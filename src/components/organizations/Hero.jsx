@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, ArrowRight } from "lucide-react";
+import AnimatedDashboard from "./../AnimatedDashboard";
 
 export default function Hero() {
   const navigate = useNavigate();
@@ -11,13 +12,13 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative pt-0 min-h-screen overflow-hidden bg-[#F5F5F6]">
-      {/* Complex Background Effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Bottom gradient fade to white */}
-        <div className="absolute bottom-0 left-0 right-0 h-[400px] bg-gradient-to-t from-white via-white/80 to-transparent z-10" />
+    <section className="relative pt-0 min-h-screen overflow-hidden">
+      {/* Fixed Background Effects - using fixed positioning */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {/* Bottom gradient fade to match bg */}
+        <div className="absolute bottom-0 left-0 right-0 h-[400px] bg-gradient-to-t from-[#F5F5F6] via-[#F5F5F6]/80 to-transparent" />
 
-        {/* Blue gradient blur - animated */}
+        {/* Blue gradient blur - fixed position */}
         <div
           className="absolute w-[700px] h-[700px] md:w-[800px] md:h-[800px] rounded-full opacity-50 md:opacity-60 -bottom-[100px] left-1/2 -translate-x-1/2 md:bottom-auto md:left-auto md:translate-x-0 md:top-[20%] md:right-[10%] transition-all duration-1000 animate-pulse"
           style={{
@@ -28,14 +29,15 @@ export default function Hero() {
           }}
         />
 
-        {/* Vertical lines - animated entrance */}
-        <div className="absolute right-0 top-0 bottom-0 flex justify-end">
+        {/* Vertical lines - animated entrance with proper positioning */}
+        <div className="absolute right-0 top-0 h-screen flex justify-end overflow-hidden">
           {[...Array(7)].map((_, i) => (
             <div
               key={`right-${i}`}
               className="relative opacity-0 animate-fadeIn"
               style={{
                 width: "103px",
+                height: "100vh",
                 animationDelay: `${i * 0.1}s`,
                 animationFillMode: "forwards",
               }}
@@ -156,20 +158,21 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right Content - Hero Image with slide-in animation */}
-          <div
-            className={`relative pt-2 lg:pt-0 lg:-mt-12 flex justify-center lg:justify-end transition-all duration-1000 ${
-              isVisible
-                ? "opacity-100 translate-x-0"
-                : "opacity-0 translate-x-10"
-            }`}
-            style={{ transitionDelay: "0.3s" }}
-          >
-            <img
-              src="/Artboard.png"
-              alt="Community Finance App"
-              className="w-full max-w-[350px] lg:max-w-[500px] xl:max-w-[600px] h-auto object-contain hover:scale-105 transition-transform duration-500"
-            />
+          {/* Right Content - Layered: Animated Dashboard Behind Welcome Image */}
+          <div className="relative pt-2 lg:pt-0 lg:-mt-12 flex justify-center lg:justify-end min-h-[500px]">
+            {/* Background Layer: Animated Dashboard (Transparent, Positioned Right) */}
+            <div className="hidden lg:block absolute top-0 right-0 w-[400px] h-[500px] opacity-80 translate-x-12">
+              <AnimatedDashboard transparent={true} />
+            </div>
+
+            {/* Foreground Layer: Welcome Image */}
+            <div className="relative z-10">
+              <img
+                src="/Artboard.png"
+                alt="Community Finance App"
+                className="w-full max-w-[350px] lg:max-w-[600px] xl:max-w-[800px] h-auto object-contain hover:scale-105 transition-transform duration-500"
+              />
+            </div>
           </div>
         </div>
       </div>

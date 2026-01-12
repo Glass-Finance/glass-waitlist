@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import GridBackground from "./GridBackground";
+import GridBackground from "./../GridBackground";
 
 export default function OurSolution() {
   const [isVisible, setIsVisible] = useState(false);
@@ -56,7 +56,7 @@ export default function OurSolution() {
 
   return (
     <GridBackground variant="alternate">
-      <section ref={sectionRef} className="relative py-16 md:py-24 bg-white">
+      <section ref={sectionRef} className="relative py-16 md:py-24">
         <div className="max-w-[1280px] mx-auto px-7 md:px-12">
           {/* Section Header */}
           <div className="text-center mb-12 md:mb-16">
@@ -72,7 +72,7 @@ export default function OurSolution() {
               </span>
             </div>
             <h2
-              className={`text-[32px] md:text-[55px] font-medium text-black leading-tight md:leading-[80px] font-dm mb-4 transition-all duration-700 ${
+              className={`text-[32px] md:text-[45px] font-medium text-black leading-tight md:leading-[80px] font-dm mb-4 transition-all duration-700 ${
                 isVisible
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 translate-y-10"

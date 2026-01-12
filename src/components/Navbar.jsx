@@ -1,14 +1,45 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ChevronDown, ChevronRight, Menu, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { ChevronDown, ChevronRight, Menu, X, Search } from "lucide-react";
 
 export default function Navbar() {
-  const [viewMode, setViewMode] = useState("organizations");
-  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  
+  // Determine active view based on current route
+  const viewMode = location.pathname === "/members" ? "members" : "organizations";
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 20;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [scrolled]);
+
+  const handleViewModeChange = (mode) => {
+    if (mode === "organizations") {
+      navigate("/");
+    } else if (mode === "members") {
+      navigate("/members");
+    }
+  };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-[#F5F5F6] z-50 h-[60px] font-sans">
+    <nav 
+      className={`fixed top-0 left-0 right-0 z-50 h-[60px] font-sans transition-all duration-300 ${
+        scrolled 
+          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200" 
+          : "bg-transparent"
+      }`}
+    >
       <div className="max-w-[1280px] mx-auto px-7 lg:px-12 h-full flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-4">
@@ -23,7 +54,7 @@ export default function Navbar() {
           {/* Toggle Pill - Hidden on mobile */}
           <div className="hidden lg:flex bg-[#EAEAEA] rounded-full p-[2px] items-center">
             <button
-              onClick={() => setViewMode("organizations")}
+              onClick={() => handleViewModeChange("organizations")}
               className={`px-[13px] py-[9px] rounded-full text-[15px] font-medium transition-all ${
                 viewMode === "organizations"
                   ? "bg-[#17A1E5] text-white"
@@ -33,7 +64,7 @@ export default function Navbar() {
               Organizations
             </button>
             <button
-              onClick={() => setViewMode("members")}
+              onClick={() => handleViewModeChange("members")}
               className={`px-[13px] py-[9px] rounded-full text-[15px] font-medium transition-all ${
                 viewMode === "members"
                   ? "bg-[#17A1E5] text-white"
@@ -72,13 +103,24 @@ export default function Navbar() {
             Ambassadors
           </button>
 
-          <button
-            onClick={() => navigate("/waitlist")}
-            className="bg-[#17A1E5] hover:bg-[#0E628C] text-white px-[13px] py-[9px] rounded-[6px] text-[15px] font-semibold transition-colors flex items-center gap-2"
-          >
-            Join Waitlist
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          {/* Conditional CTA Button based on viewMode */}
+          {viewMode === "organizations" ? (
+            <button
+              onClick={() => navigate("/waitlist")}
+              className="bg-[#17A1E5] hover:bg-[#0E628C] text-white px-[13px] py-[9px] rounded-[6px] text-[15px] font-semibold transition-colors flex items-center gap-2"
+            >
+              Join Waitlist
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/find-community")}
+              className="bg-[#17A1E5] hover:bg-[#0E628C] text-white px-[13px] py-[9px] rounded-[6px] text-[15px] font-semibold transition-colors flex items-center gap-2"
+            >
+              Find My Community
+              <Search className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -101,7 +143,10 @@ export default function Navbar() {
             {/* Toggle Pill for Mobile */}
             <div className="bg-[#EAEAEA] rounded-full p-[2px] flex items-center w-full">
               <button
-                onClick={() => setViewMode("organizations")}
+                onClick={() => {
+                  handleViewModeChange("organizations");
+                  setMenuOpen(false);
+                }}
                 className={`flex-1 px-[13px] py-[9px] rounded-full text-[15px] font-medium transition-all ${
                   viewMode === "organizations"
                     ? "bg-[#17A1E5] text-white"
@@ -111,7 +156,10 @@ export default function Navbar() {
                 Organizations
               </button>
               <button
-                onClick={() => setViewMode("members")}
+                onClick={() => {
+                  handleViewModeChange("members");
+                  setMenuOpen(false);
+                }}
                 className={`flex-1 px-[13px] py-[9px] rounded-full text-[15px] font-medium transition-all ${
                   viewMode === "members"
                     ? "bg-[#17A1E5] text-white"
@@ -147,16 +195,30 @@ export default function Navbar() {
                 Ambassadors
               </button>
 
-              <button
-                onClick={() => {
-                  navigate("/waitlist");
-                  setMenuOpen(false);
-                }}
-                className="w-full bg-[#17A1E5] hover:bg-[#0E628C] text-white px-[13px] py-[9px] rounded-[6px] text-[15px] font-semibold transition-colors flex items-center justify-center gap-2 mt-4"
-              >
-                Join Waitlist
-                <ChevronRight className="w-4 h-4" />
-              </button>
+              {/* Conditional CTA Button for Mobile */}
+              {viewMode === "organizations" ? (
+                <button
+                  onClick={() => {
+                    navigate("/waitlist");
+                    setMenuOpen(false);
+                  }}
+                  className="w-full bg-[#17A1E5] hover:bg-[#0E628C] text-white px-[13px] py-[9px] rounded-[6px] text-[15px] font-semibold transition-colors flex items-center justify-center gap-2 mt-4"
+                >
+                  Join Waitlist
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    navigate("/find-community");
+                    setMenuOpen(false);
+                  }}
+                  className="w-full bg-[#17A1E5] hover:bg-[#0E628C] text-white px-[13px] py-[9px] rounded-[6px] text-[15px] font-semibold transition-colors flex items-center justify-center gap-2 mt-4"
+                >
+                  Find My Community
+                  <Search className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>

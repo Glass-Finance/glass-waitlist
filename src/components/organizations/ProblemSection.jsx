@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import GridBackground from "./GridBackground";
+import GridBackground from "./../GridBackground";
 
 export default function ProblemSection() {
   const ref = useRef(null);
@@ -74,7 +74,7 @@ export default function ProblemSection() {
 
   return (
     <GridBackground variant="default">
-      <section ref={ref} className="relative py-16 md:py-24 bg-[#F5F5F6]">
+      <section ref={ref} className="relative py-16 md:py-24">
         <div className="max-w-[1280px] mx-auto px-7 md:px-12">
           {/* Section Header */}
           <motion.div
@@ -94,7 +94,7 @@ export default function ProblemSection() {
 
             <motion.h2
               variants={titleVariants}
-              className="text-[32px] md:text-[55px] font-medium text-black leading-tight md:leading-[80px] font-dm"
+              className="text-[32px] md:text-[45px] font-medium text-black leading-tight md:leading-[80px] font-dm"
             >
               Manual collection is holding you back
             </motion.h2>
