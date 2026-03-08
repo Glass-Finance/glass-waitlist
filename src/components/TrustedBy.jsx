@@ -31,11 +31,11 @@ export default function TrustedBy() {
   ];
 
   return (
-    <section className="py-16 px-6 md:px-12 lg:px-24">
+    <section className="bg-[#F7F8FC] py-16 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <p className="text-[#808080] font-medium mb-8">
+          <p className="text-lg font-bold mb-8">
             Trusted by forward-thinking communities
           </p>
         </div>

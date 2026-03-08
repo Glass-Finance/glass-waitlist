@@ -1,133 +1,107 @@
-import React, { useState, useEffect, useRef } from "react";
-import GridBackground from "./../GridBackground";
+import { useEffect, useRef } from "react";
+import icon1 from "../../assets/icon/frame (1).png";
+import icon2 from "../../assets/icon/frame (2).png";
+import icon3 from "../../assets/icon/frame (3).png";
+import icon4 from "../../assets/icon/frame (4).png";
+
+const features = [
+  {
+    icon: icon2,
+    title: "Automate Recurring Payments",
+    desc: "Members link their cards once, and dues are deducted automatically.",
+  },
+  {
+    icon: icon1,
+    title: "Recover Failed Payments Automatically",
+    desc: "When a payment fails, Glass retries securely and sends gentle SMS reminders",
+  },
+  {
+    icon: icon3,
+    title: "Generate Instant Proof & Reconciliation",
+    desc: "Receipts are issued automatically, and every transaction is logged in a clean, reconciled ledger",
+  },
+  {
+    icon: icon4,
+    title: "Monitor Payments in Real Time",
+    desc: "See who has paid, who hasn't, and your total balance instantly",
+  },
+];
 
 export default function OurSolution() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [hoveredCard, setHoveredCard] = useState(null);
-  const sectionRef = useRef(null);
-
-  const features = [
-    {
-      iconSrc: "/icons/frame4.png",
-      title: "Set it and forget it",
-      description:
-        "Create payment schedules once. We'll handle reminders, tracking, and follow-ups automatically.",
-    },
-    {
-      iconSrc: "/icons/frame5.png",
-      title: "We chase, so you don't",
-      description:
-        "Automated reminders via SMS and email mean you never have to awkwardly ask for payments again.",
-    },
-    {
-      iconSrc: "/icons/frame6.png",
-      title: "Instant proof of payment",
-      description:
-        "Members upload receipts directly. No more chasing screenshots or wondering who paid.",
-    },
-    {
-      iconSrc: "/icons/frame7.png",
-      title: "Total visibility",
-      description:
-        "Everyone sees the same dashboard. No more questions about where the money went.",
-    },
-  ];
+  const itemsRef = useRef([]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "1";
+            entry.target.style.transform = "translateY(0)";
+          }
+        });
       },
       { threshold: 0.1 }
     );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
+    itemsRef.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
+  const anim = (i, delay = 0) => ({
+    ref: (el) => (itemsRef.current[i] = el),
+    style: {
+      opacity: 0,
+      transform: "translateY(28px)",
+      transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
+    },
+  });
+
   return (
-    <GridBackground variant="alternate">
-      <section ref={sectionRef} className="relative py-16 md:py-24">
-        <div className="max-w-[1280px] mx-auto px-7 md:px-12">
-          {/* Section Header */}
-          <div className="text-center mb-12 md:mb-16">
-            <div
-              className={`inline-flex items-center gap-2 border border-[#2E7D32] px-[15px] py-[9px] rounded-full mb-6 transition-all duration-700 ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-10"
-              }`}
-            >
-              <span className="text-[13px] font-normal text-[#0E628C]">
-                OUR SOLUTION
-              </span>
-            </div>
-            <h2
-              className={`text-[32px] md:text-[45px] font-medium text-black leading-tight md:leading-[80px] font-dm mb-4 transition-all duration-700 ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-10"
-              }`}
-              style={{ transitionDelay: "0.1s" }}
-            >
-              Automation puts you back in control
+    <section className="bg-[#F7F8FC]  py-20 md:py-28" id="solution">
+      <div className="max-w-[1140px] mx-auto px-6">
+
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div {...anim(0, 0)}>
+            <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full mb-6">
+              Our Solution
+            </span>
+          </div>
+          <div {...anim(1, 80)}>
+            <h2 className="text-[clamp(32px,5vw,58px)] font-extrabold text-[#0f1d6e] leading-tight tracking-tight mb-4">
+              Built-In Transparency for Every<br />Transaction
             </h2>
           </div>
-
-          {/* Features Grid with stagger animation */}
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-[1100px] mx-auto">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                onMouseEnter={() => setHoveredCard(index)}
-                onMouseLeave={() => setHoveredCard(null)}
-                className={`bg-white border border-gray-200 rounded-[20px] p-6 md:p-8 transition-all duration-500 ${
-                  hoveredCard === index
-                    ? "shadow-xl border-[#17A1E5]/30 -translate-y-2 scale-105"
-                    : "hover:shadow-lg"
-                } ${
-                  isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-10"
-                }`}
-                style={{ transitionDelay: `${0.2 + index * 0.1}s` }}
-              >
-                {/* Icon */}
-                <div
-                  className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center mb-4 transition-all duration-300 ${
-                    hoveredCard === index ? "scale-110 rotate-6" : ""
-                  }`}
-                >
-                  <img
-                    src={feature.iconSrc}
-                    alt={feature.title}
-                    className="w-6 h-6 md:w-10 md:h-10"
-                  />
-                </div>
-
-                {/* Title */}
-                <h3 className="text-[24px] md:text-[28px] font-medium text-black mb-3 font-dm leading-tight">
-                  {feature.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-[16px] md:text-[18px] font-medium text-[#808080] leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
+          <div {...anim(2, 160)}>
+            <p className="text-[16px] text-[#9099b2] max-w-[580px] mx-auto leading-relaxed">
+              Centralize payments, records, and visibility in one shared system, so your team stops chasing and starts leading.
+            </p>
           </div>
         </div>
-      </section>
-    </GridBackground>
+
+        {/* 2x2 Card Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {features.map(({ icon, iconBg, title, desc }, i) => (
+            <div
+              key={title}
+              {...anim(3 + i, 200 + i * 80)}
+              className="group bg-white border border-[#E8EAF0] rounded-3xl p-10 flex flex-col items-center text-center hover:shadow-xl hover:shadow-[#1C2B8A]/8 hover:-translate-y-1 transition-all duration-300 cursor-default"
+            >
+              {/* Circle icon */}
+              <div className={`flex items-center justify-center mb-8`}>
+                <img src={icon} alt={title} className="w-[72px] h-[72px] object-contain" />
+              </div>
+
+              <h3 className="text-[22px] font-extrabold text-[#0f1d6e] leading-snug mb-3">
+                {title}
+              </h3>
+              <p className="text-[15px] text-[#9099b2] leading-relaxed max-w-[320px]">
+                {desc}
+              </p>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </section>
   );
 }

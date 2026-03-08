@@ -1,159 +1,114 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import GridBackground from "./GridBackground";
+import { useEffect, useRef } from "react";
+import case1 from "../assets/case1.png";
+import case2 from "../assets/case2.png";
+import case3 from "../assets/case3.png";
+import case4 from "../assets/case4.png";
+
+const cases = [
+  {
+    img: case1,
+    title: "Schools & Alumni",
+    desc: "Collect school fees and alumni dues without the reconciliation headache.",
+  },
+  {
+    img: case2,
+    title: "Religious Organizations",
+    desc: "Track tithes and building fund pledges with total transparency.",
+  },
+  {
+    img: case3,
+    title: "Clubs & Associations",
+    desc: "Collect monthly dues and event fees in seconds, not hours.",
+  },
+  {
+    img: case4,
+    title: "Professional Bodies",
+    desc: "Manage annual membership dues and certification fees effortlessly.",
+  },
+];
 
 export default function UseCases() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [hoveredCard, setHoveredCard] = useState(null);
-  const sectionRef = useRef(null);
-
-  const useCases = [
-    {
-      iconSrc: "/icons/frame8.png",
-      title: "Schools & Alumni",
-      description:
-        "Collect tuition, event fees, and alumni contributions with complete transparency and automated reminders.",
-    },
-    {
-      iconSrc: "/icons/frame9.png",
-      title: "Religious Organizations",
-      description:
-        "Manage tithes, offerings, and special projects with full accountability and member access to all records.",
-    },
-    {
-      iconSrc: "/icons/frame10.png",
-      title: "Residential Estates",
-      description:
-        "Automate service charges and levies. Members see exactly how every naira is spent on estate maintenance.",
-    },
-    {
-      iconSrc: "/icons/frame11.png",
-      title: "Professional Bodies",
-      description:
-        "Manage membership dues, event fees, and certification payments with automated compliance tracking.",
-    },
-  ];
-
-  // Badge animation - drops down
-  const badgeVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
-  };
+  const itemsRef = useRef([]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        }
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "1";
+            entry.target.style.transform = "translateY(0)";
+          }
+        });
       },
       { threshold: 0.1 }
     );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
+    itemsRef.current.forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
   }, []);
 
+  const anim = (i, delay = 0) => ({
+    ref: (el) => (itemsRef.current[i] = el),
+    style: {
+      opacity: 0,
+      transform: "translateY(28px)",
+      transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
+    },
+  });
+
   return (
-    <GridBackground variant="alternate">
-      <section ref={sectionRef} className="relative w-full py-16 md:py-24">
-        <div className="w-full max-w-[1280px] mx-auto px-6 md:px-12">
-          {/* Section Header */}
-          <div className="flex flex-col items-center text-center mb-12 md:mb-16">
-            <motion.div
-              initial="hidden"
-              animate={isVisible ? "visible" : "hidden"}
-              variants={badgeVariants}
-              className="inline-flex items-center gap-2 border border-[#0E628C] px-4 py-2.5 rounded-full mb-6"
-            >
-              <span className="text-sm font-normal text-[#0E628C]">
-                USECASES
-              </span>
-            </motion.div>
+    <section className="bg-[#F7F8FC] py-20 md:py-28" id="use-cases">
+      <div className="max-w-[1140px] mx-auto px-6">
 
-            {/* Main Heading - Different for Mobile and Desktop */}
-            <h2
-              className={`font-medium text-black font-dm mb-4 max-w-4xl transition-all duration-700 ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-10"
-              }`}
-            >
-              {/* Mobile - Two lines with specific styling */}
-              <span className="md:hidden block text-[40px] leading-[40px]">
-                Built for every
-                <br />
-                Nigerian community
-              </span>
-
-              {/* Desktop - One line */}
-              <span className="hidden md:block text-5xl lg:text-[40px] leading-tight">
-                Built for every Nigerian community
-              </span>
+        {/* Header */}
+        <div className="text-center mb-14">
+          <div {...anim(0, 0)}>
+            <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full mb-7">
+              Use Cases
+            </span>
+          </div>
+          <div {...anim(1, 80)}>
+            <h2 className="text-[clamp(36px,5.5vw,64px)] font-extrabold text-[#0f1d6e] leading-tight tracking-tight mb-4 max-w-[800px] mx-auto">
+              Built for every Nigerian community
             </h2>
-
-            <p className="text-base md:text-md font-medium text-[#808080] leading-relaxed max-w-4xl">
-              Whether you run a small club or a national association, Glass
-              scales with you.
+          </div>
+          <div {...anim(2, 160)}>
+            <p className="text-[16px] text-[#9099b2] max-w-[500px] mx-auto leading-relaxed">
+              Whether you run a small club or a national association, Glass scales with you.
             </p>
           </div>
+        </div>
 
-          {/* Use Cases Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
-            {useCases.map((useCase, index) => (
-              <div
-                key={index}
-                onMouseEnter={() => setHoveredCard(index)}
-                onMouseLeave={() => setHoveredCard(null)}
-                className={`flex flex-col bg-white border border-gray-200 rounded-2xl p-8 md:p-10 transition-all duration-500 ${
-                  hoveredCard === index
-                    ? "shadow-xl border-[#17A1E5]/30 -translate-y-2 scale-105"
-                    : "hover:shadow-lg"
-                } ${
-                  isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-10"
-                }`}
-                style={{ transitionDelay: `${0.2 + index * 0.1}s` }}
-              >
-                {/* Icon - FIXED: Consistent size wrapper for all icons */}
-                <div
-                  className={`flex items-center justify-center w-16 h-16 md:w-20 md:h-20 mb-6 transition-all duration-300 ${
-                    hoveredCard === index ? "scale-110 rotate-6" : ""
-                  }`}
-                >
-                  <img
-                    src={useCase.iconSrc}
-                    alt={useCase.title}
-                    className="w-10 h-10 md:w-12 md:h-12 object-contain"
-                  />
-                </div>
+        {/* 2×2 card grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+          {cases.map(({ img, title, desc }, i) => (
+            <div
+              key={title}
+              {...anim(3 + i, 200 + i * 70)}
+              className="bg-white rounded-3xl overflow-hidden border border-[#ECEEF5] shadow-sm hover:-translate-y-1 hover:shadow-xl hover:shadow-[#1C2B8A]/8 transition-all duration-300"
+            >
+              {/* Photo */}
+              <div className="w-full h-[240px] overflow-hidden">
+                <img
+                  src={img}
+                  alt={title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
-                {/* Title */}
-                <h3 className="text-2xl md:text-3xl font-medium text-black mb-3 font-dm leading-tight">
-                  {useCase.title}
+              {/* Text */}
+              <div className="px-8 py-7 text-center">
+                <h3 className="text-[22px] font-extrabold text-[#0f1d6e] mb-2 leading-tight">
+                  {title}
                 </h3>
-
-                {/* Description */}
-                <p className="text-base md:text-lg font-medium text-[#808080] leading-relaxed">
-                  {useCase.description}
+                <p className="text-[15px] text-[#9099b2] leading-relaxed max-w-[320px] mx-auto">
+                  {desc}
                 </p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      </section>
-    </GridBackground>
+
+      </div>
+    </section>
   );
 }
