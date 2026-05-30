@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Overlay from "../../assets/Overlay2.png";
-import CTAImage from "../../assets/CTA.png"; 
+import CTAImage from "../../assets/CTA.png";
 
 export default function CTA() {
   const navigate = useNavigate();
@@ -23,19 +23,19 @@ export default function CTA() {
     return () => observer.disconnect();
   }, []);
 
-  const anim = (i, delay = 0) => ({
-    ref: (el) => (itemsRef.current[i] = el),
-    style: {
-      opacity: 0,
-      transform: "translateY(24px)",
-      transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
-    },
-  });
+  // const anim = (i, delay = 0) => ({
+  //   ref: (el) => (itemsRef.current[i] = el),
+  //   style: {
+  //     opacity: 0,
+  //     transform: "translateY(24px)",
+  //     transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
+  //   },
+  // });
 
   return (
     <section className="bg-[#F7F8FC] py-12 px-6">
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="relative inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage: `url(${Overlay})`,
           backgroundSize: "cover",
@@ -44,14 +44,11 @@ export default function CTA() {
           opacity: 0.6,
         }}
       />
-      <div
-        {...anim(0, 0)}
-        className="max-w-[1140px] mx-auto bg-[#0d1a6e] rounded-3xl px-10 py-14 flex flex-col lg:flex-row items-center gap-10 lg:gap-16 overflow-hidden relative"
-      >
+      <div className="max-w-[1140px] mx-auto bg-[#0d1a6e] rounded-3xl px-10 py-14 flex flex-col md:flex-row items-center gap-10 lg:gap-16 overflow-hidden relative">
         {/* Left — text + button */}
         <div className="flex-1 min-w-0 relative z-10">
           <div className="flex items-start gap-4 mb-5">
-            <h2 className="text-[clamp(26px,3.5vw,42px)] font-extrabold text-white leading-tight max-w-[540px]">
+            <h2 className="text-[clamp(36px,3.5vw,42px)] font-bold text-white leading-tight max-w-[720px]">
               Bring clarity to your community finances.
             </h2>
             {/* Decorative star */}
@@ -62,10 +59,40 @@ export default function CTA() {
               fill="none"
               className="flex-shrink-0 mt-1 text-white"
             >
-              <line x1="18" y1="0" x2="18" y2="36" stroke="currentColor" strokeWidth="1.5" />
-              <line x1="0" y1="18" x2="36" y2="18" stroke="currentColor" strokeWidth="1.5" />
-              <line x1="3" y1="3" x2="33" y2="33" stroke="currentColor" strokeWidth="1" strokeOpacity="0.5" />
-              <line x1="33" y1="3" x2="3" y2="33" stroke="currentColor" strokeWidth="1" strokeOpacity="0.5" />
+              <line
+                x1="18"
+                y1="0"
+                x2="18"
+                y2="36"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              />
+              <line
+                x1="0"
+                y1="18"
+                x2="36"
+                y2="18"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              />
+              <line
+                x1="3"
+                y1="3"
+                x2="33"
+                y2="33"
+                stroke="currentColor"
+                strokeWidth="1"
+                strokeOpacity="0.5"
+              />
+              <line
+                x1="33"
+                y1="3"
+                x2="3"
+                y2="33"
+                stroke="currentColor"
+                strokeWidth="1"
+                strokeOpacity="0.5"
+              />
             </svg>
           </div>
 
@@ -82,11 +109,11 @@ export default function CTA() {
         </div>
 
         {/* Right — image */}
-        <div className="flex-shrink-0 w-full lg:w-[480px] relative z-10">
+        <div className="flex-shrink-0 w-full md:w-[420px] relative z-10">
           <img
             src={CTAImage}
             alt="Glass community finance"
-            className="w-full h-auto object-contain"
+            className="w-full h-auto object-cover"
           />
         </div>
       </div>

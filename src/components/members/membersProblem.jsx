@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Clock, Eye, CreditCard, Lightbulb } from "lucide-react";
-import Problem from "../../assets/problem.png";
+import Problem from "../../assets/problem2.png";
 import Overlay from "../../assets/Overlay.png";
 
 const problems = [
@@ -40,20 +40,20 @@ export default function MembersProblem() {
     return () => observer.disconnect();
   }, []);
 
-  const anim = (i, delay = 0) => ({
-    ref: (el) => (itemsRef.current[i] = el),
-    style: {
-      opacity: 0,
-      transform: "translateY(28px)",
-      transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
-    },
-  });
+  // const anim = (i, delay = 0) => ({
+  //   ref: (el) => (itemsRef.current[i] = el),
+  //   style: {
+  //     opacity: 0,
+  //     transform: "translateY(28px)",
+  //     transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
+  //   },
+  // });
 
   return (
     <section className="py-20 md:py-28 relative" id="problem">
       {/* Overlay background image */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="relative inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage: `url(${Overlay})`,
           backgroundSize: "cover",
@@ -65,17 +65,17 @@ export default function MembersProblem() {
       <div className="max-w-[1140px] mx-auto px-6 relative z-10">
         {/* Header */}
         <div className="text-center mb-16">
-          <div {...anim(0, 0)}>
+          <div>
             <span className="inline-flex items-center border border-[#1C2B8A]/30 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full mb-6">
               THE PROBLEM
             </span>
           </div>
-          <div {...anim(1, 80)}>
-            <h2 className="text-[clamp(26px,5vw,58px)] font-extrabold text-[#0f1d6e] leading-tight tracking-tight mb-4">
+          <div>
+            <h2 className="text-[clamp(26px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-4">
               Still spending weekends chasing payments?
             </h2>
           </div>
-          <div {...anim(2, 160)}>
+          <div>
             <p className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed">
               Without centralized visibility, time is wasted and trust begins to
               weaken.
@@ -88,11 +88,7 @@ export default function MembersProblem() {
           {/* LEFT */}
           <div className="flex flex-col gap-10">
             {problems.map(({ Icon, title, desc }, i) => (
-              <div
-                key={title}
-                {...anim(3 + i, 220 + i * 130)}
-                className="flex items-start gap-5"
-              >
+              <div key={title} className="flex items-start gap-5">
                 <div className="flex-shrink-0 w-[60px] h-[60px] rounded-full bg-white shadow-[0_2px_12px_rgba(28,43,138,0.10)] border border-[#e8eaf5] flex items-center justify-center mt-0.5">
                   <Icon
                     className="w-[24px] h-[24px] text-[#1C2B8A]"
@@ -112,10 +108,7 @@ export default function MembersProblem() {
           </div>
 
           {/* RIGHT */}
-          <div
-            {...anim(6, 300)}
-            className="w-full max-w-[640px] flex flex-col mx-auto lg:mx-0"
-          >
+          <div className="w-full max-w-[640px] flex flex-col mx-auto lg:mx-0">
             {/* Image */}
             <div
               className="relative rounded-2xl overflow-hidden w-full shadow-xl shadow-[#1C2B8A]/15"
@@ -131,7 +124,6 @@ export default function MembersProblem() {
 
             {/* Floating card */}
             <div
-              {...anim(7, 400)}
               className="rounded-2xl shadow-lg shadow-[#1C2B8A]/10 border border-[#eef0f8] px-5 py-4 flex items-center gap-4 self-start"
               style={{
                 marginTop: "-28px",

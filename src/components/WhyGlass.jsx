@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import Overlay from "../assets/Overlay2.png";
 
 const faqs = [
   {
@@ -27,65 +26,23 @@ const faqs = [
 
 export default function WhyGlass() {
   const [open, setOpen] = useState(0);
-  const itemsRef = useRef([]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
-          }
-        });
-      },
-      { threshold: 0.1 },
-    );
-    itemsRef.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  const anim = (i, delay = 0) => ({
-    ref: (el) => (itemsRef.current[i] = el),
-    style: {
-      opacity: 0,
-      transform: "translateY(24px)",
-      transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
-    },
-  });
 
   return (
-    <section className="bg-[#F7F8FC] py-20 md:py-28">
-      {/* Same overlay as problem section */}
-      <div
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{
-          backgroundImage: `url(${Overlay})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          opacity: 0.6,
-        }}
-      />
+    <section className="relative bg-[#F7F8FC] py-20 md:py-28 overflow-hidden">
       <div className="max-w-[1140px] mx-auto px-6">
+
         {/* Header */}
         <div className="text-center mb-14">
-          <div {...anim(0, 0)}>
-            <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full mb-6">
-              FAQ
-            </span>
-          </div>
-          <div {...anim(1, 80)}>
-            <h2 className="text-[clamp(32px,5vw,58px)] font-extrabold text-[#0f1d6e] leading-tight tracking-tight mb-4">
-              Frequently Asked Questions
-            </h2>
-          </div>
-          <div {...anim(2, 160)}>
-            <p className="text-[16px] text-[#9099b2] max-w-[640px] mx-auto leading-relaxed">
-              Everything you need to know about using Glass, from setting up
-              dues to tracking payments and ensuring full transparency.
-            </p>
-          </div>
+          <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full mb-6">
+            FAQ
+          </span>
+          <h2 className="text-[clamp(32px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-4">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-[16px] text-[#9099b2] max-w-[640px] mx-auto leading-relaxed">
+            Everything you need to know about using Glass, from setting up
+            dues to tracking payments and ensuring full transparency.
+          </p>
         </div>
 
         {/* Accordion */}
@@ -93,7 +50,6 @@ export default function WhyGlass() {
           {faqs.map((faq, i) => (
             <div
               key={faq.q}
-              {...anim(3 + i, 200 + i * 60)}
               className={`bg-[#F0F2F8] rounded-2xl mb-3 overflow-hidden border transition-all duration-300 ${
                 open === i ? "border-[#e0e4f5]" : "border-transparent"
               }`}
@@ -102,13 +58,11 @@ export default function WhyGlass() {
                 className="w-full flex items-center gap-4 px-6 py-5 text-left bg-transparent border-none cursor-pointer"
                 onClick={() => setOpen(open === i ? null : i)}
               >
-                {/* Left blue bar when open */}
                 <div
                   className={`flex-shrink-0 w-1 rounded-full self-stretch transition-all duration-300 ${
                     open === i ? "bg-[#1C2B8A]" : "bg-transparent"
                   }`}
                 />
-
                 <span
                   className={`flex-1 font-bold text-[16px] leading-snug transition-colors duration-200 ${
                     open === i ? "text-[#1C2B8A]" : "text-[#0f1d6e]"
@@ -116,8 +70,6 @@ export default function WhyGlass() {
                 >
                   {faq.q}
                 </span>
-
-                {/* +/- circle button */}
                 <div
                   className={`flex-shrink-0 w-8 h-8 rounded-full border flex items-center justify-center text-[18px] leading-none transition-all duration-300 ${
                     open === i
@@ -129,9 +81,8 @@ export default function WhyGlass() {
                 </div>
               </button>
 
-              {/* Answer */}
               <div
-                className="overflow-hidden transition-all duration-400 ease-out"
+                className="overflow-hidden transition-all duration-300 ease-out"
                 style={{ maxHeight: open === i ? "200px" : "0px" }}
               >
                 <p className="text-[15px] text-[#9099b2] leading-relaxed pl-11 pr-14 pb-6">
@@ -143,7 +94,7 @@ export default function WhyGlass() {
         </div>
 
         {/* CTA */}
-        <div {...anim(8, 500)} className="flex justify-center">
+        <div className="flex justify-center">
           <a
             href="/contact"
             className="inline-flex items-center gap-2.5 bg-[#0f1d6e] hover:bg-[#1C2B8A] text-white font-semibold text-[15px] px-7 py-3.5 rounded-full no-underline transition-all hover:-translate-y-0.5 shadow-lg shadow-[#0f1d6e]/25"

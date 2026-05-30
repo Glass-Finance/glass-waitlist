@@ -25,7 +25,6 @@ export default function TrustedBy() {
     isDown.current = false;
   };
 
-
   const trustedLogos = [
     {
       name: "Babcock University",
@@ -58,7 +57,7 @@ export default function TrustedBy() {
     <section className="bg-[#F7F8FC] pb-16 px-6 md:px-12 lg:px-24">
       {/* Same overlay as problem section */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="relative inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage: `url(${Overlay})`,
           backgroundSize: "cover",
@@ -122,25 +121,6 @@ export default function TrustedBy() {
             ))}
           </div>
         </div>
-
-        {/* Alternative: Static Grid (if you prefer no animation) */}
-        {/* Uncomment this and comment out the carousel above if you want a static grid */}
-        {/* 
-        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
-          {trustedLogos.map((item, index) => (
-            <div 
-              key={index}
-              className="grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100"
-            >
-              <img 
-                src={item.logo}
-                alt={item.alt}
-                className="h-12 md:h-16 w-auto object-contain"
-              />
-            </div>
-          ))}
-        </div>
-        */}
       </div>
     </section>
   );

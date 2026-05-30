@@ -13,7 +13,7 @@ import MembersCTA from "../components/members/membersCTA";
 
 export default function MembersHome() {
   return (
-    <div className="bg-white">
+    <div className="bg-[#F7F8FC]">
       <Navbar />
       <MembersHero />
       <MembersProblem />

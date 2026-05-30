@@ -26,19 +26,19 @@ export default function Footer() {
           }}
         />
         <div className="relative z-10 max-w-[860px] mx-auto px-6 text-center">
-          <h2 className="text-[clamp(30px,5vw,54px)] font-extrabold text-white leading-tight tracking-tight mb-5">
+          <h2 className="text-[clamp(30px,5vw,54px)] font-bold text-white leading-tight tracking-tight mb-5">
             Stop chasing payments.
             <br />
             Start building your Community.
           </h2>
-          <p className="text-[16px] text-white/60 max-w-[420px] mx-auto leading-relaxed mb-10">
-            Join 10+ communities already using Glass.
+          <p className="text-[16px] text-white/60 max-w-[720px] mx-auto leading-relaxed mb-10">
+            Join 10+ other forward-thinking communities on the waitlist today.
           </p>
           <button
             onClick={() => navigate("/waitlist")}
             className="inline-flex items-center gap-2 bg-white text-[#0f1640] text-[15px] font-semibold px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/20"
           >
-            Join Our Waitlist
+            Sign in
           </button>
         </div>
       </div>

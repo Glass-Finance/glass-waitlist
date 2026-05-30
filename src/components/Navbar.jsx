@@ -12,9 +12,7 @@ export default function Navbar() {
     location.pathname === "/members" ? "members" : "organizations";
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -32,7 +30,7 @@ export default function Navbar() {
           : "bg-transparent"
       }`}
     >
-      {/* Toggle pill mobile */}
+      {/* ── Toggle pill mobile ── */}
       <div className="lg:hidden bg-white/[0.07] border border-white/[0.1] flex">
         <button
           onClick={() => {
@@ -78,8 +76,8 @@ export default function Navbar() {
             onClick={() => handleViewModeChange("organizations")}
             className={`px-4 py-2 rounded-full text-[13.5px] font-semibold transition-all duration-200 ${
               viewMode === "organizations"
-                ? "bg-white text-[#0B0F2E] shadow-sm"
-                : "text-white/55 hover:text-white/80"
+                ? "bg-white/15 text-white/70 shadow-sm"
+                : "text-white/45 hover:text-white/50"
             }`}
           >
             Organizations
@@ -88,8 +86,8 @@ export default function Navbar() {
             onClick={() => handleViewModeChange("members")}
             className={`px-4 py-2 rounded-full text-[13.5px] font-semibold transition-all duration-200 ${
               viewMode === "members"
-                ? "bg-white text-[#0B0F2E] shadow-sm"
-                : "text-white/55 hover:text-white/80"
+                ? "bg-white/15 text-white/70 shadow-sm"
+                : "text-white/45 hover:text-white/50"
             }`}
           >
             Members
@@ -112,23 +110,30 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* ── CTA ── */}
-        <div className="hidden lg:flex items-center shrink-0">
+        {/* ── CTA (desktop) ── */}
+        <div className="hidden lg:flex items-center gap-3 shrink-0">
           {viewMode === "organizations" ? (
-            <button
-              onClick={() => navigate("/waitlist")}
-              className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20"
-            >
-              Join Our Waitlist
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+            <>
+              <button
+                onClick={() => navigate("/waitlist")}
+                className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20"
+              >
+                Get Started Free
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => navigate("/login")}
+                className="text-[13.5px] text-white/70 hover:text-white transition-colors font-medium"
+              >
+                Sign In
+              </button>
+            </>
           ) : (
             <button
-              onClick={() => navigate("/find-community")}
+              onClick={() => navigate("/login")}
               className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20"
             >
-              Find My Community
-              <Search className="w-3.5 h-3.5" />
+              Sign In
             </button>
           )}
         </div>
@@ -138,7 +143,7 @@ export default function Navbar() {
           onClick={() => setMenuOpen(!menuOpen)}
           className="lg:hidden p-2 text-white/70 hover:text-white transition-colors"
         >
-          {menuOpen ? <X className="w8 h-8" /> : <Menu className="w-8 h-8" />}
+          {menuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
         </button>
       </div>
 
@@ -159,24 +164,35 @@ export default function Navbar() {
             </div>
 
             {viewMode === "organizations" ? (
-              <button
-                onClick={() => {
-                  navigate("/waitlist");
-                  setMenuOpen(false);
-                }}
-                className="w-full flex items-center justify-center gap-2 bg-white text-[#0B0F2E] py-3 rounded-full text-[14px] font-bold"
-              >
-                Join Our Waitlist <ChevronRight className="w-4 h-4" />
-              </button>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    navigate("/waitlist");
+                    setMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 bg-white text-[#0B0F2E] py-3 rounded-full text-[14px] font-bold"
+                >
+                  Get Started Free <ChevronRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => {
+                    navigate("/login");
+                    setMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 text-white/70 py-2 text-[14px] font-medium"
+                >
+                  Sign In
+                </button>
+              </div>
             ) : (
               <button
                 onClick={() => {
-                  navigate("/find-community");
+                  navigate("/login");
                   setMenuOpen(false);
                 }}
                 className="w-full flex items-center justify-center gap-2 bg-white text-[#0B0F2E] py-3 rounded-full text-[14px] font-bold"
               >
-                Find My Community <Search className="w-4 h-4" />
+                Sign In
               </button>
             )}
           </div>

@@ -47,19 +47,19 @@ export default function UseCases() {
     return () => observer.disconnect();
   }, []);
 
-  const anim = (i, delay = 0) => ({
-    ref: (el) => (itemsRef.current[i] = el),
-    style: {
-      opacity: 0,
-      transform: "translateY(28px)",
-      transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
-    },
-  });
+  // const anim = (i, delay = 0) => ({
+  //   ref: (el) => (itemsRef.current[i] = el),
+  //   style: {
+  //     opacity: 0,
+  //     transform: "translateY(28px)",
+  //     transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
+  //   },
+  // });
 
   return (
     <section className="bg-[#F7F8FC] py-20 md:py-28" id="use-cases">
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="relative inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage: `url(${Overlay})`,
           backgroundSize: "cover",
@@ -71,17 +71,17 @@ export default function UseCases() {
       <div className="max-w-[1140px] mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-14">
-          <div {...anim(0, 0)}>
+          <div>
             <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full mb-7">
               Use Cases
             </span>
           </div>
-          <div {...anim(1, 80)}>
-            <h2 className="text-[clamp(26px,5.5vw,64px)] font-extrabold text-[#0f1d6e] leading-tight tracking-tight mb-4 max-w-[800px] mx-auto">
+          <div>
+            <h2 className="text-[clamp(26px,5.5vw,64px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-4 max-w-[800px] mx-auto">
               Built for every Nigerian community
             </h2>
           </div>
-          <div {...anim(2, 160)}>
+          <div>
             <p className="text-[17px] text-[#00000099] max-w-[500px] mx-auto leading-relaxed">
               Whether you run a small club or a national association, Glass
               scales with you.
@@ -94,7 +94,6 @@ export default function UseCases() {
           {cases.map(({ img, title, desc }, i) => (
             <div
               key={title}
-              {...anim(3 + i, 200 + i * 70)}
               className="bg-[#F0F1F7] rounded-xl md:rounded-3xl border border-[#ECEEF5] shadow-sm hover:-translate-y-1 hover:shadow-xl hover:shadow-[#1C2B8A]/8 transition-all duration-300 p-1.5"
             >
               {/* Photo */}
@@ -108,7 +107,7 @@ export default function UseCases() {
 
               {/* Text */}
               <div className="px-2 py-5 text-left">
-                <h3 className="text-[22px] font-extrabold text-[#0f1d6e] mb-2 leading-tight">
+                <h3 className="text-[22px] font-bold text-[#0f1d6e] mb-2 leading-tight">
                   {title}
                 </h3>
                 <p className="text-[15px] text-[#9099b2] leading-relaxed max-w-[320px]">

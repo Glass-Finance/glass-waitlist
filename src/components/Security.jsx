@@ -72,7 +72,7 @@ export default function Security() {
     <section className="bg-[#F7F8FC] py-20 md:py-24" id="security">
       {/* Same overlay as problem section */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="relative inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage: `url(${Overlay})`,
           backgroundSize: "cover",
@@ -84,17 +84,17 @@ export default function Security() {
       <div className="max-w-[1140px] mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-10">
-          <div {...anim(0, 0)}>
+          <div >
             <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full mb-8">
               Security & Trust
             </span>
           </div>
-          <div {...anim(1, 80)}>
-            <h2 className="text-[clamp(36px,5.5vw,64px)] font-extrabold text-[#0f1d6e] leading-tight tracking-tight mb-5 max-w-[1320px] mx-auto">
+          <div >
+            <h2 className="text-[clamp(36px,5.5vw,64px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-5 max-w-[1320px] mx-auto">
               Bank-grade security for your peace of mind
             </h2>
           </div>
-          <div {...anim(2, 160)}>
+          <div >
             <p className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed">
               We protect your funds with end-to-end encryption, and ensure your
               data never falls into the wrong hands.
@@ -139,7 +139,7 @@ export default function Security() {
                 {/* Bottom — white text area */}
                 <div className="px-6 py-6 text-center">
                   <h3
-                    className="text-[20px] font-extrabold mb-2 leading-tight"
+                    className="text-[20px] font-bold mb-2 leading-tight"
                     style={{ color: titleColor }}
                   >
                     {title}
@@ -154,7 +154,7 @@ export default function Security() {
         </div>
 
         {/* Bottom banner */}
-        <div {...anim(6, 460)}>
+        <div>
           <div className="bg-[#CCDBFF66] rounded-2xl px-8 py-6 flex items-center justify-between gap-6 flex-wrap">
             <div>
               <h4 className="text-[15px] font-bold text-[#0f1d6e] mb-1">

@@ -15,7 +15,7 @@ export default function OrganizationsHome() {
   useScrollReveal();
 
   return (
-    <div className="bg-white">
+    <div className="bg-[#F7F8FC]">
       <Navbar />
       <Hero />
       <ProblemSection />
