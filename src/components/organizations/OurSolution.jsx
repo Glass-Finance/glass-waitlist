@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
+import { motion } from "motion/react";
 import icon1 from "../../assets/icon/frame1.png";
 import icon2 from "../../assets/icon/frame2.png";
 import icon3 from "../../assets/icon/frame3.png";
 import icon4 from "../../assets/icon/frame4.png";
-
 import featureAutomate from "../../assets/solution/automate.png";
 import featureRecover from "../../assets/solution/recover.png";
 import featureProof from "../../assets/solution/proof.png";
@@ -38,191 +38,537 @@ const features = [
   },
 ];
 
-export default function OurSolution() {
-  const itemsRef = useRef([]);
+// ─── BlurText ─────────────────────────────────────────────────────────────────
+const buildKeyframes = (from, steps) => {
+  const keys = new Set([
+    ...Object.keys(from),
+    ...steps.flatMap((s) => Object.keys(s)),
+  ]);
+  const keyframes = {};
+  keys.forEach((k) => {
+    keyframes[k] = [from[k], ...steps.map((s) => s[k])];
+  });
+  return keyframes;
+};
+
+function BlurText({
+  text = "",
+  delay = 80,
+  className = "",
+  animateBy = "words",
+  direction = "top",
+  threshold = 0.15,
+  stepDuration = 0.38,
+  centered = false,
+  onAnimationComplete,
+}) {
+  const elements = animateBy === "words" ? text.split(" ") : text.split("");
+  const [inView, setInView] = useState(false);
+  const ref = useRef(null);
 
   useEffect(() => {
+    if (!ref.current) return;
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = "1";
-            entry.target.style.transform = "translateY(0)";
-          }
-        });
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
       },
-      { threshold: 0.1 },
+      { threshold },
     );
-    itemsRef.current.forEach((el) => el && observer.observe(el));
+    observer.observe(ref.current);
     return () => observer.disconnect();
-  }, []);
+  }, [threshold]);
 
-  // const anim = (i, delay = 0) => ({
-  //   ref: (el) => (itemsRef.current[i] = el),
-  //   style: {
-  //     opacity: 0,
-  //     transform: "translateY(28px)",
-  //     transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
-  //   },
-  // });
+  const fromSnapshot =
+    direction === "top"
+      ? { filter: "blur(10px)", opacity: 0, y: -30 }
+      : { filter: "blur(10px)", opacity: 0, y: 30 };
+
+  const toSnapshots = [
+    { filter: "blur(4px)", opacity: 0.5, y: direction === "top" ? 4 : -4 },
+    { filter: "blur(0px)", opacity: 1, y: 0 },
+  ];
+
+  const stepCount = toSnapshots.length + 1;
+  const totalDuration = stepDuration * (stepCount - 1);
+  const times = Array.from(
+    { length: stepCount },
+    (_, i) => i / (stepCount - 1),
+  );
+  const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots);
 
   return (
-    <section className="py-20 md:py-28 relative" id="solution">
-      {/* Same overlay as problem section */}
+    <span
+      ref={ref}
+      className={className}
+      style={{
+        display: "inline-flex",
+        flexWrap: "wrap",
+        justifyContent: centered ? "center" : "flex-start",
+        width: centered ? "100%" : "auto",
+      }}
+    >
+      {elements.map((segment, index) => (
+        <motion.span
+          className="inline-block will-change-[transform,filter,opacity]"
+          key={index}
+          initial={fromSnapshot}
+          animate={inView ? animateKeyframes : fromSnapshot}
+          transition={{
+            duration: totalDuration,
+            times,
+            delay: (index * delay) / 1000,
+            ease: "easeOut",
+          }}
+          onAnimationComplete={
+            index === elements.length - 1 ? onAnimationComplete : undefined
+          }
+        >
+          {segment === " " ? "\u00A0" : segment}
+          {animateBy === "words" && index < elements.length - 1 && "\u00A0"}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
+// ─── TextType — scroll-triggered, plays once, no loop ─────────────────────────
+function TextType({
+  text,
+  typingSpeed = 28,
+  initialDelay = 0,
+  showCursor = true,
+  cursorCharacter = "|",
+  className = "",
+  onComplete,
+  trigger = false,
+}) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  const indexRef = useRef(0);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (!trigger || done) return;
+    setDisplayed("");
+    indexRef.current = 0;
+
+    const tick = () => {
+      if (indexRef.current >= text.length) {
+        setDone(true);
+        onComplete?.();
+        return;
+      }
+      setDisplayed(text.slice(0, indexRef.current + 1));
+      indexRef.current += 1;
+      timerRef.current = setTimeout(tick, typingSpeed);
+    };
+
+    timerRef.current = setTimeout(tick, initialDelay);
+    return () => clearTimeout(timerRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trigger]);
+
+  return (
+    <span className={`text-type ${className}`} style={{ display: "inline" }}>
+      <span className="text-type__content">{displayed}</span>
+      {showCursor && !done && (
+        <span
+          style={{
+            display: "inline-block",
+            marginLeft: "1px",
+            animation: "ttCursorBlink 0.55s step-end infinite",
+            color: "inherit",
+            fontWeight: 300,
+          }}
+        >
+          {cursorCharacter}
+        </span>
+      )}
+    </span>
+  );
+}
+
+// ─── Per-card tilt hook ───────────────────────────────────────────────────────
+function useTilt(strength = 14) {
+  const cardRef = useRef(null);
+  const sheenRef = useRef(null);
+  const rafRef = useRef(null);
+  const cur = useRef({ rotX: 0, rotY: 0 });
+  const tgt = useRef({ rotX: 0, rotY: 0 });
+  const hovering = useRef(false);
+
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  const animate = useCallback(() => {
+    const card = cardRef.current;
+    const sheen = sheenRef.current;
+    if (!card) return;
+
+    cur.current.rotX = lerp(
+      cur.current.rotX,
+      tgt.current.rotX,
+      hovering.current ? 0.12 : 0.08,
+    );
+    cur.current.rotY = lerp(
+      cur.current.rotY,
+      tgt.current.rotY,
+      hovering.current ? 0.12 : 0.08,
+    );
+
+    const { rotX, rotY } = cur.current;
+    const scale = hovering.current ? 1.03 : 1;
+    card.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(${scale},${scale},1)`;
+
+    const sx = (-rotY * 1.2).toFixed(2);
+    const sy = (rotX * 1.2).toFixed(2);
+    card.style.boxShadow = hovering.current
+      ? `0 0 0 1px rgba(255,255,255,0.85) inset, ${sx}px ${sy}px 40px rgba(28,43,138,0.16), 0 2px 8px rgba(0,0,0,0.06)`
+      : "0 0 0 1px rgba(255,255,255,0.75) inset, 0 2px 12px rgba(28,43,138,0.07), 0 1px 3px rgba(0,0,0,0.05)";
+
+    if (sheen) {
+      const nx = (rotY / strength + 1) / 2;
+      const ny = (-rotX / strength + 1) / 2;
+      sheen.style.background = `radial-gradient(ellipse 55% 45% at ${(nx * 100).toFixed(1)}% ${(ny * 100).toFixed(1)}%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.04) 45%, transparent 70%)`;
+      sheen.style.opacity = hovering.current ? "1" : "0";
+    }
+
+    const moving =
+      Math.abs(cur.current.rotX - tgt.current.rotX) > 0.01 ||
+      Math.abs(cur.current.rotY - tgt.current.rotY) > 0.01;
+
+    if (moving || hovering.current)
+      rafRef.current = requestAnimationFrame(animate);
+    else rafRef.current = null;
+  }, [strength]);
+
+  const onMouseMove = useCallback(
+    (e) => {
+      const card = cardRef.current;
+      if (!card) return;
+      const rect = card.getBoundingClientRect();
+      tgt.current.rotX =
+        -((e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2)) *
+        strength;
+      tgt.current.rotY =
+        ((e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2)) *
+        strength;
+    },
+    [strength],
+  );
+
+  const onMouseEnter = useCallback(() => {
+    hovering.current = true;
+    if (!rafRef.current) rafRef.current = requestAnimationFrame(animate);
+  }, [animate]);
+
+  const onMouseLeave = useCallback(() => {
+    hovering.current = false;
+    tgt.current = { rotX: 0, rotY: 0 };
+    if (!rafRef.current) rafRef.current = requestAnimationFrame(animate);
+  }, [animate]);
+
+  useEffect(
+    () => () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    },
+    [],
+  );
+
+  return { cardRef, sheenRef, onMouseMove, onMouseEnter, onMouseLeave };
+}
+
+// ─── Feature card ─────────────────────────────────────────────────────────────
+function FeatureCard({
+  icon,
+  title,
+  desc,
+  illustration,
+  entryDelay,
+  sectionInView,
+}) {
+  const { cardRef, sheenRef, onMouseMove, onMouseEnter, onMouseLeave } =
+    useTilt(14);
+  const [titleDone, setTitleDone] = useState(false);
+  const [triggered, setTriggered] = useState(false);
+
+  useEffect(() => {
+    if (sectionInView && !triggered) {
+      const t = setTimeout(() => setTriggered(true), entryDelay);
+      return () => clearTimeout(t);
+    }
+    // Reset when section leaves so it re-animates on next scroll-in
+    if (!sectionInView) {
+      setTriggered(false);
+      setTitleDone(false);
+    }
+  }, [sectionInView, entryDelay]);
+
+  return (
+    <div
+      ref={cardRef}
+      onMouseMove={onMouseMove}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      style={{
+        position: "relative",
+        borderRadius: 14,
+        background: "#EFEFF1",
+        boxShadow:
+          "0 0 0 1px rgba(255,255,255,0.75) inset, 0 2px 12px rgba(28,43,138,0.07), 0 1px 3px rgba(0,0,0,0.05)",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        cursor: "default",
+        willChange: "transform",
+        transformStyle: "preserve-3d",
+        opacity: 0,
+        animation: `glassCardIn 0.65s cubic-bezier(0.22,1,0.36,1) ${entryDelay}ms forwards`,
+      }}
+    >
+      {/* Sheen */}
       <div
-        className="relative inset-0 z-0 pointer-events-none"
+        ref={sheenRef}
         style={{
-          backgroundImage: `url(${Overlay})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          opacity: 0.6,
+          position: "absolute",
+          inset: 0,
+          borderRadius: 14,
+          pointerEvents: "none",
+          zIndex: 20,
+          opacity: 0,
+          transition: "opacity 0.2s ease",
         }}
       />
 
-      <div className="max-w-[1140px] mx-auto px-6 relative z-30">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div>
-            <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full mb-5">
-              Our Solution
-            </span>
-          </div>
-          <div>
-            <h2 className="text-[clamp(26px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-4">
-              Built-In Transparency for Every
-              <br className="hidden md:block" /> Transaction
-            </h2>
-          </div>
-          <div>
-            <p className="text-[17px] md:text-[16px] text-[#00000099] max-w-[700px] mx-auto leading-relaxed">
-              Centralize payments, records, and visibility in one shared system,
-              so your team stops chasing and starts leading.
-            </p>
-          </div>
-        </div>
+      {/* Icon + text */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 12,
+          padding:
+            "clamp(16px,3vw,28px) clamp(14px,2.5vw,20px) clamp(6px,1vw,8px)",
+        }}
+      >
+        <img
+          src={icon}
+          alt=""
+          style={{
+            width: "clamp(36px,5vw,50px)",
+            height: "clamp(36px,5vw,50px)",
+            objectFit: "contain",
+            flexShrink: 0,
+          }}
+        />
+        <div style={{ minWidth: 0 }}>
+          {/* Title types first */}
+          <h3
+            style={{
+              fontSize: "clamp(14px,2.5vw,18px)",
+              fontWeight: 700,
+              color: "#0f1d6e",
+              lineHeight: 1.3,
+              marginBottom: 6,
+              minHeight: "1.4em",
+            }}
+          >
+            <TextType
+              text={title}
+              typingSpeed={30}
+              trigger={triggered}
+              showCursor={!titleDone}
+              onComplete={() => setTitleDone(true)}
+            />
+          </h3>
 
-        {/* Grid — 1 col mobile, 2 col desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {features.map(
-            ({ icon, title, desc, illustration, imgTransform }, i) => (
-              <div
-                key={title}
-                className="flex flex-col hover:-translate-y-1 transition-all duration-300 cursor-default"
-                style={{
-                  borderRadius: "12px",
-                  background: "#EFEFF1",
-                  boxShadow:
-                    "0 0 0 1px rgba(255,255,255,0.75) inset, 0 2px 12px rgba(28,43,138,0.07), 0 1px 3px rgba(0,0,0,0.05)",
-                  overflow: "hidden",
-                  width: "100%",
-                }}
-              >
-                {/* Icon + text
-                  — no fixed height so text wraps freely on mobile
-                  — smaller padding on mobile via clamp */}
-                <div
-                  className="flex items-start gap-3 flex-shrink-0"
-                  style={{
-                    padding:
-                      "clamp(16px, 3vw, 28px) clamp(14px, 2.5vw, 20px) clamp(6px, 1vw, 8px)",
-                  }}
-                >
-                  <img
-                    src={icon}
-                    alt=""
-                    style={{
-                      width: "clamp(36px, 5vw, 50px)",
-                      height: "clamp(36px, 5vw, 50px)",
-                      objectFit: "contain",
-                      flexShrink: 0,
-                    }}
-                  />
-                  <div style={{ minWidth: 0 }}>
-                    <h3
-                      style={{
-                        fontSize: "clamp(14px, 2.5vw, 18px)",
-                        fontWeight: 700,
-                        color: "#0f1d6e",
-                        lineHeight: 1.3,
-                        marginBottom: "4px",
-                      }}
-                    >
-                      {title}
-                    </h3>
-                    <p
-                      style={{
-                        fontSize: "clamp(15px, 2vw, 18px)",
-                        color: "#00000099",
-                        lineHeight: 1.6,
-                        margin: 0,
-                      }}
-                    >
-                      {desc}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Illustration panel */}
-                <div
-                  className="relative flex-shrink-0 h-[200px] md:h-[280px]"
-                  style={{ height: "240px", overflow: "hidden" }}
-                >
-                  {/* lightBg — full bleed behind everything */}
-                  <img
-                    src={lightBg}
-                    alt=""
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      objectPosition: "center",
-                      display: "block",
-                      opacity: 0.3,
-                    }}
-                    draggable={false}
-                  />
-
-                  {/* Top fade — thin, just blends card bg into lightBg */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: "10%",
-                      background:
-                        "linear-gradient(to bottom, #EFEFF1 0%, rgba(239,239,241,0.7) 50%, rgba(239,239,241,0) 100%)",
-                      pointerEvents: "none",
-                      zIndex: 5,
-                    }}
-                  />
-
-                  {/* Illustration — anchored to bottom, fills width naturally */}
-                  <img
-                    src={illustration}
-                    alt={title}
-                    style={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      width: "85%",
-                      height: "auto",
-                      objectFit: "contain",
-                      display: "block",
-                      zIndex: 10,
-                    }}
-                    draggable={false}
-                  />
-                </div>
-              </div>
-            ),
-          )}
+          {/* Desc types only after title finishes */}
+          <p
+            style={{
+              fontSize: "clamp(13px,2vw,15px)",
+              color: "rgba(0,0,0,0.6)",
+              lineHeight: 1.6,
+              margin: 0,
+              minHeight: "3em",
+            }}
+          >
+            <TextType
+              text={desc}
+              typingSpeed={18}
+              initialDelay={100}
+              trigger={titleDone}
+              showCursor={titleDone}
+            />
+          </p>
         </div>
       </div>
-    </section>
+
+      {/* Illustration */}
+      <div style={{ position: "relative", height: 240, overflow: "hidden" }}>
+        <img
+          src={lightBg}
+          alt=""
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            opacity: 0.3,
+          }}
+          draggable={false}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "18%",
+            background:
+              "linear-gradient(to bottom, #EFEFF1 0%, rgba(239,239,241,0.7) 55%, transparent 100%)",
+            pointerEvents: "none",
+            zIndex: 5,
+          }}
+        />
+        <img
+          src={illustration}
+          alt={title}
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "85%",
+            height: "auto",
+            objectFit: "contain",
+            zIndex: 10,
+          }}
+          draggable={false}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── Main export ──────────────────────────────────────────────────────────────
+export default function OurSolution() {
+  const sectionRef = useRef(null);
+  const [sectionInView, setSectionInView] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setSectionInView(entry.isIntersecting),
+      { threshold: 0.15 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <>
+      <style>{`
+        @keyframes glassCardIn {
+          from { opacity: 0; transform: perspective(900px) translateY(32px) rotateX(6deg); }
+          to   { opacity: 1; transform: perspective(900px) translateY(0px) rotateX(0deg); }
+        }
+        @keyframes ttCursorBlink {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0; }
+        }
+      `}</style>
+
+      <section
+        ref={sectionRef}
+        className="py-20 md:py-28 relative"
+        id="solution"
+      >
+        {/*
+          Fix: was "relative" before which pushed content down.
+          Overlay opacity dropped from 0.6 → 0.2 to stop darkening the section.
+          Background colour matches the surrounding page sections.
+        */}
+        <div className="absolute inset-0 z-0 pointer-events-none" />
+
+        <div className="max-w-[1140px] mx-auto px-6 relative z-30">
+          {/* ── Header — BlurText on all three elements ── */}
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <div
+              style={{
+                marginBottom: 20,
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <BlurText
+                text="Our Solution"
+                animateBy="words"
+                direction="top"
+                delay={60}
+                stepDuration={0.4}
+                className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full"
+              />
+            </div>
+
+            <h2
+              style={{
+                fontSize: "clamp(26px,5vw,58px)",
+                fontWeight: 700,
+                color: "#0f1d6e",
+                lineHeight: 1.15,
+                letterSpacing: "-0.02em",
+                marginBottom: 16,
+              }}
+            >
+              <BlurText
+                text="Built-In Transparency for Every Transaction"
+                animateBy="words"
+                direction="top"
+                delay={55}
+                stepDuration={0.42}
+                centered
+              />
+            </h2>
+
+            <p
+              style={{
+                fontSize: "clamp(15px,2vw,17px)",
+                color: "rgba(0,0,0,0.6)",
+                maxWidth: 640,
+                margin: "0 auto",
+                lineHeight: 1.7,
+              }}
+            >
+              <BlurText
+                text="Centralize payments, records, and visibility in one shared system, so your team stops chasing and starts leading."
+                animateBy="words"
+                direction="top"
+                delay={30}
+                stepDuration={0.35}
+                centered
+              />
+            </p>
+          </div>
+
+          {/* ── Cards ── */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {features.map(({ icon, title, desc, illustration }, i) => (
+              <FeatureCard
+                key={title}
+                icon={icon}
+                title={title}
+                desc={desc}
+                illustration={illustration}
+                entryDelay={200 + i * 120}
+                sectionInView={sectionInView}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

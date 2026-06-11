@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-import work1 from "../../assets/work1.jpg";
-import work2 from "../../assets/work2.jpg";
-import work3 from "../../assets/work3.jpg";
-import work4 from "../../assets/work4.jpg";
+import work1 from "../../assets/work/work1.jpg";
+import work2 from "../../assets/work/work2.jpg";
+import work3 from "../../assets/work/work3.jpg";
+import work4 from "../../assets/work/work4.jpg";
 import stepIcon1 from "../../assets/icon/step1.png";
 import stepIcon2 from "../../assets/icon/step2.png";
 import stepIcon3 from "../../assets/icon/step3.png";

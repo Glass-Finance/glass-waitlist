@@ -1,10 +1,9 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-import work1 from "../../assets/work1.jpg";
-import work2 from "../../assets/work2.jpg";
-import work3 from "../../assets/work3.jpg";
-import work4 from "../../assets/work4.jpg";
+import work1 from "../../assets/work/mwork1.png";
+import work2 from "../../assets/work/mwork2.png";
+import work3 from "../../assets/work/mwork3.png";
 import stepIcon1 from "../../assets/icon/step1.png";
 import stepIcon2 from "../../assets/icon/step2.png";
 import stepIcon3 from "../../assets/icon/step3.png";
@@ -34,14 +33,6 @@ const steps = [
     badge: "Set Your Dues Structure",
     img: work3,
     stepIcon: stepIcon3,
-  },
-  {
-    num: "04",
-    label: "Auto-Pay!",
-    desc: "Dues deducted automatically on your due date. Official receipt sent instantly every time.",
-    badge: "Receipt Sent Instantly",
-    img: work4,
-    stepIcon: stepIcon4,
   },
 ];
 

@@ -27,25 +27,11 @@ export default function TrustedBy() {
 
   const trustedLogos = [
     {
-      name: "Babcock University",
-      logo: "/logos/babcock.png", // Replace with actual path
-      alt: "Babcock University logo",
-    },
-    {
       name: "The Babcock Torch",
       logo: "/logos/babcock-torch.png", // Replace with actual path
       alt: "The Babcock Torch logo",
     },
-    {
-      name: "Cowrywise",
-      logo: "/logos/cowrywise.png", // Replace with actual path
-      alt: "Cowrywise logo",
-    },
-    {
-      name: "ICAN",
-      logo: "/logos/ican.png", // Replace with actual path
-      alt: "ICAN logo",
-    },
+
     {
       name: "GDG Lagos",
       logo: "/logos/gdg-lagos.png", // Replace with actual path
@@ -69,7 +55,7 @@ export default function TrustedBy() {
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <p className="text-lg font-bold mb-8">
+          <p className="text-2xl font-bold mb-8">
             Trusted by forward-thinking communities
           </p>
         </div>
