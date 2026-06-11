@@ -1,160 +1,259 @@
 import { useEffect, useRef } from "react";
-import Overlay from "../assets/Overlay2.png";
+import { motion } from "motion/react";
+import BlurText from "./ui/BlurText";
+
+import icon1 from "../assets/security/icon1.png";
+import icon2 from "../assets/security/icon2.png";
+import icon3 from "../assets/security/icon3.png";
 
 const cards = [
   {
-    imgSrc: "/icons/frame17.png",
-    imgBg: "linear-gradient(135deg, #4a2472 0%, #6b3fa0 50%, #8b5cc7 100%)",
-    iconBg: "#7B5FC7",
-    title: "NDPR Compliant",
-    desc: "Fully licensed and compliant with Nigerian Data Protection Regulations.",
-    titleColor: "#1C2B8A",
-  },
-  {
-    imgSrc: "/icons/frame14.png",
-    imgBg: "linear-gradient(135deg, #1a3a6b 0%, #1e5299 50%, #2a72c8 100%)",
-    iconBg: "#2563EB",
+    icon: icon1,
     title: "Transparency",
     desc: "Every kobo is accounted for. No hidden fees or missing funds.",
-    titleColor: "#1C2B8A",
   },
   {
-    imgSrc: "/icons/frame13.png",
-    imgBg: "linear-gradient(135deg, #2d6b3a 0%, #3a8a4a 50%, #4aaa5a 100%)",
-    iconBg: "#16a34a",
+    icon: icon2,
+    title: "NDPR Compliant",
+    desc: "Fully licensed and compliant with Nigerian Data Protection Regulations.",
+  },
+  {
+    icon: icon3,
     title: "Encryption",
     desc: "All data and transactions are encrypted. Your records are private.",
-    titleColor: "#1C2B8A",
   },
 ];
 
+const TILTS = [
+  { rotate: -3, y: 18 },
+  { rotate: 0, y: 0 },
+  { rotate: 3, y: 18 },
+];
+
 export default function Security() {
-  const itemsRef = useRef([]);
+  const cardRefs = useRef([]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = "1";
-            const idx = itemsRef.current.indexOf(entry.target);
-            // observer
-            if (idx === 3) {
-              entry.target.style.transform = "rotateZ(-4deg) translateY(20px)";
-            } else if (idx === 5) {
-              entry.target.style.transform = "rotateZ(4deg) translateY(20px)";
-            } else {
-              entry.target.style.transform = "translateY(0)";
-            }
-          }
+          if (!entry.isIntersecting) return;
+
+          const idx = cardRefs.current.indexOf(entry.target);
+          if (idx === -1) return;
+
+          const { rotate, y } = TILTS[idx];
+
+          entry.target.style.transform = `rotateZ(${rotate}deg) translateY(${y}px)`;
+
+          observer.unobserve(entry.target);
         });
       },
-      { threshold: 0.1 },
+      {
+        threshold: 0.15,
+      },
     );
-    itemsRef.current.forEach((el) => el && observer.observe(el));
+
+    cardRefs.current.forEach((el) => el && observer.observe(el));
+
     return () => observer.disconnect();
   }, []);
 
-  const anim = (i, delay = 0) => ({
-    ref: (el) => (itemsRef.current[i] = el),
-    style: {
-      opacity: 0,
-      transform:
-        i === 3
-          ? "rotateZ(-4deg) translateY(28px)"
-          : i === 5
-            ? "rotateZ(4deg) translateY(28px)"
-            : "translateY(28px)",
-      transition: `opacity 0.65s ease ${delay}ms, transform 0.65s ease ${delay}ms`,
-    },
-  });
   return (
-    <section className="bg-[#F7F8FC] py-20 md:py-24" id="security">
-      {/* Same overlay as problem section */}
-      <div
-        className="relative inset-0 z-0 pointer-events-none"
-        style={{
-          backgroundImage: `url(${Overlay})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          opacity: 0.6,
-        }}
-      />
+    <section
+      className="relative bg-[#F7F8FC] overflow-hidden py-20 md:py-28"
+      id="security"
+    >
       <div className="max-w-[1140px] mx-auto px-6">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <div >
-            <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full mb-8">
+        {/* ── Header ── */}
+        <div className="mb-16" style={{ textAlign: "center" }}>
+          {/* Badge */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: 28,
+            }}
+          >
+            <motion.span
+              initial={{ clipPath: "inset(0% 100% 0% 0%)" }}
+              whileInView={{ clipPath: "inset(0% 0% 0% 0%)" }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full"
+            >
               Security & Trust
-            </span>
+            </motion.span>
           </div>
-          <div >
-            <h2 className="text-[clamp(36px,5.5vw,64px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-5 max-w-[1320px] mx-auto">
-              Bank-grade security for your peace of mind
+
+          {/* Headline */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: 16,
+            }}
+          >
+            <h2
+              className="text-[clamp(32px,5.5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight"
+              style={{ maxWidth: 1080 }}
+            >
+              <BlurText
+                text="Bank-grade security for your peace of mind"
+                delay={80}
+                animateBy="words"
+                direction="top"
+                stepDuration={0.38}
+                centered
+              />
             </h2>
           </div>
-          <div >
-            <p className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed">
-              We protect your funds with end-to-end encryption, and ensure your
-              data never falls into the wrong hands.
+
+          {/* Subtext */}
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <p
+              className="text-[17px] text-[#00000099] leading-relaxed"
+              style={{ maxWidth: 700 }}
+            >
+              <BlurText
+                text="We protect your funds with end-to-end encryption and ensure your data never falls into the wrong hands."
+                delay={45}
+                animateBy="words"
+                direction="top"
+                stepDuration={0.28}
+                centered
+              />
             </p>
           </div>
         </div>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12 items-start">
-          {cards.map(
-            ({ imgSrc, imgBg, iconBg, title, desc, titleColor }, i) => (
+        {/* ── Cards ── */}
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-14 xl:gap-20 mb-14 justify-items-center"
+          style={{ alignItems: "start" }}
+        >
+          {cards.map(({ icon, title, desc }, i) => {
+            const { rotate, y } = TILTS[i];
+
+            return (
               <div
                 key={title}
-                {...anim(3 + i, 200 + i * 80)}
-                className="bg-[#F0F1F7] rounded-xl shadow-sm border border-[#ECEEF5] hover:-translate-y-1 hover:shadow-xl hover:shadow-[#1C2B8A]/8 transition-all duration-300 p-1.5"
+                ref={(el) => (cardRefs.current[i] = el)}
                 style={{
+                  width: "100%",
+                  maxWidth: "320px",
+
+                  transform:
+                    window.innerWidth >= 1024
+                      ? `rotateZ(${rotate}deg) translateY(${y + 20}px)`
+                      : "translateY(20px)",
+
+                  transition: `transform 0.7s cubic-bezier(0.22,1,0.36,1) ${200 + i * 100}ms`,
+
                   transformOrigin: "top center",
+
+                  borderRadius: 24,
+                  background: "#EFEFF1E5",
+
+                  padding: "32px 24px",
+
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+
+                  // boxShadow:
+                  //   "0 0 0 1px rgba(255,255,255,0.7) inset, 0 2px 16px rgba(28,43,138,0.06)",
                 }}
               >
-                {/* Top — gradient bg with concentric circles + icon */}
                 <div
-                  className="relative w-full h-[200px] flex items-center justify-center overflow-hidden rounded-lg"
-                  style={{ background: imgBg }}
+                  style={{
+                    position: "relative",
+                    width: 170,
+                    height: 170,
+                    marginBottom: 28,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-[240px] h-[240px] rounded-full border border-white/10 absolute" />
-                    <div className="w-[170px] h-[170px] rounded-full border border-white/10 absolute" />
-                    <div className="w-[110px] h-[110px] rounded-full border border-white/10 absolute" />
-                  </div>
+                  {/* Glow */}
                   <div
-                    className="relative z-10 w-[76px] h-[76px] rounded-full flex items-center justify-center shadow-2xl"
-                    style={{ backgroundColor: iconBg }}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      borderRadius: "50%",
+                      background:
+                        "radial-gradient(circle, rgba(168,85,247,0.35) 0%, rgba(168,85,247,0.18) 45%, transparent 75%)",
+                      filter: "blur(20px)",
+                    }}
+                  />
+
+                  {/* White circle */}
+                  <div
+                    style={{
+                      width: 78,
+                      height: 78,
+                      borderRadius: "50%",
+                      background: "#fff",
+                      boxShadow:
+                        "0 0 0 6px rgba(255,255,255,0.35), 0 4px 20px rgba(28,43,138,0.10)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      position: "relative",
+                      zIndex: 1,
+                    }}
                   >
                     <img
-                      src={imgSrc}
+                      src={icon}
                       alt={title}
-                      className="w-9 h-9 object-contain brightness-0 invert"
+                      style={{
+                        width: 28,
+                        height: 28,
+                        objectFit: "contain",
+                      }}
                     />
                   </div>
                 </div>
 
-                {/* Bottom — white text area */}
-                <div className="px-6 py-6 text-center">
-                  <h3
-                    className="text-[20px] font-bold mb-2 leading-tight"
-                    style={{ color: titleColor }}
-                  >
-                    {title}
-                  </h3>
-                  <p className="text-[14px] text-[#00000099] leading-relaxed">
-                    {desc}
-                  </p>
-                </div>
+                {/* Title */}
+                <h3
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: "#1C2B8A",
+                    marginBottom: 12,
+                    lineHeight: 1.25,
+                  }}
+                >
+                  {title}
+                </h3>
+
+                {/* Description */}
+                <p
+                  style={{
+                    fontSize: 14,
+                    color: "rgba(0,0,0,0.5)",
+                    lineHeight: 1.65,
+                    margin: 0,
+                    maxWidth: 260,
+                  }}
+                >
+                  {desc}
+                </p>
               </div>
-            ),
-          )}
+            );
+          })}
         </div>
 
-        {/* Bottom banner */}
-        <div>
+        {/* ── Bottom banner ── */}
+        <motion.div
+          initial={{ y: 20 }}
+          whileInView={{ y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div className="bg-[#CCDBFF66] rounded-2xl px-8 py-6 flex items-center justify-between gap-6 flex-wrap">
             <div>
               <h4 className="text-[15px] font-bold text-[#0f1d6e] mb-1">
@@ -168,12 +267,20 @@ export default function Security() {
               href="https://tribuneonlineng.com/team-glass-shines-as-winner-of-5th-babcock-innovation-challenge/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0 border border-[#0f1d6e] text-[#0f1d6e] font-semibold text-[14px] px-6 py-3 rounded-full no-underline hover:shadow-md hover:-translate-y-px transition-all"
+              className="flex-shrink-0 border border-[#0f1d6e] text-[#0f1d6e] font-semibold text-[14px] px-6 py-3 rounded-full no-underline transition-all"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#0f1d6e";
+                e.currentTarget.style.color = "#fff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "";
+                e.currentTarget.style.color = "#0f1d6e";
+              }}
             >
               Check It Out
             </a>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
