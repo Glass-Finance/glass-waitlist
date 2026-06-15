@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import Overlay from "../../assets/Overlay2.png";
 
 import work1 from "../../assets/work/work1.jpg";
 import work2 from "../../assets/work/work2.jpg";
@@ -18,6 +19,23 @@ const steps = [
     badge: "Set Up With Few Clicks",
     img: work1,
     stepIcon: stepIcon1,
+    icon: (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
   },
   {
     num: "02",
@@ -26,6 +44,23 @@ const steps = [
     badge: "Upload CSV For Bulk Addition",
     img: work2,
     stepIcon: stepIcon2,
+    icon: (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <line x1="19" y1="8" x2="19" y2="14" />
+        <line x1="22" y1="11" x2="16" y2="11" />
+      </svg>
+    ),
   },
   {
     num: "03",
@@ -34,6 +69,21 @@ const steps = [
     badge: "Set Your Dues Structure",
     img: work3,
     stepIcon: stepIcon3,
+    icon: (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 6v6l4 2" />
+      </svg>
+    ),
   },
   {
     num: "04",
@@ -42,6 +92,22 @@ const steps = [
     badge: "Activate Your Community",
     img: work4,
     stepIcon: stepIcon4,
+    icon: (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+        <path d="M9 18h6" />
+        <path d="M10 22h4" />
+      </svg>
+    ),
   },
 ];
 
@@ -67,18 +133,28 @@ function StepConnector({ fromDir, stepRef, connId }) {
 
   const makePath = (off) => {
     if (isLTR) {
-      const x1 = 975 - off, x2 = 25 + off, yTop = 5, yMid = 110, yBot = 215;
+      const x1 = 975 - off,
+        x2 = 25 + off,
+        yTop = 5,
+        yMid = 110,
+        yBot = 215;
       return [
-        `M ${x1} ${yTop}`, `L ${x1} ${yMid - R}`,
+        `M ${x1} ${yTop}`,
+        `L ${x1} ${yMid - R}`,
         `C ${x1} ${yMid} ${x1} ${yMid} ${x1 - R} ${yMid}`,
         `L ${x2 + R} ${yMid}`,
         `C ${x2} ${yMid} ${x2} ${yMid} ${x2} ${yMid + R}`,
         `L ${x2} ${yBot}`,
       ].join(" ");
     } else {
-      const x1 = 25 + off, x2 = 975 - off, yTop = 5, yMid = 110, yBot = 215;
+      const x1 = 25 + off,
+        x2 = 975 - off,
+        yTop = 5,
+        yMid = 110,
+        yBot = 215;
       return [
-        `M ${x1} ${yTop}`, `L ${x1} ${yMid - R}`,
+        `M ${x1} ${yTop}`,
+        `L ${x1} ${yMid - R}`,
         `C ${x1} ${yMid} ${x1} ${yMid} ${x1 + R} ${yMid}`,
         `L ${x2 - R} ${yMid}`,
         `C ${x2} ${yMid} ${x2} ${yMid} ${x2} ${yMid + R}`,
@@ -116,9 +192,9 @@ function StepConnector({ fromDir, stepRef, connId }) {
             </feMerge>
           </filter>
           <linearGradient id={gId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%"   stopColor="#e9d5ff" stopOpacity="1" />
-            <stop offset="35%"  stopColor="#a855f7" stopOpacity="1" />
-            <stop offset="65%"  stopColor="#7c3aed" stopOpacity="1" />
+            <stop offset="0%" stopColor="#e9d5ff" stopOpacity="1" />
+            <stop offset="35%" stopColor="#a855f7" stopOpacity="1" />
+            <stop offset="65%" stopColor="#7c3aed" stopOpacity="1" />
             <stop offset="100%" stopColor="#4338ca" stopOpacity="0.8" />
           </linearGradient>
         </defs>
@@ -138,7 +214,11 @@ function StepConnector({ fromDir, stepRef, connId }) {
                 whileInView={{ pathLength: 1, opacity: 1 }}
                 viewport={{ once: false, margin: "-20px" }}
                 transition={{
-                  pathLength: { duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: delays[i] },
+                  pathLength: {
+                    duration: 1.1,
+                    ease: [0.22, 1, 0.36, 1],
+                    delay: delays[i],
+                  },
                   opacity: { duration: 0.35, delay: delays[i] },
                 }}
               />
@@ -153,7 +233,11 @@ function StepConnector({ fromDir, stepRef, connId }) {
                 whileInView={{ pathLength: 1, opacity: 1 }}
                 viewport={{ once: false, margin: "-20px" }}
                 transition={{
-                  pathLength: { duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: delays[i] },
+                  pathLength: {
+                    duration: 1.1,
+                    ease: [0.22, 1, 0.36, 1],
+                    delay: delays[i],
+                  },
                   opacity: { duration: 0.3, delay: delays[i] },
                 }}
               />
@@ -164,7 +248,11 @@ function StepConnector({ fromDir, stepRef, connId }) {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: [0, 1, 1, 0] }}
                 viewport={{ once: false, margin: "-20px" }}
-                transition={{ duration: 1.1, ease: "easeInOut", delay: delays[i] }}
+                transition={{
+                  duration: 1.1,
+                  ease: "easeInOut",
+                  delay: delays[i],
+                }}
               >
                 <animateMotion
                   dur="1.4s"
@@ -190,10 +278,16 @@ function MobileDivider() {
           className="w-px rounded-full"
           style={{
             height: 32,
-            background: "linear-gradient(to bottom, rgba(168,85,247,0.7), rgba(99,102,241,0.4))",
+            background:
+              "linear-gradient(to bottom, rgba(168,85,247,0.7), rgba(99,102,241,0.4))",
           }}
           animate={{ scaleY: [0, 1, 0], opacity: [0, 1, 0] }}
-          transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: i * 0.15 }}
+          transition={{
+            duration: 1.2,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: i * 0.15,
+          }}
         />
       ))}
     </div>
@@ -206,8 +300,12 @@ function StepRow({ step, index, innerRef }) {
     target: innerRef,
     offset: ["start 90%", "end 10%"],
   });
-  const rowOpacity = useTransform(scrollYProgress, [0, 0.18, 0.75, 1], [0, 1, 1, 0]);
-  const rowY       = useTransform(scrollYProgress, [0, 0.18], [40, 0]);
+  const rowOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.18, 0.75, 1],
+    [0, 1, 1, 0],
+  );
+  const rowY = useTransform(scrollYProgress, [0, 0.18], [40, 0]);
 
   const glassCard = {
     background: "rgba(255,255,255,0.25)",
@@ -235,39 +333,134 @@ function StepRow({ step, index, innerRef }) {
 
   return (
     <motion.div ref={innerRef} style={{ opacity: rowOpacity, y: rowY }}>
-      {/* Mobile */}
+      {/* ── Mobile — label overlaps top of image ── */}
       <div className="flex flex-col md:hidden" style={{ position: "relative" }}>
+        {/* Image card — full width */}
         <div className="relative w-full rounded-lg overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
-          <img src={step.img} alt={step.label} className="w-full h-auto block" draggable={false} />
+          <img
+            src={step.img}
+            alt={step.label}
+            className="w-full h-auto block"
+            draggable={false}
+          />
           <div style={glassBadge}>
-            <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#1C2B8A", flexShrink: 0, display: "inline-block" }} />
-            <span style={{ fontSize: 12, fontWeight: 800, color: "#0f1d6e" }}>{step.badge}</span>
+            <span
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: "50%",
+                background: "#1C2B8A",
+                flexShrink: 0,
+                display: "inline-block",
+              }}
+            />
+            <span style={{ fontSize: 12, fontWeight: 800, color: "#0f1d6e" }}>
+              {step.badge}
+            </span>
           </div>
         </div>
-        <div style={{ ...glassCard, position: "absolute", top: -24, left: -12, width: 130, borderRadius: "4px", padding: "14px 12px", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", zIndex: 20 }}>
-          <img src={step.stepIcon} alt="" style={{ width: 32, height: 32, objectFit: "contain", marginBottom: 8 }} />
-          <p style={{ fontSize: 12, fontWeight: 800, color: "#0f1d6e", lineHeight: 1.3, margin: 0 }}>{step.label}</p>
+        {/* Label card — overlaps top-left of image with negative margin */}
+        <div
+          style={{
+            ...glassCard,
+            position: "absolute",
+            top: -24,
+            left: -12,
+            width: 130,
+            borderRadius: "4px",
+            padding: "14px 12px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            textAlign: "center",
+            zIndex: 20,
+          }}
+        >
+          <img
+            src={step.stepIcon}
+            alt=""
+            style={{
+              width: 32,
+              height: 32,
+              objectFit: "contain",
+              marginBottom: 8,
+            }}
+          />
+          <p
+            style={{
+              fontSize: 12,
+              fontWeight: 500,
+              color: "#0f1d6e",
+              lineHeight: 1.3,
+              margin: 0,
+            }}
+          >
+            {step.label}
+          </p>
         </div>
       </div>
 
-      {/* Desktop */}
-      <div className={`hidden md:flex relative items-center ${isLTR ? "flex-row" : "flex-row-reverse"}`}>
+      {/* ── Desktop ── */}
+      <div
+        className={`hidden md:flex relative items-center ${isLTR ? "flex-row" : "flex-row-reverse"}`}
+      >
+        {/* Label card */}
         <div
           className={`flex-shrink-0 w-[190px] rounded-2xl p-5 z-20 flex flex-col items-center text-center ${isLTR ? "mr-[-34px]" : "ml-[-34px]"}`}
           style={glassCard}
         >
-          <img src={step.stepIcon} alt="" style={{ width: 44, height: 44, objectFit: "contain", marginBottom: 10 }} />
-          <p className="text-[13px] font-bold text-[#0f1d6e] leading-snug">{step.label}</p>
+          <img
+            src={step.stepIcon}
+            alt=""
+            style={{
+              width: 44,
+              height: 44,
+              objectFit: "contain",
+              marginBottom: 10,
+            }}
+          />
+          <p className="text-[13px] font-bold text-[#0f1d6e] leading-snug">
+            {step.label}
+          </p>
         </div>
+        {/* Image card */}
         <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
-          <img src={step.img} alt={step.label} className="w-full h-auto block" draggable={false} />
-          <div style={{ ...glassBadge, bottom: 16, right: 16, padding: "10px 18px" }}>
-            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#1C2B8A", flexShrink: 0, display: "inline-block" }} />
-            <span style={{ fontSize: 12, fontWeight: 600, color: "#0f1d6e" }}>{step.badge}</span>
+          <img
+            src={step.img}
+            alt={step.label}
+            className="w-full h-auto block"
+            draggable={false}
+          />
+          <div
+            style={{
+              ...glassBadge,
+              bottom: 16,
+              right: 16,
+              padding: "10px 18px",
+            }}
+          >
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: "#1C2B8A",
+                flexShrink: 0,
+                display: "inline-block",
+              }}
+            />
+            <span style={{ fontSize: 13, fontWeight: 500, color: "#0f1d6e" }}>
+              {step.badge}
+            </span>
           </div>
         </div>
-        <div className={`absolute top-3 ${isLTR ? "right-[-8px]" : "left-[-8px]"} w-[calc(100%-158px)] h-full rounded-3xl border border-[#1C2B8A]/8 bg-[#EEF1FB]/45 -z-10`} />
-        <div className={`absolute top-6 ${isLTR ? "right-[-15px]" : "left-[-15px]"} w-[calc(100%-158px)] h-full rounded-3xl border border-[#1C2B8A]/4 bg-[#E8ECF8]/28 -z-20`} />
+        {/* Ghost depth cards */}
+        <div
+          className={`absolute top-3 ${isLTR ? "right-[-8px]" : "left-[-8px]"} w-[calc(100%-158px)] h-full rounded-3xl border border-[#1C2B8A]/8 bg-[#EEF1FB]/45 -z-10`}
+        />
+        <div
+          className={`absolute top-6 ${isLTR ? "right-[-15px]" : "left-[-15px]"} w-[calc(100%-158px)] h-full rounded-3xl border border-[#1C2B8A]/4 bg-[#E8ECF8]/28 -z-20`}
+        />
       </div>
     </motion.div>
   );
@@ -277,10 +470,9 @@ export default function GetStarted() {
   const stepRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
 
   return (
-    <section className="relative bg-[#F7F8FC] overflow-hidden py-24" id="how-it-works">
-
-      {/* Ambient glows — correctly contained inside relative section */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <section className="relative overflow-hidden py-24" id="how-it-works">
+      <div className="absolute inset-0 z-0 pointer-events-none" />
+      <div className="absolute inset-0 pointer-events-none">
         <motion.div
           className="absolute top-[8%] left-[4%] w-[360px] h-[360px] rounded-full bg-indigo-200/15 blur-[100px]"
           animate={{ scale: [1, 1.12, 1], opacity: [0.15, 0.3, 0.15] }}
@@ -294,22 +486,38 @@ export default function GetStarted() {
       </div>
 
       <div className="relative z-10 max-w-[880px] mx-auto px-6">
-
-        {/* Header — no fade-in delays */}
         <div className="text-center mb-12 md:mb-20">
-          <span className="inline-flex items-center border border-[#1C2B8A]/20 text-[#1C2B8A] text-[12px] font-semibold px-5 py-2 rounded-full mb-7">
+          <motion.span
+            initial={{ opacity: 0, y: -12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center border border-[#1C2B8A]/20 text-[#1C2B8A] text-[12px] font-semibold px-5 py-2 rounded-full mb-7"
+          >
             How We Work
-          </span>
-          <h2 className="text-[clamp(26px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-5">
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="text-[clamp(26px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-5"
+          >
             Launch Transparent Payments
             <br className="hidden md:block" /> in Minutes
-          </h2>
-          <p className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed">
-            Set up your community, link member payment methods, and let Glass handle the rest.
-          </p>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.56, delay: 0.2 }}
+            className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed"
+          >
+            Set up your community, link member payment methods, and let Glass
+            handle the rest.
+          </motion.p>
         </div>
 
-        {/* Steps */}
         <div className="flex flex-col">
           {steps.map((step, i) => (
             <div key={step.num}>
@@ -320,7 +528,7 @@ export default function GetStarted() {
                   <StepConnector
                     fromDir={i % 2 === 0 ? "ltr" : "rtl"}
                     stepRef={stepRefs[i]}
-                    connId={`org${i}`}
+                    connId={`o${i}`}
                   />
                 </>
               )}
@@ -328,8 +536,13 @@ export default function GetStarted() {
           ))}
         </div>
 
-        {/* CTA — no fade-in wrapper */}
-        <div className="flex justify-center mt-12 md:mt-20">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="flex justify-center mt-12 md:mt-20"
+        >
           <motion.a
             href="/get-started"
             whileHover={{ scale: 1.04, y: -2 }}
@@ -344,17 +557,25 @@ export default function GetStarted() {
             <span className="relative z-10">Join Glass</span>
             <motion.svg
               className="relative z-10"
-              width="15" height="15" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" strokeWidth="2.5"
-              strokeLinecap="round" strokeLinejoin="round"
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               animate={{ x: [0, 4, 0] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+              transition={{
+                duration: 1.8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
             >
               <path d="M5 12h14M12 5l7 7-7 7" />
             </motion.svg>
           </motion.a>
-        </div>
-
+        </motion.div>
       </div>
     </section>
   );
