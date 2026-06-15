@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import Hero from "../components/organizations/Hero";
 import ProblemSection from "../components/organizations/ProblemSection";
 import OurSolution from "../components/organizations/OurSolution";
-import GetStarted from "../components/organizations/GetStarted";
+// import GetStarted from "../components/organizations/GetStarted";
 import Usecases from "../components/Usecases";
 import Security from "../components/Security";
 import WhyGlass from "../components/WhyGlass";
@@ -20,7 +20,7 @@ export default function OrganizationsHome() {
       <Hero />
       <ProblemSection />
       <OurSolution />
-      <GetStarted />
+      {/* <GetStarted /> */}
       <Usecases />
       <TrustedBy />
       <Security />

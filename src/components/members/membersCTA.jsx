@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 /**
  * CTA.jsx  →  src/components/organizations/CTA.jsx
  *            src/components/members/membersCTA.jsx
