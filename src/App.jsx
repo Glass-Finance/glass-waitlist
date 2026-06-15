@@ -1,28 +1,41 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
-// ── Landing pages ──────────────────────────────────────────────────────────
+// ── Landing pages ──────────────────────────────────────────────────────────────
 import OrganizationsHome from "./pages/index";
-import MembersHome       from "./pages/membersHome";
+import MembersHome from "./pages/membersHome";
 
-// ── Dashboard pages ────────────────────────────────────────────────────────
-import CommunitiesHome   from "./pages/dashboard/CommunitiesHome";
-import AdminDashboard    from "./pages/dashboard/AdminDashboard";
-import PaymentsPage      from "./pages/dashboard/PaymentsPage";
-// import MembersPage    from "./pages/dashboard/MembersPage";
-// import SettingsPage   from "./pages/dashboard/SettingsPage";
+// ── Auth pages ─────────────────────────────────────────────────────────────────
+import MemberAuth from "./pages/auth/MemberAuth";
+import CheckEmail from "./pages/auth/CheckEmail";
 
-// ── Auth pages (your partner's work) ──────────────────────────────────────
-// import Login          from "./pages/auth/Login";
-// import Register       from "./pages/auth/Register";
-// import ForgotPassword from "./pages/auth/ForgotPassword";
+// ── Onboarding pages ───────────────────────────────────────────────────────────
+import ChoosePath from "./pages/onboarding/ChoosePath";
+import OrganizationProfile from "./pages/onboarding/OrganizationProfile";
+import PaymentProfile from "./pages/onboarding/PaymentProfile";
+import AddMembers from "./pages/onboarding/AddMembers";
 
-// ── Other landing pages ────────────────────────────────────────────────────
-// import Waitlist       from "./pages/Waitlist";
-// import Ambassadors    from "./pages/Ambassadors";
-// import FindCommunity  from "./pages/FindCommunity";
+// ── Dashboard layout + pages ───────────────────────────────────────────────────
+import DashboardLayout from "./layouts/DashboardLayout";
+import CommunitiesHome from "./pages/dashboard/CommunitiesHome";
+import AdminDashboard, { PayingAdminDashboard } from "./pages/dashboard/AdminDashboard";
 
-// ── Guards ─────────────────────────────────────────────────────────────────
-import ProtectedRoute from "./routes/ProtectedRoute";
+// ── Settings ───────────────────────────────────────────────────────────────────
+import Settings from "./pages/dashboard/settings/Settings";
+import Profile from "./pages/dashboard/settings/account/Profile";
+import Role from "./pages/dashboard/settings/account/Role";
+import Notifications from "./pages/dashboard/settings/account/Notifications";
+import Security from "./pages//dashboard/settings/account/Security";
+// import PaymentMethod from "./pages/settings/finance/PaymentMethod";
+// import AutoPay from "./pages/settings/finance/AutoPay";
+// import Community from "./pages/settings/community/Community";
+
+// ── Guards ─────────────────────────────────────────────────────────────────────
+// import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
@@ -30,31 +43,46 @@ function App() {
       <Routes>
 
         {/* ── Public landing ── */}
-        <Route path="/"        element={<OrganizationsHome />} />
+        <Route path="/" element={<OrganizationsHome />} />
         <Route path="/members" element={<MembersHome />} />
 
-        {/* ── Dashboard ── */}
+        {/* ── Auth ── */}
+        <Route path="/member/signup" element={<MemberAuth />} />
+        <Route path="/check-email" element={<CheckEmail />} />
+
+        {/* ── Onboarding ── */}
         {/*
-          Wrap all /dashboard/* routes with ProtectedRoute once auth is ready:
-          <Route element={<ProtectedRoute />}>
-            ...all dashboard routes here...
-          </Route>
+          Flow A (Create Community — admin):
+          /signup → /onboarding/choose-path → /onboarding/payment-profile
+               → /onboarding/organization-profile → /onboarding/members → /dashboard/home
+
+          Flow B (Join Community — member):
+          /member/signup → /onboarding/choose-path → /check-email → /dashboard/home
         */}
-        <Route path="/dashboard/home"     element={<CommunitiesHome />} />
-        <Route path="/dashboard"          element={<AdminDashboard />} />
-        <Route path="/dashboard/payments" element={<PaymentsPage />} />
-        {/* <Route path="/dashboard/members"  element={<MembersPage />} /> */}
-        {/* <Route path="/dashboard/settings" element={<SettingsPage />} /> */}
+        <Route path="/onboarding/choose-path" element={<ChoosePath />} />
+        <Route path="/onboarding/payment-profile" element={<PaymentProfile />} />
+        <Route path="/onboarding/organization-profile" element={<OrganizationProfile />} />
+        <Route path="/onboarding/members" element={<AddMembers />} />
 
-        {/* ── Auth (uncomment when your partner is ready) ── */}
-        {/* <Route path="/login"            element={<Login />} /> */}
-        {/* <Route path="/register"         element={<Register />} /> */}
-        {/* <Route path="/forgot-password"  element={<ForgotPassword />} /> */}
+        {/* ── Dashboard — all wrapped in DashboardLayout ── */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<Navigate to="home" replace />} />
+          <Route path="home" element={<CommunitiesHome />} />
+          <Route path="admin" element={<AdminDashboard />} />
+          <Route path="admin/paying" element={<PayingAdminDashboard />} />
 
-        {/* ── Other landing pages ── */}
-        {/* <Route path="/waitlist"         element={<Waitlist />} /> */}
-        {/* <Route path="/ambassadors"      element={<Ambassadors />} /> */}
-        {/* <Route path="/find-community"   element={<FindCommunity />} /> */}
+          {/* Settings nested under dashboard */}
+          <Route path="settings" element={<Settings />}>
+            <Route index element={<Navigate to="account/profile" replace />} />
+            <Route path="account/profile" element={<Profile />} />
+            <Route path="account/role" element={<Role />} />
+            <Route path="account/notifications" element={<Notifications />} />
+            <Route path="account/security" element={<Security />} />
+            {/* <Route path="finance/payment-method" element={<PaymentMethod />} />
+            <Route path="finance/auto-pay" element={<AutoPay />} />
+            <Route path="community/profile" element={<Community />} /> */}
+          </Route>
+        </Route>
 
         {/* ── Catch-all ── */}
         <Route path="*" element={<Navigate to="/" replace />} />
