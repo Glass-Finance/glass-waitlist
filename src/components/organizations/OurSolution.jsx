@@ -348,8 +348,7 @@ function FeatureCard({
           display: "flex",
           alignItems: "flex-start",
           gap: 12,
-          padding:
-            "clamp(16px,3vw,28px) clamp(14px,2.5vw,20px) clamp(6px,1vw,8px)",
+          padding: "clamp(16px,3vw,28px) clamp(14px,2.5vw,20px) 0px",
         }}
       >
         <img
@@ -362,7 +361,7 @@ function FeatureCard({
             flexShrink: 0,
           }}
         />
-        <div style={{ minWidth: 0 }}>
+        <div className="solution-text-block" style={{ minWidth: 0 }}>
           {/* Title types first */}
           <h3
             style={{
@@ -371,7 +370,7 @@ function FeatureCard({
               color: "#0f1d6e",
               lineHeight: 1.3,
               marginBottom: 6,
-              minHeight: "1.4em",
+              minHeight: "clamp(1.2em, 5vw, 1.4em)",
             }}
           >
             <TextType
@@ -386,11 +385,11 @@ function FeatureCard({
           {/* Desc types only after title finishes */}
           <p
             style={{
-              fontSize: "clamp(13px,2vw,15px)",
+              fontSize: "clamp(13px,2vw,14px)",
               color: "rgba(0,0,0,0.6)",
               lineHeight: 1.6,
               margin: 0,
-              minHeight: "3em",
+              minHeight: "clamp(2.2em, 14vw, 3em)",
             }}
           >
             <TextType
@@ -405,7 +404,14 @@ function FeatureCard({
       </div>
 
       {/* Illustration */}
-      <div style={{ position: "relative", height: 240, overflow: "hidden" }}>
+      <div
+        className="solution-illus"
+        style={{
+          position: "relative",
+          height: "clamp(160px, 45vw, 240px)",
+          overflow: "hidden",
+        }}
+      >
         <img
           src={lightBg}
           alt=""
@@ -420,6 +426,7 @@ function FeatureCard({
           draggable={false}
         />
         <div
+          className="solution-fade"
           style={{
             position: "absolute",
             top: 0,
@@ -471,15 +478,20 @@ export default function OurSolution() {
   return (
     <>
       <style>{`
-        @keyframes glassCardIn {
-          from { opacity: 0; transform: perspective(900px) translateY(32px) rotateX(6deg); }
-          to   { opacity: 1; transform: perspective(900px) translateY(0px) rotateX(0deg); }
-        }
-        @keyframes ttCursorBlink {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0; }
-        }
-      `}</style>
+      @keyframes glassCardIn {
+        from { opacity: 0; transform: perspective(900px) translateY(32px) rotateX(6deg); }
+        to   { opacity: 1; transform: perspective(900px) translateY(0px) rotateX(0deg); }
+      }
+      @keyframes ttCursorBlink {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0; }
+      }
+      @media (min-width: 640px) and (max-width: 1023px) {
+        .solution-text-block { height: 90px !important; overflow: hidden !important; }
+        .solution-illus { height: 180px !important; }
+        .solution-fade { height: 8% !important; background: linear-gradient(to bottom, #EFEFF1 0%, transparent 100%) !important; }
+      }
+    `}</style>
 
       <section
         ref={sectionRef}

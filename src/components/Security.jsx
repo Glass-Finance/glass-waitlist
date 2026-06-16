@@ -44,7 +44,10 @@ export default function Security() {
 
           const { rotate, y } = TILTS[idx];
 
-          entry.target.style.transform = `rotateZ(${rotate}deg) translateY(${y}px)`;
+          entry.target.style.transform =
+            window.innerWidth >= 1024
+              ? `rotateZ(${rotate}deg) translateY(${y}px)`
+              : "none";
 
           observer.unobserve(entry.target);
         });
@@ -146,8 +149,10 @@ export default function Security() {
                   transform:
                     window.innerWidth >= 1024
                       ? `rotateZ(${rotate}deg) translateY(${y + 20}px)`
-                      : "translateY(20px)",
-
+                      : window.innerWidth >= 640
+                        ? `rotateZ(${rotate * 0.4}deg) translateY(${(y + 20) * 0.5}px)`
+                        : "none",
+                        
                   transition: `transform 0.7s cubic-bezier(0.22,1,0.36,1) ${200 + i * 100}ms`,
 
                   transformOrigin: "top center",

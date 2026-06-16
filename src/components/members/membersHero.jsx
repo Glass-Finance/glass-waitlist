@@ -264,7 +264,7 @@ export default function MembersHero() {
           <div
             style={{
               fontSize: "clamp(38px,10vw,56px)",
-              fontWeight: 800,
+              fontWeight: 600,
               lineHeight: 1.05,
               letterSpacing: "-0.03em",
               marginBottom: 2,
@@ -285,17 +285,12 @@ export default function MembersHero() {
             />
           </div>
           <div
-            className="mb-5"
+            className="mb-6 text-white"
             style={{
-              fontSize: "clamp(38px,10vw,56px)",
-              fontWeight: 800,
+              fontSize: "clamp(38px,5.8vw,62px)",
+              fontWeight: 600,
               lineHeight: 1.05,
               letterSpacing: "-0.03em",
-              background:
-                "linear-gradient(135deg,#c084fc 0%,#a855f7 45%,#7c3aed 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
             }}
           >
             <BlurText
@@ -305,11 +300,6 @@ export default function MembersHero() {
               direction="top"
               stepDuration={0.42}
               className="block"
-              style={{
-                fontSize: "clamp(38px,10vw,56px)",
-                fontWeight: 800,
-                lineHeight: 1.05,
-              }}
             />
           </div>
           <p
@@ -322,7 +312,7 @@ export default function MembersHero() {
           <button
             onClick={() => navigate("/waitlist")}
             className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[15px] px-8 py-3.5 rounded-full mb-8 shadow-lg shadow-black/30"
-            style={{ fontWeight: 700 }}
+            style={{ fontWeight: 500 }}
           >
             Join A Community
             <motion.span
@@ -351,13 +341,13 @@ export default function MembersHero() {
                 top: "1.8%",
                 left: "8.2%",
                 width: "83.5%",
-                height: "96%",
+                height: "100%",
                 borderRadius: "38px",
                 overflow: "hidden",
                 zIndex: 2,
               }}
             >
-              <div
+              {/* <div
                 style={{
                   width: 390,
                   height: 844,
@@ -366,7 +356,7 @@ export default function MembersHero() {
                 }}
               >
                 <MembersDashboard />
-              </div>
+              </div> */}
             </div>
             <img
               src={iphone}
