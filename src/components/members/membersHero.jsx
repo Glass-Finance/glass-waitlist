@@ -170,6 +170,7 @@ export default function MembersHero() {
           <div className="mb-8" style={{ maxWidth: 420 }}>
             <VariableProximity
               label="Stop sending screenshots of receipts. Get instant proof of payment, track your history, and never miss a deadline again."
+              s
               fromFontVariationSettings="'wght' 300, 'opsz' 9"
               toFontVariationSettings="'wght' 700, 'opsz' 40"
               containerRef={containerRef}
@@ -196,11 +197,11 @@ export default function MembersHero() {
             }}
           >
             <button
-              onClick={() => navigate("/waitlist")}
-              className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30"
+              onClick={() => navigate("/member/join")}
+              className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer"
               style={{
                 fontFamily: "Inter, sans-serif",
-                fontWeight: 700,
+                fontWeight: 500,
               }}
             >
               Join A Community
@@ -277,17 +278,17 @@ export default function MembersHero() {
               direction="top"
               stepDuration={0.36}
               className="text-white block"
-              style={{
-                fontSize: "clamp(38px,10vw,56px)",
-                fontWeight: 800,
-                lineHeight: 1.05,
-              }}
+              // style={{
+              //   fontSize: "clamp(38px,10vw,56px)",
+              //   fontWeight: 800,
+              //   lineHeight: 1.05,
+              // }}
             />
           </div>
           <div
             className="mb-6 text-white"
             style={{
-              fontSize: "clamp(38px,5.8vw,62px)",
+              fontSize: "clamp(38px,10vw,62px)",
               fontWeight: 600,
               lineHeight: 1.05,
               letterSpacing: "-0.03em",
@@ -310,9 +311,9 @@ export default function MembersHero() {
             track your history, and never miss a deadline again.
           </p>
           <button
-            onClick={() => navigate("/waitlist")}
-            className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[15px] px-8 py-3.5 rounded-full mb-8 shadow-lg shadow-black/30"
-            style={{ fontWeight: 500 }}
+            onClick={() => navigate("/member/join")}
+            className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer"
+            style={{ fontFamily: "Inter, sans-serif", fontWeight: 500 }}
           >
             Join A Community
             <motion.span
@@ -324,7 +325,7 @@ export default function MembersHero() {
               }}
               style={{ display: "inline-flex", alignItems: "center" }}
             >
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </motion.span>
           </button>
         </div>

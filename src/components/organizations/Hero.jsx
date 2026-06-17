@@ -64,13 +64,11 @@ function DashboardOverlay() {
   const aliveRef = useRef(true);
 
   useEffect(() => {
-    // ── Static TV noise — drawn ONCE, frozen in place, very subtle ───────────
     const canvas = document.getElementById("hero-static-canvas");
     if (canvas) {
       const resize = () => {
         canvas.width = canvas.offsetWidth || window.innerWidth;
         canvas.height = canvas.offsetHeight || window.innerHeight;
-        // Redraw once after resize
         const ctx = canvas.getContext("2d");
         const w = canvas.width,
           h = canvas.height;
@@ -148,7 +146,6 @@ function DashboardOverlay() {
       await sw(320);
     };
 
-    // ── Toast engine — ONE toast at a time ────────────────────────────────────
     const mkToast = (d) => {
       const el = document.createElement("div");
       el.style.cssText = `
@@ -175,32 +172,20 @@ function DashboardOverlay() {
           await sw(500);
           continue;
         }
-
-        // Clear any leftover toasts (safety)
         toastRef.current.innerHTML = "";
-
         const el = mkToast(TOASTS[idx % TOASTS.length]);
         toastRef.current.appendChild(el);
-
-        // Slide in
         await sw(40);
         if (!aliveRef.current) return;
         el.style.opacity = "1";
         el.style.transform = "translateX(0)";
-
-        // Hold visible for 3.5s
         await sw(3500);
         if (!aliveRef.current) return;
-
-        // Slide out
         el.style.opacity = "0";
         el.style.transform = "translateX(14px)";
         await sw(500);
         if (el.parentNode) el.parentNode.removeChild(el);
-
         idx++;
-
-        // Gap between toasts: alternates 5s / 7s
         const gap = idx % 2 === 0 ? 5000 : 7000;
         await sw(gap);
       }
@@ -218,16 +203,12 @@ function DashboardOverlay() {
     };
 
     const main = async () => {
-      // Phase 1 — one-time slide-up entrance
       await sw(400);
       if (!aliveRef.current || !outerRef.current) return;
       outerRef.current.style.opacity = "1";
       outerRef.current.style.transform = "translateY(0)";
-
       await sw(2200);
       if (!aliveRef.current) return;
-
-      // Phase 2 — breathe + toast loops
       dashLoop();
       await sw(1400);
       if (!aliveRef.current) return;
@@ -250,23 +231,19 @@ function DashboardOverlay() {
 
   return (
     <div style={{ position: "relative", width: "100%", ...F }}>
-      {/* ── Toast column — overlaps the right edge of the dashboard ── */}
       <div
         ref={toastRef}
         style={{
           position: "absolute",
-          // sits on the right side, half overlapping the dashboard
           top: 90,
-          right: -30, // pulls toasts so ~half overlap the dashboard edge
+          right: -30,
           display: "flex",
           flexDirection: "column",
           pointerEvents: "none",
-          zIndex: 200, // above everything
+          zIndex: 200,
           width: 220,
         }}
       />
-
-      {/* ── Outer frame ── */}
       <div
         ref={outerRef}
         style={{
@@ -276,7 +253,6 @@ function DashboardOverlay() {
             "opacity 2s cubic-bezier(.22,1,.36,1), transform 2s cubic-bezier(.22,1,.36,1)",
         }}
       >
-        {/* Device chrome */}
         <div
           style={{
             background: "#3a3a3a",
@@ -287,7 +263,6 @@ function DashboardOverlay() {
             border: "1px solid rgba(255,255,255,0.08)",
           }}
         >
-          {/* Dashboard inner */}
           <div
             style={{
               display: "flex",
@@ -638,7 +613,7 @@ function DashboardOverlay() {
               </div>
             </div>
 
-            {/* Main area */}
+            {/* Main area — identical to original, omitted for brevity but kept intact */}
             <div
               style={{
                 flex: 1,
@@ -647,7 +622,6 @@ function DashboardOverlay() {
                 minWidth: 0,
               }}
             >
-              {/* Topbar */}
               <div
                 style={{
                   background: "#fff",
@@ -756,16 +730,15 @@ function DashboardOverlay() {
                   </div>
                 </div>
               </div>
-
-              {/* Page body */}
               <div
                 style={{ flex: 1, padding: "14px 16px 0", overflow: "hidden" }}
               >
-                {/* Page header */}
                 <div
                   id="dbo-e0"
                   style={{
-                    ...ri,
+                    opacity: 0,
+                    transform: "translateY(10px)",
+                    transition: "opacity .5s ease, transform .5s ease",
                     display: "flex",
                     alignItems: "flex-start",
                     justifyContent: "space-between",
@@ -817,8 +790,6 @@ function DashboardOverlay() {
                     </button>
                   </div>
                 </div>
-
-                {/* Stat cards */}
                 <div
                   style={{
                     display: "grid",
@@ -972,7 +943,9 @@ function DashboardOverlay() {
                       key={s.id}
                       id={"dbo-" + s.id}
                       style={{
-                        ...ri,
+                        opacity: 0,
+                        transform: "translateY(10px)",
+                        transition: "opacity .5s ease, transform .5s ease",
                         background: "#fff",
                         borderRadius: 10,
                         padding: "12px 14px",
@@ -1034,8 +1007,6 @@ function DashboardOverlay() {
                     </div>
                   ))}
                 </div>
-
-                {/* Plans + Activity */}
                 <div
                   style={{
                     display: "grid",
@@ -1043,7 +1014,6 @@ function DashboardOverlay() {
                     gap: 10,
                   }}
                 >
-                  {/* Payment Plans */}
                   <div
                     style={{
                       background: "rgba(204,219,255,0.4)",
@@ -1121,7 +1091,9 @@ function DashboardOverlay() {
                         key={p.id}
                         id={"dbo-" + p.id}
                         style={{
-                          ...ri,
+                          opacity: 0,
+                          transform: "translateY(10px)",
+                          transition: "opacity .5s ease, transform .5s ease",
                           background: "#fff",
                           borderRadius: 8,
                           padding: "10px 12px",
@@ -1216,8 +1188,6 @@ function DashboardOverlay() {
                       </div>
                     ))}
                   </div>
-
-                  {/* Recent Activity */}
                   <div
                     style={{
                       background: "#fff",
@@ -1278,7 +1248,9 @@ function DashboardOverlay() {
                         key={a.id}
                         id={"dbo-" + a.id}
                         style={{
-                          ...ri,
+                          opacity: 0,
+                          transform: "translateY(10px)",
+                          transition: "opacity .5s ease, transform .5s ease",
                           display: "flex",
                           alignItems: "flex-start",
                           gap: 9,
@@ -1429,7 +1401,6 @@ function DashboardOverlay() {
                   </div>
                 </div>
               </div>
-              {/* end page body */}
             </div>
           </div>
         </div>
@@ -1442,14 +1413,12 @@ function DashboardOverlay() {
 export default function Hero() {
   const navigate = useNavigate();
 
-  // Scroll to top on every mount/reload
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
   return (
     <section className="relative overflow-hidden pt-[68px]">
-      {/* ── 1. Wave image background ── */}
       <div
         className="absolute inset-0 w-full h-full"
         style={{
@@ -1458,8 +1427,6 @@ export default function Hero() {
           backgroundPosition: "center",
         }}
       />
-
-      {/* ── 2. Very dark base overlay — slightly lifted so purple bleeds through ── */}
       <div
         className="absolute inset-0"
         style={{
@@ -1467,8 +1434,6 @@ export default function Hero() {
             "linear-gradient(135deg, rgba(2,3,16,0.91) 0%, rgba(5,4,26,0.88) 40%, rgba(12,4,24,0.83) 100%)",
         }}
       />
-
-      {/* ── 3. TV static noise — frozen, one-time draw, very subtle ── */}
       <canvas
         id="hero-static-canvas"
         className="absolute inset-0 pointer-events-none select-none"
@@ -1479,10 +1444,7 @@ export default function Hero() {
           mixBlendMode: "screen",
         }}
       />
-
-      {/* ── 5. Glow blobs — purple/violet like screenshot ── */}
       <div className="pointer-events-none absolute inset-0 select-none overflow-hidden">
-        {/* Bottom centre purple bloom */}
         <div
           className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1000px] h-[560px]"
           style={{
@@ -1492,7 +1454,6 @@ export default function Hero() {
             opacity: 0.7,
           }}
         />
-        {/* Bottom-left accent */}
         <div
           className="absolute bottom-0 left-0 w-[500px] h-[320px]"
           style={{
@@ -1502,7 +1463,6 @@ export default function Hero() {
             opacity: 0.45,
           }}
         />
-        {/* Top dark vignette */}
         <div
           className="absolute top-0 left-0 right-0 h-[200px]"
           style={{
@@ -1512,14 +1472,13 @@ export default function Hero() {
         />
       </div>
 
-      {/* ── Hero text ── */}
       <div
         className="relative z-10 w-full max-w-[720px] mx-auto text-center px-6 pt-12 pb-[260px] sm:pb-8 sm:pt-20"
         style={{ fontFamily: "Inter,-apple-system,sans-serif" }}
       >
         <Reveal variant="up" delay={80}>
           <h1
-            className="font-bold text-white leading-[1.05] tracking-tight mb-5 text-center max-w-[280px] sm:max-w-none mx-auto"
+            className="font-bold text-white leading-[1.05] tracking-tight  mb-5 text-center max-w-[480px] sm:max-w-none mx-auto"
             style={{ fontSize: "clamp(38px,7.5vw,72px)" }}
           >
             <TextType
@@ -1532,30 +1491,21 @@ export default function Hero() {
             />
           </h1>
         </Reveal>
-
         <Reveal variant="up" delay={160}>
           <p className="text-[15px] sm:text-[16px] text-white/55 leading-relaxed max-w-[540px] mx-auto mb-8 sm:mb-6">
             Save 15–20 hours monthly chasing payments. The transparent way for
             Nigerian associations, clubs, and schools to manage funds.
           </p>
         </Reveal>
-
         <Reveal variant="up" delay={240}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 12,
-              flexWrap: "wrap",
-            }}
-          >
+          <div className="flex items-center justify-center gap-3 flex-wrap">
+            {/* ── FIXED: navigates to org onboarding entry point ── */}
             <button
-              onClick={() => navigate("/waitlist")}
-              className="inline-flex items-center gap-2 bg-white text-[#0d1022] text-[15px] px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30"
+              onClick={() => navigate("/onboarding/choose-path")}
+              className="inline-flex items-center gap-2 bg-white text-[#0d1022] text-[15px] px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer"
               style={{ fontFamily: "Inter,sans-serif", fontWeight: 500 }}
             >
-              Create Your Community{" "}
+              Create Your Community
               <motion.span
                 animate={{ x: [0, 5, 0] }}
                 transition={{
@@ -1572,7 +1522,6 @@ export default function Hero() {
         </Reveal>
       </div>
 
-      {/* ── Desktop animated dashboard ── */}
       <Reveal variant="up" delay={360}>
         <div
           className="relative z-10 w-full px-8 pb-0 hidden sm:block"
@@ -1584,14 +1533,13 @@ export default function Hero() {
         </div>
       </Reveal>
 
-      {/* ── Mobile mockup — same bg treatment applies since overlays cover full section ── */}
       <div
         className="block sm:hidden absolute bottom-0 left-0 right-0 z-10"
         style={{ padding: "0 16px" }}
       >
         <Reveal variant="up" delay={360}>
           <div
-            className="w-full max-w-[360px] mx-auto overflow-hidden"
+            className="w-full max-w-[260px] mx-auto overflow-hidden"
             style={{ maxHeight: "260px" }}
           >
             <img
@@ -1611,7 +1559,6 @@ export default function Hero() {
         </Reveal>
       </div>
 
-      {/* ── Bottom gradient fade — desktop ── */}
       <div
         className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 hidden sm:block"
         style={{
@@ -1620,8 +1567,6 @@ export default function Hero() {
             "linear-gradient(to top, rgba(229,229,229,0.97) 0%, rgba(229,229,229,0.65) 35%, rgba(229,229,229,0.1) 75%, transparent 100%)",
         }}
       />
-
-      {/* ── Bottom gradient fade — mobile ── */}
       <div
         className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 block sm:hidden"
         style={{

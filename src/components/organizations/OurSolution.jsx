@@ -365,7 +365,7 @@ function FeatureCard({
           {/* Title types first */}
           <h3
             style={{
-              fontSize: "clamp(14px,2.5vw,18px)",
+              fontSize: "clamp(16px,2.5vw,18px)",
               fontWeight: 700,
               color: "#0f1d6e",
               lineHeight: 1.3,
@@ -385,7 +385,7 @@ function FeatureCard({
           {/* Desc types only after title finishes */}
           <p
             style={{
-              fontSize: "clamp(13px,2vw,14px)",
+              fontSize: "clamp(14px,2vw,14px)",
               color: "rgba(0,0,0,0.6)",
               lineHeight: 1.6,
               margin: 0,

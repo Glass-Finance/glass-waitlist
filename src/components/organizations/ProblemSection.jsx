@@ -284,6 +284,7 @@ export default function ProblemSection() {
               animateBy="words"
               direction="top"
               stepDuration={0.28}
+              centered
             />
           </div>
         </div>
