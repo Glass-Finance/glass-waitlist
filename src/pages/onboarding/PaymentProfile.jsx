@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
 import GlassLogo from "../../assets/Glass.png";
+import Background from "../../assets/background.png";
 
 const SIDEBAR_STEPS = [
   {
@@ -72,7 +73,7 @@ export default function PaymentProfile() {
   const completedSteps = ["organization"];
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden bg-[#F0F0F2]">
+    <div className="h-screen w-screen flex flex-col overflow-hidden bg-[#F0F0F2]" style={{ backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}>
 
       {/* ── Navbar ── */}
       <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 flex-shrink-0">
@@ -151,7 +152,7 @@ export default function PaymentProfile() {
 
             {/* Heading */}
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-1">
+              <h2 className="text-md font-semibold text-gray-900 mb-1">
                 Set up your payment profile
               </h2>
               <p className="text-sm text-gray-500">
@@ -160,7 +161,7 @@ export default function PaymentProfile() {
             </div>
 
             {/* Paystack Card */}
-            <div className="bg-white rounded-2xl p-6 max-w-2xl" style={{ border: "1px solid #E5E7EB" }}>
+            <div className="bg-[#EFEFF1] rounded-lg px-6 py-4" style={{ border: "1px solid #E5E7EB", width: 800 }}>
 
               {/* Logo row + connected badge */}
               <div className="flex items-center justify-between mb-5">
@@ -173,25 +174,24 @@ export default function PaymentProfile() {
                 )}
               </div>
 
-              {/* Divider */}
-              <div className="border-t border-gray-100 mb-5" />
-
               {/* Description */}
               <div className="mb-5">
-                <p className="text-sm font-semibold text-gray-900 mb-1">
+                <p className="text-sm font-semibold text-gray-900 mb-2">
                   Connect your payment account
                 </p>
                 <p className="text-sm text-gray-500">
                   Glass uses Paystack to receive and manage your community's payments securely.
                 </p>
               </div>
-
+            </div>
+            <div className="mt-8 max-w-4xl flex item-center justify-center gap-4">
               {/* Connect button — unconnected state */}
               {!connected && (
                 <button
                   onClick={handleConnect}
                   disabled={connecting}
-                  className="w-full py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60"
+                  className="py-3.5 rounded-full text-white font-medium text-xs bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60"
+                  style={{width: "50%"}}
                 >
                   {connecting ? "Connecting..." : "Connect Paystack"}
                 </button>
@@ -201,13 +201,13 @@ export default function PaymentProfile() {
               {connected && (
                 <button
                   onClick={() => navigate("/onboarding/members")}
-                  className="w-full py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all"
+                  className="py-3.5 rounded-full text-white font-medium text-xs bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all"
+                  style={{width: "50%"}}
                 >
                   Continue
                 </button>
               )}
-            </div>
-
+</div>
           </div>
         </main>
       </div>
