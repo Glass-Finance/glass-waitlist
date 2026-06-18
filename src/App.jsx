@@ -42,8 +42,8 @@ import MemberTransactions from "./pages/members/Transactions";
 import MemberUpcoming from "./pages/members/UpcomingPayments";
 import MemberNotifications from "./pages/members/MemberNotifications";
 import ManagePayments from "./pages/members/ManagePayments";
-// import PaymentSummary from "./pages/members/PaymentSummary";
-// import PaymentSuccess from "./pages/members/PaymentSuccess";
+import PaymentSummary from "./pages/members/PaymentSummary";
+import PaymentSuccess from "./pages/members/PaymentSuccess";
 // import InvitesEmptyState from "./pages/members/InvitesEmptyState";
 
 // ── Guards ─────────────────────────────────────────────────────────────────────
@@ -148,8 +148,8 @@ function App() {
 
           {/* Full-screen sub-pages (back-arrow header, no bottom nav needed) */}
           <Route path="manage-payments" element={<ManagePayments />} />
-          {/* <Route path="pay/:paymentId" element={<PaymentSummary />} /> */}
-          {/* <Route path="pay/:paymentId/success" element={<PaymentSuccess />} /> */}
+          <Route path="pay/:paymentId" element={<PaymentSummary />} />
+          <Route path="pay/:paymentId/success" element={<PaymentSuccess />} />
 
           {/* Profile — placeholder until UI designer delivers */}
           {/* <Route path="profile" element={<MemberProfile />} /> */}
