@@ -1,101 +1,129 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, CreditCard, Users, Settings, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { LayoutDashboard, CreditCard, Users, Settings } from "lucide-react";
 
 const NAV = [
-  { icon: <LayoutDashboard size={17}/>, label: "Dashboard", id: "dashboard", path: "/dashboard"          },
-  { icon: <CreditCard size={17}/>,      label: "Payments",  id: "payments",  path: "/dashboard/payments" },
-  { icon: <Users size={17}/>,           label: "Members",   id: "members",   path: "/dashboard/members"  },
-  { icon: <Settings size={17}/>,        label: "Settings",  id: "settings",  path: "/dashboard/settings" },
+  {
+    icon: <LayoutDashboard size={15} />,
+    label: "Dashboard",
+    id: "dashboard",
+    // Both admin variants live here — match either path
+    paths: ["/dashboard/admin", "/dashboard/paying-admin"],
+  },
+  {
+    icon: <CreditCard size={15} />,
+    label: "Payments",
+    id: "payments",
+    paths: ["/dashboard/payments"],
+  },
+  {
+    icon: <Users size={15} />,
+    label: "Members",
+    id: "members",
+    paths: ["/dashboard/members"],
+  },
+  {
+    icon: <Settings size={15} />,
+    label: "Settings",
+    id: "settings",
+    paths: ["/dashboard/settings"],
+  },
 ];
 
 const COMMUNITIES = [
   { tag: "KC", name: "Kings College Alumni" },
-  { tag: "C1", name: "Community 1"          },
+  { tag: "C1", name: "Community 1" },
 ];
 
 export default function Sidebar() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [activeCom, setActiveCom] = useState("KC");
 
-  const active    = NAV.find(n => location.pathname === n.path)?.id || "dashboard";
-  const community = COMMUNITIES.find(c => c.tag === activeCom);
-  const W         = collapsed ? 0 : 200;
+  // Check if current path matches any of the nav item's paths (exact or nested)
+  const activeId =
+    NAV.find((n) =>
+      n.paths.some(
+        (p) =>
+          location.pathname === p ||
+          location.pathname.startsWith(p + "/")
+      )
+    )?.id || "dashboard";
+
+  const community = COMMUNITIES.find((c) => c.tag === activeCom);
+
+  // Navigate to the first path for each nav item on click
+  const navTo = (item) => navigate(item.paths[0]);
 
   return (
-    <div style={{ display: "flex", height: "100vh", position: "sticky", top: 0, zIndex: 60, flexShrink: 0 }}>
+    <div className="flex h-screen sticky top-0 z-60 flex-shrink-0">
 
       {/* ── Blue rail ── */}
-      <div style={{
-        width: 56, flexShrink: 0,
-        background: "#002FA7",
-        display: "flex", flexDirection: "column",
-        alignItems: "center",
-        paddingTop: 14, paddingBottom: 20,
-        fontFamily: "Inter, sans-serif",
-      }}>
-        {/* Glass logo → landing page */}
+      <div className="w-14 flex-shrink-0 bg-[#002FA7] flex flex-col items-center pt-3.5 pb-5">
+
+        {/* Logo */}
         <button
           onClick={() => navigate("/")}
-          style={{ background: "none", border: "none", cursor: "pointer", marginBottom: 16, padding: 0 }}
+          className="mb-4 p-0 bg-transparent border-none cursor-pointer"
           title="Go to landing page"
         >
           <img
-            src="/Glass.png" alt="Glass"
-            style={{ width: 26, height: 26, objectFit: "contain", filter: "brightness(0) invert(1)", display: "block" }}
-            onError={e => {
+            src="/Glass.png"
+            alt="Glass"
+            className="w-6 h-6 object-contain brightness-0 invert block"
+            onError={(e) => {
               e.target.style.display = "none";
               e.target.nextSibling.style.display = "flex";
             }}
           />
-          {/* Fallback if logo missing */}
-          <div style={{
-            display: "none", width: 26, height: 26, borderRadius: 6,
-            background: "rgba(255,255,255,0.25)",
-            alignItems: "center", justifyContent: "center",
-            color: "#fff", fontWeight: 900, fontSize: 13,
-          }}>G</div>
+          <div className="hidden w-6 h-6 rounded-md bg-white/25 items-center justify-center text-white font-black text-sm">
+            G
+          </div>
         </button>
 
-        {/* Home — communities picker */}
+        {/* Home */}
         <button
           onClick={() => navigate("/dashboard/home")}
           title="Your Communities"
-          style={{
-            width: 34, height: 34, borderRadius: 8, border: "none", cursor: "pointer",
-            background: location.pathname === "/dashboard/home" ? "#fff" : "rgba(255,255,255,0.15)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: location.pathname === "/dashboard/home" ? "#002FA7" : "#fff",
-            marginBottom: 12, transition: "all .15s",
-          }}
+          className={`w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center mb-3 transition-all
+            ${
+              location.pathname === "/dashboard/home"
+                ? "bg-white text-[#002FA7]"
+                : "bg-white/15 text-white hover:bg-white/25"
+            }`}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M9 21V12h6v9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            <path
+              d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"
+              stroke="currentColor" strokeWidth="1.8"
+              strokeLinecap="round" strokeLinejoin="round"
+            />
+            <path
+              d="M9 21V12h6v9"
+              stroke="currentColor" strokeWidth="1.8"
+              strokeLinecap="round" strokeLinejoin="round"
+            />
           </svg>
         </button>
 
-        {/* Divider */}
-        <div style={{ width: 22, height: 1, background: "rgba(255,255,255,0.2)", marginBottom: 14 }}/>
+        <div className="w-5 h-px bg-white/20 mb-3.5" />
 
         {/* Community avatars */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
-          {COMMUNITIES.map(c => (
+        <div className="flex flex-col gap-2 items-center">
+          {COMMUNITIES.map((c) => (
             <button
               key={c.tag}
-              onClick={() => { setActiveCom(c.tag); navigate("/dashboard"); }}
-              title={c.name}
-              style={{
-                width: 34, height: 34, borderRadius: 9, border: "none", cursor: "pointer",
-                background: activeCom === c.tag ? "#fff" : "rgba(255,255,255,0.18)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                color: activeCom === c.tag ? "#002FA7" : "#fff",
-                fontWeight: 800, fontSize: 11,
-                transition: "all .15s",
-                fontFamily: "Inter, sans-serif",
+              onClick={() => {
+                setActiveCom(c.tag);
+                navigate("/dashboard/admin");
               }}
+              title={c.name}
+              className={`w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all
+                ${
+                  activeCom === c.tag
+                    ? "bg-white text-[#002FA7]"
+                    : "bg-white/15 text-white hover:bg-white/30"
+                }`}
             >
               {c.tag}
             </button>
@@ -104,111 +132,40 @@ export default function Sidebar() {
       </div>
 
       {/* ── White nav panel ── */}
-      <div style={{
-        width: W,
-        background: "#fff",
-        borderRight: "1px solid #eef0f8",
-        display: "flex", flexDirection: "column",
-        overflow: "hidden",
-        transition: "width .22s cubic-bezier(0.4,0,0.2,1)",
-        fontFamily: "Inter, sans-serif",
-      }}>
+      <div className="bg-white border-r border-[#eef0f8] flex flex-col overflow-hidden w-[220px]">
 
-        {/* Org header — collapse button sits here beside the org name */}
-        <div style={{
-          padding: "15px 12px 13px",
-          borderBottom: "1px solid #eef0f8",
-          display: "flex", alignItems: "center",
-          justifyContent: "space-between",
-          gap: 8, minHeight: 64,
-        }}>
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <div style={{
-              fontSize: 13, fontWeight: 700, color: "#0f1d6e",
-              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-              lineHeight: 1.3,
-            }}>
-              {community?.name}
-            </div>
-            <span style={{
-              display: "inline-block", marginTop: 3,
-              fontSize: 10, fontWeight: 700, color: "#e85d04",
-              background: "#fff4ee", borderRadius: 99, padding: "1px 8px",
-            }}>
+        {/* Org header */}
+        <div className="flex items-center gap-2 px-3 py-3.5 border-b border-[#eef0f8] min-h-[56px]">
+          <p className="text-[11px] font-semibold text-[#000000] truncate leading-tight flex-1 min-w-0">
+            {community?.name}
+            <span className="inline-block ml-2 text-[8px] font-bold text-[#e85d04] bg-[#fff4ee] rounded-full px-2 py-px">
               Admin
             </span>
-          </div>
-
-          {/* Collapse toggle — sits beside org name */}
-          <button
-            onClick={() => setCollapsed(c => !c)}
-            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            style={{
-              background: "none", border: "none", cursor: "pointer",
-              color: "#9ca3af", flexShrink: 0, padding: 4,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              borderRadius: 6, transition: "background .15s",
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = "#f3f4f6")}
-            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-          >
-            {collapsed
-              ? <PanelLeftOpen  size={16}/>
-              : <PanelLeftClose size={16}/>
-            }
-          </button>
+          </p>
         </div>
 
-        {/* Nav links */}
-        <nav style={{ flex: 1, padding: "10px 8px" }}>
-          {NAV.map(({ icon, label, id, path }) => {
-            const isActive = id === active;
+        {/* Nav */}
+        <nav className="flex-1 px-2 py-2.5">
+          {NAV.map((item) => {
+            const isActive = item.id === activeId;
             return (
               <button
-                key={id}
-                onClick={() => navigate(path)}
-                style={{
-                  width: "100%",
-                  display: "flex", alignItems: "center", gap: 9,
-                  padding: "9px 10px",
-                  borderRadius: 8, border: "none", cursor: "pointer",
-                  background: isActive ? "#e6eeff" : "transparent",
-                  color: isActive ? "#002FA7" : "#6b7280",
-                  fontWeight: isActive ? 700 : 500,
-                  fontSize: 13,
-                  marginBottom: 2,
-                  transition: "all .15s",
-                  fontFamily: "Inter, sans-serif",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "#f9fafb"; }}
-                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+                key={item.id}
+                onClick={() => navTo(item)}
+                className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg border-none cursor-pointer text-[11px] font-medium mb-0.5 whitespace-nowrap transition-all
+                  ${
+                    isActive
+                      ? "bg-[#e6eeff] text-[#002FA7] font-semibold"
+                      : "text-gray-500 bg-transparent hover:bg-gray-50 hover:text-gray-700"
+                  }`}
               >
-                {icon}
-                <span>{label}</span>
+                {item.icon}
+                <span>{item.label}</span>
               </button>
             );
           })}
         </nav>
       </div>
-
-      {/* ── Collapsed: floating expand button on the edge ── */}
-      {collapsed && (
-        <button
-          onClick={() => setCollapsed(false)}
-          title="Expand sidebar"
-          style={{
-            position: "absolute", left: 56, top: 18,
-            width: 20, height: 20, borderRadius: "0 6px 6px 0",
-            background: "#fff", border: "1px solid #eef0f8",
-            borderLeft: "none", cursor: "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#9ca3af", zIndex: 61,
-          }}
-        >
-          <PanelLeftOpen size={12}/>
-        </button>
-      )}
     </div>
   );
 }

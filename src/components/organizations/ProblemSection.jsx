@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // import { useEffect, useRef } from "react";
 // import { Clock, Eye, Lightbulb } from "lucide-react";
 // import Problem from "../../assets/problem.png";

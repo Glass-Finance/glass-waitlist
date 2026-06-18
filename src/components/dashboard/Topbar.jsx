@@ -2,55 +2,40 @@ import { Search, Bell } from "lucide-react";
 
 export default function Topbar({ searchPlaceholder = "Search members, payments, receipts..." }) {
   return (
-    <header style={{
-      height: 56, background: "#fff", borderBottom: "1px solid #eef0f8",
-      display: "flex", alignItems: "center", gap: 16, padding: "0 24px",
-      position: "sticky", top: 0, zIndex: 50,
-    }}>
+    <header className="h-14 bg-white border-b border-[#EFEFF1] flex items-center gap-4 px-6 sticky top-0 z-50 flex-shrink-0">
+
       {/* Search */}
-      <div style={{
-        flex: 1, maxWidth: 420, display: "flex", alignItems: "center", gap: 8,
-        background: "#f5f6fa", borderRadius: 8, padding: "8px 12px",
-        border: "1px solid #eef0f8",
-      }}>
-        <Search size={14} color="#9ca3af"/>
+      <div className="flex-1 max-w-[420px] flex items-center gap-2 bg-[#FFFFFF] rounded-md px-3 py-2 border border-gray-100 focus-within:ring-1 focus-within:ring-[#002FA7]">
+        <Search size={14} className="text-gray-400 flex-shrink-0" />
         <input
           placeholder={searchPlaceholder}
-          style={{
-            flex: 1, border: "none", background: "transparent",
-            outline: "none", fontSize: 13, color: "#374151",
-          }}
+          className="flex-1 bg-transparent border-none outline-none text-xs text-gray-600 placeholder-gray-400"
         />
       </div>
 
-      <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 16 }}>
+      {/* Right side */}
+      <div className="ml-auto flex items-center gap-4">
+
         {/* Bell */}
-        <button style={{ position: "relative", background: "none", border: "none", cursor: "pointer", color: "#6b7280" }}>
-          <Bell size={18}/>
-          <span style={{
-            position: "absolute", top: -2, right: -2,
-            width: 7, height: 7, borderRadius: "50%",
-            background: "#e11d48", border: "2px solid #fff",
-          }}/>
+        <button className="relative bg-transparent border-none cursor-pointer text-gray-500 hover:text-gray-700 transition-colors p-0">
+          <Bell size={18} />
+          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 border-2 border-white" />
         </button>
 
+        {/* Divider */}
+        <div className="w-px h-6 bg-[#eef0f8]" />
+
         {/* User */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: "50%",
-            background: "linear-gradient(135deg,#1C2B8A,#4f46e5)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            color: "#fff", fontWeight: 700, fontSize: 12,
-          }}>
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1C2B8A] to-[#4f46e5] flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
             AA
           </div>
           <div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#0f1d6e", lineHeight: 1.2 }}>Amina Agrawal</div>
-            <div style={{ fontSize: 11, color: "#9ca3af" }}>amina@gmail.com</div>
+            <p className="text-xs font-bold text-[#0f1d6e] leading-tight">Amina Agrawal</p>
+            <p className="text-[11px] text-gray-400">amina@gmail.com</p>
           </div>
         </div>
       </div>
     </header>
   );
 }
-

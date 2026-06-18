@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Overlay from "../../assets/Overlay2.png";
 
@@ -314,7 +315,6 @@ function StepRow({ step, index, innerRef }) {
     border: "1px solid rgba(255,255,255,0.45)",
     boxShadow: "0 4px 24px rgba(28,43,138,0.08)",
   };
-
   const glassBadge = {
     position: "absolute",
     bottom: 12,
@@ -359,7 +359,6 @@ function StepRow({ step, index, innerRef }) {
             </span>
           </div>
         </div>
-        {/* Label card — overlaps top-left of image with negative margin */}
         <div
           style={{
             ...glassCard,
@@ -389,7 +388,7 @@ function StepRow({ step, index, innerRef }) {
           <p
             style={{
               fontSize: 12,
-              fontWeight: 500,
+              fontWeight: 800,
               color: "#0f1d6e",
               lineHeight: 1.3,
               margin: 0,
@@ -399,12 +398,9 @@ function StepRow({ step, index, innerRef }) {
           </p>
         </div>
       </div>
-
-      {/* ── Desktop ── */}
       <div
         className={`hidden md:flex relative items-center ${isLTR ? "flex-row" : "flex-row-reverse"}`}
       >
-        {/* Label card */}
         <div
           className={`flex-shrink-0 w-[190px] rounded-2xl p-5 z-20 flex flex-col items-center text-center ${isLTR ? "mr-[-34px]" : "ml-[-34px]"}`}
           style={glassCard}
@@ -449,12 +445,11 @@ function StepRow({ step, index, innerRef }) {
                 display: "inline-block",
               }}
             />
-            <span style={{ fontSize: 13, fontWeight: 500, color: "#0f1d6e" }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color: "#0f1d6e" }}>
               {step.badge}
             </span>
           </div>
         </div>
-        {/* Ghost depth cards */}
         <div
           className={`absolute top-3 ${isLTR ? "right-[-8px]" : "left-[-8px]"} w-[calc(100%-158px)] h-full rounded-3xl border border-[#1C2B8A]/8 bg-[#EEF1FB]/45 -z-10`}
         />
@@ -467,12 +462,15 @@ function StepRow({ step, index, innerRef }) {
 }
 
 export default function GetStarted() {
+  const navigate = useNavigate();
   const stepRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
 
   return (
-    <section className="relative overflow-hidden py-24" id="how-it-works">
-      <div className="absolute inset-0 z-0 pointer-events-none" />
-      <div className="absolute inset-0 pointer-events-none">
+    <section
+      className="relative bg-[#F7F8FC] overflow-hidden py-24"
+      id="how-it-works"
+    >
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
           className="absolute top-[8%] left-[4%] w-[360px] h-[360px] rounded-full bg-indigo-200/15 blur-[100px]"
           animate={{ scale: [1, 1.12, 1], opacity: [0.15, 0.3, 0.15] }}
@@ -505,17 +503,11 @@ export default function GetStarted() {
           >
             Launch Transparent Payments
             <br className="hidden md:block" /> in Minutes
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.56, delay: 0.2 }}
-            className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed"
-          >
+          </h2>
+          <p className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed">
             Set up your community, link member payment methods, and let Glass
             handle the rest.
-          </motion.p>
+          </p>
         </div>
 
         <div className="flex flex-col">
@@ -536,18 +528,13 @@ export default function GetStarted() {
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="flex justify-center mt-12 md:mt-20"
-        >
-          <motion.a
-            href="/get-started"
+        <div className="flex justify-center mt-12 md:mt-20">
+          {/* ── FIXED: useNavigate instead of <a href> ── */}
+          <motion.button
+            onClick={() => navigate("/onboarding/choose-path")}
             whileHover={{ scale: 1.04, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="relative inline-flex items-center gap-3 bg-[#0f1d6e] text-white font-bold text-[14px] px-8 py-4 rounded-full no-underline overflow-hidden shadow-2xl shadow-[#0f1d6e]/25"
+            className="relative inline-flex items-center gap-3 bg-[#0f1d6e] text-white font-bold text-[14px] px-8 py-4 rounded-full overflow-hidden shadow-2xl shadow-[#0f1d6e]/25"
           >
             <motion.span
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full"
@@ -574,8 +561,8 @@ export default function GetStarted() {
             >
               <path d="M5 12h14M12 5l7 7-7 7" />
             </motion.svg>
-          </motion.a>
-        </motion.div>
+          </motion.button>
+        </div>
       </div>
     </section>
   );
