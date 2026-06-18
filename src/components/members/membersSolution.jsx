@@ -1,7 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-hooks/set-state-in-effect */
-/* eslint-disable react-hooks/immutability */
-/* eslint-disable no-unused-vars */
 import { useEffect, useRef, useCallback, useState } from "react";
 import { motion } from "motion/react";
 import icon1 from "../../assets/icon/frame1.png";
@@ -303,6 +299,7 @@ function FeatureCard({
       const t = setTimeout(() => setTriggered(true), entryDelay);
       return () => clearTimeout(t);
     }
+    // Reset when section leaves so it re-animates on next scroll-in
     if (!sectionInView) {
       setTriggered(false);
       setTitleDone(false);
@@ -317,8 +314,8 @@ function FeatureCard({
       onMouseLeave={onMouseLeave}
       style={{
         position: "relative",
-        borderRadius: 16,
-        background: "B3B3B3",
+        borderRadius: 14,
+        background: "#EFEFF1",
         boxShadow:
           "0 0 0 1px rgba(255,255,255,0.75) inset, 0 2px 12px rgba(28,43,138,0.07), 0 1px 3px rgba(0,0,0,0.05)",
         overflow: "hidden",
@@ -337,7 +334,7 @@ function FeatureCard({
         style={{
           position: "absolute",
           inset: 0,
-          borderRadius: 16,
+          borderRadius: 14,
           pointerEvents: "none",
           zIndex: 20,
           opacity: 0,
@@ -351,23 +348,29 @@ function FeatureCard({
           display: "flex",
           alignItems: "flex-start",
           gap: 12,
-          padding: "20px 24px 10px",
+          padding: "clamp(16px,3vw,28px) clamp(14px,2.5vw,20px) 0px",
         }}
       >
         <img
           src={icon}
           alt=""
-          style={{ width: 44, height: 44, objectFit: "contain", flexShrink: 0 }}
+          style={{
+            width: "clamp(36px,5vw,50px)",
+            height: "clamp(36px,5vw,50px)",
+            objectFit: "contain",
+            flexShrink: 0,
+          }}
         />
-        <div>
+        <div className="solution-text-block" style={{ minWidth: 0 }}>
+          {/* Title types first */}
           <h3
             style={{
-              fontSize: 18,
+              fontSize: "clamp(16px,2.5vw,18px)",
               fontWeight: 700,
               color: "#0f1d6e",
               lineHeight: 1.3,
               marginBottom: 6,
-              minHeight: "1.4em",
+              minHeight: "clamp(1.2em, 5vw, 1.4em)",
             }}
           >
             <TextType
@@ -378,13 +381,15 @@ function FeatureCard({
               onComplete={() => setTitleDone(true)}
             />
           </h3>
+
+          {/* Desc types only after title finishes */}
           <p
             style={{
-              fontSize: 15,
+              fontSize: "clamp(14px,2vw,14px)",
               color: "rgba(0,0,0,0.6)",
               lineHeight: 1.6,
               margin: 0,
-              minHeight: "3em",
+              minHeight: "clamp(2.2em, 14vw, 3em)",
             }}
           >
             <TextType
@@ -400,11 +405,11 @@ function FeatureCard({
 
       {/* Illustration */}
       <div
+        className="solution-illus"
         style={{
           position: "relative",
-          height: 240,
+          height: "clamp(160px, 45vw, 240px)",
           overflow: "hidden",
-          flexShrink: 0,
         }}
       >
         <img
@@ -421,6 +426,7 @@ function FeatureCard({
           draggable={false}
         />
         <div
+          className="solution-fade"
           style={{
             position: "absolute",
             top: 0,
@@ -441,7 +447,7 @@ function FeatureCard({
             bottom: 0,
             left: "50%",
             transform: "translateX(-50%)",
-            width: "100%",
+            width: "85%",
             height: "auto",
             objectFit: "contain",
             zIndex: 10,
@@ -472,31 +478,32 @@ export default function MembersSolution() {
   return (
     <>
       <style>{`
-        @keyframes glassCardIn {
-          from { opacity: 0; transform: perspective(900px) translateY(32px) rotateX(6deg); }
-          to   { opacity: 1; transform: perspective(900px) translateY(0px) rotateX(0deg); }
-        }
-        @keyframes ttCursorBlink {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0; }
-        }
-      `}</style>
+      @keyframes glassCardIn {
+        from { opacity: 0; transform: perspective(900px) translateY(32px) rotateX(6deg); }
+        to   { opacity: 1; transform: perspective(900px) translateY(0px) rotateX(0deg); }
+      }
+      @keyframes ttCursorBlink {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0; }
+      }
+      @media (min-width: 640px) and (max-width: 1023px) {
+        .solution-text-block { height: 90px !important; overflow: hidden !important; }
+        .solution-illus { height: 180px !important; }
+        .solution-fade { height: 8% !important; background: linear-gradient(to bottom, #EFEFF1 0%, transparent 100%) !important; }
+      }
+    `}</style>
 
       <section
         ref={sectionRef}
         className="py-20 md:py-28 relative"
         id="solution"
       >
-        <div
-          className="absolute inset-0 z-0 pointer-events-none"
-          // style={{
-          //   backgroundImage: `url(${Overlay})`,
-          //   backgroundSize: "cover",
-          //   backgroundPosition: "center",
-          //   backgroundRepeat: "no-repeat",
-          //   opacity: 0.1,  /* was 0.9 — that's what made the section dark */
-          // }}
-        />
+        {/*
+          Fix: was "relative" before which pushed content down.
+          Overlay opacity dropped from 0.6 → 0.2 to stop darkening the section.
+          Background colour matches the surrounding page sections.
+        */}
+        <div className="absolute inset-0 z-0 pointer-events-none" />
 
         <div className="max-w-[1140px] mx-auto px-6 relative z-30">
           {/* ── Header — BlurText on all three elements ── */}
@@ -529,7 +536,7 @@ export default function MembersSolution() {
               }}
             >
               <BlurText
-                text="Experience Financial Peace Of Mind"
+                text="Built-In Transparency for Every Transaction"
                 animateBy="words"
                 direction="top"
                 delay={55}
@@ -548,7 +555,7 @@ export default function MembersSolution() {
               }}
             >
               <BlurText
-                text="Make payments in seconds, track everything in one place, and never miss a due date again."
+                text="Centralize payments, records, and visibility in one shared system, so your team stops chasing and starts leading."
                 animateBy="words"
                 direction="top"
                 delay={30}

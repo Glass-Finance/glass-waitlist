@@ -37,7 +37,7 @@ export default function Navbar() {
             handleViewModeChange("organizations");
             setMenuOpen(false);
           }}
-          className={`flex-1 px-4 py-2 rounded-md text-[13px] font-semibold transition-all ${
+          className={`flex-1 px-4 py-2 rounded-md text-[13px] font-semibold cursor-pointer transition-all ${
             viewMode === "organizations"
               ? "bg-[#808080] text-white"
               : "text-white/55"
@@ -50,7 +50,7 @@ export default function Navbar() {
             handleViewModeChange("members");
             setMenuOpen(false);
           }}
-          className={`flex-1 px-4 py-3 rounded-md text-[13px] font-semibold transition-all ${
+          className={`flex-1 px-4 py-3 rounded-md text-[13px] font-semibold cursor-pointer transition-all ${
             viewMode === "members" ? "bg-[#808080] text-white" : "text-white/55"
           }`}
         >
@@ -71,7 +71,7 @@ export default function Navbar() {
         </Link>
 
         {/* ── Toggle Pill (desktop) ── */}
-        <div className="hidden lg:flex bg-white/[0.07] border border-white/[0.1] rounded-full p-[3px] items-center gap-0.5 backdrop-blur-sm">
+        <div className="hidden lg:flex bg-white/[0.07] border border-white/[0.1] rounded-full p-[3px] items-center gap-0.5 backdrop-blur-sm cursor-pointer">
           <button
             onClick={() => handleViewModeChange("organizations")}
             className={`px-4 py-2 rounded-full text-[13.5px] font-semibold transition-all duration-200 ${
@@ -96,15 +96,15 @@ export default function Navbar() {
 
         {/* ── Nav Links (desktop) ── */}
         <div className="hidden lg:flex items-center gap-7">
-          <button className="flex items-center gap-1 text-[13.5px] text-white hover:text-white/55 transition-colors font-medium">
+          <button className="flex items-center gap-1 text-[13.5px] text-white hover:text-white/55 transition-colors font-medium cursor-pointer">
             Use Cases <ChevronDown className="w-3.5 h-3.5 mt-px" />
           </button>
-          <button className="text-[13.5px] text-white hover:text-white/55 transition-colors font-medium">
+          <button className="text-[13.5px] text-white hover:text-white/55 transition-colors font-medium cursor-pointer">
             Contact Us
           </button>
           <button
             onClick={() => navigate("/ambassadors")}
-            className="text-[13.5px] text-white hover:text-white/55 transition-colors font-medium"
+            className="text-[13.5px] text-white hover:text-white/55 transition-colors font-medium cursor-pointer"
           >
             Ambassadors
           </button>
@@ -116,7 +116,7 @@ export default function Navbar() {
             <>
               <button
                 onClick={() => navigate("/waitlist")}
-                className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20"
+                className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20 cursor-pointer"
               >
                 Get Started Free
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -131,7 +131,7 @@ export default function Navbar() {
           ) : (
             <button
               onClick={() => navigate("/login")}
-              className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20"
+              className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20 cursor-pointer"
             >
               Sign In
             </button>
@@ -141,7 +141,7 @@ export default function Navbar() {
         {/* ── Mobile Hamburger ── */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="lg:hidden p-2 text-white/70 hover:text-white transition-colors"
+          className="lg:hidden p-2 text-white/70 hover:text-white transition-colors cursor-pointer"
         >
           {menuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
         </button>
@@ -170,7 +170,7 @@ export default function Navbar() {
                     navigate("/waitlist");
                     setMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-center gap-2 bg-white text-[#0B0F2E] py-3 rounded-full text-[14px] font-bold"
+                  className="w-full flex items-center justify-center gap-2 bg-white text-[#0B0F2E] py-3 rounded-full text-[14px] font-bold cursor-pointer"
                 >
                   Get Started Free <ChevronRight className="w-4 h-4" />
                 </button>
@@ -179,7 +179,7 @@ export default function Navbar() {
                     navigate("/login");
                     setMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-center gap-2 text-white/70 py-2 text-[14px] font-medium"
+                  className="w-full flex items-center justify-center gap-2 text-white/70 py-2 text-[14px] font-medium cursor-pointer"
                 >
                   Sign In
                 </button>
@@ -190,7 +190,7 @@ export default function Navbar() {
                   navigate("/login");
                   setMenuOpen(false);
                 }}
-                className="w-full flex items-center justify-center gap-2 bg-white text-[#0B0F2E] py-3 rounded-full text-[14px] font-bold"
+                className="w-full flex items-center justify-center gap-2 bg-white text-[#0B0F2E] py-3 rounded-full text-[14px] font-bold cursor-pointer"
               >
                 Sign In
               </button>
