@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
+import Overlay from "../../assets/Overlay2.png";
 
 import work1 from "../../assets/work/work1.jpg";
 import work2 from "../../assets/work/work2.jpg";
@@ -19,6 +20,23 @@ const steps = [
     badge: "Set Up With Few Clicks",
     img: work1,
     stepIcon: stepIcon1,
+    icon: (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </svg>
+    ),
   },
   {
     num: "02",
@@ -27,6 +45,23 @@ const steps = [
     badge: "Upload CSV For Bulk Addition",
     img: work2,
     stepIcon: stepIcon2,
+    icon: (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <line x1="19" y1="8" x2="19" y2="14" />
+        <line x1="22" y1="11" x2="16" y2="11" />
+      </svg>
+    ),
   },
   {
     num: "03",
@@ -35,6 +70,21 @@ const steps = [
     badge: "Set Your Dues Structure",
     img: work3,
     stepIcon: stepIcon3,
+    icon: (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 6v6l4 2" />
+      </svg>
+    ),
   },
   {
     num: "04",
@@ -43,6 +93,22 @@ const steps = [
     badge: "Activate Your Community",
     img: work4,
     stepIcon: stepIcon4,
+    icon: (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
+        <path d="M9 18h6" />
+        <path d="M10 22h4" />
+      </svg>
+    ),
   },
 ];
 
@@ -267,7 +333,9 @@ function StepRow({ step, index, innerRef }) {
 
   return (
     <motion.div ref={innerRef} style={{ opacity: rowOpacity, y: rowY }}>
+      {/* ── Mobile — label overlaps top of image ── */}
       <div className="flex flex-col md:hidden" style={{ position: "relative" }}>
+        {/* Image card — full width */}
         <div className="relative w-full rounded-lg overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
           <img
             src={step.img}
@@ -351,6 +419,7 @@ function StepRow({ step, index, innerRef }) {
             {step.label}
           </p>
         </div>
+        {/* Image card */}
         <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
           <img
             src={step.img}
@@ -416,10 +485,22 @@ export default function GetStarted() {
 
       <div className="relative z-10 max-w-[880px] mx-auto px-6">
         <div className="text-center mb-12 md:mb-20">
-          <span className="inline-flex items-center border border-[#1C2B8A]/20 text-[#1C2B8A] text-[12px] font-semibold px-5 py-2 rounded-full mb-7">
+          <motion.span
+            initial={{ opacity: 0, y: -12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center border border-[#1C2B8A]/20 text-[#1C2B8A] text-[12px] font-semibold px-5 py-2 rounded-full mb-7"
+          >
             How We Work
-          </span>
-          <h2 className="text-[clamp(26px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-5">
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="text-[clamp(26px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-5"
+          >
             Launch Transparent Payments
             <br className="hidden md:block" /> in Minutes
           </h2>
@@ -439,7 +520,7 @@ export default function GetStarted() {
                   <StepConnector
                     fromDir={i % 2 === 0 ? "ltr" : "rtl"}
                     stepRef={stepRefs[i]}
-                    connId={`org${i}`}
+                    connId={`o${i}`}
                   />
                 </>
               )}
