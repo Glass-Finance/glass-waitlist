@@ -12,6 +12,8 @@ import activePlansIcon      from "../../assets/dashboard/active_plans.png";
 import TimerIcon            from "../../assets/dashboard/timer.png";
 import RecurringPayment from "../../assets/dashboard/recurring-payment.png";
 import OneTimePayment from "../../assets/dashboard/one-time-payment.png";
+import Background from "../../assets/dashboard/dashbackground.png"
+
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const STATS = [
@@ -290,7 +292,7 @@ function DashboardContent({ isPaying }) {
   );
 
   return (
-    <main className="flex-1 px-6 py-5 overflow-y-auto">
+    <main className="flex-1 px-6 py-5 overflow-y-auto" style={{ backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}>
 
       {/* Page header */}
       <div className="flex items-start justify-between mb-5">
@@ -330,10 +332,10 @@ function DashboardContent({ isPaying }) {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-3 mb-5">
         {STATS.map(s => (
-          <div key={s.label} className="bg-white rounded-xl px-4 py-4 border border-[#eef0f8]" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+          <div key={s.label} className="bg-[#EFEFF1] rounded-xl px-4 py-4 border border-[#eef0f8]" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm text-gray-500 font-bold">{s.label}</span>
-              <Info size={13} className="text-[#c4c9e0]"/>
+              <Info size={14} className="text-[#002FA7]"/>
             </div>
             <div className="flex items-center gap-2.5">
               <img src={s.icon} alt={s.label} className="w-8 h-8 object-contain flex-shrink-0"/>
@@ -345,7 +347,7 @@ function DashboardContent({ isPaying }) {
 
       {/* Your Payments — paying only */}
       {isPaying && (
-        <div className="bg-white rounded-xl border border-[#eef0f8] p-5 mb-5" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+        <div className="bg-[#F4F5F5]/60 rounded-xl border border-[#eef0f8] p-5 mb-5" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-medium text-black">Your Payments</span>
             <div className="flex gap-2">
@@ -353,11 +355,11 @@ function DashboardContent({ isPaying }) {
               <button className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 cursor-pointer">Filter</button>
             </div>
           </div>
-          <table className="w-full text-sm border-collapse">
+          <table className="w-full text-sm border-collapse text-left">
             <thead>
               <tr className="border-b border-gray-100">
                 {["Members", "Plan", "Amount", "Due Date", "Status", "Action"].map(h => (
-                  <th key={h} className="pb-2 text-left text-xs font-semibold text-gray-400">{h}</th>
+                  <th key={h} className="p-2 text-left text-xs text-gray-400">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -365,13 +367,13 @@ function DashboardContent({ isPaying }) {
               {MY_PAYMENTS.map((row, i) => {
                 const s = STATUS_STYLE[row.status];
                 return (
-                  <tr key={i} className="border-b border-gray-50">
-                    <td className="py-3 text-sm font-medium text-gray-800">{row.member}</td>
+                  <tr key={i} className="border-b border-gray-50 bg-gray-100">
+                    <td className="py-3 text-xs text-gray-800 ">{row.member}</td>
                     <td className="py-3">
                       <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ color: row.planColor, background: row.planBg }}>{row.plan}</span>
                     </td>
-                    <td className="py-3 text-sm text-black">{row.amount}</td>
-                    <td className="py-3 text-sm text-gray-500">{row.due}</td>
+                    <td className="py-3 text-xs text-black">{row.amount}</td>
+                    <td className="py-3 text-xs text-gray-500">{row.due}</td>
                     <td className="py-3">
                       <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ color: s.color, background: s.bg }}>{row.status}</span>
                     </td>
@@ -397,7 +399,7 @@ function DashboardContent({ isPaying }) {
           </div>
           <div className="flex flex-col gap-3">
             {PLANS.map(p => (
-              <div key={p.name} className="bg-white rounded-xl p-4 border border-blue-100/60">
+              <div key={p.name} className="bg-[#F4F5F5]/60 rounded-xl p-4 border border-blue-100/60">
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-sm font-medium text-black truncate">{p.name}</span>
@@ -416,7 +418,7 @@ function DashboardContent({ isPaying }) {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl border border-[#eef0f8] p-4" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+        <div className="bg-[EFEFF1]/90 rounded-xl border border-[#eef0f8] p-4" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
           <span className="text-sm font-medium text-black block mb-4">Recent Activity</span>
           {ACTIVITY.map((a, i) => (
             <div key={i} className={`flex items-start gap-3 py-3 ${i < ACTIVITY.length - 1 ? "border-b border-gray-50" : ""}`}>
@@ -442,10 +444,10 @@ function DashboardContent({ isPaying }) {
       </div>
 
       {/* Member Payments */}
-      <div className="bg-white rounded-xl border border-[#eef0f8]" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+      <div className="bg-[#EFEFF1] rounded-xl border border-[#eef0f8]" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
         <div className="flex items-center justify-between px-5 pt-4 pb-0">
-          <span className="text-sm font-bold text-[#0f1d6e]">Member Payments</span>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-gray-600 hover:bg-gray-50 cursor-pointer">
+          <span className="text-sm font-medium">Member Payments</span>
+          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#002FA7] bg-white text-xs text-[#002FA7] hover:bg-gray-50 cursor-pointer">
             <Download size={12}/> Export CSV
           </button>
         </div>
@@ -455,9 +457,9 @@ function DashboardContent({ isPaying }) {
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search members, payments, receipts..."
               className="flex-1 bg-transparent border-none outline-none text-xs text-gray-600 placeholder-gray-400"/>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+          <div className="flex items-center gap-1.5 text-xs ">
             Sort by:
-            <button className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-gray-200 bg-white font-semibold text-gray-600 cursor-pointer">
+            <button className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-500 bg-white font-medium text-gray-500 cursor-pointer">
               Recent <ChevronDown size={11}/>
             </button>
           </div>
@@ -465,9 +467,9 @@ function DashboardContent({ isPaying }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="border-y border-[#eef0f8]">
+              <tr className="border-y border-[#eef0f8] bg-gray-50">
                 {["Members", "Plan", "Amount", "Date", "Email", "Status", "Actions"].map(h => (
-                  <th key={h} className="px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">{h}</th>
+                  <th key={h} className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -478,25 +480,26 @@ function DashboardContent({ isPaying }) {
                   <tr key={i} className="border-b border-[#f3f4f8] hover:bg-[#fafbff] transition-colors cursor-default"
                     onMouseEnter={e => e.currentTarget.style.background = "#fafbff"}
                     onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                    <td className="px-5 py-3 text-sm font-semibold text-[#002FA7] cursor-pointer">{row.name}</td>
+                    <td className="px-5 py-3 text-sm font-medium text-[#002FA7] cursor-pointer">{row.name}</td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-1.5">
                         <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: row.dot }}/>
-                        <span className="text-sm font-medium text-black">{row.plan}</span>
+                        <span className="text-sm text-black">{row.plan}</span>
                       </div>
                     </td>
-                    <td className="px-5 py-3 text-sm font-medium text-black">{row.amount}</td>
-                    <td className="px-5 py-3 text-sm font-medium text-black">{row.date}</td>
-                    <td className="px-5 py-3 text-sm font-medium text-black">{row.email}</td>
+                    <td className="px-5 py-3 text-sm text-black">{row.amount}</td>
+                    <td className="px-5 py-3 text-sm text-black">{row.date}</td>
+                    <td className="px-5 py-3 text-sm text-black">{row.email}</td>
                     <td className="px-5 py-3">
                       <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ color: s.color, background: s.bg }}>{row.status}</span>
+
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2">
                         <button className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center hover:bg-gray-50 cursor-pointer">
                           <img src={TimerIcon} className="w-2.5 h-2.5 object-contain" alt="timer"/>
                         </button>
-                        <button className="w-7 h-7 rounded-lg border border-[#e0e3f0] bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer">
+                        <button className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer">
                           <MoreHorizontal size={12}/>
                         </button>
                       </div>

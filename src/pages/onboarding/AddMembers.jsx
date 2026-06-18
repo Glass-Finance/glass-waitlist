@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Download, CloudUpload, Copy, Trash2, Plus } from "lucide-react";
+import { Bell, Download, CloudUpload, Copy, Trash2, Plus, Check } from "lucide-react";
 import GlassLogo from "../../assets/Glass.png";
+import Background from "../../assets/background.png";
 
 const SIDEBAR_STEPS = [
   {
@@ -48,35 +49,101 @@ const SAMPLE_MEMBER = {
 };
 
 const TABLE_HEADERS = ["First Name", "Last Name", "Email Address", "Phone Number", "Member ID", "Role/Title"];
-
 const EMPTY_ROW = { firstName: "", lastName: "", email: "", phone: "", memberId: "", role: "" };
 
+const inputCls =
+  "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
+
+const inviteLink = "https://glass.finance/join/babcock-alumni";
+
+// ── Success Modal ─────────────────────────────────────────────────────────────
+function SuccessModal({ onGoToDashboard, onCopyLink }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(2px)" }}
+    >
+      <div
+        className="bg-white rounded-3xl flex flex-col items-center text-center px-10 py-20"
+        style={{
+          width: "100%",
+          maxWidth: 550,
+          boxShadow: "0 24px 64px rgba(0,0,0,0.15)",
+        }}
+      >
+        {/* Green check circle */}
+        <div
+          className="flex items-center justify-center rounded-full mb-6"
+          style={{
+            width: 70,
+            height: 70,
+            background: "radial-gradient(circle, #22c55e 60%, #16a34a 100%)",
+            boxShadow: "0 0 0 12px #dcfce7",
+          }}
+        >
+          <Check size={40} color="white" strokeWidth={3} />
+        </div>
+
+        <h2 className="text-lg font-small text-gray-900 mb-2">
+          Your Community Is Now Live
+        </h2>
+        <p className="text-xs text-gray-500 mb-8">
+          Kings College Lagos Is All Set Up On Glass!
+        </p>
+
+        {/* Go to Dashboard */}
+        <button
+          onClick={onGoToDashboard}
+          className="w-[80%] py-3.5 rounded-full text-white font-medium text-xs bg-[#002FA7] hover:opacity-90 transition-all border-none cursor-pointer mb-5"
+        >
+          Go To Dashboard
+        </button>
+
+        {/* Copy link */}
+        <p className="text-xs text-gray-900 mb-1">Ready To Invite Members?</p>
+        <button
+          onClick={onCopyLink}
+          className="text-xs font-medium text-[#002FA7] hover:underline bg-transparent border-none cursor-pointer"
+        >
+          Click here to copy your community link
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
 export default function AddMembers() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const urlInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState("upload");
   const [dragOver, setDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [fileUrl, setFileUrl] = useState("");
   const [copied, setCopied] = useState(false);
-  // eslint-disable-next-line react-hooks/purity
+  const [showSuccess, setShowSuccess] = useState(false);
   const [manualRows, setManualRows] = useState([{ ...EMPTY_ROW, id: Date.now() }]);
-  const inviteLink = "https://glass.finance/join/babcock-alumni";
 
   const handleFile = (file) => { if (!file) return; setUploadedFile(file); };
   const handleDrop = (e) => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]); };
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(inviteLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-  const handleSubmit = () => navigate("/dashboard/home");
 
-  // Manual tab handlers
-  const handleRowChange = (id, field, value) => {
-    setManualRows((rows) => rows.map((r) => r.id === id ? { ...r, [field]: value } : r));
+  // "Create Your Community" — show modal instead of navigating directly
+  const handleSubmit = () => setShowSuccess(true);
+
+  // Modal actions
+  const handleGoToDashboard = () => navigate("/dashboard/home");
+  const handleModalCopyLink = () => {
+    navigator.clipboard.writeText(inviteLink);
   };
+
+  const handleRowChange = (id, field, value) =>
+    setManualRows((rows) => rows.map((r) => (r.id === id ? { ...r, [field]: value } : r)));
   const addRow = () => setManualRows((rows) => [...rows, { ...EMPTY_ROW, id: Date.now() }]);
   const removeRow = (id) => setManualRows((rows) => rows.filter((r) => r.id !== id));
 
@@ -84,7 +151,7 @@ export default function AddMembers() {
   const activeStep = "members";
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden bg-[#F0F0F2]">
+    <div style={{ height: "100vh", overflow: "hidden", backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center"}} className="flex flex-col">
 
       {/* ── Navbar ── */}
       <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 flex-shrink-0">
@@ -93,7 +160,9 @@ export default function AddMembers() {
           <span className="font-semibold text-base text-gray-900">Glass</span>
         </div>
         <div className="flex items-center gap-4">
-          <button className="text-gray-400 hover:text-gray-600 transition-colors"><Bell size={20} /></button>
+          <button className="text-gray-400 hover:text-gray-600 transition-colors bg-transparent border-none cursor-pointer">
+            <Bell size={20} />
+          </button>
           <div className="text-right">
             <p className="text-sm font-semibold text-gray-900">Amina Agrawal</p>
             <p className="text-xs text-gray-500">amina@gmail.com</p>
@@ -105,7 +174,7 @@ export default function AddMembers() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* ── Sidebar ── */}
-        <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col pt-10 px-6 h-full">
+        <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col pt-10 px-6">
           {SIDEBAR_STEPS.map((step, index) => {
             const isActive = step.id === activeStep;
             const isCompleted = completedSteps.includes(step.id);
@@ -113,7 +182,8 @@ export default function AddMembers() {
             return (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${isActive || isCompleted ? "bg-[#002FA7] text-white" : "bg-white border-2 border-gray-300 text-gray-400"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all
+                    ${isActive || isCompleted ? "bg-[#002FA7] text-white" : "bg-white border-2 border-gray-300 text-gray-400"}`}>
                     {isCompleted ? (
                       <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
                         <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -121,11 +191,13 @@ export default function AddMembers() {
                     ) : step.icon}
                   </div>
                   {!isLast && (
-                    <div className="w-px my-1 transition-all duration-500" style={{ minHeight: "40px", background: isCompleted ? "#002FA7" : "#E5E7EB" }} />
+                    <div className="w-px my-1 transition-all duration-500"
+                      style={{ minHeight: "40px", background: isCompleted ? "#002FA7" : "#E5E7EB" }} />
                   )}
                 </div>
                 <div className="pt-1.5 pb-10">
-                  <span className={`text-sm font-medium transition-all ${isActive ? "text-[#002FA7]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}>
+                  <span className={`text-sm font-medium transition-all
+                    ${isActive ? "text-[#002FA7]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}>
                     {step.label}
                   </span>
                 </div>
@@ -140,59 +212,62 @@ export default function AddMembers() {
 
             {/* Heading */}
             <div className="mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-1">Add your members</h2>
+              <h2 className="text-base font-medium text-gray-900 mb-1">Add your members</h2>
               <p className="text-sm text-gray-500">
                 Add your members now or invite them to join on their own. You can always add more from your dashboard later.
               </p>
             </div>
 
             {/* Invite Banner */}
-            <div className="flex items-center justify-between px-5 py-4 rounded-xl mb-6" style={{ background: "#EEF2FF", border: "1px solid #C7D2FE" }}>
+            <div className="flex items-center justify-between px-5 py-4 rounded-xl mb-6"
+              style={{ background: "#D7E2FF", border: "1px solid #0E628C33" }}>
               <div>
-                <p className="text-sm font-semibold text-gray-900 mb-0.5">Your community is ready to grow.</p>
-                <p className="text-sm text-gray-500">Copy this link and share it with your members to get them on Glass.</p>
+                <p className="text-xs text-gray-900 mb-0.5">Your community is ready to grow.</p>
+                <p className="text-xs text-gray-500">Copy this link and share it with your members to get them on Glass.</p>
               </div>
-              <button onClick={handleCopyLink} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all flex-shrink-0 ml-6">
-                <Copy size={14} />
+              <button
+                onClick={handleCopyLink}
+                className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#002FA7] text-xs font-semibold text-[#002FA7] hover:bg-gray-50 transition-all flex-shrink-0 ml-6 cursor-pointer"
+              >
+                <Copy size={12} />
                 {copied ? "Copied!" : "Copy Link"}
               </button>
             </div>
 
             {/* Direct Add Card */}
-            <div className="bg-white rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+            <div className="bg-[#EFEFF1] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
               <h3 className="text-base font-semibold text-gray-900 mb-4">Prefer To Add Members Directly?</h3>
 
               {/* Tabs */}
               <div className="flex gap-6 border-b border-gray-200 mb-5">
-                <button
-                  onClick={() => setActiveTab("upload")}
-                  className={`pb-2.5 text-sm font-semibold transition-all ${activeTab === "upload" ? "text-[#002FA7] border-b-2 border-[#002FA7]" : "text-gray-400 hover:text-gray-600"}`}
-                >
-                  Upload
-                </button>
-                <button
-                  onClick={() => setActiveTab("manual")}
-                  className={`pb-2.5 text-sm font-semibold transition-all ${activeTab === "manual" ? "text-[#002FA7] border-b-2 border-[#002FA7]" : "text-gray-400 hover:text-gray-600"}`}
-                >
-                  Manual
-                </button>
+                {["upload", "manual"].map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`pb-2.5 text-sm font-medium capitalize transition-all bg-transparent border-none cursor-pointer
+                      ${activeTab === tab ? "text-[#002FA7] border-b-2 border-[#002FA7]" : "text-gray-400 hover:text-gray-600"}`}
+                    style={ activeTab === tab ? { borderBottom: "2px solid #002FA7" } : {}}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </button>
+                ))}
               </div>
 
               {/* ── UPLOAD TAB ── */}
               {activeTab === "upload" && (
                 <>
-                  <p className="text-sm font-semibold text-gray-900 mb-1">Upload a CSV</p>
-                  <div className="flex items-center justify-between mb-4">
+                  <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
+                  <div className="flex items-center justify-between mb-6">
                     <p className="text-sm text-gray-500">Upload a CSV file with following sample information</p>
-                    <button className="flex items-center gap-1.5 text-sm font-medium text-[#002FA7] hover:opacity-80 transition-all">
-                      <Download size={14} />
+                    <button className="flex items-center gap-1.5 text-xs font-medium text-[#002FA7] hover:opacity-80 transition-all bg-transparent border-none cursor-pointer">
+                      <Download size={12} />
                       Download Template
                     </button>
                   </div>
 
                   {/* Sample table */}
-                  <div className="rounded-xl overflow-hidden mb-4" style={{ border: "1px solid #E5E7EB" }}>
-                    <table className="w-full text-sm">
+                  <div className="rounded-md overflow-hidden mb-4" style={{ border: "1px solid #E5E7EB" }}>
+                    <table className="w-full text-xs">
                       <thead>
                         <tr className="bg-gray-50">
                           {TABLE_HEADERS.map((h) => (
@@ -219,34 +294,38 @@ export default function AddMembers() {
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                     onDragLeave={() => setDragOver(false)}
                     onDrop={handleDrop}
-                    className={`w-full rounded-xl flex flex-col items-center justify-center py-10 px-6 cursor-pointer transition-all mb-5 ${dragOver ? "bg-[#EEF2FF]" : "bg-[#FAFAFA]"}`}
-                    style={{ border: dragOver ? "2px dashed #002FA7" : "2px dashed #D1D5DB", minHeight: "140px" }}
+                    className="w-full rounded-lg flex flex-col items-center justify-center py-14 px-6 cursor-pointer transition-all mb-5"
+                    style={{
+                      border: dragOver ? "2px dashed #002FA7" : "2px dashed #D1D5DB",
+                      background: dragOver ? "#EEF2FF" : "#FAFAFA",
+                      minHeight: "140px",
+                    }}
                   >
-                    <input ref={fileInputRef} type="file" accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
+                    <input ref={fileInputRef} type="file" accept=".csv" className="hidden"
+                      onChange={(e) => handleFile(e.target.files[0])} />
                     <CloudUpload size={30} className="text-gray-400 mb-3" />
                     {uploadedFile ? (
-                      <p className="text-sm text-[#002FA7] font-medium">{uploadedFile.name}</p>
+                      <p className="text-xs text-[#002FA7] font-medium">{uploadedFile.name}</p>
                     ) : (
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs text-gray-500">
                         Drag and Drop CSV here or{" "}
                         <span className="text-[#002FA7] font-medium underline">Browse</span>
                       </p>
                     )}
                   </div>
 
-                  {/* Upload from URL */}
+                  {/* Upload from URL — fixed: was glass-input */}
                   <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">Or Upload from URL</p>
+                    <p className="text-xs font-medium text-gray-700 mb-2">Or Upload from URL</p>
                     <div className="flex gap-2">
                       <input
-                        ref={urlInputRef}
                         type="url"
                         value={fileUrl}
                         onChange={(e) => setFileUrl(e.target.value)}
                         placeholder="Add File Url"
-                        className="glass-input flex-1"
+                        className={inputCls}
                       />
-                      <button className="px-5 py-3 rounded-xl text-sm font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all flex-shrink-0">
+                      <button className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-[#002FA7] hover:bg-[#002FA7]/10 transition-all flex-shrink-0 border-none cursor-pointer">
                         Upload
                       </button>
                     </div>
@@ -260,8 +339,6 @@ export default function AddMembers() {
                   <p className="text-sm text-gray-500 mb-4">
                     Enter your members' details one by one. Click "Add Row" to add more members.
                   </p>
-
-                  {/* Manual table */}
                   <div className="rounded-xl overflow-hidden mb-4" style={{ border: "1px solid #E5E7EB" }}>
                     <table className="w-full text-sm">
                       <thead>
@@ -269,7 +346,6 @@ export default function AddMembers() {
                           {TABLE_HEADERS.map((h) => (
                             <th key={h} className="px-3 py-3 text-left text-xs font-medium text-gray-500">{h}</th>
                           ))}
-                          {/* delete col */}
                           <th className="px-3 py-3 w-10" />
                         </tr>
                       </thead>
@@ -294,7 +370,7 @@ export default function AddMembers() {
                               {manualRows.length > 1 && (
                                 <button
                                   onClick={() => removeRow(row.id)}
-                                  className="text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center w-7 h-7"
+                                  className="text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center w-7 h-7 bg-transparent border-none cursor-pointer"
                                 >
                                   <Trash2 size={14} />
                                 </button>
@@ -305,14 +381,11 @@ export default function AddMembers() {
                       </tbody>
                     </table>
                   </div>
-
-                  {/* Add row */}
                   <button
                     onClick={addRow}
-                    className="flex items-center gap-2 text-sm font-medium text-[#002FA7] hover:opacity-80 transition-all"
+                    className="flex items-center gap-2 text-sm font-medium text-[#002FA7] hover:opacity-80 transition-all bg-transparent border-none cursor-pointer"
                   >
-                    <Plus size={16} />
-                    Add Row
+                    <Plus size={16} /> Add Row
                   </button>
                 </>
               )}
@@ -321,7 +394,7 @@ export default function AddMembers() {
             {/* Create Community Button */}
             <button
               onClick={handleSubmit}
-              className="w-full py-4 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all mt-6"
+              className="w-full py-4 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all mt-6 border-none cursor-pointer"
             >
               Create Your Community
             </button>
@@ -329,6 +402,14 @@ export default function AddMembers() {
           </div>
         </main>
       </div>
+
+      {/* ── Success Modal ── */}
+      {showSuccess && (
+        <SuccessModal
+          onGoToDashboard={handleGoToDashboard}
+          onCopyLink={handleModalCopyLink}
+        />
+      )}
     </div>
   );
 }

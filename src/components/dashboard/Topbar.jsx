@@ -2,14 +2,14 @@ import { Search, Bell } from "lucide-react";
 
 export default function Topbar({ searchPlaceholder = "Search members, payments, receipts..." }) {
   return (
-    <header className="h-14 bg-white border-b border-[#eef0f8] flex items-center gap-4 px-6 sticky top-0 z-50 flex-shrink-0">
+    <header className="h-14 bg-white border-b border-[#EFEFF1] flex items-center gap-4 px-6 sticky top-0 z-50 flex-shrink-0">
 
       {/* Search */}
-      <div className="flex-1 max-w-[420px] flex items-center gap-2 bg-[#f5f6fa] rounded-lg px-3 py-2 border border-[#eef0f8]">
+      <div className="flex-1 max-w-[420px] flex items-center gap-2 bg-[#FFFFFF] rounded-md px-3 py-2 border border-gray-100 focus-within:ring-1 focus-within:ring-[#002FA7]">
         <Search size={14} className="text-gray-400 flex-shrink-0" />
         <input
           placeholder={searchPlaceholder}
-          className="flex-1 bg-transparent border-none outline-none text-sm text-gray-600 placeholder-gray-400"
+          className="flex-1 bg-transparent border-none outline-none text-xs text-gray-600 placeholder-gray-400"
         />
       </div>
 

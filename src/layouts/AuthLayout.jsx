@@ -2,7 +2,7 @@ import AuthPanel from "../assets/auth/auth-panel.png";
 
 export default function AuthLayout({ children }) {
   return (
-    <div className="h-screen w-screen flex overflow-hidden bg-[#F5F5F6] pb-6 pl-6">
+    <div className="h-screen w-screen flex overflow-hidden bg-[#F5F5F6] p-2">
       <div className="hidden md:block w-[46%] h-full flex-shrink-0 rounded-3xl overflow-hidden">
         <img src={AuthPanel} alt="Glass Finance" className="w-full h-full object-fill" />
       </div>
