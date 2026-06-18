@@ -1,13 +1,14 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import GlassLogo from "../../assets/Glass.png";
-
+import background from '../../assets/background.png';
+;
 export default function CheckEmail() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const email     = location.state?.email || "sulaimonqayyum@gmail.com";
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden bg-[#EAEAEC]">
+    <div className="h-screen w-screen flex flex-col overflow-hidden" style={{ backgroundImage: `url(${background})`, backgroundSize: "contain", backgroundPosition: "left" }}>
 
       {/* Glass logo top left */}
       <header className="px-8 py-5 flex-shrink-0">
@@ -42,11 +43,11 @@ export default function CheckEmail() {
         </h1>
 
         {/* Subtext */}
-        <div className="text-center mb-8 max-w-sm">
+        <div className="text-center mb-12">
           <p className="text-sm text-gray-500 mb-1">Glass for members is best experienced on mobile!</p>
           <p className="text-sm text-gray-600">
             We've sent a link{" "}
-            <span className="font-bold text-gray-900">{email}.</span>
+            <span className="font-medium text-gray-900">{email}.</span>
             {" "}Open it on your phone to join your community on Glass.
           </p>
         </div>
@@ -54,7 +55,7 @@ export default function CheckEmail() {
         {/* Continue button */}
         <button
           onClick={() => navigate("/dashboard/home")}
-          className="w-full max-w-sm py-3.5 rounded-3xl text-white font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98] mb-4"
+          className="w-full max-w-sm py-3.5 rounded-3xl text-white text-xs transition-all hover:opacity-90 active:scale-[0.98] mb-4"
           style={{ background: "#2535c3" }}
         >
           Continue
@@ -62,7 +63,7 @@ export default function CheckEmail() {
 
         {/* Resend */}
         <button
-          className="text-sm font-medium hover:underline"
+          className="text-xs font-medium hover:underline"
           style={{ color: "#2535c3" }}
         >
           Resend Email
