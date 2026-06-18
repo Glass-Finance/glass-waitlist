@@ -1,126 +1,94 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { Search } from "lucide-react";
+import Background from "../../../assets/background.png";
 
 const TABS = [
-  { label: "Account", base: "/dashboard/settings/account" },
-  { label: "Finance", base: "/dashboard/settings/finance" },
-  { label: "Community", base: "/dashboard/settings/community" },
-];
-
-const ACCOUNT_LINKS = [
-  { to: "/dashboard/settings/account/profile", label: "Profile" },
-  { to: "/dashboard/settings/account/role", label: "My role" },
-  { to: "/dashboard/settings/account/notifications", label: "Notifications" },
-  { to: "/dashboard/settings/account/security", label: "Security" },
-];
-
-const FINANCE_LINKS = [
-  { to: "/dashboard/settings/finance/payment-method", label: "Payment Method" },
-  { to: "/dashboard/settings/finance/auto-pay", label: "Auto-Pay" },
-];
-
-const COMMUNITY_LINKS = [
-  { to: "/dashboard/settings/community/profile", label: "Community" },
+  {
+    label: "Account",
+    defaultPath: "/dashboard/settings/account/profile",
+    match: "account",
+  },
+  {
+    label: "Finance",
+    defaultPath: "/dashboard/settings/finance/payment-method",
+    match: "finance",
+  },
+  {
+    label: "Community",
+    defaultPath: "/dashboard/settings/community/profile",
+    match: "community",
+  },
 ];
 
 export default function Settings() {
-  const location = useLocation();
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const path      = location.pathname;
 
-  const activeTab = location.pathname.includes("/finance")
-    ? "Finance"
-    : location.pathname.includes("/community")
-    ? "Community"
-    : "Account";
-
-  const subLinks =
-    activeTab === "Finance"
-      ? FINANCE_LINKS
-      : activeTab === "Community"
-      ? COMMUNITY_LINKS
-      : ACCOUNT_LINKS;
+  const activeTab = TABS.find(t => path.includes(t.match))?.label || "Account";
 
   // Breadcrumb
-  const allLinks = [...ACCOUNT_LINKS, ...FINANCE_LINKS, ...COMMUNITY_LINKS];
-  const activeLink = allLinks.find((l) => location.pathname.startsWith(l.to));
+  const breadcrumbMap = {
+    "account/profile":       { parent: "Account", child: "Profile"       },
+    "account/role":          { parent: "Account", child: "My role"       },
+    "account/notifications": { parent: "Account", child: "Notifications" },
+    "account/security":      { parent: "Account", child: "Security"      },
+    "finance/payment-method":{ parent: "Finance", child: "Payment Method"},
+    "finance/auto-pay":      { parent: "Finance", child: "Auto-Pay"      },
+    "community":             { parent: "Finance", child: "Community"     },
+  };
+
+  const crumbKey   = Object.keys(breadcrumbMap).find(k => path.includes(k));
+  const breadcrumb = crumbKey ? breadcrumbMap[crumbKey] : null;
 
   return (
-    <div className="px-8 py-8 h-full flex flex-col">
+    <div className="flex flex-col h-full px-8 py-8 overflow-y-auto" style={{ backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}>
 
       {/* Heading + Search */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Settings</h1>
-          <p className="text-sm text-gray-500">A full picture of your community's financial activity.</p>
+          <h1 className="text-lg font-bold text-gray-900 mb-1">Settings</h1>
+          <p className="text-xs text-gray-500">A full picture of your community's financial activity.</p>
         </div>
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Find A Setting"
-            className="pl-9 pr-4 py-2 rounded-xl text-sm bg-white text-gray-700 placeholder-gray-400 outline-none w-52"
-            style={{ border: "1px solid #E5E7EB" }}
+            className="pl-9 pr-4 py-2 rounded-md text-xs  text-gray-700 placeholder-gray-400 outline-none w-90"
+            style={{ border: "1px solid"}}
           />
         </div>
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 mb-6 bg-white rounded-xl p-1 w-fit" style={{ border: "1px solid #E5E7EB" }}>
-        {TABS.map((tab) => {
+      <div className="flex gap-1 mb-6 bg-[#EFEFF1] rounded-md p-1 w-fit" style={{ border: "1px solid #fafafa" }}>
+        {TABS.map(tab => {
           const isActive = activeTab === tab.label;
-          const firstLink =
-            tab.label === "Finance"
-              ? FINANCE_LINKS[0].to
-              : tab.label === "Community"
-              ? COMMUNITY_LINKS[0].to
-              : ACCOUNT_LINKS[0].to;
           return (
-            <NavLink
+            <button
               key={tab.label}
-              to={firstLink}
-              className={`px-5 py-2 rounded-lg text-sm font-medium transition-all
-                ${isActive ? "bg-[#002FA7] text-white" : "text-gray-600 hover:text-gray-900"}`}
+              onClick={() => navigate(tab.defaultPath)}
+              className={`px-6 py-2 text-[13px] transition-all cursor-pointer border-none
+                ${isActive ? "bg-[#FFFFFF] " : "bg-transparent  hover:text-gray-900"}`}
             >
               {tab.label}
-            </NavLink>
+            </button>
           );
         })}
       </div>
 
       {/* Breadcrumb */}
-      {activeLink && (
-        <p className="text-sm text-gray-500 mb-5">
-          <span className="font-medium text-gray-700">{activeTab}</span>
+      {breadcrumb && (
+        <p className="text-sm text-gray-500 mb-6">
+          <span className="text-gray-600">{breadcrumb.parent}</span>
           <span className="mx-2 text-gray-400">›</span>
-          <span className="font-semibold text-gray-900">{activeLink.label}</span>
+          <span className="font-semibold text-gray-900">{breadcrumb.child}</span>
         </p>
       )}
 
-      {/* Sub-nav + content */}
-      <div className="flex gap-6 flex-1 min-h-0">
-
-        {/* Sub nav — only shown when there are multiple links */}
-        {subLinks.length > 1 && (
-          <aside className="w-44 flex-shrink-0">
-            {subLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                className={({ isActive }) =>
-                  `block px-3 py-2 rounded-lg text-sm font-medium mb-1 transition-all
-                  ${isActive ? "bg-blue-50 text-[#002FA7]" : "text-gray-500 hover:text-gray-800 hover:bg-gray-100"}`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-          </aside>
-        )}
-
-        {/* Page outlet */}
-        <div className="flex-1 overflow-y-auto">
-          <Outlet />
-        </div>
-      </div>
+      {/* Page content */}
+      <Outlet />
     </div>
   );
 }

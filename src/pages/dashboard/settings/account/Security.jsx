@@ -5,11 +5,17 @@ function Toggle({ on, onChange }) {
   return (
     <button
       onClick={() => onChange(!on)}
-      className={`relative w-11 h-6 rounded-full transition-all duration-300 flex-shrink-0 ${on ? "bg-[#002FA7]" : "bg-gray-300"}`}
+      className="flex items-center gap-1.5 flex-shrink-0 bg-transparent border-none cursor-pointer p-0"
     >
-      <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all duration-300 ${on ? "left-5" : "left-0.5"}`} />
-      <span className={`absolute top-0.5 text-[9px] font-bold transition-all ${on ? "left-1.5 text-white" : ""}`}>
-        {on ? "On" : ""}
+      <div
+        className={`relative w-8 h-[20px] rounded-full transition-all duration-300 ${on ? "bg-[#002FA7]" : "bg-gray-300"}`}
+      >
+        <div
+          className={`absolute top-0.75 w-[14px] h-[14px] rounded-full bg-white shadow transition-all duration-300 ${on ? "left-[16px]" : "left-0.5"}`}
+        />
+      </div>
+      <span className={`text-xs font-medium ${on ? "text-gray-600" : "text-gray-400"}`}>
+        {on ? "On" : "Off"}
       </span>
     </button>
   );
@@ -22,7 +28,7 @@ export default function Security() {
 
   const toggle2FA = (key) => setTwoFA((t) => ({ ...t, [key]: !t[key] }));
 
-  const inputCls = "w-full px-4 py-2.5 rounded-lg bg-white text-gray-900 text-sm outline-none transition-all glass-input pr-11";
+  const inputCls = "w-full px-4 py-2.5 rounded-md border border-gray-300 text-gray-900 text-xs outline-none transition-all pr-11";
 
   const sessions = [
     { icon: <Monitor size={16} />, label: "MacBook Pro · Chrome", sub: "Lagos, Nigeria · Active now", active: true },
@@ -33,7 +39,7 @@ export default function Security() {
     <div className="max-w-2xl flex flex-col gap-5">
 
       {/* Password */}
-      <div className="bg-white rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#f6f6f6] rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Password</p>
         <p className="text-xs text-gray-500 mb-5">Keep your account secure with a strong password.</p>
 
@@ -91,7 +97,7 @@ export default function Security() {
           </div>
 
           <div className="flex justify-end">
-            <button className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all">
+            <button className="px-4 py-2 rounded-sm font-small text-xs  text-[#002FA7] border border-[#002FA7] hover:opacity-90 transition-all">
               Update Password
             </button>
           </div>
@@ -99,20 +105,20 @@ export default function Security() {
       </div>
 
       {/* 2FA */}
-      <div className="bg-white rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#f6f6f6] rounded-2xl p-6" style={{ border: "1px solid #f6f6f6" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Two-factor authentication</p>
         <p className="text-xs text-gray-500 mb-5">Add an extra layer of protection to your account.</p>
 
         <div className="flex items-center justify-between py-3 border-b border-gray-100">
           <div>
-            <p className="text-sm font-medium text-gray-900">Enable 2FA</p>
+            <p className="text-sm text-gray-900">Enable 2FA</p>
             <p className="text-xs text-gray-500">Require a verification code on every login</p>
           </div>
           <Toggle on={twoFA.enable} onChange={() => toggle2FA("enable")} />
         </div>
         <div className="flex items-center justify-between py-3">
           <div>
-            <p className="text-sm font-medium text-gray-900">SMS verification</p>
+            <p className="text-sm  text-gray-900">SMS verification</p>
             <p className="text-xs text-gray-500">Send OTP to phone number</p>
           </div>
           <Toggle on={twoFA.sms} onChange={() => toggle2FA("sms")} />
@@ -120,7 +126,7 @@ export default function Security() {
       </div>
 
       {/* Active sessions */}
-      <div className="bg-white rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#f6f6f6] rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Active sessions</p>
         <p className="text-xs text-gray-500 mb-5">Devices currently logged into your Glass account.</p>
 
@@ -131,11 +137,11 @@ export default function Security() {
                 {s.icon}
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">{s.label}</p>
+                <p className="text-xs font-medium text-gray-900">{s.label}</p>
                 <p className="text-xs text-gray-500">{s.sub}</p>
               </div>
             </div>
-            <button className="text-sm font-medium text-red-500 hover:text-red-700 transition-colors">Remove</button>
+            <button className="text-xs font-medium text-red-500 hover:text-red-700 transition-colors">Remove</button>
           </div>
         ))}
       </div>

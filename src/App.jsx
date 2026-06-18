@@ -17,6 +17,7 @@ import MobileSignIn from "./pages/auth/MobileSignIn";
 
 // ── Onboarding pages ───────────────────────────────────────────────────────────
 import ChoosePath from "./pages/onboarding/ChoosePath";
+import PayingMember from "./pages/onboarding/PayingMember";
 import OrganizationProfile from "./pages/onboarding/OrganizationProfile";
 import PaymentProfile from "./pages/onboarding/PaymentProfile";
 import AddMembers from "./pages/onboarding/AddMembers";
@@ -49,6 +50,10 @@ import PaymentSuccess from "./pages/members/PaymentSuccess";
 // ── Guards ─────────────────────────────────────────────────────────────────────
 // import ProtectedRoute from "./routes/ProtectedRoute";
 // import MemberProtectedRoute from "./routes/MemberProtectedRoute";
+import Security from "./pages/dashboard/settings/account/Security";
+import PaymentMethod from "./pages/dashboard/settings/finance/PaymentMethod";
+import AutoPay from "./pages/dashboard/settings/finance/AutoPay";
+import Community from "./pages/dashboard/settings/community/Community";
 
 function App() {
   return (
@@ -70,37 +75,26 @@ function App() {
 
           Sign in (returning members):
                                  /member/sign-in  → MobileSignIn
-        ─────────────────────────────────────────────────────────────────────── */}
+        ───────────────────────────────────────────────────────────────────────
+            /member/signup → Email → OTP → Complete Profile
+                → /onboarding/choose-path
+                    → [Create] → /onboarding/paying-member
+                                    → /onboarding/organization-profile
+                                    → /onboarding/payment-profile
+                                    → /onboarding/members
+                                    → /dashboard/home
+                    → [Join]   → /check-email → /dashboard/home
+        */}
         <Route path="/member/signup" element={<MemberAuth />} />
         <Route path="/member/join" element={<MobileSignUp />} />
         <Route path="/member/sign-in" element={<MobileSignIn />} />
         <Route path="/check-email" element={<CheckEmail />} />
 
-        {/* ── Invites empty state (desktop post-signup, before accepting invite) ── */}
-        {/*
-          Reached after desktop signup email verification click.
-          Member has no community yet — shows pending invite(s).
-          Accepting routes to /member/home.
-        */}
-        {/* <Route path="/member/invites" element={<InvitesEmptyState />} /> */}
-
-        {/* ────────────────────────────────────────────────────────────────────
-          ONBOARDING (admin — create community flow)
-          /signup → /onboarding/choose-path
-                 → /onboarding/payment-profile
-                 → /onboarding/organization-profile
-                 → /onboarding/members
-                 → /dashboard/home
-        ─────────────────────────────────────────────────────────────────────── */}
+        {/* ── Onboarding ── */}
         <Route path="/onboarding/choose-path" element={<ChoosePath />} />
-        <Route
-          path="/onboarding/payment-profile"
-          element={<PaymentProfile />}
-        />
-        <Route
-          path="/onboarding/organization-profile"
-          element={<OrganizationProfile />}
-        />
+        <Route path="/onboarding/paying-member" element={<PayingMember />} />
+        <Route path="/onboarding/organization-profile" element={<OrganizationProfile />} />
+        <Route path="/onboarding/payment-profile" element={<PaymentProfile />} />
         <Route path="/onboarding/members" element={<AddMembers />} />
 
         {/* ── Admin dashboard — wrapped in DashboardLayout ── */}
@@ -110,6 +104,7 @@ function App() {
           <Route path="admin" element={<AdminDashboard />} />
           <Route path="admin/paying" element={<PayingAdminDashboard />} />
 
+          {/* Settings */}
           <Route path="settings" element={<Settings />}>
             <Route index element={<Navigate to="account/profile" replace />} />
             <Route path="account/profile" element={<Profile />} />
