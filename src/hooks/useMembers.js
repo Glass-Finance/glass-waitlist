@@ -1,28 +1,68 @@
-import { useQuery } from "@tanstack/react-query";
-import client from "../api/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getMe, updateProfile, updatePassword, updateEmail, getMyCommunities, getMyMemberRecord } from "../api/members";
 
-// GET /api/v1/communities/{communityIdentifier}/members
-// Returns the member list for a given community.
-async function fetchMembers(communityIdentifier) {
-  const res = await client.get(`/communities/${communityIdentifier}/members`);
-  return res.data.data;
+// ─── Current user ─────────────────────────────────────────────────────────────
+export function useMe() {
+  return useQuery({
+    queryKey: ["me"],
+    queryFn: async () => {
+      const res = await getMe();
+      return res.data?.data ?? res.data;
+    },
+    staleTime: 1000 * 60 * 10,
+  });
 }
 
-// Usage:
-//   const { data, isLoading, error } = useMembers("my-community-slug");
-//
-// communityIdentifier can be a slug or ID — matches {communityIdentifier}
-// in the backend route.
-export function useMembers(communityIdentifier) {
-  return useQuery({
-    queryKey: ["members", communityIdentifier],
-    queryFn: () => fetchMembers(communityIdentifier),
-    enabled: !!communityIdentifier,   // don't fire until we have an identifier
-    staleTime: 1000 * 60 * 5,        // 5 min — member lists change infrequently
-    gcTime:    1000 * 60 * 15,
-    select: (data) => {
-      const members = Array.isArray(data) ? data : (data?.members ?? []);
-      return { members, total: members.length };
+// ─── Update profile ───────────────────────────────────────────────────────────
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload) => updateProfile(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
     },
+  });
+}
+
+// ─── Update password ──────────────────────────────────────────────────────────
+export function useUpdatePassword() {
+  return useMutation({
+    mutationFn: (payload) => updatePassword(payload),
+  });
+}
+
+// ─── Update email ─────────────────────────────────────────────────────────────
+export function useUpdateEmail() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload) => updateEmail(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+    },
+  });
+}
+
+// ─── Communities ──────────────────────────────────────────────────────────────
+export function useMyCommunities() {
+  return useQuery({
+    queryKey: ["communities"],
+    queryFn: async () => {
+      const res = await getMyCommunities();
+      return res.data?.data ?? [];
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+// ─── Member record within a specific community ────────────────────────────────
+export function useMyMemberRecord(communityId) {
+  return useQuery({
+    queryKey: ["member-record", communityId],
+    queryFn: async () => {
+      const res = await getMyMemberRecord(communityId);
+      return res.data?.data ?? res.data;
+    },
+    enabled: !!communityId,
+    staleTime: 1000 * 60 * 5,
   });
 }

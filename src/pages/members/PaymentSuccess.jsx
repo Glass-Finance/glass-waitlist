@@ -15,7 +15,7 @@ export default function PaymentSuccess() {
       }}
     >
       {/* ── Top bar ── */}
-      <div className="flex items-center px-4 pt-5 pb-4 relative">
+      <div className="flex items-center px-4 pt-10 pb-4 relative">
         <button
           onClick={() => navigate("/member/home")}
           className="w-9 h-9 rounded-full bg-[#D4D4D4] flex items-center justify-center cursor-pointer"
@@ -28,7 +28,7 @@ export default function PaymentSuccess() {
       </div>
 
       {/* ── Success content — centred vertically ── */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-4">
+      <div className="flex-1 flex flex-col items-center mt-10 gap-4">
         {/* Black circle with checkmark */}
         <div
           className="w-[100px] h-[100px] rounded-full flex items-center justify-center"

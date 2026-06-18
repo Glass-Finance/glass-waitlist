@@ -1,26 +1,28 @@
-// src/api/client.js
 import axios from "axios";
 
 const client = axios.create({
-  baseURL: "https://api.glasspay.app",
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? "/api/v1",
+  headers: { "Content-Type": "application/json" },
+  timeout: 15000,
 });
 
+// ── Attach JWT to every request ───────────────────────────────────────────────
 client.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("glass_token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
+// ── Global response handler ───────────────────────────────────────────────────
 client.interceptors.response.use(
-  (res) => res.data,          // unwraps the axios response
-  (err) => {
-    const apiError = err.response?.data; 
-    // shape: { success, message, data, description, status }
-    if (apiError?.status === "UNAUTHORIZED") {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+  (response) => response,
+  (error) => {
+    // Token expired or invalid → clear session and redirect to sign-in
+    if (error.response?.status === 401) {
+      localStorage.removeItem("glass_token");
+      window.location.href = "/member/sign-in";
     }
-    return Promise.reject(apiError);
+    return Promise.reject(error);
   }
 );
 

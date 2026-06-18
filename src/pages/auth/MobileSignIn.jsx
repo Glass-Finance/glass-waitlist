@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { login } from "../../api/auth";
+import { useAuth } from "../../store/AuthContext";
+import { getMyInvites } from "../../api/invites";
 
 // ── Import your actual assets ──────────────────────────────────────────────
 import glassLogo from "../../assets/cta/ctalogo.png";
@@ -195,6 +196,7 @@ export default function MobileSignIn() {
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { login } = useAuth();
 
   function set(field) {
     return (e) => {
@@ -211,10 +213,21 @@ export default function MobileSignIn() {
     setLoading(true);
     setError("");
     try {
-      const res = await login(form.email.trim().toLowerCase(), form.password);
-      const { token: jwt } = res.data.data;
-      localStorage.setItem("glass_token", jwt);
-      navigate("/member/home", { replace: true });
+      await login(form.email.trim().toLowerCase(), form.password);
+
+      const inviteRes = await getMyInvites();
+
+      const invites = inviteRes?.data?.data || [];
+
+      if (invites.length > 0) {
+        navigate("/member/invites", {
+          replace: true,
+        });
+      } else {
+        navigate("/member/home", {
+          replace: true,
+        });
+      }
     } catch (err) {
       const message =
         err?.response?.data?.message || "Incorrect email or password.";
@@ -305,13 +318,7 @@ export default function MobileSignIn() {
 
         <p className="text-sm text-center text-gray-500 pb-2">
           Don't have an account?{" "}
-          <Link
-            to="/member/sign-up"
-            className="font-semibold"
-            style={{ color: "#1C2B8A" }}
-          >
-            Sign Up
-          </Link>
+          <Route path="/member/signup" element={<MemberAuth />} />
         </p>
       </div>
     </MobileShell>

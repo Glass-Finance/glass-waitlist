@@ -1478,7 +1478,7 @@ export default function Hero() {
       >
         <Reveal variant="up" delay={80}>
           <h1
-            className="font-bold text-white leading-[1.05] tracking-tight  mb-5 text-center max-w-[480px] sm:max-w-none mx-auto"
+            className="font-bold text-white leading-[1.05] tracking-tight  mb-5 text-center max-w-[480px] lg:max-w-[720px] mx-auto"
             style={{ fontSize: "clamp(38px,7.5vw,72px)" }}
           >
             <TextType

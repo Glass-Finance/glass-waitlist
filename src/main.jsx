@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import App from "./App.jsx";
 import "./index.css";
+import { AuthProvider } from "./store/AuthContext.jsx";
 
 /**
  * QueryClient — React Query
@@ -16,9 +17,9 @@ import "./index.css";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime:          1000 * 60,      // 60s before data is considered stale
-      retry:              1,              // retry failed requests once
-      refetchOnWindowFocus: false,        // don't refetch just because user switches tabs
+      staleTime: 1000 * 60, // 60s before data is considered stale
+      retry: 1, // retry failed requests once
+      refetchOnWindowFocus: false, // don't refetch just because user switches tabs
     },
   },
 });
@@ -40,26 +41,21 @@ createRoot(document.getElementById("root")).render(
       fetch functions as props.
     */}
     <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <App />
 
-      <App />
-
-      {/*
-        Toaster — lives outside Router so toasts work on any page.
-        Position bottom-right keeps it out of the way of your navbar.
-        richColors gives green/red/yellow colours matching your status badges.
-      */}
-      <Toaster
-        position="bottom-right"
-        richColors
-        closeButton
-        toastOptions={{
-          style: {
-            fontFamily: "'DM Sans', sans-serif",
-            fontSize: "13px",
-          },
-        }}
-      />
-
+        <Toaster
+          position="bottom-right"
+          richColors
+          closeButton
+          toastOptions={{
+            style: {
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: "13px",
+            },
+          }}
+        />
+      </AuthProvider>
     </QueryClientProvider>
-  </StrictMode>
+  </StrictMode>,
 );

@@ -44,7 +44,7 @@ import MemberNotifications from "./pages/members/MemberNotifications";
 import ManagePayments from "./pages/members/ManagePayments";
 import PaymentSummary from "./pages/members/PaymentSummary";
 import PaymentSuccess from "./pages/members/PaymentSuccess";
-// import InvitesEmptyState from "./pages/members/InvitesEmptyState";
+import Invites from "./pages/members/Invites";
 
 // ── Guards ─────────────────────────────────────────────────────────────────────
 // import ProtectedRoute from "./routes/ProtectedRoute";
@@ -82,7 +82,7 @@ function App() {
           Member has no community yet — shows pending invite(s).
           Accepting routes to /member/home.
         */}
-        {/* <Route path="/member/invites" element={<InvitesEmptyState />} /> */}
+        <Route path="/member/invites" element={<Invites />} />
 
         {/* ────────────────────────────────────────────────────────────────────
           ONBOARDING (admin — create community flow)

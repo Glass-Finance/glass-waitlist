@@ -1,29 +1,47 @@
 import { useQuery } from "@tanstack/react-query";
-import client from "../api/client";
+import { getMyTransactions, getTransaction } from "../api/members";
 
-// GET /api/v1/finance/transactions/me
-// Returns the authenticated user's transaction history.
-async function fetchTransactions() {
-  const res = await client.get("/finance/transactions/me");
-  return res.data.data; // unwrap envelope → { transactions: Tx[] } or Tx[]
+function shapeTransaction(raw) {
+  return {
+    id: raw.id,
+    amount: raw.amount,
+    description: raw.description ?? raw.name ?? "Payment",
+    communityName: raw.community?.name ?? raw.communityName,
+    date: raw.createdAt ?? raw.created_at,
+    status: raw.status?.toLowerCase(), // "success" | "failed" | "pending"
+    reference: raw.reference,
+    type: raw.type ?? "one-time",
+    planName: raw.planName ?? raw.plan?.name,
+    logoColor: raw.community?.color ?? "#1C2B8A",
+    logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
+  };
 }
 
+// ─── All transactions (Payment History page) ──────────────────────────────────
 export function useTransactions() {
   return useQuery({
-    queryKey: ["transactions", "me"],
-    queryFn: fetchTransactions,
-    staleTime: 1000 * 60 * 2,      // 2 min — transactions don't change that fast
-    gcTime:    1000 * 60 * 10,
-    select: (data) => {
-      // Normalise: backend may return array directly or wrapped in { transactions }
-      const transactions = Array.isArray(data) ? data : (data?.transactions ?? []);
-
-      // Sort newest-first in case the API doesn't guarantee order
-      const sorted = [...transactions].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-
-      return { transactions: sorted };
+    queryKey: ["transactions"],
+    queryFn: async () => {
+      const res = await getMyTransactions();
+      const raw = res.data?.data ?? [];
+      // Sort newest first
+      return raw
+        .map(shapeTransaction)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
     },
+    staleTime: 1000 * 60 * 2,
+  });
+}
+
+// ─── Single transaction detail ────────────────────────────────────────────────
+export function useTransaction(transactionId) {
+  return useQuery({
+    queryKey: ["transaction", transactionId],
+    queryFn: async () => {
+      const res = await getTransaction(transactionId);
+      return shapeTransaction(res.data?.data ?? res.data);
+    },
+    enabled: !!transactionId,
+    staleTime: 1000 * 60 * 5,
   });
 }
