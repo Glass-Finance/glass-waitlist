@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { getMemberAuthRoute } from "../../utils/deviceRedirect";
 import waveBg from "../../assets/hero/hero.jpg";
 import iphone from "../../assets/hero/iphone.png";
 import BlurText from "../ui/BlurText";
@@ -197,7 +198,7 @@ export default function MembersHero() {
             }}
           >
             <button
-              onClick={() => navigate("/member/join")}
+              onClick={() => navigate(getMemberAuthRoute())}
               className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer"
               style={{
                 fontFamily: "Inter, sans-serif",

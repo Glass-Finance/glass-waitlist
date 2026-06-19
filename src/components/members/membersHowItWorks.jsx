@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-
+import { getMemberAuthRoute } from "../../utils/deviceRedirect";
 import work1 from "../../assets/work/mwork1.png";
 import work2 from "../../assets/work/mwork2.png";
 import work3 from "../../assets/work/mwork3.png";
@@ -440,7 +440,7 @@ export default function MemberHowItWorks() {
         <div className="flex justify-center mt-12 md:mt-20">
           {/* ── FIXED: useNavigate instead of <a href> ── */}
           <motion.button
-            onClick={() => navigate("/member/join")}
+            onClick={() => navigate(getMemberAuthRoute())}
             whileHover={{ scale: 1.04, y: -2 }}
             whileTap={{ scale: 0.97 }}
             className="relative inline-flex items-center gap-3 bg-[#0f1d6e] text-white font-medium text-[14px] px-8 py-4 rounded-full overflow-hidden shadow-2xl shadow-[#0f1d6e]/25"

@@ -50,7 +50,7 @@ import Invites from "./pages/members/Invites";
 // ── Guards ─────────────────────────────────────────────────────────────────────
 // import ProtectedRoute from "./routes/ProtectedRoute";
 // import MemberProtectedRoute from "./routes/MemberProtectedRoute";
-import Security from "./pages/dashboard/settings/account/Security";
+// import Security from "./pages/dashboard/settings/account/Security";
 import PaymentMethod from "./pages/dashboard/settings/finance/PaymentMethod";
 import AutoPay from "./pages/dashboard/settings/finance/AutoPay";
 import Community from "./pages/dashboard/settings/community/Community";

@@ -531,7 +531,7 @@ export default function GetStarted() {
         <div className="flex justify-center mt-12 md:mt-20">
           {/* ── FIXED: useNavigate instead of <a href> ── */}
           <motion.button
-            onClick={() => navigate("/onboarding/choose-path")}
+            onClick={() => navigate("/member/signup")}
             whileHover={{ scale: 1.04, y: -2 }}
             whileTap={{ scale: 0.97 }}
             className="relative inline-flex items-center gap-3 bg-[#0f1d6e] text-white font-bold text-[14px] px-8 py-4 rounded-full overflow-hidden shadow-2xl shadow-[#0f1d6e]/25"

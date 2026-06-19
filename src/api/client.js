@@ -17,10 +17,18 @@ client.interceptors.request.use((config) => {
 client.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Token expired or invalid → clear session and redirect to sign-in
     if (error.response?.status === 401) {
       localStorage.removeItem("glass_token");
-      window.location.href = "/member/sign-in";
+      localStorage.removeItem("glass_user");
+      localStorage.removeItem("refreshToken");
+
+      // Route based on which side of the app the user was on,
+      // not a single hardcoded destination.
+      const path = window.location.pathname;
+      const isAdminArea =
+        path.startsWith("/dashboard") || path.startsWith("/onboarding");
+
+      window.location.href = isAdminArea ? "/member/signup" : "/member/sign-in";
     }
     return Promise.reject(error);
   }

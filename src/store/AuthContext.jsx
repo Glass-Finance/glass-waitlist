@@ -72,20 +72,39 @@ export function AuthProvider({ children }) {
   // Returns the user object on success, throws on failure.
   const login = useCallback(
     async (email, password) => {
-      const response = await client.post("/auth/login", {
-        email,
-        password,
-      });
-
+      const response = await client.post("/auth/login", { email, password });
       const payload = response.data;
 
       if (!payload.success) {
         throw new Error(payload.message || "Login failed");
       }
 
-      const { token, user } = payload.data;
+      const {
+        accessToken,
+        refreshToken,
+        userId,
+        email: userEmail,
+        platformRole,
+        emailVerified,
+        mfaRequired,
+        mfaChallengeToken,
+      } = payload.data;
 
-      setSession(token, user);
+      // MFA gate — don't set a session yet, let the caller handle the challenge
+      if (mfaRequired) {
+        return { mfaRequired: true, mfaChallengeToken };
+      }
+
+      // Backend has no nested "user" object — build one from the flat fields
+      const user = {
+        id: userId,
+        email: userEmail,
+        role: platformRole,
+        emailVerified,
+      };
+
+      setSession(accessToken, user);
+      localStorage.setItem("refreshToken", refreshToken);
 
       return user;
     },

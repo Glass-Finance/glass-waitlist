@@ -1501,7 +1501,7 @@ export default function Hero() {
           <div className="flex items-center justify-center gap-3 flex-wrap">
             {/* ── FIXED: navigates to org onboarding entry point ── */}
             <button
-              onClick={() => navigate("/onboarding/choose-path")}
+              onClick={() => navigate("/member/signup")}
               className="inline-flex items-center gap-2 bg-white text-[#0d1022] text-[15px] px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer"
               style={{ fontFamily: "Inter,sans-serif", fontWeight: 500 }}
             >

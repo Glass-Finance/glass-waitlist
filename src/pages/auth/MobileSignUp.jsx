@@ -198,7 +198,7 @@ function MobileShell({ children, step }) {
           </p> */}
           {(step === STEPS.EMAIL || step === STEPS.OTP) && (
             <div className="absolute inset-0 flex items-center justify-center">
-              <h1 className="text-white text-center font-normal text-[clamp(20px,5vw,48px)] leading-tight px-6">
+              <h1 className="text-white text-center font-normal text-[clamp(20px,5vw,24px)] leading-tight px-6">
                 Manage Your Community
                 <br />
                 Finance Effortlessly
@@ -261,7 +261,7 @@ function StepEmail({ onNext }) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-xl font-bold text-gray-900 mb-1 mt-5">
+        <h1 className="text-xl font-semibold text-gray-900 mb-1 mt-5">
           {hasToken ? "You've been invited" : "Create Your Account"}
         </h1>
         {hasToken && (

@@ -115,7 +115,7 @@ export default function Navbar() {
           {viewMode === "organizations" ? (
             <>
               <button
-                onClick={() => navigate("/waitlist")}
+                onClick={() => navigate("/member/signup")}
                 className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20 cursor-pointer"
               >
                 Get Started Free

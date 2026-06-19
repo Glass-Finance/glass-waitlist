@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { getMyInvites } from "../../api/invites";
+import { getMemberAuthRoute } from "../../utils/deviceRedirect";
 
 // ── Import your actual assets ──────────────────────────────────────────────
 import glassLogo from "../../assets/cta/ctalogo.png";
@@ -87,7 +88,7 @@ function GoogleButton() {
   return (
     <button
       type="button"
-      className="w-full rounded-full py-4 text-sm font-medium text-gray-800 bg-white flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
+      className="w-full rounded-full py-4 text-sm font-medium text-gray-800 bg-white flex items-center justify-center gap-3 transition-all active:scale-[0.98] cursor-pointer"
       style={{ border: "1.5px solid #E0E0E6" }}
     >
       <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
@@ -159,11 +160,10 @@ function MobileShell({ children }) {
             alt="Glass"
             className="absolute top-10 left-5 h-9 w-auto object-contain"
             draggable={false}
-            style={{ filter: "brightness(0) invert(1)" }}
           />
           <p
-            className="absolute bottom-10 left-0 right-0 text-center text-white font-normal leading-snug px-8"
-            style={{ fontSize: "clamp(18px,4vw,22px)" }}
+            className="absolute bottom-10 left-0 right-0 text-center text-white font-medium leading-snug px-8 pb-10"
+            style={{ fontSize: "clamp(24px,4vw,22px)" }}
           >
             Welcome Back to Glass
           </p>
@@ -243,7 +243,7 @@ export default function MobileSignIn() {
     <MobileShell>
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Sign In</h1>
+          <h1 className="text-lg font-semibold text-gray-900 mb-1">Login to Your Account</h1>
           <p className="text-sm text-gray-500">
             Enter your credentials to continue.
           </p>
@@ -318,7 +318,13 @@ export default function MobileSignIn() {
 
         <p className="text-sm text-center text-gray-500 pb-2">
           Don't have an account?{" "}
-          <Route path="/member/signup" element={<MemberAuth />} />
+         <Link
+          to="/member/join"
+          className="font-semibold"
+          style={{ color: "#1C2B8A" }}
+        >
+          Sign Up
+        </Link>
         </p>
       </div>
     </MobileShell>

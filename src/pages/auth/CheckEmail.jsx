@@ -27,7 +27,7 @@ export default function CheckEmail() {
         <div className="mb-8">
           <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
             {/* Envelope body */}
-            <rect x="6" y="18" width="60" height="42" rx="4" stroke="#111827" strokeWidth="2.5" fill="none"/>
+            <rect x="6" y="18" width="60" height="42" rx  ="4" stroke="#111827" strokeWidth="2.5" fill="none"/>
             {/* Envelope flap lines */}
             <path d="M6 22l30 22 30-22" stroke="#111827" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
             {/* Checkmark badge */}
