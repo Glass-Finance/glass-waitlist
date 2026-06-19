@@ -35,6 +35,9 @@ import Profile from "./pages/dashboard/settings/account/Profile";
 import Role from "./pages/dashboard/settings/account/Role";
 import Notifications from "./pages/dashboard/settings/account/Notifications";
 import Security from "./pages/dashboard/settings/account/Security";
+import PaymentMethod from "./pages/dashboard/settings/finance/PaymentMethod";
+import AutoPay from "./pages/dashboard/settings/finance/AutoPay";
+import Community from "./pages/dashboard/settings/community/Community";
 
 // ── Member app layout + pages ──────────────────────────────────────────────────
 import MemberAppLayout from "./layouts/MemberAppLayout";
@@ -50,10 +53,6 @@ import Invites from "./pages/members/Invites";
 // ── Guards ─────────────────────────────────────────────────────────────────────
 // import ProtectedRoute from "./routes/ProtectedRoute";
 // import MemberProtectedRoute from "./routes/MemberProtectedRoute";
-// import Security from "./pages/dashboard/settings/account/Security";
-import PaymentMethod from "./pages/dashboard/settings/finance/PaymentMethod";
-import AutoPay from "./pages/dashboard/settings/finance/AutoPay";
-import Community from "./pages/dashboard/settings/community/Community";
 
 function App() {
   return (
