@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import AuthPanel from "../../assets/auth/auth-panel.png";
+import glassLogo from "../../assets/cta/ctalogo.png";
 import { useAuth } from "../../store/AuthContext";
 import {
   register,
@@ -14,35 +15,106 @@ import {
 const inputCls =
   "w-full px-4 py-3 rounded-xl bg-white text-gray-900 placeholder-gray-400 text-sm outline-none transition-all";
 const inputStyle = { border: "1.5px solid #C2C2C2" };
-const onFocus = (e) => (e.target.style.borderColor = "#002FA7");
-const onBlur  = (e) => (e.target.style.borderColor = "#C2C2C2");
- 
-// ── Shared sub-components ─────────────────────────────────────────────────────
-function PrimaryBtn({ children, loading, onClick, type = "submit" }) {
-  return (
-    <button
-      type={type}
-      disabled={loading}
-      onClick={onClick}
-      className="mt-2 w-full py-3.5 rounded-3xl text-white font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 border-none cursor-pointer"
-      style={{ background: "#2535c3" }}
+const onFocus = (e) => (e.target.style.borderColor = "#2535c3");
+const onBlur = (e) => (e.target.style.borderColor = "#C2C2C2");
+
+const PrimaryBtn = ({ loading, disabled, children, ...props }) => (
+  <button
+    {...props}
+    disabled={loading || disabled}
+    className="mt-2 w-full py-3.5 rounded-3xl text-white font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+    style={{ background: "#2535c3" }}
+  >
+    {children}
+  </button>
+);
+
+const GoogleBtn = () => (
+  <button
+    type="button"
+    className="w-full py-3.5 rounded-3xl bg-white font-medium text-sm text-gray-700 flex items-center justify-center gap-2.5 hover:bg-gray-50 transition-all active:scale-[0.98]"
+    style={{ border: "1.5px solid #C2C2C2" }}
+  >
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 18 18"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      {children}
-    </button>
-  );
-}
- 
-function Divider() {
-  return (
-    <div className="flex items-center gap-3 my-4">
-      <div className="flex-1 h-px bg-gray-200" />
-      <span className="text-xs text-gray-400">or</span>
-      <div className="flex-1 h-px bg-gray-200" />
-    </div>
-  );
-}
- 
-function GoogleBtn() {
+      <path
+        d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
+        fill="#4285F4"
+      />
+      <path
+        d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"
+        fill="#34A853"
+      />
+      <path
+        d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"
+        fill="#FBBC05"
+      />
+      <path
+        d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.96L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"
+        fill="#EA4335"
+      />
+    </svg>
+    Sign Up With Google
+  </button>
+);
+
+const Divider = () => (
+  <div className="flex items-center gap-3 my-2">
+    <div className="flex-1 h-px bg-gray-200" />
+    <span className="text-xs text-gray-400">or</span>
+    <div className="flex-1 h-px bg-gray-200" />
+  </div>
+);
+
+// ── Step: Sign In ─────────────────────────────────────────────────────────────
+function SignInStep({ onSwitch }) {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [form, setForm] = useState({ email: "", password: "" });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const user = await login(form.email, form.password);
+
+      console.log("Logged in user:", user);
+      console.log("Role:", user?.role);
+
+      const role = user?.role || "";
+
+      const isAdmin =
+        role.includes("OWNER") ||
+        role.includes("ADMIN") ||
+        role.includes("MANAGER");
+
+      console.log("isAdmin:", isAdmin);
+
+      if (isAdmin) {
+        navigate("/dashboard/home", { replace: true });
+      } else {
+        navigate("/member/home", { replace: true });
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Invalid email or password. Please try again.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <button
       type="button"
@@ -354,9 +426,53 @@ export default function MemberAuth() {
 
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-[#F5F5F6] p-2">
-      {/* LEFT panel */}
-      <div className="hidden md:block w-[46%] h-full flex-shrink-0 rounded-3xl overflow-hidden">
-        <img src={AuthPanel} alt="Glass Finance" className="w-full h-full object-cover" />
+      {/* Left panel */}
+
+      {/* Left panel */}
+      <div className="hidden md:block w-[46%] h-full flex-shrink-0">
+        <div className="relative w-full h-full rounded-3xl overflow-hidden">
+          {/* Background image */}
+          <img
+            src={AuthPanel}
+            alt="Glass Finance"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+
+          {/* Logo */}
+          <div className="absolute top-8 left-8 z-10">
+            <img
+              src={glassLogo}
+              alt="Glass Logo"
+              className="h-10 w-auto object-contain cursor-pointer"
+              onClick={() => navigate("/")}
+            />
+          </div>
+
+          {/* Center Text */}
+          <div className="absolute inset-0 flex items-center justify-center z-10 px-8">
+            <div className="text-center">
+              <h1
+                className="text-white font-normal leading-tight"
+                style={{
+                  fontSize: "clamp(2rem, 3vw, 2rem)",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                Manage Your Community
+              </h1>
+
+              <h2
+                className="text-white font-normal leading-tight mt-2"
+                style={{
+                  fontSize: "clamp(2rem, 3vw, 2rem)",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                Finance Effortlessly
+              </h2>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* RIGHT form */}
