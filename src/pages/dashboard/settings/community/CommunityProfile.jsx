@@ -15,7 +15,7 @@ const CATEGORIES = [
 const inputCls =
   "w-full border border-gray-300 px-3 py-2.5 rounded-lg text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
 
-export default function Community() {
+export default function CommunityProfile() {
   const [form, setForm] = useState({
     name: "Kings College Lagos",
     category: "School",
