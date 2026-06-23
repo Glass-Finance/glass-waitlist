@@ -641,6 +641,7 @@ import { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import AuthPanel from "../../assets/auth/auth-panel.png";
+import glassLogo from "../../assets/cta/ctalogo.png";
 import { useAuth } from "../../store/AuthContext";
 import {
   register,
@@ -724,9 +725,20 @@ function SignInStep({ onSwitch }) {
     setLoading(true);
     try {
       const user = await login(form.email, form.password);
-      // Route based on role — adjust role string to match your backend
-      const role = (user?.role ?? "").toLowerCase();
-      if (role.includes("admin")) {
+
+      console.log("Logged in user:", user);
+      console.log("Role:", user?.role);
+
+      const role = user?.role || "";
+
+      const isAdmin =
+        role.includes("OWNER") ||
+        role.includes("ADMIN") ||
+        role.includes("MANAGER");
+
+      console.log("isAdmin:", isAdmin);
+
+      if (isAdmin) {
         navigate("/dashboard/home", { replace: true });
       } else {
         navigate("/member/home", { replace: true });
@@ -1154,12 +1166,52 @@ export default function MemberAuth() {
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-[#F5F5F6] p-2">
       {/* Left panel */}
-      <div className="hidden md:block w-[46%] h-full flex-shrink-0 rounded-3xl overflow-hidden">
-        <img
-          src={AuthPanel}
-          alt="Glass Finance"
-          className="w-full h-full object-fill"
-        />
+
+      {/* Left panel */}
+      <div className="hidden md:block w-[46%] h-full flex-shrink-0">
+        <div className="relative w-full h-full rounded-3xl overflow-hidden">
+          {/* Background image */}
+          <img
+            src={AuthPanel}
+            alt="Glass Finance"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+
+          {/* Logo */}
+          <div className="absolute top-8 left-8 z-10">
+            <img
+              src={glassLogo}
+              alt="Glass Logo"
+              className="h-10 w-auto object-contain cursor-pointer"
+              onClick={() => navigate("/")}
+            />
+          </div>
+
+          {/* Center Text */}
+          <div className="absolute inset-0 flex items-center justify-center z-10 px-8">
+            <div className="text-center">
+              <h1
+                className="text-white font-normal leading-tight"
+                style={{
+                  fontSize: "clamp(2rem, 3vw, 2rem)",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                Manage Your Community
+              </h1>
+
+              <h2
+                className="text-white font-normal leading-tight mt-2"
+                style={{
+                  fontSize: "clamp(2rem, 3vw, 2rem)",
+                  fontFamily: "Inter, sans-serif",
+                }}
+              >
+                Finance Effortlessly
+              </h2>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Right form */}

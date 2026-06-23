@@ -1,15 +1,18 @@
 /**
  * src/store/AuthContext.jsx
  *
- * Wraps the entire app. Provides:
- *   useAuth() → { user, token, isAuthenticated, loading, login, logout, refreshUser }
+ * Single source of truth for auth state.
  *
- * Token storage key: "glass_token"
- * User storage key:  "glass_user"
+ * Token keys (unified — one set, used everywhere):
+ *   localStorage "accessToken"   ← matches authService.storeAuthSession + client.js interceptor
+ *   localStorage "refreshToken"  ← used by client.js auto-refresh interceptor
+ *   localStorage "glass_user"    ← serialised user object
  *
- * On mount: reads token + user from localStorage so session survives refresh.
- * On 401:   the axios interceptor in client.js already clears the token and
- *           redirects — AuthContext just stays in sync via the storage event.
+ * Flow:
+ *   1. Mount  → restore session from localStorage
+ *   2. login()→ calls authService.login(), stores tokens, sets state
+ *   3. 401    → client.js interceptor tries refresh, on failure clears tokens
+ *   4. logout()→ calls authService.logout(), clears everything
  */
 
 import {
@@ -19,37 +22,62 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import client from "../api/client"; // your axios instance
+import {
+  login as apiLogin,
+  logout as apiLogout,
+  storeAuthSession,
+} from "../services/authService";
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 const AuthContext = createContext(null);
+
+// ─── Keys (one place — change here if you ever rename) ────────────────────────
+const KEY_TOKEN = "accessToken"; // must match client.js interceptor
+const KEY_USER = "glass_user";
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function readStoredUser() {
+  try {
+    const raw = localStorage.getItem(KEY_USER);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeUser(user) {
+  if (user) localStorage.setItem(KEY_USER, JSON.stringify(user));
+  else localStorage.removeItem(KEY_USER);
+}
+
+function clearSession() {
+  localStorage.removeItem(KEY_TOKEN);
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem(KEY_USER);
+  localStorage.removeItem("userId");
+  localStorage.removeItem("userEmail");
+}
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(true); // true while restoring session
+  const [loading, setLoading] = useState(true);
 
-  // ── Restore session from localStorage on mount ──────────────────────────────
+  // Restore session on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem("glass_token");
-    const storedUser = localStorage.getItem("glass_user");
-
+    const storedToken = localStorage.getItem(KEY_TOKEN);
     if (storedToken) {
       setToken(storedToken);
-      try {
-        if (storedUser) setUser(JSON.parse(storedUser));
-      } catch {
-        localStorage.removeItem("glass_user");
-      }
+      setUser(readStoredUser());
     }
     setLoading(false);
   }, []);
 
-  // ── Keep state in sync if another tab logs out (storage event) ──────────────
+  // Stay in sync if another tab logs out
   useEffect(() => {
     const onStorage = (e) => {
-      if (e.key === "glass_token" && !e.newValue) {
+      if (e.key === KEY_TOKEN && !e.newValue) {
         setToken(null);
         setUser(null);
       }
@@ -58,102 +86,117 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  const setSession = useCallback((token, user) => {
-    localStorage.setItem("glass_token", token);
+  // ── login ──────────────────────────────────────────────────────────────────
+  /**
+   * Calls authService.login() → stores tokens → updates state.
+   * Returns:
+   *   { mfaRequired: true, mfaChallengeToken } — if MFA is needed (no session yet)
+   *   user object                              — on success
+   *
+   * Throws on bad credentials / network error.
+   */
+  const login = useCallback(async (email, password) => {
+    // authService.login returns data.data (already unwrapped)
+    const authData = await apiLogin({ email, password });
 
-    localStorage.setItem("glass_user", JSON.stringify(user));
+    console.log("AUTH DATA", authData);
+    // {
+    //   accessToken, refreshToken, userId, email,
+    //   platformRole, emailVerified, mfaRequired, mfaChallengeToken
+    // }
 
-    setToken(token);
+    // MFA gate — caller must show TOTP screen, no session stored yet
+    if (authData.mfaRequired) {
+      return {
+        mfaRequired: true,
+        mfaChallengeToken: authData.mfaChallengeToken,
+      };
+    }
+
+    // Persist tokens using the same helper authService exposes
+    // so keys are guaranteed identical everywhere
+    storeAuthSession(authData);
+
+    // Build user object from flat fields (backend has no nested user object)
+    const user = {
+      id: authData.userId,
+      email: authData.email,
+      role: authData.platformRole, // "COMMUNITY_OWNER" | "MEMBER" | etc.
+      emailVerified: authData.emailVerified,
+    };
+
+    writeUser(user);
+    setToken(authData.accessToken);
     setUser(user);
+
+    return user;
   }, []);
 
-  // ── login ────────────────────────────────────────────────────────────────────
-  // Calls POST /auth/login, stores token + user, updates state.
-  // Returns the user object on success, throws on failure.
-  const login = useCallback(
-    async (email, password) => {
-      const response = await client.post("/auth/login", { email, password });
-      const payload = response.data;
-
-      if (!payload.success) {
-        throw new Error(payload.message || "Login failed");
-      }
-
-      const {
-        accessToken,
-        refreshToken,
-        userId,
-        email: userEmail,
-        platformRole,
-        emailVerified,
-        mfaRequired,
-        mfaChallengeToken,
-      } = payload.data;
-
-      // MFA gate — don't set a session yet, let the caller handle the challenge
-      if (mfaRequired) {
-        return { mfaRequired: true, mfaChallengeToken };
-      }
-
-      // Backend has no nested "user" object — build one from the flat fields
-      const user = {
-        id: userId,
-        email: userEmail,
-        role: platformRole,
-        emailVerified,
-      };
-
-      setSession(accessToken, user);
-      localStorage.setItem("refreshToken", refreshToken);
-
-      return user;
-    },
-    [setSession],
-  );
-
-  // ── logout ───────────────────────────────────────────────────────────────────
-  // Calls POST /auth/logout (best-effort), clears local state.
+  // ── logout ─────────────────────────────────────────────────────────────────
   const logout = useCallback(async () => {
     try {
-      await client.post("/auth/logout");
+      await apiLogout(); // best-effort — server invalidates refresh token
     } catch {
-      // Ignore — we clear locally regardless
+      // ignore — clear locally regardless
     } finally {
-      localStorage.removeItem("glass_token");
-      localStorage.removeItem("glass_user");
+      clearSession();
       setToken(null);
       setUser(null);
     }
   }, []);
 
-  // ── refreshUser ──────────────────────────────────────────────────────────────
-  // Re-fetches the current user profile from GET /auth/me and updates state.
-  // Useful after profile edits.
-  const refreshUser = useCallback(async () => {
-    try {
-      const response = await client.get("/auth/me");
-      const { data: payload } = response;
-      if (payload.success && payload.data) {
-        setUser(payload.data);
-        localStorage.setItem("glass_user", JSON.stringify(payload.data));
-      }
-    } catch {
-      // If the token is invalid, the interceptor handles the 401 redirect
-    }
+  // ── setSession (for post-MFA, Google OAuth, etc.) ─────────────────────────
+  /**
+   * Manually set a session when you have auth data from a non-login flow
+   * (e.g. after verifyMfaLogin, googleAuth).
+   * Pass the raw authData object from the API response.
+   */
+  const setSession = useCallback((authData) => {
+    storeAuthSession(authData);
+    const user = {
+      id: authData.userId,
+      email: authData.email,
+      role: authData.platformRole,
+      emailVerified: authData.emailVerified,
+    };
+    writeUser(user);
+    setToken(authData.accessToken);
+    setUser(user);
+    return user;
   }, []);
 
-  // ── Context value ─────────────────────────────────────────────────────────────
+  // ── updateUser ─────────────────────────────────────────────────────────────
+  // Call after profile edits so the UI reflects the change immediately.
+  const updateUser = useCallback((patch) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, ...patch };
+      writeUser(updated);
+      return updated;
+    });
+  }, []);
+
+  // ── Derive role helpers ────────────────────────────────────────────────────
+  const role = user?.role ?? "";
+  const isAdmin =
+    role.includes("OWNER") ||
+    role.includes("ADMIN") ||
+    role.includes("MANAGER");
+  const isMember = !isAdmin;
+
   const value = {
     user,
     token,
     loading,
     isAuthenticated: !!token,
+    isAdmin,
+    isMember,
 
+    // Actions
     login,
     logout,
-    refreshUser,
-
     setSession,
+    updateUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

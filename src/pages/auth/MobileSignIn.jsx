@@ -213,7 +213,21 @@ export default function MobileSignIn() {
     setLoading(true);
     setError("");
     try {
-      await login(form.email.trim().toLowerCase(), form.password);
+      const user = await login(form.email.trim().toLowerCase(), form.password);
+
+      const role = user?.role || "";
+
+      const isAdmin =
+        role.includes("OWNER") ||
+        role.includes("ADMIN") ||
+        role.includes("MANAGER");
+
+      if (isAdmin) {
+        navigate("/dashboard/home", {
+          replace: true,
+        });
+        return;
+      }
 
       const inviteRes = await getMyInvites();
 
@@ -243,7 +257,9 @@ export default function MobileSignIn() {
     <MobileShell>
       <div className="flex flex-col gap-6">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900 mb-1">Login to Your Account</h1>
+          <h1 className="text-lg font-semibold text-gray-900 mb-1">
+            Login to Your Account
+          </h1>
           <p className="text-sm text-gray-500">
             Enter your credentials to continue.
           </p>
@@ -318,13 +334,13 @@ export default function MobileSignIn() {
 
         <p className="text-sm text-center text-gray-500 pb-2">
           Don't have an account?{" "}
-         <Link
-          to="/member/join"
-          className="font-semibold"
-          style={{ color: "#1C2B8A" }}
-        >
-          Sign Up
-        </Link>
+          <Link
+            to="/member/join"
+            className="font-semibold"
+            style={{ color: "#1C2B8A" }}
+          >
+            Sign Up
+          </Link>
         </p>
       </div>
     </MobileShell>
