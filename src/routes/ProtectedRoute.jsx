@@ -2,16 +2,16 @@ import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../store/AuthContext";
 
 /**
- * IMPORTANT — before relying on this guard, confirm the exact string your
- * backend returns in `platformRole` on /auth/login (Network tab → response
- * body → data.platformRole). AuthContext.login() maps that value straight
- * into `user.role`. If the backend returns "MEMBER" or "PLATFORM_ADMIN"
- * instead of the lowercase "admin" / "member" assumed below, update the
- * comparisons here (and in MemberProtectedRoute.jsx) to match exactly.
+ * requiredRole: "admin" | "member" | undefined
+ * Role check uses isAdmin/isMember from AuthContext (derived from
+ * platformRole via .includes("OWNER"|"ADMIN"|"MANAGER")) instead of an
+ * exact string match, since the backend's exact platformRole casing/enum
+ * isn't guaranteed and isAdmin/isMember is the single source of truth
+ * already used by SignInStep's post-login redirect.
  */
-export default function ProtectedRoute({ requiredRole = null }) {
+export default function ProtectedRoute({ requiredRole }) {
   const location = useLocation();
-  const { token, user, loading } = useAuth();
+  const { token, isAdmin, isMember, loading } = useAuth();
 
   if (loading) {
     return <div>Loading...</div>;
@@ -21,16 +21,12 @@ export default function ProtectedRoute({ requiredRole = null }) {
     return <Navigate to="/member/sign-in" state={{ from: location }} replace />;
   }
 
-  if (requiredRole && user?.role !== requiredRole) {
-    // Fixed: "/member/invites" doesn't exist in the router — it 404s
-    // through the catch-all and silently bounces the user to "/".
-    // Members belong at their actual home route.
-    return (
-      <Navigate
-        to={user?.role === "member" ? "/member/home" : "/dashboard/home"}
-        replace
-      />
-    );
+  if (requiredRole === "admin" && !isAdmin) {
+    return <Navigate to="/member/home" replace />;
+  }
+
+  if (requiredRole === "member" && !isMember) {
+    return <Navigate to="/dashboard/home" replace />;
   }
 
   return <Outlet />;

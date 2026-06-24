@@ -29,17 +29,12 @@ import AdminDashboard, { PayingAdminDashboard } from "./pages/dashboard/AdminDas
 
 // ── Settings ───────────────────────────────────────────────────────────────────
 import Settings from "./pages/dashboard/settings/Settings";
-// Account
 import Profile from "./pages/dashboard/settings/account/Profile";
 import Role from "./pages/dashboard/settings/account/Role";
 import Notifications from "./pages/dashboard/settings/account/Notifications";
 import Security from "./pages/dashboard/settings/account/Security";
-// Finance (sub-pages — menu list is rendered inline in Settings.jsx)
 import PaymentMethod from "./pages/dashboard/settings/finance/PaymentMethod";
 import AutoPay from "./pages/dashboard/settings/finance/AutoPay";
-// import PaystackAccount from "./pages/dashboard/settings/finance/PaystackAccount";
-// import FinanceProfile from "./pages/dashboard/settings/finance/FinanceProfile";
-// // Community (sub-pages — menu list is rendered inline in Settings.jsx)
 import CommunityProfile from "./pages/dashboard/settings/community/CommunityProfile";
 import MemberAccess from "./pages/dashboard/settings/community/MemberAccess";
 
@@ -54,7 +49,7 @@ import PaymentSummary from "./pages/members/PaymentSummary";
 import PaymentSuccess from "./pages/members/PaymentSuccess";
 import Invites from "./pages/members/Invites";
 
-// ── Guards ─────────────────────────────────────────────────────────────────────
+// ── Guards ───────────────────────────────────────────────────────────────────
 import ProtectedRoute from "./routes/ProtectedRoute";
 import MemberProtectedRoute from "./routes/MemberProtectedRoute";
 
@@ -68,112 +63,59 @@ function App() {
         <Route path="/members" element={<MembersHome />} />
 
         {/* ── Auth ── */}
-        <Route path="/member/signup"   element={<MemberAuth />} />
-        <Route path="/member/join"     element={<MobileSignUp />} />
-        <Route path="/member/sign-in"  element={<MobileSignIn />} />
-        <Route path="/check-email"     element={<CheckEmail />} />
-
-        {/* ── Onboarding ──
-            Create: signup → choose-path → paying-member
-                        → organization-profile → payment-profile
-                        → members → dashboard/home
-            Join:   signup → choose-path → check-email → dashboard/home
-        */}
-        <Route path="/member/signup" element={<MemberAuth />} />
-        <Route path="/member/join" element={<MobileSignUp />} />
+        <Route path="/member/signup"  element={<MemberAuth />} />
+        <Route path="/member/join"    element={<MobileSignUp />} />
         <Route path="/member/sign-in" element={<MobileSignIn />} />
-        <Route path="/check-email" element={<CheckEmail />} />
+        <Route path="/check-email"    element={<CheckEmail />} />
 
         {/* ── Onboarding ── */}
-        <Route path="/onboarding/choose-path" element={<ChoosePath />} />
-        <Route path="/onboarding/paying-member" element={<PayingMember />} />
-        <Route
-          path="/onboarding/organization-profile"
-          element={<OrganizationProfile />}
-        />
-        <Route
-          path="/onboarding/payment-profile"
-          element={<PaymentProfile />}
-        />
-        <Route path="/onboarding/members" element={<AddMembers />} />
+        <Route path="/onboarding/choose-path"          element={<ChoosePath />} />
+        <Route path="/onboarding/paying-member"        element={<PayingMember />} />
+        <Route path="/onboarding/organization-profile" element={<OrganizationProfile />} />
+        <Route path="/onboarding/payment-profile"      element={<PaymentProfile />} />
+        <Route path="/onboarding/members"              element={<AddMembers />} />
 
-        {/* ────────────────────────────────────────────────────────────────────
-          ADMIN DASHBOARD — now actually gated behind ProtectedRoute.
-          Previously DashboardLayout rendered with no guard at all, so any
-          unauthenticated visitor (or a logged-in member) could load
-          /dashboard/home directly.
-        ─────────────────────────────────────────────────────────────────────── */}
+        {/* ── Admin dashboard ── */}
         <Route element={<ProtectedRoute requiredRole="admin" />}>
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Navigate to="home" replace />} />
-            <Route path="home" element={<CommunitiesHome />} />
-            <Route path="admin" element={<AdminDashboard />} />
+            <Route path="home"         element={<CommunitiesHome />} />
+            <Route path="admin"        element={<AdminDashboard />} />
             <Route path="admin/paying" element={<PayingAdminDashboard />} />
 
-          {/* Settings shell — Finance + Community menu lists render inside Settings.jsx */}
-          <Route path="settings" element={<Settings />}>
-            <Route index element={<Navigate to="account/profile" replace />} />
+            <Route path="settings" element={<Settings />}>
+              <Route index element={<Navigate to="account/profile" replace />} />
 
-            {/* Account sub-pages */}
-            <Route path="account"                element={<Navigate to="account/profile" replace />} />
-            <Route path="account/profile"        element={<Profile />} />
-            <Route path="account/role"           element={<Role />} />
-            <Route path="account/notifications"  element={<Notifications />} />
-            <Route path="account/security"       element={<Security />} />
+              {/* Account */}
+              <Route path="account"               element={<Navigate to="account/profile" replace />} />
+              <Route path="account/profile"       element={<Profile />} />
+              <Route path="account/role"          element={<Role />} />
+              <Route path="account/notifications" element={<Notifications />} />
+              <Route path="account/security"      element={<Security />} />
 
-            {/* Finance — top level shows menu (handled in Settings.jsx) */}
-            <Route path="finance/payment-methods" element={<PaymentMethod />} />
-            <Route path="finance/auto-pay"        element={<AutoPay />} />
-            {/* <Route path="finance/paystack"        element={<PaystackAccount />} /> */}
-            {/* <Route path="finance/profile"         element={<FinanceProfile />} /> */}
+              {/* Finance — top level renders menu list inside Settings.jsx */}
+              <Route path="finance/payment-methods" element={<PaymentMethod />} />
+              <Route path="finance/auto-pay"        element={<AutoPay />} />
 
-            {/* Community — top level shows menu (handled in Settings.jsx) */}
-            <Route path="community/profile"       element={<CommunityProfile />} />
-            <Route path="community/member-access" element={<MemberAccess />} />
+              {/* Community — top level renders menu list inside Settings.jsx */}
+              <Route path="community/profile"       element={<CommunityProfile />} />
+              <Route path="community/member-access" element={<MemberAccess />} />
+            </Route>
           </Route>
         </Route>
 
-        {/* ────────────────────────────────────────────────────────────────────
-          MEMBER APP — now actually gated behind MemberProtectedRoute.
-          390px centred shell + bottom nav. All pages here are mobile-first.
-
-          Bottom nav tabs:
-            Home          /member/home
-            Transactions  /member/transactions
-            Upcoming      /member/upcoming
-            Notifications /member/notifications
-
-          Other member pages (no bottom nav, back-arrow header):
-            Manage Payments   /member/manage-payments
-            Pay               /member/pay/:paymentId
-            Payment Success   /member/pay/:paymentId/success
-            Invites           /member/invites
-            Profile           /member/profile  (placeholder — design pending)
-        ─────────────────────────────────────────────────────────────────────── */}
+        {/* ── Member app ── */}
         <Route element={<MemberProtectedRoute />}>
           <Route path="/member" element={<MemberAppLayout />}>
             <Route index element={<Navigate to="home" replace />} />
-
-            {/* Bottom nav pages */}
-            <Route path="home" element={<MemberHome />} />
-            <Route path="transactions" element={<MemberTransactions />} />
-            <Route path="upcoming" element={<MemberUpcoming />} />
+            <Route path="home"          element={<MemberHome />} />
+            <Route path="transactions"  element={<MemberTransactions />} />
+            <Route path="upcoming"      element={<MemberUpcoming />} />
             <Route path="notifications" element={<MemberNotifications />} />
-
-            {/* Full-screen sub-pages (back-arrow header, no bottom nav needed) */}
-            <Route path="manage-payments" element={<ManagePayments />} />
-            <Route path="pay/:paymentId" element={<PaymentSummary />} />
+            <Route path="manage-payments"        element={<ManagePayments />} />
+            <Route path="pay/:paymentId"         element={<PaymentSummary />} />
             <Route path="pay/:paymentId/success" element={<PaymentSuccess />} />
-
-            {/*
-              Added: was referenced as a redirect target in an older version
-              of ProtectedRoute's fallback logic but never existed as a
-              route — now it does, fixing the silent 404-to-"/" bounce.
-            */}
-            <Route path="invites" element={<Invites />} />
-
-            {/* Profile — placeholder until UI designer delivers */}
-            {/* <Route path="profile" element={<MemberProfile />} /> */}
+            <Route path="invites"                element={<Invites />} />
           </Route>
         </Route>
 
