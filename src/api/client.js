@@ -38,8 +38,12 @@
 
 import axios from "axios";
 
+// VITE_API_BASE_URL is the bare origin (e.g. https://api.glasspay.app) —
+// /api/v1 must always be appended, with or without the env var set.
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "/api/v1",
+  baseURL: `${BASE_URL}/api/v1`,
   headers: { "Content-Type": "application/json" },
   timeout: 15000,
 });
