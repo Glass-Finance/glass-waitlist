@@ -156,7 +156,7 @@ export default function ChoosePath() {
 
   const handleContinue = () => {
     if (selected === "create") {
-      navigate("/onboarding/organization-profile", { state: { email } });
+      navigate("/onboarding/paying-member", { state: { email } });
     } else {
       navigate("/check-email", { state: { email } });
     }
