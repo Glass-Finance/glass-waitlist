@@ -513,7 +513,7 @@ export default function AddMembers() {
     try {
       await Promise.all(
         filled.map((r) =>
-          client.post(`/api/v1/communities/${communityId}/members`, {
+          client.post(`/communities/${communityId}/members`, {
             firstName:   r.firstName.trim(),
             lastName:    r.lastName.trim(),
             email:       r.email.trim(),

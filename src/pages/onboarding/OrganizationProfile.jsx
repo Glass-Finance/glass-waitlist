@@ -514,10 +514,11 @@
  */
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, Upload } from "lucide-react";
+import { Bell, Upload, Check, X as XIcon, Loader2 } from "lucide-react";
 import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
 import client from "../../api/client";
+import { useSlug } from "../../hooks/useSlug";
 
 const CATEGORIES = [
   "Alumni Association", "Faith Community", "Professional Association",
@@ -561,8 +562,11 @@ export default function OrganizationProfile() {
   const [loading,   setLoading]   = useState(false);
 
   const [form, setForm] = useState({
-    communityName: "", description: "", category: "", slug: "",
+    communityName: "", description: "", category: "",
   });
+
+  const { slug, setSlug, available, checking, suggesting, suggestFrom } =
+    useSlug("COMMUNITY");
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -584,6 +588,8 @@ export default function OrganizationProfile() {
 
     if (!form.communityName.trim()) { setError("Community name is required."); return; }
     if (!form.category)             { setError("Please select a category.");   return; }
+    if (!slug.trim())               { setError("Please choose a community URL slug."); return; }
+    if (available === false)        { setError("That URL slug is already taken — pick another."); return; }
 
     setLoading(true);
     try {
@@ -593,20 +599,16 @@ export default function OrganizationProfile() {
         const fd = new FormData();
         fd.append("file", logoFile);
         fd.append("fileCategory", "COMMUNITY_LOGO");
-        const uploadRes = await client.post("/api/v1/file/upload", fd, {
+        const uploadRes = await client.post("/file/upload", fd, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         logoFileId = uploadRes.data?.data?.id;
       }
 
-      // 2. Auto-generate slug from name if not provided
-      const slug = form.slug.trim() ||
-        form.communityName.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
-      // 3. Create community
-      const createRes = await client.post("/api/v1/communities", {
+      // 2. Create community
+      const createRes = await client.post("/communities", {
         name:        form.communityName.trim(),
-        slug,
+        slug:        slug.trim(),
         description: form.description.trim(),
         category:    [form.category],
         publicVisible: true,
@@ -684,6 +686,7 @@ export default function OrganizationProfile() {
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Community Name *</label>
                 <input type="text" name="communityName" value={form.communityName} onChange={handleChange}
+                  onBlur={() => !slug && suggestFrom(form.communityName)}
                   placeholder="e.g. Babcock University Alumni Association" className={inputCls} />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -702,9 +705,23 @@ export default function OrganizationProfile() {
                 </select>
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-gray-700">Community URL slug <span className="text-gray-400 font-normal">(optional — auto-generated)</span></label>
-                <input type="text" name="slug" value={form.slug} onChange={handleChange}
-                  placeholder="e.g. babcock-alumni" className={inputCls} />
+                <label className="text-sm font-medium text-gray-700">Community URL slug *</label>
+                <div className="relative">
+                  <input type="text" value={slug}
+                    onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+                    placeholder="e.g. babcock-alumni" className={inputCls + " pr-8"} />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {(checking || suggesting) && <Loader2 size={14} className="animate-spin text-gray-400" />}
+                    {!checking && !suggesting && available === true && <Check size={14} className="text-green-600" />}
+                    {!checking && !suggesting && available === false && <XIcon size={14} className="text-red-500" />}
+                  </span>
+                </div>
+                {available === false && !checking && (
+                  <span className="text-xs text-red-500">That URL is taken — try another.</span>
+                )}
+                {available === true && !checking && (
+                  <span className="text-xs text-green-600">glasspay.app/join/{slug}</span>
+                )}
               </div>
             </div>
 
@@ -739,7 +756,7 @@ export default function OrganizationProfile() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || checking || available === false}
               className="w-1/2 mx-auto block py-4 rounded-full text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-60"
               style={{ background: "#002FA7" }}
             >

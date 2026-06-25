@@ -26,6 +26,10 @@ import AddMembers from "./pages/onboarding/AddMembers";
 import DashboardLayout from "./layouts/DashboardLayout";
 import CommunitiesHome from "./pages/dashboard/CommunitiesHome";
 import AdminDashboard, { PayingAdminDashboard } from "./pages/dashboard/AdminDashboard";
+import Payments from "./pages/dashboard/Payments";
+import Members from "./pages/dashboard/Members";
+import MemberDetail from "./pages/dashboard/MemberDetail";
+import AdminNotifications from "./pages/dashboard/Notifications";
 
 // ── Settings ───────────────────────────────────────────────────────────────────
 import Settings from "./pages/dashboard/settings/Settings";
@@ -37,9 +41,8 @@ import Security from "./pages/dashboard/settings/account/Security";
 // Finance (sub-pages — menu list is rendered inline in Settings.jsx)
 import PaymentMethod from "./pages/dashboard/settings/finance/PaymentMethod";
 import AutoPay from "./pages/dashboard/settings/finance/AutoPay";
-// import PaystackAccount from "./pages/dashboard/settings/finance/PaystackAccount";
-// import FinanceProfile from "./pages/dashboard/settings/finance/FinanceProfile";
-// // Community (sub-pages — menu list is rendered inline in Settings.jsx)
+import PaystackAccount from "./pages/dashboard/settings/finance/PaystackAccount";
+// Community (sub-pages — menu list is rendered inline in Settings.jsx)
 import CommunityProfile from "./pages/dashboard/settings/community/CommunityProfile";
 import MemberAccess from "./pages/dashboard/settings/community/MemberAccess";
 
@@ -109,13 +112,16 @@ function App() {
             <Route path="home" element={<CommunitiesHome />} />
             <Route path="admin" element={<AdminDashboard />} />
             <Route path="admin/paying" element={<PayingAdminDashboard />} />
+            <Route path="payments" element={<Payments />} />
+            <Route path="members" element={<Members />} />
+            <Route path="members/:memberId" element={<MemberDetail />} />
+            <Route path="notifications" element={<AdminNotifications />} />
 
-          {/* Settings shell — Finance + Community menu lists render inside Settings.jsx */}
+          {/* Settings shell — Account/Finance/Community menu lists render inside Settings.jsx */}
           <Route path="settings" element={<Settings />}>
-            <Route index element={<Navigate to="account/profile" replace />} />
+            <Route index element={<Navigate to="account" replace />} />
 
-            {/* Account sub-pages */}
-            <Route path="account"                element={<Navigate to="account/profile" replace />} />
+            {/* Account — top level shows menu (handled in Settings.jsx) */}
             <Route path="account/profile"        element={<Profile />} />
             <Route path="account/role"           element={<Role />} />
             <Route path="account/notifications"  element={<Notifications />} />
@@ -124,12 +130,12 @@ function App() {
             {/* Finance — top level shows menu (handled in Settings.jsx) */}
             <Route path="finance/payment-methods" element={<PaymentMethod />} />
             <Route path="finance/auto-pay"        element={<AutoPay />} />
-            {/* <Route path="finance/paystack"        element={<PaystackAccount />} /> */}
-            {/* <Route path="finance/profile"         element={<FinanceProfile />} /> */}
+            <Route path="finance/paystack"        element={<PaystackAccount />} />
 
             {/* Community — top level shows menu (handled in Settings.jsx) */}
             <Route path="community/profile"       element={<CommunityProfile />} />
             <Route path="community/member-access" element={<MemberAccess />} />
+          </Route>
           </Route>
         </Route>
 

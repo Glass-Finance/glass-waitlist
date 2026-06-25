@@ -14,11 +14,19 @@ import {
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Backend list endpoints return a paginated envelope: { content, pageNumber, ... }
+// Some return a bare array. Handle both.
+function unwrapList(res) {
+  const data = res.data?.data;
+  if (Array.isArray(data)) return data;
+  return data?.content ?? [];
+}
+
 function deriveStatus(obligation) {
+  if (obligation.status === "PAID") return "paid";
   const days = Math.ceil(
     (new Date(obligation.dueDate) - new Date()) / 86400000
   );
-  if (obligation.status === "paid") return "paid";
   if (days < 0) return "overdue";
   if (days <= 7) return "due_soon";
   return "upcoming";
@@ -29,13 +37,16 @@ function shapeObligation(raw) {
   return {
     id: raw.id,
     amount: raw.amount,
-    description: raw.name ?? raw.description,
-    communityName: raw.community?.name ?? raw.communityName,
-    dueDate: raw.dueDate ?? raw.due_date,
-    type: raw.frequency === "one_time" ? "one-time" : "recurring",
-    status: raw.status,
-    paymentLinkId: raw.paymentLinkId ?? raw.payment_link_id,
-    logoColor: raw.community?.color ?? "#1C2B8A",
+    amountPaid: raw.amountPaid ?? 0,
+    name: raw.paymentLink?.title ?? raw.description ?? "Payment",
+    description: raw.paymentLink?.title ?? raw.description ?? "Payment",
+    communityName: raw.community?.name,
+    dueDate: raw.dueAt,
+    type: raw.recurringPlan ? "recurring" : "one-time",
+    status: (raw.status ?? "PENDING").toUpperCase(),
+    paymentLinkId: raw.paymentLink?.id,
+    obligationId: raw.id,
+    logoColor: "#1C2B8A",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
   };
 }
@@ -44,30 +55,32 @@ function shapeTransaction(raw) {
   return {
     id: raw.id,
     amount: raw.amount,
-    description: raw.description ?? raw.name,
+    amountPaid: raw.amountPaid,
+    description: raw.description ?? raw.paymentLink?.title ?? "Payment",
     communityName: raw.community?.name,
-    date: raw.createdAt ?? raw.created_at,
-    status: raw.status, // "success" | "failed" | "pending"
-    reference: raw.reference,
+    date: raw.paidAt ?? raw.createdAt,
+    status: (raw.status ?? "").toLowerCase(), // "success" | "failed" | "pending" | "initiated"
+    channel: raw.channel,
+    currency: raw.currency ?? "NGN",
   };
 }
 
 function shapeAuthorisation(raw) {
   return {
     id: raw.id,
-    type: raw.type ?? "recurring",
-    amount: raw.amount,
-    name: raw.name ?? raw.description,
-    nextCharge: raw.nextChargeDate ?? raw.next_charge_date,
-    autoPay: raw.isActive ?? true,
-    logo: raw.community?.logo ?? null,
-    card: {
-      last4: raw.card?.last4 ?? raw.last4 ?? "****",
-      expiry: raw.card?.expiry ?? raw.expiry ?? "**/**",
-      brand: raw.card?.brand ?? "mastercard",
-    },
-    obligationId: raw.obligationId,
-    paymentLinkId: raw.paymentLinkId,
+    bank: raw.bank,
+    bankCode: raw.bankCode,
+    last4: raw.last4 ?? "****",
+    channel: raw.channel,
+    reusable: raw.reusable,
+    status: raw.status,
+    consents: (raw.consents ?? []).map((c) => ({
+      id: c.id,
+      planStatus: c.planStatus,
+      communityName: c.community?.name,
+      paymentLinkTitle: c.paymentLink?.title,
+      revoked: !!c.revokedAt,
+    })),
   };
 }
 
@@ -80,7 +93,7 @@ export function usePayments() {
     queryKey: ["obligations"],
     queryFn: async () => {
       const res = await getMyObligations();
-      return (res.data?.data ?? []).map(shapeObligation);
+      return unwrapList(res).map(shapeObligation);
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
@@ -89,7 +102,7 @@ export function usePayments() {
     queryKey: ["transactions"],
     queryFn: async () => {
       const res = await getMyTransactions();
-      return (res.data?.data ?? []).map(shapeTransaction);
+      return unwrapList(res).map(shapeTransaction);
     },
     staleTime: 1000 * 60 * 2,
   });
@@ -107,7 +120,7 @@ export function usePayments() {
     queryKey: ["communities"],
     queryFn: async () => {
       const res = await getMyCommunities();
-      return res.data?.data ?? [];
+      return unwrapList(res);
     },
     staleTime: 1000 * 60 * 5,
   });
@@ -125,10 +138,10 @@ export function usePayments() {
   });
 
   // nextDue = first unpaid/overdue obligation
-  const nextDue = sorted.find((o) => o.status !== "paid") ?? null;
+  const nextDue = sorted.find((o) => o.status !== "PAID") ?? null;
 
-  // upcoming = all obligations (includes overdue for display)
-  const upcoming = sorted.filter((o) => o.status !== "paid");
+  // upcoming = all unpaid obligations (includes overdue for display)
+  const upcoming = sorted.filter((o) => o.status !== "PAID");
 
   return {
     data: {
@@ -151,7 +164,7 @@ export function usePayments() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Manage Payments hook — authorisations (saved cards + auto-pay)
+// Manage Payments hook — saved payment authorisations (bank/channel + consents)
 // ─────────────────────────────────────────────────────────────────────────────
 export function useManagePayments() {
   const queryClient = useQueryClient();
@@ -160,12 +173,12 @@ export function useManagePayments() {
     queryKey: ["authorisations"],
     queryFn: async () => {
       const res = await getMyAuthorisations();
-      return (res.data?.data ?? []).map(shapeAuthorisation);
+      return unwrapList(res).map(shapeAuthorisation);
     },
     staleTime: 1000 * 60 * 2,
   });
 
-  // Disable auto-pay by deleting the authorisation
+  // Disable auto-pay by removing the authorisation entirely
   const disableAutoPay = useMutation({
     mutationFn: (authId) => deleteAuthorisation(authId),
     onSuccess: () => {
@@ -173,15 +186,10 @@ export function useManagePayments() {
     },
   });
 
-  // Optimistically toggle autoPay in local cache
+  // Re-enabling isn't supported by the API — auto-pay is re-established only
+  // by completing a new payment with a fresh authorisation.
   function toggleAutoPay(id, enabled) {
-    if (!enabled) {
-      disableAutoPay.mutate(id);
-    } else {
-      // Re-enabling auto-pay would require creating a new authorisation
-      // which happens via the payment flow — flag for now
-      console.warn("Re-enabling auto-pay must be done through a new payment");
-    }
+    if (!enabled) disableAutoPay.mutate(id);
   }
 
   return {
@@ -189,6 +197,7 @@ export function useManagePayments() {
     isLoading: query.isLoading,
     error: query.error,
     toggleAutoPay,
+    isRemoving: disableAutoPay.isPending,
   };
 }
 

@@ -189,7 +189,7 @@
  */
 
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import {
   LayoutDashboard,
   CreditCard,
@@ -203,12 +203,15 @@ import { useAuth } from "../../store/AuthContext";
 import client from "../../api/client";
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
-// `segment` is the last URL segment after the community slug
+// `path` is the route under /dashboard; "home" maps to the per-community
+// admin dashboard ("admin"), which keeps its own URL convention
+// (?community=slug — see AdminDashboard.jsx) distinct from the
+// /dashboard/home communities-overview page.
 const NAV = [
-  { icon: LayoutDashboard, label: "Dashboard", segment: "home" },
-  { icon: CreditCard, label: "Payments", segment: "payments" },
-  { icon: Users, label: "Members", segment: "members" },
-  { icon: Settings, label: "Settings", segment: "settings" },
+  { icon: LayoutDashboard, label: "Dashboard", segment: "home", path: "admin" },
+  { icon: CreditCard, label: "Payments", segment: "payments", path: "payments" },
+  { icon: Users, label: "Members", segment: "members", path: "members" },
+  { icon: Settings, label: "Settings", segment: "settings", path: "settings" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -221,8 +224,11 @@ function getInitials(name = "") {
     .join("");
 }
 
-function communityPath(slug, segment) {
-  return `/dashboard/${slug}/${segment}`;
+// Matches the ?community= query-param convention already used by
+// AdminDashboard.jsx / CommunitiesHome.jsx — "settings" doesn't need it.
+function communityPath(slug, path) {
+  if (path === "settings") return "/dashboard/settings";
+  return `/dashboard/${path}?community=${slug}`;
 }
 
 // ─── Hook: fetch user's communities ──────────────────────────────────────────
@@ -232,7 +238,7 @@ function useMyCommunities() {
 
   const load = useCallback(async () => {
     try {
-      const { data } = await client.get("/api/v1/communities/me");
+      const { data } = await client.get("/communities/me");
       if (data.success) setCommunities(data.data?.content ?? []);
     } catch {
       // Network/auth failures are handled by client.js interceptor
@@ -252,28 +258,35 @@ function useMyCommunities() {
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { logout, user } = useAuth();
 
   const { communities, loading } = useMyCommunities();
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  // Derive active community slug from URL
-  // URL shape: /dashboard/:slug/:segment  or  /dashboard/home (no slug)
+  // Active route segment: /dashboard/admin → "home", /dashboard/payments →
+  // "payments", etc. (matches the flat ?community= convention, not slugs-in-path)
   const pathParts = location.pathname.split("/").filter(Boolean);
-  // pathParts[0] = "dashboard"
-  // pathParts[1] = slug OR "home"
-  // pathParts[2] = segment (optional)
-  const urlSlug = pathParts[1] !== "home" ? pathParts[1] : null;
-  const urlSegment = pathParts[2] ?? "home";
+  const routeSegment = pathParts[1] ?? "home"; // "home" | "admin" | "payments" | "members" | "settings"
+  const activeSegment = routeSegment === "admin" ? "home" : routeSegment;
 
-  // Active community object
+  // Active community: ?community= param, falling back to the last one
+  // stashed in localStorage (see useActiveCommunity.js)
+  const urlSlug =
+    searchParams.get("community") ??
+    (() => {
+      try {
+        const stored = JSON.parse(localStorage.getItem("glass_community") ?? "{}");
+        return stored.slug ?? stored.id ?? null;
+      } catch {
+        return null;
+      }
+    })();
+
   const activeCommunity = urlSlug
     ? (communities.find((c) => c.slug === urlSlug) ?? null)
     : null;
-
-  // Active nav item
-  const activeSegment = urlSegment;
 
   // ── Handle logout ──────────────────────────────────────────────────────────
   const handleLogout = async () => {
@@ -370,7 +383,10 @@ export default function Sidebar() {
               return (
                 <button
                   key={c.id}
-                  onClick={() => navigate(communityPath(c.slug, "home"))}
+                  onClick={() => {
+                    localStorage.setItem("glass_community", JSON.stringify(c));
+                    navigate(communityPath(c.slug, "admin"));
+                  }}
                   title={c.name}
                   className={`w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 ${
                     isActive
@@ -509,10 +525,10 @@ export default function Sidebar() {
 
         {/* Nav links */}
         <nav style={{ flex: 1, padding: "10px 8px", overflowY: "auto" }}>
-          {NAV.map(({ icon: Icon, label, segment }) => {
+          {NAV.map(({ icon: Icon, label, segment, path }) => {
             const isActive = activeSegment === segment;
             const href = activeCommunity
-              ? communityPath(activeCommunity.slug, segment)
+              ? communityPath(activeCommunity.slug, path)
               : segment === "home"
                 ? "/dashboard/home"
                 : "#"; // disabled if no community selected

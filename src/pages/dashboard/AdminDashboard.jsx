@@ -538,6 +538,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { useCommunityDashboard } from "../../hooks/useCommunityDashboard";
+import { usePaymentPlans } from "../../hooks/usePaymentPlans";
+import { usePayments, useInitiatePayment } from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
 import totalMembersIcon    from "../../assets/dashboard/tdesign_member.png";
 import inactiveMembersIcon from "../../assets/dashboard/inactive_members.png";
@@ -795,10 +797,30 @@ function DashboardContent({ isPaying, communityId }) {
   const [addMemberOpen, setAddOpen]   = useState(false);
   const [alertVisible, setAlertVisible] = useState(true);
 
-  const { balances, members, transactions, obligations, isLoading, error } =
+  const { balances, members, transactions, isLoading, error } =
     useCommunityDashboard(communityId);
+  const { plans, isLoading: plansLoading } = usePaymentPlans(communityId);
+
+  // Paying admin's own dues, as a member of this community
+  const { data: myPayments } = usePayments();
+  const initiatePayment = useInitiatePayment();
+  const myUpcoming = myPayments?.upcoming ?? [];
+
+  async function handlePayMine(item) {
+    try {
+      const res = await initiatePayment.mutateAsync({
+        paymentLinkId: item.paymentLinkId,
+        payload: { email: myPayments?.user?.email },
+      });
+      const url = res.data?.data?.authorizationUrl;
+      if (url) window.location.href = url;
+    } catch {
+      // Surfaced via initiatePayment.error in the table below
+    }
+  }
 
   // ── Derived stats ─────────────────────────────────────────────────────────
+  const activePlanCount = plans.filter((p) => p.status === "ACTIVE").length;
   const stats = useMemo(() => [
     {
       label: "Total Members",
@@ -817,10 +839,10 @@ function DashboardContent({ isPaying, communityId }) {
     },
     {
       label: "Active Plans",
-      value: isLoading ? "—" : String(obligations.length).padStart(2, "0"),
+      value: plansLoading ? "—" : String(activePlanCount).padStart(2, "0"),
       icon: activePlansIcon,
     },
-  ], [isLoading, members, balances, obligations]);
+  ], [isLoading, plansLoading, members, balances, activePlanCount]);
 
   // ── Filter payments by search ─────────────────────────────────────────────
   const filteredTransactions = useMemo(() => {
@@ -937,6 +959,59 @@ function DashboardContent({ isPaying, communityId }) {
         ))}
       </div>
 
+      {/* Your Payments — paying admin's own dues in this community */}
+      {isPaying && (
+        <div
+          className="bg-[#F4F5F5]/60 rounded-xl border border-[#eef0f8] p-5 mb-5"
+          style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-sm font-medium text-black">Your Payments</span>
+          </div>
+          {myUpcoming.length === 0 ? (
+            <p className="text-xs text-gray-400 text-center py-4">Nothing due right now.</p>
+          ) : (
+            <table className="w-full text-sm border-collapse text-left">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  {["Plan", "Amount", "Due Date", "Status", "Action"].map((h) => (
+                    <th key={h} className="p-2 text-left text-xs text-gray-400">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {myUpcoming.map((row) => {
+                  const s = statusStyle(row.status === "PAID" ? "paid" : "unpaid");
+                  return (
+                    <tr key={row.id} className="border-b border-gray-50 bg-gray-100">
+                      <td className="py-3 text-xs text-gray-800">{row.name}</td>
+                      <td className="py-3 text-xs text-black">{formatNaira(row.amount)}</td>
+                      <td className="py-3 text-xs text-gray-500">
+                        {row.dueDate ? new Date(row.dueDate).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" }) : "—"}
+                      </td>
+                      <td className="py-3">
+                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ color: s.color, background: s.bg }}>
+                          {s.label}
+                        </span>
+                      </td>
+                      <td className="py-3">
+                        <button
+                          onClick={() => handlePayMine(row)}
+                          disabled={initiatePayment.isPending}
+                          className="text-xs font-semibold text-[#002FA7] hover:underline bg-transparent border-none cursor-pointer disabled:opacity-50"
+                        >
+                          Pay Now
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
+
       {/* Payment Plans + Recent Activity */}
       <div className="grid grid-cols-2 gap-3 mb-5">
         {/* Payment Plans */}
@@ -946,30 +1021,33 @@ function DashboardContent({ isPaying, communityId }) {
         >
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-medium text-black">Payment Plans</span>
-            <button className="text-xs font-medium text-[#002FA7] bg-transparent border-none cursor-pointer hover:underline">
+            <button
+              onClick={() => navigate(`/dashboard/payments?community=${communityId ?? ""}`)}
+              className="text-xs font-medium text-[#002FA7] bg-transparent border-none cursor-pointer hover:underline"
+            >
               Manage All
             </button>
           </div>
 
-          {isLoading ? (
+          {plansLoading ? (
             <div className="flex flex-col gap-3">
               {[0, 1, 2].map((i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
             </div>
-          ) : obligations.length === 0 ? (
+          ) : plans.length === 0 ? (
             <p className="text-xs text-gray-400 text-center py-6">No payment plans yet.</p>
           ) : (
             <div className="flex flex-col gap-3">
-              {obligations.map((p, i) => {
-                const pct = p.percentCollected ?? p.collectedPercentage ?? 0;
+              {plans.map((p) => {
+                const pct = p.pct;
                 return (
                   <div
-                    key={p.id ?? i}
+                    key={p.id}
                     className="bg-[#F4F5F5]/60 rounded-xl p-4 border border-blue-100/60"
                   >
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2 min-w-0">
                         <span className="text-sm font-medium text-black truncate">
-                          {p.name ?? p.title ?? "Plan"}
+                          {p.name}
                         </span>
                         <span
                           className="text-[10px] font-normal px-2 py-0.5 rounded-full flex-shrink-0"
@@ -979,11 +1057,11 @@ function DashboardContent({ isPaying, communityId }) {
                         </span>
                       </div>
                       <span className="text-sm font-bold text-gray-800 flex-shrink-0 ml-2">
-                        {formatNaira(p.amount ?? p.amountPerMember)}
+                        {formatNaira(p.amount)}
                       </span>
                     </div>
                     <p className="text-[11px] text-gray-400 mb-2">
-                      {p.paidCount ?? "—"} / {p.totalCount ?? members?.total ?? "—"} members paid
+                      {p.paidCount} / {p.totalCount} members paid
                     </p>
                     <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
                       <div

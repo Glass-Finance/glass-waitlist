@@ -1,81 +1,27 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
-
-// ─── Mock data ────────────────────────────────────────────────────────────────
-// Replace with real API call: useTransactions()
-const MOCK_TRANSACTIONS = [
-  {
-    id: 1,
-    label: "Membership",
-    date: "May 1, 2026",
-    amount: 24000,
-    status: "Success",
-  },
-  {
-    id: 2,
-    label: "Membership",
-    date: "May 1, 2026",
-    amount: 24000,
-    status: "Success",
-  },
-  {
-    id: 3,
-    label: "Membership",
-    date: "May 1, 2026",
-    amount: 24000,
-    status: "Success",
-  },
-  {
-    id: 4,
-    label: "Membership",
-    date: "May 1, 2026",
-    amount: 24000,
-    status: "Failed",
-  },
-  {
-    id: 5,
-    label: "Membership",
-    date: "May 1, 2026",
-    amount: 24000,
-    status: "Success",
-  },
-  {
-    id: 6,
-    label: "Membership",
-    date: "May 1, 2026",
-    amount: 24000,
-    status: "Success",
-  },
-  {
-    id: 7,
-    label: "Membership",
-    date: "May 1, 2026",
-    amount: 24000,
-    status: "Success",
-  },
-  {
-    id: 8,
-    label: "Membership",
-    date: "May 1, 2026",
-    amount: 24000,
-    status: "Success",
-  },
-  {
-    id: 9,
-    label: "Membership",
-    date: "May 1, 2026",
-    amount: 24000,
-    status: "Success",
-  },
-];
+import { useTransactions } from "../../hooks/useTransactions";
 
 const STATUS_OPTIONS = ["All Status", "Success", "Failed", "Pending"];
-const MONTH_OPTIONS = ["May", "April", "March", "February", "January"];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function formatNaira(n) {
-  return "N" + new Intl.NumberFormat("en-NG").format(n);
+  return "₦" + new Intl.NumberFormat("en-NG").format(n ?? 0);
+}
+
+function monthLabel(dateStr) {
+  if (!dateStr) return "Unknown";
+  return new Date(dateStr).toLocaleDateString("en-NG", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function statusLabel(status) {
+  if (status === "success") return "Success";
+  if (status === "failed") return "Failed";
+  return "Pending";
 }
 
 function StatusBadge({ status }) {
@@ -84,7 +30,8 @@ function StatusBadge({ status }) {
     Failed: { bg: "#fce4e4", color: "#dc2626" },
     Pending: { bg: "#fef9c3", color: "#b45309" },
   };
-  const s = map[status] ?? map.Pending;
+  const label = statusLabel(status);
+  const s = map[label] ?? map.Pending;
   return (
     <span
       style={{
@@ -97,7 +44,7 @@ function StatusBadge({ status }) {
         padding: "2px 10px",
       }}
     >
-      {status}
+      {label}
     </span>
   );
 }
@@ -129,44 +76,50 @@ function Dropdown({ value, options, onChange }) {
       </button>
 
       {open && (
-        <div
-          style={{
-            position: "absolute",
-            top: "calc(100% + 6px)",
-            left: 0,
-            background: "#fff",
-            border: "1px solid #e5e7eb",
-            borderRadius: 10,
-            boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-            zIndex: 50,
-            minWidth: 140,
-            overflow: "hidden",
-          }}
-        >
-          {options.map((opt) => (
-            <button
-              key={opt}
-              onClick={() => {
-                onChange(opt);
-                setOpen(false);
-              }}
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "10px 16px",
-                fontSize: 14,
-                color: opt === value ? "#2563eb" : "#111827",
-                fontWeight: opt === value ? 600 : 400,
-                background: opt === value ? "#eff6ff" : "transparent",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
+        <>
+          <div
+            style={{ position: "fixed", inset: 0, zIndex: 10 }}
+            onClick={() => setOpen(false)}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: "calc(100% + 6px)",
+              left: 0,
+              background: "#fff",
+              border: "1px solid #e5e7eb",
+              borderRadius: 10,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+              zIndex: 20,
+              minWidth: 140,
+              overflow: "hidden",
+            }}
+          >
+            {options.map((opt) => (
+              <button
+                key={opt}
+                onClick={() => {
+                  onChange(opt);
+                  setOpen(false);
+                }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "10px 16px",
+                  fontSize: 14,
+                  color: opt === value ? "#2563eb" : "#111827",
+                  fontWeight: opt === value ? 600 : 400,
+                  background: opt === value ? "#eff6ff" : "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
@@ -185,24 +138,23 @@ function TxRow({ tx }) {
       }}
     >
       <div>
-        <p
-          style={{ fontSize: 15, fontWeight: 500, color: "#111827", margin: 0 }}
-        >
-          {tx.label}
+        <p style={{ fontSize: 15, fontWeight: 500, color: "#111827", margin: 0 }}>
+          {tx.description}
         </p>
         <p style={{ fontSize: 13, color: "#9ca3af", margin: "2px 0 0" }}>
-          {tx.date}
+          {tx.communityName}
+          {tx.communityName ? " · " : ""}
+          {tx.date
+            ? new Date(tx.date).toLocaleDateString("en-NG", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })
+            : "—"}
         </p>
       </div>
       <div style={{ textAlign: "right" }}>
-        <p
-          style={{
-            fontSize: 15,
-            fontWeight: 600,
-            color: "#111827",
-            margin: "0 0 4px",
-          }}
-        >
+        <p style={{ fontSize: 15, fontWeight: 600, color: "#111827", margin: "0 0 4px" }}>
           {formatNaira(tx.amount)}
         </p>
         <StatusBadge status={tx.status} />
@@ -215,11 +167,22 @@ function TxRow({ tx }) {
 export default function Transactions() {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("All Status");
-  const [month, setMonth] = useState("May");
+  const { data: transactions = [], isLoading, error } = useTransactions();
 
-  const filtered = MOCK_TRANSACTIONS.filter(
-    (tx) => statusFilter === "All Status" || tx.status === statusFilter,
+  const filtered = transactions.filter(
+    (tx) => statusFilter === "All Status" || statusLabel(tx.status) === statusFilter
   );
+
+  // Group by month, newest month first (transactions already sorted newest-first)
+  const groups = useMemo(() => {
+    const map = new Map();
+    for (const tx of filtered) {
+      const key = monthLabel(tx.date);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(tx);
+    }
+    return Array.from(map.entries());
+  }, [filtered]);
 
   return (
     <div
@@ -229,6 +192,7 @@ export default function Transactions() {
         fontFamily: "Inter, -apple-system, sans-serif",
         maxWidth: 430,
         margin: "0 auto",
+        paddingBottom: 40,
       }}
     >
       {/* ── Top bar ── */}
@@ -278,57 +242,61 @@ export default function Transactions() {
 
       {/* ── Status filter ── */}
       <div style={{ padding: "0 20px 14px" }}>
-        <Dropdown
-          value={statusFilter}
-          options={STATUS_OPTIONS}
-          onChange={setStatusFilter}
-        />
+        <Dropdown value={statusFilter} options={STATUS_OPTIONS} onChange={setStatusFilter} />
       </div>
 
-      {/* ── Month group header ── */}
-      <div
-        style={{
-          background: "#EFEFF1E5",
-          borderRadius: 16,
-          margin: "0 12px",
-          overflow: "hidden",
-        }}
-      >
-        {/* Month label — acts as a collapsible group header */}
+      {isLoading ? (
+        <p style={{ textAlign: "center", color: "#9ca3af", fontSize: 14, padding: "32px 0" }}>
+          Loading transactions…
+        </p>
+      ) : error ? (
+        <p style={{ textAlign: "center", color: "#dc2626", fontSize: 14, padding: "32px 0" }}>
+          Couldn't load transactions.
+        </p>
+      ) : groups.length === 0 ? (
         <div
           style={{
-            padding: "12px 20px",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            borderBottom: "1px solid #f3f4f6",
+            background: "#EFEFF1E5",
+            borderRadius: 16,
+            margin: "0 12px",
+            padding: "32px 20px",
+            textAlign: "center",
+            color: "#9ca3af",
+            fontSize: 14,
           }}
         >
-          <span style={{ fontSize: 14, fontWeight: 700, color: "#2563eb" }}>
-            {month}
-          </span>
-          <ChevronDown size={14} color="#2563eb" />
+          No transactions found.
         </div>
-
-        {/* Transaction rows */}
-        {filtered.length === 0 ? (
+      ) : (
+        groups.map(([label, txs]) => (
           <div
+            key={label}
             style={{
-              padding: "32px 20px",
-              textAlign: "center",
-              color: "#9ca3af",
-              fontSize: 14,
+              background: "#EFEFF1E5",
+              borderRadius: 16,
+              margin: "0 12px 12px",
+              overflow: "hidden",
             }}
           >
-            No transactions found.
+            <div
+              style={{
+                padding: "12px 20px",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                borderBottom: "1px solid #f3f4f6",
+              }}
+            >
+              <span style={{ fontSize: 14, fontWeight: 700, color: "#2563eb" }}>
+                {label}
+              </span>
+            </div>
+            {txs.map((tx) => (
+              <TxRow key={tx.id} tx={tx} />
+            ))}
           </div>
-        ) : (
-          filtered.map((tx, i) => <TxRow key={tx.id} tx={tx} />)
-        )}
-      </div>
-
-      {/* Bottom safe area */}
-      <div style={{ height: 40 }} />
+        ))
+      )}
     </div>
   );
 }

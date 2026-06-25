@@ -114,3 +114,47 @@ export function useNotifications() {
     isMarkingAllRead: markAllReadMutation.isPending,
   };
 }
+
+// GET /api/v1/notifications/preferences
+async function fetchPreferences() {
+  const res = await client.get("/notifications/preferences");
+  return res.data.data;
+}
+
+// PATCH /api/v1/notifications/preferences
+async function patchPreferences(payload) {
+  const res = await client.patch("/notifications/preferences", payload);
+  return res.data.data;
+}
+
+export function useNotificationPreferences() {
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ["notifications", "preferences"],
+    queryFn: fetchPreferences,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const update = useMutation({
+    mutationFn: patchPreferences,
+    onMutate: async (next) => {
+      await queryClient.cancelQueries({ queryKey: ["notifications", "preferences"] });
+      const previous = queryClient.getQueryData(["notifications", "preferences"]);
+      queryClient.setQueryData(["notifications", "preferences"], (old) => ({ ...old, ...next }));
+      return { previous };
+    },
+    onError: (_err, _next, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(["notifications", "preferences"], ctx.previous);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications", "preferences"] });
+    },
+  });
+
+  return {
+    preferences: query.data ?? {},
+    isLoading: query.isLoading,
+    update: (key, value) => update.mutate({ [key]: value }),
+  };
+}

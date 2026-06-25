@@ -86,6 +86,10 @@ export const deleteAuthorisation = (authId) =>
 export const getBanks = () =>
   client.get("/finance/banks");
 
+// GET /api/v1/finance/resolve-account?bankCode=&accountNumber=
+export const resolveAccount = (bankCode, accountNumber) =>
+  client.get("/finance/resolve-account", { params: { bankCode, accountNumber } });
+
 // ─────────────────────────────────────────────────────────────────────────────
 // PAYMENT — initiate payment for an obligation / payment link
 // ─────────────────────────────────────────────────────────────────────────────

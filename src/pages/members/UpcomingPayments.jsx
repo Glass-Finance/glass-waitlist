@@ -1,59 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Clock } from "lucide-react";
+import { usePayments, useInitiatePayment } from "../../hooks/usePayments";
 
-const MOCK_UPCOMING = [
-  {
-    id: "1",
-    amount: 2500,
-    type: "recurring",
-    name: "Annual Hackathon Fee",
-    communityName: "Hacker Club",
-    dueDate: "2025-06-15",
-    logoColor: "#F5A623",
-    logoText: "H",
-  },
-  {
-    id: "2",
-    amount: 8500,
-    type: "one-time",
-    name: "Rotary Club Of Lagos",
-    communityName: "Rotary",
-    dueDate: "2025-06-15",
-    logoColor: "#1C2B8A",
-    logoText: "R",
-  },
-  {
-    id: "3",
-    amount: 8500,
-    type: "one-time",
-    name: "Rotary Club Of Lagos",
-    communityName: "Rotary",
-    dueDate: "2025-06-15",
-    logoColor: "#1C2B8A",
-    logoText: "R",
-  },
-  {
-    id: "4",
-    amount: 8500,
-    type: "one-time",
-    name: "Rotary Club Of Lagos",
-    communityName: "Rotary",
-    dueDate: "2025-06-15",
-    logoColor: "#1C2B8A",
-    logoText: "R",
-  },
-  {
-    id: "5",
-    amount: 8500,
-    type: "one-time",
-    name: "Rotary Club Of Lagos",
-    communityName: "Rotary",
-    dueDate: "2025-06-15",
-    logoColor: "#1C2B8A",
-    logoText: "R",
-  },
-];
+const FILTER_OPTIONS = ["All", "Recurring", "One-time"];
 
 function formatNaira(amount) {
   return new Intl.NumberFormat("en-NG", {
@@ -61,11 +11,12 @@ function formatNaira(amount) {
     currency: "NGN",
     minimumFractionDigits: 0,
   })
-    .format(amount)
+    .format(amount ?? 0)
     .replace("NGN", "₦");
 }
 
 function formatDate(d) {
+  if (!d) return "—";
   return new Date(d).toLocaleDateString("en-NG", {
     day: "numeric",
     month: "short",
@@ -73,10 +24,83 @@ function formatDate(d) {
   });
 }
 
-function PaymentRow({ item, onPay }) {
+function FilterDropdown({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ position: "relative" }}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          padding: "8px 14px",
+          borderRadius: 8,
+          border: "1.5px solid #CCC",
+          background: "#fff",
+          color: "#111",
+          fontSize: 13,
+          fontWeight: 600,
+          cursor: "pointer",
+        }}
+      >
+        {value}
+        <ChevronDown size={14} strokeWidth={2} />
+      </button>
+      {open && (
+        <>
+          <div
+            style={{ position: "fixed", inset: 0, zIndex: 10 }}
+            onClick={() => setOpen(false)}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: "calc(100% + 6px)",
+              left: 0,
+              background: "#fff",
+              borderRadius: 10,
+              boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+              border: "1px solid #EFEFEF",
+              zIndex: 20,
+              overflow: "hidden",
+              minWidth: 130,
+            }}
+          >
+            {FILTER_OPTIONS.map((opt) => (
+              <button
+                key={opt}
+                onClick={() => {
+                  onChange(opt);
+                  setOpen(false);
+                }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "11px 16px",
+                  fontSize: 13,
+                  cursor: "pointer",
+                  background: value === opt ? "#F0F2FA" : "#fff",
+                  color: value === opt ? "#002FA7" : "#333",
+                  fontWeight: value === opt ? 600 : 400,
+                  border: "none",
+                }}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function PaymentRow({ item, onPay, paying }) {
   const isRecurring = item.type === "recurring";
   const badge = isRecurring
-    ? { label: "Recurring", color: "##002FA7", bg: "#D7E2FF" }
+    ? { label: "Recurring", color: "#002FA7", bg: "#D7E2FF" }
     : { label: "One-time", color: "#6B2FB5", bg: "#E4D7F4" };
 
   return (
@@ -88,7 +112,6 @@ function PaymentRow({ item, onPay }) {
         border: "1px solid #EEEEEE",
       }}
     >
-      {/* Top: logo + badge */}
       <div
         style={{
           display: "flex",
@@ -128,7 +151,6 @@ function PaymentRow({ item, onPay }) {
         </span>
       </div>
 
-      {/* Amount */}
       <div
         style={{
           display: "flex",
@@ -141,11 +163,10 @@ function PaymentRow({ item, onPay }) {
           {formatNaira(item.amount)}
         </span>
         {isRecurring && (
-          <span style={{ fontSize: 12, color: "#888" }}>/month</span>
+          <span style={{ fontSize: 12, color: "#888" }}>/cycle</span>
         )}
       </div>
 
-      {/* Name + Pay Now */}
       <div
         style={{
           display: "flex",
@@ -173,6 +194,7 @@ function PaymentRow({ item, onPay }) {
         </div>
         <button
           onClick={() => onPay(item)}
+          disabled={paying}
           style={{
             padding: "8px 18px",
             borderRadius: 8,
@@ -182,9 +204,10 @@ function PaymentRow({ item, onPay }) {
             fontSize: 12,
             fontWeight: 600,
             cursor: "pointer",
+            opacity: paying ? 0.6 : 1,
           }}
         >
-          Pay Now
+          {paying ? "Starting…" : "Pay Now"}
         </button>
       </div>
     </div>
@@ -194,9 +217,35 @@ function PaymentRow({ item, onPay }) {
 export default function UpcomingPayments() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("All");
+  const [error, setError] = useState("");
+  const { data, isLoading, error: loadError } = usePayments();
+  const initiatePayment = useInitiatePayment();
 
-  function handlePay(item) {
-    console.log("Pay", item);
+  const upcoming = data?.upcoming ?? [];
+  const filtered = upcoming.filter((item) => {
+    if (filter === "All") return true;
+    if (filter === "Recurring") return item.type === "recurring";
+    return item.type === "one-time";
+  });
+
+  async function handlePay(item) {
+    setError("");
+    try {
+      const res = await initiatePayment.mutateAsync({
+        paymentLinkId: item.paymentLinkId,
+        payload: { email: data?.user?.email },
+      });
+      const url = res.data?.data?.authorizationUrl;
+      if (url) {
+        window.location.href = url;
+      } else {
+        navigate("/member/payment-success");
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.message ?? "Could not start payment. Try again."
+      );
+    }
   }
 
   return (
@@ -244,25 +293,14 @@ export default function UpcomingPayments() {
 
       {/* Filter */}
       <div style={{ padding: "0 16px 16px" }}>
-        <button
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "8px 14px",
-            borderRadius: 8,
-            border: "1.5px solid #CCC",
-            background: "#fff",
-            color: "#111",
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          {filter}
-          <ChevronDown size={14} strokeWidth={2} />
-        </button>
+        <FilterDropdown value={filter} onChange={setFilter} />
       </div>
+
+      {error && (
+        <p style={{ color: "#DC2626", fontSize: 13, padding: "0 16px 12px" }}>
+          {error}
+        </p>
+      )}
 
       {/* List card */}
       <div
@@ -278,9 +316,28 @@ export default function UpcomingPayments() {
           gap: 8,
         }}
       >
-        {MOCK_UPCOMING.map((item, i) => (
-          <PaymentRow key={item.id + i} item={item} onPay={handlePay} />
-        ))}
+        {isLoading ? (
+          <p style={{ textAlign: "center", color: "#999", fontSize: 14, padding: "20px 0" }}>
+            Loading…
+          </p>
+        ) : loadError ? (
+          <p style={{ textAlign: "center", color: "#DC2626", fontSize: 14, padding: "20px 0" }}>
+            Couldn't load upcoming payments.
+          </p>
+        ) : filtered.length === 0 ? (
+          <p style={{ textAlign: "center", color: "#999", fontSize: 14, padding: "20px 0" }}>
+            Nothing due right now.
+          </p>
+        ) : (
+          filtered.map((item) => (
+            <PaymentRow
+              key={item.id}
+              item={item}
+              onPay={handlePay}
+              paying={initiatePayment.isPending}
+            />
+          ))
+        )}
       </div>
     </div>
   );

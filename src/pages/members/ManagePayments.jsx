@@ -1,97 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronDown, Landmark, Trash2 } from "lucide-react";
+import { useManagePayments } from "../../hooks/usePayments";
 
-// ─── Mock data — replace with real API hook ───────────────────────────────────
-const MOCK_PAYMENTS = [
-  {
-    id: "1",
-    type: "recurring",
-    amount: 8500,
-    name: "Annual Hackathon Fee",
-    nextCharge: "Apr 1, 2025",
-    autoPay: true,
-    logo: null, // replace with actual image url/import
-    card: { last4: "9718", expiry: "04/28", brand: "mastercard" },
-  },
-  {
-    id: "2",
-    type: "recurring",
-    amount: 8500,
-    name: "Annual Hackathon Fee",
-    nextCharge: "Apr 1, 2025",
-    autoPay: true,
-    logo: null,
-    card: { last4: "9718", expiry: "04/28", brand: "mastercard" },
-  },
-];
-
-const FILTER_OPTIONS = ["All", "Recurring", "One-time"];
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function formatNaira(amount) {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: 0,
-  })
-    .format(amount)
-    .replace("NGN", "₦");
-}
-
-// ─── Mastercard SVG icon ──────────────────────────────────────────────────────
-function MastercardIcon() {
-  return (
-    <svg
-      width="32"
-      height="20"
-      viewBox="0 0 32 20"
-      fill="none"
-      aria-label="Mastercard"
-    >
-      <rect width="32" height="20" rx="3" fill="transparent" />
-      <circle cx="12" cy="10" r="8" fill="#EB001B" />
-      <circle cx="20" cy="10" r="8" fill="#F79E1B" />
-      <path d="M16 4.27a8 8 0 0 1 0 11.46A8 8 0 0 1 16 4.27z" fill="#FF5F00" />
-    </svg>
-  );
-}
-
-// ─── Toggle switch ────────────────────────────────────────────────────────────
-function Toggle({ checked, onChange }) {
-  return (
-    <button
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onChange(!checked)}
-      style={{
-        width: 44,
-        height: 26,
-        borderRadius: 999,
-        background: checked ? "#1C2B8A" : "#D1D5DB",
-        border: "none",
-        cursor: "pointer",
-        position: "relative",
-        transition: "background 0.2s ease",
-        flexShrink: 0,
-      }}
-    >
-      <span
-        style={{
-          position: "absolute",
-          top: 3,
-          left: checked ? 21 : 3,
-          width: 20,
-          height: 20,
-          borderRadius: "50%",
-          background: "#fff",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-          transition: "left 0.2s ease",
-        }}
-      />
-    </button>
-  );
-}
+const FILTER_OPTIONS = ["All", "Active", "Revoked"];
 
 // ─── Filter dropdown ──────────────────────────────────────────────────────────
 function FilterDropdown({ value, onChange }) {
@@ -119,7 +31,6 @@ function FilterDropdown({ value, onChange }) {
       </button>
       {open && (
         <>
-          {/* backdrop */}
           <div
             style={{ position: "fixed", inset: 0, zIndex: 10 }}
             onClick={() => setOpen(false)}
@@ -168,9 +79,10 @@ function FilterDropdown({ value, onChange }) {
   );
 }
 
-// ─── Payment card ─────────────────────────────────────────────────────────────
-function PaymentCard({ item, onToggleAutoPay, onChangeCard }) {
-  const isRecurring = item.type === "recurring";
+// ─── Authorisation card ───────────────────────────────────────────────────────
+function AuthCard({ item, onRemove, removing }) {
+  const isActive = (item.status ?? "").toUpperCase() === "ACTIVE";
+  const activeConsents = item.consents.filter((c) => !c.revoked);
 
   return (
     <div
@@ -183,143 +95,107 @@ function PaymentCard({ item, onToggleAutoPay, onChangeCard }) {
     >
       {/* Top section */}
       <div style={{ padding: "16px 16px 14px" }}>
-        {/* Logo + badge row */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "space-between",
-            marginBottom: 12,
-          }}
-        >
-          {/* Community logo */}
-          {/* <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 10,
-              background: "#F0F0F0",
-              border: "1px solid #E0E0E0",
-              overflow: "hidden",
-              flexShrink: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          > */}
-            {item.logo ? (
-              <img
-                src={item.logo}
-                alt=""
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            ) : (
-              <span style={{ fontSize: 20 }}>🎯</span>
-            )}
-          {/* </div> */}
-
-          {/* Badge */}
-          <span
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: isRecurring ? "#002FA7" : "#7c3aed",
-              background: isRecurring ? "#E8ECF8" : "#F3E8FF",
-              padding: "4px 12px",
-              borderRadius: 999,
-            }}
-          >
-            {isRecurring ? "Recurring" : "One-time"}
-          </span>
-        </div>
-
-        {/* Amount */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            gap: 3,
-            marginBottom: 6,
-          }}
-        >
-          <span style={{ fontSize: 22, fontWeight: 800, color: "#111" }}>
-            {formatNaira(item.amount)}
-          </span>
-          {isRecurring && (
-            <span style={{ fontSize: 13, color: "#888", fontWeight: 400 }}>
-              /month
-            </span>
-          )}
-        </div>
-
-        {/* Name + Auto-Pay toggle */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            marginBottom: 3,
+            marginBottom: 12,
           }}
         >
-          <p style={{ fontSize: 14, fontWeight: 500, color: "#000000" }}>
-            {item.name}
-          </p>
-          <div
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 10,
+                background: "#E8ECF8",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <Landmark size={18} style={{ color: "#1C2B8A" }} />
+            </div>
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: 0 }}>
+                {item.bank ?? "Bank account"}
+              </p>
+              <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>
+                ***{item.last4}
+              </p>
+            </div>
+          </div>
+
+          <span
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              flexShrink: 0,
+              fontSize: 12,
+              fontWeight: 600,
+              color: isActive ? "#15803d" : "#999",
+              background: isActive ? "#dcfce7" : "#F0F0F0",
+              padding: "4px 12px",
+              borderRadius: 999,
             }}
           >
-            <span style={{ fontSize: 13, color: "#888" }}>Auto-Pay</span>
-            <Toggle
-              checked={item.autoPay}
-              onChange={(val) => onToggleAutoPay(item.id, val)}
-            />
-          </div>
+            {isActive ? "Active" : (item.status ?? "Inactive")}
+          </span>
         </div>
 
-        {/* Next charge */}
-        {isRecurring && (
-          <p style={{ fontSize: 12, color: "#999" }}>
-            Next charge: {item.nextCharge}
-          </p>
+        <p style={{ fontSize: 12, color: "#999", marginBottom: 8 }}>
+          Channel: {item.channel ?? "—"}
+        </p>
+
+        {/* Consents — plans this authorisation auto-pays for */}
+        {activeConsents.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {activeConsents.map((c) => (
+              <div
+                key={c.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "8px 10px",
+                  background: "#F7F8FA",
+                  borderRadius: 8,
+                }}
+              >
+                <span style={{ fontSize: 12, color: "#333" }}>
+                  {c.paymentLinkTitle ?? "Plan"}
+                  {c.communityName ? ` · ${c.communityName}` : ""}
+                </span>
+                <span style={{ fontSize: 11, color: "#888" }}>{c.planStatus}</span>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
       {/* Divider */}
       <div style={{ height: 1, background: "#F0F0F0" }} />
 
-      {/* Card row */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "12px 16px",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <MastercardIcon />
-          <span style={{ fontSize: 13, fontWeight: 500, color: "#333" }}>
-            ***{item.card.last4}{" "}
-            <span style={{ color: "#999" }}>| {item.card.expiry}</span>
-          </span>
-        </div>
+      {/* Remove row */}
+      <div style={{ padding: "10px 16px" }}>
         <button
-          onClick={() => onChangeCard(item.id)}
+          onClick={() => onRemove(item.id)}
+          disabled={removing}
           style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
             fontSize: 13,
             fontWeight: 600,
-            color: "#002FA7",
+            color: "#DC2626",
             background: "none",
             border: "none",
             cursor: "pointer",
             padding: 0,
+            opacity: removing ? 0.6 : 1,
           }}
         >
-          Change
+          <Trash2 size={14} />
+          Remove auto-pay
         </button>
       </div>
     </div>
@@ -330,24 +206,16 @@ function PaymentCard({ item, onToggleAutoPay, onChangeCard }) {
 export default function ManagePayments() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("All");
-  const [payments, setPayments] = useState(MOCK_PAYMENTS);
+  const { data, isLoading, error, toggleAutoPay, isRemoving } = useManagePayments();
 
-  function handleToggleAutoPay(id, val) {
-    setPayments((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, autoPay: val } : p)),
-    );
+  function handleRemove(id) {
+    toggleAutoPay(id, false);
   }
 
-  function handleChangeCard(id) {
-    // navigate to card change flow
-    console.log("Change card for payment", id);
-  }
-
-  const filtered = payments.filter((p) => {
+  const filtered = data.filter((p) => {
     if (filter === "All") return true;
-    if (filter === "Recurring") return p.type === "recurring";
-    if (filter === "One-time") return p.type === "one-time";
-    return true;
+    const isActive = (p.status ?? "").toUpperCase() === "ACTIVE";
+    return filter === "Active" ? isActive : !isActive;
   });
 
   return (
@@ -409,24 +277,25 @@ export default function ManagePayments() {
           padding: "0 16px",
         }}
       >
-        {filtered.length === 0 ? (
-          <p
-            style={{
-              textAlign: "center",
-              color: "#999",
-              fontSize: 14,
-              marginTop: 40,
-            }}
-          >
-            No payments found.
+        {isLoading ? (
+          <p style={{ textAlign: "center", color: "#999", fontSize: 14, marginTop: 40 }}>
+            Loading…
+          </p>
+        ) : error ? (
+          <p style={{ textAlign: "center", color: "#DC2626", fontSize: 14, marginTop: 40 }}>
+            Couldn't load saved payment methods.
+          </p>
+        ) : filtered.length === 0 ? (
+          <p style={{ textAlign: "center", color: "#999", fontSize: 14, marginTop: 40 }}>
+            No saved payment methods yet.
           </p>
         ) : (
           filtered.map((item) => (
-            <PaymentCard
+            <AuthCard
               key={item.id}
               item={item}
-              onToggleAutoPay={handleToggleAutoPay}
-              onChangeCard={handleChangeCard}
+              onRemove={handleRemove}
+              removing={isRemoving}
             />
           ))
         )}

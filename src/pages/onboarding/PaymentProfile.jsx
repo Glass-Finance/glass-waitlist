@@ -290,7 +290,7 @@ export default function PaymentProfile() {
 
   // Fetch banks on mount
   useEffect(() => {
-    client.get("/api/v1/finance/banks")
+    client.get("/finance/banks")
       .then(({ data }) => { if (data.success) setBanks(data.data ?? []); })
       .catch(() => {});
   }, []);
@@ -302,7 +302,7 @@ export default function PaymentProfile() {
       setResolving(true);
       setError("");
       try {
-        const { data } = await client.get("/api/v1/finance/resolve-account", {
+        const { data } = await client.get("/finance/resolve-account", {
           params: { bankCode, accountNumber: accNumber },
         });
         if (data.success) setAccName(data.data?.accountName ?? "");
@@ -329,7 +329,7 @@ export default function PaymentProfile() {
     setSaving(true);
     setError("");
     try {
-      await client.post(`/api/v1/communities/${communityId}/account`, {
+      await client.post(`/communities/${communityId}/account`, {
         settlementBank:     bankName,
         settlementBankCode: bankCode,
         accountNumber:      accNumber,

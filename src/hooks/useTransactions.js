@@ -1,18 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMyTransactions, getTransaction } from "../api/members";
 
+function unwrapList(res) {
+  const data = res.data?.data;
+  if (Array.isArray(data)) return data;
+  return data?.content ?? [];
+}
+
 function shapeTransaction(raw) {
   return {
     id: raw.id,
     amount: raw.amount,
-    description: raw.description ?? raw.name ?? "Payment",
-    communityName: raw.community?.name ?? raw.communityName,
-    date: raw.createdAt ?? raw.created_at,
-    status: raw.status?.toLowerCase(), // "success" | "failed" | "pending"
-    reference: raw.reference,
-    type: raw.type ?? "one-time",
-    planName: raw.planName ?? raw.plan?.name,
-    logoColor: raw.community?.color ?? "#1C2B8A",
+    amountPaid: raw.amountPaid,
+    description: raw.description ?? raw.paymentLink?.title ?? "Payment",
+    communityName: raw.community?.name,
+    date: raw.paidAt ?? raw.createdAt,
+    status: (raw.status ?? "").toLowerCase(), // "success" | "failed" | "pending" | "initiated"
+    type: raw.recurringPlan ? "recurring" : "one-time",
+    planName: raw.paymentLink?.title,
+    channel: raw.channel,
+    currency: raw.currency ?? "NGN",
+    logoColor: "#1C2B8A",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
   };
 }
@@ -23,9 +31,8 @@ export function useTransactions() {
     queryKey: ["transactions"],
     queryFn: async () => {
       const res = await getMyTransactions();
-      const raw = res.data?.data ?? [];
       // Sort newest first
-      return raw
+      return unwrapList(res)
         .map(shapeTransaction)
         .sort((a, b) => new Date(b.date) - new Date(a.date));
     },

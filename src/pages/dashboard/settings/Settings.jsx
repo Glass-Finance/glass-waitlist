@@ -102,12 +102,18 @@ const TABS = [
   { label: "Community", defaultPath: "/dashboard/settings/community", match: "community" },
 ];
 
+// Account tab menu items
+const ACCOUNT_ITEMS = [
+  { label: "Profile",  desc: "Configure your details to how you want them to appear on Glass.", path: "/dashboard/settings/account/profile"  },
+  { label: "My Role",  desc: "Define your membership and payment participation.",               path: "/dashboard/settings/account/role"     },
+  { label: "Security", desc: "Manage your password and account security.",                       path: "/dashboard/settings/account/security" },
+];
+
 // Finance tab menu items
 const FINANCE_ITEMS = [
   { label: "Payment Methods",  desc: "The cards and accounts Glass uses to collect your dues.",        path: "/dashboard/settings/finance/payment-methods"  },
   { label: "Auto-Pay",         desc: "Turn on automatic charging so you never miss a due date.",       path: "/dashboard/settings/finance/auto-pay"          },
-  { label: "Paystack Account", desc: "The account your community's payments flow into.",               path: "/dashboard/settings/finance/paystack"          },
-  { label: "Profile",          desc: "Configure your details to how you want them to appear on Glass.",path: "/dashboard/settings/finance/profile"           },
+  { label: "Payout Account",   desc: "The account your community's collected dues are settled into.",  path: "/dashboard/settings/finance/paystack"          },
 ];
 
 // Community tab menu items
@@ -124,8 +130,7 @@ const BREADCRUMB_MAP = {
   "account/security":         { parent: "Account",   child: "Security"          },
   "finance/payment-methods":  { parent: "Finance",   child: "Payment Methods"   },
   "finance/auto-pay":         { parent: "Finance",   child: "Auto-Pay"          },
-  "finance/paystack":         { parent: "Finance",   child: "Paystack Account"  },
-  "finance/profile":          { parent: "Finance",   child: "Profile"           },
+  "finance/paystack":         { parent: "Finance",   child: "Payout Account"    },
   "community/profile":        { parent: "Community", child: "Community Profile" },
   "community/member-access":  { parent: "Community", child: "Member Access"     },
 };
@@ -215,11 +220,12 @@ export default function Settings() {
       )}
 
       {/* Menu lists — shown when on top-level tab, before drilling into a sub-page */}
+      {isAccountMenu   && <MenuList items={ACCOUNT_ITEMS}   />}
       {isFinanceMenu   && <MenuList items={FINANCE_ITEMS}   />}
       {isCommunityMenu && <MenuList items={COMMUNITY_ITEMS} />}
 
       {/* Sub-page content — rendered for all sub-routes */}
-      {!isFinanceMenu && !isCommunityMenu && <Outlet />}
+      {!isAccountMenu && !isFinanceMenu && !isCommunityMenu && <Outlet />}
     </div>
   );
 }

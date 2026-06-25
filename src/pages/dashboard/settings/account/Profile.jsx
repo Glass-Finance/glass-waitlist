@@ -1,18 +1,72 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useMe, useUpdateProfile } from "../../../../hooks/useMembers";
+import { useFileUpload } from "../../../../hooks/useFileUpload";
+
+function parseUserData(user) {
+  try {
+    const ud = typeof user?.userData === "string" ? JSON.parse(user.userData) : user?.userData;
+    return ud ?? {};
+  } catch {
+    return {};
+  }
+}
 
 export default function Profile() {
-  const [form, setForm] = useState({
-    firstName: "Amina",
-    lastName: "Argawal",
-    email: "aminaargawal@gmail.com",
-    phone: "+234 902 293 2425",
-  });
+  const { data: user, isLoading } = useMe();
+  const updateProfile = useUpdateProfile();
+  const uploadFile = useFileUpload();
+  const photoInputRef = useRef(null);
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const [form, setForm] = useState({ firstName: "", lastName: "", phone: "" });
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
+  const [photoPreview, setPhotoPreview] = useState(null);
+
+  useEffect(() => {
+    if (!user) return;
+    const ud = parseUserData(user);
+    setForm({
+      firstName: ud.firstName ?? "",
+      lastName: ud.lastName ?? "",
+      phone: user.phoneNumber ?? ud.phone ?? "",
+    });
+  }, [user]);
+
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSave = async () => {
+    setError("");
+    try {
+      await updateProfile.mutateAsync({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        phoneNumber: form.phone,
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      setError(err.response?.data?.message ?? "Failed to save changes.");
+    }
+  };
+
+  const handlePhotoSelect = async (file) => {
+    if (!file) return;
+    setPhotoPreview(URL.createObjectURL(file));
+    setError("");
+    try {
+      const uploadRes = await uploadFile.mutateAsync({ file, fileCategory: "PROFILE_IMAGE" });
+      const profileImageFileId = uploadRes.data?.data?.id;
+      await updateProfile.mutateAsync({ profileImageFileId });
+    } catch (err) {
+      setError(err.response?.data?.message ?? "Failed to upload photo.");
+    }
+  };
 
   const inputCls =
     "w-full px-4 py-2.5 rounded-lg bg-white text-gray-900 text-xs outline-none transition-all border border-gray-300 focus:border-[#002FA7]";
+
+  const displayName = `${form.firstName} ${form.lastName}`.trim() || user?.email || "—";
+  const initials = displayName.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
 
   return (
     <div className="flex flex-col gap-5 max-w-3xl w-full">
@@ -25,19 +79,27 @@ export default function Profile() {
       <div className="bg-white rounded-lg p-4" style={{ border: "1px solid #E5E7EB" }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0">
-              <span className="text-sm text-[#002FA7]">A.A</span>
+            <div className="w-11 h-11 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
+              {photoPreview || user?.profileImage?.url ? (
+                <img src={photoPreview ?? user.profileImage.url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-sm text-[#002FA7]">{initials}</span>
+              )}
             </div>
             <div>
-              <p className="text-sm text-gray-900">Amina Argawal</p>
-              <p className="text-xs text-gray-500">aminaargawal@gmail.com</p>
+              <p className="text-sm text-gray-900">{isLoading ? "Loading…" : displayName}</p>
+              <p className="text-xs text-gray-500">{user?.email ?? ""}</p>
             </div>
           </div>
+          <input ref={photoInputRef} type="file" accept="image/png,image/jpeg" className="hidden"
+            onChange={(e) => handlePhotoSelect(e.target.files[0])} />
           <button
-            className="px-2 py-2 rounded-sm text-xs bg-white hover:bg-gray-50 transition-all cursor-pointer"
+            onClick={() => photoInputRef.current?.click()}
+            disabled={uploadFile.isPending}
+            className="px-2 py-2 rounded-sm text-xs bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50"
             style={{ border: "1px solid" }}
           >
-            Change Photo
+            {uploadFile.isPending ? "Uploading…" : "Change Photo"}
           </button>
         </div>
       </div>
@@ -61,7 +123,7 @@ export default function Profile() {
         <div className="grid grid-cols-2 gap-4 mb-5">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Email Address</label>
-            <input name="email" value={form.email} onChange={handleChange} className={inputCls} />
+            <input value={user?.email ?? ""} disabled className={inputCls + " bg-gray-50 text-gray-400"} />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Phone Number</label>
@@ -69,11 +131,15 @@ export default function Profile() {
           </div>
         </div>
 
+        {error && <p className="text-xs text-red-500 mb-3">{error}</p>}
+
         <div className="flex justify-end">
           <button
-            className="p-2 rounded-sm text-[11px] text-[#002FA7] hover:bg-[#002FA7] hover:text-white transition-all cursor-pointer border border-[#002FA7]"
+            onClick={handleSave}
+            disabled={updateProfile.isPending}
+            className="p-2 rounded-sm text-[11px] text-[#002FA7] hover:bg-[#002FA7] hover:text-white transition-all cursor-pointer border border-[#002FA7] disabled:opacity-50"
           >
-            Save Changes
+            {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
           </button>
         </div>
       </div>
