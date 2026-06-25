@@ -1,14 +1,16 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import GlassLogo from "../../assets/Glass.png";
-import background from '../../assets/background.png';
-;
+import QRCodeCanvas from "../../components/dashboard/QRCode";
+import { buildMobileUrl } from "../../utils/deviceRedirect";
+
 export default function CheckEmail() {
   const navigate  = useNavigate();
   const location  = useLocation();
-  const email     = location.state?.email || "sulaimonqayyum@gmail.com";
+  const email     = location.state?.email || "";
+  const joinUrl   = buildMobileUrl("/member/join");
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden" style={{ backgroundImage: `url(${background})`, backgroundSize: "contain", backgroundPosition: "left" }}>
+    <div className="h-screen w-screen flex flex-col overflow-hidden" style={{ background: "#E5E5E5" }}>
 
       {/* Glass logo top left */}
       <header className="px-8 py-5 flex-shrink-0">
@@ -21,53 +23,53 @@ export default function CheckEmail() {
       </header>
 
       {/* Centered content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 pb-10">
-
-        {/* Envelope icon with checkmark */}
-        <div className="mb-8">
-          <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Envelope body */}
-            <rect x="6" y="18" width="60" height="42" rx  ="4" stroke="#111827" strokeWidth="2.5" fill="none"/>
-            {/* Envelope flap lines */}
-            <path d="M6 22l30 22 30-22" stroke="#111827" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-            {/* Checkmark badge */}
-            <circle cx="54" cy="22" r="12" fill="white"/>
-            <circle cx="54" cy="22" r="10" fill="#111827"/>
-            <path d="M49 22l3.5 3.5 6-6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
+      <main className="flex-1 flex flex-col items-center justify-center px-6 pb-10 overflow-y-auto">
 
         {/* Heading */}
-        <h1 className="text-3xl font-bold text-gray-900 mb-3 text-center" style={{ fontFamily: "var(--font-sans)" }}>
-          Check Your Email
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center" style={{ fontFamily: "var(--font-sans)" }}>
+          Scan To Join From Your Phone
         </h1>
+        <p className="text-sm text-gray-500 mb-8 text-center">
+          Glass for members is best experienced on mobile!
+        </p>
 
-        {/* Subtext */}
-        <div className="text-center mb-12">
-          <p className="text-sm text-gray-500 mb-1">Glass for members is best experienced on mobile!</p>
-          <p className="text-sm text-gray-600">
-            We've sent a link{" "}
-            <span className="font-medium text-gray-900">{email}.</span>
-            {" "}Open it on your phone to join your community on Glass.
-          </p>
+        {/* QR code */}
+        <div className="p-3 bg-white rounded-2xl mb-8" style={{ border: "1px solid #E5E7EB" }}>
+          <QRCodeCanvas value={joinUrl} size={200} color="#000000" />
         </div>
 
-        {/* Continue button */}
+        {/* Continue on this device anyway */}
         <button
           onClick={() => navigate("/dashboard/home")}
-          className="w-full max-w-sm py-3.5 rounded-3xl text-white text-xs transition-all hover:opacity-90 active:scale-[0.98] mb-4"
-          style={{ background: "#2535c3" }}
+          className="w-full max-w-sm py-3.5 rounded-full text-white text-sm font-medium transition-all hover:opacity-90 active:scale-[0.98] border-none cursor-pointer"
+          style={{ background: "#002FA7" }}
         >
           Continue
         </button>
 
-        {/* Resend */}
-        <button
-          className="text-xs font-medium hover:underline"
-          style={{ color: "#2535c3" }}
-        >
-          Resend Email
-        </button>
+        {/* Divider */}
+        <div className="flex items-center gap-4 w-full max-w-sm my-6">
+          <div className="flex-1 h-px bg-gray-300" />
+          <span className="text-xs text-gray-400 flex-shrink-0">Or Use Email</span>
+          <div className="flex-1 h-px bg-gray-300" />
+        </div>
+
+        {/* Email fallback */}
+        <p className="text-sm text-gray-500 text-center max-w-sm mb-3">
+          We've also sent a link{" "}
+          {email && <span className="font-medium text-gray-900">{email}.</span>}
+          {" "}Open it on your phone to join your community on Glass.
+        </p>
+
+        <p className="text-sm text-gray-900">
+          Didn't get it?{" "}
+          <button
+            className="font-medium hover:underline bg-transparent border-none cursor-pointer p-0"
+            style={{ color: "#002FA7" }}
+          >
+            Resend Email
+          </button>
+        </p>
 
       </main>
     </div>
