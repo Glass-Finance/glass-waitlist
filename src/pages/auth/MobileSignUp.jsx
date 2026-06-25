@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, Info } from "lucide-react";
 import { useInviteToken } from "../../hooks/useInviteToken";
 import { register, storeAuthSession } from "../../services/authService";
 
@@ -508,6 +508,7 @@ function StepProfile({ email, onSubmit }) {
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -528,6 +529,10 @@ function StepProfile({ email, onSubmit }) {
       setError("First and last name are required.");
       return;
     }
+    if (!form.phone.trim()) {
+      setError("Phone number is required.");
+      return;
+    }
     if (form.password.length < 8) {
       setError("Password must be at least 8 characters.");
       return;
@@ -544,6 +549,7 @@ function StepProfile({ email, onSubmit }) {
   const isReady =
     form.firstName.trim() &&
     form.lastName.trim() &&
+    form.phone.trim() &&
     form.password &&
     form.confirmPassword;
 
@@ -578,6 +584,27 @@ function StepProfile({ email, onSubmit }) {
             autoComplete="family-name"
             disabled={loading}
           />
+        </div>
+      </div>
+
+      {/* Phone */}
+      <div>
+        <Label htmlFor="phone">Phone Number</Label>
+        <TextInput
+          id="phone"
+          type="tel"
+          placeholder="e.g. 0803 123 4567"
+          value={form.phone}
+          onChange={set("phone")}
+          autoComplete="tel"
+          inputMode="tel"
+          disabled={loading}
+        />
+        <div className="flex items-start gap-1.5 mt-1.5">
+          <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-gray-500 leading-snug">
+            This number should be linked to an active WhatsApp account — we'll use it to send you updates.
+          </p>
         </div>
       </div>
 
@@ -676,6 +703,7 @@ export default function MobileSignUp() {
   async function handleProfileSubmit({
     firstName,
     lastName,
+    phone,
     password,
     loading: setLoading,
     setError,
@@ -685,6 +713,7 @@ export default function MobileSignUp() {
         email,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
+        phoneNumber: phone.trim(),
         password,
         ...(token && { inviteToken: token }),
       };

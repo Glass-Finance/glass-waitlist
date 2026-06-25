@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Info } from "lucide-react";
 import { register } from "../../../services/authService";
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
@@ -71,6 +71,7 @@ export default function RegisterStep({ onNext, onSwitch }) {
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -80,6 +81,10 @@ export default function RegisterStep({ onNext, onSwitch }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    if (!form.phone.trim()) {
+      setError("Phone number is required.");
+      return;
+    }
     if (form.password !== form.confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -90,6 +95,7 @@ export default function RegisterStep({ onNext, onSwitch }) {
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
+        phoneNumber: form.phone.trim(),
         password: form.password,
       });
       onNext(form.email, result);
@@ -165,6 +171,30 @@ export default function RegisterStep({ onNext, onSwitch }) {
             onFocus={onFocus}
             onBlur={onBlur}
           />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-sm font-medium text-gray-700">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            name="phone"
+            value={form.phone}
+            onChange={handleChange}
+            placeholder="e.g. 0803 123 4567"
+            required
+            className={inputCls}
+            style={inputStyle}
+            onFocus={onFocus}
+            onBlur={onBlur}
+          />
+          <div className="flex items-start gap-1.5 mt-0.5 px-0.5">
+            <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-gray-500 leading-snug">
+              This number should be linked to an active WhatsApp account — we'll use it to send you updates.
+            </p>
+          </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
