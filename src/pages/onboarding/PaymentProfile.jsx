@@ -122,6 +122,17 @@ export default function PaymentProfile() {
     setAccName("");
   };
 
+  // Resolve-account can be down for reasons that have nothing to do with
+  // what the admin types (backend/Paystack connectivity, bad keys, etc.),
+  // and there's no skip on this step otherwise — so onboarding would be a
+  // hard dead end. The account can still be set up later from
+  // Settings → Finance → Paystack Account.
+  const handleSkip = () => {
+    navigate("/onboarding/members", {
+      state: { email, communityId, communitySlug, communityName },
+    });
+  };
+
   const handleSave = async () => {
     if (!accName)   { setError("Please enter a valid account number and bank first."); return; }
     if (!communityId) { setError("Community ID missing — go back and retry."); return; }
@@ -250,6 +261,13 @@ export default function PaymentProfile() {
               style={{ background: "#002FA7" }}
             >
               {saving ? "Setting up…" : "Set-Up Account"}
+            </button>
+            <button
+              onClick={handleSkip}
+              disabled={saving}
+              className="w-full mt-3 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer disabled:opacity-50"
+            >
+              Skip for now — set this up later
             </button>
           </div>
         </main>
