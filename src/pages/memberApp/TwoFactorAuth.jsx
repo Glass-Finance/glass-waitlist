@@ -9,7 +9,7 @@ function DisabledToggle() {
   );
 }
 
-export default function Authentication() {
+export default function TwoFactorAuth() {
   const navigate = useNavigate();
 
   return (

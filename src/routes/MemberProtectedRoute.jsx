@@ -15,7 +15,7 @@ export default function MemberProtectedRoute() {
   }
 
   if (!token) {
-    return <Navigate to="/member/sign-in" state={{ from: location }} replace />;
+    return <Navigate to="/member/app-sign-in" state={{ from: location }} replace />;
   }
 
   return <Outlet />;

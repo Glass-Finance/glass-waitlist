@@ -10,10 +10,11 @@ import OrganizationsHome from "./pages/OrganizationsHome";
 import MembersHome from "./pages/MembersHome";
 
 // ── Auth pages ─────────────────────────────────────────────────────────────────
-import MemberAuth from "./pages/auth/MemberAuth";
+import SignUp from "./pages/auth/SignUp";
 import CheckEmail from "./pages/auth/CheckEmail";
-import MobileSignUp from "./pages/auth/MobileSignUp";
-import MobileSignIn from "./pages/auth/MobileSignIn";
+import Join from "./pages/auth/Join";
+import SignIn from "./pages/auth/SignIn";
+import MemberAppSignIn from "./pages/auth/MemberAppSignIn";
 
 // ── Onboarding pages ───────────────────────────────────────────────────────────
 import ChoosePath from "./pages/onboarding/ChoosePath";
@@ -35,7 +36,7 @@ import AdminNotifications from "./pages/dashboard/Notifications";
 import Settings from "./pages/dashboard/settings/Settings";
 import Profile from "./pages/dashboard/settings/account/Profile";
 import Role from "./pages/dashboard/settings/account/Role";
-import Notifications from "./pages/dashboard/settings/account/Notifications";
+import NotificationSettings from "./pages/dashboard/settings/account/NotificationSettings";
 import Security from "./pages/dashboard/settings/account/Security";
 import PaymentMethod from "./pages/dashboard/settings/finance/PaymentMethod";
 import AutoPay from "./pages/dashboard/settings/finance/AutoPay";
@@ -58,7 +59,7 @@ import MemberProfile from "./pages/memberApp/Profile";
 import MyCommunities from "./pages/memberApp/MyCommunities";
 import MemberSecurity from "./pages/memberApp/Security";
 import MemberPassword from "./pages/memberApp/Password";
-import MemberAuthentication from "./pages/memberApp/Authentication";
+import MemberTwoFactorAuth from "./pages/memberApp/TwoFactorAuth";
 import MemberAutoPay from "./pages/memberApp/AutoPay";
 import MemberNotificationSettings from "./pages/memberApp/NotificationSettings";
 
@@ -76,9 +77,10 @@ function App() {
         <Route path="/members" element={<MembersHome />} />
 
         {/* ── Auth ── */}
-        <Route path="/member/signup"  element={<MemberAuth />} />
-        <Route path="/member/join"    element={<MobileSignUp />} />
-        <Route path="/member/sign-in" element={<MobileSignIn />} />
+        <Route path="/member/signup"  element={<SignUp />} />
+        <Route path="/member/join"    element={<Join />} />
+        <Route path="/member/sign-in"     element={<SignIn />} />
+        <Route path="/member/app-sign-in" element={<MemberAppSignIn />} />
         <Route path="/check-email"    element={<CheckEmail />} />
 
         {/* ── Onboarding ── */}
@@ -107,7 +109,7 @@ function App() {
               <Route path="account"               element={null} />
               <Route path="account/profile"       element={<Profile />} />
               <Route path="account/role"          element={<Role />} />
-              <Route path="account/notifications" element={<Notifications />} />
+              <Route path="account/notifications" element={<NotificationSettings />} />
               <Route path="account/security"      element={<Security />} />
 
               {/* Finance — bare path renders the menu list inside Settings.jsx */}
@@ -142,7 +144,7 @@ function App() {
             <Route path="communities"                    element={<MyCommunities />} />
             <Route path="security"                       element={<MemberSecurity />} />
             <Route path="security/password"              element={<MemberPassword />} />
-            <Route path="security/authentication"        element={<MemberAuthentication />} />
+            <Route path="security/authentication"        element={<MemberTwoFactorAuth />} />
             <Route path="auto-pay"                        element={<MemberAutoPay />} />
             <Route path="notification-settings"           element={<MemberNotificationSettings />} />
           </Route>

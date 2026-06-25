@@ -310,7 +310,7 @@ function StepEmail({ onNext }) {
       <p className="text-sm text-center text-gray-500 pb-2">
         Already Have An Account?{" "}
         <Link
-          to="/member/sign-in"
+          to="/member/app-sign-in"
           className="font-semibold"
           style={{ color: "#1C2B8A" }}
         >
@@ -679,9 +679,9 @@ function StepProfile({ email, onSubmit }) {
 }
 
 // ---------------------------------------------------------------------------
-// MobileSignUp root
+// Join root
 // ---------------------------------------------------------------------------
-export default function MobileSignUp() {
+export default function Join() {
   const navigate = useNavigate();
   const { token, consumeToken } = useInviteToken();
 

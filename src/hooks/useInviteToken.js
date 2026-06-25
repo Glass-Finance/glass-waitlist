@@ -17,7 +17,7 @@ export const INVITE_TOKEN_KEY = "glass_invite_token";
 //      single-session by design).
 //   3. Expose `token` (string | null) and `consumeToken` to callers.
 //
-// Usage in MobileSignUp:
+// Usage in Join:
 //   const { token, consumeToken } = useInviteToken();
 //   // on successful register → consumeToken() clears it from storage
 //

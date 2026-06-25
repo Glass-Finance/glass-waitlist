@@ -6,7 +6,7 @@ import OTPStep from "./OTPStep";
 import { useAuth } from "../../../store/AuthContext";
 
 // ── Main Component ────────────────────────────────────────────────────────────
-export default function MemberAuth() {
+export default function SignUp() {
   const navigate = useNavigate();
   const { setSession } = useAuth();
   const [step, setStep] = useState(1);

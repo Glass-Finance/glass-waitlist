@@ -9,7 +9,7 @@
 //   const navigate = useNavigate();
 //   const location = useLocation();
 
-//   // Email is passed via router state from MemberAuth's OTP step
+//   // Email is passed via router state from SignUp's OTP step
 //   // Fall back to "" so the app doesn't crash if navigated to directly
 //   const email = location.state?.email ?? "";
 
@@ -130,7 +130,7 @@
 
 /**
  * ChoosePath.jsx — no API calls, pure navigation
- * Receives email from router state (set by MemberAuth OTP step)
+ * Receives email from router state (set by SignUp's OTP step)
  */
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -156,7 +156,7 @@ export default function ChoosePath() {
 
   const handleContinue = () => {
     if (selected === "create") {
-      navigate("/onboarding/organization-profile", { state: { email } });
+      navigate("/onboarding/paying-member", { state: { email } });
     } else {
       navigate("/check-email", { state: { email } });
     }

@@ -73,7 +73,7 @@ function SideDrawer({ open, onClose }) {
   async function handleLogout() {
     onClose();
     await logout();
-    navigate("/member/sign-in", { replace: true });
+    navigate("/member/app-sign-in", { replace: true });
   }
 
   return (

@@ -190,7 +190,7 @@ function MobileShell({ children }) {
 // ---------------------------------------------------------------------------
 // Sign In form
 // ---------------------------------------------------------------------------
-export default function MobileSignIn() {
+export default function MemberAppSignIn() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPw, setShowPw] = useState(false);
