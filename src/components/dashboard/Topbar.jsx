@@ -9,10 +9,18 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Bell } from "lucide-react";
+import { Search, Bell, Loader2 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { useNotifications } from "../../hooks/useNotifications";
+import { useActiveCommunityId } from "../../hooks/useActiveCommunity";
+import client from "../../api/client";
 import NotificationsPanel from "./NotificationsPanel";
+
+function formatNaira(amount) {
+  return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", minimumFractionDigits: 0 })
+    .format(amount ?? 0)
+    .replace("NGN", "₦");
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function getInitials(user) {
@@ -58,6 +66,7 @@ export default function Topbar({
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const communityId = useActiveCommunityId();
   const { notifications, isLoading, unreadCount, markRead, markAllRead } =
     useNotifications();
   const [panelOpen, setPanelOpen] = useState(false);
@@ -79,15 +88,147 @@ export default function Topbar({
     return () => document.removeEventListener("mousedown", handleClick);
   }, [panelOpen]);
 
+  // ── Search — GET /communities/{id}/search, debounced (backend requires
+  // 2+ chars and returns a capped top-10 preview per category). ───────────
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState(null);
+  const [searching, setSearching] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchRef = useRef(null);
+
+  useEffect(() => {
+    if (!searchOpen) return;
+    function handleClick(e) {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setSearchOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [searchOpen]);
+
+  useEffect(() => {
+    const q = query.trim();
+    if (!communityId || q.length < 2) {
+      setResults(null);
+      setSearching(false);
+      return;
+    }
+    setSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const { data } = await client.get(`/communities/${communityId}/search`, {
+          params: { search: q, pageSize: 5 },
+        });
+        setResults(data?.data ?? null);
+        setSearchOpen(true);
+      } catch {
+        setResults(null);
+      } finally {
+        setSearching(false);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [query, communityId]);
+
+  function goToResult(path) {
+    setSearchOpen(false);
+    setQuery("");
+    navigate(path);
+  }
+
+  const searchMembers = results?.members?.content ?? [];
+  const searchTransactions = results?.transactions?.content ?? [];
+  const searchPaymentLinks = results?.paymentLinks?.content ?? [];
+  const searchSettlements = results?.settlements?.content ?? [];
+  const hasSearchResults =
+    searchMembers.length || searchTransactions.length || searchPaymentLinks.length || searchSettlements.length;
+
   return (
     <header className="h-14 bg-white border-b border-[#EFEFF1] flex items-center gap-4 px-6 sticky top-0 z-50 flex-shrink-0">
       {/* Search */}
-      <div className="flex-1 max-w-[420px] flex items-center gap-2 bg-white rounded-md px-3 py-2 border border-gray-100 focus-within:ring-1 focus-within:ring-[#002FA7]">
-        <Search size={14} className="text-gray-400 flex-shrink-0" />
-        <input
-          placeholder={searchPlaceholder}
-          className="flex-1 bg-transparent border-none outline-none text-xs text-gray-600 placeholder-gray-400"
-        />
+      <div className="relative flex-1 max-w-[420px]" ref={searchRef}>
+        <div className="flex items-center gap-2 bg-white rounded-md px-3 py-2 border border-gray-100 focus-within:ring-1 focus-within:ring-[#002FA7]">
+          {searching ? (
+            <Loader2 size={14} className="text-gray-400 flex-shrink-0 animate-spin" />
+          ) : (
+            <Search size={14} className="text-gray-400 flex-shrink-0" />
+          )}
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => { if (results) setSearchOpen(true); }}
+            placeholder={searchPlaceholder}
+            className="flex-1 bg-transparent border-none outline-none text-xs text-gray-600 placeholder-gray-400"
+          />
+        </div>
+
+        {searchOpen && query.trim().length >= 2 && (
+          <div className="absolute left-0 top-full mt-1.5 w-full bg-white rounded-xl border border-gray-100 shadow-lg z-50 max-h-[420px] overflow-y-auto">
+            {!hasSearchResults ? (
+              <p className="text-xs text-gray-400 px-4 py-4">No results for "{query.trim()}"</p>
+            ) : (
+              <>
+                {searchMembers.length > 0 && (
+                  <div className="py-2">
+                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Members</p>
+                    {searchMembers.map((m) => (
+                      <button
+                        key={m.id}
+                        onClick={() => goToResult(`/dashboard/members/${m.id}?community=${communityId}`)}
+                        className="w-full flex items-center justify-between gap-2.5 px-4 py-2 hover:bg-gray-50 text-left bg-transparent border-none cursor-pointer"
+                      >
+                        <span className="text-xs font-medium text-gray-900">{m.firstName} {m.lastName}</span>
+                        <span className="text-[11px] text-gray-400">{m.email}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {searchTransactions.length > 0 && (
+                  <div className="py-2 border-t border-gray-50">
+                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Transactions</p>
+                    {searchTransactions.map((t) => (
+                      <button
+                        key={t.id}
+                        onClick={() => goToResult(`/dashboard/payments?community=${communityId}`)}
+                        className="w-full flex items-center justify-between gap-2.5 px-4 py-2 hover:bg-gray-50 text-left bg-transparent border-none cursor-pointer"
+                      >
+                        <span className="text-xs font-medium text-gray-900 truncate">{t.memberName ?? t.paymentLinkTitle ?? t.internalReference}</span>
+                        <span className="text-[11px] text-gray-400 flex-shrink-0">{formatNaira(t.amount)}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {searchPaymentLinks.length > 0 && (
+                  <div className="py-2 border-t border-gray-50">
+                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Payment Links</p>
+                    {searchPaymentLinks.map((p) => (
+                      <button
+                        key={p.id}
+                        onClick={() => goToResult(`/dashboard/payments?community=${communityId}`)}
+                        className="w-full flex items-center justify-between gap-2.5 px-4 py-2 hover:bg-gray-50 text-left bg-transparent border-none cursor-pointer"
+                      >
+                        <span className="text-xs font-medium text-gray-900">{p.title}</span>
+                        <span className="text-[11px] text-gray-400">{p.status}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {searchSettlements.length > 0 && (
+                  <div className="py-2 border-t border-gray-50">
+                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Settlements</p>
+                    {searchSettlements.map((s) => (
+                      <div key={s.id} className="flex items-center justify-between gap-2.5 px-4 py-2">
+                        <span className="text-xs font-medium text-gray-900">{s.status}</span>
+                        <span className="text-[11px] text-gray-400">{formatNaira(s.netAmount)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Right */}

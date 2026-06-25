@@ -564,8 +564,12 @@ function CommunityCard({ community, onClick }) {
     community.owned;
 
   const tag = getTag(community.name ?? community.slug ?? "GC");
+  // The rich metrics object (totalMembers, overdueMembers, collectedAmount,
+  // etc.) is only populated on the single-community detail endpoint, not
+  // on this list — so it's usually {} here. Don't show "0 Members" as if
+  // it were a real count; fall back to "—" like Collected/Outstanding do.
   const metrics = community.metrics ?? {};
-  const memberCount = metrics.totalMembers ?? metrics.activeMembers ?? 0;
+  const memberCount = metrics.totalMembers ?? metrics.activeMembers ?? null;
 
   // Admin-facing stats from metrics
   const totalCollected = metrics.collectedAmount;
@@ -610,7 +614,7 @@ function CommunityCard({ community, onClick }) {
               <div className="flex items-center gap-1 mt-0.5">
                 <Users size={11} className="text-gray-400" />
                 <span className="text-[10px] text-gray-400">
-                  {memberCount} Members
+                  {memberCount != null ? `${memberCount} Members` : "— Members"}
                 </span>
               </div>
             </div>

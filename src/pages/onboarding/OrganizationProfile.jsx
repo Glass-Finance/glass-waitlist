@@ -639,7 +639,7 @@ export default function OrganizationProfile() {
       style={{ height: "100vh", backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
     >
       {/* Navbar */}
-      <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 flex-shrink-0">
+      <header className="flex items-center justify-between px-8 py-4 bg-[#C9CBCF] border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
@@ -654,7 +654,7 @@ export default function OrganizationProfile() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col pt-10 px-6">
+        <aside className="w-64 flex-shrink-0 bg-[#C9CBCF] border-r border-gray-200 flex flex-col pt-10 px-6">
           {STEPS.map((step, i) => {
             const isActive    = step.id === "organization";
             const isCompleted = false;
@@ -662,7 +662,7 @@ export default function OrganizationProfile() {
             return (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isActive ? "bg-[#002FA7] text-white" : "bg-white border-2 border-gray-300 text-gray-400"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isActive ? "bg-[#002FA7] text-white" : "bg-[#C9CBCF] border-1 border-gray-250 text-gray-500"}`}>
                     {isCompleted
                       ? <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       : <StepIcon id={step.id} />}
@@ -670,7 +670,7 @@ export default function OrganizationProfile() {
                   {!isLast && <div className="w-px my-1" style={{ minHeight: 40, background: isCompleted ? "#002FA7" : "#E5E7EB" }} />}
                 </div>
                 <div className="pt-1.5 pb-10">
-                  <span className={`text-sm font-medium ${isActive ? "text-[#002FA7]" : "text-gray-400"}`}>{step.label}</span>
+                  <span className={`text-sm font-medium ${isActive ? "text-[#000000]" : "text-gray-400"}`}>{step.label}</span>
                 </div>
               </div>
             );

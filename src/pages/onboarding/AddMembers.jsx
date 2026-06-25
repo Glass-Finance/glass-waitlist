@@ -428,11 +428,13 @@
  */
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import Papa from "papaparse";
 import { Bell, Download, CloudUpload, Copy, Trash2, Plus, Check } from "lucide-react";
 import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
 import client from "../../api/client";
 import { notifyError } from "../../utils/errorHandler";
+import { useRoles } from "../../hooks/useCommunityMembers";
 
 const STEPS = [
   { id: "organization", label: "Organization Profile" },
@@ -445,6 +447,59 @@ const FIELDS  = ["firstName", "lastName", "email", "phone", "memberId", "role"];
 const EMPTY   = () => ({ id: Date.now() + Math.random(), firstName: "", lastName: "", email: "", phone: "", memberId: "", role: "" });
 
 const inputCls = "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+
+function downloadTemplate() {
+  const sample = ["Ada", "Okafor", "ada@example.com", "08031234567", "M001", "Member"];
+  const csv = `${HEADERS.join(",")}\n${sample.join(",")}\n`;
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "glass-member-import-template.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function parseCsvText(text) {
+  const { data } = Papa.parse(text, { header: true, skipEmptyLines: true });
+  return data;
+}
+
+async function parseCsvFile(file) {
+  const text = await file.text();
+  return parseCsvText(text);
+}
+
+async function parseCsvFromUrl(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Couldn't download a file from that URL.");
+  return parseCsvText(await res.text());
+}
+
+// Maps a parsed CSV row (using our template's headers, tolerant of a few
+// common variants) to the bulk-create payload shape. "Role/Title" is a
+// free-text label in the CSV but the backend wants a roleId, so it's
+// resolved against the community's actual roles by name.
+function csvRowToMember(row, roles) {
+  const get = (...keys) => {
+    for (const k of keys) {
+      const v = row[k];
+      if (v != null && String(v).trim() !== "") return String(v).trim();
+    }
+    return "";
+  };
+  const roleLabel = get("Role/Title", "Role", "Title", "role");
+  const matchedRole = roles?.find((r) => r.name?.toLowerCase() === roleLabel.toLowerCase());
+
+  return {
+    firstName: get("First Name", "firstName"),
+    lastName: get("Last Name", "lastName"),
+    email: get("Email Address", "Email", "email"),
+    phoneNumber: get("Phone Number", "Phone", "phoneNumber"),
+    memberRef: get("Member ID", "Member Id", "memberRef"),
+    ...(matchedRole ? { roleId: matchedRole.id } : {}),
+  };
+}
 
 function SuccessModal({ communityName, onDashboard, onCopy }) {
   return (
@@ -474,6 +529,7 @@ export default function AddMembers() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const fileRef   = useRef(null);
+  const { data: roles } = useRoles();
 
   const { email, communityId, communitySlug, communityName } = location.state ?? {};
 
@@ -504,36 +560,43 @@ export default function AddMembers() {
     setRows((r) => r.map((x) => (x.id === id ? { ...x, [field]: val } : x)));
   const removeRow = (id) => setRows((r) => r.filter((x) => x.id !== id));
 
-  // POST each manual row to /api/v1/communities/{id}/members
-  const submitManual = async () => {
-    if (!communityId) { setError("Community ID missing."); return; }
-    const filled = rows.filter((r) => r.firstName || r.email);
-    if (filled.length === 0) { setShowSuccess(true); return; } // no entries → skip
-    setLoading(true);
+  // Bulk member creation is all-or-nothing on the backend, so both the
+  // manual rows table and the CSV/URL upload funnel through one call to
+  // POST /communities/{id}/members/bulk instead of N individual requests.
+  const handleSubmit = async () => {
     setError("");
+    setLoading(true);
     try {
-      await Promise.all(
-        filled.map((r) =>
-          client.post(`/communities/${communityId}/members`, {
-            firstName:   r.firstName.trim(),
-            lastName:    r.lastName.trim(),
-            email:       r.email.trim(),
+      let members;
+      if (tab === "manual") {
+        members = rows
+          .filter((r) => r.firstName || r.email)
+          .map((r) => ({
+            firstName: r.firstName.trim(),
+            lastName: r.lastName.trim(),
+            email: r.email.trim(),
             phoneNumber: r.phone.trim(),
-            memberRef:   r.memberId.trim(),
-          })
-        )
-      );
+            memberRef: r.memberId.trim(),
+          }));
+      } else if (uploadedFile) {
+        members = (await parseCsvFile(uploadedFile)).map((row) => csvRowToMember(row, roles));
+      } else if (fileUrl.trim()) {
+        members = (await parseCsvFromUrl(fileUrl.trim())).map((row) => csvRowToMember(row, roles));
+      } else {
+        members = []; // nothing provided — same as before, just finish onboarding
+      }
+
+      const filled = members.filter((m) => m.firstName || m.email);
+      if (filled.length === 0) { setShowSuccess(true); return; }
+      if (!communityId) { setError("Community ID missing."); return; }
+
+      await client.post(`/communities/${communityId}/members/bulk`, { members: filled });
       setShowSuccess(true);
     } catch (err) {
-      setError(notifyError(err, { context: "Add members", fallback: "Failed to add some members. You can add them from the dashboard later." }));
+      setError(notifyError(err, { context: "Add members", fallback: "Failed to add members. You can add them from the dashboard later." }));
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSubmit = () => {
-    if (tab === "manual") { submitManual(); }
-    else { setShowSuccess(true); } // CSV is fire-and-forget for now; backend processes async
   };
 
   const goToDashboard = () => {
@@ -556,7 +619,7 @@ export default function AddMembers() {
       className="flex flex-col overflow-hidden"
       style={{ height: "100vh", backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
     >
-      <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 flex-shrink-0">
+      <header className="flex items-center justify-between px-8 py-4 bg-[#C9CBCF] border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
@@ -569,7 +632,7 @@ export default function AddMembers() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col pt-10 px-6">
+        <aside className="w-64 flex-shrink-0 bg-[#C9CBCF] border-r border-gray-200 flex flex-col pt-10 px-6">
           {STEPS.map((step, i) => {
             const isActive    = step.id === "members";
             const isCompleted = ["organization", "payment"].includes(step.id);
@@ -577,7 +640,7 @@ export default function AddMembers() {
             return (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isActive || isCompleted ? "bg-[#002FA7] text-white" : "bg-white border-2 border-gray-300 text-gray-400"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isActive || isCompleted ? "bg-[#002FA7] text-white" : "bg-[#C9CBCF] border-1 border-gray-250 text-gray-500"}`}>
                     {isCompleted
                       ? <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
@@ -586,7 +649,7 @@ export default function AddMembers() {
                   {!isLast && <div className="w-px my-1" style={{ minHeight: 40, background: isCompleted ? "#002FA7" : "#E5E7EB" }} />}
                 </div>
                 <div className="pt-1.5 pb-10">
-                  <span className={`text-sm font-medium ${isActive ? "text-[#002FA7]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}>{step.label}</span>
+                  <span className={`text-sm font-medium ${isActive ? "text-[#000000]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}>{step.label}</span>
                 </div>
               </div>
             );
@@ -634,7 +697,7 @@ export default function AddMembers() {
                 <>
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-sm text-gray-500">Upload a CSV file with member information</p>
-                    <button className="flex items-center gap-1.5 text-xs font-medium text-[#002FA7] hover:opacity-80 bg-transparent border-none cursor-pointer">
+                    <button onClick={downloadTemplate} className="flex items-center gap-1.5 text-xs font-medium text-[#002FA7] hover:opacity-80 bg-transparent border-none cursor-pointer">
                       <Download size={12} />Download Template
                     </button>
                   </div>
@@ -664,7 +727,8 @@ export default function AddMembers() {
                     <div className="flex gap-2">
                       <input type="url" value={fileUrl} onChange={(e) => setFileUrl(e.target.value)}
                         placeholder="Add File URL" className={inputCls} />
-                      <button className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-[#002FA7] hover:bg-[#002FA7]/10 transition-all flex-shrink-0 border-none cursor-pointer">
+                      <button onClick={handleSubmit} disabled={!fileUrl.trim() || loading}
+                        className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-[#002FA7] hover:bg-[#002FA7]/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50">
                         Upload
                       </button>
                     </div>
@@ -729,7 +793,7 @@ export default function AddMembers() {
               disabled={loading}
               className="w-full py-4 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all mt-6 border-none cursor-pointer disabled:opacity-60"
             >
-              {loading ? "Adding members…" : "Create Your Community"}
+              {loading ? "Adding members…" : "Finish Setup"}
             </button>
           </div>
         </main>

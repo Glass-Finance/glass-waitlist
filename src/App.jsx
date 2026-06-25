@@ -17,7 +17,6 @@ import MobileSignIn from "./pages/auth/MobileSignIn";
 
 // ── Onboarding pages ───────────────────────────────────────────────────────────
 import ChoosePath from "./pages/onboarding/ChoosePath";
-import PayingMember from "./pages/onboarding/PayingMember";
 import OrganizationProfile from "./pages/onboarding/OrganizationProfile";
 import PaymentProfile from "./pages/onboarding/PaymentProfile";
 import AddMembers from "./pages/onboarding/AddMembers";
@@ -95,7 +94,6 @@ function App() {
 
         {/* ── Onboarding ── */}
         <Route path="/onboarding/choose-path"          element={<ChoosePath />} />
-        <Route path="/onboarding/paying-member"        element={<PayingMember />} />
         <Route path="/onboarding/organization-profile" element={<OrganizationProfile />} />
         <Route path="/onboarding/payment-profile"      element={<PaymentProfile />} />
         <Route path="/onboarding/members"              element={<AddMembers />} />

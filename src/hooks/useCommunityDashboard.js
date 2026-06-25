@@ -23,10 +23,23 @@ async function fetchMembers(id) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// GET /api/v1/communities/{communityIdentifier}/activity
+// Real audit-log feed (event/description/actor/result/occurredAt) — replaces
+// deriving "recent activity" from the first few transactions, which only
+// ever showed payments and never member joins, reminders, etc.
+// ─────────────────────────────────────────────────────────────────────────────
+async function fetchActivity(id) {
+  const res = await client.get(`/communities/${id}/activity`, { params: { pageSize: 6 } });
+  return res.data.data;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // GET /api/v1/communities/{communityIdentifier}/finance/transactions
 // ─────────────────────────────────────────────────────────────────────────────
 async function fetchTransactions(id) {
-  const res = await client.get(`/communities/${id}/finance/transactions`);
+  // Paginated server-side — request a large page so the "Recent Activity"
+  // sort below isn't silently working off a single default-sized page.
+  const res = await client.get(`/communities/${id}/finance/transactions`, { params: { pageSize: 1000 } });
   return res.data.data;
 }
 
@@ -79,6 +92,17 @@ export function useCommunityDashboard(communityId) {
     },
   });
 
+  // ── Activity feed — separate from the rest so its skeleton doesn't wait
+  // on members/transactions, and a failure here doesn't blank the page ──────
+  const activityQuery = useQuery({
+    queryKey: ["community", communityId, "activity"],
+    queryFn: () => fetchActivity(communityId),
+    enabled,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 10,
+    select: (data) => data?.content ?? [],
+  });
+
   const isLoading =
     communityQuery.isLoading ||
     membersQuery.isLoading ||
@@ -101,6 +125,7 @@ export function useCommunityDashboard(communityId) {
     list: membersQuery.data ?? [],
     total: metrics.totalMembers ?? membersQuery.data?.length ?? 0,
     inactive: metrics.inactiveMembers ?? 0,
+    overdue: metrics.overdueMembers ?? 0,
   };
 
   return {
@@ -108,12 +133,17 @@ export function useCommunityDashboard(communityId) {
     balances,
     members,
     transactions: transactionsQuery.data ?? [],
+    activity: {
+      list: activityQuery.data ?? [],
+      isLoading: activityQuery.isLoading,
+    },
     isLoading,
     error,
     queries: {
       community: communityQuery,
       members: membersQuery,
       transactions: transactionsQuery,
+      activity: activityQuery,
     },
   };
 }
