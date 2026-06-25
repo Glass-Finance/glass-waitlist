@@ -536,8 +536,20 @@ export default function AddMembers() {
     else { setShowSuccess(true); } // CSV is fire-and-forget for now; backend processes async
   };
 
-  const goToDashboard = () =>
-    navigate(communitySlug ? `/dashboard/${communitySlug}/home` : "/dashboard/home", { replace: true });
+  const goToDashboard = () => {
+    if (communitySlug || communityId) {
+      // Matches the ?community= convention AdminDashboard/Sidebar read from —
+      // there's no /dashboard/:slug/home route, so navigating there 404s
+      // straight back to the landing page via the catch-all route.
+      localStorage.setItem(
+        "glass_community",
+        JSON.stringify({ id: communityId, slug: communitySlug, name: communityName }),
+      );
+      navigate(`/dashboard/admin?community=${communitySlug ?? communityId}`, { replace: true });
+    } else {
+      navigate("/dashboard/home", { replace: true });
+    }
+  };
 
   return (
     <div

@@ -21,7 +21,18 @@ export default function PaystackAccount() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    getBanks().then(({ data }) => { if (data.success) setBanks(data.data ?? []); })
+    getBanks().then(({ data }) => {
+      if (!data.success) return;
+      // The bank list has been observed to contain duplicate codes —
+      // dedupe so React's key={b.code} stays unique.
+      const seen = new Set();
+      const unique = (data.data ?? []).filter((b) => {
+        if (seen.has(b.code)) return false;
+        seen.add(b.code);
+        return true;
+      });
+      setBanks(unique);
+    })
       .catch((err) => notifyError(err, { context: "Load banks", fallback: "Couldn't load the bank list. Please refresh." }));
   }, []);
 

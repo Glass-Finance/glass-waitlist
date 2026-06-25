@@ -1,11 +1,18 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider, MutationCache } from "@tanstack/react-query";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "sonner";
 import App from "./App.jsx";
 import "./index.css";
 import { AuthProvider } from "./store/AuthContext.jsx";
 import { notifyError } from "./utils/errorHandler.js";
+
+// "Continue with Google" needs a real OAuth Client ID from Google Cloud
+// Console — see .env.example. Falls back to an empty string rather than
+// crashing the whole app if it isn't set yet; the Google button itself
+// will just fail to render/authenticate until it is.
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
 
 /**
  * QueryClient — React Query
@@ -59,21 +66,23 @@ createRoot(document.getElementById("root")).render(
       fetch functions as props.
     */}
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <App />
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <AuthProvider>
+          <App />
 
-        <Toaster
-          position="bottom-right"
-          richColors
-          closeButton
-          toastOptions={{
-            style: {
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "13px",
-            },
-          }}
-        />
-      </AuthProvider>
+          <Toaster
+            position="bottom-right"
+            richColors
+            closeButton
+            toastOptions={{
+              style: {
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "13px",
+              },
+            }}
+          />
+        </AuthProvider>
+      </GoogleOAuthProvider>
     </QueryClientProvider>
   </StrictMode>,
 );
