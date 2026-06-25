@@ -6,8 +6,8 @@ import {
 } from "react-router-dom";
 
 // ── Landing pages ──────────────────────────────────────────────────────────────
-import OrganizationsHome from "./pages/index";
-import MembersHome from "./pages/membersHome";
+import OrganizationsHome from "./pages/OrganizationsHome";
+import MembersHome from "./pages/MembersHome";
 
 // ── Auth pages ─────────────────────────────────────────────────────────────────
 import MemberAuth from "./pages/auth/MemberAuth";
