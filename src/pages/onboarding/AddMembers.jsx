@@ -435,7 +435,7 @@ import client from "../../api/client";
 
 const STEPS = [
   { id: "organization", label: "Organization Profile" },
-  { id: "payment",      label: "Payment Profile"      },
+  { id: "payment",      label: "Payment Account"      },
   { id: "members",      label: "Members"              },
 ];
 
