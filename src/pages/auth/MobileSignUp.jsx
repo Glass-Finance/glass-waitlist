@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useInviteToken } from "../../hooks/useInviteToken";
-import { register } from "../../api/auth";
+import { register, storeAuthSession } from "../../services/authService";
 
 // ── Import your actual assets ──────────────────────────────────────────────
 import glassLogo from "../../assets/cta/ctalogo.png";
@@ -688,9 +688,8 @@ export default function MobileSignUp() {
         password,
         ...(token && { inviteToken: token }),
       };
-      const res = await register(payload);
-      const { token: jwt } = res.data.data;
-      localStorage.setItem("glass_token", jwt);
+      const authData = await register(payload);
+      storeAuthSession(authData);
       consumeToken();
       navigate(token ? "/member/home" : "/member/invites", { replace: true });
     } catch (err) {

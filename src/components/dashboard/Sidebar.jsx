@@ -270,6 +270,7 @@ export default function Sidebar() {
   const pathParts = location.pathname.split("/").filter(Boolean);
   const routeSegment = pathParts[1] ?? "home"; // "home" | "admin" | "payments" | "members" | "settings"
   const activeSegment = routeSegment === "admin" ? "home" : routeSegment;
+  const onCommunitiesOverview = location.pathname === "/dashboard/home";
 
   // Active community: ?community= param, falling back to the last one
   // stashed in localStorage (see useActiveCommunity.js)
@@ -287,13 +288,12 @@ export default function Sidebar() {
   const activeCommunity = urlSlug
     ? (communities.find((c) => c.slug === urlSlug) ?? null)
     : null;
-
   // ── Handle logout ──────────────────────────────────────────────────────────
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
       await logout();
-      navigate("/sign-in", { replace: true });
+      navigate("/member/sign-in", { replace: true });
     } finally {
       setLoggingOut(false);
     }
@@ -337,7 +337,7 @@ export default function Sidebar() {
           onClick={() => navigate("/dashboard/home")}
           title="Your Communities"
           className={`w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center mb-3 transition-all ${
-            !urlSlug && pathParts[1] === "home"
+            onCommunitiesOverview
               ? "bg-white text-[#002FA7]"
               : "bg-white/15 text-white hover:bg-white/25"
           }`}
@@ -531,13 +531,14 @@ export default function Sidebar() {
               ? communityPath(activeCommunity.slug, path)
               : segment === "home"
                 ? "/dashboard/home"
-                : "#"; // disabled if no community selected
+                : null; // no community selected, or segment has no route yet
+            const isDisabled = !href;
 
             return (
               <button
                 key={segment}
-                onClick={() => (activeCommunity ? navigate(href) : undefined)}
-                disabled={!activeCommunity && segment !== "home"}
+                onClick={() => href && navigate(href)}
+                disabled={isDisabled}
                 style={{
                   width: "100%",
                   display: "flex",
@@ -546,14 +547,11 @@ export default function Sidebar() {
                   padding: "9px 10px",
                   borderRadius: 8,
                   border: "none",
-                  cursor:
-                    activeCommunity || segment === "home"
-                      ? "pointer"
-                      : "default",
+                  cursor: isDisabled ? "default" : "pointer",
                   background: isActive ? "#e6eeff" : "transparent",
                   color: isActive
                     ? "#002FA7"
-                    : !activeCommunity && segment !== "home"
+                    : isDisabled
                       ? "#d1d5db"
                       : "#6b7280",
                   fontWeight: isActive ? 700 : 500,
@@ -562,10 +560,10 @@ export default function Sidebar() {
                   transition: "all .15s",
                   fontFamily: "Inter, sans-serif",
                   whiteSpace: "nowrap",
-                  opacity: !activeCommunity && segment !== "home" ? 0.5 : 1,
+                  opacity: isDisabled ? 0.5 : 1,
                 }}
                 onMouseEnter={(e) => {
-                  if (!isActive && (activeCommunity || segment === "home"))
+                  if (!isActive && !isDisabled)
                     e.currentTarget.style.background = "#f9fafb";
                 }}
                 onMouseLeave={(e) => {

@@ -1,19 +1,14 @@
 // src/services/authService.js
 // Thin wrappers around the Authentication API endpoints.
 
-import api from "../lib/api";
+import client from "../api/client";
 
 /**
  * Register a new account.
  * @returns {Promise<{accessToken, refreshToken, userId, email, emailVerified, ...}>}
  */
-export async function register({ firstName, lastName, email, password }) {
-  const { data } = await api.post("/auth/register", {
-    firstName,
-    lastName,
-    email,
-    password,
-  });
+export async function register(payload) {
+  const { data } = await client.post("/auth/register", payload);
   return data.data;
 }
 
@@ -23,7 +18,7 @@ export async function register({ firstName, lastName, email, password }) {
  * @param {string} token - the OTP/verification code
  */
 export async function verifyEmail({ email, token }) {
-  const { data } = await api.post("/auth/verify", { email, token });
+  const { data } = await client.post("/auth/verify", { email, token });
   return data;
 }
 
@@ -31,7 +26,7 @@ export async function verifyEmail({ email, token }) {
  * Resend the verification email/code.
  */
 export async function resendVerification({ email }) {
-  const { data } = await api.post("/auth/verify/resend", { email });
+  const { data } = await client.post("/auth/verify/resend", { email });
   return data;
 }
 
@@ -39,7 +34,7 @@ export async function resendVerification({ email }) {
  * Log in with email + password.
  */
 export async function login({ email, password }) {
-  const { data } = await api.post("/auth/login", {
+  const { data } = await client.post("/auth/login", {
     email,
     password,
     deviceInfo: navigator.userAgent,
@@ -53,7 +48,7 @@ export async function login({ email, password }) {
 export async function logout() {
   const refreshToken = localStorage.getItem("refreshToken");
   if (!refreshToken) return;
-  const { data } = await api.post("/auth/logout", { refreshToken });
+  const { data } = await client.post("/auth/logout", { refreshToken });
   return data;
 }
 
@@ -61,7 +56,7 @@ export async function logout() {
  * Forgot password — sends reset email.
  */
 export async function forgotPassword({ email }) {
-  const { data } = await api.post("/auth/password/forgot", { email });
+  const { data } = await client.post("/auth/password/forgot", { email });
   return data;
 }
 
@@ -69,7 +64,7 @@ export async function forgotPassword({ email }) {
  * Reset password using the token from the reset email.
  */
 export async function resetPassword({ email, token, newPassword, confirmPassword }) {
-  const { data } = await api.post("/auth/password/reset", {
+  const { data } = await client.post("/auth/password/reset", {
     email,
     token,
     newPassword,
@@ -82,7 +77,7 @@ export async function resetPassword({ email, token, newPassword, confirmPassword
  * Google OAuth login/signup.
  */
 export async function googleAuth({ clientToken }) {
-  const { data } = await api.post("/auth/google", { clientToken });
+  const { data } = await client.post("/auth/google", { clientToken });
   return data.data;
 }
 
@@ -90,7 +85,7 @@ export async function googleAuth({ clientToken }) {
  * Complete MFA login with a TOTP code.
  */
 export async function verifyMfaLogin({ challengeToken, code }) {
-  const { data } = await api.post("/auth/mfa/totp/verify-login", {
+  const { data } = await client.post("/auth/mfa/totp/verify-login", {
     challengeToken,
     code,
     deviceInfo: navigator.userAgent,

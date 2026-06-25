@@ -93,20 +93,23 @@
 //   );
 // }
 
+
+
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { Search, ChevronRight } from "lucide-react";
+import Background from "../../../assets/background.png";
 
 const TABS = [
-  { label: "Account",   defaultPath: "/dashboard/settings/account",   match: "account"   },
-  { label: "Finance",   defaultPath: "/dashboard/settings/finance",   match: "finance"   },
-  { label: "Community", defaultPath: "/dashboard/settings/community", match: "community" },
+  { label: "Account",   defaultPath: "/dashboard/settings/account",                  match: "account"   },
+  { label: "Finance",   defaultPath: "/dashboard/settings/finance",                  match: "finance"   },
+  { label: "Community", defaultPath: "/dashboard/settings/community",                match: "community" },
 ];
 
-// Account tab menu items
 const ACCOUNT_ITEMS = [
-  { label: "Profile",  desc: "Configure your details to how you want them to appear on Glass.", path: "/dashboard/settings/account/profile"  },
-  { label: "My Role",  desc: "Define your membership and payment participation.",               path: "/dashboard/settings/account/role"     },
-  { label: "Security", desc: "Manage your password and account security.",                       path: "/dashboard/settings/account/security" },
+  { label: "Profile",       desc: "Configure your details to how you want them to appear on Glass.", path: "/dashboard/settings/account/profile"       },
+  { label: "My Role",       desc: "Tell us how you participate financially in this community.",       path: "/dashboard/settings/account/role"          },
+  { label: "Security",      desc: "Keep your account locked down with password and login controls.",  path: "/dashboard/settings/account/security"      },
+  { label: "Notifications", desc: "Choose which updates you get by email and SMS.",                   path: "/dashboard/settings/account/notifications" },
 ];
 
 // Finance tab menu items
@@ -116,13 +119,11 @@ const FINANCE_ITEMS = [
   { label: "Payout Account",   desc: "The account your community's collected dues are settled into.",  path: "/dashboard/settings/finance/paystack"          },
 ];
 
-// Community tab menu items
 const COMMUNITY_ITEMS = [
-  { label: "Community Profile", desc: "How your community looks and behaves to its members.",          path: "/dashboard/settings/community/profile"         },
-  { label: "Member Access",     desc: "Control who can join, and who else can manage this community.", path: "/dashboard/settings/community/member-access"   },
+  { label: "Community Profile", desc: "How your community looks and behaves to its members.",           path: "/dashboard/settings/community/profile"        },
+  { label: "Member Access",     desc: "Control who can join, and who else can manage this community.",  path: "/dashboard/settings/community/member-access"  },
 ];
 
-// Breadcrumb map
 const BREADCRUMB_MAP = {
   "account/profile":          { parent: "Account",   child: "Profile"           },
   "account/role":             { parent: "Account",   child: "My role"           },
@@ -143,14 +144,14 @@ function MenuList({ items }) {
         <button
           key={i}
           onClick={() => navigate(item.path)}
-          className="w-full flex items-center justify-between px-5 py-4 bg-white rounded-2xl text-left hover:bg-gray-50 transition-all cursor-pointer border-none"
+          className="w-full flex items-center justify-between px-5 py-4 bg-white rounded-xl text-left hover:bg-gray-50 transition-all cursor-pointer border-none"
           style={{ border: "1px solid #E5E7EB" }}
         >
           <div>
             <p className="text-sm font-semibold text-gray-900">{item.label}</p>
             <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
           </div>
-          <ChevronRight size={16} className="text-gray-400 flex-shrink-0 ml-4" />
+          <ChevronRight size={15} className="text-gray-400 flex-shrink-0 ml-4" />
         </button>
       ))}
     </div>
@@ -164,17 +165,24 @@ export default function Settings() {
 
   const activeTab = TABS.find(t => path.includes(t.match))?.label || "Account";
 
-  // Determine if we're on a menu page or a sub-page
+  // Determine if we're on the top-level tab (show menu) vs a sub-page (show Outlet)
+  const isAccountMenu   = path === "/dashboard/settings/account";
   const isFinanceMenu   = path === "/dashboard/settings/finance";
   const isCommunityMenu = path === "/dashboard/settings/community";
-  const isAccountMenu   = path === "/dashboard/settings/account";
 
-  // Breadcrumb — only shown on sub-pages, not menu pages
+  // Breadcrumb — only on sub-pages
   const crumbKey   = Object.keys(BREADCRUMB_MAP).find(k => path.includes(k));
   const breadcrumb = crumbKey ? BREADCRUMB_MAP[crumbKey] : null;
 
   return (
-    <div className="flex flex-col h-full px-8 py-8 overflow-y-auto">
+    <div
+      className="flex flex-col h-full px-8 py-8 overflow-y-auto"
+      style={{
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "contain",
+        backgroundPosition: "center",
+      }}
+    >
 
       {/* Heading + Search */}
       <div className="flex items-start justify-between mb-5">
@@ -194,7 +202,10 @@ export default function Settings() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 mb-6 bg-[#EFEFF1] rounded-md p-1 w-fit">
+      <div
+        className="flex gap-1 mb-6 bg-[#EFEFF1] rounded-md p-1 w-fit"
+        style={{ border: "1px solid #fafafa" }}
+      >
         {TABS.map(tab => {
           const isActive = activeTab === tab.label;
           return (
@@ -202,7 +213,9 @@ export default function Settings() {
               key={tab.label}
               onClick={() => navigate(tab.defaultPath)}
               className={`px-6 py-2 text-[13px] rounded transition-all cursor-pointer border-none font-medium
-                ${isActive ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-800"}`}
+                ${isActive
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "bg-transparent text-gray-500 hover:text-gray-800"}`}
             >
               {tab.label}
             </button>
@@ -210,7 +223,7 @@ export default function Settings() {
         })}
       </div>
 
-      {/* Breadcrumb — only on sub-pages */}
+      {/* Breadcrumb — only shown on sub-pages */}
       {breadcrumb && (
         <p className="text-sm text-gray-500 mb-5">
           <span className="text-gray-600">{breadcrumb.parent}</span>

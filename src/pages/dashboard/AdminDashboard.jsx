@@ -5,10 +5,10 @@
 // } from "lucide-react";
 // import Sidebar from "../../components/dashboard/Sidebar";
 // import Topbar from "../../components/dashboard/Topbar";
-// import totalMembersIcon     from "../../assets/dashboard/tdesign_member.png";
-// import inactiveMembersIcon  from "../../assets/dashboard/inactive_members.png";
+// import totalMembersIcon     from "../../assets/dashboard/tdesign-member.png";
+// import inactiveMembersIcon  from "../../assets/dashboard/inactive-members.png";
 // import totalContribIcon     from "../../assets/dashboard/tcontributions.png";
-// import activePlansIcon      from "../../assets/dashboard/active_plans.png";
+// import activePlansIcon      from "../../assets/dashboard/active-plans.png";
 // import TimerIcon            from "../../assets/dashboard/timer.png";
 // import RecurringPayment from "../../assets/dashboard/recurring-payment.png";
 // import OneTimePayment from "../../assets/dashboard/one-time-payment.png";
@@ -541,10 +541,10 @@ import { useCommunityDashboard } from "../../hooks/useCommunityDashboard";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { usePayments, useInitiatePayment } from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
-import totalMembersIcon    from "../../assets/dashboard/tdesign_member.png";
-import inactiveMembersIcon from "../../assets/dashboard/inactive_members.png";
+import totalMembersIcon    from "../../assets/dashboard/tdesign-member.png";
+import inactiveMembersIcon from "../../assets/dashboard/inactive-members.png";
 import totalContribIcon    from "../../assets/dashboard/tcontributions.png";
-import activePlansIcon     from "../../assets/dashboard/active_plans.png";
+import activePlansIcon     from "../../assets/dashboard/active-plans.png";
 import TimerIcon           from "../../assets/dashboard/timer.png";
 import RecurringPayment    from "../../assets/dashboard/recurring-payment.png";
 import OneTimePayment      from "../../assets/dashboard/one-time-payment.png";
@@ -1325,4 +1325,4 @@ export function PayingAdminDashboard() {
     })();
 
   return <DashboardContent isPaying={true} communityId={communityId} />;
-}
+}
