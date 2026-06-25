@@ -86,20 +86,22 @@ function App() {
             <Route path="payments"     element={<Payments />} />
 
             <Route path="settings" element={<Settings />}>
-              <Route index element={<Navigate to="account/profile" replace />} />
+              <Route index element={<Navigate to="account" replace />} />
 
-              {/* Account */}
-              <Route path="account"               element={<Navigate to="account/profile" replace />} />
+              {/* Account — bare path renders the menu list inside Settings.jsx */}
+              <Route path="account"               element={null} />
               <Route path="account/profile"       element={<Profile />} />
               <Route path="account/role"          element={<Role />} />
               <Route path="account/notifications" element={<Notifications />} />
               <Route path="account/security"      element={<Security />} />
 
-              {/* Finance — top level renders menu list inside Settings.jsx */}
+              {/* Finance — bare path renders the menu list inside Settings.jsx */}
+              <Route path="finance"                 element={null} />
               <Route path="finance/payment-methods" element={<PaymentMethod />} />
               <Route path="finance/auto-pay"        element={<AutoPay />} />
 
-              {/* Community — top level renders menu list inside Settings.jsx */}
+              {/* Community — bare path renders the menu list inside Settings.jsx */}
+              <Route path="community"               element={null} />
               <Route path="community/profile"       element={<CommunityProfile />} />
               <Route path="community/member-access" element={<MemberAccess />} />
             </Route>
