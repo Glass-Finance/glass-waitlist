@@ -519,6 +519,7 @@ import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
 import client from "../../api/client";
 import { useSlug } from "../../hooks/useSlug";
+import { useAuth } from "../../store/AuthContext";
 import { notifyError } from "../../utils/errorHandler";
 
 const CATEGORIES = [
@@ -555,6 +556,7 @@ export default function OrganizationProfile() {
 
   const email      = location.state?.email ?? "";
   const isPaying   = location.state?.isPaying ?? true;
+  const { updateUser } = useAuth();
 
   const [dragOver,  setDragOver]  = useState(false);
   const [logoFile,  setLogoFile]  = useState(null);   // File object
@@ -621,6 +623,15 @@ export default function OrganizationProfile() {
 
       const community = createRes.data?.data;
       if (!community?.id) throw new Error("Community creation failed.");
+
+      // AuthContext's isAdmin is derived from the role captured at
+      // register/login time, which is whatever generic role the backend
+      // assigned before this community existed — it's never refetched.
+      // Without this, ProtectedRoute's admin check still sees the old
+      // role after onboarding finishes and bounces straight to the
+      // member app, which then hits the device guard on desktop and
+      // dead-ends at the QR handoff instead of the dashboard.
+      updateUser({ role: "COMMUNITY_OWNER" });
 
       navigate("/onboarding/payment-profile", {
         state: { email, isPaying, communityId: community.id, communitySlug: community.slug, communityName: community.name },
