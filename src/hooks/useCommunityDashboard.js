@@ -30,14 +30,6 @@ async function fetchTransactions(id) {
   return res.data.data;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GET /api/v1/communities/{communityIdentifier}/finance/obligations
-// ─────────────────────────────────────────────────────────────────────────────
-async function fetchObligations(id) {
-  const res = await client.get(`/communities/${id}/finance/obligations`);
-  return res.data.data;
-}
-
 /**
  * useCommunityDashboard
  * Fetches everything the admin dashboard needs, in parallel.
@@ -87,32 +79,15 @@ export function useCommunityDashboard(communityId) {
     },
   });
 
-  // ── Obligations (payment plans) ─────────────────────────────────────────────
-  const obligationsQuery = useQuery({
-    queryKey: ["community", communityId, "obligations"],
-    queryFn: () => fetchObligations(communityId),
-    enabled,
-    staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 10,
-    select: (data) => {
-      const list = Array.isArray(data)
-        ? data
-        : (data?.content ?? data?.obligations ?? []);
-      return list;
-    },
-  });
-
   const isLoading =
     communityQuery.isLoading ||
     membersQuery.isLoading ||
-    transactionsQuery.isLoading ||
-    obligationsQuery.isLoading;
+    transactionsQuery.isLoading;
 
   const error =
     communityQuery.error ||
     membersQuery.error ||
-    transactionsQuery.error ||
-    obligationsQuery.error;
+    transactionsQuery.error;
 
   // ── Stat-card friendly shape, pulled straight from community.metrics ────────
   const metrics = communityQuery.data?.metrics ?? {};
@@ -133,14 +108,12 @@ export function useCommunityDashboard(communityId) {
     balances,
     members,
     transactions: transactionsQuery.data ?? [],
-    obligations: obligationsQuery.data ?? [],
     isLoading,
     error,
     queries: {
       community: communityQuery,
       members: membersQuery,
       transactions: transactionsQuery,
-      obligations: obligationsQuery,
     },
   };
 }

@@ -188,7 +188,7 @@
  * panel shows generic labels.
  */
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -200,7 +200,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
-import client from "../../api/client";
+import { useCommunities } from "../../hooks/useCommunities";
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
 // `path` is the route under /dashboard; "home" maps to the per-community
@@ -231,29 +231,6 @@ function communityPath(slug, path) {
   return `/dashboard/${path}?community=${slug}`;
 }
 
-// ─── Hook: fetch user's communities ──────────────────────────────────────────
-function useMyCommunities() {
-  const [communities, setCommunities] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const load = useCallback(async () => {
-    try {
-      const { data } = await client.get("/communities/me");
-      if (data.success) setCommunities(data.data?.content ?? []);
-    } catch {
-      // Network/auth failures are handled by client.js interceptor
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
-  return { communities, loading, reload: load };
-}
-
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -261,7 +238,8 @@ export default function Sidebar() {
   const [searchParams] = useSearchParams();
   const { logout, user } = useAuth();
 
-  const { communities, loading } = useMyCommunities();
+  const { data: communitiesData, isLoading: loading } = useCommunities();
+  const communities = communitiesData?.communities ?? [];
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 

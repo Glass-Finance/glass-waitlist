@@ -5,7 +5,6 @@ import {
   getMyAuthorisations,
   deleteAuthorisation,
   initiatePayment,
-  verifyPayment,
   getMe,
   getMyCommunities,
 } from "../api/members";
@@ -214,22 +213,6 @@ export function useInitiatePayment() {
       // Refresh obligations and transactions after successful payment
       queryClient.invalidateQueries({ queryKey: ["obligations"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-    },
-  });
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Verify payment after Paystack callback
-// ─────────────────────────────────────────────────────────────────────────────
-export function useVerifyPayment() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (payload) => verifyPayment(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["obligations"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["authorisations"] });
     },
   });
 }
