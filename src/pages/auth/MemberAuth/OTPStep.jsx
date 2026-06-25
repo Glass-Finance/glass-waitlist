@@ -29,8 +29,8 @@ export default function OTPStep({ email, onVerified, onBack }) {
     setError("");
     setLoading(true);
     try {
-      await verifyEmail({ email, token: otp.join("") });
-      onVerified();
+      const result = await verifyEmail({ email, token: otp.join("") });
+      onVerified(result);
     } catch (err) {
       setError(
         err.response?.data?.message ||

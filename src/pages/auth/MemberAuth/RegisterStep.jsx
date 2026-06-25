@@ -86,13 +86,13 @@ export default function RegisterStep({ onNext, onSwitch }) {
     }
     setLoading(true);
     try {
-      await register({
+      const result = await register({
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
         password: form.password,
       });
-      onNext(form.email);
+      onNext(form.email, result);
     } catch (err) {
       setError(
         err.response?.data?.message ||

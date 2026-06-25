@@ -19,7 +19,7 @@ export async function register(payload) {
  */
 export async function verifyEmail({ email, token }) {
   const { data } = await client.post("/auth/verify", { email, token });
-  return data;
+  return data.data;
 }
 
 /**
