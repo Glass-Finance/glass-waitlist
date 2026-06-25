@@ -189,7 +189,7 @@
  */
 
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import {
   LayoutDashboard,
   CreditCard,
@@ -203,13 +203,21 @@ import { useAuth } from "../../store/AuthContext";
 import client from "../../api/client";
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
-// `segment` is the last URL segment after the community slug
+// `segment` maps to a registered /dashboard route via SEGMENT_ROUTES below.
+// "members" has no route yet — communityPath() returns null for it, which
+// the nav loop treats as permanently disabled rather than linking to a 404.
 const NAV = [
   { icon: LayoutDashboard, label: "Dashboard", segment: "home" },
   { icon: CreditCard, label: "Payments", segment: "payments" },
   { icon: Users, label: "Members", segment: "members" },
   { icon: Settings, label: "Settings", segment: "settings" },
 ];
+
+const SEGMENT_ROUTES = {
+  home: "/dashboard/admin",
+  payments: "/dashboard/payments",
+  settings: "/dashboard/settings",
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function getInitials(name = "") {
@@ -221,8 +229,11 @@ function getInitials(name = "") {
     .join("");
 }
 
+// Community context travels via ?community=<slug> query param, matching
+// the scheme AdminDashboard/CommunitiesHome already read from and write to.
 function communityPath(slug, segment) {
-  return `/dashboard/${slug}/${segment}`;
+  const base = SEGMENT_ROUTES[segment];
+  return base ? `${base}?community=${slug}` : null;
 }
 
 // ─── Hook: fetch user's communities ──────────────────────────────────────────
@@ -252,35 +263,34 @@ function useMyCommunities() {
 export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { logout, user } = useAuth();
 
   const { communities, loading } = useMyCommunities();
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  // Derive active community slug from URL
-  // URL shape: /dashboard/:slug/:segment  or  /dashboard/home (no slug)
-  const pathParts = location.pathname.split("/").filter(Boolean);
-  // pathParts[0] = "dashboard"
-  // pathParts[1] = slug OR "home"
-  // pathParts[2] = segment (optional)
-  const urlSlug = pathParts[1] !== "home" ? pathParts[1] : null;
-  const urlSegment = pathParts[2] ?? "home";
+  // Community context comes from ?community=<slug>, not the URL path —
+  // matches AdminDashboard/CommunitiesHome's existing scheme.
+  const urlSlug = searchParams.get("community");
+  const onCommunitiesOverview = location.pathname === "/dashboard/home";
 
   // Active community object
   const activeCommunity = urlSlug
     ? (communities.find((c) => c.slug === urlSlug) ?? null)
     : null;
 
-  // Active nav item
-  const activeSegment = urlSegment;
+  // Active nav item — derived from which base route we're on
+  const activeSegment = Object.keys(SEGMENT_ROUTES).find(
+    (seg) => location.pathname === SEGMENT_ROUTES[seg],
+  );
 
   // ── Handle logout ──────────────────────────────────────────────────────────
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
       await logout();
-      navigate("/sign-in", { replace: true });
+      navigate("/member/sign-in", { replace: true });
     } finally {
       setLoggingOut(false);
     }
@@ -324,7 +334,7 @@ export default function Sidebar() {
           onClick={() => navigate("/dashboard/home")}
           title="Your Communities"
           className={`w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center mb-3 transition-all ${
-            !urlSlug && pathParts[1] === "home"
+            onCommunitiesOverview
               ? "bg-white text-[#002FA7]"
               : "bg-white/15 text-white hover:bg-white/25"
           }`}
@@ -515,13 +525,17 @@ export default function Sidebar() {
               ? communityPath(activeCommunity.slug, segment)
               : segment === "home"
                 ? "/dashboard/home"
-                : "#"; // disabled if no community selected
+                : null; // no community selected, or segment has no route yet
+            const isDisabled = !href;
 
             return (
               <button
                 key={segment}
-                onClick={() => (activeCommunity ? navigate(href) : undefined)}
-                disabled={!activeCommunity && segment !== "home"}
+                onClick={() => href && navigate(href)}
+                disabled={isDisabled}
+                title={
+                  segment === "members" ? "Coming soon" : undefined
+                }
                 style={{
                   width: "100%",
                   display: "flex",
@@ -530,14 +544,11 @@ export default function Sidebar() {
                   padding: "9px 10px",
                   borderRadius: 8,
                   border: "none",
-                  cursor:
-                    activeCommunity || segment === "home"
-                      ? "pointer"
-                      : "default",
+                  cursor: isDisabled ? "default" : "pointer",
                   background: isActive ? "#e6eeff" : "transparent",
                   color: isActive
                     ? "#002FA7"
-                    : !activeCommunity && segment !== "home"
+                    : isDisabled
                       ? "#d1d5db"
                       : "#6b7280",
                   fontWeight: isActive ? 700 : 500,
@@ -546,10 +557,10 @@ export default function Sidebar() {
                   transition: "all .15s",
                   fontFamily: "Inter, sans-serif",
                   whiteSpace: "nowrap",
-                  opacity: !activeCommunity && segment !== "home" ? 0.5 : 1,
+                  opacity: isDisabled ? 0.5 : 1,
                 }}
                 onMouseEnter={(e) => {
-                  if (!isActive && (activeCommunity || segment === "home"))
+                  if (!isActive && !isDisabled)
                     e.currentTarget.style.background = "#f9fafb";
                 }}
                 onMouseLeave={(e) => {
