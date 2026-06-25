@@ -26,6 +26,7 @@ import AddMembers from "./pages/onboarding/AddMembers";
 import DashboardLayout from "./layouts/DashboardLayout";
 import CommunitiesHome from "./pages/dashboard/CommunitiesHome";
 import AdminDashboard, { PayingAdminDashboard } from "./pages/dashboard/AdminDashboard";
+import Payments from "./pages/dashboard/Payments";
 
 // ── Settings ───────────────────────────────────────────────────────────────────
 import Settings from "./pages/dashboard/settings/Settings";
@@ -40,14 +41,14 @@ import MemberAccess from "./pages/dashboard/settings/community/MemberAccess";
 
 // ── Member app layout + pages ──────────────────────────────────────────────────
 import MemberAppLayout from "./layouts/MemberAppLayout";
-import MemberHome from "./pages/members/Home";
-import MemberTransactions from "./pages/members/Transactions";
-import MemberUpcoming from "./pages/members/UpcomingPayments";
-import MemberNotifications from "./pages/members/MemberNotifications";
-import ManagePayments from "./pages/members/ManagePayments";
-import PaymentSummary from "./pages/members/PaymentSummary";
-import PaymentSuccess from "./pages/members/PaymentSuccess";
-import Invites from "./pages/members/Invites";
+import MemberHome from "./pages/memberApp/Home";
+import MemberTransactions from "./pages/memberApp/Transactions";
+import MemberUpcoming from "./pages/memberApp/UpcomingPayments";
+import MemberNotifications from "./pages/memberApp/MemberNotifications";
+import ManagePayments from "./pages/memberApp/ManagePayments";
+import PaymentSummary from "./pages/memberApp/PaymentSummary";
+import PaymentSuccess from "./pages/memberApp/PaymentSuccess";
+import Invites from "./pages/memberApp/Invites";
 
 // ── Guards ───────────────────────────────────────────────────────────────────
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -82,6 +83,7 @@ function App() {
             <Route path="home"         element={<CommunitiesHome />} />
             <Route path="admin"        element={<AdminDashboard />} />
             <Route path="admin/paying" element={<PayingAdminDashboard />} />
+            <Route path="payments"     element={<Payments />} />
 
             <Route path="settings" element={<Settings />}>
               <Route index element={<Navigate to="account/profile" replace />} />
