@@ -17,6 +17,7 @@ import { Bell, ChevronDown, Check } from "lucide-react";
 import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
 import client from "../../api/client";
+import { notifyError } from "../../utils/errorHandler";
 
 const STEPS = [
   { id: "organization", label: "Organization Profile" },
@@ -79,7 +80,7 @@ export default function PaymentProfile() {
   useEffect(() => {
     client.get("/finance/banks")
       .then(({ data }) => { if (data.success) setBanks(data.data ?? []); })
-      .catch(() => {});
+      .catch((err) => notifyError(err, { context: "Load banks", fallback: "Couldn't load the bank list. Please refresh." }));
   }, []);
 
   // Auto-resolve when both bank + 10-digit account are set
@@ -94,8 +95,8 @@ export default function PaymentProfile() {
         });
         if (data.success) setAccName(data.data?.accountName ?? "");
         else setError("Could not resolve account. Check the number and try again.");
-      } catch {
-        setError("Could not resolve account. Check the number and try again.");
+      } catch (err) {
+        setError(notifyError(err, { context: "Resolve account", fallback: "Could not resolve account. Check the number and try again.", silent: true }));
       } finally {
         setResolving(false);
       }
@@ -128,7 +129,7 @@ export default function PaymentProfile() {
         });
       }, 1600);
     } catch (err) {
-      setError(err.response?.data?.message ?? "Failed to save account. Please try again.");
+      setError(notifyError(err, { context: "Save payment account" }));
     } finally {
       setSaving(false);
     }

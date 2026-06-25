@@ -4,6 +4,7 @@ import { Plus, Search, Filter, ChevronDown, RotateCcw, MoreHorizontal, X, Users,
 import { useActiveCommunityId } from "../../hooks/useActiveCommunity";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 const FALLBACK_ROLES = [
   { id: "MEMBER", name: "Member" },
@@ -314,7 +315,7 @@ export default function Members() {
           onClose={() => setModalOpen(false)}
           onAdd={handleAdd}
           adding={addMember.isPending}
-          error={addMember.error?.response?.data?.message}
+          error={addMember.error ? getErrorMessage(addMember.error) : null}
           roles={roles}
         />
       )}

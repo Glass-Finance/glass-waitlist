@@ -3,7 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { getMyInvites } from "../../api/invites";
-import { getMemberAuthRoute } from "../../utils/deviceRedirect";
+import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
+import { notifyError } from "../../utils/errorHandler";
 
 // ── Import your actual assets ──────────────────────────────────────────────
 import glassLogo from "../../assets/cta/ctalogo.png";
@@ -229,6 +230,14 @@ export default function MobileSignIn() {
         return;
       }
 
+      // The member app is mobile-only — a non-admin signing in from a
+      // desktop/tablet gets the QR handoff instead of a layout that was
+      // never built for that viewport.
+      if (!isMobileDevice()) {
+        navigate(mobileRequiredPath("/member/sign-in"), { replace: true });
+        return;
+      }
+
       const inviteRes = await getMyInvites();
 
       const invites = inviteRes?.data?.data || [];
@@ -243,9 +252,7 @@ export default function MobileSignIn() {
         });
       }
     } catch (err) {
-      const message =
-        err?.response?.data?.message || "Incorrect email or password.";
-      setError(message);
+      setError(notifyError(err, { context: "Sign in", fallback: "Incorrect email or password." }));
     } finally {
       setLoading(false);
     }

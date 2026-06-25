@@ -3,6 +3,7 @@ import { Landmark, ChevronDown, Check } from "lucide-react";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunity";
 import { useCommunityAccount } from "../../../../hooks/useCommunityAccount";
 import { getBanks, resolveAccount } from "../../../../api/members";
+import { getErrorMessage, notifyError } from "../../../../utils/errorHandler";
 
 const inputCls =
   "w-full border border-gray-300 px-3 py-2.5 rounded-lg text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
@@ -20,7 +21,8 @@ export default function PaystackAccount() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    getBanks().then(({ data }) => { if (data.success) setBanks(data.data ?? []); }).catch(() => {});
+    getBanks().then(({ data }) => { if (data.success) setBanks(data.data ?? []); })
+      .catch((err) => notifyError(err, { context: "Load banks", fallback: "Couldn't load the bank list. Please refresh." }));
   }, []);
 
   useEffect(() => {
@@ -32,8 +34,8 @@ export default function PaystackAccount() {
         const { data } = await resolveAccount(bankCode, accNumber);
         if (data.success) setAccName(data.data?.accountName ?? "");
         else setError("Could not resolve account. Check the number and try again.");
-      } catch {
-        setError("Could not resolve account. Check the number and try again.");
+      } catch (err) {
+        setError(getErrorMessage(err, "Could not resolve account. Check the number and try again."));
       } finally {
         setResolving(false);
       }
@@ -61,7 +63,7 @@ export default function PaystackAccount() {
       setBankCode("");
       setAccName("");
     } catch (err) {
-      setError(err.response?.data?.message ?? "Failed to save account. Please try again.");
+      setError(getErrorMessage(err, "Failed to save account. Please try again."));
     }
   };
 

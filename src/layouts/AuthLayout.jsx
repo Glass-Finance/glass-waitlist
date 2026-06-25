@@ -59,7 +59,12 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
       </div>
 
       {/* Right content */}
-      <div className="flex-1 h-full flex flex-col justify-center items-center px-12 bg-[#F5F5F6] overflow-y-auto">
+      {/* No justify-center here: when content (e.g. the registration form)
+          is taller than the viewport, centering a scrollable flex container
+          crops the top of the content — including the heading — above the
+          visible scroll area. Top-aligning with padding keeps the start of
+          the content reachable on load for forms of any height. */}
+      <div className="flex-1 h-full flex flex-col items-center px-12 py-10 bg-[#F5F5F6] overflow-y-auto">
         {children}
       </div>
     </div>

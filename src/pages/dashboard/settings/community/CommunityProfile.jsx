@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunity";
 import { useCommunity, useUpdateCommunity } from "../../../../hooks/useCommunity";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
+import { getErrorMessage } from "../../../../utils/errorHandler";
 
 const CATEGORIES = [
   "Alumni Association",
@@ -82,7 +83,7 @@ export default function CommunityProfile() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
-      setError(err.response?.data?.message ?? "Failed to save changes.");
+      setError(getErrorMessage(err, "Failed to save changes."));
     }
   };
 
@@ -105,7 +106,7 @@ export default function CommunityProfile() {
       const logoFileId = uploadRes.data?.data?.id;
       await updateCommunity.mutateAsync({ logoFileId });
     } catch (err) {
-      setError(err.response?.data?.message ?? "Failed to upload logo.");
+      setError(getErrorMessage(err, "Failed to upload logo."));
     }
   };
 

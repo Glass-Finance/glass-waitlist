@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { verifyEmail, resendVerification } from "../../../services/authService";
+import { notifyError } from "../../../utils/errorHandler";
 
 // ── Step 2: OTP Verification ───────────────────────────────────────────────────
 export default function OTPStep({ email, onVerified, onBack }) {
@@ -32,10 +33,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
       const result = await verifyEmail({ email, token: otp.join("") });
       onVerified(result);
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Invalid or expired code. Please try again.",
-      );
+      setError(notifyError(err, { context: "Verify OTP", fallback: "Invalid or expired code. Please try again." }));
     } finally {
       setLoading(false);
     }
@@ -47,8 +45,8 @@ export default function OTPStep({ email, onVerified, onBack }) {
     try {
       await resendVerification({ email });
       setResendMessage("A new code has been sent.");
-    } catch {
-      setResendMessage("Could not resend. Please try again.");
+    } catch (err) {
+      setResendMessage(notifyError(err, { context: "Resend OTP", fallback: "Could not resend. Please try again.", silent: true }));
     } finally {
       setResending(false);
     }

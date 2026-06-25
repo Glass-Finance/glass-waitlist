@@ -519,6 +519,7 @@ import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
 import client from "../../api/client";
 import { useSlug } from "../../hooks/useSlug";
+import { notifyError } from "../../utils/errorHandler";
 
 const CATEGORIES = [
   "Alumni Association", "Faith Community", "Professional Association",
@@ -562,7 +563,7 @@ export default function OrganizationProfile() {
   const [loading,   setLoading]   = useState(false);
 
   const [form, setForm] = useState({
-    communityName: "", description: "", category: "",
+    communityName: "", description: "", category: "", contactEmail: email,
   });
 
   const { slug, setSlug, available, checking, suggesting, suggestFrom } =
@@ -588,6 +589,7 @@ export default function OrganizationProfile() {
 
     if (!form.communityName.trim()) { setError("Community name is required."); return; }
     if (!form.category)             { setError("Please select a category.");   return; }
+    if (!form.contactEmail.trim())  { setError("A contact email is required."); return; }
     if (!slug.trim())               { setError("Please choose a community URL slug."); return; }
     if (available === false)        { setError("That URL slug is already taken — pick another."); return; }
 
@@ -611,6 +613,7 @@ export default function OrganizationProfile() {
         slug:        slug.trim(),
         description: form.description.trim(),
         category:    [form.category],
+        contactEmail: form.contactEmail.trim(),
         publicVisible: true,
         requiresMemberApproval: false,
         ...(logoFileId ? { logoFileId } : {}),
@@ -624,7 +627,7 @@ export default function OrganizationProfile() {
       });
 
     } catch (err) {
-      setError(err.response?.data?.message ?? err.message ?? "Something went wrong. Please try again.");
+      setError(notifyError(err, { context: "Create community" }));
     } finally {
       setLoading(false);
     }
@@ -722,6 +725,15 @@ export default function OrganizationProfile() {
                 {available === true && !checking && (
                   <span className="text-xs text-green-600">glasspay.app/join/{slug}</span>
                 )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-5 mb-5">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-gray-700">Contact Email *</label>
+                <input type="email" name="contactEmail" value={form.contactEmail} onChange={handleChange}
+                  placeholder="e.g. contact@babcockalumni.org" className={inputCls} />
+                <p className="text-xs text-gray-400">Where Glass and members can reach your community.</p>
               </div>
             </div>
 

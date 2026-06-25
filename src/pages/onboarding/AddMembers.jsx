@@ -432,6 +432,7 @@ import { Bell, Download, CloudUpload, Copy, Trash2, Plus, Check } from "lucide-r
 import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
 import client from "../../api/client";
+import { notifyError } from "../../utils/errorHandler";
 
 const STEPS = [
   { id: "organization", label: "Organization Profile" },
@@ -524,7 +525,7 @@ export default function AddMembers() {
       );
       setShowSuccess(true);
     } catch (err) {
-      setError(err.response?.data?.message ?? "Failed to add some members. You can add them from the dashboard later.");
+      setError(notifyError(err, { context: "Add members", fallback: "Failed to add some members. You can add them from the dashboard later." }));
     } finally {
       setLoading(false);
     }

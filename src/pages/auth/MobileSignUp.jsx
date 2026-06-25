@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Info } from "lucide-react";
 import { useInviteToken } from "../../hooks/useInviteToken";
 import { register, storeAuthSession } from "../../services/authService";
+import { notifyError } from "../../utils/errorHandler";
 
 // ── Import your actual assets ──────────────────────────────────────────────
 import glassLogo from "../../assets/cta/ctalogo.png";
@@ -722,10 +723,7 @@ export default function MobileSignUp() {
       consumeToken();
       navigate(token ? "/member/home" : "/member/invites", { replace: true });
     } catch (err) {
-      const message =
-        err?.response?.data?.message ||
-        "Something went wrong. Please try again.";
-      setError(message);
+      setError(notifyError(err, { context: "Member register" }));
       setLoading(false);
     }
   }

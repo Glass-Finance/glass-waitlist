@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { register } from "../../../services/authService";
+import { notifyError } from "../../../utils/errorHandler";
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
 const inputCls =
@@ -100,10 +101,7 @@ export default function RegisterStep({ onNext, onSwitch }) {
       });
       onNext(form.email, result);
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Something went wrong. Please try again.",
-      );
+      setError(notifyError(err, { context: "Register" }));
     } finally {
       setLoading(false);
     }
