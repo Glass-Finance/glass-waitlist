@@ -17,6 +17,13 @@ const STATUS_MESSAGES = {
   409: "That already exists or conflicts with something else.",
   422: "Some of the information provided isn't valid.",
   429: "Too many attempts — please wait a moment and try again.",
+  // 502/503/504 mean OUR server failed to get a valid response from
+  // whatever it's calling internally (Paystack, most often, for anything
+  // bank/payment related) — distinct from "we have a bug," so worth its
+  // own message rather than the generic 500 fallback.
+  502: "Our service is temporarily unavailable. Please try again in a moment.",
+  503: "Our service is temporarily unavailable. Please try again in a moment.",
+  504: "That took too long to respond. Please try again in a moment.",
 };
 
 function fallbackForStatus(status) {
