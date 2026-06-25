@@ -1,5 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMe, updateProfile, updatePassword, updateEmail, getMyCommunities, getMyMemberRecord } from "../api/members";
+import { getMe, updateProfile, updatePassword, updateEmail, getMyCommunities, getMyMemberRecord, leaveCommunity } from "../api/members";
+
+function unwrapList(res) {
+  const data = res.data?.data;
+  if (Array.isArray(data)) return data;
+  return data?.content ?? [];
+}
 
 // ─── Current user ─────────────────────────────────────────────────────────────
 export function useMe() {
@@ -48,9 +54,20 @@ export function useMyCommunities() {
     queryKey: ["communities"],
     queryFn: async () => {
       const res = await getMyCommunities();
-      return res.data?.data ?? [];
+      return unwrapList(res);
     },
     staleTime: 1000 * 60 * 5,
+  });
+}
+
+// ─── Leave a community ────────────────────────────────────────────────────────
+export function useLeaveCommunity() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (communityId) => leaveCommunity(communityId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["communities"] });
+    },
   });
 }
 

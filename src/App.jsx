@@ -53,6 +53,14 @@ import ManagePayments from "./pages/memberApp/ManagePayments";
 import PaymentSummary from "./pages/memberApp/PaymentSummary";
 import PaymentSuccess from "./pages/memberApp/PaymentSuccess";
 import Invites from "./pages/memberApp/Invites";
+import MemberSettings from "./pages/memberApp/Settings";
+import MemberProfile from "./pages/memberApp/Profile";
+import MyCommunities from "./pages/memberApp/MyCommunities";
+import MemberSecurity from "./pages/memberApp/Security";
+import MemberPassword from "./pages/memberApp/Password";
+import MemberAuthentication from "./pages/memberApp/Authentication";
+import MemberAutoPay from "./pages/memberApp/AutoPay";
+import MemberNotificationSettings from "./pages/memberApp/NotificationSettings";
 
 // ── Guards ───────────────────────────────────────────────────────────────────
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -128,6 +136,15 @@ function App() {
             <Route path="pay/:paymentId"         element={<PaymentSummary />} />
             <Route path="pay/:paymentId/success" element={<PaymentSuccess />} />
             <Route path="invites"                element={<Invites />} />
+
+            <Route path="settings"                       element={<MemberSettings />} />
+            <Route path="profile"                        element={<MemberProfile />} />
+            <Route path="communities"                    element={<MyCommunities />} />
+            <Route path="security"                       element={<MemberSecurity />} />
+            <Route path="security/password"              element={<MemberPassword />} />
+            <Route path="security/authentication"        element={<MemberAuthentication />} />
+            <Route path="auto-pay"                        element={<MemberAutoPay />} />
+            <Route path="notification-settings"           element={<MemberNotificationSettings />} />
           </Route>
         </Route>
 
