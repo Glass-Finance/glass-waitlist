@@ -74,7 +74,11 @@ function shapeAuthorisation(raw) {
     reusable: raw.reusable,
     status: raw.status,
     consents: (raw.consents ?? []).map((c) => ({
-      id: c.id,
+      // The consent object's id field is `consentId`, not `id` — using the
+      // wrong key meant every consent rendered with key={undefined} in
+      // ManagePayments, which silently breaks React's identity tracking
+      // for any authorisation with more than one active consent.
+      id: c.consentId,
       planStatus: c.planStatus,
       communityName: c.community?.name,
       paymentLinkTitle: c.paymentLink?.title,

@@ -26,7 +26,7 @@ const STEPS = [
 ];
 
 const inputCls =
-  "w-full border border-gray-700 bg-[#C9CBCF] p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
+  "w-full border-1 border-gray-200 bg-white p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
 
 function StepIcon({ id, completed }) {
   if (completed) return (
@@ -153,7 +153,7 @@ export default function PaymentProfile() {
     >
       {showSuccess && <SuccessModal />}
 
-      <header className="flex items-center justify-between px-8 py-4 bg-[#C9CBCF] border-b border-gray-200 flex-shrink-0">
+      <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
@@ -166,7 +166,7 @@ export default function PaymentProfile() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-[#C9CBCF] border-r border-gray-200 flex flex-col pt-10 px-6">
+        <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col pt-10 px-6">
           {STEPS.map((step, i) => {
             const isActive    = step.id === "payment";
             const isCompleted = step.id === "organization";
@@ -174,7 +174,7 @@ export default function PaymentProfile() {
             return (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isActive || isCompleted ? "bg-[#002FA7] text-white" : "bg-[#C9CBCF] border-1 border-gray-250 text-gray-500"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isActive || isCompleted ? "bg-[#002FA7] text-white" : "bg-white border-1 border-gray-250 text-gray-500"}`}>
                     <StepIcon id={step.id} completed={isCompleted} />
                   </div>
                   {!isLast && <div className="w-px my-1" style={{ minHeight: 40, background: isCompleted ? "#002FA7" : "#E5E7EB" }} />}
@@ -192,7 +192,7 @@ export default function PaymentProfile() {
         {/* Main */}
         <main className="flex-1 overflow-y-auto py-10 px-12">
           <div className="w-full max-w-3xl">
-            <div className="bg-[#C9CBCF] rounded-lg px-8 py-7" style={{ border: "1px solid #E5E7EB" }}>
+            <div className="bg-white rounded-lg px-8 py-7" style={{ border: "1px solid #E5E7EB" }}>
               <div className="mb-6 pb-5" style={{ borderBottom: "1px solid #E5E7EB" }}>
                 <h2 className="text-lg font-semibold text-gray-900 mb-1">Set up your payment Account</h2>
                 <p className="text-sm text-gray-500">
