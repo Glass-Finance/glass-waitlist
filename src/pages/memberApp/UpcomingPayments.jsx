@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Clock } from "lucide-react";
-import { usePayments, useInitiatePayment } from "../../hooks/usePayments";
+import { usePayments } from "../../hooks/usePayments";
 
 const FILTER_OPTIONS = ["All", "Recurring", "One-time"];
 
@@ -217,9 +217,7 @@ function PaymentRow({ item, onPay, paying }) {
 export default function UpcomingPayments() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("All");
-  const [error, setError] = useState("");
   const { data, isLoading, error: loadError } = usePayments();
-  const initiatePayment = useInitiatePayment();
 
   const upcoming = data?.upcoming ?? [];
   const filtered = upcoming.filter((item) => {
@@ -228,24 +226,8 @@ export default function UpcomingPayments() {
     return item.type === "one-time";
   });
 
-  async function handlePay(item) {
-    setError("");
-    try {
-      const res = await initiatePayment.mutateAsync({
-        paymentLinkId: item.paymentLinkId,
-        payload: { email: data?.user?.email },
-      });
-      const url = res.data?.data?.authorizationUrl;
-      if (url) {
-        window.location.href = url;
-      } else {
-        navigate("/member/payment-success");
-      }
-    } catch (err) {
-      setError(
-        err.response?.data?.message ?? "Could not start payment. Try again."
-      );
-    }
+  function handlePay(item) {
+    navigate(`/member/pay/${item.id}`);
   }
 
   return (
@@ -296,12 +278,6 @@ export default function UpcomingPayments() {
         <FilterDropdown value={filter} onChange={setFilter} />
       </div>
 
-      {error && (
-        <p style={{ color: "#DC2626", fontSize: 13, padding: "0 16px 12px" }}>
-          {error}
-        </p>
-      )}
-
       {/* List card */}
       <div
         style={{
@@ -330,12 +306,7 @@ export default function UpcomingPayments() {
           </p>
         ) : (
           filtered.map((item) => (
-            <PaymentRow
-              key={item.id}
-              item={item}
-              onPay={handlePay}
-              paying={initiatePayment.isPending}
-            />
+            <PaymentRow key={item.id} item={item} onPay={handlePay} />
           ))
         )}
       </div>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Menu,
   Bell,
   ChevronDown,
   Clock,
@@ -12,61 +11,8 @@ import {
   LogOut,
   X,
 } from "lucide-react";
-
-// ---------------------------------------------------------------------------
-// Mock data — matches Figma exactly
-// ---------------------------------------------------------------------------
-const MOCK_USER = { firstName: "David" };
-const MOCK_COMMUNITY = { name: "Kings College Community" };
-
-const MOCK_NEXT_DUE = {
-  id: "1",
-  type: "recurring",
-  amount: 15000,
-  description: "Alumni Contribution",
-  dueDate: "2025-06-01",
-};
-
-const MOCK_UPCOMING = [
-  {
-    id: "2",
-    amount: 2500,
-    type: "recurring",
-    description: "Infrastructure Development",
-    dueDate: "2025-06-15",
-  },
-  {
-    id: "3",
-    amount: 8500,
-    type: "one-time",
-    description: "School Fees Support",
-    dueDate: "2025-06-15",
-  },
-];
-
-const MOCK_HISTORY = [
-  {
-    id: "h1",
-    description: "Membership",
-    date: "2026-05-01",
-    amount: 24000,
-    status: "success",
-  },
-  {
-    id: "h2",
-    description: "Membership",
-    date: "2026-05-01",
-    amount: 24000,
-    status: "failed",
-  },
-  {
-    id: "h3",
-    description: "Membership",
-    date: "2026-05-01",
-    amount: 24000,
-    status: "success",
-  },
-];
+import { usePayments } from "../../hooks/usePayments";
+import { useAuth } from "../../store/AuthContext";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -78,11 +24,12 @@ function formatNaira(amount) {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   })
-    .format(amount)
+    .format(amount ?? 0)
     .replace("NGN", "₦");
 }
 
 function formatDate(dateString) {
+  if (!dateString) return "—";
   return new Date(dateString).toLocaleDateString("en-NG", {
     day: "numeric",
     month: "long",
@@ -91,11 +38,22 @@ function formatDate(dateString) {
 }
 
 function formatDateShort(dateString) {
+  if (!dateString) return "—";
   return new Date(dateString).toLocaleDateString("en-NG", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
+}
+
+function firstName(user) {
+  try {
+    const ud = typeof user?.userData === "string" ? JSON.parse(user.userData) : user?.userData;
+    if (ud?.firstName) return ud.firstName;
+  } catch {
+    /* ignore */
+  }
+  return user?.email?.split("@")[0] ?? "there";
 }
 
 // ---------------------------------------------------------------------------
@@ -110,6 +68,13 @@ const NAV_ITEMS = [
 
 function SideDrawer({ open, onClose }) {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  async function handleLogout() {
+    onClose();
+    await logout();
+    navigate("/member/sign-in", { replace: true });
+  }
 
   return (
     <>
@@ -224,9 +189,7 @@ function SideDrawer({ open, onClose }) {
 
         {/* Log out — pinned to bottom */}
         <button
-          onClick={() => {
-            onClose(); /* logout logic here */
-          }}
+          onClick={handleLogout}
           style={{
             display: "flex",
             alignItems: "center",
@@ -253,8 +216,26 @@ function SideDrawer({ open, onClose }) {
 // ---------------------------------------------------------------------------
 // Hero card
 // ---------------------------------------------------------------------------
-function HeroCard({ onPay }) {
-  const p = MOCK_NEXT_DUE;
+function HeroCard({ nextDue, onPay }) {
+  if (!nextDue) {
+    return (
+      <div
+        style={{
+          margin: "0 16px",
+          borderRadius: 16,
+          background: "#002FA7",
+          padding: "28px 20px",
+          textAlign: "center",
+        }}
+      >
+        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.8)", margin: 0 }}>
+          You're all caught up — nothing due right now.
+        </p>
+      </div>
+    );
+  }
+
+  const isRecurring = nextDue.type === "recurring";
 
   return (
     <div
@@ -281,7 +262,7 @@ function HeroCard({ onPay }) {
           fontWeight: 500,
         }}
       >
-        Recurring
+        {isRecurring ? "Recurring" : "One-time"}
       </div>
 
       {/* Label */}
@@ -307,7 +288,7 @@ function HeroCard({ onPay }) {
           marginBottom: 14,
         }}
       >
-        ₦15,000
+        {formatNaira(nextDue.amount)}
       </p>
 
       {/* Plan name badge */}
@@ -322,7 +303,7 @@ function HeroCard({ onPay }) {
           marginBottom: 10,
         }}
       >
-        Alumni Contribution
+        {nextDue.name}
       </div>
 
       {/* Due date */}
@@ -337,12 +318,12 @@ function HeroCard({ onPay }) {
         }}
       >
         <Clock size={12} strokeWidth={1.8} />
-        <span>Due June 1, 2025</span>
+        <span>Due {formatDate(nextDue.dueDate)}</span>
       </div>
 
       {/* Pay Now button */}
       <button
-        onClick={() => onPay(p)}
+        onClick={() => onPay(nextDue)}
         style={{
           width: "100%",
           padding: "14px 0",
@@ -397,11 +378,6 @@ function UpcomingRow({ payment, onPay }) {
           <span style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>
             {formatNaira(payment.amount)}
           </span>
-          {isRecurring && (
-            <span style={{ fontSize: 12, color: "#888", fontWeight: 400 }}>
-              /month
-            </span>
-          )}
         </div>
         <p
           style={{
@@ -411,7 +387,7 @@ function UpcomingRow({ payment, onPay }) {
             marginBottom: 4,
           }}
         >
-          {payment.description}
+          {payment.name}
         </p>
         <div
           style={{
@@ -497,15 +473,7 @@ function HistoryRow({ item }) {
         >
           {item.description}
         </p>
-        <p style={{ fontSize: 12, color: "#999" }}>
-          {new Date(item.date)
-            .toLocaleDateString("en-NG", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })
-            .replace(",", ",")}
-        </p>
+        <p style={{ fontSize: 12, color: "#999" }}>{formatDateShort(item.date)}</p>
       </div>
       <div
         style={{
@@ -541,10 +509,16 @@ function HistoryRow({ item }) {
 export default function Home() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data, isLoading } = usePayments();
+
+  const nextDue = data?.nextDue ?? null;
+  const upcoming = (data?.upcoming ?? []).filter((o) => o.id !== nextDue?.id).slice(0, 2);
+  const history = (data?.history ?? []).slice(0, 3);
+  const communityName = data?.community?.name ?? "Your Community";
+  const communityInitial = communityName.charAt(0).toUpperCase();
 
   function handlePay(payment) {
-    // navigate(`/member/pay/${payment.id}`);
-    console.log("pay", payment);
+    navigate(`/member/pay/${payment.id}`);
   }
 
   return (
@@ -582,44 +556,13 @@ export default function Home() {
               gap: 5,
             }}
           >
-            <span
-              style={{
-                display: "block",
-                width: 22,
-                height: 2,
-                background: "#222",
-                borderRadius: 2,
-              }}
-            />
-            <span
-              style={{
-                display: "block",
-                width: 22,
-                height: 2,
-                background: "#222",
-                borderRadius: 2,
-              }}
-            />
-            <span
-              style={{
-                display: "block",
-                width: 22,
-                height: 2,
-                background: "#222",
-                borderRadius: 2,
-              }}
-            />
+            <span style={{ display: "block", width: 22, height: 2, background: "#222", borderRadius: 2 }} />
+            <span style={{ display: "block", width: 22, height: 2, background: "#222", borderRadius: 2 }} />
+            <span style={{ display: "block", width: 22, height: 2, background: "#222", borderRadius: 2 }} />
           </button>
 
           {/* Community pill */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 7,
-            }}
-          >
-            {/* Favicon placeholder — replace with actual community logo */}
+          <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
             <div
               style={{
                 width: 28,
@@ -632,14 +575,15 @@ export default function Home() {
                 color: "#fff",
                 fontSize: 11,
                 fontWeight: 700,
+                flexShrink: 0,
               }}
             >
-              K
+              {communityInitial}
             </div>
-            <span style={{ fontSize: 14, fontWeight: 500, color: "#111" }}>
-              Kings College Community
+            <span style={{ fontSize: 14, fontWeight: 500, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 150 }}>
+              {communityName}
             </span>
-            <ChevronDown size={14} strokeWidth={2} style={{ color: "#666" }} />
+            <ChevronDown size={14} strokeWidth={2} style={{ color: "#666", flexShrink: 0 }} />
           </div>
 
           {/* Bell */}
@@ -657,6 +601,7 @@ export default function Home() {
               alignItems: "center",
               justifyContent: "center",
               boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+              flexShrink: 0,
             }}
           >
             <Bell size={17} strokeWidth={1.8} style={{ color: "#333" }} />
@@ -665,135 +610,88 @@ export default function Home() {
 
         {/* ── Greeting ────────────────────────────────────────────────────── */}
         <div style={{ padding: "4px 20px 20px" }}>
-          <h1
-            style={{ fontSize: 24, fontWeight: 500, color: "#111", margin: 0 }}
-          >
-            Hi David,
+          <h1 style={{ fontSize: 24, fontWeight: 500, color: "#111", margin: 0 }}>
+            Hi {firstName(data?.user)},
           </h1>
-          <p
-            style={{
-              fontSize: 13,
-              color: "#888",
-              marginTop: 3,
-              fontWeight: 400,
-            }}
-          >
+          <p style={{ fontSize: 13, color: "#888", marginTop: 3, fontWeight: 400 }}>
             Here's Your Community At A Glance
           </p>
         </div>
 
-        {/* ── Hero card ───────────────────────────────────────────────────── */}
-        <HeroCard onPay={handlePay} />
+        {isLoading ? (
+          <p style={{ textAlign: "center", color: "#999", fontSize: 13 }}>Loading…</p>
+        ) : (
+          <>
+            {/* ── Hero card ───────────────────────────────────────────────────── */}
+            <HeroCard nextDue={nextDue} onPay={handlePay} />
 
-        {/* ── Upcoming Payments ────────────────────────────────────────────── */}
-        <div
-          style={{
-            margin: "16px 16px 0",
-            background: "#EFEFF1E5",
-            borderRadius: 16,
-            padding: "16px 16px 4px",
-            boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-          }}
-        >
-          {/* Header */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 4,
-            }}
-          >
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
-              Upcoming Payments
-            </span>
-            <button
+            {/* ── Upcoming Payments ────────────────────────────────────────────── */}
+            <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: 13,
-                fontWeight: 600,
-                color: "#1C2B8A",
-                padding: 0,
+                margin: "16px 16px 0",
+                background: "#EFEFF1E5",
+                borderRadius: 16,
+                padding: "16px 16px 4px",
+                boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
               }}
             >
-              Filter
-              <ChevronDown size={13} strokeWidth={2.2} />
-            </button>
-          </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Upcoming Payments</span>
+              </div>
 
-          {/* Rows */}
-          {MOCK_UPCOMING.map((p) => (
-            <UpcomingRow key={p.id} payment={p} onPay={handlePay} />
-          ))}
+              {upcoming.length === 0 ? (
+                <p style={{ fontSize: 13, color: "#999", padding: "12px 0 16px" }}>Nothing else due soon.</p>
+              ) : (
+                upcoming.map((p) => <UpcomingRow key={p.id} payment={p} onPay={handlePay} />)
+              )}
 
-          {/* View All */}
-          <button
-            onClick={() => navigate("/member/upcoming")}
-            style={{
-              display: "block",
-              width: "100%",
-              padding: "4px 0 10px",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 600,
-              color: "#1C2B8A",
-              textAlign: "center",
-            }}
-          >
-            View All
-          </button>
-        </div>
+              <button
+                onClick={() => navigate("/member/upcoming")}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  padding: "4px 0 10px",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "#1C2B8A",
+                  textAlign: "center",
+                }}
+              >
+                View All
+              </button>
+            </div>
 
-        {/* ── Payment History ──────────────────────────────────────────────── */}
-        <div
-          style={{
-            margin: "16px 16px 0",
-            background: "#EFEFF1E5",
-            borderRadius: 16,
-            padding: "16px 16px 4px",
-            boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-          }}
-        >
-          {/* Header */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 4,
-            }}
-          >
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
-              Payment History
-            </span>
-            <button
-              onClick={() => navigate("/member/transactions")}
+            {/* ── Payment History ──────────────────────────────────────────────── */}
+            <div
               style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: 13,
-                fontWeight: 600,
-                color: "#002FA7",
-                padding: 0,
+                margin: "16px 16px 0",
+                background: "#EFEFF1E5",
+                borderRadius: 16,
+                padding: "16px 16px 4px",
+                boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
               }}
             >
-              See All
-            </button>
-          </div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Payment History</span>
+                <button
+                  onClick={() => navigate("/member/transactions")}
+                  style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#002FA7", padding: 0 }}
+                >
+                  See All
+                </button>
+              </div>
 
-          {/* Rows */}
-          {MOCK_HISTORY.map((item) => (
-            <HistoryRow key={item.id} item={item} />
-          ))}
-        </div>
+              {history.length === 0 ? (
+                <p style={{ fontSize: 13, color: "#999", padding: "12px 0 16px" }}>No payments yet.</p>
+              ) : (
+                history.map((item) => <HistoryRow key={item.id} item={item} />)
+              )}
+            </div>
+          </>
+        )}
       </div>
     </>
   );

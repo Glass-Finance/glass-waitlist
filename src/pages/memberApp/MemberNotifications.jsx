@@ -1,105 +1,114 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Clock, Users } from "lucide-react";
+import { ChevronLeft, Bell, Mail } from "lucide-react";
+import { useInvites } from "../../hooks/useInvites";
+import { useNotifications } from "../../hooks/useNotifications";
 
 const TABS = ["Payments", "Community", "Invites"];
 
-const MOCK_INVITES = [
-  {
-    id: "1",
-    name: "Arsenal Club Fans",
-    category: "Football",
-    description:
-      "A community for passionate Arsenal supporters to connect, contribute, and celebrate every match together.",
-    invitedBy: "Habeeb Abayomi",
-    members: 390,
-    timeAgo: "2 days ago",
-    logo: null,
-    logoColor: "#DB0007",
-    logoText: "A",
-  },
-  {
-    id: "2",
-    name: "Lions Club International...",
-    category: "Social Club",
-    description:
-      "Advancing community service, leadership, and social impact throughout Lagos",
-    invitedBy: "Habeeb Abayomi",
-    members: 390,
-    timeAgo: "2 days ago",
-    logo: null,
-    logoColor: "#F5A623",
-    logoText: "L",
-  },
-  {
-    id: "3",
-    name: "Ikoyi Club 1938 Members",
-    category: "Social Club",
-    description:
-      "Connecting members through world-class recreation, networking, and community engagement.",
-    invitedBy: "Habeeb Abayomi",
-    members: 390,
-    timeAgo: "2 days ago",
-    logo: null,
-    logoColor: "#888",
-    logoText: "I",
-  },
-];
+function timeAgo(dateStr) {
+  if (!dateStr) return "";
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
 
-function InviteCard({ invite }) {
-  const [status, setStatus] = useState("idle"); // idle | accepted | declined
+function isPaymentNotification(n) {
+  const type = (n.type ?? "").toUpperCase();
+  return type.includes("PAYMENT") || type.includes("OBLIGATION") || type.includes("AUTO_PAY");
+}
 
-  if (status === "accepted") {
-    return (
-      <div
+function Avatar({ name }) {
+  const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
+  return (
+    <div
+      style={{
+        width: 40,
+        height: 40,
+        borderRadius: 10,
+        background: "#1C2B8A22",
+        border: "1px solid #1C2B8A44",
+        color: "#1C2B8A",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 14,
+        fontWeight: 700,
+        flexShrink: 0,
+      }}
+    >
+      {initials}
+    </div>
+  );
+}
+
+function EmptyState({ icon: Icon, label }) {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: 14,
+        padding: 32,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 10,
+      }}
+    >
+      <Icon size={22} strokeWidth={1.6} style={{ color: "#bbb" }} />
+      <p style={{ color: "#999", fontSize: 13, margin: 0 }}>{label}</p>
+    </div>
+  );
+}
+
+function NotificationRow({ n, onTap }) {
+  const isRead = n.isRead ?? n.read ?? false;
+  return (
+    <button
+      onClick={() => !isRead && onTap(n.id)}
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 10,
+        width: "100%",
+        textAlign: "left",
+        background: "#fff",
+        border: "none",
+        borderRadius: 14,
+        padding: 16,
+        marginBottom: 12,
+        cursor: "pointer",
+      }}
+    >
+      <span
         style={{
-          background: "#fff",
-          borderRadius: 14,
-          padding: "16px",
-          marginBottom: 12,
-          border: "1px solid #EFEFEF",
+          width: 7,
+          height: 7,
+          borderRadius: "50%",
+          background: isRead ? "transparent" : "#002FA7",
+          marginTop: 6,
+          flexShrink: 0,
         }}
-      >
-        <p
-          style={{
-            fontSize: 14,
-            color: "#059669",
-            fontWeight: 500,
-            textAlign: "center",
-          }}
-        >
-          ✓ Joined {invite.name}
+      />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ fontSize: 14, fontWeight: isRead ? 500 : 700, color: "#111", margin: 0 }}>
+          {n.title ?? n.subject ?? n.message ?? "Notification"}
         </p>
+        {n.title && n.message && (
+          <p style={{ fontSize: 13, color: "#666", margin: "4px 0 0" }}>{n.message}</p>
+        )}
+        <p style={{ fontSize: 12, color: "#aaa", margin: "6px 0 0" }}>{timeAgo(n.createdAt)}</p>
       </div>
-    );
-  }
+    </button>
+  );
+}
 
-  if (status === "declined") {
-    return (
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: 14,
-          padding: "16px",
-          marginBottom: 12,
-          border: "1px solid #EFEFEF",
-          opacity: 0.5,
-        }}
-      >
-        <p
-          style={{
-            fontSize: 14,
-            color: "#888",
-            fontWeight: 500,
-            textAlign: "center",
-          }}
-        >
-          Invite declined
-        </p>
-      </div>
-    );
-  }
-
+function InviteCard({ invite, onAccept, onReject, busy }) {
   return (
     <div
       style={{
@@ -110,99 +119,19 @@ function InviteCard({ invite }) {
         border: "1px solid #EFEFEF",
       }}
     >
-      {/* Top row */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          marginBottom: 10,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {/* Logo */}
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              background: invite.logoColor + "22",
-              border: `1px solid ${invite.logoColor}44`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 16,
-              fontWeight: 700,
-              color: invite.logoColor,
-              flexShrink: 0,
-            }}
-          >
-            {invite.logoText}
-          </div>
-          <div>
-            <p
-              style={{
-                fontSize: 14,
-                fontWeight: 500,
-                color: "#111",
-                marginBottom: 1,
-              }}
-            >
-              {invite.name}
-            </p>
-            <p style={{ fontSize: 12, color: "#888" }}>{invite.category}</p>
-          </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 4,
-            flexShrink: 0,
-          }}
-        >
-          <Clock size={11} style={{ color: "#aaa" }} />
-          <span style={{ fontSize: 11, color: "#aaa" }}>{invite.timeAgo}</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+        <Avatar name={invite.community?.name} />
+        <div style={{ minWidth: 0 }}>
+          <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>
+            {invite.community?.name ?? "Community"}
+          </p>
+          <p style={{ fontSize: 12, color: "#888", margin: "2px 0 0" }}>Invited you to join</p>
         </div>
       </div>
-
-      <div style={{ height: 1, background: "#0000000D", margin: "0 -16px 6px", padding: "0" }} />
-
-      {/* Description */}
-      <p
-        style={{
-          fontSize: 13,
-          color: "#444",
-          lineHeight: 1.55,
-          marginBottom: 10,
-        }}
-      >
-        {invite.description}
-      </p>
-
-      {/* Invited by + members */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          marginBottom: 14,
-        }}
-      >
-        <Users size={13} style={{ color: "#888" }} />
-        <span style={{ fontSize: 12, color: "#555" }}>
-          Invited by <span style={{ color: "#111" }}>{invite.invitedBy}</span>
-        </span>
-        <span style={{ fontSize: 12, color: "#aaa" }}>•</span>
-        <span style={{ fontSize: 12, color: "#555" }}>
-          <span style={{ color: "#111" }}>{invite.members}</span> Members
-        </span>
-      </div>
-
-      {/* Buttons */}
       <div style={{ display: "flex", gap: 10 }}>
         <button
-          onClick={() => setStatus("accepted")}
+          onClick={() => onAccept(invite)}
+          disabled={busy}
           style={{
             flex: 1,
             padding: "12px 0",
@@ -218,14 +147,15 @@ function InviteCard({ invite }) {
           Accept
         </button>
         <button
-          onClick={() => setStatus("declined")}
+          onClick={() => onReject(invite)}
+          disabled={busy}
           style={{
             flex: 1,
             padding: "12px 0",
             borderRadius: 4,
             border: "1.5px solid #002FA7",
             background: "#fff",
-            color: "##002FA7",
+            color: "#002FA7",
             fontSize: 14,
             fontWeight: 600,
             cursor: "pointer",
@@ -241,6 +171,25 @@ function InviteCard({ invite }) {
 export default function MemberNotifications() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Invites");
+
+  const { invites, isLoading: invitesLoading, accept, reject, isAccepting, isRejecting } = useInvites();
+  const { notifications, isLoading: notifsLoading, markRead } = useNotifications();
+
+  const { paymentNotifs, communityNotifs } = useMemo(() => {
+    const payment = [];
+    const community = [];
+    for (const n of notifications) {
+      (isPaymentNotification(n) ? payment : community).push(n);
+    }
+    return { paymentNotifs: payment, communityNotifs: community };
+  }, [notifications]);
+
+  async function handleAccept(invite) {
+    await accept(invite.id);
+  }
+  async function handleReject(invite) {
+    await reject(invite.id);
+  }
 
   return (
     <div
@@ -320,37 +269,42 @@ export default function MemberNotifications() {
 
       {/* Content */}
       <div style={{ padding: "0 16px" }}>
-        {activeTab === "Invites" &&
-          MOCK_INVITES.map((invite) => (
-            <InviteCard key={invite.id} invite={invite} />
-          ))}
-        {activeTab === "Payments" && (
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: 14,
-              padding: 24,
-              textAlign: "center",
-            }}
-          >
-            <p style={{ color: "#aaa", fontSize: 14 }}>
-              No payment notifications.
-            </p>
-          </div>
+        {activeTab === "Invites" && (
+          invitesLoading ? (
+            <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>Loading…</p>
+          ) : invites.length === 0 ? (
+            <EmptyState icon={Mail} label="No community invitations yet." />
+          ) : (
+            invites.map((invite) => (
+              <InviteCard
+                key={invite.id}
+                invite={invite}
+                onAccept={handleAccept}
+                onReject={handleReject}
+                busy={isAccepting || isRejecting}
+              />
+            ))
+          )
         )}
+
+        {activeTab === "Payments" && (
+          notifsLoading ? (
+            <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>Loading…</p>
+          ) : paymentNotifs.length === 0 ? (
+            <EmptyState icon={Bell} label="No payment notifications." />
+          ) : (
+            paymentNotifs.map((n) => <NotificationRow key={n.id} n={n} onTap={markRead} />)
+          )
+        )}
+
         {activeTab === "Community" && (
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: 14,
-              padding: 24,
-              textAlign: "center",
-            }}
-          >
-            <p style={{ color: "#aaa", fontSize: 14 }}>
-              No community notifications.
-            </p>
-          </div>
+          notifsLoading ? (
+            <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>Loading…</p>
+          ) : communityNotifs.length === 0 ? (
+            <EmptyState icon={Bell} label="No community notifications." />
+          ) : (
+            communityNotifs.map((n) => <NotificationRow key={n.id} n={n} onTap={markRead} />)
+          )
         )}
       </div>
     </div>
