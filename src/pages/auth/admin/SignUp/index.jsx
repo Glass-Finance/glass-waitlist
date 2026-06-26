@@ -44,7 +44,7 @@ export default function SignUp() {
       {step === 1 && (
         <RegisterStep
           onNext={handleRegistered}
-          onSwitch={() => navigate("/member/sign-in")}
+          onSwitch={() => navigate("/sign-in")}
           onGoogleAuth={handleGoogleAuth}
         />
       )}

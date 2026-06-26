@@ -18,7 +18,7 @@ export default function ProtectedRoute({ requiredRole }) {
   }
 
   if (!token) {
-    return <Navigate to="/member/sign-in" state={{ from: location }} replace />;
+    return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
   if (requiredRole === "admin" && !isAdmin) {

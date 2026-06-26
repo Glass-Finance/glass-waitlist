@@ -12,9 +12,13 @@ import MembersHome from "./pages/MembersHome";
 // ── Auth pages ─────────────────────────────────────────────────────────────────
 import SignUp from "./pages/auth/admin/SignUp";
 import SignIn from "./pages/auth/admin/SignIn";
+import ForgotPassword from "./pages/auth/admin/ForgotPassword";
+import ResetPassword from "./pages/auth/admin/ResetPassword";
 import CheckEmail from "./pages/auth/member/CheckEmail";
 import Join from "./pages/auth/member/Join";
-import MemberAppSignIn from "./pages/auth/member/SignIn";
+import MemberSignIn from "./pages/auth/member/SignIn";
+import MemberForgotPassword from "./pages/auth/member/ForgotPassword";
+import MemberResetPassword from "./pages/auth/member/ResetPassword";
 
 // ── Onboarding pages ───────────────────────────────────────────────────────────
 import ChoosePath from "./pages/onboarding/ChoosePath";
@@ -26,7 +30,9 @@ import AddMembers from "./pages/onboarding/AddMembers";
 // ── Admin dashboard layout + pages ────────────────────────────────────────────
 import DashboardLayout from "./layouts/DashboardLayout";
 import CommunitiesHome from "./pages/dashboard/CommunitiesHome";
-import AdminDashboard, { PayingAdminDashboard } from "./pages/dashboard/AdminDashboard";
+import AdminDashboard, {
+  PayingAdminDashboard,
+} from "./pages/dashboard/AdminDashboard";
 import Payments from "./pages/dashboard/Payments";
 import Members from "./pages/dashboard/Members";
 import MemberDetail from "./pages/dashboard/MemberDetail";
@@ -36,7 +42,7 @@ import AdminNotifications from "./pages/dashboard/Notifications";
 import Settings from "./pages/dashboard/settings/Settings";
 import Profile from "./pages/dashboard/settings/account/Profile";
 import Role from "./pages/dashboard/settings/account/Role";
-import NotificationSettings from "./pages/dashboard/settings/account/NotificationSettings";
+import NotificationSettings from "./pages/dashboard/settings/account/Notifications";
 import Security from "./pages/dashboard/settings/account/Security";
 import PaymentMethod from "./pages/dashboard/settings/finance/PaymentMethod";
 import AutoPay from "./pages/dashboard/settings/finance/AutoPay";
@@ -55,13 +61,13 @@ import PaymentSummary from "./pages/memberApp/PaymentSummary";
 import PaymentSuccess from "./pages/memberApp/PaymentSuccess";
 import Invites from "./pages/memberApp/Invites";
 import MemberSettings from "./pages/memberApp/settings/Settings";
-import MemberProfile from "./pages/memberApp/settings/Profile";
-import MyCommunities from "./pages/memberApp/settings/MyCommunities";
-import MemberSecurity from "./pages/memberApp/settings/Security";
-import MemberPassword from "./pages/memberApp/settings/Password";
-import MemberTwoFactorAuth from "./pages/memberApp/settings/TwoFactorAuth";
-import MemberAutoPay from "./pages/memberApp/settings/AutoPay";
-import MemberNotificationSettings from "./pages/memberApp/settings/NotificationSettings";
+import MemberProfile from "./pages/memberApp/settings/account/Profile";
+import MyCommunities from "./pages/memberApp/settings/communities/MyCommunities";
+import MemberSecurity from "./pages/memberApp/settings/account/Security";
+import MemberPassword from "./pages/memberApp/settings/account/Password";
+import MemberTwoFactorAuth from "./pages/memberApp/settings/account/TwoFactorAuth";
+import MemberAutoPay from "./pages/memberApp/settings/payments/AutoPay";
+import MemberNotificationSettings from "./pages/memberApp/settings/account/Notifications";
 
 // ── Guards ───────────────────────────────────────────────────────────────────
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -73,7 +79,6 @@ function App() {
   return (
     <Router>
       <Routes>
-
         {/* ── Public landing ── */}
         <Route path="/" element={<OrganizationsHome />} />
         <Route path="/members" element={<MembersHome />} />
@@ -82,62 +87,90 @@ function App() {
             /member/signup is the COMMUNITY OWNER entry point (desktop-first,
             never device-gated). /member/join is the MEMBER registration
             entry point — joining is mobile-only, so it's hard-gated here.
-            /member/sign-in is the desktop-styled login, used by admin-facing
-            entry points (the admin guard, Sidebar logout, SignUp's "Already
-            have an account" link). /member/app-sign-in is the mobile-card
-            login shared by member-facing entry points (Join's link, the
-            member guard, memberApp logout) — it's reachable on any device,
-            but auth/member/SignIn.jsx redirects non-admin desktop logins to the
+            /sign-in is the desktop-styled login, used by admin-facing entry
+            points (the admin guard, Sidebar logout, SignUp's "Already have
+            an account" link) — no "/member" prefix since it's not member-
+            specific. /member/app-sign-in is the mobile-card login shared by
+            member-facing entry points (Join's link, the member guard,
+            memberApp logout) — it's reachable on any device, but
+            auth/member/SignIn.jsx redirects non-admin desktop logins to the
             QR handoff after authenticating, since only the *resulting role*
-            tells us which experience the user actually needs. ── */}
-        <Route path="/member/signup"  element={<SignUp />} />
+            tells us which experience the user actually needs. Each side
+            gets its own forgot/reset-password pair, matching its own
+            sign-in's styling. ── */}
+        <Route path="/member/signup" element={<SignUp />} />
         <Route element={<MemberDeviceGuard />}>
           <Route path="/member/join" element={<Join />} />
         </Route>
-        <Route path="/member/sign-in"     element={<SignIn />} />
-        <Route path="/member/app-sign-in" element={<MemberAppSignIn />} />
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/member/app-sign-in" element={<MemberSignIn />} />
+        <Route
+          path="/member/forgot-password"
+          element={<MemberForgotPassword />}
+        />
+        <Route
+          path="/member/reset-password"
+          element={<MemberResetPassword />}
+        />
         <Route path="/member/mobile-required" element={<MobileRequired />} />
-        <Route path="/check-email"    element={<CheckEmail />} />
+        <Route path="/check-email" element={<CheckEmail />} />
 
         {/* ── Onboarding ── */}
-        <Route path="/onboarding/choose-path"          element={<ChoosePath />} />
-        <Route path="/onboarding/paying-member"        element={<PayingMember />} />
-        <Route path="/onboarding/organization-profile" element={<OrganizationProfile />} />
-        <Route path="/onboarding/payment-profile"      element={<PaymentProfile />} />
-        <Route path="/onboarding/members"              element={<AddMembers />} />
+        <Route path="/onboarding/choose-path" element={<ChoosePath />} />
+        <Route path="/onboarding/paying-member" element={<PayingMember />} />
+        <Route
+          path="/onboarding/organization-profile"
+          element={<OrganizationProfile />}
+        />
+        <Route
+          path="/onboarding/payment-profile"
+          element={<PaymentProfile />}
+        />
+        <Route path="/onboarding/members" element={<AddMembers />} />
 
         {/* ── Admin dashboard ── */}
         <Route element={<ProtectedRoute requiredRole="admin" />}>
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Navigate to="home" replace />} />
-            <Route path="home"         element={<CommunitiesHome />} />
-            <Route path="admin"        element={<AdminDashboard />} />
+            <Route path="home" element={<CommunitiesHome />} />
+            <Route path="admin" element={<AdminDashboard />} />
             <Route path="admin/paying" element={<PayingAdminDashboard />} />
-            <Route path="payments"           element={<Payments />} />
-            <Route path="members"            element={<Members />} />
-            <Route path="members/:memberId"  element={<MemberDetail />} />
-            <Route path="notifications"      element={<AdminNotifications />} />
+            <Route path="payments" element={<Payments />} />
+            <Route path="members" element={<Members />} />
+            <Route path="members/:memberId" element={<MemberDetail />} />
+            <Route path="notifications" element={<AdminNotifications />} />
 
             <Route path="settings" element={<Settings />}>
               <Route index element={<Navigate to="account" replace />} />
 
               {/* Account — bare path renders the menu list inside Settings.jsx */}
-              <Route path="account"               element={null} />
-              <Route path="account/profile"       element={<Profile />} />
-              <Route path="account/role"          element={<Role />} />
-              <Route path="account/notifications" element={<NotificationSettings />} />
-              <Route path="account/security"      element={<Security />} />
+              <Route path="account" element={null} />
+              <Route path="account/profile" element={<Profile />} />
+              <Route path="account/role" element={<Role />} />
+              <Route
+                path="account/notifications"
+                element={<NotificationSettings />}
+              />
+              <Route path="account/security" element={<Security />} />
 
               {/* Finance — bare path renders the menu list inside Settings.jsx */}
-              <Route path="finance"                 element={null} />
-              <Route path="finance/payment-methods" element={<PaymentMethod />} />
-              <Route path="finance/auto-pay"        element={<AutoPay />} />
-              <Route path="finance/paystack"        element={<PaystackAccount />} />
+              <Route path="finance" element={null} />
+              <Route
+                path="finance/payment-methods"
+                element={<PaymentMethod />}
+              />
+              <Route path="finance/auto-pay" element={<AutoPay />} />
+              <Route path="finance/paystack" element={<PaystackAccount />} />
 
               {/* Community — bare path renders the menu list inside Settings.jsx */}
-              <Route path="community"               element={null} />
-              <Route path="community/profile"       element={<CommunityProfile />} />
-              <Route path="community/member-access" element={<MemberAccess />} />
+              <Route path="community" element={null} />
+              <Route path="community/profile" element={<CommunityProfile />} />
+              <Route
+                path="community/member-access"
+                element={<MemberAccess />}
+              />
             </Route>
           </Route>
         </Route>
@@ -150,30 +183,38 @@ function App() {
           <Route element={<MemberProtectedRoute />}>
             <Route path="/member" element={<MemberAppLayout />}>
               <Route index element={<Navigate to="home" replace />} />
-              <Route path="home"          element={<MemberHome />} />
-              <Route path="transactions"  element={<MemberTransactions />} />
-              <Route path="upcoming"      element={<MemberUpcoming />} />
+              <Route path="home" element={<MemberHome />} />
+              <Route path="transactions" element={<MemberTransactions />} />
+              <Route path="upcoming" element={<MemberUpcoming />} />
               <Route path="notifications" element={<MemberNotifications />} />
-              <Route path="manage-payments"        element={<ManagePayments />} />
-              <Route path="pay/:paymentId"         element={<PaymentSummary />} />
-              <Route path="pay/:paymentId/success" element={<PaymentSuccess />} />
-              <Route path="invites"                element={<Invites />} />
+              <Route path="manage-payments" element={<ManagePayments />} />
+              <Route path="pay/:paymentId" element={<PaymentSummary />} />
+              <Route
+                path="pay/:paymentId/success"
+                element={<PaymentSuccess />}
+              />
+              <Route path="invites" element={<Invites />} />
 
-              <Route path="settings"                       element={<MemberSettings />} />
-              <Route path="profile"                        element={<MemberProfile />} />
-              <Route path="communities"                    element={<MyCommunities />} />
-              <Route path="security"                       element={<MemberSecurity />} />
-              <Route path="security/password"              element={<MemberPassword />} />
-              <Route path="security/authentication"        element={<MemberTwoFactorAuth />} />
-              <Route path="auto-pay"                        element={<MemberAutoPay />} />
-              <Route path="notification-settings"           element={<MemberNotificationSettings />} />
+              <Route path="settings" element={<MemberSettings />} />
+              <Route path="profile" element={<MemberProfile />} />
+              <Route path="communities" element={<MyCommunities />} />
+              <Route path="security" element={<MemberSecurity />} />
+              <Route path="security/password" element={<MemberPassword />} />
+              <Route
+                path="security/authentication"
+                element={<MemberTwoFactorAuth />}
+              />
+              <Route path="auto-pay" element={<MemberAutoPay />} />
+              <Route
+                path="notification-settings"
+                element={<MemberNotificationSettings />}
+              />
             </Route>
           </Route>
         </Route>
 
         {/* ── Catch-all ── */}
         <Route path="*" element={<Navigate to="/" replace />} />
-
       </Routes>
     </Router>
   );

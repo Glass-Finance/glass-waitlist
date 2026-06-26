@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { useMe, useUpdateProfile } from "../../../hooks/useMyAccount";
-import { getErrorMessage } from "../../../utils/errorHandler";
+import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
+import { getErrorMessage } from "../../../../utils/errorHandler";
 
 function parseUserData(user) {
   try {

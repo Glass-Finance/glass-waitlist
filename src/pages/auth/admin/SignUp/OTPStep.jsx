@@ -33,7 +33,12 @@ export default function OTPStep({ email, onVerified, onBack }) {
       const result = await verifyEmail({ email, token: otp.join("") });
       onVerified(result);
     } catch (err) {
-      setError(notifyError(err, { context: "Verify OTP", fallback: "Invalid or expired code. Please try again." }));
+      setError(
+        notifyError(err, {
+          context: "Verify OTP",
+          fallback: "Invalid or expired code. Please try again.",
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -46,7 +51,13 @@ export default function OTPStep({ email, onVerified, onBack }) {
       await resendVerification({ email });
       setResendMessage("A new code has been sent.");
     } catch (err) {
-      setResendMessage(notifyError(err, { context: "Resend OTP", fallback: "Could not resend. Please try again.", silent: true }));
+      setResendMessage(
+        notifyError(err, {
+          context: "Resend OTP",
+          fallback: "Could not resend. Please try again.",
+          silent: true,
+        }),
+      );
     } finally {
       setResending(false);
     }
@@ -88,7 +99,9 @@ export default function OTPStep({ email, onVerified, onBack }) {
               onKeyDown={(e) => handleKeyDown(i, e)}
               className="w-11 h-12 text-center text-lg font-semibold text-gray-900 bg-white rounded-xl outline-none transition-all"
               style={{ border: "1.5px solid #C2C2C2" }}
-              onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
+              onFocus={(e) =>
+                (e.target.style.borderColor = "var(--color-primary)")
+              }
               onBlur={(e) => (e.target.style.borderColor = "#C2C2C2")}
             />
           ))}
@@ -105,7 +118,9 @@ export default function OTPStep({ email, onVerified, onBack }) {
               onKeyDown={(e) => handleKeyDown(i, e)}
               className="w-11 h-12 text-center text-lg font-semibold text-gray-900 bg-white rounded-xl outline-none transition-all"
               style={{ border: "1.5px solid #C2C2C2" }}
-              onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
+              onFocus={(e) =>
+                (e.target.style.borderColor = "var(--color-primary)")
+              }
               onBlur={(e) => (e.target.style.borderColor = "#C2C2C2")}
             />
           ))}

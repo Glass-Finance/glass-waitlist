@@ -77,7 +77,7 @@ function clearSessionAndRedirect() {
 
   const path = window.location.pathname;
   const isAdminArea = path.startsWith("/dashboard") || path.startsWith("/onboarding");
-  window.location.href = isAdminArea ? "/member/signup" : "/member/app-sign-in";
+  window.location.href = isAdminArea ? "/sign-in" : "/member/app-sign-in";
 }
 
 // ── Global response handler ───────────────────────────────────────────────────

@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import client from "../api/client";
 
-// GET /api/v1/notifications
+// GET /api/v1/notifications — returns a paginated envelope: { content, pageNumber, pageSize, totalElements, totalPages, last }
 async function fetchNotifications() {
-  const res = await client.get("/notifications");
+  const res = await client.get("/notifications", { params: { pageSize: 50 } });
   return res.data.data;
 }
 
@@ -35,9 +35,7 @@ export function useNotifications() {
     staleTime: 1000 * 30,       // 30s — notifications are time-sensitive
     gcTime:    1000 * 60 * 5,
     select: (data) => {
-      const notifications = Array.isArray(data)
-        ? data
-        : (data?.notifications ?? []);
+      const notifications = data?.content ?? [];
       // Newest first
       return [...notifications].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -62,12 +60,16 @@ export function useNotifications() {
       await queryClient.cancelQueries({ queryKey: ["notifications"] });
       const previous = queryClient.getQueryData(["notifications"]);
 
-      // Optimistically flip isRead
+      // Optimistically flip readFlag — the cache holds the raw paginated
+      // envelope ({ content: [...] }), not the flat array `select` derives.
       queryClient.setQueryData(["notifications"], (old) =>
         old
-          ? old.map((n) =>
-              n.id === notificationId ? { ...n, isRead: true, read: true } : n
-            )
+          ? {
+              ...old,
+              content: old.content.map((n) =>
+                n.id === notificationId ? { ...n, readFlag: true } : n
+              ),
+            }
           : old
       );
       return { previous };
@@ -89,7 +91,9 @@ export function useNotifications() {
       const previous = queryClient.getQueryData(["notifications"]);
 
       queryClient.setQueryData(["notifications"], (old) =>
-        old ? old.map((n) => ({ ...n, isRead: true, read: true })) : old
+        old
+          ? { ...old, content: old.content.map((n) => ({ ...n, readFlag: true })) }
+          : old
       );
       // Zero out the count immediately
       queryClient.setQueryData(["notifications", "unread-count"], 0);

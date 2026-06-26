@@ -19,7 +19,7 @@ function timeAgo(dateStr) {
 }
 
 function isPaymentNotification(n) {
-  const type = (n.type ?? "").toUpperCase();
+  const type = (n.notificationType ?? "").toUpperCase();
   return type.includes("PAYMENT") || type.includes("OBLIGATION") || type.includes("AUTO_PAY");
 }
 
@@ -67,7 +67,7 @@ function EmptyState({ icon: Icon, label }) {
 }
 
 function NotificationRow({ n, onTap }) {
-  const isRead = n.isRead ?? n.read ?? false;
+  const isRead = n.readFlag ?? false;
   return (
     <button
       onClick={() => !isRead && onTap(n.id)}
