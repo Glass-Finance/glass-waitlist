@@ -27,6 +27,31 @@ export function isMobileDevice() {
   return getDeviceType() === "mobile";
 }
 
+// Once MemberDeviceGuard has let someone through as mobile, remember that
+// for the rest of this browser tab. Real phones never need this -- their
+// UA is identical on every reload. It exists because device-emulation
+// tools (Chrome DevTools' device toolbar) don't always reapply their UA
+// override on a hard reload the same way they do on first load, which
+// would otherwise bounce an already-in-progress mobile session to the QR
+// handoff screen on every refresh.
+const MOBILE_SESSION_KEY = "glass_mobile_verified";
+
+export function isMobileSession() {
+  if (isMobileDevice()) {
+    try {
+      sessionStorage.setItem(MOBILE_SESSION_KEY, "1");
+    } catch {
+      /* ignore — storage unavailable, fall through to the live check only */
+    }
+    return true;
+  }
+  try {
+    return sessionStorage.getItem(MOBILE_SESSION_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
 // Public production origin — used to build the absolute URL a QR code
 // points to, since the phone scanning it isn't on the same dev/local origin.
 const APP_ORIGIN = "https://glasspay.app";

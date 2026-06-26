@@ -64,7 +64,10 @@ export default function Profile() {
     try {
       const uploadRes = await uploadFile.mutateAsync({ file, fileCategory: "PROFILE_IMAGE" });
       const profileImageFileId = uploadRes.data?.data?.id;
-      await updateProfile.mutateAsync({ profileImageFileId });
+      // Unlike firstName/lastName/phoneNumber (which the backend accepts
+      // flat and maps into userData itself), profileImageFileId only takes
+      // effect when sent nested under userData explicitly.
+      await updateProfile.mutateAsync({ userData: { profileImageFileId } });
       await refreshUser();
     } catch (err) {
       setError(getErrorMessage(err, "Failed to upload photo."));
