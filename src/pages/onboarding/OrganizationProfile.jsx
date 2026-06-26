@@ -624,14 +624,12 @@ export default function OrganizationProfile() {
       const community = createRes.data?.data;
       if (!community?.id) throw new Error("Community creation failed.");
 
-      // AuthContext's isAdmin is derived from the role captured at
-      // register/login time, which is whatever generic role the backend
-      // assigned before this community existed — it's never refetched.
-      // Without this, ProtectedRoute's admin check still sees the old
-      // role after onboarding finishes and bounces straight to the
-      // member app, which then hits the device guard on desktop and
-      // dead-ends at the QR handoff instead of the dashboard.
-      updateUser({ role: "COMMUNITY_OWNER" });
+      // AuthContext's isAdmin reflects the communities list as of the last
+      // login/refresh, which didn't include this community yet since it
+      // didn't exist. Without this, ProtectedRoute's admin check bounces
+      // straight to the member app, which then hits the device guard on
+      // desktop and dead-ends at the QR handoff instead of the dashboard.
+      updateUser({ isAdmin: true });
 
       navigate("/onboarding/payment-profile", {
         state: { email, isPaying, communityId: community.id, communitySlug: community.slug, communityName: community.name },

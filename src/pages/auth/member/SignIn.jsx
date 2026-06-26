@@ -181,14 +181,7 @@ export default function SignIn() {
   // *resulting* role/device, since neither knows in advance whether this
   // is a community owner or a mobile-only member.
   async function routeAfterAuth(user) {
-    const role = user?.role || "";
-
-    const isAdmin =
-      role.includes("OWNER") ||
-      role.includes("ADMIN") ||
-      role.includes("MANAGER");
-
-    if (isAdmin) {
+    if (user?.isAdmin) {
       navigate("/dashboard/home", { replace: true });
       return;
     }

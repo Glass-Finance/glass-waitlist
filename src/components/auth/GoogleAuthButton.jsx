@@ -25,7 +25,7 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
     }
     try {
       const authData = await googleAuth({ clientToken: credentialResponse.credential });
-      const user = setSession(authData);
+      const user = await setSession(authData);
       onAuthenticated?.(user);
     } catch (err) {
       notifyError(err, { context: "Google auth" });

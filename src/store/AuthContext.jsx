@@ -28,6 +28,20 @@ import {
   storeAuthSession,
 } from "../services/authService";
 import { getMe } from "../api/members";
+import client from "../api/client";
+
+// "Admin" has no global flag on this backend — platformRole/the JWT's role
+// claim is a platform-wide value ("USER" for every account, even community
+// owners) and never reflects per-community standing. Whether someone is an
+// admin is only knowable from their communities list: owned, or a
+// memberRole of OWNER/ADMIN/MANAGER on at least one community.
+function hasAdminCommunity(communities) {
+  return (communities ?? []).some((c) => {
+    if (c.owned) return true;
+    const role = (c.memberRole ?? "").toUpperCase();
+    return role === "OWNER" || role === "ADMIN" || role === "MANAGER";
+  });
+}
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 const AuthContext = createContext(null);
@@ -57,6 +71,27 @@ function clearSession() {
   localStorage.removeItem(KEY_USER);
   localStorage.removeItem("userId");
   localStorage.removeItem("userEmail");
+}
+
+// Callers (SignIn pages' routeAfterAuth) need an accurate isAdmin on the
+// object login()/setSession() resolve with, immediately — not from a
+// separate async refresh that might not have landed yet. So the admin
+// check happens here, awaited, before login()/setSession() return.
+async function buildUser(authData) {
+  const user = {
+    id: authData.userId,
+    email: authData.email,
+    role: authData.platformRole,
+    emailVerified: authData.emailVerified,
+    isAdmin: false,
+  };
+  try {
+    const res = await client.get("/communities/me");
+    user.isAdmin = hasAdminCommunity(res.data?.data?.content);
+  } catch {
+    // Network hiccup — fall back to non-admin rather than block login.
+  }
+  return user;
 }
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
@@ -118,13 +153,7 @@ export function AuthProvider({ children }) {
     // so keys are guaranteed identical everywhere
     storeAuthSession(authData);
 
-    // Build user object from flat fields (backend has no nested user object)
-    const user = {
-      id: authData.userId,
-      email: authData.email,
-      role: authData.platformRole, // "COMMUNITY_OWNER" | "MEMBER" | etc.
-      emailVerified: authData.emailVerified,
-    };
+    const user = await buildUser(authData);
 
     writeUser(user);
     setToken(authData.accessToken);
@@ -152,14 +181,9 @@ export function AuthProvider({ children }) {
    * (e.g. after verifyMfaLogin, googleAuth).
    * Pass the raw authData object from the API response.
    */
-  const setSession = useCallback((authData) => {
+  const setSession = useCallback(async (authData) => {
     storeAuthSession(authData);
-    const user = {
-      id: authData.userId,
-      email: authData.email,
-      role: authData.platformRole,
-      emailVerified: authData.emailVerified,
-    };
+    const user = await buildUser(authData);
     writeUser(user);
     setToken(authData.accessToken);
     setUser(user);
@@ -186,8 +210,12 @@ export function AuthProvider({ children }) {
   // immediately instead of waiting for the next full login.
   const refreshUser = useCallback(async () => {
     try {
-      const res = await getMe();
-      const profile = res.data?.data ?? res.data;
+      const [meRes, communitiesRes] = await Promise.all([
+        getMe(),
+        client.get("/communities/me"),
+      ]);
+      const profile = meRes.data?.data ?? meRes.data;
+      const communities = communitiesRes.data?.data?.content ?? [];
       if (!profile) return;
       setUser((prev) => {
         if (!prev) return prev; // logged out while this was in flight
@@ -197,6 +225,7 @@ export function AuthProvider({ children }) {
           lastName: profile.lastName,
           phoneNumber: profile.phoneNumber,
           profileImage: profile.profileImage,
+          isAdmin: hasAdminCommunity(communities),
         };
         writeUser(updated);
         return updated;
@@ -211,11 +240,11 @@ export function AuthProvider({ children }) {
   }, [token, refreshUser]);
 
   // ── Derive role helpers ────────────────────────────────────────────────────
-  const role = user?.role ?? "";
-  const isAdmin =
-    role.includes("OWNER") ||
-    role.includes("ADMIN") ||
-    role.includes("MANAGER");
+  // isAdmin lives on the user object itself now (set by buildUser/refreshUser
+  // from the communities list — see hasAdminCommunity above), not derived
+  // from platformRole, which is a platform-wide value with no per-community
+  // meaning.
+  const isAdmin = user?.isAdmin ?? false;
   const isMember = !isAdmin;
 
   const value = {

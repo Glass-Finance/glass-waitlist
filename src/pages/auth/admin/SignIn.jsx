@@ -50,13 +50,7 @@ export default function SignIn() {
   // owner or a mobile-only member who just happened to land on the desktop
   // sign-in page (matches MemberAppSignIn.jsx's routeAfterAuth).
   async function routeAfterAuth(user) {
-    const role = user?.role || "";
-    const isAdmin =
-      role.includes("OWNER") ||
-      role.includes("ADMIN") ||
-      role.includes("MANAGER");
-
-    if (isAdmin) {
+    if (user?.isAdmin) {
       navigate("/dashboard/home", { replace: true });
       return;
     }
