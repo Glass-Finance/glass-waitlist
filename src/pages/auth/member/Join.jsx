@@ -670,7 +670,7 @@ export default function Join() {
   // landing on /member/invites rather than being auto-applied.
   function handleGoogleAuth() {
     consumeToken();
-    navigate(token ? "/member/home" : "/member/invites", { replace: true });
+    navigate(token ? "/member/invites" : "/member/home", { replace: true });
   }
   function handleOTPNext() {
     setStep(STEPS.PROFILE);

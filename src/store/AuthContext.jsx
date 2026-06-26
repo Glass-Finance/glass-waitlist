@@ -114,16 +114,6 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Restore session on mount
-  useEffect(() => {
-    const storedToken = localStorage.getItem(KEY_TOKEN);
-    if (storedToken) {
-      setToken(storedToken);
-      setUser(readStoredUser());
-    }
-    setLoading(false);
-  }, []);
-
   // Stay in sync if another tab logs out
   useEffect(() => {
     const onStorage = (e) => {
@@ -148,8 +138,6 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (email, password) => {
     // authService.login returns data.data (already unwrapped)
     const authData = await apiLogin({ email, password });
-
-    console.log("AUTH DATA", authData);
     // {
     //   accessToken, refreshToken, userId, email,
     //   platformRole, emailVerified, mfaRequired, mfaChallengeToken
@@ -249,6 +237,28 @@ export function AuthProvider({ children }) {
       // Keep whatever we already had (e.g. from login) rather than wiping it.
     }
   }, []);
+
+  // Restore session on mount. `loading` gates ProtectedRoute's very first
+  // isAdmin check, so it can't flip to false until the *real* isAdmin is
+  // confirmed — the cached value in localStorage can be stale (e.g. admin
+  // status changed in another tab/session since the last login), and
+  // ProtectedRoute would otherwise redirect away using that stale value
+  // via a hard <Navigate> before refreshUser() ever got a chance to correct
+  // it, with no way to self-heal afterward.
+  useEffect(() => {
+    async function restore() {
+      const storedToken = localStorage.getItem(KEY_TOKEN);
+      if (!storedToken) {
+        setLoading(false);
+        return;
+      }
+      setToken(storedToken);
+      setUser(readStoredUser());
+      await refreshUser();
+      setLoading(false);
+    }
+    restore();
+  }, [refreshUser]);
 
   useEffect(() => {
     if (token) refreshUser();

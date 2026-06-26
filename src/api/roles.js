@@ -1,4 +1,5 @@
 import client from "./client";
 
-// GET /api/v1/roles — community-scoped roles (e.g. ADMIN, MEMBER, TREASURER)
-export const getRoles = () => client.get("/roles");
+// GET /api/v1/roles/community — role definitions assignable within a
+// community (ADMIN, MEMBER, TREASURER, etc.) — distinct from /roles/platform.
+export const getRoles = () => client.get("/roles/community");

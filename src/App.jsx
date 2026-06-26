@@ -8,6 +8,7 @@ import {
 // ── Landing pages ──────────────────────────────────────────────────────────────
 import OrganizationsHome from "./pages/OrganizationsHome";
 import MembersHome from "./pages/MembersHome";
+import Ambassadors from "./pages/Ambassadors";
 
 // ── Auth pages ─────────────────────────────────────────────────────────────────
 import SignUp from "./pages/auth/admin/SignUp";
@@ -82,9 +83,10 @@ function App() {
         {/* ── Public landing ── */}
         <Route path="/" element={<OrganizationsHome />} />
         <Route path="/members" element={<MembersHome />} />
+        <Route path="/ambassadors" element={<Ambassadors />} />
 
         {/* ── Auth ──
-            /member/signup is the COMMUNITY OWNER entry point (desktop-first,
+            /sign-up is the COMMUNITY OWNER entry point (desktop-first,
             never device-gated). /member/join is the MEMBER registration
             entry point — joining is mobile-only, so it's hard-gated here.
             /sign-in is the desktop-styled login, used by admin-facing entry
@@ -98,7 +100,7 @@ function App() {
             tells us which experience the user actually needs. Each side
             gets its own forgot/reset-password pair, matching its own
             sign-in's styling. ── */}
-        <Route path="/member/signup" element={<SignUp />} />
+        <Route path="/sign-up" element={<SignUp />} />
         <Route element={<MemberDeviceGuard />}>
           <Route path="/member/join" element={<Join />} />
         </Route>
