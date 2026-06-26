@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Landmark, ChevronDown, Check } from "lucide-react";
-import { useActiveCommunityId } from "../../../../hooks/useActiveCommunity";
+import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityAccount } from "../../../../hooks/useCommunityAccount";
 import { getBanks, resolveAccount } from "../../../../api/members";
 import { getErrorMessage, notifyError } from "../../../../utils/errorHandler";

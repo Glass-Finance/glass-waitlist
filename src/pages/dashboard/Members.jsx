@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, ChevronDown, RotateCcw, MoreHorizontal, X, Users, UserX, Clock, ShieldCheck } from "lucide-react";
-import { useActiveCommunityId } from "../../hooks/useActiveCommunity";
+import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
 import { getErrorMessage } from "../../utils/errorHandler";

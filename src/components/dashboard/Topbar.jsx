@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, Bell, Loader2 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { useNotifications } from "../../hooks/useNotifications";
-import { useActiveCommunityId } from "../../hooks/useActiveCommunity";
+import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import client from "../../api/client";
 import NotificationsPanel from "./NotificationsPanel";
 

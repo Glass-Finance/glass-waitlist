@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider, MutationCache } from "@tanstack/react-query";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "sonner";
+import { CheckCircle2, XCircle, AlertTriangle, Info, Loader2 } from "lucide-react";
 import App from "./App.jsx";
 import "./index.css";
 import { AuthProvider } from "./store/AuthContext.jsx";
@@ -81,12 +82,34 @@ createRoot(document.getElementById("root")).render(
 
           <Toaster
             position="bottom-right"
-            richColors
             closeButton
+            icons={{
+              success: <CheckCircle2 size={18} className="text-emerald-500" />,
+              error: <XCircle size={18} className="text-red-500" />,
+              warning: <AlertTriangle size={18} className="text-amber-500" />,
+              info: <Info size={18} className="text-[#002FA7]" />,
+              loading: <Loader2 size={18} className="text-gray-400 animate-spin" />,
+            }}
             toastOptions={{
               style: {
-                fontFamily: "'DM Sans', sans-serif",
+                fontFamily: "'Inter', sans-serif",
                 fontSize: "13px",
+              },
+              classNames: {
+                toast:
+                  "rounded-2xl! border! border-gray-100! shadow-lg! bg-white! text-gray-900!",
+                title: "font-medium! text-gray-900!",
+                description: "text-xs! text-gray-500!",
+                closeButton:
+                  "bg-white! border! border-gray-200! text-gray-400! hover:text-gray-600!",
+                actionButton:
+                  "bg-[#002FA7]! text-white! rounded-full! text-xs! font-semibold!",
+                cancelButton:
+                  "bg-gray-100! text-gray-600! rounded-full! text-xs! font-semibold!",
+                error: "border-l-4! border-l-red-500!",
+                success: "border-l-4! border-l-emerald-500!",
+                warning: "border-l-4! border-l-amber-500!",
+                info: "border-l-4! border-l-[#002FA7]!",
               },
             }}
           />

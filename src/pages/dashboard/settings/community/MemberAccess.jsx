@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Copy, Check } from "lucide-react";
-import { useActiveCommunityId } from "../../../../hooks/useActiveCommunity";
+import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityMembers, useRoles } from "../../../../hooks/useCommunityMembers";
 import QRCodeCanvas from "../../../../components/dashboard/QRCode";
 
@@ -121,4 +121,4 @@ export default function MemberAccess() {
       </div>
     </div>
   );
-}
+}

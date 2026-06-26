@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useActiveCommunityId } from "../../../../hooks/useActiveCommunity";
+import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunity, useUpdateCommunity } from "../../../../hooks/useCommunity";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { getErrorMessage } from "../../../../utils/errorHandler";
