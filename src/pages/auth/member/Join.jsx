@@ -4,6 +4,7 @@ import { Eye, EyeOff, Info } from "lucide-react";
 import { useInviteToken } from "../../../hooks/useInviteToken";
 import { register, verifyEmail, resendVerification } from "../../../services/authService";
 import { notifyError } from "../../../utils/errorHandler";
+import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import { useAuth } from "../../../store/AuthContext";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 
@@ -411,8 +412,8 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
       setError("Phone number is required.");
       return;
     }
-    if (form.password.length < 8) {
-      setError("Password must be at least 8 characters.");
+    if (!isPasswordValid(form.password)) {
+      setError(`Password must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`);
       return;
     }
     if (form.password !== form.confirmPassword) {
@@ -530,6 +531,9 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
             </button>
           }
         />
+        <p className="text-xs text-gray-500 mt-1.5 px-1">
+          {PASSWORD_REQUIREMENTS_TEXT}
+        </p>
       </div>
 
       {/* Confirm password */}
