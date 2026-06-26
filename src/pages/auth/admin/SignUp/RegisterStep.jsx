@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { register } from "../../../../services/authService";
 import { notifyError } from "../../../../utils/errorHandler";
+import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
 import GoogleAuthButton from "../../../../components/auth/GoogleAuthButton";
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
@@ -52,6 +53,10 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
     setError("");
     if (!form.phone.trim()) {
       setError("Phone number is required.");
+      return;
+    }
+    if (!isPasswordValid(form.password)) {
+      setError(`Password must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`);
       return;
     }
     if (form.password !== form.confirmPassword) {
@@ -188,6 +193,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
+          <p className="text-xs text-gray-500 mt-0.5">{PASSWORD_REQUIREMENTS_TEXT}</p>
         </div>
 
         <div className="flex flex-col gap-1.5">

@@ -13,7 +13,7 @@ const SECTIONS = [
   {
     label: "Payments",
     items: [
-      { Icon: CreditCard, label: "Payment Methods", desc: "Saved banks and auto-pay methods", to: "/member/manage-payments" },
+      { Icon: CreditCard, label: "Payment Methods", desc: "Saved banks and auto-pay methods", to: "/member/saved-cards" },
       { Icon: RefreshCw, label: "Auto-Pay", desc: "Plans set to charge automatically", to: "/member/auto-pay" },
     ],
   },

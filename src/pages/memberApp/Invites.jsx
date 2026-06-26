@@ -27,7 +27,7 @@ function Avatar({ name }) {
 
 export default function Invites() {
   const navigate = useNavigate();
-  const { invites, isLoading, error, accept, reject, isAccepting, isRejecting } =
+  const { invites, isLoading, error, accept, reject, isAccepting, isRejecting, refresh } =
     useInvites();
 
   async function handleAccept(invite) {
@@ -113,9 +113,29 @@ export default function Invites() {
             >
               <Mail size={22} strokeWidth={1.6} style={{ color: "#999" }} />
             </div>
-            <p style={{ fontSize: 14, color: "#666", margin: 0 }}>
-              No community invitations yet.
+            <p style={{ fontSize: 14, fontWeight: 600, color: "#333", margin: 0 }}>
+              No invitations yet
             </p>
+            <p style={{ fontSize: 13, color: "#888", margin: 0, maxWidth: 260, lineHeight: 1.5 }}>
+              Ask a community admin to send you an invite link, or have them add you directly by your email or phone number.
+            </p>
+            <button
+              onClick={refresh}
+              disabled={isLoading}
+              style={{
+                marginTop: 6,
+                padding: "9px 18px",
+                borderRadius: 8,
+                border: "1.5px solid #002FA7",
+                background: "#fff",
+                color: "#002FA7",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Check Again
+            </button>
           </div>
         ) : (
           invites.map((invite) => (

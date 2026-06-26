@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff, Loader2, Info } from "lucide-react";
+import { Eye, EyeOff, Info } from "lucide-react";
 import { useInviteToken } from "../../../hooks/useInviteToken";
-import { register } from "../../../services/authService";
+import { register, verifyEmail, resendVerification } from "../../../services/authService";
 import { notifyError } from "../../../utils/errorHandler";
+import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import { useAuth } from "../../../store/AuthContext";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 
@@ -15,9 +16,7 @@ import authHeroBg from "../../../assets/auth/mobile-auth.png";
 // Constants
 // ---------------------------------------------------------------------------
 const OTP_LENGTH = 6;
-const STEPS = { EMAIL: "email", OTP: "otp", PROFILE: "profile" };
-const showHeroText =
-  location.pathname === "/signup" || location.pathname === "/verify-email";
+const STEPS = { PROFILE: "profile", OTP: "otp" };
 
 // ---------------------------------------------------------------------------
 // Shared primitives — light sheet style (matches Figma)
@@ -165,7 +164,7 @@ function MobileShell({ children, step }) {
             <br />
             Finance Effortlessly
           </p> */}
-          {(step === STEPS.EMAIL || step === STEPS.OTP) && (
+          {step === STEPS.OTP && (
             <div className="absolute inset-0 flex items-center justify-center">
               <h1 className="text-white text-center font-normal text-[clamp(20px,5vw,24px)] leading-tight px-6">
                 Manage Your Community
@@ -197,103 +196,9 @@ function MobileShell({ children, step }) {
 }
 
 // ---------------------------------------------------------------------------
-// Step 1 — Email
-// ---------------------------------------------------------------------------
-function StepEmail({ onNext, onGoogleAuth }) {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const { hasToken } = useInviteToken();
-
-  async function handleContinue() {
-    const trimmed = email.trim().toLowerCase();
-    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setError("Enter a valid email address.");
-      return;
-    }
-    setError("");
-    setLoading(true);
-    try {
-      await fetch("/api/auth/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed }),
-      });
-      onNext({ email: trimmed });
-    } catch {
-      setError("Couldn't send a code. Check your connection and try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-xl font-semibold text-gray-900 mb-1 mt-5">
-          {hasToken ? "You've been invited" : "Create Your Account"}
-        </h1>
-        {hasToken && (
-          <p className="text-sm text-gray-500">
-            Enter your email to accept the invite.
-          </p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="email">Email Address</Label>
-        <TextInput
-          id="email"
-          type="email"
-          placeholder="e.g Bax**re@gmail.com"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setError("");
-          }}
-          autoComplete="email"
-          inputMode="email"
-          disabled={loading}
-        />
-        <ErrorMessage message={error} />
-      </div>
-
-      <PrimaryButton
-        onClick={handleContinue}
-        loading={loading}
-        disabled={!email.trim()}
-        className="cursor-pointer"
-      >
-        Continue
-      </PrimaryButton>
-
-      {/* Divider */}
-      <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-gray-300" />
-        <span className="text-xs text-gray-400">or</span>
-        <div className="flex-1 h-px bg-gray-300" />
-      </div>
-
-      <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
-
-      <p className="text-sm text-center text-gray-500 pb-2">
-        Already Have An Account?{" "}
-        <Link
-          to="/member/app-sign-in"
-          className="font-semibold"
-          style={{ color: "#1C2B8A" }}
-        >
-          Sign In
-        </Link>
-      </p>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
 // Step 2 — OTP  (6 boxes with dash in middle like Figma)
 // ---------------------------------------------------------------------------
-function StepOTP({ email, onNext, onBack }) {
+function StepOTP({ email, onVerified, onBack }) {
   const [digits, setDigits] = useState(Array(OTP_LENGTH).fill(""));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -340,14 +245,10 @@ function StepOTP({ email, onNext, onBack }) {
     setLoading(true);
     setError("");
     try {
-      await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: code }),
-      });
-      onNext({ otp: code });
-    } catch {
-      setError("That code didn't work. Please try again.");
+      const result = await verifyEmail({ email, token: code });
+      onVerified(result);
+    } catch (err) {
+      setError(notifyError(err, { context: "Verify OTP", fallback: "That code didn't work. Please try again.", silent: true }));
       setDigits(Array(OTP_LENGTH).fill(""));
       inputRefs.current[0]?.focus();
     } finally {
@@ -359,11 +260,11 @@ function StepOTP({ email, onNext, onBack }) {
     if (resendCooldown > 0) return;
     setResendCooldown(30);
     setError("");
-    await fetch("/api/auth/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
+    try {
+      await resendVerification({ email });
+    } catch (err) {
+      setError(notifyError(err, { context: "Resend OTP", fallback: "Could not resend. Please try again.", silent: true }));
+    }
   }
 
   // Figma shows: [box][box][box] — [box][box][box]
@@ -471,10 +372,14 @@ function StepOTP({ email, onNext, onBack }) {
 }
 
 // ---------------------------------------------------------------------------
-// Step 3 — Complete profile (Figma: first, last, password, confirm password)
+// Step 1 — Profile (email + name + phone + password) — collects everything
+// register() needs in one step, since the backend only sends a
+// verification code after the account actually exists, not before.
 // ---------------------------------------------------------------------------
-function StepProfile({ email, onSubmit }) {
+function StepProfile({ onSubmit, onGoogleAuth }) {
+  const { hasToken } = useInviteToken();
   const [form, setForm] = useState({
+    email: "",
     firstName: "",
     lastName: "",
     phone: "",
@@ -494,6 +399,11 @@ function StepProfile({ email, onSubmit }) {
   }
 
   function handleSubmit() {
+    const trimmedEmail = form.email.trim().toLowerCase();
+    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError("Enter a valid email address.");
+      return;
+    }
     if (!form.firstName.trim() || !form.lastName.trim()) {
       setError("First and last name are required.");
       return;
@@ -502,8 +412,8 @@ function StepProfile({ email, onSubmit }) {
       setError("Phone number is required.");
       return;
     }
-    if (form.password.length < 8) {
-      setError("Password must be at least 8 characters.");
+    if (!isPasswordValid(form.password)) {
+      setError(`Password must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`);
       return;
     }
     if (form.password !== form.confirmPassword) {
@@ -512,10 +422,11 @@ function StepProfile({ email, onSubmit }) {
     }
     setLoading(true);
     setError("");
-    onSubmit({ ...form, loading: setLoading, setError });
+    onSubmit({ ...form, email: trimmedEmail, loading: setLoading, setError });
   }
 
   const isReady =
+    form.email.trim() &&
     form.firstName.trim() &&
     form.lastName.trim() &&
     form.phone.trim() &&
@@ -526,8 +437,28 @@ function StepProfile({ email, onSubmit }) {
     <div className="flex flex-col gap-5">
       <div>
         <h1 className="text-lg font-bold text-gray-900 mt-5">
-          Complete Your Profile
+          {hasToken ? "You've Been Invited" : "Create Your Account"}
         </h1>
+        {hasToken && (
+          <p className="text-sm text-gray-500 mt-1">
+            Complete your profile to accept the invite.
+          </p>
+        )}
+      </div>
+
+      {/* Email */}
+      <div>
+        <Label htmlFor="email">Email Address</Label>
+        <TextInput
+          id="email"
+          type="email"
+          placeholder="e.g Bax**re@gmail.com"
+          value={form.email}
+          onChange={set("email")}
+          autoComplete="email"
+          inputMode="email"
+          disabled={loading}
+        />
       </div>
 
       {/* First + Last */}
@@ -600,6 +531,9 @@ function StepProfile({ email, onSubmit }) {
             </button>
           }
         />
+        <p className="text-xs text-gray-500 mt-1.5 px-1">
+          {PASSWORD_REQUIREMENTS_TEXT}
+        </p>
       </div>
 
       {/* Confirm password */}
@@ -637,11 +571,24 @@ function StepProfile({ email, onSubmit }) {
         Create Account
       </PrimaryButton>
 
+      {/* Divider */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-px bg-gray-300" />
+        <span className="text-xs text-gray-400">or</span>
+        <div className="flex-1 h-px bg-gray-300" />
+      </div>
+
+      <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
+
       <p className="text-sm text-center text-gray-500 pb-2">
-        Didn't get OTP?{" "}
-        <button className="font-semibold" style={{ color: "#1C2B8A" }}>
-          Resend
-        </button>
+        Already Have An Account?{" "}
+        <Link
+          to="/member/app-sign-in"
+          className="font-semibold"
+          style={{ color: "#1C2B8A" }}
+        >
+          Sign In
+        </Link>
       </p>
     </div>
   );
@@ -655,32 +602,44 @@ export default function Join() {
   const { token, consumeToken } = useInviteToken();
   const { setSession } = useAuth();
 
-  const [step, setStep] = useState(STEPS.EMAIL);
+  const [step, setStep] = useState(STEPS.PROFILE);
   const [email, setEmail] = useState("");
 
-  function handleEmailNext({ email: e }) {
-    setEmail(e);
-    setStep(STEPS.OTP);
+  // Some backends issue a session immediately on register, others only
+  // after email verification — store it the moment either response
+  // actually includes a token, instead of assuming which step does it
+  // (matches the admin SignUp flow's same pattern).
+  function maybeStoreSession(authData) {
+    if (authData?.accessToken) setSession(authData);
+  }
+
+  function finishAndRoute() {
+    consumeToken();
+    navigate(token ? "/member/home" : "/member/invites", { replace: true });
   }
 
   // Google already proves the user owns this email, so registration is
-  // immediate — no OTP, no separate profile step. Note: the invite token
-  // isn't sent to /auth/google today (it only takes a credential), so an
-  // invite opened on this device may need to be accepted manually after
-  // landing on /member/invites rather than being auto-applied.
+  // immediate — no OTP step needed. Note: the invite token isn't sent to
+  // /auth/google today (it only takes a credential), so it's never
+  // actually applied here — unlike finishAndRoute() above (used after the
+  // regular register()+OTP flow, which does send the token), a pending
+  // invite needs /member/invites to accept it manually instead of
+  // /member/home, the opposite direction of finishAndRoute()'s ternary.
   function handleGoogleAuth() {
     consumeToken();
     navigate(token ? "/member/invites" : "/member/home", { replace: true });
   }
-  function handleOTPNext() {
-    setStep(STEPS.PROFILE);
-  }
+
   function handleBack() {
-    if (step === STEPS.OTP) setStep(STEPS.EMAIL);
-    if (step === STEPS.PROFILE) setStep(STEPS.OTP);
+    if (step === STEPS.OTP) setStep(STEPS.PROFILE);
   }
 
+  // Registration has to happen before any verification code can be sent —
+  // there's no account yet to send one for. This was previously inverted
+  // (collecting just an email and calling a nonexistent /api/auth/send-otp
+  // before the account existed), which is why no code was ever delivered.
   async function handleProfileSubmit({
+    email: enteredEmail,
     firstName,
     lastName,
     phone,
@@ -690,7 +649,7 @@ export default function Join() {
   }) {
     try {
       const payload = {
-        email,
+        email: enteredEmail,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         phoneNumber: phone.trim(),
@@ -698,23 +657,28 @@ export default function Join() {
         ...(token && { inviteToken: token }),
       };
       const authData = await register(payload);
-      setSession(authData);
-      consumeToken();
-      navigate(token ? "/member/home" : "/member/invites", { replace: true });
+      maybeStoreSession(authData);
+      setEmail(enteredEmail);
+      setStep(STEPS.OTP);
     } catch (err) {
       setError(notifyError(err, { context: "Member register" }));
+    } finally {
       setLoading(false);
     }
   }
 
+  function handleVerified(authData) {
+    maybeStoreSession(authData);
+    finishAndRoute();
+  }
+
   return (
     <MobileShell step={step}>
-      {step === STEPS.EMAIL && <StepEmail onNext={handleEmailNext} onGoogleAuth={handleGoogleAuth} />}
-      {step === STEPS.OTP && (
-        <StepOTP email={email} onNext={handleOTPNext} onBack={handleBack} />
-      )}
       {step === STEPS.PROFILE && (
-        <StepProfile email={email} onSubmit={handleProfileSubmit} />
+        <StepProfile onSubmit={handleProfileSubmit} onGoogleAuth={handleGoogleAuth} />
+      )}
+      {step === STEPS.OTP && (
+        <StepOTP email={email} onVerified={handleVerified} onBack={handleBack} />
       )}
     </MobileShell>
   );
