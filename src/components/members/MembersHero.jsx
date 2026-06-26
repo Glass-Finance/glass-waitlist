@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { getMemberAuthRoute } from "../../utils/deviceRedirect";
+import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import waveBg from "../../assets/hero/hero.jpg";
 import iphone from "../../assets/hero/iphone.png";
 import BlurText from "../ui/BlurText";
@@ -14,6 +14,13 @@ export default function MembersHero() {
   const navigate = useNavigate();
   const sectionRef = useRef(null);
   const containerRef = useRef(null);
+
+  // Joining is a mobile-only flow — on desktop/tablet, hand off via QR
+  // instead of sending the visitor into a registration form built for
+  // a phone screen.
+  function handleJoin() {
+    navigate(isMobileDevice() ? "/member/join" : mobileRequiredPath("/member/join"));
+  }
 
   useEffect(() => {
     // ── Static TV noise — drawn ONCE, frozen in place, very subtle ───────────
@@ -198,7 +205,7 @@ export default function MembersHero() {
             }}
           >
             <button
-              onClick={() => navigate(getMemberAuthRoute())}
+              onClick={handleJoin}
               className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer"
               style={{
                 fontFamily: "Inter, sans-serif",
@@ -312,7 +319,7 @@ export default function MembersHero() {
             track your history, and never miss a deadline again.
           </p>
           <button
-            onClick={() => navigate("/member/join")}
+            onClick={handleJoin}
             className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer"
             style={{ fontFamily: "Inter, sans-serif", fontWeight: 500 }}
           >

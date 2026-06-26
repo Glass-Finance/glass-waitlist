@@ -3,6 +3,7 @@ import { Plus, MoreHorizontal, X, RefreshCw, Zap, Check, ArrowLeft, Loader2, Wal
 import { useActiveCommunityId } from "../../hooks/useActiveCommunity";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { useSlug } from "../../hooks/useSlug";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 const PLAN_STATUS = {
   ACTIVE:   { bg: "#ecfdf5", color: "#059669", label: "Active" },
@@ -396,7 +397,7 @@ export default function Payments() {
           onClose={() => setModalOpen(false)}
           onCreate={handleCreate}
           creating={planPlans.create.isPending}
-          createError={planPlans.create.error?.response?.data?.message}
+          createError={planPlans.create.error ? getErrorMessage(planPlans.create.error) : null}
         />
       )}
     </div>

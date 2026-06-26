@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMe, updateProfile, updatePassword, updateEmail, getMyCommunities, getMyMemberRecord, leaveCommunity } from "../api/members";
+import { getMe, updateProfile, updatePassword, getMyCommunities, getMyMemberRecord, leaveCommunity } from "../api/members";
 
 function unwrapList(res) {
   const data = res.data?.data;
@@ -34,17 +34,6 @@ export function useUpdateProfile() {
 export function useUpdatePassword() {
   return useMutation({
     mutationFn: (payload) => updatePassword(payload),
-  });
-}
-
-// ─── Update email ─────────────────────────────────────────────────────────────
-export function useUpdateEmail() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (payload) => updateEmail(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["me"] });
-    },
   });
 }
 

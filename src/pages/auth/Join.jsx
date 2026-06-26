@@ -2,7 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Info } from "lucide-react";
 import { useInviteToken } from "../../hooks/useInviteToken";
-import { register, storeAuthSession } from "../../services/authService";
+import { register } from "../../services/authService";
+import { notifyError } from "../../utils/errorHandler";
+import { useAuth } from "../../store/AuthContext";
+import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 
 // ── Import your actual assets ──────────────────────────────────────────────
 import glassLogo from "../../assets/cta/ctalogo.png";
@@ -105,40 +108,6 @@ function PrimaryButton({
   );
 }
 
-function GoogleButton() {
-  return (
-    <button
-      type="button"
-      className="w-full rounded-full py-4 text-sm font-medium text-gray-800 bg-white flex items-center justify-center gap-3 transition-all duration-150 active:scale-[0.98] cursor-pointer"
-      style={{ border: "1.5px solid #E0E0E6" }}
-      onClick={() => {
-        /* wire up Google OAuth */
-      }}
-    >
-      {/* Google G SVG */}
-      <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-        <path
-          fill="#EA4335"
-          d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-        />
-        <path
-          fill="#4285F4"
-          d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
-        />
-        <path
-          fill="#FBBC05"
-          d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
-        />
-        <path
-          fill="#34A853"
-          d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-        />
-      </svg>
-      Sign Up With Google
-    </button>
-  );
-}
-
 function ErrorMessage({ message }) {
   if (!message) return null;
   return (
@@ -230,7 +199,7 @@ function MobileShell({ children, step }) {
 // ---------------------------------------------------------------------------
 // Step 1 — Email
 // ---------------------------------------------------------------------------
-function StepEmail({ onNext }) {
+function StepEmail({ onNext, onGoogleAuth }) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -305,7 +274,7 @@ function StepEmail({ onNext }) {
         <div className="flex-1 h-px bg-gray-300" />
       </div>
 
-      <GoogleButton />
+      <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
 
       <p className="text-sm text-center text-gray-500 pb-2">
         Already Have An Account?{" "}
@@ -684,6 +653,7 @@ function StepProfile({ email, onSubmit }) {
 export default function Join() {
   const navigate = useNavigate();
   const { token, consumeToken } = useInviteToken();
+  const { setSession } = useAuth();
 
   const [step, setStep] = useState(STEPS.EMAIL);
   const [email, setEmail] = useState("");
@@ -691,6 +661,16 @@ export default function Join() {
   function handleEmailNext({ email: e }) {
     setEmail(e);
     setStep(STEPS.OTP);
+  }
+
+  // Google already proves the user owns this email, so registration is
+  // immediate — no OTP, no separate profile step. Note: the invite token
+  // isn't sent to /auth/google today (it only takes a credential), so an
+  // invite opened on this device may need to be accepted manually after
+  // landing on /member/invites rather than being auto-applied.
+  function handleGoogleAuth() {
+    consumeToken();
+    navigate(token ? "/member/home" : "/member/invites", { replace: true });
   }
   function handleOTPNext() {
     setStep(STEPS.PROFILE);
@@ -718,21 +698,18 @@ export default function Join() {
         ...(token && { inviteToken: token }),
       };
       const authData = await register(payload);
-      storeAuthSession(authData);
+      setSession(authData);
       consumeToken();
       navigate(token ? "/member/home" : "/member/invites", { replace: true });
     } catch (err) {
-      const message =
-        err?.response?.data?.message ||
-        "Something went wrong. Please try again.";
-      setError(message);
+      setError(notifyError(err, { context: "Member register" }));
       setLoading(false);
     }
   }
 
   return (
     <MobileShell step={step}>
-      {step === STEPS.EMAIL && <StepEmail onNext={handleEmailNext} />}
+      {step === STEPS.EMAIL && <StepEmail onNext={handleEmailNext} onGoogleAuth={handleGoogleAuth} />}
       {step === STEPS.OTP && (
         <StepOTP email={email} onNext={handleOTPNext} onBack={handleBack} />
       )}

@@ -46,9 +46,11 @@ export const leaveCommunity = (communityId) =>
 // ─────────────────────────────────────────────────────────────────────────────
 
 // GET /api/v1/finance/obligations/me — list member's obligations
-// These map to "upcoming payments" in the UI
+// These map to "upcoming payments" in the UI. Paginated server-side, so a
+// member with more obligations than the backend's default page size would
+// silently see an incomplete list without an explicit pageSize.
 export const getMyObligations = () =>
-  client.get("/finance/obligations/me");
+  client.get("/finance/obligations/me", { params: { pageSize: 200 } });
 
 // GET /api/v1/finance/obligations/me/{obligationId}
 export const getObligation = (obligationId) =>
@@ -58,9 +60,10 @@ export const getObligation = (obligationId) =>
 // FINANCE — member transactions (payment history)
 // ─────────────────────────────────────────────────────────────────────────────
 
-// GET /api/v1/finance/transactions/me
+// GET /api/v1/finance/transactions/me — paginated server-side, same reason
+// as getMyObligations above.
 export const getMyTransactions = () =>
-  client.get("/finance/transactions/me");
+  client.get("/finance/transactions/me", { params: { pageSize: 200 } });
 
 // GET /api/v1/finance/transactions/me/{transactionIdentifier}
 export const getTransaction = (transactionId) =>
@@ -72,7 +75,7 @@ export const getTransaction = (transactionId) =>
 
 // GET /api/v1/finance/authorizations — member's active payment authorisations
 export const getMyAuthorisations = () =>
-  client.get("/finance/authorizations");
+  client.get("/finance/authorizations", { params: { pageSize: 100 } });
 
 // GET /api/v1/finance/authorizations/{authorizationId}
 export const getAuthorisation = (authId) =>

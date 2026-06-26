@@ -5,8 +5,14 @@ import client from "./client";
 // ─────────────────────────────────────────────────────────────────────────────
 
 // GET /api/v1/communities/{communityIdentifier}/finance/obligations
+// These endpoints are paginated server-side (content/pageNumber/pageSize/
+// totalElements) — without an explicit pageSize, the backend's default
+// page would silently truncate the list for any community with more
+// than a page's worth of obligations, breaking the per-member aggregates
+// the Members page derives from this data. Members.jsx and the admin
+// dashboard need the full set to join against, not one page of it.
 export const getCommunityObligations = (communityId) =>
-  client.get(`/communities/${communityId}/finance/obligations`);
+  client.get(`/communities/${communityId}/finance/obligations`, { params: { pageSize: 1000 } });
 
 // GET /api/v1/communities/{communityIdentifier}/finance/obligations/{obligationId}
 export const getCommunityObligation = (communityId, obligationId) =>
@@ -25,4 +31,4 @@ export const extendObligationDueDate = (communityId, obligationId, dueAt) =>
 
 // GET /api/v1/communities/{communityIdentifier}/finance/transactions
 export const getCommunityTransactions = (communityId) =>
-  client.get(`/communities/${communityId}/finance/transactions`);
+  client.get(`/communities/${communityId}/finance/transactions`, { params: { pageSize: 1000 } });

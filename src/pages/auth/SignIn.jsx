@@ -3,6 +3,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { getMyInvites } from "../../api/invites";
+import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
+import { notifyError } from "../../utils/errorHandler";
+import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 import AuthLayout from "../../layouts/AuthLayout";
 
 // ── Shared styles (matches SignUp/RegisterStep) ───────────────────────────────
@@ -20,39 +23,6 @@ const PrimaryBtn = ({ loading, disabled, children, ...props }) => (
     style={{ background: "#2535c3" }}
   >
     {children}
-  </button>
-);
-
-const GoogleBtn = () => (
-  <button
-    type="button"
-    className="w-full py-3.5 rounded-3xl bg-white font-medium text-sm text-gray-700 flex items-center justify-center gap-2.5 hover:bg-gray-50 transition-all active:scale-[0.98]"
-    style={{ border: "1.5px solid #C2C2C2" }}
-  >
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 18 18"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
-        fill="#4285F4"
-      />
-      <path
-        d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"
-        fill="#34A853"
-      />
-      <path
-        d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"
-        fill="#FBBC05"
-      />
-      <path
-        d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.96L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"
-        fill="#EA4335"
-      />
-    </svg>
-    Sign In With Google
   </button>
 );
 
@@ -75,38 +45,60 @@ export default function SignIn() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
+  // Shared by password sign-in and Google sign-in: routes by the *resulting*
+  // role/device, since neither knows in advance whether this is a community
+  // owner or a mobile-only member who just happened to land on the desktop
+  // sign-in page (matches MemberAppSignIn.jsx's routeAfterAuth).
+  async function routeAfterAuth(user) {
+    const role = user?.role || "";
+    const isAdmin =
+      role.includes("OWNER") ||
+      role.includes("ADMIN") ||
+      role.includes("MANAGER");
+
+    if (isAdmin) {
+      navigate("/dashboard/home", { replace: true });
+      return;
+    }
+
+    if (!isMobileDevice()) {
+      navigate(mobileRequiredPath("/member/app-sign-in"), { replace: true });
+      return;
+    }
+
+    const inviteRes = await getMyInvites();
+    const invites = inviteRes?.data?.data || [];
+    navigate(invites.length > 0 ? "/member/invites" : "/member/home", {
+      replace: true,
+    });
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
       const user = await login(form.email.trim().toLowerCase(), form.password);
-
-      const role = user?.role || "";
-      const isAdmin =
-        role.includes("OWNER") ||
-        role.includes("ADMIN") ||
-        role.includes("MANAGER");
-
-      if (isAdmin) {
-        navigate("/dashboard/home", { replace: true });
-        return;
-      }
-
-      const inviteRes = await getMyInvites();
-      const invites = inviteRes?.data?.data || [];
-      navigate(invites.length > 0 ? "/member/invites" : "/member/home", {
-        replace: true,
-      });
+      await routeAfterAuth(user);
     } catch (err) {
       setError(
-        err.response?.data?.message ||
-          "Incorrect email or password. Please try again.",
+        notifyError(err, {
+          context: "Sign in",
+          fallback: "Incorrect email or password. Please try again.",
+        }),
       );
     } finally {
       setLoading(false);
     }
   };
+
+  async function handleGoogleAuth(user) {
+    try {
+      await routeAfterAuth(user);
+    } catch (err) {
+      setError(notifyError(err, { context: "Google sign in" }));
+    }
+  }
 
   return (
     <AuthLayout
@@ -186,7 +178,7 @@ export default function SignIn() {
         </form>
 
         <Divider />
-        <GoogleBtn />
+        <GoogleAuthButton onAuthenticated={handleGoogleAuth} label="signin_with" />
 
         <p className="text-center text-sm mt-5 text-gray-500">
           Don't have an account?{" "}

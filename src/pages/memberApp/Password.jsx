@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { useUpdatePassword } from "../../hooks/useMembers";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 const inputStyle = {
   width: "100%",
@@ -65,7 +66,7 @@ export default function Password() {
       setSuccess(true);
       setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
-      setError(err.response?.data?.message ?? "Failed to update password.");
+      setError(getErrorMessage(err, "Failed to update password."));
     }
   }
 

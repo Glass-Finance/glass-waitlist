@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useMe, useUpdateProfile } from "../../../../hooks/useMembers";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
+import { getErrorMessage } from "../../../../utils/errorHandler";
 
 function parseUserData(user) {
   try {
@@ -45,7 +46,7 @@ export default function Profile() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
-      setError(err.response?.data?.message ?? "Failed to save changes.");
+      setError(getErrorMessage(err, "Failed to save changes."));
     }
   };
 
@@ -58,7 +59,7 @@ export default function Profile() {
       const profileImageFileId = uploadRes.data?.data?.id;
       await updateProfile.mutateAsync({ profileImageFileId });
     } catch (err) {
-      setError(err.response?.data?.message ?? "Failed to upload photo.");
+      setError(getErrorMessage(err, "Failed to upload photo."));
     }
   };
 

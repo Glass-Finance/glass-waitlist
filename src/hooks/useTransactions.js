@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMyTransactions, getTransaction } from "../api/members";
+import { getMyTransactions } from "../api/members";
 
 function unwrapList(res) {
   const data = res.data?.data;
@@ -37,18 +37,5 @@ export function useTransactions() {
         .sort((a, b) => new Date(b.date) - new Date(a.date));
     },
     staleTime: 1000 * 60 * 2,
-  });
-}
-
-// ─── Single transaction detail ────────────────────────────────────────────────
-export function useTransaction(transactionId) {
-  return useQuery({
-    queryKey: ["transaction", transactionId],
-    queryFn: async () => {
-      const res = await getTransaction(transactionId);
-      return shapeTransaction(res.data?.data ?? res.data);
-    },
-    enabled: !!transactionId,
-    staleTime: 1000 * 60 * 5,
   });
 }

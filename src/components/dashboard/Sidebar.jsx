@@ -200,7 +200,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
-import { useMyCommunities } from "../../hooks/useMembers";
+import { useCommunities } from "../../hooks/useCommunities";
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
 // `path` is the route under /dashboard; "home" maps to the per-community
@@ -238,7 +238,8 @@ export default function Sidebar() {
   const [searchParams] = useSearchParams();
   const { logout, user } = useAuth();
 
-  const { data: communities = [], isLoading: loading } = useMyCommunities();
+  const { data: communitiesData, isLoading: loading } = useCommunities();
+  const communities = communitiesData?.communities ?? [];
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 

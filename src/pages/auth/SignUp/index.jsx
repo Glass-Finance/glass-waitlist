@@ -30,6 +30,12 @@ export default function SignUp() {
     navigate("/onboarding/choose-path", { state: { email } });
   };
 
+  // Google already proves the user owns this email, so there's no OTP step
+  // to go through — skip straight to onboarding.
+  const handleGoogleAuth = (user) => {
+    navigate("/onboarding/choose-path", { state: { email: user?.email ?? email } });
+  };
+
   return (
     <AuthLayout
       heroTitle="Manage Your Community"
@@ -39,6 +45,7 @@ export default function SignUp() {
         <RegisterStep
           onNext={handleRegistered}
           onSwitch={() => navigate("/member/sign-in")}
+          onGoogleAuth={handleGoogleAuth}
         />
       )}
       {step === 2 && (

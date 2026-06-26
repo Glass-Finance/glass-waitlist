@@ -797,7 +797,7 @@ function DashboardContent({ isPaying, communityId }) {
   const [addMemberOpen, setAddOpen]   = useState(false);
   const [alertVisible, setAlertVisible] = useState(true);
 
-  const { balances, members, transactions, isLoading, error } =
+  const { balances, members, transactions, activity, isLoading, error } =
     useCommunityDashboard(communityId);
   const { plans, isLoading: plansLoading } = usePaymentPlans(communityId);
 
@@ -833,6 +833,11 @@ function DashboardContent({ isPaying, communityId }) {
       icon: inactiveMembersIcon,
     },
     {
+      label: "Overdue Members",
+      value: isLoading ? "—" : String(members?.overdue ?? 0),
+      icon: inactiveMembersIcon,
+    },
+    {
       label: "Total Contributions",
       value: isLoading ? "—" : formatNaira(balances?.totalContributions ?? 0),
       icon: totalContribIcon,
@@ -856,11 +861,8 @@ function DashboardContent({ isPaying, communityId }) {
     );
   }, [transactions, search]);
 
-  // ── Recent activity derived from transactions ─────────────────────────────
-  const recentActivity = useMemo(
-    () => transactions.slice(0, 4),
-    [transactions]
-  );
+  // ── Recent activity — real audit-log feed (event/description/actor/result) ──
+  const recentActivity = activity.list;
 
   if (error) {
     return (
@@ -936,7 +938,7 @@ function DashboardContent({ isPaying, communityId }) {
       )}
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-3 mb-5">
+      <div className="grid grid-cols-5 gap-3 mb-5">
         {stats.map((s) => (
           <div
             key={s.label}
@@ -1088,7 +1090,7 @@ function DashboardContent({ isPaying, communityId }) {
             Recent Activity
           </span>
 
-          {isLoading ? (
+          {activity.isLoading ? (
             <div className="flex flex-col gap-3">
               {[0, 1, 2, 3].map((i) => (
                 <div key={i} className="flex gap-3">
@@ -1103,14 +1105,17 @@ function DashboardContent({ isPaying, communityId }) {
           ) : recentActivity.length === 0 ? (
             <p className="text-xs text-gray-400 text-center py-6">No recent activity.</p>
           ) : (
-            recentActivity.map((tx, i) => {
-              const isPmt = tx.type === "payment" || tx.amount != null;
-              const aColor = isPmt ? "#059669" : "#002FA7";
-              const aBg    = isPmt ? "#ecfdf5"  : "#e6eeff";
-              const type   = isPmt ? "payment" : "member";
+            recentActivity.map((a, i) => {
+              const event = a.event ?? "";
+              const failed = a.result === "FAILED";
+              const isPmt = event.includes("PAYMENT");
+              const aColor = failed ? "#e11d48" : isPmt ? "#059669" : "#002FA7";
+              const aBg    = failed ? "#fff1f2" : isPmt ? "#ecfdf5"  : "#e6eeff";
+              const type   = isPmt ? "payment" : event.includes("MEMBER") ? "member" : undefined;
+              const actorName = [a.actor?.firstName, a.actor?.lastName].filter(Boolean).join(" ");
               return (
                 <div
-                  key={tx.id ?? i}
+                  key={a.id ?? i}
                   className={`flex items-start gap-3 py-3 ${i < recentActivity.length - 1 ? "border-b border-gray-50" : ""}`}
                 >
                   <div
@@ -1121,12 +1126,10 @@ function DashboardContent({ isPaying, communityId }) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-gray-700 leading-relaxed">
-                      {tx.memberName && (
-                        <strong className="text-[#002FA7] font-bold">{tx.memberName} </strong>
+                      {actorName && !a.description?.startsWith(actorName) && (
+                        <strong className="text-[#002FA7] font-bold">{actorName} </strong>
                       )}
-                      {isPmt
-                        ? `paid ${formatNaira(tx.amount)}`
-                        : tx.description ?? "activity"}
+                      {a.description ?? event.replaceAll("_", " ").toLowerCase() ?? "activity"}
                     </p>
                     <div className="flex items-center gap-1 mt-1">
                       <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
@@ -1134,7 +1137,7 @@ function DashboardContent({ isPaying, communityId }) {
                         <path d="M12 6v6l4 2" stroke="#9ca3af" strokeWidth="1.8" strokeLinecap="round"/>
                       </svg>
                       <span className="text-[11px] text-gray-400">
-                        {timeAgo(tx.createdAt)}
+                        {timeAgo(a.occurredAt)}
                       </span>
                     </div>
                   </div>

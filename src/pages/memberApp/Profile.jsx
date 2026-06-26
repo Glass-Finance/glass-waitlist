@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { useMe, useUpdateProfile } from "../../hooks/useMembers";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 function parseUserData(user) {
   try {
@@ -54,7 +55,7 @@ export default function Profile() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
-      setError(err.response?.data?.message ?? "Failed to save changes.");
+      setError(getErrorMessage(err, "Failed to save changes."));
     }
   }
 

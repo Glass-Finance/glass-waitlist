@@ -5,6 +5,7 @@ import { ChevronLeft, Landmark } from "lucide-react";
 import { getObligation } from "../../api/members";
 import { useMe } from "../../hooks/useMembers";
 import { useManagePayments, useInitiatePayment } from "../../hooks/usePayments";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 function fmt(n) {
   return "₦" + new Intl.NumberFormat("en-NG").format(n ?? 0);
@@ -64,7 +65,10 @@ export default function PaymentSummary() {
         navigate(`/member/pay/${paymentId}/success`);
       }
     } catch (err) {
-      setError(err.response?.data?.message ?? "Could not start payment. Please try again.");
+      // No notifyError() here — initiatePayment is a useMutation, so the
+      // global mutationCache handler in main.jsx already toasts it. This
+      // just grabs the same message for the inline text under the button.
+      setError(getErrorMessage(err, "Could not start payment. Please try again."));
     }
   }
 

@@ -5,7 +5,6 @@ import {
   getMyAuthorisations,
   deleteAuthorisation,
   initiatePayment,
-  verifyPayment,
   getMe,
   getMyCommunities,
 } from "../api/members";
@@ -75,7 +74,11 @@ function shapeAuthorisation(raw) {
     reusable: raw.reusable,
     status: raw.status,
     consents: (raw.consents ?? []).map((c) => ({
-      id: c.id,
+      // The consent object's id field is `consentId`, not `id` — using the
+      // wrong key meant every consent rendered with key={undefined} in
+      // ManagePayments, which silently breaks React's identity tracking
+      // for any authorisation with more than one active consent.
+      id: c.consentId,
       planStatus: c.planStatus,
       communityName: c.community?.name,
       paymentLinkTitle: c.paymentLink?.title,
@@ -214,22 +217,6 @@ export function useInitiatePayment() {
       // Refresh obligations and transactions after successful payment
       queryClient.invalidateQueries({ queryKey: ["obligations"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
-    },
-  });
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Verify payment after Paystack callback
-// ─────────────────────────────────────────────────────────────────────────────
-export function useVerifyPayment() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (payload) => verifyPayment(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["obligations"] });
-      queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      queryClient.invalidateQueries({ queryKey: ["authorisations"] });
     },
   });
 }

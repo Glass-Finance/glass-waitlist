@@ -18,10 +18,3 @@ export function useActiveCommunityId() {
   }
 }
 
-export function useActiveCommunity() {
-  try {
-    return JSON.parse(localStorage.getItem("glass_community") ?? "{}");
-  } catch {
-    return {};
-  }
-}

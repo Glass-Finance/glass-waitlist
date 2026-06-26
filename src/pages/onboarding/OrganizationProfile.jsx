@@ -519,6 +519,8 @@ import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
 import client from "../../api/client";
 import { useSlug } from "../../hooks/useSlug";
+import { useAuth } from "../../store/AuthContext";
+import { notifyError } from "../../utils/errorHandler";
 
 const CATEGORIES = [
   "Alumni Association", "Faith Community", "Professional Association",
@@ -527,7 +529,7 @@ const CATEGORIES = [
 
 const STEPS = [
   { id: "organization", label: "Organization Profile" },
-  { id: "payment",      label: "Payment Profile"      },
+  { id: "payment",      label: "Payment Account"      },
   { id: "members",      label: "Members"              },
 ];
 
@@ -554,6 +556,7 @@ export default function OrganizationProfile() {
 
   const email      = location.state?.email ?? "";
   const isPaying   = location.state?.isPaying ?? true;
+  const { updateUser } = useAuth();
 
   const [dragOver,  setDragOver]  = useState(false);
   const [logoFile,  setLogoFile]  = useState(null);   // File object
@@ -562,7 +565,7 @@ export default function OrganizationProfile() {
   const [loading,   setLoading]   = useState(false);
 
   const [form, setForm] = useState({
-    communityName: "", description: "", category: "",
+    communityName: "", description: "", category: "", contactEmail: email,
   });
 
   const { slug, setSlug, available, checking, suggesting, suggestFrom } =
@@ -588,6 +591,7 @@ export default function OrganizationProfile() {
 
     if (!form.communityName.trim()) { setError("Community name is required."); return; }
     if (!form.category)             { setError("Please select a category.");   return; }
+    if (!form.contactEmail.trim())  { setError("A contact email is required."); return; }
     if (!slug.trim())               { setError("Please choose a community URL slug."); return; }
     if (available === false)        { setError("That URL slug is already taken — pick another."); return; }
 
@@ -611,6 +615,7 @@ export default function OrganizationProfile() {
         slug:        slug.trim(),
         description: form.description.trim(),
         category:    [form.category],
+        contactEmail: form.contactEmail.trim(),
         publicVisible: true,
         requiresMemberApproval: false,
         ...(logoFileId ? { logoFileId } : {}),
@@ -619,12 +624,21 @@ export default function OrganizationProfile() {
       const community = createRes.data?.data;
       if (!community?.id) throw new Error("Community creation failed.");
 
+      // AuthContext's isAdmin is derived from the role captured at
+      // register/login time, which is whatever generic role the backend
+      // assigned before this community existed — it's never refetched.
+      // Without this, ProtectedRoute's admin check still sees the old
+      // role after onboarding finishes and bounces straight to the
+      // member app, which then hits the device guard on desktop and
+      // dead-ends at the QR handoff instead of the dashboard.
+      updateUser({ role: "COMMUNITY_OWNER" });
+
       navigate("/onboarding/payment-profile", {
         state: { email, isPaying, communityId: community.id, communitySlug: community.slug, communityName: community.name },
       });
 
     } catch (err) {
-      setError(err.response?.data?.message ?? err.message ?? "Something went wrong. Please try again.");
+      setError(notifyError(err, { context: "Create community" }));
     } finally {
       setLoading(false);
     }
@@ -636,7 +650,7 @@ export default function OrganizationProfile() {
       style={{ height: "100vh", backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
     >
       {/* Navbar */}
-      <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 flex-shrink-0">
+      <header className="flex items-center justify-between px-8 py-4 bg-[#C9CBCF] border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
@@ -651,7 +665,7 @@ export default function OrganizationProfile() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col pt-10 px-6">
+        <aside className="w-64 flex-shrink-0 bg-[#C9CBCF] border-r border-gray-200 flex flex-col pt-10 px-6">
           {STEPS.map((step, i) => {
             const isActive    = step.id === "organization";
             const isCompleted = false;
@@ -659,7 +673,7 @@ export default function OrganizationProfile() {
             return (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isActive ? "bg-[#002FA7] text-white" : "bg-white border-2 border-gray-300 text-gray-400"}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isActive ? "bg-[#002FA7] text-white" : "bg-[#C9CBCF] border-1 border-gray-250 text-gray-500"}`}>
                     {isCompleted
                       ? <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       : <StepIcon id={step.id} />}
@@ -667,7 +681,7 @@ export default function OrganizationProfile() {
                   {!isLast && <div className="w-px my-1" style={{ minHeight: 40, background: isCompleted ? "#002FA7" : "#E5E7EB" }} />}
                 </div>
                 <div className="pt-1.5 pb-10">
-                  <span className={`text-sm font-medium ${isActive ? "text-[#002FA7]" : "text-gray-400"}`}>{step.label}</span>
+                  <span className={`text-sm font-medium ${isActive ? "text-[#000000]" : "text-gray-400"}`}>{step.label}</span>
                 </div>
               </div>
             );
@@ -722,6 +736,15 @@ export default function OrganizationProfile() {
                 {available === true && !checking && (
                   <span className="text-xs text-green-600">glasspay.app/join/{slug}</span>
                 )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-5 mb-5">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-gray-700">Contact Email *</label>
+                <input type="email" name="contactEmail" value={form.contactEmail} onChange={handleChange}
+                  placeholder="e.g. contact@babcockalumni.org" className={inputCls} />
+                <p className="text-xs text-gray-400">Where Glass and members can reach your community.</p>
               </div>
             </div>
 

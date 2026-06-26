@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import QRCode from "qrcode";
 
-export default function QRCodeCanvas({ value, size = 160 }) {
+export default function QRCodeCanvas({ value, size = 160, color = "#002FA7" }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -9,9 +9,9 @@ export default function QRCodeCanvas({ value, size = 160 }) {
     QRCode.toCanvas(canvasRef.current, value, {
       width: size,
       margin: 1,
-      color: { dark: "#002FA7", light: "#FFFFFF" },
+      color: { dark: color, light: "#E5E5E5" }, // ← match page bg, no white box
     }).catch(() => {});
-  }, [value, size]);
+  }, [value, size, color]);
 
   if (!value) return null;
   return <canvas ref={canvasRef} width={size} height={size} />;

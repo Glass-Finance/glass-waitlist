@@ -66,6 +66,8 @@ import MemberNotificationSettings from "./pages/memberApp/NotificationSettings";
 // ── Guards ───────────────────────────────────────────────────────────────────
 import ProtectedRoute from "./routes/ProtectedRoute";
 import MemberProtectedRoute from "./routes/MemberProtectedRoute";
+import MemberDeviceGuard from "./routes/MemberDeviceGuard";
+import MobileRequired from "./pages/member/MobileRequired";
 
 function App() {
   return (
@@ -76,11 +78,25 @@ function App() {
         <Route path="/" element={<OrganizationsHome />} />
         <Route path="/members" element={<MembersHome />} />
 
-        {/* ── Auth ── */}
+        {/* ── Auth ──
+            /member/signup is the COMMUNITY OWNER entry point (desktop-first,
+            never device-gated). /member/join is the MEMBER registration
+            entry point — joining is mobile-only, so it's hard-gated here.
+            /member/sign-in is the desktop-styled login, used by admin-facing
+            entry points (the admin guard, Sidebar logout, SignUp's "Already
+            have an account" link). /member/app-sign-in is the mobile-card
+            login shared by member-facing entry points (Join's link, the
+            member guard, memberApp logout) — it's reachable on any device,
+            but MemberAppSignIn.jsx redirects non-admin desktop logins to the
+            QR handoff after authenticating, since only the *resulting role*
+            tells us which experience the user actually needs. ── */}
         <Route path="/member/signup"  element={<SignUp />} />
-        <Route path="/member/join"    element={<Join />} />
+        <Route element={<MemberDeviceGuard />}>
+          <Route path="/member/join" element={<Join />} />
+        </Route>
         <Route path="/member/sign-in"     element={<SignIn />} />
         <Route path="/member/app-sign-in" element={<MemberAppSignIn />} />
+        <Route path="/member/mobile-required" element={<MobileRequired />} />
         <Route path="/check-email"    element={<CheckEmail />} />
 
         {/* ── Onboarding ── */}
@@ -126,27 +142,32 @@ function App() {
           </Route>
         </Route>
 
-        {/* ── Member app ── */}
-        <Route element={<MemberProtectedRoute />}>
-          <Route path="/member" element={<MemberAppLayout />}>
-            <Route index element={<Navigate to="home" replace />} />
-            <Route path="home"          element={<MemberHome />} />
-            <Route path="transactions"  element={<MemberTransactions />} />
-            <Route path="upcoming"      element={<MemberUpcoming />} />
-            <Route path="notifications" element={<MemberNotifications />} />
-            <Route path="manage-payments"        element={<ManagePayments />} />
-            <Route path="pay/:paymentId"         element={<PaymentSummary />} />
-            <Route path="pay/:paymentId/success" element={<PaymentSuccess />} />
-            <Route path="invites"                element={<Invites />} />
+        {/* ── Member app ──
+            Mobile-only by design (never device-gated): direct URL access,
+            old bookmarks, or links shared into a desktop chat all get the
+            QR handoff instead of a half-responsive layout. ── */}
+        <Route element={<MemberDeviceGuard />}>
+          <Route element={<MemberProtectedRoute />}>
+            <Route path="/member" element={<MemberAppLayout />}>
+              <Route index element={<Navigate to="home" replace />} />
+              <Route path="home"          element={<MemberHome />} />
+              <Route path="transactions"  element={<MemberTransactions />} />
+              <Route path="upcoming"      element={<MemberUpcoming />} />
+              <Route path="notifications" element={<MemberNotifications />} />
+              <Route path="manage-payments"        element={<ManagePayments />} />
+              <Route path="pay/:paymentId"         element={<PaymentSummary />} />
+              <Route path="pay/:paymentId/success" element={<PaymentSuccess />} />
+              <Route path="invites"                element={<Invites />} />
 
-            <Route path="settings"                       element={<MemberSettings />} />
-            <Route path="profile"                        element={<MemberProfile />} />
-            <Route path="communities"                    element={<MyCommunities />} />
-            <Route path="security"                       element={<MemberSecurity />} />
-            <Route path="security/password"              element={<MemberPassword />} />
-            <Route path="security/authentication"        element={<MemberTwoFactorAuth />} />
-            <Route path="auto-pay"                        element={<MemberAutoPay />} />
-            <Route path="notification-settings"           element={<MemberNotificationSettings />} />
+              <Route path="settings"                       element={<MemberSettings />} />
+              <Route path="profile"                        element={<MemberProfile />} />
+              <Route path="communities"                    element={<MyCommunities />} />
+              <Route path="security"                       element={<MemberSecurity />} />
+              <Route path="security/password"              element={<MemberPassword />} />
+              <Route path="security/authentication"        element={<MemberTwoFactorAuth />} />
+              <Route path="auto-pay"                        element={<MemberAutoPay />} />
+              <Route path="notification-settings"           element={<MemberNotificationSettings />} />
+            </Route>
           </Route>
         </Route>
 

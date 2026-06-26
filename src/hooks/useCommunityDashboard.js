@@ -23,18 +23,23 @@ async function fetchMembers(id) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /api/v1/communities/{communityIdentifier}/finance/transactions
+// GET /api/v1/communities/{communityIdentifier}/activity
+// Real audit-log feed (event/description/actor/result/occurredAt) — replaces
+// deriving "recent activity" from the first few transactions, which only
+// ever showed payments and never member joins, reminders, etc.
 // ─────────────────────────────────────────────────────────────────────────────
-async function fetchTransactions(id) {
-  const res = await client.get(`/communities/${id}/finance/transactions`);
+async function fetchActivity(id) {
+  const res = await client.get(`/communities/${id}/activity`, { params: { pageSize: 6 } });
   return res.data.data;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /api/v1/communities/{communityIdentifier}/finance/obligations
+// GET /api/v1/communities/{communityIdentifier}/finance/transactions
 // ─────────────────────────────────────────────────────────────────────────────
-async function fetchObligations(id) {
-  const res = await client.get(`/communities/${id}/finance/obligations`);
+async function fetchTransactions(id) {
+  // Paginated server-side — request a large page so the "Recent Activity"
+  // sort below isn't silently working off a single default-sized page.
+  const res = await client.get(`/communities/${id}/finance/transactions`, { params: { pageSize: 1000 } });
   return res.data.data;
 }
 
@@ -87,32 +92,26 @@ export function useCommunityDashboard(communityId) {
     },
   });
 
-  // ── Obligations (payment plans) ─────────────────────────────────────────────
-  const obligationsQuery = useQuery({
-    queryKey: ["community", communityId, "obligations"],
-    queryFn: () => fetchObligations(communityId),
+  // ── Activity feed — separate from the rest so its skeleton doesn't wait
+  // on members/transactions, and a failure here doesn't blank the page ──────
+  const activityQuery = useQuery({
+    queryKey: ["community", communityId, "activity"],
+    queryFn: () => fetchActivity(communityId),
     enabled,
-    staleTime: 1000 * 60 * 2,
+    staleTime: 1000 * 60,
     gcTime: 1000 * 60 * 10,
-    select: (data) => {
-      const list = Array.isArray(data)
-        ? data
-        : (data?.content ?? data?.obligations ?? []);
-      return list;
-    },
+    select: (data) => data?.content ?? [],
   });
 
   const isLoading =
     communityQuery.isLoading ||
     membersQuery.isLoading ||
-    transactionsQuery.isLoading ||
-    obligationsQuery.isLoading;
+    transactionsQuery.isLoading;
 
   const error =
     communityQuery.error ||
     membersQuery.error ||
-    transactionsQuery.error ||
-    obligationsQuery.error;
+    transactionsQuery.error;
 
   // ── Stat-card friendly shape, pulled straight from community.metrics ────────
   const metrics = communityQuery.data?.metrics ?? {};
@@ -126,6 +125,7 @@ export function useCommunityDashboard(communityId) {
     list: membersQuery.data ?? [],
     total: metrics.totalMembers ?? membersQuery.data?.length ?? 0,
     inactive: metrics.inactiveMembers ?? 0,
+    overdue: metrics.overdueMembers ?? 0,
   };
 
   return {
@@ -133,14 +133,17 @@ export function useCommunityDashboard(communityId) {
     balances,
     members,
     transactions: transactionsQuery.data ?? [],
-    obligations: obligationsQuery.data ?? [],
+    activity: {
+      list: activityQuery.data ?? [],
+      isLoading: activityQuery.isLoading,
+    },
     isLoading,
     error,
     queries: {
       community: communityQuery,
       members: membersQuery,
       transactions: transactionsQuery,
-      obligations: obligationsQuery,
+      activity: activityQuery,
     },
   };
 }
