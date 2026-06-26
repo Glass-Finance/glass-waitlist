@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { isMobileDevice, mobileRequiredPath } from "../utils/deviceRedirect";
+import { isMobileSession, mobileRequiredPath } from "../utils/deviceRedirect";
 
 /**
  * The member app (Home, Transactions, Upcoming, Notifications, Manage
@@ -7,11 +7,15 @@ import { isMobileDevice, mobileRequiredPath } from "../utils/deviceRedirect";
  * never adapted for desktop. Anyone reaching them on a desktop, laptop, or
  * tablet (typed URL, bookmark, old link) gets a QR handoff instead, rather
  * than a broken or half-responsive layout.
+ *
+ * Uses isMobileSession() (not the raw device check) so an already-verified
+ * mobile session survives a reload even if a device-emulation tool fails
+ * to reapply its UA override on that specific reload — see deviceRedirect.js.
  */
 export default function MemberDeviceGuard() {
   const location = useLocation();
 
-  if (!isMobileDevice()) {
+  if (!isMobileSession()) {
     const target = `${location.pathname}${location.search}`;
     return <Navigate to={mobileRequiredPath(target)} replace />;
   }

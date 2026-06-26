@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { Home, ArrowLeftRight, CalendarClock, Bell } from "lucide-react";
+import { Home, ArrowLeftRight, CalendarClock, Bell, Menu } from "lucide-react";
+import SideDrawer from "../components/memberApp/SideDrawer";
 
 const TABS = [
   { to: "/member/home", label: "Home", Icon: Home },
@@ -10,6 +12,7 @@ const TABS = [
 
 export default function MemberAppLayout() {
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="flex justify-center items-start min-h-screen bg-[#EBEBEB]">
@@ -17,6 +20,21 @@ export default function MemberAppLayout() {
         className="relative flex flex-col bg-[#EBEBEB] w-full max-w-[390px] min-h-screen overflow-hidden"
         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
       >
+        <SideDrawer open={menuOpen} onClose={() => setMenuOpen(false)} />
+
+        {/* Persistent menu access — every page gets this, not just Home,
+            since Settings/My Communities otherwise had no reachable path
+            from anywhere else in the app. */}
+        <div className="flex-shrink-0 flex items-center px-4 py-2.5">
+          <button
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open menu"
+            className="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border-none cursor-pointer"
+          >
+            <Menu size={18} strokeWidth={2} style={{ color: "#222" }} />
+          </button>
+        </div>
+
         {/* Scrollable content */}
         <main
           className="flex-1 overflow-y-auto overscroll-contain"
