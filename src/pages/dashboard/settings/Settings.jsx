@@ -136,44 +136,22 @@ const BREADCRUMB_MAP = {
   "community/member-access":  { parent: "Community", child: "Member Access"     },
 };
 
-const ITEMS_BY_PARENT = {
-  Account: ACCOUNT_ITEMS,
-  Finance: FINANCE_ITEMS,
-  Community: COMMUNITY_ITEMS,
-};
-
 const PARENT_PATH = {
   Account: "/dashboard/settings/account",
   Finance: "/dashboard/settings/finance",
   Community: "/dashboard/settings/community",
 };
 
-// Parent breadcrumb crumb is both a link back to that tab's menu AND a
-// hover dropdown to jump straight to a sibling sub-page, instead of having
-// to land on the menu list first.
+// Parent breadcrumb crumb — click to go back to that tab's menu list.
 function BreadcrumbParent({ parent }) {
   const navigate = useNavigate();
-  const items = ITEMS_BY_PARENT[parent] ?? [];
   return (
-    <span className="relative inline-block group">
-      <button
-        onClick={() => navigate(PARENT_PATH[parent])}
-        className="text-gray-600 hover:text-gray-900 hover:underline bg-transparent border-none p-0 cursor-pointer text-sm"
-      >
-        {parent}
-      </button>
-      <div className="absolute left-0 top-full mt-1 hidden group-hover:block bg-white rounded-lg border border-gray-100 shadow-lg z-30 min-w-[170px] py-1">
-        {items.map((item) => (
-          <button
-            key={item.path}
-            onClick={() => navigate(item.path)}
-            className="w-full text-left px-3.5 py-2 text-xs text-gray-700 hover:bg-gray-50 bg-transparent border-none cursor-pointer"
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-    </span>
+    <button
+      onClick={() => navigate(PARENT_PATH[parent])}
+      className="text-gray-600 hover:text-gray-900 hover:underline bg-transparent border-none p-0 cursor-pointer text-sm"
+    >
+      {parent}
+    </button>
   );
 }
 
