@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { getErrorMessage } from "../../../../utils/errorHandler";
+import { useAuth } from "../../../../store/AuthContext";
 
 function parseUserData(user) {
   try {
@@ -16,6 +17,7 @@ export default function Profile() {
   const { data: user, isLoading } = useMe();
   const updateProfile = useUpdateProfile();
   const uploadFile = useFileUpload();
+  const { refreshUser } = useAuth();
   const photoInputRef = useRef(null);
 
   const [form, setForm] = useState({ firstName: "", lastName: "", phone: "" });
@@ -43,6 +45,7 @@ export default function Profile() {
         lastName: form.lastName,
         phoneNumber: form.phone,
       });
+      await refreshUser();
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
@@ -58,6 +61,7 @@ export default function Profile() {
       const uploadRes = await uploadFile.mutateAsync({ file, fileCategory: "PROFILE_IMAGE" });
       const profileImageFileId = uploadRes.data?.data?.id;
       await updateProfile.mutateAsync({ profileImageFileId });
+      await refreshUser();
     } catch (err) {
       setError(getErrorMessage(err, "Failed to upload photo."));
     }

@@ -27,6 +27,7 @@ import {
   logout as apiLogout,
   storeAuthSession,
 } from "../services/authService";
+import { getMe } from "../api/members";
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 const AuthContext = createContext(null);
@@ -176,6 +177,39 @@ export function AuthProvider({ children }) {
     });
   }, []);
 
+  // ── refreshUser ────────────────────────────────────────────────────────────
+  // login()/setSession() only ever populate {id, email, role, emailVerified}
+  // — flat fields off the auth response, which has no name or photo on it.
+  // Sidebar/Topbar/Settings all want firstName/lastName/profileImage, which
+  // only exist on GET /user/me. Fetch it once we have a token, and let
+  // callers (e.g. after a profile save) re-call this to pick up changes
+  // immediately instead of waiting for the next full login.
+  const refreshUser = useCallback(async () => {
+    try {
+      const res = await getMe();
+      const profile = res.data?.data ?? res.data;
+      if (!profile) return;
+      setUser((prev) => {
+        if (!prev) return prev; // logged out while this was in flight
+        const updated = {
+          ...prev,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          phoneNumber: profile.phoneNumber,
+          profileImage: profile.profileImage,
+        };
+        writeUser(updated);
+        return updated;
+      });
+    } catch {
+      // Keep whatever we already had (e.g. from login) rather than wiping it.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (token) refreshUser();
+  }, [token, refreshUser]);
+
   // ── Derive role helpers ────────────────────────────────────────────────────
   const role = user?.role ?? "";
   const isAdmin =
@@ -197,6 +231,7 @@ export function AuthProvider({ children }) {
     logout,
     setSession,
     updateUser,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

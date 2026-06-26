@@ -136,6 +136,47 @@ const BREADCRUMB_MAP = {
   "community/member-access":  { parent: "Community", child: "Member Access"     },
 };
 
+const ITEMS_BY_PARENT = {
+  Account: ACCOUNT_ITEMS,
+  Finance: FINANCE_ITEMS,
+  Community: COMMUNITY_ITEMS,
+};
+
+const PARENT_PATH = {
+  Account: "/dashboard/settings/account",
+  Finance: "/dashboard/settings/finance",
+  Community: "/dashboard/settings/community",
+};
+
+// Parent breadcrumb crumb is both a link back to that tab's menu AND a
+// hover dropdown to jump straight to a sibling sub-page, instead of having
+// to land on the menu list first.
+function BreadcrumbParent({ parent }) {
+  const navigate = useNavigate();
+  const items = ITEMS_BY_PARENT[parent] ?? [];
+  return (
+    <span className="relative inline-block group">
+      <button
+        onClick={() => navigate(PARENT_PATH[parent])}
+        className="text-gray-600 hover:text-gray-900 hover:underline bg-transparent border-none p-0 cursor-pointer text-sm"
+      >
+        {parent}
+      </button>
+      <div className="absolute left-0 top-full mt-1 hidden group-hover:block bg-white rounded-lg border border-gray-100 shadow-lg z-30 min-w-[170px] py-1">
+        {items.map((item) => (
+          <button
+            key={item.path}
+            onClick={() => navigate(item.path)}
+            className="w-full text-left px-3.5 py-2 text-xs text-gray-700 hover:bg-gray-50 bg-transparent border-none cursor-pointer"
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+    </span>
+  );
+}
+
 function MenuList({ items }) {
   const navigate = useNavigate();
   return (
@@ -179,7 +220,7 @@ export default function Settings() {
       className="flex flex-col h-full px-8 py-8 overflow-y-auto"
       style={{
         backgroundImage: `url(${Background})`,
-        backgroundSize: "contain",
+        backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
@@ -195,8 +236,8 @@ export default function Settings() {
           <input
             type="text"
             placeholder="Find A Setting"
-            className="pl-9 pr-4 py-2 rounded-md text-xs text-gray-700 placeholder-gray-400 outline-none"
-            style={{ border: "1px solid #E5E7EB", width: "220px" }}
+            className="pl-9 pr-4 py-2 rounded-md text-xs text-gray-700 placeholder-gray-400 "
+            style={{ border: "1px solid #000000", width: "220px" }}
           />
         </div>
       </div>
@@ -226,7 +267,7 @@ export default function Settings() {
       {/* Breadcrumb — only shown on sub-pages */}
       {breadcrumb && (
         <p className="text-sm text-gray-500 mb-5">
-          <span className="text-gray-600">{breadcrumb.parent}</span>
+          <BreadcrumbParent parent={breadcrumb.parent} />
           <span className="mx-2 text-gray-400">›</span>
           <span className="font-semibold text-gray-900">{breadcrumb.child}</span>
         </p>

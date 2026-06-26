@@ -23,41 +23,21 @@ function formatNaira(amount) {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+// user.firstName/lastName come from AuthContext's refreshUser() (GET /user/me)
+// — the login/register response itself only has {id, email, role,
+// emailVerified}, no name fields, so there's nothing to parse off it directly.
 function getInitials(user) {
   if (!user) return "?";
-  // The User API returns userData as a JSON string containing firstName/lastName
-  // Try to parse it; fall back to email initial
-  try {
-    if (user.userData && typeof user.userData === "string") {
-      const parsed = JSON.parse(user.userData);
-      const first = parsed.firstName?.[0] ?? "";
-      const last = parsed.lastName?.[0] ?? "";
-      if (first || last) return (first + last).toUpperCase();
-    }
-    if (user.userData && typeof user.userData === "object") {
-      const first = user.userData.firstName?.[0] ?? "";
-      const last = user.userData.lastName?.[0] ?? "";
-      if (first || last) return (first + last).toUpperCase();
-    }
-  } catch {
-    /* ignore */
-  }
-  // Fallback: first two chars of email
+  const first = user.firstName?.[0] ?? "";
+  const last = user.lastName?.[0] ?? "";
+  if (first || last) return (first + last).toUpperCase();
   return (user.email ?? "?").slice(0, 2).toUpperCase();
 }
 
 function getDisplayName(user) {
   if (!user) return "Loading...";
-  try {
-    const ud =
-      typeof user.userData === "string"
-        ? JSON.parse(user.userData)
-        : user.userData;
-    if (ud?.firstName) return `${ud.firstName} ${ud.lastName ?? ""}`.trim();
-  } catch {
-    /* ignore */
-  }
-  return user.accountName ?? user.email ?? "User";
+  if (user.firstName) return `${user.firstName} ${user.lastName ?? ""}`.trim();
+  return user.email ?? "User";
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -267,8 +247,12 @@ export default function Topbar({
           onClick={() => navigate("/dashboard/settings")}
           className="flex items-center gap-2 bg-transparent border-none cursor-pointer hover:opacity-80 transition-opacity p-0"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1C2B8A] to-[#4f46e5] flex items-center justify-center text-white font-bold text-xs flex-shrink-0 select-none">
-            {initials}
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1C2B8A] to-[#4f46e5] flex items-center justify-center text-white font-bold text-xs flex-shrink-0 select-none overflow-hidden">
+            {user?.profileImage?.url ? (
+              <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              initials
+            )}
           </div>
           <div className="text-left hidden sm:block">
             <p className="text-xs font-bold text-[#0f1d6e] leading-tight">

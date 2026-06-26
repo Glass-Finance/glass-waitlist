@@ -237,6 +237,10 @@ export default function Sidebar() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { logout, user } = useAuth();
+  const userDisplayName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "";
+  const userInitials = (user?.firstName || user?.lastName)
+    ? `${(user?.firstName ?? "")[0] ?? ""}${(user?.lastName ?? "")[0] ?? ""}`.toUpperCase()
+    : (user?.email ?? "").slice(0, 2).toUpperCase() || "?";
 
   const { data: communitiesData, isLoading: loading } = useCommunities();
   const communities = communitiesData?.communities ?? [];
@@ -295,7 +299,7 @@ export default function Sidebar() {
           <img
             src="/Glass.png"
             alt="Glass"
-            className="w-6 h-6 object-contain brightness-0 invert block"
+            className="w-8 h-8 object-contain brightness-0 invert block"
             onError={(e) => {
               e.currentTarget.style.display = "none";
               if (e.currentTarget.nextSibling)
@@ -303,7 +307,7 @@ export default function Sidebar() {
             }}
           />
           <div
-            className="hidden w-6 h-6 rounded-md bg-white/25 items-center justify-center text-white font-black text-sm"
+            className="hidden w-8 h-8 rounded-md bg-white/25 items-center justify-center text-white font-black text-base"
             aria-hidden="true"
           >
             G
@@ -472,7 +476,7 @@ export default function Sidebar() {
           )}
 
           {/* Collapse toggle */}
-          <button
+          {/* <button
             onClick={() => setCollapsed((c) => !c)}
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             style={{
@@ -498,7 +502,7 @@ export default function Sidebar() {
             ) : (
               <PanelLeftClose size={15} />
             )}
-          </button>
+          </button> */}
         </div>
 
         {/* Nav links */}
@@ -580,9 +584,14 @@ export default function Sidebar() {
                 fontSize: 10,
                 fontWeight: 700,
                 flexShrink: 0,
+                overflow: "hidden",
               }}
             >
-              {user?.email?.slice(0, 2).toUpperCase() ?? "?"}
+              {user?.profileImage?.url ? (
+                <img src={user.profileImage.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                userInitials
+              )}
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <p
@@ -596,7 +605,7 @@ export default function Sidebar() {
                   textOverflow: "ellipsis",
                 }}
               >
-                {user?.email ?? ""}
+                {userDisplayName}
               </p>
             </div>
           </div>
