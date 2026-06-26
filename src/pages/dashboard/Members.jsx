@@ -21,7 +21,10 @@ function memberName(m) {
   return full || m.user?.email || m.email || "Member";
 }
 const memberEmail = (m) => m.user?.email ?? m.email ?? "—";
-const memberRole = (m) => m.role?.name ?? m.roleName ?? m.role ?? "Member";
+const memberRole = (m) => m.roleCode ?? m.role?.name ?? m.roleName ?? m.role ?? "Member";
+// Matches AuthContext's hasAdminCommunity check — roleCode is the stable
+// enum value (OWNER/ADMIN/MANAGER/MEMBER/...), not a free-text display name.
+const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes((m.roleCode ?? "").toUpperCase());
 const memberInitials = (m) => memberName(m).split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
 
 function formatNaira(amount) {
@@ -103,7 +106,8 @@ export default function Members() {
   const { members, obligations, isLoading, error } = useMembersWithPayments(communityId);
   const { addMember, removeMember } = useCommunityMembers(communityId);
   const { data: rolesData } = useRoles();
-  const roles = rolesData?.length ? rolesData : FALLBACK_ROLES;
+  const usingFallbackRoles = !rolesData?.length;
+  const roles = usingFallbackRoles ? FALLBACK_ROLES : rolesData;
 
   const planOptions = useMemo(
     () => [...new Set(obligations.map((o) => o.paymentLink?.title).filter(Boolean))],
@@ -136,7 +140,7 @@ export default function Members() {
     total: members.length,
     active: members.filter((m) => (m.status ?? "ACTIVE").toUpperCase() === "ACTIVE").length,
     inactive: members.filter((m) => (m.status ?? "").toUpperCase() === "INACTIVE").length,
-    admins: members.filter((m) => memberRole(m).toLowerCase() === "admin").length,
+    admins: members.filter(isAdminRole).length,
   };
 
   async function handleAdd(payload) {
@@ -317,22 +321,33 @@ export default function Members() {
           adding={addMember.isPending}
           error={addMember.error ? getErrorMessage(addMember.error) : null}
           roles={roles}
+          rolesUnavailable={usingFallbackRoles}
         />
       )}
     </div>
   );
 }
 
-function AddMemberModal({ onClose, onAdd, adding, error, roles }) {
+function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable }) {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [roleId, setRoleId] = useState(roles[0]?.id ?? "");
   const [billingExempt, setBillingExempt] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const ok = await onAdd({ email: email.trim(), roleId, billingExempt });
+    const ok = await onAdd({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.trim(),
+      roleId,
+      billingExempt,
+    });
     if (ok) onClose();
   }
+
+  const isReady = email.trim() && firstName.trim() && lastName.trim() && !rolesUnavailable;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm" onClick={e => e.target === e.currentTarget && onClose()}>
@@ -343,6 +358,30 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles }) {
         </div>
 
         <div className="flex flex-col gap-3.5">
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <label className="block text-sm font-semibold text-gray-900 mb-1.5">First Name</label>
+              <input
+                type="text"
+                required
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="First name"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-[#002FA7]"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-semibold text-gray-900 mb-1.5">Last Name</label>
+              <input
+                type="text"
+                required
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Last name"
+                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-[#002FA7]"
+              />
+            </div>
+          </div>
           <div>
             <label className="block text-sm font-semibold text-gray-900 mb-1.5">Email</label>
             <input
@@ -363,6 +402,9 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles }) {
             >
               {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>
+            {rolesUnavailable && (
+              <p className="text-xs text-red-500 mt-1.5">Couldn't load roles from the server — try closing and reopening this dialog.</p>
+            )}
           </div>
           <label className="flex items-center gap-2 text-sm text-gray-700">
             <input type="checkbox" checked={billingExempt} onChange={(e) => setBillingExempt(e.target.checked)} />
@@ -374,7 +416,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles }) {
 
         <button
           type="submit"
-          disabled={adding || !email.trim()}
+          disabled={adding || !isReady}
           className="w-full mt-5 px-4 py-2.5 rounded-lg bg-[#002FA7] text-white text-sm font-semibold hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
         >
           {adding ? "Adding…" : "Add Member"}

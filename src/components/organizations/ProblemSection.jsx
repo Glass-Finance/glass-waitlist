@@ -197,8 +197,6 @@ export default function ProblemSection() {
     const io2 = new IntersectionObserver(
       (entries) =>
         entries.forEach((e) => {
-          console.log("IMAGE OBSERVER", e.isIntersecting);
-
           if (e.isIntersecting) {
             e.target.style.clipPath = "inset(0% 0% 0% 0%)";
             io2.unobserve(e.target);

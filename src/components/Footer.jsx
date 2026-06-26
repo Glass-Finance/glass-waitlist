@@ -179,7 +179,7 @@ export default function Footer() {
             Join 10+ other forward-thinking communities on the waitlist today.
           </p>
           <button
-            onClick={() => navigate("/waitlist")}
+            onClick={() => navigate("/sign-up")}
             className="inline-flex items-center gap-2 bg-white text-[#0f1640] text-[15px] font-semibold px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/20"
           >
             Get Started

@@ -1414,7 +1414,18 @@ export default function Hero() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
+    // index.css sets `scroll-behavior: smooth` globally for anchor links —
+    // that also hijacks plain scrollTo() calls, turning this reset into a
+    // visible multi-hundred-ms slide instead of an instant jump. Suppressing
+    // it has to survive past the browser's next paint, or restoring it
+    // synchronously here wins the race and the scroll still animates.
+    const root = document.documentElement;
+    const prevBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => {
+      root.style.scrollBehavior = prevBehavior;
+    });
   }, []);
 
   return (
@@ -1501,7 +1512,7 @@ export default function Hero() {
           <div className="flex items-center justify-center gap-3 flex-wrap">
             {/* ── FIXED: navigates to org onboarding entry point ── */}
             <button
-              onClick={() => navigate("/member/signup")}
+              onClick={() => navigate("/sign-up")}
               className="inline-flex items-center gap-2 bg-white text-[#0d1022] text-[15px] px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer"
               style={{ fontFamily: "Inter,sans-serif", fontWeight: 500 }}
             >

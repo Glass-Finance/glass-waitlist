@@ -23,6 +23,21 @@ export default function MembersHero() {
   }
 
   useEffect(() => {
+    // index.css sets `scroll-behavior: smooth` globally for anchor links —
+    // that also hijacks plain scrollTo() calls, turning this reset into a
+    // visible multi-hundred-ms slide instead of an instant jump. Suppressing
+    // it has to survive past the browser's next paint, or restoring it
+    // synchronously here wins the race and the scroll still animates.
+    const root = document.documentElement;
+    const prevBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => {
+      root.style.scrollBehavior = prevBehavior;
+    });
+  }, []);
+
+  useEffect(() => {
     // ── Static TV noise — drawn ONCE, frozen in place, very subtle ───────────
     const canvas = document.getElementById("hero-static-canvas");
     if (canvas) {

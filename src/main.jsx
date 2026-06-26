@@ -14,6 +14,15 @@ import { notifyError } from "./utils/errorHandler.js";
 // will just fail to render/authenticate until it is.
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
 
+// The browser's own scroll restoration ("auto") fights with each page's
+// own scroll-to-top effect on route change — it holds the previous page's
+// scroll position for a beat before the effect wins, producing a visible
+// flash/jump. Handing scroll restoration entirely to the app removes that
+// race.
+if ("scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
+
 /**
  * QueryClient — React Query
  * ─────────────────────────

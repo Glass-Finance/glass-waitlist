@@ -620,11 +620,14 @@ export default function Join() {
 
   // Google already proves the user owns this email, so registration is
   // immediate — no OTP step needed. Note: the invite token isn't sent to
-  // /auth/google today (it only takes a credential), so an invite opened
-  // on this device may need to be accepted manually after landing on
-  // /member/invites rather than being auto-applied.
+  // /auth/google today (it only takes a credential), so it's never
+  // actually applied here — unlike finishAndRoute() above (used after the
+  // regular register()+OTP flow, which does send the token), a pending
+  // invite needs /member/invites to accept it manually instead of
+  // /member/home, the opposite direction of finishAndRoute()'s ternary.
   function handleGoogleAuth() {
-    finishAndRoute();
+    consumeToken();
+    navigate(token ? "/member/invites" : "/member/home", { replace: true });
   }
 
   function handleBack() {

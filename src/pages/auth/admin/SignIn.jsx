@@ -177,7 +177,7 @@ export default function SignIn() {
         <p className="text-center text-sm mt-5 text-gray-500">
           Don't have an account?{" "}
           <Link
-            to="/member/signup"
+            to="/sign-up"
             className="font-semibold hover:underline"
             style={{ color: "#1B2FE8" }}
           >
