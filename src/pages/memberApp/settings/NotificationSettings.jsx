@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { useNotificationPreferences } from "../../hooks/useNotifications";
+import { useNotificationPreferences } from "../../../hooks/useNotifications";
 
 function Toggle({ on, onChange }) {
   return (

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Eye, EyeOff, Info } from "lucide-react";
-import { register } from "../../../services/authService";
-import { notifyError } from "../../../utils/errorHandler";
-import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
+import { register } from "../../../../services/authService";
+import { notifyError } from "../../../../utils/errorHandler";
+import GoogleAuthButton from "../../../../components/auth/GoogleAuthButton";
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
 const inputCls =

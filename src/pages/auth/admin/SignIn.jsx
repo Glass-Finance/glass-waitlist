@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { useAuth } from "../../store/AuthContext";
-import { getMyInvites } from "../../api/invites";
-import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
-import { notifyError } from "../../utils/errorHandler";
-import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
-import AuthLayout from "../../layouts/AuthLayout";
+import { useAuth } from "../../../store/AuthContext";
+import { getMyInvites } from "../../../api/invites";
+import { isMobileDevice, mobileRequiredPath } from "../../../utils/deviceRedirect";
+import { notifyError } from "../../../utils/errorHandler";
+import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
+import AuthLayout from "../../../layouts/AuthLayout";
 
 // ── Shared styles (matches SignUp/RegisterStep) ───────────────────────────────
 const inputCls =

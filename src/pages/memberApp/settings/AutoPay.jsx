@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { usePayments, useManagePayments } from "../../hooks/usePayments";
+import { usePayments, useManagePayments } from "../../../hooks/usePayments";
 
 function Toggle({ on, onChange }) {
   return (

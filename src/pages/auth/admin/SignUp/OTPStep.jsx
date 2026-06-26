@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-import { verifyEmail, resendVerification } from "../../../services/authService";
-import { notifyError } from "../../../utils/errorHandler";
+import { verifyEmail, resendVerification } from "../../../../services/authService";
+import { notifyError } from "../../../../utils/errorHandler";
 
 // ── Step 2: OTP Verification ───────────────────────────────────────────────────
 export default function OTPStep({ email, onVerified, onBack }) {

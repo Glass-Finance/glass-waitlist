@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunity";
-import { useMyMemberRecord } from "../../../../hooks/useMembers";
+import { useMyMemberRecord } from "../../../../hooks/useMyAccount";
 import { updateCommunityMember } from "../../../../api/communities";
 
 const OPTIONS = [

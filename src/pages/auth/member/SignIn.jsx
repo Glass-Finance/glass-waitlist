@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { useAuth } from "../../store/AuthContext";
-import { getMyInvites } from "../../api/invites";
-import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
-import { notifyError } from "../../utils/errorHandler";
-import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
+import { useAuth } from "../../../store/AuthContext";
+import { getMyInvites } from "../../../api/invites";
+import { isMobileDevice, mobileRequiredPath } from "../../../utils/deviceRedirect";
+import { notifyError } from "../../../utils/errorHandler";
+import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 
 // ── Import your actual assets ──────────────────────────────────────────────
-import glassLogo from "../../assets/cta/ctalogo.png";
-import authHeroBg from "../../assets/auth/mobile-auth.png";
+import glassLogo from "../../../assets/cta/ctalogo.png";
+import authHeroBg from "../../../assets/auth/mobile-auth.png";
 
 // ---------------------------------------------------------------------------
 // Primitives (same light-sheet style as SignUp)
@@ -162,7 +162,7 @@ function MobileShell({ children }) {
 // ---------------------------------------------------------------------------
 // Sign In form
 // ---------------------------------------------------------------------------
-export default function MemberAppSignIn() {
+export default function SignIn() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPw, setShowPw] = useState(false);

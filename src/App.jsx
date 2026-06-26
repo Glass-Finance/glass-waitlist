@@ -10,11 +10,11 @@ import OrganizationsHome from "./pages/OrganizationsHome";
 import MembersHome from "./pages/MembersHome";
 
 // ── Auth pages ─────────────────────────────────────────────────────────────────
-import SignUp from "./pages/auth/SignUp";
-import CheckEmail from "./pages/auth/CheckEmail";
-import Join from "./pages/auth/Join";
-import SignIn from "./pages/auth/SignIn";
-import MemberAppSignIn from "./pages/auth/MemberAppSignIn";
+import SignUp from "./pages/auth/admin/SignUp";
+import SignIn from "./pages/auth/admin/SignIn";
+import CheckEmail from "./pages/auth/member/CheckEmail";
+import Join from "./pages/auth/member/Join";
+import MemberAppSignIn from "./pages/auth/member/SignIn";
 
 // ── Onboarding pages ───────────────────────────────────────────────────────────
 import ChoosePath from "./pages/onboarding/ChoosePath";
@@ -49,25 +49,25 @@ import MemberAppLayout from "./layouts/MemberAppLayout";
 import MemberHome from "./pages/memberApp/Home";
 import MemberTransactions from "./pages/memberApp/Transactions";
 import MemberUpcoming from "./pages/memberApp/UpcomingPayments";
-import MemberNotifications from "./pages/memberApp/MemberNotifications";
+import MemberNotifications from "./pages/memberApp/Notifications";
 import ManagePayments from "./pages/memberApp/ManagePayments";
 import PaymentSummary from "./pages/memberApp/PaymentSummary";
 import PaymentSuccess from "./pages/memberApp/PaymentSuccess";
 import Invites from "./pages/memberApp/Invites";
-import MemberSettings from "./pages/memberApp/Settings";
-import MemberProfile from "./pages/memberApp/Profile";
-import MyCommunities from "./pages/memberApp/MyCommunities";
-import MemberSecurity from "./pages/memberApp/Security";
-import MemberPassword from "./pages/memberApp/Password";
-import MemberTwoFactorAuth from "./pages/memberApp/TwoFactorAuth";
-import MemberAutoPay from "./pages/memberApp/AutoPay";
-import MemberNotificationSettings from "./pages/memberApp/NotificationSettings";
+import MemberSettings from "./pages/memberApp/settings/Settings";
+import MemberProfile from "./pages/memberApp/settings/Profile";
+import MyCommunities from "./pages/memberApp/settings/MyCommunities";
+import MemberSecurity from "./pages/memberApp/settings/Security";
+import MemberPassword from "./pages/memberApp/settings/Password";
+import MemberTwoFactorAuth from "./pages/memberApp/settings/TwoFactorAuth";
+import MemberAutoPay from "./pages/memberApp/settings/AutoPay";
+import MemberNotificationSettings from "./pages/memberApp/settings/NotificationSettings";
 
 // ── Guards ───────────────────────────────────────────────────────────────────
 import ProtectedRoute from "./routes/ProtectedRoute";
 import MemberProtectedRoute from "./routes/MemberProtectedRoute";
 import MemberDeviceGuard from "./routes/MemberDeviceGuard";
-import MobileRequired from "./pages/member/MobileRequired";
+import MobileRequired from "./pages/auth/member/MobileRequired";
 
 function App() {
   return (
@@ -87,7 +87,7 @@ function App() {
             have an account" link). /member/app-sign-in is the mobile-card
             login shared by member-facing entry points (Join's link, the
             member guard, memberApp logout) — it's reachable on any device,
-            but MemberAppSignIn.jsx redirects non-admin desktop logins to the
+            but auth/member/SignIn.jsx redirects non-admin desktop logins to the
             QR handoff after authenticating, since only the *resulting role*
             tells us which experience the user actually needs. ── */}
         <Route path="/member/signup"  element={<SignUp />} />

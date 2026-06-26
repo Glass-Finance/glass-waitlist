@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
-import { useUpdatePassword } from "../../hooks/useMembers";
-import { getErrorMessage } from "../../utils/errorHandler";
+import { useUpdatePassword } from "../../../hooks/useMyAccount";
+import { getErrorMessage } from "../../../utils/errorHandler";
 
 const inputStyle = {
   width: "100%",

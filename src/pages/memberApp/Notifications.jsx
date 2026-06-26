@@ -168,7 +168,7 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
   );
 }
 
-export default function MemberNotifications() {
+export default function Notifications() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Invites");
 

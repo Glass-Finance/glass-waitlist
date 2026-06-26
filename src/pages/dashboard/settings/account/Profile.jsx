@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useMe, useUpdateProfile } from "../../../../hooks/useMembers";
+import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Landmark } from "lucide-react";
 import { getObligation } from "../../api/members";
-import { useMe } from "../../hooks/useMembers";
+import { useMe } from "../../hooks/useMyAccount";
 import { useManagePayments, useInitiatePayment } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
 

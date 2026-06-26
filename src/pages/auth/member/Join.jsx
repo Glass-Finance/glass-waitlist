@@ -1,15 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Info } from "lucide-react";
-import { useInviteToken } from "../../hooks/useInviteToken";
-import { register } from "../../services/authService";
-import { notifyError } from "../../utils/errorHandler";
-import { useAuth } from "../../store/AuthContext";
-import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
+import { useInviteToken } from "../../../hooks/useInviteToken";
+import { register } from "../../../services/authService";
+import { notifyError } from "../../../utils/errorHandler";
+import { useAuth } from "../../../store/AuthContext";
+import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 
 // ── Import your actual assets ──────────────────────────────────────────────
-import glassLogo from "../../assets/cta/ctalogo.png";
-import authHeroBg from "../../assets/auth/mobile-auth.png";
+import glassLogo from "../../../assets/cta/ctalogo.png";
+import authHeroBg from "../../../assets/auth/mobile-auth.png";
 
 // ---------------------------------------------------------------------------
 // Constants

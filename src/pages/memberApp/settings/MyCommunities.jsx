@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, LogOut } from "lucide-react";
-import { useMyCommunities, useLeaveCommunity } from "../../hooks/useMembers";
+import { useMyCommunities, useLeaveCommunity } from "../../../hooks/useMyAccount";
 
 function getInitials(name = "") {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
