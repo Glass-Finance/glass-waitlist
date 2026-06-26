@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
+import { useFileUpload } from "../../../../hooks/useFileUpload";
+import { useAuth } from "../../../../store/AuthContext";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 
 function parseUserData(user) {
@@ -29,10 +31,14 @@ export default function Profile() {
   const navigate = useNavigate();
   const { data: user, isLoading } = useMe();
   const updateProfile = useUpdateProfile();
+  const uploadFile = useFileUpload();
+  const { refreshUser } = useAuth();
+  const photoInputRef = useRef(null);
 
   const [form, setForm] = useState({ firstName: "", lastName: "", phone: "" });
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const [photoPreview, setPhotoPreview] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -59,6 +65,24 @@ export default function Profile() {
     }
   }
 
+  async function handlePhotoSelect(file) {
+    if (!file) return;
+    setPhotoPreview(URL.createObjectURL(file));
+    setError("");
+    try {
+      const uploadRes = await uploadFile.mutateAsync({ file, fileCategory: "PROFILE_IMAGE" });
+      const profileImageFileId = uploadRes.data?.data?.id;
+      // profileImageFileId only takes effect nested under userData -- the
+      // backend accepts firstName/lastName/phoneNumber flat, but not this.
+      await updateProfile.mutateAsync({ userData: { profileImageFileId } });
+      await refreshUser();
+    } catch (err) {
+      setError(getErrorMessage(err, "Failed to upload photo."));
+    }
+  }
+
+  const ud = parseUserData(user);
+  const photoUrl = ud.profileImage?.url ?? null;
   const initials = `${form.firstName} ${form.lastName}`.trim().split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
 
   return (
@@ -75,9 +99,30 @@ export default function Profile() {
 
       <div style={{ padding: "0 16px" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 20 }}>
-          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#D7E2FF", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: 20, fontWeight: 600, color: "#002FA7" }}>{initials}</span>
+          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#D7E2FF", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+            {photoPreview || photoUrl ? (
+              <img src={photoPreview ?? photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              <span style={{ fontSize: 20, fontWeight: 600, color: "#002FA7" }}>{initials}</span>
+            )}
           </div>
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            style={{ display: "none" }}
+            onChange={(e) => handlePhotoSelect(e.target.files[0])}
+          />
+          <button
+            onClick={() => photoInputRef.current?.click()}
+            disabled={uploadFile.isPending}
+            style={{
+              background: "none", border: "none", cursor: "pointer", padding: 0,
+              fontSize: 13, fontWeight: 600, color: "#002FA7", opacity: uploadFile.isPending ? 0.6 : 1,
+            }}
+          >
+            {uploadFile.isPending ? "Uploading…" : "Change Photo"}
+          </button>
           <p style={{ fontSize: 13, color: "#999", margin: 0 }}>{isLoading ? "Loading…" : user?.email}</p>
         </div>
 
