@@ -9,7 +9,7 @@ export default function MobileRequired() {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   const [searchParams] = useSearchParams();
-  const target = searchParams.get("to") || "/member/sign-in";
+  const target = searchParams.get("to") || "/member/app-sign-in";
   const url = buildMobileUrl(target);
 
   // Admins have a real desktop home to go to; a pure member doesn't --

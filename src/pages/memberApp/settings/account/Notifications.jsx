@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { useNotificationPreferences } from "../../../hooks/useNotifications";
+import { useNotificationPreferences } from "../../../../hooks/useNotifications";
 
 function Toggle({ on, onChange }) {
   return (
@@ -27,7 +27,7 @@ function Row({ label, desc, value, onChange, last = false }) {
   );
 }
 
-export default function NotificationSettings() {
+export default function Notifications() {
   const navigate = useNavigate();
   const { preferences, isLoading, update } = useNotificationPreferences();
   const get = (key) => preferences[key] ?? true;
@@ -48,21 +48,12 @@ export default function NotificationSettings() {
         {isLoading && <p style={{ textAlign: "center", color: "#999", fontSize: 13 }}>Loading…</p>}
 
         <p style={{ fontSize: 12, fontWeight: 600, color: "#999", margin: "0 4px 8px", textTransform: "uppercase", letterSpacing: 0.4 }}>
-          Payment
-        </p>
-        <div style={{ background: "#fff", borderRadius: 14, padding: 4, marginBottom: 20, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
-          <Row label="Payment due reminder" desc="3 days before your dues are due" value={get("paymentDue")} onChange={(v) => update("paymentDue", v)} />
-          <Row label="Payment successful" desc="Confirmation when a payment goes through" value={get("paymentSuccess")} onChange={(v) => update("paymentSuccess", v)} />
-          <Row label="Payment failed" desc="Alert when a payment attempt fails" value={get("paymentFailed")} onChange={(v) => update("paymentFailed", v)} />
-          <Row label="Auto-Pay charged" desc="Confirmation when Auto-Pay processes a charge" value={get("autoPay")} onChange={(v) => update("autoPay", v)} last />
-        </div>
-
-        <p style={{ fontSize: 12, fontWeight: 600, color: "#999", margin: "0 4px 8px", textTransform: "uppercase", letterSpacing: 0.4 }}>
-          Community
+          Notification channels
         </p>
         <div style={{ background: "#fff", borderRadius: 14, padding: 4, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
-          <Row label="New member joined" desc="When someone joins your community" value={get("newMember")} onChange={(v) => update("newMember", v)} />
-          <Row label="New payment plan" desc="When a new plan is added to your community" value={get("newPlan")} onChange={(v) => update("newPlan", v)} last />
+          <Row label="In-app notifications" desc="Show notifications inside the app" value={get("inAppEnabled")} onChange={(v) => update("inAppEnabled", v)} />
+          <Row label="Email notifications" desc="Send updates to your email address" value={get("emailEnabled")} onChange={(v) => update("emailEnabled", v)} />
+          <Row label="WhatsApp notifications" desc="Send updates to your WhatsApp number" value={get("whatsappEnabled")} onChange={(v) => update("whatsappEnabled", v)} last />
         </div>
       </div>
     </div>

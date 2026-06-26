@@ -48,7 +48,7 @@ export default function SignIn() {
   // Shared by password sign-in and Google sign-in: routes by the *resulting*
   // role/device, since neither knows in advance whether this is a community
   // owner or a mobile-only member who just happened to land on the desktop
-  // sign-in page (matches MemberAppSignIn.jsx's routeAfterAuth).
+  // sign-in page (matches member/SignIn.jsx's routeAfterAuth).
   async function routeAfterAuth(user) {
     if (user?.isAdmin) {
       navigate("/dashboard/home", { replace: true });
@@ -99,7 +99,7 @@ export default function SignIn() {
       heroTitle="Manage Your Community"
       heroSubtitle="Finance Effortlessly"
     >
-      <div className="w-full max-w-sm flex flex-col">
+      <div className="w-full max-w-sm flex flex-col my-auto">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-1.5">
             Welcome Back
@@ -134,7 +134,7 @@ export default function SignIn() {
                 Password
               </label>
               <Link
-                to="/member/forgot-password"
+                to="/forgot-password"
                 className="text-xs font-semibold"
                 style={{ color: "#2535c3" }}
               >

@@ -275,7 +275,7 @@ export default function Sidebar() {
     setLoggingOut(true);
     try {
       await logout();
-      navigate("/member/sign-in", { replace: true });
+      navigate("/sign-in", { replace: true });
     } finally {
       setLoggingOut(false);
     }

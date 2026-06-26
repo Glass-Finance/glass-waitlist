@@ -43,7 +43,7 @@ export default function Notifications() {
           </div>
         ) : (
           notifications.map((n) => {
-            const isRead = n.isRead ?? n.read ?? false;
+            const isRead = n.readFlag ?? false;
             return (
               <button
                 key={n.id}
