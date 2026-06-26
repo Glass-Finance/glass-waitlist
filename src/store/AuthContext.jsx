@@ -30,6 +30,20 @@ import {
 import { getMe } from "../api/members";
 import client from "../api/client";
 
+// GET /user/me doesn't return firstName/lastName/phone as flat fields —
+// they're nested in userData, which can come back as a JSON string or an
+// object depending on the field (matches Profile.jsx's parseUserData,
+// which is the confirmed-working version of this since it renders the
+// name correctly there already).
+function parseUserData(profile) {
+  try {
+    const ud = typeof profile?.userData === "string" ? JSON.parse(profile.userData) : profile?.userData;
+    return ud ?? {};
+  } catch {
+    return {};
+  }
+}
+
 // "Admin" has no global flag on this backend — platformRole/the JWT's role
 // claim is a platform-wide value ("USER" for every account, even community
 // owners) and never reflects per-community standing. Whether someone is an
@@ -217,13 +231,14 @@ export function AuthProvider({ children }) {
       const profile = meRes.data?.data ?? meRes.data;
       const communities = communitiesRes.data?.data?.content ?? [];
       if (!profile) return;
+      const ud = parseUserData(profile);
       setUser((prev) => {
         if (!prev) return prev; // logged out while this was in flight
         const updated = {
           ...prev,
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          phoneNumber: profile.phoneNumber,
+          firstName: ud.firstName,
+          lastName: ud.lastName,
+          phoneNumber: profile.phoneNumber ?? ud.phone,
           profileImage: profile.profileImage,
           isAdmin: hasAdminCommunity(communities),
         };
