@@ -3,12 +3,20 @@ import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
 import QRCodeCanvas from "../../components/dashboard/QRCode";
 import { buildMobileUrl } from "../../utils/deviceRedirect";
+import { useAuth } from "../../store/AuthContext";
 
 export default function MobileRequired() {
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
   const [searchParams] = useSearchParams();
   const target = searchParams.get("to") || "/member/sign-in";
   const url = buildMobileUrl(target);
+
+  // Admins have a real desktop home to go to; a pure member doesn't --
+  // sending them to /dashboard/home would just get bounced by
+  // ProtectedRoute back to /member/home, which is itself mobile-gated,
+  // landing them right back on this page.
+  const continueTo = isAdmin ? "/dashboard/home" : "/";
 
   return (
     <div
@@ -47,36 +55,12 @@ export default function MobileRequired() {
           <QRCodeCanvas value={url} size={200} color="#000000" />
 
           <button
-            onClick={() => navigate("/dashboard/home")}
+            onClick={() => navigate(continueTo)}
             className="w-full max-w-md mt-4 py-3 rounded-full text-white text-sm font-medium transition-all hover:opacity-90 active:scale-[0.98] border-none cursor-pointer"
             style={{ background: "#002FA7" }}
           >
             Continue
           </button>
-
-          {/* Divider */}
-          <div className="flex items-center gap-4 w-full my-5">
-            <div className="flex-1 h-px bg-gray-300" />
-            <span className="text-xs text-gray-400 flex-shrink-0">
-              Or Use Email
-            </span>
-            <div className="flex-1 h-px bg-gray-300" />
-          </div>
-
-          <p className="text-xs text-gray-500 text-center mb-2.5">
-            We can also send a link to your email so you can pick up where you
-            left off on your phone.
-          </p>
-
-          <p className="text-xs text-gray-900 text-center">
-            Didn't get it?{" "}
-            <button
-              className="font-normal hover:underline bg-transparent border-none cursor-pointer p-0"
-              style={{ color: "#002FA7" }}
-            >
-              Resend Email
-            </button>
-          </p>
         </div>
       </main>
     </div>
