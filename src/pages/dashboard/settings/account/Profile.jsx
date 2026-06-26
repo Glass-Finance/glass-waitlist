@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { getErrorMessage } from "../../../../utils/errorHandler";
+import { useAuth } from "../../../../store/AuthContext";
 
 function parseUserData(user) {
   try {
@@ -16,12 +17,17 @@ export default function Profile() {
   const { data: user, isLoading } = useMe();
   const updateProfile = useUpdateProfile();
   const uploadFile = useFileUpload();
+  const { refreshUser } = useAuth();
   const photoInputRef = useRef(null);
 
   const [form, setForm] = useState({ firstName: "", lastName: "", phone: "" });
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
   const [photoPreview, setPhotoPreview] = useState(null);
+
+  // profileImage lives inside userData too (confirmed against the real
+  // GET /user/me response — it's not a top-level field).
+  const profileImageUrl = parseUserData(user).profileImage?.url ?? null;
 
   useEffect(() => {
     if (!user) return;
@@ -43,6 +49,7 @@ export default function Profile() {
         lastName: form.lastName,
         phoneNumber: form.phone,
       });
+      await refreshUser();
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
@@ -58,6 +65,7 @@ export default function Profile() {
       const uploadRes = await uploadFile.mutateAsync({ file, fileCategory: "PROFILE_IMAGE" });
       const profileImageFileId = uploadRes.data?.data?.id;
       await updateProfile.mutateAsync({ profileImageFileId });
+      await refreshUser();
     } catch (err) {
       setError(getErrorMessage(err, "Failed to upload photo."));
     }
@@ -81,8 +89,8 @@ export default function Profile() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
-              {photoPreview || user?.profileImage?.url ? (
-                <img src={photoPreview ?? user.profileImage.url} alt="" className="w-full h-full object-cover" />
+              {photoPreview || profileImageUrl ? (
+                <img src={photoPreview ?? profileImageUrl} alt="" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-sm text-[#002FA7]">{initials}</span>
               )}

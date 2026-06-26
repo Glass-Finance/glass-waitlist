@@ -880,7 +880,7 @@ function DashboardContent({ isPaying, communityId }) {
       className="flex-1 px-6 py-5 overflow-y-auto"
       style={{
         backgroundImage: `url(${Background})`,
-        backgroundSize: "contain",
+        backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
@@ -942,7 +942,7 @@ function DashboardContent({ isPaying, communityId }) {
         {stats.map((s) => (
           <div
             key={s.label}
-            className="bg-[#EFEFF1] rounded-xl px-4 py-4 border border-[#eef0f8]"
+            className="bg-white rounded-xl px-4 py-4 border border-[#eef0f8]"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <div className="flex items-center justify-between mb-3">
@@ -1328,4 +1328,4 @@ export function PayingAdminDashboard() {
     })();
 
   return <DashboardContent isPaying={true} communityId={communityId} />;
-}
+}
