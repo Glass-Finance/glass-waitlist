@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Plus, MoreHorizontal, X, RefreshCw, Zap, Check, ArrowLeft, Loader2, Wallet, ListChecks, Clock, XCircle } from "lucide-react";
-import { useActiveCommunityId } from "../../hooks/useActiveCommunity";
+import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { useSlug } from "../../hooks/useSlug";
 import { getErrorMessage } from "../../utils/errorHandler";

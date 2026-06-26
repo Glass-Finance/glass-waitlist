@@ -80,14 +80,23 @@ function clearSessionAndRedirect() {
   window.location.href = isAdminArea ? "/sign-in" : "/member/app-sign-in";
 }
 
+// A 401 from one of these means "wrong credentials," not "your session
+// expired" — there's no session to refresh yet, since the user is still
+// trying to establish one. Letting the refresh-and-redirect logic below
+// run for these hard-navigates away from the sign-in form mid-attempt
+// (clearing whatever they typed) before the caller's own catch block ever
+// gets to show an inline/toast error.
+const PRE_AUTH_PATHS = ["/auth/login", "/auth/google", "/auth/mfa/totp/verify-login"];
+
 // ── Global response handler ───────────────────────────────────────────────────
 client.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const isPreAuthRequest = PRE_AUTH_PATHS.some((p) => originalRequest?.url?.includes(p));
 
     // Only attempt refresh on 401, and only once per request
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry && !isPreAuthRequest) {
       const refreshToken = localStorage.getItem("refreshToken");
 
       // No refresh token available — nothing to do but log out

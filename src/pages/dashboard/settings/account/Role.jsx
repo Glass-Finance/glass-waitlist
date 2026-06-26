@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useActiveCommunityId } from "../../../../hooks/useActiveCommunity";
+import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useMyMemberRecord } from "../../../../hooks/useMyAccount";
 import { updateCommunityMember } from "../../../../api/communities";
 

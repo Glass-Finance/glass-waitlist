@@ -255,7 +255,7 @@ export default function Sidebar() {
   const onCommunitiesOverview = location.pathname === "/dashboard/home";
 
   // Active community: ?community= param, falling back to the last one
-  // stashed in localStorage (see useActiveCommunity.js)
+  // stashed in localStorage (see useActiveCommunityId.js)
   const urlSlug =
     searchParams.get("community") ??
     (() => {
