@@ -239,7 +239,7 @@ export function AuthProvider({ children }) {
           firstName: ud.firstName,
           lastName: ud.lastName,
           phoneNumber: profile.phoneNumber ?? ud.phone,
-          profileImage: profile.profileImage,
+          profileImage: ud.profileImage,
           isAdmin: hasAdminCommunity(communities),
         };
         writeUser(updated);

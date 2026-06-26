@@ -25,6 +25,10 @@ export default function Profile() {
   const [error, setError] = useState("");
   const [photoPreview, setPhotoPreview] = useState(null);
 
+  // profileImage lives inside userData too (confirmed against the real
+  // GET /user/me response — it's not a top-level field).
+  const profileImageUrl = parseUserData(user).profileImage?.url ?? null;
+
   useEffect(() => {
     if (!user) return;
     const ud = parseUserData(user);
@@ -85,8 +89,8 @@ export default function Profile() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
-              {photoPreview || user?.profileImage?.url ? (
-                <img src={photoPreview ?? user.profileImage.url} alt="" className="w-full h-full object-cover" />
+              {photoPreview || profileImageUrl ? (
+                <img src={photoPreview ?? profileImageUrl} alt="" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-sm text-[#002FA7]">{initials}</span>
               )}
