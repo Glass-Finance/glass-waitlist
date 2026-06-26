@@ -47,7 +47,7 @@ function Avatar({ name }) {
   );
 }
 
-function EmptyState({ icon: Icon, label }) {
+function EmptyState({ icon: Icon, label, hint, onAction, actionLabel }) {
   return (
     <div
       style={{
@@ -58,10 +58,32 @@ function EmptyState({ icon: Icon, label }) {
         flexDirection: "column",
         alignItems: "center",
         gap: 10,
+        textAlign: "center",
       }}
     >
       <Icon size={22} strokeWidth={1.6} style={{ color: "#bbb" }} />
       <p style={{ color: "#999", fontSize: 13, margin: 0 }}>{label}</p>
+      {hint && (
+        <p style={{ color: "#aaa", fontSize: 12, margin: 0, maxWidth: 240, lineHeight: 1.5 }}>{hint}</p>
+      )}
+      {onAction && (
+        <button
+          onClick={onAction}
+          style={{
+            marginTop: 4,
+            padding: "8px 16px",
+            borderRadius: 8,
+            border: "1.5px solid #002FA7",
+            background: "#fff",
+            color: "#002FA7",
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          {actionLabel}
+        </button>
+      )}
     </div>
   );
 }
@@ -172,7 +194,7 @@ export default function Notifications() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Invites");
 
-  const { invites, isLoading: invitesLoading, accept, reject, isAccepting, isRejecting } = useInvites();
+  const { invites, isLoading: invitesLoading, accept, reject, isAccepting, isRejecting, refresh } = useInvites();
   const { notifications, isLoading: notifsLoading, markRead } = useNotifications();
 
   const { paymentNotifs, communityNotifs } = useMemo(() => {
@@ -273,7 +295,13 @@ export default function Notifications() {
           invitesLoading ? (
             <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>Loading…</p>
           ) : invites.length === 0 ? (
-            <EmptyState icon={Mail} label="No community invitations yet." />
+            <EmptyState
+              icon={Mail}
+              label="No invitations yet"
+              hint="Ask a community admin to send you an invite link, or have them add you directly by your email or phone number."
+              onAction={refresh}
+              actionLabel="Check Again"
+            />
           ) : (
             invites.map((invite) => (
               <InviteCard

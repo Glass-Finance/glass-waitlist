@@ -67,6 +67,7 @@ import MemberSecurity from "./pages/memberApp/settings/account/Security";
 import MemberPassword from "./pages/memberApp/settings/account/Password";
 import MemberTwoFactorAuth from "./pages/memberApp/settings/account/TwoFactorAuth";
 import MemberAutoPay from "./pages/memberApp/settings/payments/AutoPay";
+import MemberSavedCards from "./pages/memberApp/settings/payments/SavedCards";
 import MemberNotificationSettings from "./pages/memberApp/settings/account/Notifications";
 
 // ── Guards ───────────────────────────────────────────────────────────────────
@@ -205,6 +206,7 @@ function App() {
                 element={<MemberTwoFactorAuth />}
               />
               <Route path="auto-pay" element={<MemberAutoPay />} />
+              <Route path="saved-cards" element={<MemberSavedCards />} />
               <Route
                 path="notification-settings"
                 element={<MemberNotificationSettings />}
