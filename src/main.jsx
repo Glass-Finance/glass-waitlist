@@ -8,6 +8,7 @@ import App from "./App.jsx";
 import "./index.css";
 import { AuthProvider } from "./store/AuthContext.jsx";
 import { notifyError } from "./utils/errorHandler.js";
+import { toastSuccess } from "./utils/toast.js";
 
 // "Continue with Google" needs a real OAuth Client ID from Google Cloud
 // Console — see .env.example. Falls back to an empty string rather than
@@ -39,6 +40,11 @@ if ("scrollRestoration" in window.history) {
  * optimistic update) without losing this: that local handler runs first,
  * and the toast still fires here afterward, since this is the cache-level
  * callback rather than a per-mutation override.
+ *
+ * onSuccess mirrors it for the success side, opt-in rather than opt-out
+ * (most mutations close a modal or just re-render and don't need a toast
+ * on top of that) via:
+ *   useMutation({ ..., meta: { successMessage: "Member added" } })
  */
 const queryClient = new QueryClient({
   mutationCache: new MutationCache({
@@ -48,6 +54,10 @@ const queryClient = new QueryClient({
       //   useMutation({ ..., meta: { silentError: true } })
       if (mutation.options.meta?.silentError) return;
       notifyError(error, { context: mutation.options.mutationKey?.join(".") });
+    },
+    onSuccess: (_data, _variables, _context, mutation) => {
+      const message = mutation.options.meta?.successMessage;
+      if (message) toastSuccess(message);
     },
   }),
   defaultOptions: {
@@ -110,6 +120,7 @@ createRoot(document.getElementById("root")).render(
                 success: "border-l-4! border-l-emerald-500!",
                 warning: "border-l-4! border-l-amber-500!",
                 info: "border-l-4! border-l-[#002FA7]!",
+                loading: "border-l-4! border-l-gray-300!",
               },
             }}
           />

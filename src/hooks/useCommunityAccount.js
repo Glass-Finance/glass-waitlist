@@ -20,6 +20,7 @@ export function useCommunityAccount(communityId) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["community", communityId, "account"] });
     },
+    meta: { successMessage: "Payout account connected" },
   });
 
   return {

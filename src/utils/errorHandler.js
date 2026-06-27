@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 const STATUS_MESSAGES = {
   400: "That didn't look right — please check the form and try again.",
-  401: "Your session has expired. Please sign in again.",
+  401: "For your security, your session has expired — please sign in again.",
   403: "You don't have permission to do that.",
   404: "We couldn't find what you were looking for.",
   409: "That already exists or conflicts with something else.",
@@ -60,7 +60,7 @@ export function getErrorMessage(error, fallback = "Something went wrong. Please 
 
   // Axios error with no response — request never reached the server
   if (error.request) {
-    return "Network error — check your connection and try again.";
+    return "Connection lost — this didn't go through. Check your connection and try again.";
   }
 
   // Axios/timeout-specific code

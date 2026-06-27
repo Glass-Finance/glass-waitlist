@@ -107,6 +107,7 @@ export function useInvites() {
       queryClient.invalidateQueries({ queryKey: ["invites", "me"] });
       queryClient.invalidateQueries({ queryKey: ["communities"] });
     },
+    meta: { successMessage: "Invite accepted" },
   });
 
   const rejectMutation = useMutation({
@@ -131,6 +132,7 @@ export function useInvites() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["invites", "me"] });
     },
+    meta: { successMessage: "Invite declined" },
   });
 
   return {

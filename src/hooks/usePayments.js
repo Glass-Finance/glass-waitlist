@@ -61,6 +61,7 @@ function shapeTransaction(raw) {
     status: (raw.status ?? "").toLowerCase(), // "success" | "failed" | "pending" | "initiated"
     channel: raw.channel,
     currency: raw.currency ?? "NGN",
+    reference: raw.internalReference, // matches Topbar.jsx search results' field name
   };
 }
 

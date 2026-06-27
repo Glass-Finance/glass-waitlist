@@ -27,6 +27,7 @@ export function useUpdateProfile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
     },
+    meta: { successMessage: "Profile updated" },
   });
 }
 
@@ -34,6 +35,7 @@ export function useUpdateProfile() {
 export function useUpdatePassword() {
   return useMutation({
     mutationFn: (payload) => updatePassword(payload),
+    meta: { successMessage: "Password changed" },
   });
 }
 
@@ -57,6 +59,7 @@ export function useLeaveCommunity() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communities"] });
     },
+    meta: { successMessage: "You've left the community" },
   });
 }
 

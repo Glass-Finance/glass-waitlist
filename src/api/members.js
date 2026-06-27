@@ -8,9 +8,11 @@ import client from "./client";
 export const getMe = () =>
   client.get("/user/me");
 
-// PATCH /api/v1/user/profile
+// PUT /api/v1/user/me — same resource GET /user/me reads. /user/profile
+// 404s and PATCH /user/me 405s (both confirmed live) — a 405 on the right
+// path means the method's wrong, not the route, so this is PUT instead.
 export const updateProfile = (payload) =>
-  client.patch("/user/profile", payload);
+  client.put("/user/me", payload);
 
 // PATCH /api/v1/user/password
 export const updatePassword = (payload) =>

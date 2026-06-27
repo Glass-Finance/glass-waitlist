@@ -75,6 +75,12 @@ function clearSessionAndRedirect() {
   localStorage.removeItem("glass_user");
   localStorage.removeItem("refreshToken");
 
+  // window.location.href below is a hard navigation — it wipes any toast
+  // shown right before it along with all other JS state. sessionStorage
+  // survives the navigation, so the destination sign-in page can read this
+  // flag on mount and show the explanation there instead.
+  sessionStorage.setItem("glass_session_expired", "1");
+
   const path = window.location.pathname;
   const isAdminArea = path.startsWith("/dashboard") || path.startsWith("/onboarding");
   window.location.href = isAdminArea ? "/sign-in" : "/member/app-sign-in";

@@ -22,6 +22,7 @@ import {
   useEffect,
   useCallback,
 } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   login as apiLogin,
   logout as apiLogout,
@@ -29,20 +30,7 @@ import {
 } from "../services/authService";
 import { getMe } from "../api/members";
 import client from "../api/client";
-
-// GET /user/me doesn't return firstName/lastName/phone as flat fields —
-// they're nested in userData, which can come back as a JSON string or an
-// object depending on the field (matches Profile.jsx's parseUserData,
-// which is the confirmed-working version of this since it renders the
-// name correctly there already).
-function parseUserData(profile) {
-  try {
-    const ud = typeof profile?.userData === "string" ? JSON.parse(profile.userData) : profile?.userData;
-    return ud ?? {};
-  } catch {
-    return {};
-  }
-}
+import { parseUserData } from "../utils/userData";
 
 // "Admin" has no global flag on this backend — platformRole/the JWT's role
 // claim is a platform-wide value ("USER" for every account, even community
@@ -113,6 +101,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   // Stay in sync if another tab logs out
   useEffect(() => {
@@ -155,6 +144,14 @@ export function AuthProvider({ children }) {
     // so keys are guaranteed identical everywhere
     storeAuthSession(authData);
 
+    // Every data hook (communities, notifications, member records, ...)
+    // caches under a query key with no user identity in it, and the
+    // QueryClient is a single instance that outlives any one session — so
+    // without this, logging in as a different account on the same tab
+    // serves the previous account's still-cached data until each query's
+    // own staleTime happens to expire.
+    queryClient.clear();
+
     const user = await buildUser(authData);
 
     writeUser(user);
@@ -162,7 +159,7 @@ export function AuthProvider({ children }) {
     setUser(user);
 
     return user;
-  }, []);
+  }, [queryClient]);
 
   // ── logout ─────────────────────────────────────────────────────────────────
   const logout = useCallback(async () => {
@@ -172,10 +169,11 @@ export function AuthProvider({ children }) {
       // ignore — clear locally regardless
     } finally {
       clearSession();
+      queryClient.clear(); // see login()'s comment — same staleness risk in reverse
       setToken(null);
       setUser(null);
     }
-  }, []);
+  }, [queryClient]);
 
   // ── setSession (for post-MFA, Google OAuth, etc.) ─────────────────────────
   /**
@@ -185,12 +183,13 @@ export function AuthProvider({ children }) {
    */
   const setSession = useCallback(async (authData) => {
     storeAuthSession(authData);
+    queryClient.clear(); // see login()'s comment
     const user = await buildUser(authData);
     writeUser(user);
     setToken(authData.accessToken);
     setUser(user);
     return user;
-  }, []);
+  }, [queryClient]);
 
   // ── updateUser ─────────────────────────────────────────────────────────────
   // Call after profile edits so the UI reflects the change immediately.

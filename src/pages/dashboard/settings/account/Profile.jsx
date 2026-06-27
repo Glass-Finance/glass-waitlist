@@ -3,15 +3,7 @@ import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { useAuth } from "../../../../store/AuthContext";
-
-function parseUserData(user) {
-  try {
-    const ud = typeof user?.userData === "string" ? JSON.parse(user.userData) : user?.userData;
-    return ud ?? {};
-  } catch {
-    return {};
-  }
-}
+import { parseUserData } from "../../../../utils/userData";
 
 export default function Profile() {
   const { data: user, isLoading } = useMe();
