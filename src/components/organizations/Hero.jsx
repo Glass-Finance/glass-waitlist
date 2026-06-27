@@ -2,8 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "../Reveal";
 import { motion } from "motion/react";
-import { useEffect, useRef } from "react";
-import iphoneMockup from "../../assets/mobiledash.png";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import waveBg from "../../assets/hero/hero.jpg";
 import TextType from "../ui/TextType";
 import BlurText from "../ui/BlurText";
@@ -1409,6 +1408,53 @@ function DashboardOverlay() {
   );
 }
 
+// ─── Scaled dashboard ───────────────────────────────────────────────────────
+// DashboardOverlay's internals are all fixed-pixel (960px-wide layout,
+// fixed sidebar/grid widths) — retrofitting every value to be fluid would
+// mean rebuilding it. Instead, render it at its natural size and scale the
+// whole thing down to fit whatever width it's given (mobile included),
+// the same approach already used for the member-side dashboard mockup.
+// offsetWidth/offsetHeight always reflect the pre-transform layout size
+// (CSS transform doesn't affect layout), so measuring the inner node gives
+// stable natural dimensions to scale from regardless of the current scale.
+const DASHBOARD_NATURAL_WIDTH = 960;
+
+function ScaledDashboard() {
+  const outerRef = useRef(null);
+  const innerRef = useRef(null);
+  const [scale, setScale] = useState(1);
+  const [naturalHeight, setNaturalHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    function measure() {
+      if (!outerRef.current || !innerRef.current) return;
+      const containerWidth = outerRef.current.offsetWidth;
+      const h = innerRef.current.offsetHeight;
+      if (containerWidth > 0) {
+        setScale(Math.min(1, containerWidth / DASHBOARD_NATURAL_WIDTH));
+      }
+      if (h > 0) setNaturalHeight(h);
+    }
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  return (
+    <div
+      ref={outerRef}
+      style={{ width: "100%", overflow: "hidden", height: naturalHeight ? naturalHeight * scale : undefined }}
+    >
+      <div
+        ref={innerRef}
+        style={{ width: DASHBOARD_NATURAL_WIDTH, transform: `scale(${scale})`, transformOrigin: "top left" }}
+      >
+        <DashboardOverlay />
+      </div>
+    </div>
+  );
+}
+
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 export default function Hero() {
   const navigate = useNavigate();
@@ -1484,7 +1530,7 @@ export default function Hero() {
       </div>
 
       <div
-        className="relative z-10 w-full max-w-[720px] mx-auto text-center px-6 pt-12 pb-[260px] sm:pb-8 sm:pt-20"
+        className="relative z-10 w-full max-w-[720px] mx-auto text-center px-6 pt-12 pb-8 sm:pt-20"
         style={{ fontFamily: "Inter,-apple-system,sans-serif" }}
       >
         <Reveal variant="up" delay={80}>
@@ -1534,41 +1580,12 @@ export default function Hero() {
       </div>
 
       <Reveal variant="up" delay={360}>
-        <div
-          className="relative z-10 w-full px-8 pb-0 hidden sm:block"
-          style={{ overflow: "visible" }}
-        >
+        <div className="relative z-10 w-full px-4 sm:px-8 pb-0">
           <div className="w-full max-w-[960px] mx-auto">
-            <DashboardOverlay />
+            <ScaledDashboard />
           </div>
         </div>
       </Reveal>
-
-      <div
-        className="block sm:hidden absolute bottom-0 left-0 right-0 z-10"
-        style={{ padding: "0 16px" }}
-      >
-        <Reveal variant="up" delay={360}>
-          <div
-            className="w-full max-w-[260px] mx-auto overflow-hidden"
-            style={{ maxHeight: "260px" }}
-          >
-            <img
-              src={iphoneMockup}
-              alt="Glass dashboard on iPhone"
-              className="w-full"
-              style={{
-                display: "block",
-                objectFit: "cover",
-                objectPosition: "top",
-                filter: "drop-shadow(0 24px 60px rgba(107,15,107,0.55))",
-                borderRadius: "12px 12px 0 0",
-              }}
-              draggable={false}
-            />
-          </div>
-        </Reveal>
-      </div>
 
       <div
         className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 hidden sm:block"

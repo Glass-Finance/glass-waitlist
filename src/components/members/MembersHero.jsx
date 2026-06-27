@@ -356,7 +356,7 @@ export default function MembersHero() {
         {/* Phone on mobile */}
         <div
           className="w-full flex justify-center overflow-hidden"
-          style={{ maxHeight: 400 }}
+          style={{ maxHeight: 400, position: "relative" }}
         >
           <div style={{ position: "relative", width: 280 }}>
             <div
@@ -395,6 +395,18 @@ export default function MembersHero() {
               draggable={false}
             />
           </div>
+
+          {/* Fade mask right at the phone's own crop boundary — meshes the
+              hard maxHeight cutoff into the section's bottom fade instead
+              of leaving a visible hard edge above it. */}
+          <div
+            className="pointer-events-none absolute bottom-0 left-0 right-0"
+            style={{
+              height: "120px",
+              background:
+                "linear-gradient(to top, rgba(229,229,229,0.97) 0%, rgba(229,229,229,0.55) 50%, transparent 100%)",
+            }}
+          />
         </div>
       </div>
 

@@ -172,8 +172,8 @@ function FloatingIcon({ icon, inView }) {
     <div
       style={{
         position: "absolute",
-        width: icon.size,
-        height: icon.size,
+        width: `clamp(30px, 8vw, ${icon.size}px)`,
+        height: `clamp(30px, 8vw, ${icon.size}px)`,
         ...posStyle,
         willChange: "transform",
         /* initial state — invisible until entrance fires */
@@ -269,7 +269,7 @@ export default function CTA() {
         className="max-w-[1140px] mx-auto rounded-3xl overflow-hidden relative"
         style={{
           background: "#0d1a6e",
-          padding: "clamp(52px,7vw,88px) clamp(100px,15vw,200px)",
+          padding: "clamp(40px,7vw,88px) clamp(24px,10vw,200px)",
           textAlign: "center",
           minHeight: 300,
           display: "flex",
@@ -301,7 +301,7 @@ export default function CTA() {
         {/* ── Headline ── */}
         <h2
           style={{
-            fontSize: "clamp(30px,4.5vw,52px)",
+            fontSize: "clamp(24px,4.5vw,52px)",
             fontWeight: 800,
             color: "white",
             lineHeight: 1.1,
@@ -325,7 +325,7 @@ export default function CTA() {
         {/* ── Subtext ── */}
         <div
           style={{
-            fontSize: 16,
+            fontSize: "clamp(13px, 3vw, 16px)",
             color: "rgba(255,255,255,0.52)",
             marginBottom: 36,
             lineHeight: 1.6,

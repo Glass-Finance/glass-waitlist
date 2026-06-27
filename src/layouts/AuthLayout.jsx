@@ -67,7 +67,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
           crops the top of the content — including the heading — above the
           visible scroll area. Top-aligning with padding keeps the start of
           the content reachable on load for forms of any height. */}
-      <div className="flex-1 flex flex-col items-center px-6 md:px-12 py-8 md:py-10 bg-[#F5F5F6] overflow-y-auto min-h-0">
+      <div className="flex-1 flex flex-col items-center px-6 md:px-12 py-8 md:py-10 bg-[#F5F5F6] overflow-y-auto min-h-0 rounded-t-[20px] md:rounded-none -mt-5 md:mt-0">
         {children}
       </div>
     </div>
