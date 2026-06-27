@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { Menu } from "lucide-react";
+import { useState } from "react";
 import { Bell, ChevronDown, Clock } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
+import SideDrawer from "../../components/memberApp/SideDrawer";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -36,7 +39,10 @@ function formatDateShort(dateString) {
 
 function firstName(user) {
   try {
-    const ud = typeof user?.userData === "string" ? JSON.parse(user.userData) : user?.userData;
+    const ud =
+      typeof user?.userData === "string"
+        ? JSON.parse(user.userData)
+        : user?.userData;
     if (ud?.firstName) return ud.firstName;
   } catch {
     /* ignore */
@@ -304,7 +310,9 @@ function HistoryRow({ item }) {
         >
           {item.description}
         </p>
-        <p style={{ fontSize: 12, color: "#999" }}>{formatDateShort(item.date)}</p>
+        <p style={{ fontSize: 12, color: "#999" }}>
+          {formatDateShort(item.date)}
+        </p>
       </div>
       <div
         style={{
@@ -342,10 +350,13 @@ export default function Home() {
   const { data, isLoading } = usePayments();
 
   const nextDue = data?.nextDue ?? null;
-  const upcoming = (data?.upcoming ?? []).filter((o) => o.id !== nextDue?.id).slice(0, 2);
+  const upcoming = (data?.upcoming ?? [])
+    .filter((o) => o.id !== nextDue?.id)
+    .slice(0, 2);
   const history = (data?.history ?? []).slice(0, 3);
   const communityName = data?.community?.name ?? "Your Community";
   const communityInitial = communityName.charAt(0).toUpperCase();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   function handlePay(payment) {
     navigate(`/member/pay/${payment.id}`);
@@ -361,38 +372,64 @@ export default function Home() {
           paddingBottom: 40,
         }}
       >
-        {/* ── Top bar ─────────────────────────────────────────────────────── */}
+        <SideDrawer open={menuOpen} onClose={() => setMenuOpen(false)} />
+
+        {/* ── Top bar — menu, community pill, and notifications all on one
+            row, the menu button is the persistent access point to
+            Settings/My Communities since those have no other reachable
+            path from this page. ── */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "4px 16px 16px",
+            padding: "25px 20px 20px",
           }}
         >
-          {/* Community pill */}
-          <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
-            <div
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 6,
-                background: "#1C2B8A",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontSize: 11,
-                fontWeight: 700,
-                flexShrink: 0,
-              }}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+            <button
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border-none cursor-pointer"
+              style={{ flexShrink: 0 }}
             >
-              {communityInitial}
+              <Menu size={28} strokeWidth={2} style={{ color: "#222" }} />
+            </button>
+
+            {/* Community pill */}
+            <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 6,
+                  background: "#1C2B8A",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  flexShrink: 0,
+                }}
+              >
+                {communityInitial}
+              </div>
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: "#111",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  maxWidth: 120,
+                }}
+              >
+                {communityName}
+              </span>
+              <ChevronDown size={14} strokeWidth={2} style={{ color: "#666", flexShrink: 0 }} />
             </div>
-            <span style={{ fontSize: 14, fontWeight: 500, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 150 }}>
-              {communityName}
-            </span>
-            <ChevronDown size={14} strokeWidth={2} style={{ color: "#666", flexShrink: 0 }} />
           </div>
 
           {/* Bell */}
@@ -419,16 +456,27 @@ export default function Home() {
 
         {/* ── Greeting ────────────────────────────────────────────────────── */}
         <div style={{ padding: "4px 20px 20px" }}>
-          <h1 style={{ fontSize: 24, fontWeight: 500, color: "#111", margin: 0 }}>
+          <h1
+            style={{ fontSize: 24, fontWeight: 500, color: "#111", margin: 0 }}
+          >
             Hi {firstName(data?.user)},
           </h1>
-          <p style={{ fontSize: 13, color: "#888", marginTop: 3, fontWeight: 400 }}>
+          <p
+            style={{
+              fontSize: 13,
+              color: "#888",
+              marginTop: 3,
+              fontWeight: 400,
+            }}
+          >
             Here's Your Community At A Glance
           </p>
         </div>
 
         {isLoading ? (
-          <p style={{ textAlign: "center", color: "#999", fontSize: 13 }}>Loading…</p>
+          <p style={{ textAlign: "center", color: "#999", fontSize: 13 }}>
+            Loading…
+          </p>
         ) : (
           <>
             {/* ── Hero card ───────────────────────────────────────────────────── */}
@@ -444,14 +492,33 @@ export default function Home() {
                 boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Upcoming Payments</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 4,
+                }}
+              >
+                <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
+                  Upcoming Payments
+                </span>
               </div>
 
               {upcoming.length === 0 ? (
-                <p style={{ fontSize: 13, color: "#999", padding: "12px 0 16px" }}>Nothing else due soon.</p>
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: "#999",
+                    padding: "12px 0 16px",
+                  }}
+                >
+                  Nothing else due soon.
+                </p>
               ) : (
-                upcoming.map((p) => <UpcomingRow key={p.id} payment={p} onPay={handlePay} />)
+                upcoming.map((p) => (
+                  <UpcomingRow key={p.id} payment={p} onPay={handlePay} />
+                ))
               )}
 
               <button
@@ -483,18 +550,43 @@ export default function Home() {
                 boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>Payment History</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 4,
+                }}
+              >
+                <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
+                  Payment History
+                </span>
                 <button
                   onClick={() => navigate("/member/transactions")}
-                  style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#002FA7", padding: 0 }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: "#002FA7",
+                    padding: 0,
+                  }}
                 >
                   See All
                 </button>
               </div>
 
               {history.length === 0 ? (
-                <p style={{ fontSize: 13, color: "#999", padding: "12px 0 16px" }}>No payments yet.</p>
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: "#999",
+                    padding: "12px 0 16px",
+                  }}
+                >
+                  No payments yet.
+                </p>
               ) : (
                 history.map((item) => <HistoryRow key={item.id} item={item} />)
               )}

@@ -1,0 +1,163 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useAuth } from "../../store/AuthContext";
+import { getMyInvites } from "../../api/invites";
+import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
+import { notifyError } from "../../utils/errorHandler";
+import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
+import AuthLayout from "../../layouts/AuthLayout";
+import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
+
+// One sign-in page reachable from two routes (/sign-in and
+// /member/app-sign-in) — neither the page nor the login call itself knows
+// in advance whether this is a community owner or a mobile-only member,
+// only the *resulting* role/device does, so there was never a reason for
+// two separate implementations. AuthLayout already adapts its chrome
+// between a desktop split-screen and a mobile top-banner/bottom-sheet via
+// CSS breakpoints, which is exactly the "one page, adapts by screen size"
+// behavior both entry points need.
+export default function SignIn() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [showPw, setShowPw] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  function set(field) {
+    return (e) => {
+      setForm((f) => ({ ...f, [field]: e.target.value }));
+      setError("");
+    };
+  }
+
+  async function routeAfterAuth(user) {
+    if (user?.isAdmin) {
+      navigate("/dashboard/home", { replace: true });
+      return;
+    }
+
+    // The member app is mobile-only — a non-admin signing in from a
+    // desktop/tablet gets the QR handoff instead of a layout that was
+    // never built for that viewport.
+    if (!isMobileDevice()) {
+      navigate(mobileRequiredPath("/member/app-sign-in"), { replace: true });
+      return;
+    }
+
+    const inviteRes = await getMyInvites();
+    const invites = inviteRes?.data?.data || [];
+    navigate(invites.length > 0 ? "/member/invites" : "/member/home", {
+      replace: true,
+    });
+  }
+
+  async function handleSignIn() {
+    if (!form.email.trim() || !form.password) {
+      setError("Email and password are required.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const user = await login(form.email.trim().toLowerCase(), form.password);
+      await routeAfterAuth(user);
+    } catch (err) {
+      setError(notifyError(err, { context: "Sign in", fallback: "Incorrect email or password." }));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleGoogleAuth(user) {
+    try {
+      await routeAfterAuth(user);
+    } catch (err) {
+      setError(notifyError(err, { context: "Google sign in" }));
+    }
+  }
+
+  const isReady = form.email.trim() && form.password;
+
+  return (
+    <AuthLayout heroTitle="Community Finance" heroSubtitle="Crystal Clear">
+      <div className="w-full max-w-sm flex flex-col my-auto gap-6">
+        <div>
+          <h1 className="text-lg font-bold text-gray-900 mb-1">Sign in To Your Account</h1>
+          <p className="text-sm text-gray-500">Enter your credentials to continue.</p>
+        </div>
+
+        <div>
+          <Label htmlFor="email">Email Address</Label>
+          <TextInput
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            value={form.email}
+            onChange={set("email")}
+            autoComplete="email"
+            inputMode="email"
+            disabled={loading}
+          />
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <Label htmlFor="password">Password</Label>
+            <Link to="/forgot-password" className="text-xs font-medium" style={{ color: "#1C2B8A" }}>
+              Forgot password?
+            </Link>
+          </div>
+          <TextInput
+            id="password"
+            type={showPw ? "text" : "password"}
+            placeholder="Enter your password"
+            value={form.password}
+            onChange={set("password")}
+            autoComplete="current-password"
+            disabled={loading}
+            rightElement={
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                className="text-gray-400 hover:text-gray-600"
+                tabIndex={-1}
+                aria-label={showPw ? "Hide password" : "Show password"}
+              >
+                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            }
+          />
+          <ErrorMessage message={error} />
+        </div>
+
+        <PrimaryButton onClick={handleSignIn} loading={loading} disabled={!isReady}>
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader2 size={16} className="animate-spin" />
+              <span>Signing in…</span>
+            </span>
+          ) : (
+            "Sign In"
+          )}
+        </PrimaryButton>
+
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-gray-300" />
+          <span className="text-xs text-gray-400">or</span>
+          <div className="flex-1 h-px bg-gray-300" />
+        </div>
+
+        <GoogleAuthButton onAuthenticated={handleGoogleAuth} label="signin_with" />
+
+        <p className="text-sm text-center text-gray-500 pb-2">
+          Don't have an account?{" "}
+          <Link to="/sign-up" className="font-semibold" style={{ color: "#1C2B8A" }}>
+            Sign Up
+          </Link>
+        </p>
+      </div>
+    </AuthLayout>
+  );
+}

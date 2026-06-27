@@ -283,8 +283,13 @@ export default function MembersHero() {
       </div>
 
       {/* ── MOBILE ── */}
-      <div className="sm:hidden relative z-10 w-full px-6 pt-12 pb-0 flex flex-col">
-        <div ref={containerRef} style={{ position: "relative" }}>
+      {/* Taken out of the section's flex/justify-center flow and pinned to
+          inset:0 instead — that way the phone mockup below can be
+          absolutely bottom-pinned to the actual screen edge (filling it on
+          any phone height) without the section's centering logic shifting
+          the whole group up and leaving a gap underneath. */}
+      <div className="sm:hidden absolute top-[68px] left-0 right-0 bottom-0 z-10 flex flex-col">
+        <div ref={containerRef} className="px-6 pt-30" style={{ position: "relative" }}>
           <div
             style={{
               fontSize: "clamp(38px,10vw,56px)",
@@ -353,12 +358,15 @@ export default function MembersHero() {
           </button>
         </div>
 
-        {/* Phone on mobile */}
+        {/* Phone on mobile — pinned to the screen's bottom edge so it
+            always fills flush to the bottom regardless of phone height,
+            instead of floating with a gap beneath it. Cropped from the
+            top (items-end) if it doesn't fit, never from the bottom. */}
         <div
-          className="w-full flex justify-center overflow-hidden"
-          style={{ maxHeight: 400, position: "relative" }}
+          className="absolute bottom-0 left-0 right-0 flex justify-center items-end overflow-hidden"
+          style={{ maxHeight: "58vh" }}
         >
-          <div style={{ position: "relative", width: 280 }}>
+          <div style={{ position: "relative", width: 330 }}>
             <div
               style={{
                 position: "absolute",
@@ -395,18 +403,6 @@ export default function MembersHero() {
               draggable={false}
             />
           </div>
-
-          {/* Fade mask right at the phone's own crop boundary — meshes the
-              hard maxHeight cutoff into the section's bottom fade instead
-              of leaving a visible hard edge above it. */}
-          <div
-            className="pointer-events-none absolute bottom-0 left-0 right-0"
-            style={{
-              height: "120px",
-              background:
-                "linear-gradient(to top, rgba(229,229,229,0.97) 0%, rgba(229,229,229,0.55) 50%, transparent 100%)",
-            }}
-          />
         </div>
       </div>
 
@@ -417,14 +413,6 @@ export default function MembersHero() {
           height: "40px",
           background:
             "linear-gradient(to top, rgba(229,229,229,0.97) 0%, rgba(229,229,229,0.65) 35%, rgba(229,229,229,0.1) 75%, transparent 100%)",
-        }}
-      />
-      <div
-        className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 block sm:hidden"
-        style={{
-          height: "20px",
-          background:
-            "linear-gradient(to top, rgba(229,229,229,0.95) 0%, rgba(229,229,229,0.5) 40%, transparent 100%)",
         }}
       />
     </section>

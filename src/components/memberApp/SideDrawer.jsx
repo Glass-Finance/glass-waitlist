@@ -146,7 +146,7 @@ export default function SideDrawer({ open, onClose }) {
             display: "flex",
             alignItems: "center",
             gap: 12,
-            padding: "20px 24px",
+            padding: "40px 24px",
             paddingBottom: "env(safe-area-inset-bottom, 32px)",
             border: "none",
             background: "none",

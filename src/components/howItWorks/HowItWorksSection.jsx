@@ -1,4 +1,4 @@
-import { createRef, useRef } from "react";
+import { createRef, useLayoutEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import StepRow from "./StepRow";
 import StepConnector from "./StepConnector";
@@ -12,6 +12,55 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
   // whole array in one useRef() keeps the ref objects stable across
   // re-renders while only calling the hook itself once.
   const stepRefs = useRef(steps.map(() => createRef())).current;
+  const badgeRefs = useRef(steps.map(() => createRef())).current;
+  const stackRef = useRef(null);
+  const [badgePoints, setBadgePoints] = useState([]);
+  const [bendYs, setBendYs] = useState([]);
+
+  // Connector lines anchor to the actual rendered badge elements (per the
+  // Figma reference, the lines run badge-to-badge) rather than a guessed
+  // fixed offset — so they stay correct regardless of image aspect ratio
+  // or how much text wraps in a badge. The horizontal bend of each curve
+  // is kept separate from the badge midpoint: badge 2 sits near the
+  // *bottom* of its own card, so averaging the two badge Y positions would
+  // push the bend deep inside card 2 — invisible, since rows render above
+  // the connector SVG. Using the midpoint of the actual gap between row i
+  // and row i+1 instead keeps the visible curve in the space that's
+  // actually empty. Re-measures on resize and on the stack's own size
+  // changing (e.g. images finishing load shifts row heights).
+  useLayoutEffect(() => {
+    function measure() {
+      if (!stackRef.current) return;
+      const containerRect = stackRef.current.getBoundingClientRect();
+      const toLocal = (r) => ({
+        x: r.left + r.width / 2 - containerRect.left,
+        y: r.top + r.height / 2 - containerRect.top,
+      });
+      const points = badgeRefs.map((ref) => {
+        const el = ref.current;
+        return el ? toLocal(el.getBoundingClientRect()) : null;
+      });
+      const rowRects = stepRefs.map((ref) => ref.current?.getBoundingClientRect() ?? null);
+      const bends = rowRects.slice(0, -1).map((rect, i) => {
+        const next = rowRects[i + 1];
+        if (!rect || !next) return null;
+        const top = rect.bottom - containerRect.top;
+        const bottom = next.top - containerRect.top;
+        return (top + bottom) / 2;
+      });
+      setBadgePoints(points);
+      setBendYs(bends);
+    }
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (stackRef.current) ro.observe(stackRef.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <section className="relative bg-[#F7F8FC] overflow-hidden py-24" id="how-it-works">
@@ -53,21 +102,50 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
             Set up your community, link member payment methods, and let Glass handle the rest.
           </p>
         </div>
+      </div>
 
-        <div className="flex flex-col">
+      {/* Wider than the heading on purpose — each row is a fixed-width
+          card pushed to alternating edges (far right, far left, far
+          right...), per the Figma reference. Constraining this to the
+          heading's 880px column leaves no room for that swing. */}
+      <div className="relative z-10 max-w-[1180px] mx-auto px-6 md:px-10">
+        <div ref={stackRef} className="relative flex flex-col">
+          {/* z-index below the rows (which get an explicit z-10 below) so
+              the part of each line that would otherwise cross a card's
+              face is hidden behind it — only the segments in the gaps
+              between rows end up visible, matching the Figma reference. */}
+          <svg
+            className="hidden md:block pointer-events-none absolute inset-0"
+            style={{ width: "100%", height: "100%", overflow: "visible", zIndex: 0 }}
+            fill="none"
+          >
+            {steps.slice(0, -1).map((step, i) => {
+              const p1 = badgePoints[i];
+              const p2 = badgePoints[i + 1];
+              if (!p1 || !p2) return null;
+              return (
+                <StepConnector
+                  key={step.num}
+                  p1={p1}
+                  p2={p2}
+                  bendY={bendYs[i]}
+                  stepRef={stepRefs[i]}
+                />
+              );
+            })}
+          </svg>
+
           {steps.map((step, i) => (
-            <div key={step.num}>
-              <StepRow step={step} index={i} innerRef={stepRefs[i]} />
-              {i < steps.length - 1 && (
-                <>
-                  <MobileDivider />
-                  <StepConnector fromDir={i % 2 === 0 ? "ltr" : "rtl"} stepRef={stepRefs[i]} />
-                </>
-              )}
+            <div key={step.num} className="relative" style={{ zIndex: 10 }}>
+              <StepRow step={step} index={i} innerRef={stepRefs[i]} badgeRef={badgeRefs[i]} />
+              {i < steps.length - 1 && <MobileDivider />}
+              {i < steps.length - 1 && <div className="hidden md:block" style={{ height: 90 }} />}
             </div>
           ))}
         </div>
+      </div>
 
+      <div className="relative z-10 max-w-[880px] mx-auto px-6">
         <div className="flex justify-center mt-12 md:mt-20">
           <motion.button
             onClick={onCtaClick}

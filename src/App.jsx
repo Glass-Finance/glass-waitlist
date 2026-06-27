@@ -12,14 +12,11 @@ import Ambassadors from "./pages/Ambassadors";
 
 // ── Auth pages ─────────────────────────────────────────────────────────────────
 import SignUp from "./pages/auth/admin/SignUp";
-import SignIn from "./pages/auth/admin/SignIn";
-import ForgotPassword from "./pages/auth/admin/ForgotPassword";
-import ResetPassword from "./pages/auth/admin/ResetPassword";
+import SignIn from "./pages/auth/SignIn";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import CheckEmail from "./pages/auth/member/CheckEmail";
 import Join from "./pages/auth/member/Join";
-import MemberSignIn from "./pages/auth/member/SignIn";
-import MemberForgotPassword from "./pages/auth/member/ForgotPassword";
-import MemberResetPassword from "./pages/auth/member/ResetPassword";
 
 // ── Onboarding pages ───────────────────────────────────────────────────────────
 import ChoosePath from "./pages/onboarding/ChoosePath";
@@ -90,17 +87,16 @@ function App() {
             /sign-up is the COMMUNITY OWNER entry point (desktop-first,
             never device-gated). /member/join is the MEMBER registration
             entry point — joining is mobile-only, so it's hard-gated here.
-            /sign-in is the desktop-styled login, used by admin-facing entry
-            points (the admin guard, Sidebar logout, SignUp's "Already have
-            an account" link) — no "/member" prefix since it's not member-
-            specific. /member/app-sign-in is the mobile-card login shared by
-            member-facing entry points (Join's link, the member guard,
-            memberApp logout) — it's reachable on any device, but
-            auth/member/SignIn.jsx redirects non-admin desktop logins to the
-            QR handoff after authenticating, since only the *resulting role*
-            tells us which experience the user actually needs. Each side
-            gets its own forgot/reset-password pair, matching its own
-            sign-in's styling. ── */}
+            SignIn/ForgotPassword/ResetPassword are each reachable from two
+            routes (no "/member" prefix vs "/member/...") for the admin- and
+            member-facing entry points that link to them respectively (the
+            admin guard/Sidebar logout vs Join's link/the member
+            guard/memberApp logout), but both routes render the *same*
+            component — neither page nor the login call itself knows in
+            advance whether this is a community owner or a mobile-only
+            member, only the resulting role/device does (see
+            routeAfterAuth in pages/auth/SignIn.jsx), and AuthLayout already
+            adapts its chrome between desktop and mobile via CSS. ── */}
         <Route path="/sign-up" element={<SignUp />} />
         <Route element={<MemberDeviceGuard />}>
           <Route path="/member/join" element={<Join />} />
@@ -108,15 +104,9 @@ function App() {
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/member/app-sign-in" element={<MemberSignIn />} />
-        <Route
-          path="/member/forgot-password"
-          element={<MemberForgotPassword />}
-        />
-        <Route
-          path="/member/reset-password"
-          element={<MemberResetPassword />}
-        />
+        <Route path="/member/app-sign-in" element={<SignIn />} />
+        <Route path="/member/forgot-password" element={<ForgotPassword />} />
+        <Route path="/member/reset-password" element={<ResetPassword />} />
         <Route path="/member/mobile-required" element={<MobileRequired />} />
         <Route path="/check-email" element={<CheckEmail />} />
 
