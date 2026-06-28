@@ -6,6 +6,7 @@ import { getObligation } from "../../api/members";
 import { useMe } from "../../hooks/useMyAccount";
 import { useManagePayments, useInitiatePayment } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { toastSuccess } from "../../utils/toast";
 
 function fmt(n) {
   return "₦" + new Intl.NumberFormat("en-NG").format(n ?? 0);
@@ -62,6 +63,11 @@ export default function PaymentSummary() {
       if (url) {
         window.location.href = url;
       } else {
+        // No authorizationUrl means this charged immediately against a
+        // saved method rather than redirecting to Paystack's hosted page —
+        // there's no separate confirmation step coming, so this is the
+        // only chance to show the reference for the user to verify later.
+        toastSuccess("Payment sent", { reference: res.data?.data?.internalReference });
         navigate(`/member/pay/${paymentId}/success`);
       }
     } catch (err) {

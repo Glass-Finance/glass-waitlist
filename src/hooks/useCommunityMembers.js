@@ -34,16 +34,19 @@ export function useCommunityMembers(communityId) {
   const addMember = useMutation({
     mutationFn: (payload) => addCommunityMember(communityId, payload),
     onSuccess: invalidate,
+    meta: { successMessage: "Member added" },
   });
 
   const updateMember = useMutation({
     mutationFn: ({ memberId, payload }) => updateCommunityMember(communityId, memberId, payload),
     onSuccess: invalidate,
+    meta: { successMessage: "Member updated" },
   });
 
   const removeMember = useMutation({
     mutationFn: (memberId) => removeCommunityMember(communityId, memberId),
     onSuccess: invalidate,
+    meta: { successMessage: "Member removed" },
   });
 
   return {

@@ -625,9 +625,17 @@ export default function Join() {
   // regular register()+OTP flow, which does send the token), a pending
   // invite needs /member/invites to accept it manually instead of
   // /member/home, the opposite direction of finishAndRoute()'s ternary.
-  function handleGoogleAuth() {
+  // Google also never gives us a name, so a brand-new account detours
+  // through one extra step to collect what the rest of Glass assumes
+  // every account has.
+  function handleGoogleAuth(_user, { profileComplete } = {}) {
     consumeToken();
-    navigate(token ? "/member/invites" : "/member/home", { replace: true });
+    const next = token ? "/member/invites" : "/member/home";
+    if (!profileComplete) {
+      navigate("/member/complete-profile", { state: { next } });
+      return;
+    }
+    navigate(next, { replace: true });
   }
 
   function handleBack() {

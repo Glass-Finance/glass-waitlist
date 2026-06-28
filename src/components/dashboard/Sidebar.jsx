@@ -370,10 +370,10 @@ export default function Sidebar() {
                     navigate(communityPath(c.slug, "admin"));
                   }}
                   title={c.name}
-                  className={`w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 ${
+                  className={`w-9 h-9 rounded-xl border cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 ${
                     isActive
-                      ? "bg-white text-[#002FA7] shadow-md"
-                      : "bg-white/15 text-white hover:bg-white/30"
+                      ? "bg-white text-[#002FA7] shadow-md border-white"
+                      : "bg-white/15 text-white hover:bg-white/30 border-white/15 hover:border-white/30"
                   }`}
                 >
                   {c.logo?.url ? (
@@ -436,7 +436,7 @@ export default function Sidebar() {
                 style={{
                   fontSize: 12,
                   fontWeight: 700,
-                  color: "#0f1d6e",
+                  color: "#000000",
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -598,7 +598,7 @@ export default function Sidebar() {
                 style={{
                   fontSize: 11,
                   fontWeight: 600,
-                  color: "#0f1d6e",
+
                   margin: 0,
                   whiteSpace: "nowrap",
                   overflow: "hidden",

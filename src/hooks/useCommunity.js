@@ -20,5 +20,6 @@ export function useUpdateCommunity(communityId) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["community", communityId] });
     },
+    meta: { successMessage: "Community profile updated" },
   });
 }

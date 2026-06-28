@@ -29,7 +29,17 @@ export default function MemberAccess() {
     return `${first} ${last}`.trim() || m.user?.email || m.email || "Member";
   }
   const memberEmail = (m) => m.user?.email ?? m.email ?? "—";
-  const memberRole = (m) => m.role?.name ?? m.roleName ?? m.role ?? "Member";
+  // roleCode is the real field (OWNER/ADMIN/MANAGER/MEMBER) — not a `role`
+  // object/string, which doesn't exist on the member entity at all and was
+  // silently falling back to "Member" for every single member.
+  function memberRoleLabel(m) {
+    const code = (m.roleCode ?? "").toUpperCase();
+    if (code === "OWNER") return "Owner";
+    if (code === "ADMIN") return "Admin";
+    if (code === "MANAGER") return "Manager";
+    return "Member";
+  }
+  const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes((m.roleCode ?? "").toUpperCase());
 
   return (
     <div className="flex flex-col gap-4 max-w-3xl w-full">
@@ -90,16 +100,16 @@ export default function MemberAccess() {
                   <span
                     className="text-xs font-semibold px-2.5 py-0.5 rounded-full"
                     style={{
-                      color:      memberRole(member) === "Admin" ? "#002FA7" : "#D97706",
-                      background: memberRole(member) === "Admin" ? "#EEF2FF" : "#FEF3C7",
+                      color:      isAdminRole(member) ? "#002FA7" : "#D97706",
+                      background: isAdminRole(member) ? "#EEF2FF" : "#FEF3C7",
                     }}
                   >
-                    {memberRole(member)}
+                    {memberRoleLabel(member)}
                   </span>
                 </div>
                 <button
                   onClick={() => {
-                    const isAdmin = memberRole(member) === "Admin";
+                    const isAdmin = isAdminRole(member);
                     if (isAdmin) {
                       if (window.confirm(`Revoke admin access for ${memberName(member)}? They'll remain a member.`)) {
                         updateMember.mutate({ memberId: member.id, payload: { roleId: memberRoleId } });
@@ -112,7 +122,7 @@ export default function MemberAccess() {
                   className="text-sm font-semibold hover:opacity-70 transition-all bg-transparent border-none cursor-pointer disabled:opacity-50"
                   style={{ color: "#EF4444" }}
                 >
-                  {memberRole(member) === "Admin" ? "Revoke" : "Remove"}
+                  {isAdminRole(member) ? "Revoke" : "Remove"}
                 </button>
               </div>
             ))

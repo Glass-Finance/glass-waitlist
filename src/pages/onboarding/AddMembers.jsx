@@ -432,8 +432,10 @@ import Papa from "papaparse";
 import { Bell, Download, CloudUpload, Copy, Trash2, Plus, Check } from "lucide-react";
 import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
+import { toast } from "sonner";
 import client from "../../api/client";
 import { notifyError } from "../../utils/errorHandler";
+import { toastProgress, toastSuccess } from "../../utils/toast";
 import { useRoles } from "../../hooks/useCommunityMembers";
 
 const STEPS = [
@@ -590,7 +592,14 @@ export default function AddMembers() {
       if (filled.length === 0) { setShowSuccess(true); return; }
       if (!communityId) { setError("Community ID missing."); return; }
 
-      await client.post(`/communities/${communityId}/members/bulk`, { members: filled });
+      const toastId = toastProgress("Adding members…", "Usually takes 5–10 seconds");
+      try {
+        await client.post(`/communities/${communityId}/members/bulk`, { members: filled });
+      } catch (err) {
+        toast.dismiss(toastId);
+        throw err;
+      }
+      toastSuccess(`${filled.length} member${filled.length === 1 ? "" : "s"} added`, { id: toastId });
       setShowSuccess(true);
     } catch (err) {
       setError(notifyError(err, { context: "Add members", fallback: "Failed to add members. You can add them from the dashboard later." }));

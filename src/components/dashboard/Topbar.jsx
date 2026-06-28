@@ -255,7 +255,7 @@ export default function Topbar({
             )}
           </div>
           <div className="text-left hidden sm:block">
-            <p className="text-xs font-bold text-[#0f1d6e] leading-tight">
+            <p className="text-xs font-bold text-[#000000] leading-tight">
               {displayName}
             </p>
             <p className="text-[11px] text-gray-400 leading-tight">{email}</p>

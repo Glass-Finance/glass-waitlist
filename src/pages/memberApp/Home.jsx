@@ -386,18 +386,32 @@ export default function Home() {
             padding: "25px 20px 20px",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 15,
+              minWidth: 0,
+            }}
+          >
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border-none cursor-pointer"
+              className="flex items-center justify-center border-none cursor-pointer bg-transparent p-0"
               style={{ flexShrink: 0 }}
             >
               <Menu size={28} strokeWidth={2} style={{ color: "#222" }} />
             </button>
 
             {/* Community pill */}
-            <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 7,
+                minWidth: 0,
+              }}
+            >
               <div
                 style={{
                   width: 28,
@@ -428,7 +442,11 @@ export default function Home() {
               >
                 {communityName}
               </span>
-              <ChevronDown size={14} strokeWidth={2} style={{ color: "#666", flexShrink: 0 }} />
+              <ChevronDown
+                size={14}
+                strokeWidth={2}
+                style={{ color: "#666", flexShrink: 0 }}
+              />
             </div>
           </div>
 

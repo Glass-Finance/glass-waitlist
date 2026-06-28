@@ -66,36 +66,44 @@ export function usePaymentPlans(communityId) {
   const create = useMutation({
     mutationFn: (payload) => createPaymentLink(communityId, payload),
     onSuccess: invalidate,
+    meta: { successMessage: "Payment plan created" },
   });
 
   const update = useMutation({
     mutationFn: ({ paymentLinkId, payload }) => updatePaymentLink(communityId, paymentLinkId, payload),
     onSuccess: invalidate,
+    meta: { successMessage: "Payment plan updated" },
   });
 
   const activate = useMutation({
     mutationFn: (paymentLinkId) => activatePaymentLink(communityId, paymentLinkId),
     onSuccess: invalidate,
+    meta: { successMessage: "Payment plan activated" },
   });
   const pause = useMutation({
     mutationFn: (paymentLinkId) => pausePaymentLink(communityId, paymentLinkId),
     onSuccess: invalidate,
+    meta: { successMessage: "Payment plan paused" },
   });
   const resume = useMutation({
     mutationFn: (paymentLinkId) => resumePaymentLink(communityId, paymentLinkId),
     onSuccess: invalidate,
+    meta: { successMessage: "Payment plan resumed" },
   });
   const expire = useMutation({
     mutationFn: (paymentLinkId) => expirePaymentLink(communityId, paymentLinkId),
     onSuccess: invalidate,
+    meta: { successMessage: "Payment plan expired" },
   });
   const archive = useMutation({
     mutationFn: (paymentLinkId) => archivePaymentLink(communityId, paymentLinkId),
     onSuccess: invalidate,
+    meta: { successMessage: "Payment plan archived" },
   });
   const duplicate = useMutation({
     mutationFn: (paymentLinkId) => duplicatePaymentLink(communityId, paymentLinkId),
     onSuccess: invalidate,
+    meta: { successMessage: "Payment plan duplicated" },
   });
 
   return {

@@ -5,15 +5,7 @@ import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { useAuth } from "../../../../store/AuthContext";
 import { getErrorMessage } from "../../../../utils/errorHandler";
-
-function parseUserData(user) {
-  try {
-    const ud = typeof user?.userData === "string" ? JSON.parse(user.userData) : user?.userData;
-    return ud ?? {};
-  } catch {
-    return {};
-  }
-}
+import { parseUserData } from "../../../../utils/userData";
 
 const inputStyle = {
   width: "100%",

@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { getMyInvites } from "../../api/invites";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { notifyError } from "../../utils/errorHandler";
+import { toastInfo } from "../../utils/toast";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
@@ -25,6 +26,18 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // client.js's 401 interceptor hard-redirects here on session expiry — a
+  // toast shown right before that navigation gets wiped along with
+  // everything else, so it leaves this flag for the destination to read.
+  useEffect(() => {
+    if (sessionStorage.getItem("glass_session_expired")) {
+      sessionStorage.removeItem("glass_session_expired");
+      setTimeout(() => {
+        toastInfo("Session expired", { description: "For your security, please sign in again." });
+      }, 0);
+    }
+  }, []);
+
   function set(field) {
     return (e) => {
       setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -32,25 +45,23 @@ export default function SignIn() {
     };
   }
 
-  async function routeAfterAuth(user) {
-    if (user?.isAdmin) {
-      navigate("/dashboard/home", { replace: true });
-      return;
-    }
+  // Shared by password sign-in and Google sign-in: resolves the destination
+  // by the *resulting* role/device, since neither knows in advance whether
+  // this is a community owner or a mobile-only member. Returns the path
+  // rather than navigating directly so Google sign-in can detour through
+  // complete-profile first when Google never gave us a name, stashing this
+  // as where to continue afterward.
+  async function resolveDestination(user) {
+    if (user?.isAdmin) return "/dashboard/home";
 
     // The member app is mobile-only — a non-admin signing in from a
     // desktop/tablet gets the QR handoff instead of a layout that was
     // never built for that viewport.
-    if (!isMobileDevice()) {
-      navigate(mobileRequiredPath("/member/app-sign-in"), { replace: true });
-      return;
-    }
+    if (!isMobileDevice()) return mobileRequiredPath("/member/app-sign-in");
 
     const inviteRes = await getMyInvites();
     const invites = inviteRes?.data?.data || [];
-    navigate(invites.length > 0 ? "/member/invites" : "/member/home", {
-      replace: true,
-    });
+    return invites.length > 0 ? "/member/invites" : "/member/home";
   }
 
   async function handleSignIn() {
@@ -62,7 +73,7 @@ export default function SignIn() {
     setError("");
     try {
       const user = await login(form.email.trim().toLowerCase(), form.password);
-      await routeAfterAuth(user);
+      navigate(await resolveDestination(user), { replace: true });
     } catch (err) {
       setError(notifyError(err, { context: "Sign in", fallback: "Incorrect email or password." }));
     } finally {
@@ -70,9 +81,20 @@ export default function SignIn() {
     }
   }
 
-  async function handleGoogleAuth(user) {
+  async function handleGoogleAuth(user, { profileComplete } = {}) {
     try {
-      await routeAfterAuth(user);
+      const next = await resolveDestination(user);
+      if (!profileComplete) {
+        // /complete-profile is ungated, /member/complete-profile is
+        // mobile-gated (matching /member/join) — pick by where the
+        // resolved destination was actually headed.
+        const completeProfilePath = next.startsWith("/dashboard")
+          ? "/complete-profile"
+          : "/member/complete-profile";
+        navigate(completeProfilePath, { state: { next } });
+        return;
+      }
+      navigate(next, { replace: true });
     } catch (err) {
       setError(notifyError(err, { context: "Google sign in" }));
     }
@@ -152,9 +174,9 @@ export default function SignIn() {
         <GoogleAuthButton onAuthenticated={handleGoogleAuth} label="signin_with" />
 
         <p className="text-sm text-center text-gray-500 pb-2">
-          Don't have an account?{" "}
+          New User?{" "}
           <Link to="/sign-up" className="font-semibold" style={{ color: "#1C2B8A" }}>
-            Sign Up
+           Create Account
           </Link>
         </p>
       </div>
