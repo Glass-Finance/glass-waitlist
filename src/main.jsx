@@ -25,6 +25,12 @@ if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
 }
 
+// Boot Pendo with an anonymous visitor. The SDK resolves the previous
+// visitor from cookies/localStorage if available, otherwise it falls back
+// to a new anonymous visitor. pendo.identify() is called later once the
+// user signs in (see AuthContext).
+pendo.initialize({ visitor: { id: '' } });
+
 /**
  * QueryClient — React Query
  * ─────────────────────────
