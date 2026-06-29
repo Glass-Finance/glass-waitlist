@@ -181,7 +181,13 @@ export function AuthProvider({ children }) {
       queryClient.clear(); // see login()'s comment — same staleness risk in reverse
       setToken(null);
       setUser(null);
-      pendo.clearSession();
+      // Pendo's install snippet only pre-stubs initialize/identify/
+      // updateOptions/pageLoad/track/trackAgent — clearSession isn't in
+      // that list, so it's only real once the CDN script actually loads.
+      // Blocked by an ad-blocker or a strict CSP (common in production),
+      // it stays undefined and this throws, which previously skipped the
+      // navigate() in handleLogout entirely.
+      if (typeof pendo?.clearSession === "function") pendo.clearSession();
     }
   }, [queryClient]);
 
