@@ -1,7 +1,13 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 
-export default function StepRow({ step, index, innerRef }) {
-  const isLTR = index % 2 === 0;
+export default function StepRow({ step, index, innerRef, badgeRef }) {
+  // Per the Figma reference, the label is always to the left of the image
+  // — it never flips. What alternates is the whole card's position: step 1
+  // hugs the far right of the section, step 2 the far left, step 3 the far
+  // right again. That only works if the row has a fixed width narrower
+  // than its (much wider) wrapping container, pushed to one edge via
+  // margin — not by reversing flex-row internally.
+  const hugRight = index % 2 === 0;
   const { scrollYProgress } = useScroll({
     target: innerRef,
     offset: ["start 90%", "end 10%"],
@@ -90,10 +96,12 @@ export default function StepRow({ step, index, innerRef }) {
         </div>
       </div>
 
-      {/* ── Desktop — alternating left/right rows ── */}
-      <div className={`hidden md:flex relative items-center ${isLTR ? "flex-row" : "flex-row-reverse"}`}>
+      {/* ── Desktop — fixed-width row, pushed to alternating edges ── */}
+      <div
+        className={`hidden md:flex relative items-center w-[min(720px,100%)] ${hugRight ? "ml-auto" : "mr-auto"}`}
+      >
         <div
-          className={`flex-shrink-0 w-[190px] rounded-2xl p-5 z-20 flex flex-col items-center text-center ${isLTR ? "mr-[-30px]" : "ml-[-30px]"}`}
+          className="flex-shrink-0 w-[190px] rounded-2xl p-5 z-20 flex flex-col items-center text-center mr-[-30px]"
           style={glassCard}
         >
           <img
@@ -105,7 +113,7 @@ export default function StepRow({ step, index, innerRef }) {
         </div>
         <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
           <img src={step.img} alt={step.label} className="w-full h-auto block" draggable={false} />
-          <div style={{ ...glassBadge, bottom: 16, right: 16, padding: "10px 18px" }}>
+          <div ref={badgeRef} style={{ ...glassBadge, bottom: 16, right: 16, padding: "10px 18px" }}>
             <span
               style={{
                 width: 8,
@@ -119,12 +127,8 @@ export default function StepRow({ step, index, innerRef }) {
             <span style={{ fontSize: 12, fontWeight: 700, color: "#0f1d6e" }}>{step.badge}</span>
           </div>
         </div>
-        <div
-          className={`absolute top-3 ${isLTR ? "right-[-8px]" : "left-[-8px]"} w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/8 bg-[#EEF1FB]/45 -z-10`}
-        />
-        <div
-          className={`absolute top-6 ${isLTR ? "right-[-15px]" : "left-[-15px]"} w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/4 bg-[#E8ECF8]/28 -z-20`}
-        />
+        <div className="absolute top-3 right-[-8px] w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/8 bg-[#EEF1FB]/45 -z-10" />
+        <div className="absolute top-6 right-[-15px] w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/4 bg-[#E8ECF8]/28 -z-20" />
       </div>
     </motion.div>
   );

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "../../../../layouts/AuthLayout";
+import AuthLayout from "../../../layouts/AuthLayout";
 import RegisterStep from "./RegisterStep";
 import OTPStep from "./OTPStep";
-import { useAuth } from "../../../../store/AuthContext";
+import { useAuth } from "../../../store/AuthContext";
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function SignUp() {

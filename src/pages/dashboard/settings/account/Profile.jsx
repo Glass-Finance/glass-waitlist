@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
+import { updateEmail } from "../../../../api/members";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { useAuth } from "../../../../store/AuthContext";
 import { parseUserData } from "../../../../utils/userData";
+import EmailChangeModal from "../../../../components/auth/EmailChangeModal";
 
 export default function Profile() {
   const { data: user, isLoading } = useMe();
@@ -12,10 +14,13 @@ export default function Profile() {
   const { refreshUser } = useAuth();
   const photoInputRef = useRef(null);
 
-  const [form, setForm] = useState({ firstName: "", lastName: "", phone: "" });
+  const [form, setForm] = useState({ firstName: "", lastName: "", phone: "", email: "" });
+  const [savedForm, setSavedForm] = useState(form);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
   const [photoPreview, setPhotoPreview] = useState(null);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [emailSaving, setEmailSaving] = useState(false);
 
   // profileImage lives inside userData too (confirmed against the real
   // GET /user/me response — it's not a top-level field).
@@ -24,30 +29,70 @@ export default function Profile() {
   useEffect(() => {
     if (!user) return;
     const ud = parseUserData(user);
-    setForm({
+    const loaded = {
       firstName: ud.firstName ?? "",
       lastName: ud.lastName ?? "",
       phone: user.phoneNumber ?? ud.phone ?? "",
-    });
+      email: user.email ?? "",
+    };
+    setForm(loaded);
+    setSavedForm(loaded);
   }, [user]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  const isDirty =
+    form.firstName !== savedForm.firstName ||
+    form.lastName !== savedForm.lastName ||
+    form.phone !== savedForm.phone ||
+    form.email !== savedForm.email;
+
+  // Email changes go through OTP verification (handled by EmailChangeModal)
+  // before they actually take effect, so they're split out from the rest of
+  // the form here — name/phone save immediately as before, email only after
+  // the code sent to the new address is confirmed.
   const handleSave = async () => {
     setError("");
     try {
-      await updateProfile.mutateAsync({
-        firstName: form.firstName,
-        lastName: form.lastName,
-        phoneNumber: form.phone,
-      });
-      await refreshUser();
+      if (form.firstName !== savedForm.firstName || form.lastName !== savedForm.lastName || form.phone !== savedForm.phone) {
+        await updateProfile.mutateAsync({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          phoneNumber: form.phone,
+        });
+        await refreshUser();
+        setSavedForm((sf) => ({ ...sf, firstName: form.firstName, lastName: form.lastName, phone: form.phone }));
+      }
+
+      if (form.email !== savedForm.email) {
+        setEmailSaving(true);
+        await updateEmail({ email: form.email.trim().toLowerCase() });
+        setEmailSaving(false);
+        setEmailModalOpen(true);
+        return;
+      }
+
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
+      setEmailSaving(false);
       setError(getErrorMessage(err, "Failed to save changes."));
     }
   };
+
+  function handleEmailVerified() {
+    setEmailModalOpen(false);
+    setSavedForm((sf) => ({ ...sf, email: form.email }));
+    refreshUser();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  function handleWrongEmail() {
+    // Just closes the modal — the (mistyped) email stays in the field so
+    // they can correct it rather than retyping the whole address.
+    setEmailModalOpen(false);
+  }
 
   const handlePhotoSelect = async (file) => {
     if (!file) return;
@@ -127,7 +172,7 @@ export default function Profile() {
         <div className="grid grid-cols-2 gap-4 mb-5">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Email Address</label>
-            <input value={user?.email ?? ""} disabled className={inputCls + " bg-gray-50 text-gray-400"} />
+            <input name="email" type="email" value={form.email} onChange={handleChange} className={inputCls} />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Phone Number</label>
@@ -140,13 +185,22 @@ export default function Profile() {
         <div className="flex justify-end">
           <button
             onClick={handleSave}
-            disabled={updateProfile.isPending}
+            disabled={updateProfile.isPending || emailSaving || !isDirty}
             className="p-2 rounded-sm text-[11px] text-[#002FA7] hover:bg-[#002FA7] hover:text-white transition-all cursor-pointer border border-[#002FA7] disabled:opacity-50"
           >
-            {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
+            {saved ? "Saved!" : updateProfile.isPending || emailSaving ? "Saving…" : "Save Changes"}
           </button>
         </div>
       </div>
+
+      {emailModalOpen && (
+        <EmailChangeModal
+          newEmail={form.email}
+          onVerified={handleEmailVerified}
+          onWrongEmail={handleWrongEmail}
+          onClose={handleWrongEmail}
+        />
+      )}
 
       {/* Delete Account */}
       <div className="bg-white rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>

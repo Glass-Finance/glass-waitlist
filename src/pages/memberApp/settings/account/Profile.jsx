@@ -28,6 +28,7 @@ export default function Profile() {
   const photoInputRef = useRef(null);
 
   const [form, setForm] = useState({ firstName: "", lastName: "", phone: "" });
+  const [savedForm, setSavedForm] = useState(form);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -35,12 +36,19 @@ export default function Profile() {
   useEffect(() => {
     if (!user) return;
     const ud = parseUserData(user);
-    setForm({
+    const loaded = {
       firstName: ud.firstName ?? "",
       lastName: ud.lastName ?? "",
       phone: user.phoneNumber ?? ud.phone ?? "",
-    });
+    };
+    setForm(loaded);
+    setSavedForm(loaded);
   }, [user]);
+
+  const isDirty =
+    form.firstName !== savedForm.firstName ||
+    form.lastName !== savedForm.lastName ||
+    form.phone !== savedForm.phone;
 
   async function handleSave() {
     setError("");
@@ -50,6 +58,7 @@ export default function Profile() {
         lastName: form.lastName,
         phoneNumber: form.phone,
       });
+      setSavedForm(form);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
@@ -141,11 +150,11 @@ export default function Profile() {
 
         <button
           onClick={handleSave}
-          disabled={updateProfile.isPending}
+          disabled={updateProfile.isPending || !isDirty}
           style={{
             width: "100%", marginTop: 16, padding: "14px 0", borderRadius: 10, border: "none",
             background: "#002FA7", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer",
-            opacity: updateProfile.isPending ? 0.7 : 1,
+            opacity: updateProfile.isPending || !isDirty ? 0.7 : 1,
           }}
         >
           {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Eye, EyeOff, Info } from "lucide-react";
-import { register } from "../../../../services/authService";
-import { notifyError } from "../../../../utils/errorHandler";
-import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
-import GoogleAuthButton from "../../../../components/auth/GoogleAuthButton";
+import { register } from "../../../services/authService";
+import { notifyError } from "../../../utils/errorHandler";
+import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
+import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
 const inputCls =
@@ -238,7 +238,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
         <button
           onClick={onSwitch}
           className="font-semibold hover:underline bg-transparent border-none cursor-pointer"
-          style={{ color: "#1B2FE8" }}
+          style={{ color: "#1C2B8A" }}
         >
           Sign In
         </button>

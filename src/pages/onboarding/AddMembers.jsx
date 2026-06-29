@@ -429,7 +429,7 @@
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Papa from "papaparse";
-import { Bell, Download, CloudUpload, Copy, Trash2, Plus, Check } from "lucide-react";
+import { Bell, Download, CloudUpload, Copy, Check, X, FileSpreadsheet } from "lucide-react";
 import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
 import { toast } from "sonner";
@@ -445,8 +445,7 @@ const STEPS = [
 ];
 
 const HEADERS = ["First Name", "Last Name", "Email Address", "Phone Number", "Member ID", "Role/Title"];
-const FIELDS  = ["firstName", "lastName", "email", "phone", "memberId", "role"];
-const EMPTY   = () => ({ id: Date.now() + Math.random(), firstName: "", lastName: "", email: "", phone: "", memberId: "", role: "" });
+const SAMPLE_ROW = ["Fatimah", "Yahya", "Fati***ya@**.com", "0812990293", "A23434", "Student"];
 
 const inputCls = "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
 
@@ -535,8 +534,13 @@ export default function AddMembers() {
 
   const { email, communityId, communitySlug, communityName } = location.state ?? {};
 
+  // /join/{slug} isn't a route this app has ever had — it fell through to
+  // the catch-all and silently redirected to the public homepage, so this
+  // link has never actually worked. /member/join is the real entry point;
+  // ?community= (read by useJoinCommunityParam) tells it which community
+  // to file a join request for once the visitor registers or signs in.
   const inviteLink = communitySlug
-    ? `https://glasspay.app/join/${communitySlug}`
+    ? `https://glasspay.app/member/join?community=${communitySlug}`
     : "https://glasspay.app";
 
   const [tab,          setTab]          = useState("upload");
@@ -545,9 +549,23 @@ export default function AddMembers() {
   const [fileUrl,      setFileUrl]      = useState("");
   const [copied,       setCopied]       = useState(false);
   const [showSuccess,  setShowSuccess]  = useState(false);
-  const [rows,         setRows]         = useState([EMPTY()]);
   const [loading,      setLoading]      = useState(false);
   const [error,        setError]        = useState("");
+
+  // Manual tab — chip-based email entry instead of a full per-row table.
+  // No name/role fields are collected here, so these go through the same
+  // bulk-add endpoint as an {email}-only (+ optional phone) member record.
+  const [emails,      setEmails]      = useState([]);
+  const [emailInput,  setEmailInput]  = useState("");
+  const [phoneNumbers, setPhoneNumbers] = useState("");
+
+  // URL upload — a simulated progress sequence (the underlying fetch+parse
+  // has no natural byte-level progress signal worth wiring up for a CSV
+  // that's typically tiny) so the wait doesn't feel like nothing's happening.
+  const [urlStage,    setUrlStage]    = useState("idle"); // idle | fetching | complete
+  const [urlProgress, setUrlProgress] = useState(0);
+  const [urlFileInfo, setUrlFileInfo] = useState(null); // { name, sizeLabel }
+  const [urlCsvText,  setUrlCsvText]  = useState(null);
 
   const copyLink = () => {
     navigator.clipboard.writeText(inviteLink);
@@ -558,30 +576,103 @@ export default function AddMembers() {
   const handleFile = (file) => { if (file) setUploadedFile(file); };
   const handleDrop = (e) => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]); };
 
-  const changeRow = (id, field, val) =>
-    setRows((r) => r.map((x) => (x.id === id ? { ...x, [field]: val } : x)));
-  const removeRow = (id) => setRows((r) => r.filter((x) => x.id !== id));
+  function commitEmailChip() {
+    const val = emailInput.trim().replace(/[,;]+$/, "");
+    if (val && !emails.includes(val)) setEmails((arr) => [...arr, val]);
+    setEmailInput("");
+  }
+  function handleEmailKeyDown(e) {
+    if (e.key === "Enter" || e.key === "," || e.key === " ") {
+      e.preventDefault();
+      commitEmailChip();
+    } else if (e.key === "Backspace" && !emailInput && emails.length > 0) {
+      setEmails((arr) => arr.slice(0, -1));
+    }
+  }
+  const removeEmailChip = (i) => setEmails((arr) => arr.filter((_, idx) => idx !== i));
 
-  // Bulk member creation is all-or-nothing on the backend, so both the
-  // manual rows table and the CSV/URL upload funnel through one call to
-  // POST /communities/{id}/members/bulk instead of N individual requests.
+  async function handleUrlUpload() {
+    const url = fileUrl.trim();
+    if (!url) return;
+    setError("");
+    setUrlStage("fetching");
+    setUrlProgress(8);
+    const tick = setInterval(() => {
+      setUrlProgress((p) => (p < 88 ? p + Math.random() * 18 : p));
+    }, 250);
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Couldn't download a file from that URL.");
+      const text = await res.text();
+      clearInterval(tick);
+      setUrlProgress(100);
+      const sizeKb = new Blob([text]).size / 1024;
+      const name = url.split("/").pop() || "file.csv";
+      setUrlFileInfo({
+        name,
+        sizeLabel: sizeKb > 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(sizeKb))} KB`,
+      });
+      setUrlCsvText(text);
+      setUrlStage("complete");
+    } catch (err) {
+      clearInterval(tick);
+      setUrlStage("idle");
+      setUrlProgress(0);
+      setError(notifyError(err, { context: "Upload from URL" }));
+    }
+  }
+  function clearUrlUpload() {
+    setUrlStage("idle");
+    setUrlProgress(0);
+    setUrlFileInfo(null);
+    setUrlCsvText(null);
+    setFileUrl("");
+  }
+
+  // Manual tab's own submit — sends the entered emails immediately and
+  // finishes onboarding, rather than waiting for a separate page-level
+  // button (the design has no second control on this tab).
+  async function handleSendInvite() {
+    if (emails.length === 0) return;
+    setError("");
+    setLoading(true);
+    try {
+      const members = emails.map((email) => ({
+        email,
+        ...(phoneNumbers.trim() ? { phoneNumber: phoneNumbers.trim() } : {}),
+      }));
+      if (!communityId) { setError("Community ID missing."); return; }
+      const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
+      try {
+        await client.post(`/communities/${communityId}/members/bulk`, { members });
+      } catch (err) {
+        toast.dismiss(toastId);
+        throw err;
+      }
+      toastSuccess(`${members.length} invite${members.length === 1 ? "" : "s"} sent`, { id: toastId });
+      setEmails([]);
+      setPhoneNumbers("");
+      setShowSuccess(true);
+    } catch (err) {
+      setError(notifyError(err, { context: "Send invites", fallback: "Failed to send invites. You can add members from the dashboard later." }));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Upload tab's submit — CSV file and CSV-from-URL both funnel through one
+  // call to POST /communities/{id}/members/bulk instead of N individual
+  // requests. Uses the already-fetched urlCsvText rather than re-fetching
+  // the URL a second time if the preview step already pulled it down.
   const handleSubmit = async () => {
     setError("");
     setLoading(true);
     try {
       let members;
-      if (tab === "manual") {
-        members = rows
-          .filter((r) => r.firstName || r.email)
-          .map((r) => ({
-            firstName: r.firstName.trim(),
-            lastName: r.lastName.trim(),
-            email: r.email.trim(),
-            phoneNumber: r.phone.trim(),
-            memberRef: r.memberId.trim(),
-          }));
-      } else if (uploadedFile) {
+      if (uploadedFile) {
         members = (await parseCsvFile(uploadedFile)).map((row) => csvRowToMember(row, roles));
+      } else if (urlCsvText) {
+        members = parseCsvText(urlCsvText).map((row) => csvRowToMember(row, roles));
       } else if (fileUrl.trim()) {
         members = (await parseCsvFromUrl(fileUrl.trim())).map((row) => csvRowToMember(row, roles));
       } else {
@@ -704,19 +795,39 @@ export default function AddMembers() {
               {/* Upload tab */}
               {tab === "upload" && (
                 <>
+                  <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
                   <div className="flex items-center justify-between mb-4">
-                    <p className="text-sm text-gray-500">Upload a CSV file with member information</p>
+                    <p className="text-sm text-gray-500">Upload a CSV file with following sample information</p>
                     <button onClick={downloadTemplate} className="flex items-center gap-1.5 text-xs font-medium text-[#002FA7] hover:opacity-80 bg-transparent border-none cursor-pointer">
                       <Download size={12} />Download Template
                     </button>
                   </div>
+
+                  {/* Sample table */}
+                  <div className="rounded-md overflow-hidden mb-4" style={{ border: "1px solid #E5E7EB" }}>
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          {HEADERS.map((h) => <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500">{h}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-t border-gray-100">
+                          {SAMPLE_ROW.map((cell, i) => (
+                            <td key={i} className={`px-4 py-3 ${i === 2 ? "text-[#002FA7] underline" : "text-gray-900"}`}>{cell}</td>
+                          ))}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
                   {/* Drop zone */}
                   <div
                     onClick={() => fileRef.current?.click()}
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                     onDragLeave={() => setDragOver(false)}
                     onDrop={handleDrop}
-                    className="w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-4"
+                    className="w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-5"
                     style={{
                       minHeight: 140,
                       background: dragOver ? "#EEF2FF" : "#FAFAFA",
@@ -730,80 +841,122 @@ export default function AddMembers() {
                       ? <p className="text-xs text-[#002FA7] font-medium">{uploadedFile.name}</p>
                       : <p className="text-xs text-gray-500">Drag and Drop CSV here or <span className="text-[#002FA7] font-medium underline">Browse</span></p>}
                   </div>
+
                   {/* URL upload */}
                   <div>
                     <p className="text-xs font-medium text-gray-700 mb-2">Or Upload from URL</p>
                     <div className="flex gap-2">
-                      <input type="url" value={fileUrl} onChange={(e) => setFileUrl(e.target.value)}
-                        placeholder="Add File URL" className={inputCls} />
-                      <button onClick={handleSubmit} disabled={!fileUrl.trim() || loading}
+                      <input type="url" value={fileUrl}
+                        onChange={(e) => { setFileUrl(e.target.value); if (urlStage !== "idle") clearUrlUpload(); }}
+                        placeholder="Add File URL" className={inputCls}
+                        disabled={urlStage === "fetching"} />
+                      <button onClick={handleUrlUpload} disabled={!fileUrl.trim() || urlStage === "fetching" || loading}
                         className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-[#002FA7] hover:bg-[#002FA7]/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50">
                         Upload
                       </button>
                     </div>
+
+                    {urlStage === "fetching" && (
+                      <div className="mt-3 rounded-lg flex flex-col items-center justify-center py-10" style={{ border: "2px dashed #002FA7", background: "#EEF2FF" }}>
+                        <div className="relative w-16 h-16 mb-3">
+                          <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90">
+                            <circle cx="32" cy="32" r="28" fill="none" stroke="#E0E3F0" strokeWidth="6" />
+                            <circle cx="32" cy="32" r="28" fill="none" stroke="#002FA7" strokeWidth="6"
+                              strokeDasharray={2 * Math.PI * 28}
+                              strokeDashoffset={2 * Math.PI * 28 * (1 - urlProgress / 100)}
+                              strokeLinecap="round" style={{ transition: "stroke-dashoffset 0.2s linear" }} />
+                          </svg>
+                          <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-gray-900">
+                            {Math.round(urlProgress)}%
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-700 mb-3">Uploading File...</p>
+                        <button onClick={clearUrlUpload}
+                          className="px-4 py-1.5 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-50 transition-all bg-white border border-gray-300 cursor-pointer">
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+
+                    {urlStage === "complete" && urlFileInfo && (
+                      <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3" style={{ border: "1px solid #E5E7EB" }}>
+                        <FileSpreadsheet size={20} className="text-green-600 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-gray-900 truncate">{urlFileInfo.name}</p>
+                          <p className="text-xs text-gray-500 flex items-center gap-1">
+                            {urlFileInfo.sizeLabel} • <Check size={11} className="text-green-600" /> <span className="text-green-600 font-medium">Complete</span>
+                          </p>
+                        </div>
+                        <button onClick={clearUrlUpload} aria-label="Remove file"
+                          className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0">
+                          <X size={16} />
+                        </button>
+                      </div>
+                    )}
                   </div>
+
+                  {error && <p className="text-sm text-red-500 mt-3">{error}</p>}
+
+                  <button
+                    onClick={handleSubmit}
+                    disabled={loading || urlStage === "fetching"}
+                    className="w-full py-4 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all mt-6 border-none cursor-pointer disabled:opacity-60"
+                  >
+                    {loading ? "Adding members…" : "Create Your Community"}
+                  </button>
                 </>
               )}
 
               {/* Manual tab */}
               {tab === "manual" && (
                 <>
-                  <p className="text-sm text-gray-500 mb-4">Enter your members' details one by one.</p>
-                  <div className="rounded-xl overflow-hidden mb-4" style={{ border: "1px solid #E5E7EB" }}>
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-gray-50">
-                          {HEADERS.map((h) => <th key={h} className="px-3 py-3 text-left text-xs font-medium text-gray-500">{h}</th>)}
-                          <th className="px-3 py-3 w-10" />
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {rows.map((row) => (
-                          <tr key={row.id} className="border-t border-gray-100">
-                            {FIELDS.map((f) => (
-                              <td key={f} className="px-2 py-2">
-                                <input
-                                  type={f === "email" ? "email" : "text"}
-                                  value={row[f]}
-                                  onChange={(e) => changeRow(row.id, f, e.target.value)}
-                                  placeholder={HEADERS[FIELDS.indexOf(f)]}
-                                  className="w-full px-2 py-1.5 text-xs rounded-lg bg-gray-50 text-gray-900 placeholder-gray-400 outline-none transition-all"
-                                  style={{ border: "1px solid #E5E7EB" }}
-                                  onFocus={(e) => (e.target.style.borderColor = "#002FA7")}
-                                  onBlur={(e)  => (e.target.style.borderColor = "#E5E7EB")}
-                                />
-                              </td>
-                            ))}
-                            <td className="px-2 py-2">
-                              {rows.length > 1 && (
-                                <button onClick={() => removeRow(row.id)}
-                                  className="text-gray-400 hover:text-red-500 transition-colors w-7 h-7 flex items-center justify-center bg-transparent border-none cursor-pointer">
-                                  <Trash2 size={14} />
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <p className="text-sm font-medium text-gray-900 mb-2">Enter Email(s):</p>
+                  <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5" style={{ minHeight: 60, border: "1px solid #E5E7EB", background: "#fff" }}>
+                    {emails.map((em, i) => (
+                      <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800" style={{ background: "#F3F4F6" }}>
+                        <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-[#002FA7] text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
+                          {em.charAt(0).toUpperCase()}
+                        </span>
+                        {em}
+                        <button onClick={() => removeEmailChip(i)} aria-label={`Remove ${em}`}
+                          className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex items-center justify-center">
+                          <X size={12} />
+                        </button>
+                      </span>
+                    ))}
+                    <input
+                      type="text"
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      onKeyDown={handleEmailKeyDown}
+                      onBlur={commitEmailChip}
+                      placeholder={emails.length === 0 ? "Type an email and press Enter" : ""}
+                      className="flex-1 min-w-[160px] outline-none text-sm bg-transparent border-none py-1"
+                    />
                   </div>
-                  <button onClick={() => setRows((r) => [...r, EMPTY()])}
-                    className="flex items-center gap-2 text-sm font-medium text-[#002FA7] hover:opacity-80 bg-transparent border-none cursor-pointer">
-                    <Plus size={16} />Add Row
-                  </button>
+
+                  <p className="text-sm font-medium text-gray-900 mb-2">
+                    Enter Phone Number(s) <span className="text-gray-400 font-normal">(Optional):</span>
+                  </p>
+                  <input
+                    type="text"
+                    value={phoneNumbers}
+                    onChange={(e) => setPhoneNumbers(e.target.value)}
+                    placeholder="Enter Phone Number"
+                    className={`${inputCls} mb-5`}
+                  />
+
+                  {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
+
+                  <div className="flex justify-end">
+                    <button onClick={handleSendInvite} disabled={emails.length === 0 || loading}
+                      className="px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50">
+                      {loading ? "Sending…" : "Send Invite"}
+                    </button>
+                  </div>
                 </>
               )}
             </div>
-
-            {error && <p className="text-sm text-red-500 mt-3">{error}</p>}
-
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="w-full py-4 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all mt-6 border-none cursor-pointer disabled:opacity-60"
-            >
-              {loading ? "Adding members…" : "Finish Setup"}
-            </button>
           </div>
         </main>
       </div>

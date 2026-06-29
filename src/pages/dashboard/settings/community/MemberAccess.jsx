@@ -14,7 +14,12 @@ export default function MemberAccess() {
   const memberRoleId = (rolesData ?? []).find((r) => r.name?.toLowerCase() === "member")?.id
     ?? FALLBACK_MEMBER_ROLE.id;
 
-  const inviteLink = communityId ? `https://app.glasspay.app/join/${communityId}` : null;
+  // /join/{id} isn't a route this app has ever had — it fell through to
+  // the catch-all and silently redirected to the public homepage, so this
+  // link has never actually worked. /member/join is the real entry point;
+  // ?community= (read by useJoinCommunityParam) tells it which community
+  // to file a join request for once the visitor registers or signs in.
+  const inviteLink = communityId ? `https://app.glasspay.app/member/join?community=${communityId}` : null;
 
   const handleCopy = () => {
     if (!inviteLink) return;

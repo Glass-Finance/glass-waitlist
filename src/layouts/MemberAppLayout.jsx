@@ -17,23 +17,10 @@ export default function MemberAppLayout() {
   return (
     <div className="flex justify-center items-start min-h-screen bg-[#EBEBEB]">
       <div
-        className="relative flex flex-col bg-[#EBEBEB] w-full max-w-[390px] min-h-screen overflow-hidden"
+        className="relative bg-[#EBEBEB] w-full max-w-[390px] min-h-screen overflow-hidden"
         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
       >
-        <SideDrawer open={menuOpen} onClose={() => setMenuOpen(false)} />
-
-        {/* Persistent menu access — every page gets this, not just Home,
-            since Settings/My Communities otherwise had no reachable path
-            from anywhere else in the app. */}
-        <div className="flex-shrink-0 flex items-center px-4 py-2.5">
-          <button
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-white shadow-sm border-none cursor-pointer"
-          >
-            <Menu size={18} strokeWidth={2} style={{ color: "#222" }} />
-          </button>
-        </div>
+        
 
         {/* Scrollable content */}
         <main
@@ -45,7 +32,7 @@ export default function MemberAppLayout() {
 
         {/* Bottom nav */}
         <nav
-          className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50"
+          className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-30"
           style={{
             background:
               "linear-gradient(180deg, rgba(235,235,235,0) 0%, #EBEBEB 28%)",

@@ -6,11 +6,12 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen w-screen flex flex-col md:flex-row overflow-hidden bg-[#F5F5F6] md:p-2">
-      {/* Hero panel — full side panel on desktop; collapses into a short top
-          banner on mobile instead of disappearing, matching the member-side
-          mobile auth screens (Join.jsx) rather than just hiding the logo. */}
-      <div className="w-full h-[26vh] min-h-[150px] md:w-[46%] md:h-full flex-shrink-0">
+    <div className="h-screen w-screen flex flex-col md:flex-row overflow-hidden bg-[#EFEFEF] md:p-2">
+      {/* ── Hero panel ───────────────────────────────────────────────────── */}
+      {/* Mobile: 45vh full-bleed image with gradient + welcome text        */}
+      {/* Desktop: side panel, unchanged                                     */}
+      {/* ── Hero panel ── */}
+      <div className="w-full flex-shrink-0 h-[35vh] min-h-[220px] md:w-[46%] md:h-full">
         <div className="relative w-full h-full md:rounded-3xl overflow-hidden">
           <img
             src={AuthPanel}
@@ -28,10 +29,23 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
             />
           </div>
 
-          {/* Center text — desktop only, the mobile banner is too short for
-              it and the form below already carries its own heading */}
+          {/* Welcome text — mobile only, sits at the bottom of the hero */}
+          {heroTitle && (
+            <p
+              className="md:hidden absolute bottom-10 left-0 right-0 text-center
+                         text-white font-medium leading-snug px-8 pb-10 z-10"
+              style={{ fontSize: "clamp(22px, 4vw, 22px)" }}
+            >
+              {heroTitle}
+            </p>
+          )}
+
+          {/* Center text — desktop only (unchanged) */}
           {(heroTitle || heroSubtitle) && (
-            <div className="hidden md:flex absolute inset-0 items-center justify-center z-10 px-8">
+            <div
+              className="hidden md:flex absolute inset-0 items-center
+                            justify-center z-10 px-8"
+            >
               <div className="text-center">
                 {heroTitle && (
                   <h1
@@ -61,14 +75,20 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
         </div>
       </div>
 
-      {/* Form content */}
-      {/* No justify-center here: when content (e.g. the registration form)
-          is taller than the viewport, centering a scrollable flex container
-          crops the top of the content — including the heading — above the
-          visible scroll area. Top-aligning with padding keeps the start of
-          the content reachable on load for forms of any height. */}
-      <div className="flex-1 flex flex-col items-center px-6 md:px-12 py-8 md:py-10 bg-[#F5F5F6] overflow-y-auto min-h-0 rounded-t-[20px] md:rounded-none -mt-5 md:mt-0">
+      {/* ── Form sheet ───────────────────────────────────────────────────── */}
+      {/* Mobile: pulls up -28px over the hero with rounded top corners     */}
+      {/* Desktop: unchanged right column                                   */}
+      <div
+        className="flex-1 flex flex-col items-center px-6 md:px-12
+                   py-8 md:py-10 bg-[#EFEFEF] overflow-y-auto min-h-0
+                   md:rounded-none z-20"
+        style={{
+          borderRadius: "12px 12px 0 0", // overridden to none on md via className
+          marginTop: -10 , // the pull-up; md resets this below
+        }}
+      >
         {children}
+        <div style={{ height: "env(safe-area-inset-bottom, 20px)" }} />
       </div>
     </div>
   );
