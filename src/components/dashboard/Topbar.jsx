@@ -100,8 +100,24 @@ export default function Topbar({
         const { data } = await client.get(`/communities/${communityId}/search`, {
           params: { search: q, pageSize: 5 },
         });
-        setResults(data?.data ?? null);
+        const searchData = data?.data ?? null;
+        setResults(searchData);
         setSearchOpen(true);
+        if (typeof pendo !== "undefined") {
+          const m = searchData?.members?.content?.length ?? 0;
+          const t = searchData?.transactions?.content?.length ?? 0;
+          const p = searchData?.paymentLinks?.content?.length ?? 0;
+          const s = searchData?.settlements?.content?.length ?? 0;
+          pendo.track("dashboard_search_executed", {
+            query: q,
+            community_id: communityId,
+            members_count: m,
+            transactions_count: t,
+            payment_links_count: p,
+            settlements_count: s,
+            has_results: m + t + p + s > 0,
+          });
+        }
       } catch {
         setResults(null);
       } finally {

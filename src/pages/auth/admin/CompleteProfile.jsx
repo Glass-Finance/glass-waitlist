@@ -46,7 +46,14 @@ export default function CompleteProfile() {
         phoneNumber: form.phone.trim(),
       });
       await refreshUser();
-      navigate(location.state?.next ?? "/onboarding/choose-path", { replace: true });
+      const dest = location.state?.next ?? "/onboarding/choose-path";
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_completed", {
+          user_type: "admin",
+          destination: dest,
+        });
+      }
+      navigate(dest, { replace: true });
     } catch (err) {
       setError(getErrorMessage(err, "Failed to save your details."));
     }

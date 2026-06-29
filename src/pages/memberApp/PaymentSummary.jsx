@@ -59,6 +59,16 @@ export default function PaymentSummary() {
         paymentLinkId: obligation.paymentLink.id,
         payload: { email: me?.email },
       });
+      if (typeof pendo !== "undefined") {
+        pendo.track("payment_initiated", {
+          payment_link_id: obligation.paymentLink.id,
+          amount: obligation.amount,
+          plan_name: obligation.paymentLink?.title,
+          community_name: communityName,
+          payment_type: isRecurring ? "recurring" : "one_time",
+          has_saved_method: !!savedMethod,
+        });
+      }
       const url = res.data?.data?.authorizationUrl;
       if (url) {
         window.location.href = url;

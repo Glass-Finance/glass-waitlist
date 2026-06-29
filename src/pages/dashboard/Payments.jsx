@@ -250,13 +250,30 @@ function PlanActionsMenu({ plan, planPlans }) {
   const [open, setOpen] = useState(false);
   const status = plan.status;
 
+  function trackStatusChange(action) {
+    if (typeof pendo !== "undefined") {
+      pendo.track("payment_plan_status_changed", {
+        plan_id: plan.id,
+        action,
+        previous_status: status,
+      });
+    }
+  }
+
   const actions = [];
-  if (status === "DRAFT") actions.push({ label: "Activate", run: () => planPlans.activate.mutate(plan.id) });
-  if (status === "ACTIVE") actions.push({ label: "Pause", run: () => planPlans.pause.mutate(plan.id) });
-  if (status === "PAUSED") actions.push({ label: "Resume", run: () => planPlans.resume.mutate(plan.id) });
-  if (status === "ACTIVE" || status === "PAUSED") actions.push({ label: "Expire", run: () => planPlans.expire.mutate(plan.id) });
-  if (status !== "ARCHIVED") actions.push({ label: "Archive", run: () => planPlans.archive.mutate(plan.id) });
-  actions.push({ label: "Duplicate", run: () => planPlans.duplicate.mutate(plan.id) });
+  if (status === "DRAFT") actions.push({ label: "Activate", run: () => { trackStatusChange("activate"); planPlans.activate.mutate(plan.id); } });
+  if (status === "ACTIVE") actions.push({ label: "Pause", run: () => { trackStatusChange("pause"); planPlans.pause.mutate(plan.id); } });
+  if (status === "PAUSED") actions.push({ label: "Resume", run: () => { trackStatusChange("resume"); planPlans.resume.mutate(plan.id); } });
+  if (status === "ACTIVE" || status === "PAUSED") actions.push({ label: "Expire", run: () => { trackStatusChange("expire"); planPlans.expire.mutate(plan.id); } });
+  if (status !== "ARCHIVED") actions.push({ label: "Archive", run: () => { trackStatusChange("archive"); planPlans.archive.mutate(plan.id); } });
+  actions.push({ label: "Duplicate", run: () => {
+    if (typeof pendo !== "undefined") {
+      pendo.track("payment_plan_duplicated", {
+        source_plan_id: plan.id,
+      });
+    }
+    planPlans.duplicate.mutate(plan.id);
+  } });
 
   return (
     <div className="relative">
@@ -342,6 +359,16 @@ export default function Payments() {
   async function handleCreate(payload) {
     try {
       await planPlans.create.mutateAsync(payload);
+      if (typeof pendo !== "undefined") {
+        pendo.track("payment_plan_created", {
+          community_id: communityId,
+          plan_type: payload.paymentType,
+          amount: payload.amount,
+          frequency: payload.frequency || "one_time",
+          slug: payload.slug,
+          activate_immediately: !!payload.activateImmediately,
+        });
+      }
       return true;
     } catch {
       return false;

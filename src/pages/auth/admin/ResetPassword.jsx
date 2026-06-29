@@ -58,6 +58,11 @@ export default function ResetPassword() {
         newPassword: form.newPassword,
         confirmPassword: form.confirmPassword,
       });
+      if (typeof pendo !== "undefined") {
+        pendo.track("password_reset_completed", {
+          user_type: "admin",
+        });
+      }
       navigate("/sign-in", { replace: true });
     } catch (err) {
       setError(notifyError(err, { context: "Reset password" }));

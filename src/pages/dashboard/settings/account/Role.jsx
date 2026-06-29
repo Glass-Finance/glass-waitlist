@@ -42,6 +42,12 @@ export default function Role() {
     setSaving(true);
     try {
       await updateExemption.mutateAsync(id === "exempt");
+      if (typeof pendo !== "undefined") {
+        pendo.track("billing_exemption_changed", {
+          community_id: communityId,
+          new_status: id,
+        });
+      }
     } catch {
       setRole(memberRecord?.billingExempt ? "exempt" : "pays"); // revert on failure
     } finally {

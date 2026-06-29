@@ -218,7 +218,15 @@ export default function SignIn() {
     setError("");
     try {
       const user = await login(form.email.trim().toLowerCase(), form.password);
-      navigate(await resolveDestination(user), { replace: true });
+      const dest = await resolveDestination(user);
+      if (typeof pendo !== "undefined") {
+        pendo.track("member_signin_completed", {
+          auth_method: "email",
+          destination: dest,
+          is_mobile: true,
+        });
+      }
+      navigate(dest, { replace: true });
     } catch (err) {
       setError(notifyError(err, { context: "Sign in", fallback: "Incorrect email or password." }));
     } finally {

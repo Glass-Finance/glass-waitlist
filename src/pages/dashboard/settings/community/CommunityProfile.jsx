@@ -80,6 +80,11 @@ export default function CommunityProfile() {
         description: form.description,
         ...toggles,
       });
+      if (typeof pendo !== "undefined") {
+        pendo.track("community_profile_updated", {
+          community_id: communityId,
+        });
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
@@ -92,6 +97,13 @@ export default function CommunityProfile() {
     setToggles(next);
     try {
       await updateCommunity.mutateAsync(next);
+      if (typeof pendo !== "undefined") {
+        pendo.track("community_visibility_changed", {
+          community_id: communityId,
+          setting_name: key,
+          new_value: value,
+        });
+      }
     } catch {
       setToggles(toggles); // revert on failure
     }
@@ -105,6 +117,11 @@ export default function CommunityProfile() {
       const uploadRes = await uploadFile.mutateAsync({ file, fileCategory: "COMMUNITY_LOGO" });
       const logoFileId = uploadRes.data?.data?.id;
       await updateCommunity.mutateAsync({ logoFileId });
+      if (typeof pendo !== "undefined") {
+        pendo.track("community_logo_uploaded", {
+          community_id: communityId,
+        });
+      }
     } catch (err) {
       setError(getErrorMessage(err, "Failed to upload logo."));
     }

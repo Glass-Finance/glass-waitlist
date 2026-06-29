@@ -13,6 +13,12 @@ export default function MyCommunities() {
 
   function handleLeave(community) {
     if (!window.confirm(`Leave ${community.name}? You'll need a new invite to rejoin.`)) return;
+    if (typeof pendo !== "undefined") {
+      pendo.track("community_left", {
+        community_name: community.name,
+        community_id: community.id,
+      });
+    }
     leaveCommunity.mutate(community.slug ?? community.id);
   }
 

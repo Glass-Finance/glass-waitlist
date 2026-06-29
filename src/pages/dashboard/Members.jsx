@@ -146,6 +146,13 @@ export default function Members() {
   async function handleAdd(payload) {
     try {
       await addMember.mutateAsync(payload);
+      if (typeof pendo !== "undefined") {
+        pendo.track("member_added", {
+          community_id: communityId,
+          member_role: payload.roleId,
+          billing_exempt: !!payload.billingExempt,
+        });
+      }
       return true;
     } catch {
       return false;
@@ -154,6 +161,13 @@ export default function Members() {
 
   function handleRemove(member) {
     if (!window.confirm(`Remove ${memberName(member)} from this community?`)) return;
+    if (typeof pendo !== "undefined") {
+      pendo.track("member_removed", {
+        community_id: communityId,
+        member_id: member.id,
+        source: "members_list",
+      });
+    }
     removeMember.mutate(member.id);
   }
 
@@ -163,6 +177,13 @@ export default function Members() {
 
   function exportCsv() {
     const rows = (selected.length ? filtered.filter((m) => selected.includes(m.id)) : filtered);
+    if (typeof pendo !== "undefined") {
+      pendo.track("members_exported", {
+        community_id: communityId,
+        member_count: rows.length,
+        has_selection_filter: selected.length > 0,
+      });
+    }
     const header = "Name,Email,Plans,Paid,Total,Date Joined\n";
     const body = rows.map((m) => `${memberName(m)},${memberEmail(m)},${m.planCount},${m.paidCount},${m.totalCount},${formatDate(m.joinedAt ?? m.createdAt)}`).join("\n");
     const blob = new Blob([header + body], { type: "text/csv" });

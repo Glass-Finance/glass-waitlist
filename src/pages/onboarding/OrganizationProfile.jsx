@@ -624,6 +624,17 @@ export default function OrganizationProfile() {
       const community = createRes.data?.data;
       if (!community?.id) throw new Error("Community creation failed.");
 
+      if (typeof pendo !== "undefined") {
+        pendo.track("community_created", {
+          community_name: form.communityName.trim(),
+          community_category: form.category,
+          has_logo: !!logoFileId,
+          has_description: !!form.description.trim(),
+          slug: slug.trim(),
+          is_paying_member: isPaying,
+        });
+      }
+
       // AuthContext's isAdmin reflects the communities list as of the last
       // login/refresh, which didn't include this community yet since it
       // didn't exist. Without this, ProtectedRoute's admin check bounces

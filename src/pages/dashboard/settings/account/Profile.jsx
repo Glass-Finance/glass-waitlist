@@ -42,6 +42,11 @@ export default function Profile() {
         phoneNumber: form.phone,
       });
       await refreshUser();
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_updated", {
+          user_type: "admin",
+        });
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
@@ -61,6 +66,12 @@ export default function Profile() {
       // effect when sent nested under userData explicitly.
       await updateProfile.mutateAsync({ userData: { profileImageFileId } });
       await refreshUser();
+      if (typeof pendo !== "undefined") {
+        pendo.track("profile_photo_uploaded", {
+          user_type: "admin",
+          file_category: "PROFILE_IMAGE",
+        });
+      }
     } catch (err) {
       setError(getErrorMessage(err, "Failed to upload photo."));
     }

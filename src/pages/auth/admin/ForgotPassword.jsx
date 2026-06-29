@@ -35,6 +35,11 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       await forgotPassword({ email: email.trim().toLowerCase() });
+      if (typeof pendo !== "undefined") {
+        pendo.track("password_reset_requested", {
+          user_type: "admin",
+        });
+      }
       setSent(true);
     } catch (err) {
       setError(notifyError(err, { context: "Forgot password" }));

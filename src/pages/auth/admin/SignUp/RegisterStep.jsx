@@ -72,6 +72,12 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
         phoneNumber: form.phone.trim(),
         password: form.password,
       });
+      if (typeof pendo !== "undefined") {
+        pendo.track("admin_signup_completed", {
+          auth_method: "email",
+          has_invite_token: false,
+        });
+      }
       onNext(form.email, result);
     } catch (err) {
       setError(notifyError(err, { context: "Register" }));

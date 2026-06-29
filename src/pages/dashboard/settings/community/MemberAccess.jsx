@@ -19,6 +19,12 @@ export default function MemberAccess() {
   const handleCopy = () => {
     if (!inviteLink) return;
     navigator.clipboard.writeText(inviteLink);
+    if (typeof pendo !== "undefined") {
+      pendo.track("invite_link_copied", {
+        community_id: communityId,
+        source: "settings",
+      });
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -112,6 +118,13 @@ export default function MemberAccess() {
                     const isAdmin = isAdminRole(member);
                     if (isAdmin) {
                       if (window.confirm(`Revoke admin access for ${memberName(member)}? They'll remain a member.`)) {
+                        if (typeof pendo !== "undefined") {
+                          pendo.track("member_role_changed", {
+                            community_id: communityId,
+                            member_id: member.id,
+                            action: "revoke_admin",
+                          });
+                        }
                         updateMember.mutate({ memberId: member.id, payload: { roleId: memberRoleId } });
                       }
                     } else if (window.confirm(`Remove ${memberName(member)} from this community?`)) {
@@ -131,4 +144,4 @@ export default function MemberAccess() {
       </div>
     </div>
   );
-}
+}

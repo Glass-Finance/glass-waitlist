@@ -70,6 +70,12 @@ export default function PaystackAccount() {
         settlementBankCode: bankCode,
         accountNumber: accNumber,
       });
+      if (typeof pendo !== "undefined") {
+        pendo.track("payout_account_updated", {
+          community_id: communityId,
+          bank_name: bankName,
+        });
+      }
       setAccNumber("");
       setBankCode("");
       setAccName("");

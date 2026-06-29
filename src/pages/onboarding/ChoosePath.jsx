@@ -155,6 +155,11 @@ export default function ChoosePath() {
   ];
 
   const handleContinue = () => {
+    if (typeof pendo !== "undefined") {
+      pendo.track("onboarding_path_selected", {
+        path_selected: selected,
+      });
+    }
     if (selected === "create") {
       navigate("/onboarding/paying-member", { state: { email } });
     } else {

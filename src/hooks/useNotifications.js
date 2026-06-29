@@ -159,6 +159,14 @@ export function useNotificationPreferences() {
   return {
     preferences: query.data ?? {},
     isLoading: query.isLoading,
-    update: (key, value) => update.mutate({ [key]: value }),
+    update: (key, value) => {
+      if (typeof pendo !== "undefined") {
+        pendo.track("notification_preference_updated", {
+          preference_key: key,
+          new_value: value,
+        });
+      }
+      update.mutate({ [key]: value });
+    },
   };
 }

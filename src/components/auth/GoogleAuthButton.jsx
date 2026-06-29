@@ -45,6 +45,12 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
         // hiccup, just let them through as if it were complete.
       }
 
+      if (typeof pendo !== "undefined") {
+        pendo.track("google_auth_completed", {
+          is_new_user: !profileComplete,
+          profile_complete: profileComplete,
+        });
+      }
       onAuthenticated?.(user, { profileComplete });
     } catch (err) {
       notifyError(err, { context: "Google auth" });

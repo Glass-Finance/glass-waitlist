@@ -246,6 +246,11 @@ function StepOTP({ email, onVerified, onBack }) {
     setError("");
     try {
       const result = await verifyEmail({ email, token: code });
+      if (typeof pendo !== "undefined") {
+        pendo.track("email_verified", {
+          user_type: "member",
+        });
+      }
       onVerified(result);
     } catch (err) {
       setError(notifyError(err, { context: "Verify OTP", fallback: "That code didn't work. Please try again.", silent: true }));
@@ -665,6 +670,12 @@ export default function Join() {
         ...(token && { inviteToken: token }),
       };
       const authData = await register(payload);
+      if (typeof pendo !== "undefined") {
+        pendo.track("member_signup_completed", {
+          auth_method: "email",
+          has_invite_token: !!token,
+        });
+      }
       maybeStoreSession(authData);
       setEmail(enteredEmail);
       setStep(STEPS.OTP);

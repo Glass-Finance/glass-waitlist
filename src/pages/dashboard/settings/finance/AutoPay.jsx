@@ -49,6 +49,12 @@ export default function AutoPay() {
     if (!window.confirm(
       "Turning this off removes the saved payment method for this plan — auto-pay will stop for every plan tied to it."
     )) return;
+    if (typeof pendo !== "undefined") {
+      pendo.track("auto_pay_disabled", {
+        plan_name: plan.name,
+        community_name: plan.communityName,
+      });
+    }
     toggleAutoPay(auth.id, false);
   }
 

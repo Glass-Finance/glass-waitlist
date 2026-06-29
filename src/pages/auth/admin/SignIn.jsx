@@ -80,7 +80,14 @@ export default function SignIn() {
     setLoading(true);
     try {
       const user = await login(form.email.trim().toLowerCase(), form.password);
-      navigate(await resolveDestination(user), { replace: true });
+      const dest = await resolveDestination(user);
+      if (typeof pendo !== "undefined") {
+        pendo.track("admin_signin_completed", {
+          auth_method: "email",
+          destination: dest,
+        });
+      }
+      navigate(dest, { replace: true });
     } catch (err) {
       setError(
         notifyError(err, {

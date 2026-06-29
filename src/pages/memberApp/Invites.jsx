@@ -32,11 +32,25 @@ export default function Invites() {
 
   async function handleAccept(invite) {
     await accept(invite.id);
+    if (typeof pendo !== "undefined") {
+      pendo.track("invite_accepted", {
+        community_name: invite.community?.name,
+        community_id: invite.community?.id,
+        invite_id: invite.id,
+      });
+    }
     navigate("/member/home");
   }
 
   async function handleReject(invite) {
     await reject(invite.id);
+    if (typeof pendo !== "undefined") {
+      pendo.track("invite_declined", {
+        community_name: invite.community?.name,
+        community_id: invite.community?.id,
+        invite_id: invite.id,
+      });
+    }
   }
 
   return (

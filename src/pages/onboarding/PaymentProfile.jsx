@@ -128,6 +128,11 @@ export default function PaymentProfile() {
   // hard dead end. The account can still be set up later from
   // Settings → Finance → Paystack Account.
   const handleSkip = () => {
+    if (typeof pendo !== "undefined") {
+      pendo.track("payment_account_setup_skipped", {
+        community_id: communityId,
+      });
+    }
     navigate("/onboarding/members", {
       state: { email, communityId, communitySlug, communityName },
     });
@@ -144,6 +149,12 @@ export default function PaymentProfile() {
         settlementBankCode: bankCode,
         accountNumber:      accNumber,
       });
+      if (typeof pendo !== "undefined") {
+        pendo.track("payment_account_setup_completed", {
+          bank_name: bankName,
+          community_id: communityId,
+        });
+      }
       setShowSuccess(true);
       setTimeout(() => {
         navigate("/onboarding/members", {

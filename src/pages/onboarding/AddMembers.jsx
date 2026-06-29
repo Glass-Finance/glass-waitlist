@@ -600,6 +600,13 @@ export default function AddMembers() {
         throw err;
       }
       toastSuccess(`${filled.length} member${filled.length === 1 ? "" : "s"} added`, { id: toastId });
+      if (typeof pendo !== "undefined") {
+        pendo.track("onboarding_members_added", {
+          member_count: filled.length,
+          method: tab,
+          community_id: communityId,
+        });
+      }
       setShowSuccess(true);
     } catch (err) {
       setError(notifyError(err, { context: "Add members", fallback: "Failed to add members. You can add them from the dashboard later." }));
@@ -609,6 +616,12 @@ export default function AddMembers() {
   };
 
   const goToDashboard = () => {
+    if (typeof pendo !== "undefined") {
+      pendo.track("onboarding_completed", {
+        community_id: communityId,
+        community_name: communityName,
+      });
+    }
     if (communitySlug || communityId) {
       // Matches the ?community= convention AdminDashboard/Sidebar read from —
       // there's no /dashboard/:slug/home route, so navigating there 404s

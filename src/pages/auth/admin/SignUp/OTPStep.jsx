@@ -31,6 +31,11 @@ export default function OTPStep({ email, onVerified, onBack }) {
     setLoading(true);
     try {
       const result = await verifyEmail({ email, token: otp.join("") });
+      if (typeof pendo !== "undefined") {
+        pendo.track("email_verified", {
+          user_type: "admin",
+        });
+      }
       onVerified(result);
     } catch (err) {
       setError(

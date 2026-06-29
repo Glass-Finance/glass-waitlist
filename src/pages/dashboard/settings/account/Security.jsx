@@ -43,6 +43,11 @@ export default function Security() {
         currentPassword: passwords.current,
         newPassword: passwords.new,
       });
+      if (typeof pendo !== "undefined") {
+        pendo.track("password_changed", {
+          user_type: "admin",
+        });
+      }
       setSuccess(true);
       setPasswords({ current: "", new: "", confirm: "" });
     } catch (err) {
