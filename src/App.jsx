@@ -15,7 +15,6 @@ import SignUp from "./pages/auth/admin/SignUp";
 import SignIn from "./pages/auth/SignIn";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
-import CompleteProfile from "./pages/auth/CompleteProfile";
 import CheckEmail from "./pages/auth/member/CheckEmail";
 import Join from "./pages/auth/member/Join";
 
@@ -88,27 +87,23 @@ function App() {
             /sign-up is the COMMUNITY OWNER entry point (desktop-first,
             never device-gated). /member/join is the MEMBER registration
             entry point — joining is mobile-only, so it's hard-gated here.
-            SignIn/ForgotPassword/ResetPassword/CompleteProfile are each
-            reachable from two routes (no "/member" prefix vs "/member/...")
-            for the admin- and member-facing entry points that link to them
-            respectively (the admin guard/Sidebar logout vs Join's link/the
-            member guard/memberApp logout), but every route pair renders the
-            *same* component — neither the page nor the login call itself
-            knows in advance whether this is a community owner or a
-            mobile-only member, only the resolved destination does (see
+            SignIn/ForgotPassword/ResetPassword are each reachable from two
+            routes (no "/member" prefix vs "/member/...") for the admin- and
+            member-facing entry points that link to them respectively (the
+            admin guard/Sidebar logout vs Join's link/the member
+            guard/memberApp logout), but every route pair renders the *same*
+            component — neither the page nor the login call itself knows in
+            advance whether this is a community owner or a mobile-only
+            member, only the resolved destination does (see
             resolveDestination in pages/auth/SignIn.jsx), and AuthLayout
-            already adapts its chrome between desktop and mobile via CSS.
-            /member/complete-profile is mobile-gated like /member/join;
-            /complete-profile isn't. ── */}
+            already adapts its chrome between desktop and mobile via CSS. ── */}
         <Route path="/sign-up" element={<SignUp />} />
         <Route element={<MemberDeviceGuard />}>
           <Route path="/member/join" element={<Join />} />
-          <Route path="/member/complete-profile" element={<CompleteProfile />} />
         </Route>
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/complete-profile" element={<CompleteProfile />} />
         <Route path="/member/app-sign-in" element={<SignIn />} />
         <Route path="/member/forgot-password" element={<ForgotPassword />} />
         <Route path="/member/reset-password" element={<ResetPassword />} />

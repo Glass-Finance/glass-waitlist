@@ -31,16 +31,9 @@ export default function SignUp() {
   };
 
   // Google already proves the user owns this email, so there's no OTP step
-  // to go through — skip straight to onboarding. Google never gives us a
-  // name though, so a brand-new account routes through one extra step to
-  // collect what onboarding/the rest of Glass assumes every account has.
-  const handleGoogleAuth = (user, { profileComplete } = {}) => {
-    const next = "/onboarding/choose-path";
-    if (!profileComplete) {
-      navigate("/complete-profile", { state: { next, email: user?.email ?? email } });
-      return;
-    }
-    navigate(next, { state: { email: user?.email ?? email } });
+  // to go through — skip straight to onboarding.
+  const handleGoogleAuth = (user) => {
+    navigate("/onboarding/choose-path", { state: { email: user?.email ?? email } });
   };
 
   return (

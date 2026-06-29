@@ -2,8 +2,11 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { useInviteToken } from "../../../hooks/useInviteToken";
+import { useJoinCommunityParam } from "../../../hooks/useJoinCommunityParam";
 import { register, verifyEmail, resendVerification } from "../../../services/authService";
+import { submitJoinRequest } from "../../../api/invites";
 import { notifyError } from "../../../utils/errorHandler";
+import { toastSuccess } from "../../../utils/toast";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import { useAuth } from "../../../store/AuthContext";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
@@ -600,6 +603,7 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
 export default function Join() {
   const navigate = useNavigate();
   const { token, consumeToken } = useInviteToken();
+  const { community, consumeCommunity } = useJoinCommunityParam();
   const { setSession } = useAuth();
 
   const [step, setStep] = useState(STEPS.PROFILE);
@@ -613,8 +617,29 @@ export default function Join() {
     if (authData?.accessToken) setSession(authData);
   }
 
+  // The community's own generic, shareable "Invite Link" (?community=) has
+  // no personal token to send at registration, unlike a personalized
+  // invite — it goes through its own join-request call once the account
+  // exists, then routes to /member/invites the same way a pending
+  // personalized invite does, since both are "waiting on something" states
+  // from the member's point of view.
+  async function submitCommunityJoinAndRoute() {
+    consumeCommunity();
+    try {
+      await submitJoinRequest(community);
+      toastSuccess("Join request sent", { description: "The community admin will review it shortly." });
+    } catch (err) {
+      notifyError(err, { context: "Join community" });
+    }
+    navigate("/member/invites", { replace: true });
+  }
+
   function finishAndRoute() {
     consumeToken();
+    if (community) {
+      submitCommunityJoinAndRoute();
+      return;
+    }
     navigate(token ? "/member/home" : "/member/invites", { replace: true });
   }
 
@@ -625,17 +650,13 @@ export default function Join() {
   // regular register()+OTP flow, which does send the token), a pending
   // invite needs /member/invites to accept it manually instead of
   // /member/home, the opposite direction of finishAndRoute()'s ternary.
-  // Google also never gives us a name, so a brand-new account detours
-  // through one extra step to collect what the rest of Glass assumes
-  // every account has.
-  function handleGoogleAuth(_user, { profileComplete } = {}) {
+  function handleGoogleAuth() {
     consumeToken();
-    const next = token ? "/member/invites" : "/member/home";
-    if (!profileComplete) {
-      navigate("/member/complete-profile", { state: { next } });
+    if (community) {
+      submitCommunityJoinAndRoute();
       return;
     }
-    navigate(next, { replace: true });
+    navigate(token ? "/member/invites" : "/member/home", { replace: true });
   }
 
   function handleBack() {

@@ -11,8 +11,15 @@ export const getMe = () =>
 // PUT /api/v1/user/me — same resource GET /user/me reads. /user/profile
 // 404s and PATCH /user/me 405s (both confirmed live) — a 405 on the right
 // path means the method's wrong, not the route, so this is PUT instead.
-export const updateProfile = (payload) =>
-  client.put("/user/me", payload);
+// export const updateProfile = (payload) =>
+//   client.patch("/user/me", payload);
+export const updateProfile = (payload) => {
+  const body = payload.userData
+    ? payload
+    : { userData: { firstName: payload.firstName, lastName: payload.lastName, phoneNumber: payload.phoneNumber } };
+  return client.patch("/user/profile", body);
+};  
+
 
 // PATCH /api/v1/user/password
 export const updatePassword = (payload) =>

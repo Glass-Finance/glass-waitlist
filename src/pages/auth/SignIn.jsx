@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
-import { getMyInvites } from "../../api/invites";
+import { getMyInvites, getMyCommunityJoinRequests } from "../../api/invites";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { notifyError } from "../../utils/errorHandler";
 import { toastInfo } from "../../utils/toast";
@@ -47,10 +47,7 @@ export default function SignIn() {
 
   // Shared by password sign-in and Google sign-in: resolves the destination
   // by the *resulting* role/device, since neither knows in advance whether
-  // this is a community owner or a mobile-only member. Returns the path
-  // rather than navigating directly so Google sign-in can detour through
-  // complete-profile first when Google never gave us a name, stashing this
-  // as where to continue afterward.
+  // this is a community owner or a mobile-only member.
   async function resolveDestination(user) {
     if (user?.isAdmin) return "/dashboard/home";
 
@@ -61,7 +58,19 @@ export default function SignIn() {
 
     const inviteRes = await getMyInvites();
     const invites = inviteRes?.data?.data || [];
-    return invites.length > 0 ? "/member/invites" : "/member/home";
+
+    // Untested against the live backend yet, unlike getMyInvites above —
+    // don't let a wrong/broken endpoint here block sign-in entirely.
+    let joinRequests = [];
+    try {
+      const joinReqRes = await getMyCommunityJoinRequests();
+      const data = joinReqRes?.data?.data;
+      joinRequests = Array.isArray(data) ? data : (data?.content ?? []);
+    } catch {
+      // fall through with joinRequests = []
+    }
+
+    return invites.length > 0 || joinRequests.length > 0 ? "/member/invites" : "/member/home";
   }
 
   async function handleSignIn() {
@@ -81,20 +90,9 @@ export default function SignIn() {
     }
   }
 
-  async function handleGoogleAuth(user, { profileComplete } = {}) {
+  async function handleGoogleAuth(user) {
     try {
-      const next = await resolveDestination(user);
-      if (!profileComplete) {
-        // /complete-profile is ungated, /member/complete-profile is
-        // mobile-gated (matching /member/join) — pick by where the
-        // resolved destination was actually headed.
-        const completeProfilePath = next.startsWith("/dashboard")
-          ? "/complete-profile"
-          : "/member/complete-profile";
-        navigate(completeProfilePath, { state: { next } });
-        return;
-      }
-      navigate(next, { replace: true });
+      navigate(await resolveDestination(user), { replace: true });
     } catch (err) {
       setError(notifyError(err, { context: "Google sign in" }));
     }
@@ -103,7 +101,7 @@ export default function SignIn() {
   const isReady = form.email.trim() && form.password;
 
   return (
-    <AuthLayout heroTitle="Community Finance" heroSubtitle="Crystal Clear">
+    <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
       <div className="w-full max-w-sm flex flex-col my-auto gap-6">
         <div>
           <h1 className="text-lg font-bold text-gray-900 mb-1">Sign in To Your Account</h1>

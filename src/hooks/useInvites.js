@@ -52,7 +52,7 @@
 // }
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMyInvites, acceptInvite, rejectInvite } from "../api/invites";
+import { getMyInvites, acceptInvite, rejectInvite, getMyCommunityJoinRequests } from "../api/invites";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/v1/communities/invites/me returns objects shaped like:
@@ -145,5 +145,33 @@ export function useInvites() {
     isRejecting: rejectMutation.isPending,
     refresh: () =>
       queryClient.invalidateQueries({ queryKey: ["invites", "me"] }),
+  };
+}
+
+// Join requests the member submitted themselves (via a community's generic
+// shareable link, see useJoinCommunityParam) — read-only here, no
+// accept/reject, since they're the one waiting on the *admin* to act, not
+// the other way around like a personalized invite. Untested against the
+// live backend yet — /communities/join-requests/me is the endpoint that
+// matches every other "my X" endpoint's /communities/-prefixed convention
+// (getMyCommunities, getMyInvites), but there's also an unprefixed
+// /join-requests/me defined in api/invites.js; swap here first if this
+// turns out to be the wrong one.
+export function useMyJoinRequests() {
+  const query = useQuery({
+    queryKey: ["join-requests", "me"],
+    queryFn: async () => {
+      const res = await getMyCommunityJoinRequests();
+      const data = res.data?.data;
+      const list = Array.isArray(data) ? data : (data?.content ?? []);
+      return list;
+    },
+    staleTime: 1000 * 60,
+  });
+
+  return {
+    joinRequests: query.data ?? [],
+    isLoading: query.isLoading,
+    error: query.error,
   };
 }

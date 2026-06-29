@@ -238,7 +238,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
         <button
           onClick={onSwitch}
           className="font-semibold hover:underline bg-transparent border-none cursor-pointer"
-          style={{ color: "#1B2FE8" }}
+          style={{ color: "#1C2B8A" }}
         >
           Sign In
         </button>
