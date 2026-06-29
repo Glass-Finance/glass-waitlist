@@ -158,6 +158,15 @@ export function AuthProvider({ children }) {
     setToken(authData.accessToken);
     setUser(user);
 
+    pendo.identify({
+      visitor: {
+        id: user.id,
+        email: user.email,
+        platformRoleCode: user.role,
+        emailVerified: user.emailVerified,
+      },
+    });
+
     return user;
   }, [queryClient]);
 
@@ -172,6 +181,7 @@ export function AuthProvider({ children }) {
       queryClient.clear(); // see login()'s comment — same staleness risk in reverse
       setToken(null);
       setUser(null);
+      pendo.clearSession();
     }
   }, [queryClient]);
 
@@ -188,6 +198,16 @@ export function AuthProvider({ children }) {
     writeUser(user);
     setToken(authData.accessToken);
     setUser(user);
+
+    pendo.identify({
+      visitor: {
+        id: user.id,
+        email: user.email,
+        platformRoleCode: user.role,
+        emailVerified: user.emailVerified,
+      },
+    });
+
     return user;
   }, [queryClient]);
 
@@ -232,6 +252,43 @@ export function AuthProvider({ children }) {
         writeUser(updated);
         return updated;
       });
+
+      // Re-identify with enriched profile + community (account) data
+      if (profile.id) {
+        const pendoPayload = {
+          visitor: {
+            id: profile.id,
+            email: profile.email,
+            full_name: [ud.firstName, ud.lastName].filter(Boolean).join(' ') || undefined,
+            accountName: profile.accountName,
+            timezone: profile.timezone,
+            platformRoleCode: profile.platformRole,
+            emailVerified: profile.emailVerified,
+            emailVerifiedAt: profile.emailVerifiedAt,
+            lastLoginAt: profile.lastLoginAt,
+            enabled: profile.enabled,
+            createdAt: profile.createdAt,
+            firstName: ud.firstName,
+            lastName: ud.lastName,
+          },
+        };
+        const primaryCommunity = communities[0];
+        if (primaryCommunity) {
+          pendoPayload.account = {
+            id: String(primaryCommunity.id),
+            name: primaryCommunity.name,
+            slug: primaryCommunity.slug,
+            category: primaryCommunity.category,
+            defaultCurrency: primaryCommunity.defaultCurrency,
+            status: primaryCommunity.status,
+            requiresMemberApproval: primaryCommunity.requiresMemberApproval,
+            publicVisible: primaryCommunity.publicVisible,
+            createdAt: primaryCommunity.createdAt,
+            archivedAt: primaryCommunity.archivedAt,
+          };
+        }
+        pendo.identify(pendoPayload);
+      }
     } catch {
       // Keep whatever we already had (e.g. from login) rather than wiping it.
     }
