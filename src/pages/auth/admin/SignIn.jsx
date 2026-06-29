@@ -58,20 +58,26 @@ export default function SignIn() {
     }
   }, []);
 
-  // Shared by password sign-in and Google sign-in: resolves the destination
-  // by the *resulting* role/device, since neither knows in advance whether
-  // this is a community owner or a mobile-only member who just happened to
-  // land on the desktop sign-in page (matches member/SignIn.jsx's version).
-  // Returns the path rather than navigating directly so Google sign-in can
-  // detour through /complete-profile first when Google never gave us a
-  // name, stashing this as where to continue afterward.
-  async function resolveDestination(user) {
-    if (user?.isAdmin) return "/dashboard/home";
-    if (!isMobileDevice()) return mobileRequiredPath("/member/app-sign-in");
+  // Shared by password sign-in and Google sign-in: routes by the *resulting*
+  // role/device, since neither knows in advance whether this is a community
+  // owner or a mobile-only member who just happened to land on the desktop
+  // sign-in page (matches member/SignIn.jsx's routeAfterAuth).
+  async function routeAfterAuth(user) {
+    if (user?.isAdmin) {
+      navigate("/dashboard/home", { replace: true });
+      return;
+    }
+
+    if (!isMobileDevice()) {
+      navigate(mobileRequiredPath("/member/app-sign-in"), { replace: true });
+      return;
+    }
 
     const inviteRes = await getMyInvites();
     const invites = inviteRes?.data?.data || [];
-    return invites.length > 0 ? "/member/invites" : "/member/home";
+    navigate(invites.length > 0 ? "/member/invites" : "/member/home", {
+      replace: true,
+    });
   }
 
   const handleSubmit = async (e) => {
@@ -80,7 +86,7 @@ export default function SignIn() {
     setLoading(true);
     try {
       const user = await login(form.email.trim().toLowerCase(), form.password);
-      navigate(await resolveDestination(user), { replace: true });
+      await routeAfterAuth(user);
     } catch (err) {
       setError(
         notifyError(err, {
@@ -93,14 +99,9 @@ export default function SignIn() {
     }
   };
 
-  async function handleGoogleAuth(user, { profileComplete } = {}) {
+  async function handleGoogleAuth(user) {
     try {
-      const next = await resolveDestination(user);
-      if (!profileComplete) {
-        navigate("/complete-profile", { state: { next } });
-        return;
-      }
-      navigate(next, { replace: true });
+      await routeAfterAuth(user);
     } catch (err) {
       setError(notifyError(err, { context: "Google sign in" }));
     }

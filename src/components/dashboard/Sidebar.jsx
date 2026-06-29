@@ -188,7 +188,7 @@
  * panel shows generic labels.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -201,6 +201,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { useCommunities } from "../../hooks/useCommunities";
+import { resolveIsPayingAdmin } from "../../utils/communityRole";
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
 // `path` is the route under /dashboard; "home" maps to the per-community
@@ -226,9 +227,14 @@ function getInitials(name = "") {
 
 // Matches the ?community= query-param convention already used by
 // AdminDashboard.jsx / CommunitiesHome.jsx — "settings" doesn't need it.
-function communityPath(slug, path) {
+// "admin" has two variants (AdminDashboard.jsx's two exports) depending on
+// whether this admin pays dues as a member of their own community — isPaying
+// has to be resolved by the caller (see resolveIsPayingAdmin) since it's
+// per-community, not derivable from the slug alone.
+function communityPath(slug, path, isPaying = false) {
   if (path === "settings") return "/dashboard/settings";
-  return `/dashboard/${path}?community=${slug}`;
+  const resolvedPath = path === "admin" && isPaying ? "admin/paying" : path;
+  return `/dashboard/${resolvedPath}?community=${slug}`;
 }
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
@@ -246,6 +252,7 @@ export default function Sidebar() {
   const communities = communitiesData?.communities ?? [];
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [activeCommunityIsPaying, setActiveCommunityIsPaying] = useState(false);
 
   // Active route segment: /dashboard/admin → "home", /dashboard/payments →
   // "payments", etc. (matches the flat ?community= convention, not slugs-in-path)
@@ -255,21 +262,45 @@ export default function Sidebar() {
   const onCommunitiesOverview = location.pathname === "/dashboard/home";
 
   // Active community: ?community= param, falling back to the last one
-  // stashed in localStorage (see useActiveCommunityId.js)
+  // stashed in localStorage (see useActiveCommunityId.js) — except on the
+  // communities overview itself, whose whole purpose is choosing one. The
+  // localStorage fallback exists for navigating *between* a community's
+  // own pages (Settings doesn't carry ?community= in its URL at all), not
+  // for skipping the choice from the one page that's supposed to require it.
   const urlSlug =
     searchParams.get("community") ??
-    (() => {
-      try {
-        const stored = JSON.parse(localStorage.getItem("glass_community") ?? "{}");
-        return stored.slug ?? stored.id ?? null;
-      } catch {
-        return null;
-      }
-    })();
+    (onCommunitiesOverview
+      ? null
+      : (() => {
+          try {
+            const stored = JSON.parse(localStorage.getItem("glass_community") ?? "{}");
+            return stored.slug ?? stored.id ?? null;
+          } catch {
+            return null;
+          }
+        })());
 
   const activeCommunity = urlSlug
     ? (communities.find((c) => c.slug === urlSlug) ?? null)
     : null;
+
+  // The "Dashboard" nav item below needs to know which of AdminDashboard.jsx's
+  // two variants to link to — re-resolved whenever the active community
+  // changes, so switching communities (or just landing on Payments/Members/
+  // Settings for one) doesn't leave this pointing at a stale community's
+  // paying status.
+  useEffect(() => {
+    if (!activeCommunity) {
+      setActiveCommunityIsPaying(false);
+      return;
+    }
+    let cancelled = false;
+    resolveIsPayingAdmin(activeCommunity.slug).then((isPaying) => {
+      if (!cancelled) setActiveCommunityIsPaying(isPaying);
+    });
+    return () => { cancelled = true; };
+  }, [activeCommunity?.slug]);
+
   // ── Handle logout ──────────────────────────────────────────────────────────
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -365,9 +396,10 @@ export default function Sidebar() {
               return (
                 <button
                   key={c.id}
-                  onClick={() => {
+                  onClick={async () => {
                     localStorage.setItem("glass_community", JSON.stringify(c));
-                    navigate(communityPath(c.slug, "admin"));
+                    const isPaying = await resolveIsPayingAdmin(c.slug);
+                    navigate(communityPath(c.slug, "admin", isPaying));
                   }}
                   title={c.name}
                   className={`w-9 h-9 rounded-xl border cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 ${
@@ -510,7 +542,7 @@ export default function Sidebar() {
           {NAV.map(({ icon: Icon, label, segment, path }) => {
             const isActive = activeSegment === segment;
             const href = activeCommunity
-              ? communityPath(activeCommunity.slug, path)
+              ? communityPath(activeCommunity.slug, path, activeCommunityIsPaying)
               : segment === "home"
                 ? "/dashboard/home"
                 : null; // no community selected, or segment has no route yet

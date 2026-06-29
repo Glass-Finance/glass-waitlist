@@ -15,13 +15,11 @@ import SignUp from "./pages/auth/admin/SignUp";
 import SignIn from "./pages/auth/admin/SignIn";
 import ForgotPassword from "./pages/auth/admin/ForgotPassword";
 import ResetPassword from "./pages/auth/admin/ResetPassword";
-import CompleteProfile from "./pages/auth/admin/CompleteProfile";
 import CheckEmail from "./pages/auth/member/CheckEmail";
 import Join from "./pages/auth/member/Join";
 import MemberSignIn from "./pages/auth/member/SignIn";
 import MemberForgotPassword from "./pages/auth/member/ForgotPassword";
 import MemberResetPassword from "./pages/auth/member/ResetPassword";
-import MemberCompleteProfile from "./pages/auth/member/CompleteProfile";
 
 // ── Onboarding pages ───────────────────────────────────────────────────────────
 import ChoosePath from "./pages/onboarding/ChoosePath";
@@ -106,12 +104,10 @@ function App() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route element={<MemberDeviceGuard />}>
           <Route path="/member/join" element={<Join />} />
-          <Route path="/member/complete-profile" element={<MemberCompleteProfile />} />
         </Route>
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/complete-profile" element={<CompleteProfile />} />
         <Route path="/member/app-sign-in" element={<MemberSignIn />} />
         <Route
           path="/member/forgot-password"

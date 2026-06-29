@@ -190,23 +190,31 @@ export default function SignIn() {
     };
   }
 
-  // Shared by password sign-in and Google sign-in: resolves the destination
-  // by the *resulting* role/device, since neither knows in advance whether
-  // this is a community owner or a mobile-only member. Returns the path
-  // rather than navigating directly so Google sign-in can detour through
-  // /member/complete-profile first when Google never gave us a name,
-  // stashing this as where to continue afterward.
-  async function resolveDestination(user) {
-    if (user?.isAdmin) return "/dashboard/home";
+  // Shared by password sign-in and Google sign-in: routes by the
+  // *resulting* role/device, since neither knows in advance whether this
+  // is a community owner or a mobile-only member.
+  async function routeAfterAuth(user) {
+    if (user?.isAdmin) {
+      navigate("/dashboard/home", { replace: true });
+      return;
+    }
 
     // The member app is mobile-only — a non-admin signing in from a
     // desktop/tablet gets the QR handoff instead of a layout that was
     // never built for that viewport.
-    if (!isMobileDevice()) return mobileRequiredPath("/member/app-sign-in");
+    if (!isMobileDevice()) {
+      navigate(mobileRequiredPath("/member/app-sign-in"), { replace: true });
+      return;
+    }
 
     const inviteRes = await getMyInvites();
     const invites = inviteRes?.data?.data || [];
-    return invites.length > 0 ? "/member/invites" : "/member/home";
+
+    if (invites.length > 0) {
+      navigate("/member/invites", { replace: true });
+    } else {
+      navigate("/member/home", { replace: true });
+    }
   }
 
   async function handleSignIn() {
@@ -218,7 +226,7 @@ export default function SignIn() {
     setError("");
     try {
       const user = await login(form.email.trim().toLowerCase(), form.password);
-      navigate(await resolveDestination(user), { replace: true });
+      await routeAfterAuth(user);
     } catch (err) {
       setError(notifyError(err, { context: "Sign in", fallback: "Incorrect email or password." }));
     } finally {
@@ -226,14 +234,9 @@ export default function SignIn() {
     }
   }
 
-  async function handleGoogleAuth(user, { profileComplete } = {}) {
+  async function handleGoogleAuth(user) {
     try {
-      const next = await resolveDestination(user);
-      if (!profileComplete) {
-        navigate("/member/complete-profile", { state: { next } });
-        return;
-      }
-      navigate(next, { replace: true });
+      await routeAfterAuth(user);
     } catch (err) {
       setError(notifyError(err, { context: "Google sign in" }));
     }

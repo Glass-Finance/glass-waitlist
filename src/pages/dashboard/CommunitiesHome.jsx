@@ -509,7 +509,7 @@ import {
 } from "lucide-react";
 import { useCommunities } from "../../hooks/useCommunities";
 import { useAuth } from "../../store/AuthContext";
-import { getMyMemberRecord } from "../../api/members";
+import { resolveIsPayingAdmin } from "../../utils/communityRole";
 
 const SORT_OPTIONS = ["Recently Viewed", "A-Z", "Z-A", "Newest First"];
 
@@ -688,22 +688,10 @@ export default function CommunitiesHome() {
     return 0; // Recently Viewed — keep API order
   });
 
-  // Whether THIS admin pays dues as a member of their own community (set
-  // during onboarding's PayingMember step) lives on their own member
-  // record, not the community itself — billingExempt: false means paying.
-  // AdminDashboard.jsx's two exports only differ in which of these they're
-  // given; nothing else derives it, so it has to be decided here.
   async function handleCommunityClick(community) {
     const id = community.slug ?? community.id;
     localStorage.setItem("glass_community", JSON.stringify(community));
-    let isPaying = false;
-    try {
-      const res = await getMyMemberRecord(id);
-      const memberRecord = res.data?.data ?? res.data;
-      isPaying = memberRecord?.billingExempt === false;
-    } catch {
-      // Network hiccup — fall back to the non-paying dashboard rather than block navigation.
-    }
+    const isPaying = await resolveIsPayingAdmin(id);
     navigate(`/dashboard/${isPaying ? "admin/paying" : "admin"}?community=${id}`);
   }
 
