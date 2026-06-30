@@ -1,11 +1,12 @@
 import { useMemo } from "react";
 import { usePayments, useManagePayments } from "../../../../hooks/usePayments";
 
-function Toggle({ on, onChange }) {
+function Toggle({ on, onChange, disabled }) {
   return (
     <button
-      onClick={() => onChange(!on)}
-      className="flex items-center gap-1.5 flex-shrink-0 bg-transparent border-none cursor-pointer p-0"
+      onClick={() => !disabled && onChange(!on)}
+      disabled={disabled}
+      className={`flex items-center gap-1.5 flex-shrink-0 bg-transparent border-none p-0 ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
     >
       <div className={`relative w-8 h-[20px] rounded-full transition-all duration-300 ${on ? "bg-[#002FA7]" : "bg-gray-300"}`}>
         <div className={`absolute top-0.75 w-[14px] h-[14px] rounded-full bg-white shadow transition-all duration-300 ${on ? "left-[16px]" : "left-0.5"}`} />
@@ -78,8 +79,11 @@ export default function AutoPay() {
                     <p className="text-xs text-gray-500 mt-0.5">
                       {plan.communityName} · {formatNaira(plan.amount)} · Next due {plan.dueDate ? new Date(plan.dueDate).toLocaleDateString("en-NG", { month: "short", day: "numeric" }) : "—"}
                     </p>
+                    {!auth && (
+                      <p className="text-[11px] text-gray-400 mt-1">Pay once and save your method to enable Auto-Pay</p>
+                    )}
                   </div>
-                  <Toggle on={!!auth} onChange={() => handleToggle(plan, auth)} />
+                  <Toggle on={!!auth} onChange={() => handleToggle(plan, auth)} disabled={!auth} />
                 </div>
               );
             })

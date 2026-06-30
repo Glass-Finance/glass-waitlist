@@ -36,7 +36,7 @@ const TABS = ["All Plans", "Recurring", "One Time"];
 const BAR_COLORS = ["#d4a017", "#7c3aed", "#1C2B8A", "#059669"];
 
 const inputCls =
-  "w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-700 bg-white outline-none transition-all focus:border-[#002FA7]";
+  "w-full px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 bg-white outline-none transition-all focus:border-[#1C2B8A]";
 
 function formatNaira(amount) {
   return new Intl.NumberFormat("en-NG", {
@@ -57,18 +57,18 @@ function formatCompact(amount) {
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
     <div
-      className="bg-white rounded-xl border border-gray-100 px-4 py-3.5 flex items-center justify-between"
+      className="bg-white rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between"
       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
     >
       <div>
         <p className="text-xs text-gray-400 mb-1">{label}</p>
-        <p className="text-base font-bold text-[#0f1d6e]">{value}</p>
+        <p className="text-[13px] font-semibold text-black">{value}</p>
       </div>
       <div
-        className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
         style={{ background: bg }}
       >
-        <Icon size={16} style={{ color }} />
+        <Icon size={14} style={{ color }} />
       </div>
     </div>
   );
@@ -92,19 +92,19 @@ function StepIndicator({ current }) {
           >
             <div className="flex flex-col items-center gap-1 flex-shrink-0">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border-2 ${done ? "bg-[#002FA7] border-[#002FA7] text-white" : active ? "border-[#002FA7] text-[#002FA7] bg-white" : "border-gray-300 text-gray-400 bg-white"}`}
+                className={`w-7 h-7 rounded-full flex items-center justify-center font-medium text-xs border ${done ? "bg-[#1C2B8A] border-[#1C2B8A] text-white" : active ? "border-[#1C2B8A] text-[#1C2B8A] bg-white" : "border-gray-300 text-gray-400 bg-white"}`}
               >
                 {done ? <Check size={13} /> : s.n}
               </div>
               <span
-                className={`text-[11px] whitespace-nowrap ${active ? "font-semibold text-[#002FA7]" : done ? "text-gray-600" : "text-gray-400"}`}
+                className={`text-[11px] whitespace-nowrap ${active ? "font-semibold text-[#1C2B8A]" : done ? "text-gray-600" : "text-gray-400"}`}
               >
                 {s.label}
               </span>
             </div>
             {i < steps.length - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-2 mb-4 ${done ? "bg-[#002FA7]" : "bg-gray-200"}`}
+                className={`flex-1 h-0.5 mx-2 mb-4 ${done ? "bg-[#1C2B8A]" : "bg-gray-200"}`}
               />
             )}
           </div>
@@ -117,7 +117,7 @@ function StepIndicator({ current }) {
 function Step1({ value, onChange }) {
   return (
     <div>
-      <p className="text-sm text-gray-500 mb-5">
+      <p className="text-xs text-gray-500 mb-5">
         Choose the type of plan you want to create
       </p>
       <div className="grid grid-cols-2 gap-3">
@@ -140,15 +140,15 @@ function Step1({ value, onChange }) {
             <button
               key={opt.id}
               onClick={() => onChange(opt.id)}
-              className={`p-5 rounded-xl text-left border-2 transition-all relative ${sel ? "border-[#002FA7] bg-blue-50" : "border-gray-200 bg-gray-50"}`}
+              className={`p-5 rounded-xl text-left border-2 transition-all relative ${sel ? "border-[#1C2B8A] bg-blue-50" : "border-gray-200 bg-gray-50"}`}
             >
               <div
-                className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center ${sel ? "bg-[#002FA7] border-[#002FA7]" : "border-gray-300"}`}
+                className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center ${sel ? "bg-[#1C2B8A] border-[#1C2B8A]" : "border-gray-300"}`}
               >
                 {sel && <Check size={10} color="white" strokeWidth={3} />}
               </div>
               <div className="mt-4 mb-2 text-gray-600">{opt.icon}</div>
-              <p className="text-sm font-bold text-gray-900">{opt.title}</p>
+              <p className="text-xs font-medium text-gray-900">{opt.title}</p>
               <p className="text-xs text-gray-500">{opt.desc}</p>
             </button>
           );
@@ -162,9 +162,9 @@ function Step2({ planType, form, onChange, slugState }) {
   const { slug, setSlug, available, checking, suggesting, suggestFrom } =
     slugState;
   return (
-    <div className="max-h-[55vh] overflow-y-auto pr-1 space-y-3.5">
+    <div className="pr-1 space-y-3.5">
       <div>
-        <label className="block text-sm font-semibold text-gray-900 mb-1.5">
+        <label className="block text-xs font-medium text-gray-700 mb-1">
           Plan Name
         </label>
         <input
@@ -176,7 +176,7 @@ function Step2({ planType, form, onChange, slugState }) {
         />
       </div>
       <div>
-        <label className="block text-sm font-semibold text-gray-900 mb-1.5">
+        <label className="block text-xs font-medium text-gray-700 mb-1">
           URL slug
         </label>
         <div className="relative">
@@ -207,7 +207,7 @@ function Step2({ planType, form, onChange, slugState }) {
         )}
       </div>
       <div>
-        <label className="block text-sm font-semibold text-gray-900 mb-1.5">
+        <label className="block text-xs font-medium text-gray-700 mb-1">
           Description
         </label>
         <textarea
@@ -219,7 +219,7 @@ function Step2({ planType, form, onChange, slugState }) {
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-semibold text-gray-900 mb-1.5">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
             Amount
           </label>
           <input
@@ -232,7 +232,7 @@ function Step2({ planType, form, onChange, slugState }) {
         </div>
         {planType === "recurring" && (
           <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-1.5">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Frequency
             </label>
             <select
@@ -254,7 +254,7 @@ function Step2({ planType, form, onChange, slugState }) {
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-semibold text-gray-900 mb-1.5">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
             Start Date
           </label>
           <input
@@ -265,7 +265,7 @@ function Step2({ planType, form, onChange, slugState }) {
           />
         </div>
         <div>
-          <label className="block text-sm font-semibold text-gray-900 mb-1.5">
+          <label className="block text-xs font-medium text-gray-700 mb-1">
             Due Date
           </label>
           <input
@@ -277,7 +277,7 @@ function Step2({ planType, form, onChange, slugState }) {
         </div>
       </div>
       <div>
-        <label className="block text-sm font-semibold text-gray-900 mb-1.5">
+        <label className="block text-xs font-medium text-gray-700 mb-1">
           Auto Reminder
         </label>
         <select
@@ -321,7 +321,7 @@ function Step3({ planType, form, slug }) {
       value: form.amount ? formatNaira(Number(form.amount)) : "—",
     },
     ...(planType === "recurring"
-      ? [{ label: "Frequency", value: form.frequency || "—" }]
+      ? [{ label: "Frequency", value: (FREQUENCIES.find(f => f.value === form.frequency)?.label ?? form.frequency) || "—" }]
       : []),
     { label: "Due Date", value: form.dueDate || "—" },
     {
@@ -336,14 +336,14 @@ function Step3({ planType, form, slug }) {
         {rows.map((r, i) => (
           <div
             key={r.label}
-            className={`flex justify-between px-4 py-3 text-sm ${i < rows.length - 1 ? "border-b border-gray-100" : ""} ${i % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
+            className={`flex justify-between px-4 py-2.5 text-xs ${i < rows.length - 1 ? "border-b border-gray-100" : ""} ${i % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
           >
             <span className="text-gray-500 w-36">{r.label}</span>
             <span className="font-semibold text-gray-900">{r.value}</span>
           </div>
         ))}
       </div>
-      <div className="px-4 py-3 rounded-xl bg-blue-50 border border-blue-100 text-sm text-gray-700">
+      <div className="px-4 py-3 rounded-xl bg-blue-50 border border-blue-100 text-xs text-gray-500">
         Once created, assigned members will receive a notification.
       </div>
     </div>
@@ -415,7 +415,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
       <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
         <div className="flex items-start justify-between px-6 pt-5">
           <div>
-            <h2 className="text-base font-extrabold text-[#0f1d6e]">
+            <h2 className="text-base font-semibold text-black">
               Create Payment Plan
             </h2>
             <p className="text-xs text-gray-400 mt-0.5">
@@ -435,7 +435,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
               <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                 <Check size={24} className="text-green-600" strokeWidth={2.5} />
               </div>
-              <h3 className="text-lg font-extrabold text-[#0f1d6e] mb-2">
+              <h3 className="text-lg font-semibold text-black mb-2">
                 Plan Created!
               </h3>
               <p className="text-sm text-gray-500 mb-6">
@@ -443,7 +443,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
               </p>
               <button
                 onClick={onClose}
-                className="px-8 py-2.5 rounded-full bg-[#002FA7] text-white font-bold text-sm"
+                className="px-6 py-2 rounded bg-[#1C2B8A] text-white font-medium text-xs"
               >
                 Done
               </button>
@@ -481,9 +481,9 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
           <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
             <button
               onClick={() => (step > 1 ? setStep((s) => s - 1) : onClose())}
-              className="flex items-center gap-1.5 text-sm font-semibold text-[#002FA7] bg-transparent border-none cursor-pointer"
+              className="flex items-center gap-1 text-xs font-medium text-gray-500 bg-transparent border-none cursor-pointer"
             >
-              <ArrowLeft size={13} /> {step > 1 ? "Back" : "Cancel"}
+              <ArrowLeft size={12} /> {step > 1 ? "Back" : "Cancel"}
             </button>
             <button
               onClick={() =>
@@ -495,7 +495,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
                 slugState.checking ||
                 slugState.available === false
               }
-              className={`px-10 py-2.5 rounded-full text-sm font-bold border-none cursor-pointer ${canContinue ? "bg-[#002FA7] text-white hover:opacity-90" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+              className={`px-6 py-2 rounded text-xs font-medium border-none cursor-pointer ${canContinue ? "bg-[#1C2B8A] text-white hover:opacity-90" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
             >
               {creating ? "Creating…" : step === 3 ? "Create Plan" : "Continue"}
             </button>
@@ -593,23 +593,23 @@ function PlanCard({ plan, planPlans, barColor }) {
         <PlanActionsMenu plan={plan} planPlans={planPlans} />
       </div>
 
-      <p className="text-sm font-bold text-[#0f1d6e] mb-2">{plan.name}</p>
+      <p className="text-xs font-semibold text-black mb-2">{plan.name}</p>
 
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-base font-extrabold text-gray-900">
+          <span className="text-[13px] font-semibold text-gray-900">
             {formatNaira(plan.amount)}
           </span>
           <span
-            className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+            className="text-[11px] font-medium px-2 py-0.5 rounded-full"
             style={{ color: "#7c3aed", background: "#f3eeff" }}
           >
             {plan.type === "RECURRING"
-              ? (plan.frequency ?? "Recurring")
+              ? (FREQUENCIES.find(f => f.value === plan.frequency)?.label ?? plan.frequency ?? "Recurring")
               : "One-Time"}
           </span>
         </div>
-        <span className="text-sm font-bold text-gray-800">
+        <span className="text-xs font-medium text-gray-500">
           {formatCompact(plan.amountCollected)}/
           {formatCompact(plan.expectedAmount)} Collected
         </span>
@@ -681,16 +681,16 @@ export default function Payments() {
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 className="text-xl font-extrabold text-[#0f1d6e]">Payments</h1>
+          <h1 className="text-xl font-bold text-black">Payments</h1>
           <p className="text-sm text-gray-400 mt-0.5">
             Manage payment plans and track member contributions.
           </p>
         </div>
         <button
           onClick={() => setModalOpen(true)}
-          className="px-4 py-2 rounded-lg bg-[#002FA7] text-white text-sm font-semibold flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
+          className="px-4 py-2 rounded text-xs font-medium text-white bg-[#1C2B8A] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
         >
-          <Plus size={14} /> Create Payment Plan
+          <Plus size={13} /> Create Payment Plan
         </button>
       </div>
 
@@ -700,7 +700,7 @@ export default function Payments() {
           icon={Wallet}
           label="Total Amount Collected"
           value={formatNaira(stats.collected)}
-          color="#002FA7"
+          color="#1C2B8A"
           bg="#E6EEFF"
         />
         <StatCard
@@ -732,7 +732,7 @@ export default function Payments() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-5 py-2 text-[13px] rounded transition-all cursor-pointer border-none font-medium ${tab === t ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-800"}`}
+            className={`px-4 py-1.5 text-xs rounded transition-all cursor-pointer border-none font-medium ${tab === t ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-800"}`}
           >
             {t}
           </button>

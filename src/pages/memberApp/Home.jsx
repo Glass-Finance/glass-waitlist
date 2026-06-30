@@ -403,13 +403,18 @@ export default function Home() {
               <Menu size={28} strokeWidth={2} style={{ color: "#222" }} />
             </button>
 
-            {/* Community pill */}
-            <div
+            {/* Community pill — tapping navigates to communities list */}
+            <button
+              onClick={() => navigate("/member/communities")}
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: 7,
                 minWidth: 0,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
               }}
             >
               <div
@@ -447,7 +452,7 @@ export default function Home() {
                 strokeWidth={2}
                 style={{ color: "#666", flexShrink: 0 }}
               />
-            </div>
+            </button>
           </div>
 
           {/* Bell */}

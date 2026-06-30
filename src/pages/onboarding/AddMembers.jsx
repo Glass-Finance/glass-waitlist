@@ -424,7 +424,7 @@
  *
  * Success → show modal → navigate to /dashboard/{slug}/home
  *
- * Invite link format: https://glasspay.app/join/{communitySlug}
+ * Invite link format: {APP_ORIGIN}/member/join?community={communitySlug}
  */
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -433,10 +433,16 @@ import { Bell, Download, CloudUpload, Copy, Check, X, FileSpreadsheet } from "lu
 import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
 import { toast } from "sonner";
-import client from "../../api/client";
 import { notifyError } from "../../utils/errorHandler";
+import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { toastProgress, toastSuccess } from "../../utils/toast";
 import { useRoles } from "../../hooks/useCommunityMembers";
+import { addCommunityMember } from "../../api/communities";
+
+// Mirrors MemberAccess.jsx's fallback — used when /roles/community hasn't
+// resolved yet (or never returns a "Member" role) so onboarding still has
+// a roleId to send rather than submitting members with none at all.
+const FALLBACK_MEMBER_ROLE_ID = "MEMBER";
 
 const STEPS = [
   { id: "organization", label: "Organization Profile" },
@@ -478,10 +484,13 @@ async function parseCsvFromUrl(url) {
 }
 
 // Maps a parsed CSV row (using our template's headers, tolerant of a few
-// common variants) to the bulk-create payload shape. "Role/Title" is a
-// free-text label in the CSV but the backend wants a roleId, so it's
-// resolved against the community's actual roles by name.
-function csvRowToMember(row, roles) {
+// common variants) to the real addCommunityMember payload — {email, roleId}
+// is the only confirmed shape (api/communities.js); name/phone/member-ref
+// columns are accepted in the template for the admin's own reference but
+// aren't part of that contract, so they're dropped before submission.
+// "Role/Title" is a free-text label in the CSV but the backend wants a
+// roleId, so it's resolved against the community's actual roles by name.
+function csvRowToMember(row, roles, defaultRoleId) {
   const get = (...keys) => {
     for (const k of keys) {
       const v = row[k];
@@ -493,12 +502,8 @@ function csvRowToMember(row, roles) {
   const matchedRole = roles?.find((r) => r.name?.toLowerCase() === roleLabel.toLowerCase());
 
   return {
-    firstName: get("First Name", "firstName"),
-    lastName: get("Last Name", "lastName"),
     email: get("Email Address", "Email", "email"),
-    phoneNumber: get("Phone Number", "Phone", "phoneNumber"),
-    memberRef: get("Member ID", "Member Id", "memberRef"),
-    ...(matchedRole ? { roleId: matchedRole.id } : {}),
+    roleId: matchedRole?.id ?? defaultRoleId,
   };
 }
 
@@ -531,6 +536,8 @@ export default function AddMembers() {
   const location  = useLocation();
   const fileRef   = useRef(null);
   const { data: roles } = useRoles();
+  const defaultRoleId = (roles ?? []).find((r) => r.name?.toLowerCase() === "member")?.id
+    ?? FALLBACK_MEMBER_ROLE_ID;
 
   const { email, communityId, communitySlug, communityName } = location.state ?? {};
 
@@ -546,8 +553,8 @@ export default function AddMembers() {
   // route). Using the origin actually being viewed from means this can
   // never point at a dead domain in dev, staging, or prod.
   const inviteLink = communitySlug
-    ? `${window.location.origin}/member/join?community=${communitySlug}`
-    : window.location.origin;
+    ? `${APP_ORIGIN}/member/join?community=${communitySlug}`
+    : APP_ORIGIN;
 
   const [tab,          setTab]          = useState("upload");
   const [dragOver,     setDragOver]     = useState(false);
@@ -637,25 +644,32 @@ export default function AddMembers() {
 
   // Manual tab's own submit — sends the entered emails immediately and
   // finishes onboarding, rather than waiting for a separate page-level
-  // button (the design has no second control on this tab).
+  // button (the design has no second control on this tab). There's no
+  // bulk-create endpoint (the only confirmed contract is the singular
+  // POST /communities/{id}/members, {email, roleId}), so each email goes
+  // through its own call; allSettled so one bad email doesn't block the
+  // rest. phoneNumbers isn't part of that contract either, so it's no
+  // longer sent — collecting it here was never wired to anything real.
   async function handleSendInvite() {
     if (emails.length === 0) return;
     setError("");
     setLoading(true);
     try {
-      const members = emails.map((email) => ({
-        email,
-        ...(phoneNumbers.trim() ? { phoneNumber: phoneNumbers.trim() } : {}),
-      }));
       if (!communityId) { setError("Community ID missing."); return; }
       const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
-      try {
-        await client.post(`/communities/${communityId}/members/bulk`, { members });
-      } catch (err) {
+      const results = await Promise.allSettled(
+        emails.map((email) => addCommunityMember(communityId, { email, roleId: defaultRoleId }))
+      );
+      const succeeded = results.filter((r) => r.status === "fulfilled").length;
+      if (succeeded === 0) {
         toast.dismiss(toastId);
-        throw err;
+        throw results.find((r) => r.status === "rejected")?.reason ?? new Error("Failed to send invites.");
       }
-      toastSuccess(`${members.length} invite${members.length === 1 ? "" : "s"} sent`, { id: toastId });
+      const failed = results.length - succeeded;
+      toastSuccess(
+        `${succeeded} invite${succeeded === 1 ? "" : "s"} sent${failed ? `, ${failed} failed` : ""}`,
+        { id: toastId }
+      );
       setEmails([]);
       setPhoneNumbers("");
       setShowSuccess(true);
@@ -666,37 +680,45 @@ export default function AddMembers() {
     }
   }
 
-  // Upload tab's submit — CSV file and CSV-from-URL both funnel through one
-  // call to POST /communities/{id}/members/bulk instead of N individual
-  // requests. Uses the already-fetched urlCsvText rather than re-fetching
-  // the URL a second time if the preview step already pulled it down.
+  // Upload tab's submit — CSV file and CSV-from-URL both end up here. No
+  // bulk-create endpoint exists (only the singular POST
+  // /communities/{id}/members, {email, roleId} is confirmed), so each row
+  // is its own request; allSettled so a few bad rows don't block the rest.
+  // Uses the already-fetched urlCsvText rather than re-fetching the URL a
+  // second time if the preview step already pulled it down.
   const handleSubmit = async () => {
     setError("");
     setLoading(true);
     try {
       let members;
       if (uploadedFile) {
-        members = (await parseCsvFile(uploadedFile)).map((row) => csvRowToMember(row, roles));
+        members = (await parseCsvFile(uploadedFile)).map((row) => csvRowToMember(row, roles, defaultRoleId));
       } else if (urlCsvText) {
-        members = parseCsvText(urlCsvText).map((row) => csvRowToMember(row, roles));
+        members = parseCsvText(urlCsvText).map((row) => csvRowToMember(row, roles, defaultRoleId));
       } else if (fileUrl.trim()) {
-        members = (await parseCsvFromUrl(fileUrl.trim())).map((row) => csvRowToMember(row, roles));
+        members = (await parseCsvFromUrl(fileUrl.trim())).map((row) => csvRowToMember(row, roles, defaultRoleId));
       } else {
         members = []; // nothing provided — same as before, just finish onboarding
       }
 
-      const filled = members.filter((m) => m.firstName || m.email);
+      const filled = members.filter((m) => m.email);
       if (filled.length === 0) { setShowSuccess(true); return; }
       if (!communityId) { setError("Community ID missing."); return; }
 
       const toastId = toastProgress("Adding members…", "Usually takes 5–10 seconds");
-      try {
-        await client.post(`/communities/${communityId}/members/bulk`, { members: filled });
-      } catch (err) {
+      const results = await Promise.allSettled(
+        filled.map((m) => addCommunityMember(communityId, { email: m.email, roleId: m.roleId }))
+      );
+      const succeeded = results.filter((r) => r.status === "fulfilled").length;
+      if (succeeded === 0) {
         toast.dismiss(toastId);
-        throw err;
+        throw results.find((r) => r.status === "rejected")?.reason ?? new Error("Failed to add members.");
       }
-      toastSuccess(`${filled.length} member${filled.length === 1 ? "" : "s"} added`, { id: toastId });
+      const failed = results.length - succeeded;
+      toastSuccess(
+        `${succeeded} member${succeeded === 1 ? "" : "s"} added${failed ? `, ${failed} failed` : ""}`,
+        { id: toastId }
+      );
       setShowSuccess(true);
     } catch (err) {
       setError(notifyError(err, { context: "Add members", fallback: "Failed to add members. You can add them from the dashboard later." }));

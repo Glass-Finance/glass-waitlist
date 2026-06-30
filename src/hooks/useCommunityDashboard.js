@@ -61,8 +61,12 @@ export function useCommunityDashboard(communityId) {
   });
 
   // ── Members list — for the table, not just the count ────────────────────────
+  // "members", "all" sub-key avoids cache collision with useCommunityMembers /
+  // useMembersWithPayments, whose queryFns return a pre-unwrapped flat array
+  // while this one returns raw res.data.data — mixing them breaks .map() on
+  // the Members page when navigating from the dashboard without a reload.
   const membersQuery = useQuery({
-    queryKey: ["community", communityId, "members"],
+    queryKey: ["community", communityId, "members", "all"],
     queryFn: () => fetchMembers(communityId),
     enabled,
     staleTime: 1000 * 60 * 5,
@@ -76,8 +80,10 @@ export function useCommunityDashboard(communityId) {
   });
 
   // ── Transactions ──────────────────────────────────────────────────────────────
+  // Same cache-isolation reason as members above — useMembersWithPayments also
+  // uses ["community", communityId, "transactions"] with a different raw shape.
   const transactionsQuery = useQuery({
-    queryKey: ["community", communityId, "transactions"],
+    queryKey: ["community", communityId, "transactions", "all"],
     queryFn: () => fetchTransactions(communityId),
     enabled,
     staleTime: 1000 * 60 * 2,

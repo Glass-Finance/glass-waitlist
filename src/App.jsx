@@ -8,7 +8,6 @@ import {
 // ── Landing pages ──────────────────────────────────────────────────────────────
 import OrganizationsHome from "./pages/OrganizationsHome";
 import MembersHome from "./pages/MembersHome";
-import Ambassadors from "./pages/Ambassadors";
 
 // ── Auth pages ─────────────────────────────────────────────────────────────────
 import SignUp from "./pages/auth/SignUp";
@@ -81,7 +80,6 @@ function App() {
         {/* ── Public landing ── */}
         <Route path="/" element={<OrganizationsHome />} />
         <Route path="/members" element={<MembersHome />} />
-        <Route path="/ambassadors" element={<Ambassadors />} />
 
         {/* ── Auth ──
             /sign-up is the COMMUNITY OWNER entry point (desktop-first,

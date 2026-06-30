@@ -188,7 +188,7 @@
  * panel shows generic labels.
  */
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -201,6 +201,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { useCommunities } from "../../hooks/useCommunities";
+import { useMyMemberRecord } from "../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../utils/communityRole";
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
@@ -252,7 +253,6 @@ export default function Sidebar() {
   const communities = communitiesData?.communities ?? [];
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [activeCommunityIsPaying, setActiveCommunityIsPaying] = useState(false);
 
   // Active route segment: /dashboard/admin → "home", /dashboard/payments →
   // "payments", etc. (matches the flat ?community= convention, not slugs-in-path)
@@ -284,22 +284,10 @@ export default function Sidebar() {
     ? (communities.find((c) => c.slug === urlSlug) ?? null)
     : null;
 
-  // The "Dashboard" nav item below needs to know which of AdminDashboard.jsx's
-  // two variants to link to — re-resolved whenever the active community
-  // changes, so switching communities (or just landing on Payments/Members/
-  // Settings for one) doesn't leave this pointing at a stale community's
-  // paying status.
-  useEffect(() => {
-    if (!activeCommunity) {
-      setActiveCommunityIsPaying(false);
-      return;
-    }
-    let cancelled = false;
-    resolveIsPayingAdmin(activeCommunity.slug).then((isPaying) => {
-      if (!cancelled) setActiveCommunityIsPaying(isPaying);
-    });
-    return () => { cancelled = true; };
-  }, [activeCommunity?.slug]);
+  // Use the cached member record to derive paying status — same data source
+  // as Role.jsx, so no extra network call and no race condition.
+  const { data: myMemberRecord } = useMyMemberRecord(activeCommunity?.slug ?? null);
+  const activeCommunityIsPaying = myMemberRecord?.billingExempt === false;
 
   // ── Handle logout ──────────────────────────────────────────────────────────
   const handleLogout = async () => {

@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Landmark } from "lucide-react";
 import { getObligation } from "../../api/members";
-import { useMe } from "../../hooks/useMyAccount";
 import { useManagePayments, useInitiatePayment } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { toastSuccess } from "../../utils/toast";
@@ -42,7 +41,6 @@ export default function PaymentSummary() {
   const [error, setError] = useState("");
 
   const { data: obligation, isLoading } = useObligation(paymentId);
-  const { data: me } = useMe();
   const { data: authorisations } = useManagePayments();
   const initiatePayment = useInitiatePayment();
 
@@ -57,18 +55,25 @@ export default function PaymentSummary() {
     try {
       const res = await initiatePayment.mutateAsync({
         paymentLinkId: obligation.paymentLink.id,
-        payload: { email: me?.email },
+        payload: {
+          idempotencyKey: crypto.randomUUID(),
+          amount: obligation.amount,
+          savePaymentMethod: isRecurring,
+          obligationId: obligation.id,
+        },
       });
       const url = res.data?.data?.authorizationUrl;
+      const reference = res.data?.data?.reference;
       if (url) {
         window.location.href = url;
       } else {
         // No authorizationUrl means this charged immediately against a
         // saved method rather than redirecting to Paystack's hosted page —
-        // there's no separate confirmation step coming, so this is the
-        // only chance to show the reference for the user to verify later.
-        toastSuccess("Payment sent", { reference: res.data?.data?.internalReference });
-        navigate(`/member/pay/${paymentId}/success`);
+        // PaymentSuccess still needs the reference to verify the actual
+        // outcome, so it travels as a query param same as Paystack's own
+        // redirect would carry it.
+        toastSuccess("Payment sent", { reference });
+        navigate(`/member/pay/${paymentId}/success?reference=${reference}`);
       }
     } catch (err) {
       // No notifyError() here — initiatePayment is a useMutation, so the

@@ -8,26 +8,15 @@ import client from "./client";
 export const getMe = () =>
   client.get("/user/me");
 
-// PUT /api/v1/user/me — same resource GET /user/me reads. /user/profile
-// 404s and PATCH /user/me 405s (both confirmed live) — a 405 on the right
-// path means the method's wrong, not the route, so this is PUT instead.
-// export const updateProfile = (payload) =>
-//   client.patch("/user/me", payload);
-export const updateProfile = (payload) => {
-  const body = payload.userData
-    ? payload
-    : { userData: { firstName: payload.firstName, lastName: payload.lastName, phoneNumber: payload.phoneNumber } };
-  return client.patch("/user/profile", body);
-};  
+// PATCH /api/v1/user/profile
+// { userData: { firstName, lastName, phoneNumber, profileImageFileId, ... } }
+export const updateProfile = (payload) => client.patch("/user/profile", payload);
 
+// PATCH /api/v1/user/password — { oldPassword, newPassword, confirmPassword }
+export const updatePassword = (payload) => client.patch("/user/password", payload);
 
-// PATCH /api/v1/user/password
-export const updatePassword = (payload) =>
-  client.patch("/user/password", payload);
-
-// PATCH /api/v1/user/email
-export const updateEmail = (payload) =>
-  client.patch("/user/email", payload);
+// PATCH /api/v1/user/email — { email, emailVerificationOtp }
+export const updateEmail = (payload) => client.patch("/user/email", payload);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COMMUNITIES (member perspective)
@@ -106,14 +95,16 @@ export const resolveAccount = (bankCode, accountNumber) =>
 // PAYMENT — initiate payment for an obligation / payment link
 // ─────────────────────────────────────────────────────────────────────────────
 
-// POST /api/v1/payments/payment-links/{paymentLinkIdentifier}/pay
-// payload: { email, amount?, metadata? }
+// POST /api/v1/payments/pay/payment-links/{paymentLinkIdentifier}
+// payload: { idempotencyKey, amount, savePaymentMethod, obligationId, metadata }
+// response.data.data: { transactionId, reference, authorizationUrl, accessCode, amount, currency }
 export const initiatePayment = (paymentLinkId, payload) =>
-  client.post(`/payments/payment-links/${paymentLinkId}/pay`, payload);
+  client.post(`/payments/pay/payment-links/${paymentLinkId}`, payload);
 
-// POST /api/v1/payments/callback/verify
-export const verifyPayment = (payload) =>
-  client.post("/payments/callback/verify", payload);
+// POST /api/v1/payments/callback/verify?reference=xxx — reference is a query
+// param, not a body field.
+export const verifyPayment = (reference) =>
+  client.post("/payments/callback/verify", null, { params: { reference } });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COMMUNITY PAYMENT LINKS (visible to members)

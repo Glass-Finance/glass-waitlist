@@ -3,29 +3,24 @@ import { Copy, Check } from "lucide-react";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityMembers, useRoles } from "../../../../hooks/useCommunityMembers";
 import QRCodeCanvas from "../../../../components/dashboard/QRCode";
+import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
 
 const FALLBACK_MEMBER_ROLE = { id: "MEMBER", name: "Member" };
 
 export default function MemberAccess() {
-  const communityId = useActiveCommunityId();
+  // useActiveCommunityId() returns the community slug (preferred over id)
+  // since both the Sidebar and CommunitiesHome set ?community= to the slug.
+  const communitySlug = useActiveCommunityId();
   const [copied, setCopied] = useState(false);
-  const { members, isLoading, removeMember, updateMember } = useCommunityMembers(communityId);
+  const { members, isLoading, removeMember, updateMember } = useCommunityMembers(communitySlug);
   const { data: rolesData } = useRoles();
   const memberRoleId = (rolesData ?? []).find((r) => r.name?.toLowerCase() === "member")?.id
     ?? FALLBACK_MEMBER_ROLE.id;
+  const adminRoleId = (rolesData ?? []).find((r) => r.name?.toLowerCase() === "admin")?.id;
 
-  // /join/{id} isn't a route this app has ever had — it fell through to
-  // the catch-all and silently redirected to the public homepage, so this
-  // link has never actually worked. /member/join is the real entry point;
-  // ?community= (read by useJoinCommunityParam) tells it which community
-  // to file a join request for once the visitor registers or signs in.
-  //
-  // window.location.origin instead of a hardcoded domain — confirmed live
-  // that "app.glasspay.app" doesn't resolve at all (DNS_PROBE_FINISHED_
-  // NXDOMAIN, not just a wrong route). Using the origin the admin is
-  // actually viewing the dashboard from means this can never point at a
-  // dead domain again, in dev, staging, or prod.
-  const inviteLink = communityId ? `${window.location.origin}/member/join?community=${communityId}` : null;
+  const inviteLink = communitySlug
+    ? `${APP_ORIGIN}/member/join?community=${communitySlug}`
+    : null;
 
   const handleCopy = () => {
     if (!inviteLink) return;
@@ -118,23 +113,49 @@ export default function MemberAccess() {
                     {memberRoleLabel(member)}
                   </span>
                 </div>
-                <button
-                  onClick={() => {
-                    const isAdmin = isAdminRole(member);
-                    if (isAdmin) {
-                      if (window.confirm(`Revoke admin access for ${memberName(member)}? They'll remain a member.`)) {
-                        updateMember.mutate({ memberId: member.id, payload: { roleId: memberRoleId } });
-                      }
-                    } else if (window.confirm(`Remove ${memberName(member)} from this community?`)) {
-                      removeMember.mutate(member.id);
-                    }
-                  }}
-                  disabled={removeMember.isPending || updateMember.isPending}
-                  className="text-sm font-semibold hover:opacity-70 transition-all bg-transparent border-none cursor-pointer disabled:opacity-50"
-                  style={{ color: "#EF4444" }}
-                >
-                  {isAdminRole(member) ? "Revoke" : "Remove"}
-                </button>
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  {isAdminRole(member) ? (
+                    <button
+                      onClick={() => {
+                        if (window.confirm(`Revoke admin access for ${memberName(member)}? They'll remain a member.`)) {
+                          updateMember.mutate({ memberId: member.id, payload: { roleId: memberRoleId } });
+                        }
+                      }}
+                      disabled={removeMember.isPending || updateMember.isPending}
+                      className="text-sm font-semibold hover:opacity-70 transition-all bg-transparent border-none cursor-pointer disabled:opacity-50"
+                      style={{ color: "#EF4444" }}
+                    >
+                      Revoke
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Promote ${memberName(member)} to admin?`)) {
+                            updateMember.mutate({ memberId: member.id, payload: { roleId: adminRoleId } });
+                          }
+                        }}
+                        disabled={!adminRoleId || removeMember.isPending || updateMember.isPending}
+                        className="text-sm font-semibold hover:opacity-70 transition-all bg-transparent border-none cursor-pointer disabled:opacity-50"
+                        style={{ color: "#002FA7" }}
+                      >
+                        Promote
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Remove ${memberName(member)} from this community?`)) {
+                            removeMember.mutate(member.id);
+                          }
+                        }}
+                        disabled={removeMember.isPending || updateMember.isPending}
+                        className="text-sm font-semibold hover:opacity-70 transition-all bg-transparent border-none cursor-pointer disabled:opacity-50"
+                        style={{ color: "#EF4444" }}
+                      >
+                        Remove
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             ))
           )}

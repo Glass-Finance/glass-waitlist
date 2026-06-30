@@ -5,5 +5,8 @@ import { uploadFile } from "../api/files";
 export function useFileUpload() {
   return useMutation({
     mutationFn: ({ file, fileCategory }) => uploadFile(file, fileCategory),
+    // callers catch errors themselves and show inline text — suppress the
+    // global mutationCache toast to avoid showing two errors at once.
+    meta: { silentError: true },
   });
 }

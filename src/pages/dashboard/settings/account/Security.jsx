@@ -40,8 +40,9 @@ export default function Security() {
     }
     try {
       await updatePassword.mutateAsync({
-        currentPassword: passwords.current,
+        oldPassword: passwords.current,
         newPassword: passwords.new,
+        confirmPassword: passwords.confirm,
       });
       setSuccess(true);
       setPasswords({ current: "", new: "", confirm: "" });
