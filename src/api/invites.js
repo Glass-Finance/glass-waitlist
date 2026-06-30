@@ -35,10 +35,7 @@ export const revokeInvite = (communityId, inviteId) =>
 export const submitJoinRequest = (communityId) =>
   client.post(`/communities/${communityId}/join-requests`);
 
-// GET /api/v1/join-requests/me — authenticated user's join requests
-export const getMyJoinRequests = () =>
-  client.get("/join-requests/me");
-
 // GET /api/v1/communities/join-requests/me
+// (Bare /join-requests/me is not documented — removed.)
 export const getMyCommunityJoinRequests = () =>
   client.get("/communities/join-requests/me");

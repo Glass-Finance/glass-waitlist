@@ -95,11 +95,13 @@ export const resolveAccount = (bankCode, accountNumber) =>
 // PAYMENT — initiate payment for an obligation / payment link
 // ─────────────────────────────────────────────────────────────────────────────
 
-// POST /api/v1/payments/pay/payment-links/{paymentLinkIdentifier}
+// POST /api/v1/payments/payment-links/{paymentLinkIdentifier}/pay
+// Confirmed via backend doc: /pay is a SUFFIX on the payment link ID, not a
+// prefix before payment-links. Previous path was wrong.
 // payload: { idempotencyKey, amount, savePaymentMethod, obligationId, metadata }
 // response.data.data: { transactionId, reference, authorizationUrl, accessCode, amount, currency }
 export const initiatePayment = (paymentLinkId, payload) =>
-  client.post(`/payments/pay/payment-links/${paymentLinkId}`, payload);
+  client.post(`/payments/payment-links/${paymentLinkId}/pay`, payload);
 
 // POST /api/v1/payments/callback/verify?reference=xxx — reference is a query
 // param, not a body field.
