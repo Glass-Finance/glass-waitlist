@@ -51,7 +51,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
                   <h1
                     className="text-white font-normal leading-tight"
                     style={{
-                      fontSize: "clamp(2rem, 3vw, 2rem)",
+                      fontSize: "clamp(2rem, 2vw, 2rem)",
                       fontFamily: "Inter, sans-serif",
                     }}
                   >
@@ -62,7 +62,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
                   <h2
                     className="text-white font-normal leading-tight mt-2"
                     style={{
-                      fontSize: "clamp(2rem, 3vw, 2rem)",
+                      fontSize: "clamp(2rem, 2vw, 2rem)",
                       fontFamily: "Inter, sans-serif",
                     }}
                   >

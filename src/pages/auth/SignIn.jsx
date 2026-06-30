@@ -104,7 +104,7 @@ export default function SignIn() {
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
       <div className="w-full max-w-sm flex flex-col my-auto gap-6">
         <div>
-          <h1 className="text-lg font-bold text-gray-900 mb-1">Sign in To Your Account</h1>
+          <h1 className="text-xl font-bold text-gray-900 mb-1">Sign in To Your Account</h1>
           <p className="text-sm text-gray-500">Enter your credentials to continue.</p>
         </div>
 

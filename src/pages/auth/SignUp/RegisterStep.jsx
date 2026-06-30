@@ -82,8 +82,8 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
 
   return (
     <div className="w-full max-w-sm flex flex-col">
-      <div className="text-center mb-3">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1.5">
+      <div className="mb-3">
+        <h1 className="text-xl font-bold text-gray-900 mb-1.5">
           Create Your Account
         </h1>
       </div>

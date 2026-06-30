@@ -32,10 +32,10 @@ export default function ForgotPassword() {
   }
 
   return (
-    <AuthLayout heroTitle="Community Finance" heroSubtitle="Crystal Clear">
-      <div className="w-full max-w-sm flex flex-col my-auto gap-6">
+    <AuthLayout heroTitle="Manage Community" heroSubtitle="Finance Effortlessly">
+      <div className="w-full max-w-sm flex flex-col gap-6  md:my-auto">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900 mb-1">Reset Password</h1>
+          <h1 className="text-xl font-semibold text-gray-900 mb-1">Reset Password</h1>
           <p className="text-sm text-gray-500">Enter your email and we'll send you a link to reset it.</p>
         </div>
 

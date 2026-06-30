@@ -19,7 +19,13 @@ export default function MemberAccess() {
   // link has never actually worked. /member/join is the real entry point;
   // ?community= (read by useJoinCommunityParam) tells it which community
   // to file a join request for once the visitor registers or signs in.
-  const inviteLink = communityId ? `https://app.glasspay.app/member/join?community=${communityId}` : null;
+  //
+  // window.location.origin instead of a hardcoded domain — confirmed live
+  // that "app.glasspay.app" doesn't resolve at all (DNS_PROBE_FINISHED_
+  // NXDOMAIN, not just a wrong route). Using the origin the admin is
+  // actually viewing the dashboard from means this can never point at a
+  // dead domain again, in dev, staging, or prod.
+  const inviteLink = communityId ? `${window.location.origin}/member/join?community=${communityId}` : null;
 
   const handleCopy = () => {
     if (!inviteLink) return;

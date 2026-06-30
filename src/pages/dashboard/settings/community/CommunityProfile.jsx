@@ -137,7 +137,7 @@ export default function CommunityProfile() {
             </div>
             <div>
               <p className="text-sm text-gray-900">{isLoading ? "Loading…" : (community?.name ?? "Community")}</p>
-              <p className="text-xs text-gray-500">{community?.slug ? `glasspay.app/join/${community.slug}` : ""}</p>
+              <p className="text-xs text-gray-500">{community?.slug ? `glasspay.app/member/join?community=${community.slug}` : ""}</p>
             </div>
           </div>
           <input

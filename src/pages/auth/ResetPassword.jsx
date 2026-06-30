@@ -52,9 +52,9 @@ export default function ResetPassword() {
 
   return (
     <AuthLayout heroTitle="Community Finance" heroSubtitle="Crystal Clear">
-      <div className="w-full max-w-sm flex flex-col my-auto gap-6">
+      <div className="w-full max-w-sm flex flex-col m-auto gap-6">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900 mb-1">Reset Password</h1>
+          <h1 className="text-xl font-semibold text-gray-900 mb-1">Reset Password</h1>
           <p className="text-sm text-gray-500">Choose a new password for your account.</p>
         </div>
 

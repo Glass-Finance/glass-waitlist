@@ -732,7 +732,7 @@ export default function OrganizationProfile() {
                   <span className="text-xs text-red-500">That URL is taken — try another.</span>
                 )}
                 {available === true && !checking && (
-                  <span className="text-xs text-green-600">glasspay.app/join/{slug}</span>
+                  <span className="text-xs text-green-600">glasspay.app/member/join?community={slug}</span>
                 )}
               </div>
             </div>

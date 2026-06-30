@@ -539,9 +539,15 @@ export default function AddMembers() {
   // link has never actually worked. /member/join is the real entry point;
   // ?community= (read by useJoinCommunityParam) tells it which community
   // to file a join request for once the visitor registers or signs in.
+  //
+  // window.location.origin instead of a hardcoded domain — confirmed live
+  // that "app.glasspay.app" (used in the other invite-link generator)
+  // doesn't resolve at all (DNS_PROBE_FINISHED_NXDOMAIN, not just a wrong
+  // route). Using the origin actually being viewed from means this can
+  // never point at a dead domain in dev, staging, or prod.
   const inviteLink = communitySlug
-    ? `https://glasspay.app/member/join?community=${communitySlug}`
-    : "https://glasspay.app";
+    ? `${window.location.origin}/member/join?community=${communitySlug}`
+    : window.location.origin;
 
   const [tab,          setTab]          = useState("upload");
   const [dragOver,     setDragOver]     = useState(false);
