@@ -586,10 +586,6 @@ function statusStyle(status = "") {
   return STATUS_STYLE[status.toLowerCase()] ?? STATUS_STYLE.pending;
 }
 
-const FREQUENCIES = ["Monthly", "Weekly", "Quarterly", "Annually", "One-Time"];
-const REMINDERS   = ["Every Day", "Every 3 Days", "Every Week", "Every 2 Weeks"];
-const inputCls    = "w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-700 bg-white outline-none transition-all focus:border-[#002FA7]";
-
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 function Skeleton({ className = "" }) {
   return <div className={`bg-gray-200 rounded animate-pulse ${className}`} />;
@@ -617,184 +613,12 @@ function ActivityIcon({ type, color }) {
   );
 }
 
-// ── Step indicator ────────────────────────────────────────────────────────────
-function StepIndicator({ current }) {
-  const steps = [{ n: 1, label: "Plan Type" }, { n: 2, label: "Plan Details" }, { n: 3, label: "Review" }];
-  return (
-    <div className="flex items-center mb-6">
-      {steps.map((s, i) => {
-        const done = s.n < current, active = s.n === current;
-        return (
-          <div key={s.n} className={`flex items-center ${i < steps.length - 1 ? "flex-1" : ""}`}>
-            <div className="flex flex-col items-center gap-1 flex-shrink-0">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border transition-all
-                ${done ? "bg-[#002FA7] border-[#002FA7] text-white" : active ? "border-[#002FA7] text-[#002FA7] bg-white" : "border-gray-300 text-gray-400 bg-white"}`}>
-                {done ? <Check size={13}/> : s.n}
-              </div>
-              <span className={`text-[11px] whitespace-nowrap ${active ? "font-medium text-[#002FA7]" : done ? "text-gray-600" : "text-gray-400"}`}>{s.label}</span>
-            </div>
-            {i < steps.length - 1 && <div className={`flex-1 h-0.5 mx-2 mb-4 ${done ? "bg-[#002FA7]" : "bg-gray-200"}`}/>}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ── Modal steps ───────────────────────────────────────────────────────────────
-function Step1({ value, onChange }) {
-  return (
-    <div>
-      <p className="text-sm text-gray-500 mb-5">Choose the type of plan you want to create</p>
-      <div className="grid grid-cols-2 gap-3">
-        {[
-          { id: "recurring", icon: RecurringPayment, title: "Recurring", desc: "Members pay on a set schedule." },
-          { id: "one_time",  icon: OneTimePayment,   title: "One Time",  desc: "A single payment for one purpose." },
-        ].map(opt => {
-          const sel = value === opt.id;
-          return (
-            <button key={opt.id} onClick={() => onChange(opt.id)}
-              className={`p-6 rounded-xl text-left border transition-all relative cursor-pointer ${sel ? "border-[#002FA7] bg-blue-50" : "border-gray-200 hover:border-gray-300"}`}>
-              <div className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center ${sel ? "bg-[#002FA7] border-[#002FA7]" : "border-gray-300"}`}>
-                {sel && <Check size={10} color="white" strokeWidth={3}/>}
-              </div>
-              <div className="mt-5 mb-2"><img src={opt.icon} alt={opt.title} className="w-6 h-6 mx-auto"/></div>
-              <p className="text-sm font-medium text-gray-900 text-center">{opt.title}</p>
-              <p className="text-xs text-gray-500 text-center">{opt.desc}</p>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function Step2({ form, onChange, memberCount }) {
-  return (
-    <div className="pr-1 space-y-3.5">
-      <div><label className="block text-sm font-medium text-gray-900 mb-1.5">Plan Name</label><input className={inputCls} value={form.name} placeholder="Enter plan name" onChange={e => onChange("name", e.target.value)}/></div>
-      <div><label className="block text-sm font-medium text-gray-900 mb-1.5">Description</label><textarea className={`${inputCls} resize-y`} value={form.description} placeholder="Briefly describe this plan..." rows={3} onChange={e => onChange("description", e.target.value)}/></div>
-      <div className="grid grid-cols-2 gap-3">
-        <div><label className="block text-sm font-medium text-gray-900 mb-1.5">Amount Per Member</label><input type="number" className={inputCls} value={form.amount} placeholder="₦0.00" onChange={e => onChange("amount", e.target.value)}/></div>
-        <div><label className="block text-sm font-medium text-gray-900 mb-1.5">Frequency</label>
-          <select className={inputCls} value={form.frequency} onChange={e => onChange("frequency", e.target.value)}>
-            <option value="" disabled>Select frequency</option>
-            {FREQUENCIES.map(o => <option key={o}>{o}</option>)}
-          </select>
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div><label className="block text-sm font-medium text-gray-900 mb-1.5">Start Date</label><input type="date" className={inputCls} value={form.startDate} onChange={e => onChange("startDate", e.target.value)}/></div>
-        <div><label className="block text-sm font-medium text-gray-900 mb-1.5">Due Date</label><input type="date" className={inputCls} value={form.dueDate} onChange={e => onChange("dueDate", e.target.value)}/></div>
-      </div>
-      <div>
-        <label className="block text-sm font-semibold text-gray-900 mb-1.5">Applies To</label>
-        <select className={inputCls} value={form.appliesTo} onChange={e => onChange("appliesTo", e.target.value)}>
-          <option value="">All Members ({memberCount})</option>
-        </select>
-        <p className="text-xs text-gray-400 mt-1">You can adjust member assignment after creation.</p>
-      </div>
-      <div>
-        <label className="block text-sm font-semibold text-gray-900 mb-1.5">Set Auto Reminder</label>
-        <select className={inputCls} value={form.reminder} onChange={e => onChange("reminder", e.target.value)}>
-          <option value="" disabled>Select reminder frequency</option>
-          {REMINDERS.map(o => <option key={o}>{o}</option>)}
-        </select>
-        <p className="text-xs text-gray-400 mt-1">Reminders sent via SMS and email to unpaid members.</p>
-      </div>
-    </div>
-  );
-}
-
-function Step3({ planType, form }) {
-  const rows = [
-    { label: "Plan Name",         value: form.name || "—" },
-    { label: "Plan Type",         value: planType === "recurring" ? "Recurring" : "One Time" },
-    { label: "Amount Per Member", value: form.amount ? formatNaira(Number(form.amount)) : "—" },
-    { label: "Frequency",         value: form.frequency || "—" },
-    { label: "Due Date",          value: form.dueDate || "—" },
-    { label: "Applies To",        value: form.appliesTo || "All Members" },
-    { label: "Description",       value: form.description || "—" },
-  ];
-  return (
-    <div>
-      <div className="rounded-xl border border-gray-200 overflow-hidden mb-3">
-        {rows.map((r, i) => (
-          <div key={r.label} className={`flex justify-between px-4 py-3 text-sm ${i < rows.length - 1 ? "border-b border-gray-100" : ""} ${i % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
-            <span className="text-gray-500 w-36 flex-shrink-0">{r.label}</span>
-            <span className="font-medium text-gray-900 text-right">{r.value}</span>
-          </div>
-        ))}
-      </div>
-      <div className="px-4 py-3 rounded-xl bg-blue-50 border border-blue-100 text-sm text-gray-700">
-        Once created, assigned members will receive a notification. You can edit or pause this plan at any time.
-      </div>
-    </div>
-  );
-}
-
-function CreatePaymentPlanModal({ onClose, memberCount }) {
-  const [step, setStep]         = useState(1);
-  const [planType, setPlanType] = useState("recurring");
-  const [success, setSuccess]   = useState(false);
-  const [form, setForm]         = useState({ name: "", description: "", amount: "", frequency: "", startDate: "", dueDate: "", appliesTo: "", reminder: "" });
-  const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
-  const canContinue = step === 1 ? !!planType : step === 2 ? !!(form.name && form.amount && form.frequency) : true;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
-      onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
-        <div className="flex items-start justify-between px-6 pt-5">
-          <div>
-            <h2 className="text-base font-medium text-[#000000]">Create Payment Plan</h2>
-            <p className="text-xs text-gray-400 mt-0.5">You can edit or pause any plan at any time.</p>
-          </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer"><X size={14}/></button>
-        </div>
-        <div className="px-6 py-4 flex-1 overflow-hidden flex flex-col">
-          {success ? (
-            <div className="text-center py-10">
-              <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4"><Check size={24} className="text-green-600" strokeWidth={2.5}/></div>
-              <h3 className="text-lg font-extrabold text-[#0f1d6e] mb-2">Plan Created Successfully!</h3>
-              <p className="text-sm text-gray-500 mb-6">Members assigned to this plan have been notified.</p>
-              <button onClick={onClose} className="px-8 py-2.5 rounded-full bg-[#002FA7] text-white font-bold text-sm hover:opacity-90 border-none cursor-pointer">Done</button>
-            </div>
-          ) : (
-            <>
-              <StepIndicator current={step}/>
-              <div className="flex-1 overflow-y-auto">
-                {step === 1 && <Step1 value={planType} onChange={setPlanType}/>}
-                {step === 2 && <Step2 form={form} onChange={update} memberCount={memberCount}/>}
-                {step === 3 && <Step3 planType={planType} form={form}/>}
-              </div>
-            </>
-          )}
-        </div>
-        {!success && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
-            <button onClick={() => step > 1 ? setStep(s => s - 1) : onClose()}
-              className="flex items-center gap-1.5 text-sm font-medium text-[#000000] bg-transparent border-none cursor-pointer">
-              <ArrowLeft size={13}/> {step > 1 ? "Back" : "Cancel"}
-            </button>
-            <button onClick={() => step < 3 ? setStep(s => s + 1) : setSuccess(true)} disabled={!canContinue}
-              className={`px-20 py-2.5 rounded-full text-sm font-medium border-none transition-all ${canContinue ? "bg-[#002FA7] text-white hover:opacity-90 cursor-pointer" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}>
-              {step === 3 ? "Create Plan" : "Continue"}
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // ── Dashboard content ─────────────────────────────────────────────────────────
 function DashboardContent({ isPaying, communityId }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [search, setSearch]           = useState("");
-  const [paymentPlanOpen, setPlanOpen] = useState(false);
-  const [addMemberOpen, setAddOpen]   = useState(false);
+  const [sortDir, setSortDir]         = useState("desc"); // desc = Recent, asc = Oldest
   const [alertVisible, setAlertVisible] = useState(true);
 
   const { balances, members, transactions, activity, isLoading, error } =
@@ -851,15 +675,22 @@ function DashboardContent({ isPaying, communityId }) {
 
   // ── Filter payments by search ─────────────────────────────────────────────
   const filteredTransactions = useMemo(() => {
-    if (!search.trim()) return transactions;
-    const q = search.toLowerCase();
-    return transactions.filter(
-      (t) =>
-        (t.memberName ?? t.description ?? "").toLowerCase().includes(q) ||
-        (t.planName ?? "").toLowerCase().includes(q) ||
-        (t.email ?? "").toLowerCase().includes(q)
-    );
-  }, [transactions, search]);
+    let list = transactions;
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter(
+        (t) =>
+          (t.memberName ?? t.description ?? "").toLowerCase().includes(q) ||
+          (t.planName ?? "").toLowerCase().includes(q) ||
+          (t.email ?? "").toLowerCase().includes(q)
+      );
+    }
+    return [...list].sort((a, b) => {
+      const ta = new Date(a.createdAt ?? a.date ?? 0).getTime();
+      const tb = new Date(b.createdAt ?? b.date ?? 0).getTime();
+      return sortDir === "desc" ? tb - ta : ta - tb;
+    });
+  }, [transactions, search, sortDir]);
 
   // ── Recent activity — real audit-log feed (event/description/actor/result) ──
   const recentActivity = activity.list;
@@ -894,67 +725,77 @@ function DashboardContent({ isPaying, communityId }) {
         </div>
         <div className="flex gap-2.5">
           <button
-            onClick={() => setPlanOpen(true)}
+            onClick={() => navigate(`/dashboard/payments?community=${communityId ?? ""}`)}
             className="px-4 py-2 rounded text-xs font-medium text-black bg-white border border-[#efeff1] hover:bg-gray-50 transition-all cursor-pointer"
           >
             Create Payment Plan
           </button>
           <button
-            onClick={() => setAddOpen(true)}
-            className="px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
+            onClick={() => navigate(`/dashboard/members?community=${communityId ?? ""}`)}
+            className="px-4 py-2 rounded text-xs font-medium text-white bg-[#1C2B8A] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
           >
             <Plus size={14}/> Add Member
           </button>
         </div>
       </div>
 
-      {/* Alert — paying admin only */}
-      {isPaying && alertVisible && (
-        <div className="flex items-start justify-between px-4 py-4 rounded-md mb-5 bg-[#D7E2FF] border border-blue-100">
-          <div className="flex items-start gap-6">
-            <AlertTriangle size={30} className="text-[#002FA7] flex-shrink-0 mt-1 border p-1" />
-            <div>
-              <p className="text-[13px] font-medium text-gray-800">
-                Your School Fees Support payment is due in 3 days
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                ₦5,000 due Apr 1, 2025 ·{" "}
-                <span className="text-[#002FA7] font-medium">Auto-Pay is off</span>
-              </p>
+      {/* Alert — paying admin with an unpaid obligation */}
+      {isPaying && alertVisible && (() => {
+        const due = myUpcoming.filter(o => (o.status ?? "").toUpperCase() !== "PAID")[0];
+        if (!due) return null;
+        const daysLeft = due.dueDate
+          ? Math.ceil((new Date(due.dueDate) - new Date()) / 86400000)
+          : null;
+        return (
+          <div className="flex items-start justify-between px-4 py-4 rounded-md mb-5 bg-[#D7E2FF] border border-blue-100">
+            <div className="flex items-start gap-6">
+              <AlertTriangle size={18} className="text-[#002FA7] flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-[13px] font-medium text-gray-800">
+                  Your {due.name} payment{daysLeft != null ? ` is due in ${daysLeft} day${daysLeft === 1 ? "" : "s"}` : " is due soon"}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {formatNaira(due.amount)}{due.dueDate ? ` due ${new Date(due.dueDate).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" })}` : ""}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+              <button
+                onClick={() => handlePayMine(due)}
+                disabled={initiatePayment.isPending}
+                className="px-4 py-2 rounded-sm text-xs font-semibold text-[#002FA7] border cursor-pointer disabled:opacity-50"
+              >
+                Pay Now
+              </button>
+              <button
+                onClick={() => setAlertVisible(false)}
+                className="text-[#002FA7] bg-transparent border-none cursor-pointer"
+              >
+                <X size={20}/>
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-            <button className="px-4 py-2 rounded-sm text-xs font-semibold text-[#002FA7] border cursor-pointer">
-              Pay Now
-            </button>
-            <button
-              onClick={() => setAlertVisible(false)}
-              className="text-[#002FA7] bg-transparent border-none cursor-pointer"
-            >
-              <X size={20}/>
-            </button>
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Stats */}
       <div className="grid grid-cols-5 gap-3 mb-5">
         {stats.map((s) => (
           <div
             key={s.label}
-            className="bg-white rounded-xl px-4 py-4 border border-[#eef0f8]"
+            className="bg-white rounded-xl px-4 py-3 border border-[#eef0f8]"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-gray-500 font-bold">{s.label}</span>
-              <Info size={14} className="text-[#002FA7]"/>
+              <span className="text-xs text-gray-500 font-medium">{s.label}</span>
+              <Info size={13} className="text-[#002FA7]"/>
             </div>
             <div className="flex items-center gap-2.5">
-              <img src={s.icon} alt={s.label} className="w-8 h-8 object-contain flex-shrink-0"/>
+              <img src={s.icon} alt={s.label} className="w-7 h-7 object-contain flex-shrink-0"/>
               {isLoading ? (
-                <Skeleton className="h-5 w-16" />
+                <Skeleton className="h-4 w-16" />
               ) : (
-                <span className="text-[15px] font-bold text-black">{s.value}</span>
+                <span className="text-[13px] font-semibold text-black">{s.value}</span>
               )}
             </div>
           </div>
@@ -1048,7 +889,7 @@ function DashboardContent({ isPaying, communityId }) {
                   >
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-sm font-medium text-black truncate">
+                        <span className="text-xs font-medium text-black truncate">
                           {p.name}
                         </span>
                         <span
@@ -1058,7 +899,7 @@ function DashboardContent({ isPaying, communityId }) {
                           {p.frequency ?? p.type ?? "—"}
                         </span>
                       </div>
-                      <span className="text-sm font-bold text-gray-800 flex-shrink-0 ml-2">
+                      <span className="text-xs font-semibold text-gray-800 flex-shrink-0 ml-2">
                         {formatNaira(p.amount)}
                       </span>
                     </div>
@@ -1127,7 +968,7 @@ function DashboardContent({ isPaying, communityId }) {
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-gray-700 leading-relaxed">
                       {actorName && !a.description?.startsWith(actorName) && (
-                        <strong className="text-[#002FA7] font-bold">{actorName} </strong>
+                        <strong className="text-[#002FA7] font-semibold">{actorName} </strong>
                       )}
                       {a.description ?? event.replaceAll("_", " ").toLowerCase() ?? "activity"}
                     </p>
@@ -1155,7 +996,11 @@ function DashboardContent({ isPaying, communityId }) {
       >
         <div className="flex items-center justify-between px-5 pt-4 pb-0">
           <span className="text-sm font-medium">Member Payments</span>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[#002FA7] bg-white text-xs text-[#002FA7] hover:bg-gray-50 cursor-pointer">
+          <button
+            disabled
+            title="Export CSV — coming soon"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-200 bg-white text-xs text-gray-400 cursor-not-allowed"
+          >
             <Download size={12}/> Export CSV
           </button>
         </div>
@@ -1172,8 +1017,11 @@ function DashboardContent({ isPaying, communityId }) {
           </div>
           <div className="flex items-center gap-1.5 text-xs">
             Sort by:
-            <button className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-500 bg-white font-medium text-gray-500 cursor-pointer">
-              Recent <ChevronDown size={11}/>
+            <button
+              onClick={() => setSortDir(d => d === "desc" ? "asc" : "desc")}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-500 bg-white font-medium text-gray-500 cursor-pointer hover:bg-gray-50"
+            >
+              {sortDir === "desc" ? "Recent" : "Oldest"} <ChevronDown size={11} className={sortDir === "asc" ? "rotate-180" : ""}/>
             </button>
           </div>
         </div>
@@ -1214,24 +1062,24 @@ function DashboardContent({ isPaying, communityId }) {
                       key={tx.id ?? i}
                       className="border-b border-[#f3f4f8] hover:bg-[#fafbff] transition-colors cursor-default"
                     >
-                      <td className="px-5 py-3 text-sm font-medium text-[#002FA7]">
+                      <td className="px-5 py-3 text-xs font-medium text-[#002FA7]">
                         {tx.memberName ?? tx.userName ?? "—"}
                       </td>
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full flex-shrink-0 bg-[#d4a017]" />
-                          <span className="text-sm text-black">
+                          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-[#d4a017]" />
+                          <span className="text-xs text-black">
                             {tx.planName ?? tx.description ?? "—"}
                           </span>
                         </div>
                       </td>
-                      <td className="px-5 py-3 text-sm text-black">
+                      <td className="px-5 py-3 text-xs text-black">
                         {formatNaira(tx.amount)}
                       </td>
-                      <td className="px-5 py-3 text-sm text-black">
+                      <td className="px-5 py-3 text-xs text-black">
                         {formatDate(tx.createdAt ?? tx.date)}
                       </td>
-                      <td className="px-5 py-3 text-sm text-black">
+                      <td className="px-5 py-3 text-xs text-black">
                         {tx.email ?? tx.memberEmail ?? "—"}
                       </td>
                       <td className="px-5 py-3">
@@ -1244,10 +1092,18 @@ function DashboardContent({ isPaying, communityId }) {
                       </td>
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-2">
-                          <button className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center hover:bg-gray-50 cursor-pointer">
-                            <img src={TimerIcon} className="w-2.5 h-2.5 object-contain" alt="timer"/>
+                          <button
+                            disabled
+                            title="Send reminder — coming soon"
+                            className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center cursor-not-allowed opacity-40"
+                          >
+                            <img src={TimerIcon} className="w-2.5 h-2.5 object-contain" alt="Send reminder"/>
                           </button>
-                          <button className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer">
+                          <button
+                            disabled
+                            title="More options — coming soon"
+                            className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center text-gray-400 cursor-not-allowed opacity-40"
+                          >
                             <MoreHorizontal size={12}/>
                           </button>
                         </div>
@@ -1261,39 +1117,6 @@ function DashboardContent({ isPaying, communityId }) {
         </div>
       </div>
 
-      {paymentPlanOpen && (
-        <CreatePaymentPlanModal
-          onClose={() => setPlanOpen(false)}
-          memberCount={members?.total ?? 0}
-        />
-      )}
-      {addMemberOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
-          onClick={(e) => e.target === e.currentTarget && setAddOpen(false)}
-        >
-          <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-10 text-center">
-            <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round"/>
-                <circle cx="9" cy="7" r="4" stroke="#002FA7" strokeWidth="1.8"/>
-                <line x1="19" y1="8" x2="19" y2="14" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round"/>
-                <line x1="16" y1="11" x2="22" y2="11" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <h3 className="text-lg font-extrabold text-[#0f1d6e] mb-2">Add Member</h3>
-            <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-              This feature is coming soon! You'll be able to invite and onboard new members directly from the dashboard.
-            </p>
-            <button
-              onClick={() => setAddOpen(false)}
-              className="px-8 py-2.5 rounded-full bg-[#002FA7] text-white font-bold text-sm hover:opacity-90 border-none cursor-pointer"
-            >
-              Got it
-            </button>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

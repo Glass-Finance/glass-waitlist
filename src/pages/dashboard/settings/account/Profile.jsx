@@ -9,9 +9,9 @@ import EmailChangeModal from "../../../../components/auth/EmailChangeModal";
 
 export default function Profile() {
   const { data: user, isLoading } = useMe();
+  const { refreshUser } = useAuth();
   const updateProfile = useUpdateProfile();
   const uploadFile = useFileUpload();
-  const { refreshUser } = useAuth();
   const photoInputRef = useRef(null);
 
   const [form, setForm] = useState({ firstName: "", lastName: "", phone: "", email: "" });
@@ -22,16 +22,17 @@ export default function Profile() {
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [emailSaving, setEmailSaving] = useState(false);
 
-  // profileImage lives inside userData too (confirmed against the real
-  // GET /user/me response — it's not a top-level field).
-  const profileImageUrl = parseUserData(user).profileImage?.url ?? null;
+  // user here is from useMe() (raw GET /user/me response). profileImage is
+  // nested inside the userData blob, so parseUserData is the correct extractor.
+  // The AuthContext user is separate — it has profileImage flat after refreshUser.
+  const profileImageUrl = parseUserData(user).profileImage?.url ?? user?.profileImage?.url ?? null;
 
   useEffect(() => {
     if (!user) return;
     const ud = parseUserData(user);
     const loaded = {
-      firstName: ud.firstName ?? "",
-      lastName: ud.lastName ?? "",
+      firstName: ud.firstName ?? user?.firstName ?? "",
+      lastName: ud.lastName ?? user?.lastName ?? "",
       phone: user.phoneNumber ?? ud.phone ?? "",
       email: user.email ?? "",
     };
@@ -56,9 +57,11 @@ export default function Profile() {
     try {
       if (form.firstName !== savedForm.firstName || form.lastName !== savedForm.lastName || form.phone !== savedForm.phone) {
         await updateProfile.mutateAsync({
-          firstName: form.firstName,
-          lastName: form.lastName,
-          phoneNumber: form.phone,
+          userData: {
+            firstName: form.firstName,
+            lastName: form.lastName,
+            phoneNumber: form.phone,
+          },
         });
         await refreshUser();
         setSavedForm((sf) => ({ ...sf, firstName: form.firstName, lastName: form.lastName, phone: form.phone }));
@@ -76,7 +79,12 @@ export default function Profile() {
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       setEmailSaving(false);
-      setError(getErrorMessage(err, "Failed to save changes."));
+      const status = err?.response?.status;
+      setError(
+        status === 404
+          ? "Profile setup incomplete — please contact support to finish setting up your account."
+          : getErrorMessage(err, "Failed to save changes.")
+      );
     }
   };
 
@@ -100,14 +108,17 @@ export default function Profile() {
     setError("");
     try {
       const uploadRes = await uploadFile.mutateAsync({ file, fileCategory: "PROFILE_IMAGE" });
-      const profileImageFileId = uploadRes.data?.data?.id;
-      // Unlike firstName/lastName/phoneNumber (which the backend accepts
-      // flat and maps into userData itself), profileImageFileId only takes
-      // effect when sent nested under userData explicitly.
+      const fileData = uploadRes.data?.data ?? uploadRes.data;
+      const profileImageFileId = fileData?.id ?? fileData?.fileId;
       await updateProfile.mutateAsync({ userData: { profileImageFileId } });
       await refreshUser();
     } catch (err) {
-      setError(getErrorMessage(err, "Failed to upload photo."));
+      const status = err?.response?.status;
+      setError(
+        status === 404
+          ? "Profile setup incomplete — please contact support to finish setting up your account."
+          : getErrorMessage(err, "Failed to upload photo.")
+      );
     }
   };
 
@@ -196,6 +207,9 @@ export default function Profile() {
       {emailModalOpen && (
         <EmailChangeModal
           newEmail={form.email}
+          onSubmitOtp={(code) =>
+            updateEmail({ email: form.email.trim().toLowerCase(), emailVerificationOtp: code })
+          }
           onVerified={handleEmailVerified}
           onWrongEmail={handleWrongEmail}
           onClose={handleWrongEmail}
@@ -214,7 +228,9 @@ export default function Profile() {
             Permanently remove your account and all associated data from Glass.
           </p>
           <button
-            className="ml-4 px-4 py-1.5 rounded-md text-xs font-medium text-red-600 hover:bg-red-50 transition-all flex-shrink-0 cursor-pointer bg-transparent"
+            disabled
+            title="Account deletion — coming soon"
+            className="ml-4 px-4 py-1.5 rounded-md text-xs font-medium text-red-300 transition-all flex-shrink-0 cursor-not-allowed bg-transparent"
             style={{ border: "1px solid #FECACA" }}
           >
             Delete

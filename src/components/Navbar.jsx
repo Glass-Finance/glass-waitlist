@@ -102,12 +102,6 @@ export default function Navbar() {
           <button className="text-[13.5px] text-white hover:text-white/55 transition-colors font-medium cursor-pointer">
             Contact Us
           </button>
-          <button
-            onClick={() => navigate("/ambassadors")}
-            className="text-[13.5px] text-white hover:text-white/55 transition-colors font-medium cursor-pointer"
-          >
-            Ambassadors
-          </button>
         </div>
 
         {/* ── CTA (desktop) ── */}
@@ -152,15 +146,9 @@ export default function Navbar() {
         <div className="lg:hidden bg-[#0B0F2E]/98 backdrop-blur-xl border-b border-white/[0.08]">
           <div className="px-6 py-5 space-y-4">
             <div className="space-y-1 pt-1">
-              {["Use Cases", "Contact Us", "Ambassadors"].map((item) => (
+              {["Use Cases", "Contact Us"].map((item) => (
                 <button
                   key={item}
-                  onClick={() => {
-                    if (item === "Ambassadors") {
-                      navigate("/ambassadors");
-                      setMenuOpen(false);
-                    }
-                  }}
                   className="flex items-center justify-between w-full py-3 text-[14px] font-medium text-white/60 hover:text-white transition-colors border-b border-white/[0.05]"
                 >
                   {item}

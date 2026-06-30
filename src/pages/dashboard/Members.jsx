@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Filter, ChevronDown, RotateCcw, MoreHorizontal, X, Users, UserX, Clock, ShieldCheck } from "lucide-react";
+import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, UserX, Clock, ShieldCheck } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
@@ -44,13 +44,13 @@ function statusStyle(paid, total) {
 
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 px-4 py-3.5 flex items-center justify-between" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-white rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <div>
         <p className="text-xs text-gray-400 mb-1">{label}</p>
-        <p className="text-base font-bold text-[#0f1d6e]">{value}</p>
+        <p className="text-[13px] font-semibold text-black">{value}</p>
       </div>
-      <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: bg }}>
-        <Icon size={16} style={{ color }} />
+      <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: bg }}>
+        <Icon size={14} style={{ color }} />
       </div>
     </div>
   );
@@ -82,7 +82,7 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
           </div>
           <button
             onClick={() => { onApply({ plan, status }); onClose(); }}
-            className="px-3 py-2 rounded-lg bg-[#002FA7] text-white text-xs font-semibold border-none cursor-pointer"
+            className="px-3 py-2 rounded-lg bg-[#1C2B8A] text-white text-xs font-semibold border-none cursor-pointer"
           >
             Apply
           </button>
@@ -183,17 +183,17 @@ export default function Members() {
     <div className="px-6 py-6 overflow-y-auto h-full">
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 className="text-xl font-extrabold text-[#0f1d6e]">Members</h1>
+          <h1 className="text-xl font-bold text-black">Members</h1>
           <p className="text-sm text-gray-400 mt-0.5">A full picture of the members of your community</p>
         </div>
-        <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded-lg bg-[#002FA7] text-white text-sm font-semibold flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer">
-          <Plus size={14} /> Add Member
+        <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded text-xs font-medium text-white bg-[#1C2B8A] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer">
+          <Plus size={13} /> Add Member
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-4 gap-3 mb-5">
-        <StatCard icon={Users} label="Total Members" value={String(stats.total)} color="#002FA7" bg="#E6EEFF" />
+        <StatCard icon={Users} label="Total Members" value={String(stats.total)} color="#1C2B8A" bg="#E6EEFF" />
         <StatCard icon={UserX} label="Active Members" value={String(stats.active)} color="#dc2626" bg="#FFE9EC" />
         <StatCard icon={Clock} label="Inactive" value={String(stats.inactive)} color="#b45309" bg="#FFF8E7" />
         <StatCard icon={ShieldCheck} label="Admins" value={String(stats.admins).padStart(2, "0")} color="#7c3aed" bg="#F3EEFF" />
@@ -201,7 +201,7 @@ export default function Members() {
 
       <div className="bg-white rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
         <div className="flex items-center justify-between px-5 py-4">
-          <span className="text-sm font-bold text-[#0f1d6e]">Member Payments</span>
+          <span className="text-sm font-medium text-black">Member Payments</span>
           <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-all bg-white cursor-pointer">
             Export Csv
           </button>
@@ -251,7 +251,7 @@ export default function Members() {
                 </button>
               </span>
             ))}
-            <button onClick={() => setFilters({ plan: "", status: "" })} className="text-xs font-semibold text-[#002FA7] bg-transparent border-none cursor-pointer">
+            <button onClick={() => setFilters({ plan: "", status: "" })} className="text-xs font-semibold text-[#1C2B8A] bg-transparent border-none cursor-pointer">
               Clear All
             </button>
           </div>
@@ -286,23 +286,23 @@ export default function Members() {
                         <input type="checkbox" checked={selected.includes(m.id)} onChange={() => toggleSelect(m.id)} />
                       </td>
                       <td className="px-5 py-3">
-                        <button onClick={() => navigate(`/dashboard/members/${m.id}?community=${communityId}`)} className="text-sm font-semibold text-[#002FA7] hover:underline bg-transparent border-none cursor-pointer p-0">
+                        <button onClick={() => navigate(`/dashboard/members/${m.id}?community=${communityId}`)} className="text-xs font-semibold text-[#1C2B8A] hover:underline bg-transparent border-none cursor-pointer p-0">
                           {memberName(m)}
                         </button>
                       </td>
-                      <td className="px-5 py-3 text-sm text-gray-600">{m.planCount}</td>
+                      <td className="px-5 py-3 text-xs text-gray-600">{m.planCount}</td>
                       <td className="px-5 py-3">
                         <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ color: s.color, background: s.bg }}>
                           {m.paidCount}/{m.totalCount} Paid
                         </span>
                       </td>
-                      <td className="px-5 py-3 text-sm text-gray-500">{formatDate(m.lastPaymentDate)}</td>
-                      <td className="px-5 py-3 text-sm text-gray-500">{memberEmail(m)}</td>
-                      <td className="px-5 py-3 text-sm text-gray-500">{formatDate(m.joinedAt ?? m.createdAt)}</td>
+                      <td className="px-5 py-3 text-xs text-gray-500">{formatDate(m.lastPaymentDate)}</td>
+                      <td className="px-5 py-3 text-xs text-gray-500">{memberEmail(m)}</td>
+                      <td className="px-5 py-3 text-xs text-gray-500">{formatDate(m.joinedAt ?? m.createdAt)}</td>
                       <td className="px-5 py-3">
                         <div className="flex gap-1.5">
-                          <button title="Resend reminder" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"><RotateCcw size={11} /></button>
-                          <button onClick={() => handleRemove(m)} title="Remove member" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"><MoreHorizontal size={11} /></button>
+                          <button disabled title="Resend reminder — coming soon" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-300 cursor-not-allowed"><RotateCcw size={11} /></button>
+                          <button onClick={() => handleRemove(m)} title="Remove member" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"><UserMinus size={11} /></button>
                         </div>
                       </td>
                     </tr>
@@ -353,32 +353,32 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm" onClick={e => e.target === e.currentTarget && onClose()}>
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
         <div className="flex items-start justify-between mb-5">
-          <h2 className="text-base font-extrabold text-[#0f1d6e]">Add Member</h2>
+          <h2 className="text-base font-semibold text-black">Add Member</h2>
           <button type="button" onClick={onClose} className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 bg-transparent cursor-pointer"><X size={14} /></button>
         </div>
 
         <div className="flex flex-col gap-3.5">
           <div className="flex gap-3">
             <div className="flex-1">
-              <label className="block text-sm font-semibold text-gray-900 mb-1.5">First Name</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">First Name</label>
               <input
                 type="text"
                 required
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="First name"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-[#002FA7]"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1C2B8A]"
               />
             </div>
             <div className="flex-1">
-              <label className="block text-sm font-semibold text-gray-900 mb-1.5">Last Name</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Last Name</label>
               <input
                 type="text"
                 required
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Last name"
-                className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-[#002FA7]"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1C2B8A]"
               />
             </div>
           </div>
@@ -390,7 +390,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="member@email.com"
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-[#002FA7]"
+              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1C2B8A]"
             />
           </div>
           <div>
@@ -398,7 +398,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
             <select
               value={roleId}
               onChange={(e) => setRoleId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-[#002FA7] bg-white"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-[#1C2B8A] bg-white"
             >
               {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>
@@ -406,7 +406,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
               <p className="text-xs text-red-500 mt-1.5">Couldn't load roles from the server — try closing and reopening this dialog.</p>
             )}
           </div>
-          <label className="flex items-center gap-2 text-sm text-gray-700">
+          <label className="flex items-center gap-2 text-xs text-gray-600">
             <input type="checkbox" checked={billingExempt} onChange={(e) => setBillingExempt(e.target.checked)} />
             Exempt from billing
           </label>
@@ -417,7 +417,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
         <button
           type="submit"
           disabled={adding || !isReady}
-          className="w-full mt-5 px-4 py-2.5 rounded-lg bg-[#002FA7] text-white text-sm font-semibold hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
+          className="w-full mt-4 px-4 py-2 rounded bg-[#1C2B8A] text-white text-xs font-medium hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
         >
           {adding ? "Adding…" : "Add Member"}
         </button>

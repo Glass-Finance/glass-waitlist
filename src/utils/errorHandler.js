@@ -32,16 +32,50 @@ function fallbackForStatus(status) {
   return "Something went wrong. Please try again.";
 }
 
+// Strings the backend uses as generic placeholders — not useful on their
+// own, so we let the HTTP-status fallback take over instead.
+const GENERIC_MESSAGES = new Set([
+  "error", "bad request", "internal server error",
+  "forbidden", "unauthorized", "not found", "conflict",
+  "unprocessable entity", "too many requests",
+]);
+
+function isTooGeneric(s) {
+  return !s || GENERIC_MESSAGES.has(s.toLowerCase().trim());
+}
+
 // Some backends return { message }, some { error }, some a validation array
 // under { errors: [{ field, message }] } or { errors: ["msg", ...] }.
+// NestJS ValidationPipe sends message as an array of field-level strings.
 function extractServerMessage(data) {
   if (!data) return null;
-  if (typeof data.message === "string") return data.message;
-  if (typeof data.error === "string") return data.error;
-  if (Array.isArray(data.errors) && data.errors.length) {
-    const first = data.errors[0];
-    return typeof first === "string" ? first : first?.message ?? null;
+
+  // Support backends that wrap errors under the same { data: {...} }
+  // envelope they use for success responses.
+  const payload = (data.data && typeof data.data === "object") ? data.data : data;
+
+  // NestJS ValidationPipe: message is an array of field errors
+  if (Array.isArray(payload.message) && payload.message.length) {
+    const first = payload.message[0];
+    const msg = typeof first === "string" ? first : (first?.message ?? null);
+    if (msg && !isTooGeneric(msg)) return msg;
   }
+
+  if (typeof payload.message === "string" && !isTooGeneric(payload.message)) {
+    return payload.message;
+  }
+
+  // { error: "..." } — only when it's specific enough to be useful
+  if (typeof payload.error === "string" && !isTooGeneric(payload.error)) {
+    return payload.error;
+  }
+
+  if (Array.isArray(payload.errors) && payload.errors.length) {
+    const first = payload.errors[0];
+    const msg = typeof first === "string" ? first : (first?.message ?? null);
+    if (msg && !isTooGeneric(msg)) return msg;
+  }
+
   return null;
 }
 
@@ -90,6 +124,9 @@ export function notifyError(error, { fallback, context, silent = false } = {}) {
 
   if (import.meta.env?.DEV) {
     console.error(context ? `[${context}]` : "[error]", error);
+    if (error?.response) {
+      console.error("  ↳ response body:", error.response.data);
+    }
   }
 
   if (!silent) {

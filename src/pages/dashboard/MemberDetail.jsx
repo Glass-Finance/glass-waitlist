@@ -176,7 +176,7 @@ export default function MemberDetail() {
                         <td className="px-5 py-3 text-sm text-gray-500">{t.channel ?? "—"}</td>
                         <td className="px-5 py-3 text-sm text-gray-500">{formatDate(t.paidAt ?? t.createdAt)}</td>
                         <td className="px-5 py-3">
-                          <button title="Download receipt" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"><Download size={11} /></button>
+                          <button disabled title="Download receipt — coming soon" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-300 cursor-not-allowed"><Download size={11} /></button>
                         </td>
                       </tr>
                     );

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
-import { verifyEmail, resendVerification } from "../../services/authService";
+import { resendVerification } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
 
 // Masks an email's local part for display in the OTP prompt, e.g.
@@ -26,7 +26,8 @@ function ModalShell({ children }) {
 // that PATCH /user/email (called by the caller before mounting this) sends
 // the code the same way registration does. Untested against the live
 // backend yet; adjust here first if the real contract differs.
-export default function EmailChangeModal({ newEmail, onVerified, onWrongEmail, onClose }) {
+// onSubmitOtp(otpString) — called with the 6-digit code to confirm the change
+export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, onWrongEmail, onClose }) {
   const [step, setStep] = useState("otp"); // "otp" | "success"
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
@@ -54,7 +55,7 @@ export default function EmailChangeModal({ newEmail, onVerified, onWrongEmail, o
     setError("");
     setLoading(true);
     try {
-      await verifyEmail({ email: newEmail, token: otp.join("") });
+      await onSubmitOtp(otp.join(""));
       setStep("success");
       setTimeout(() => onVerified(), 1800);
     } catch (err) {

@@ -42,6 +42,7 @@ function shapePlan(raw) {
     unpaidCount: m.membersUnpaid ?? 0,
     totalCount: m.audienceSize ?? 0,
     currency: m.currency ?? "NGN",
+    dueAt: raw.dueAt ?? null,
   };
 }
 

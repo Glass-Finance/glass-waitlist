@@ -52,9 +52,13 @@ export function isMobileSession() {
   }
 }
 
-// Public production origin — used to build the absolute URL a QR code
-// points to, since the phone scanning it isn't on the same dev/local origin.
-const APP_ORIGIN = "https://glasspay.app";
+// Public origin for the app. VITE_APP_URL pins this to the production
+// domain in deployed builds; in local dev it falls back to whatever
+// origin Vite is serving on (http://localhost:5173), so invite links
+// copied during development actually resolve instead of going to a
+// hardcoded domain that may not be live.
+export const APP_ORIGIN =
+  import.meta.env.VITE_APP_URL ?? window.location.origin;
 
 // Builds the absolute URL for a path (with its query string preserved,
 // e.g. an invite token) so a phone can open it directly after scanning.
