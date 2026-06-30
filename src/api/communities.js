@@ -34,14 +34,11 @@ export const updateCommunityMember = (communityId, memberId, payload) =>
   client.patch(`/communities/${communityId}/members/${memberId}`, payload);
 
 // PATCH /api/v1/communities/{communityIdentifier}/members/{memberId}/remove
-// DELETE on this route is confirmed 405 (live network trace: "Request
-// method 'DELETE' is not supported") -- a 405 means the route exists, just
-// not for that method. The member record carries an exitedAt field that's
-// null until someone leaves, and the member-initiated equivalent
-// (leaveCommunity in members.js) is PATCH .../leave, so this mirrors that
-// same dedicated-action shape for the admin-initiated side rather than a
-// plain PATCH with a guessed status payload. Unconfirmed against the live
-// backend yet -- check the actual response if this still 404s/405s.
+// Confirmed via backend Swagger docs: "Remove community member; platform
+// admins may use the same endpoint with broader permission." No request
+// body needed -- DELETE on this route was 405, the Swagger only documents
+// PATCH here. Mirrors the member-self-removal (leaveCommunity) which is
+// also a PATCH with no body.
 export const removeCommunityMember = (communityId, memberId) =>
   client.patch(`/communities/${communityId}/members/${memberId}/remove`);
 
