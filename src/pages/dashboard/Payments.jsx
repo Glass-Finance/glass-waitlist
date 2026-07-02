@@ -255,6 +255,9 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
       paymentType: planType === "recurring" ? "RECURRING" : "ONE_TIME",
       slug: slugState.slug,
       activateImmediately: form.activateImmediately ?? true,
+      audience: "ALL_MEMBERS",
+      visibility: "PUBLIC",
+      amountMode: "FIXED",
       ...(form.description?.trim() ? { description: form.description.trim() } : {}),
       ...(planType === "recurring" ? {
         recurringPlan: {
