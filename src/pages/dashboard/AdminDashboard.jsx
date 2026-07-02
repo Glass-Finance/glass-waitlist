@@ -668,7 +668,7 @@ function DashboardContent({ isPaying, communityId }) {
     },
     {
       label: "Active Plans",
-      value: plansLoading ? "—" : String(activePlanCount).padStart(2, "0"),
+      value: plansLoading ? "—" : String(activePlanCount),
       icon: activePlansIcon,
     },
   ], [isLoading, plansLoading, members, balances, activePlanCount]);

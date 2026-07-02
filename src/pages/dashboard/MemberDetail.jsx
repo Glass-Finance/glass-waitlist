@@ -118,9 +118,9 @@ export default function MemberDetail() {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-3 mb-5">
         <StatCard label="Total Amount Paid" value={formatNaira(totalPaid)} />
-        <StatCard label="Active Plans" value={String(member.planCount).padStart(2, "0")} />
-        <StatCard label="Plans Yet to pay" value={String(member.totalCount - member.paidCount).padStart(2, "0")} />
-        <StatCard label="Failed Payments" value={String(member.failedCount).padStart(2, "0")} />
+        <StatCard label="Active Plans" value={String(member.planCount)} />
+        <StatCard label="Plans Yet to pay" value={String(member.totalCount - member.paidCount)} />
+        <StatCard label="Failed Payments" value={String(member.failedCount)} />
       </div>
 
       {/* Tabs */}

@@ -197,7 +197,7 @@ export default function Members() {
         <StatCard icon={Users} label="Total Members" value={String(stats.total)} color="#1C2B8A" bg="#E6EEFF" />
         <StatCard icon={UserX} label="Active Members" value={String(stats.active)} color="#dc2626" bg="#FFE9EC" />
         <StatCard icon={Clock} label="Inactive" value={String(stats.inactive)} color="#b45309" bg="#FFF8E7" />
-        <StatCard icon={ShieldCheck} label="Admins" value={String(stats.admins).padStart(2, "0")} color="#7c3aed" bg="#F3EEFF" />
+        <StatCard icon={ShieldCheck} label="Admins" value={String(stats.admins)} color="#7c3aed" bg="#F3EEFF" />
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>

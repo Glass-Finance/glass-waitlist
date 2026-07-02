@@ -827,9 +827,9 @@ export default function Payments() {
       {/* Stats */}
       <div className="grid grid-cols-4 gap-3 mb-5">
         <StatCard icon={Wallet}      label="Total Amount Collected" value={formatNaira(stats.collected)} color="#1C2B8A" bg="#E6EEFF" />
-        <StatCard icon={ListChecks}  label="Active Plans"           value={String(stats.active).padStart(2, "0")}  color="#dc2626" bg="#FFE9EC" />
+        <StatCard icon={ListChecks}  label="Active Plans"           value={String(stats.active)}  color="#dc2626" bg="#FFE9EC" />
         <StatCard icon={Clock}       label="Yet to pay"             value={String(stats.yetToPay)}                 color="#b45309" bg="#FFF8E7" />
-        <StatCard icon={XCircle}     label="Failed Payments"        value={String(stats.failed).padStart(2, "0")}  color="#7c3aed" bg="#F3EEFF" />
+        <StatCard icon={XCircle}     label="Failed Payments"        value={String(stats.failed)}  color="#7c3aed" bg="#F3EEFF" />
       </div>
 
       {/* Tabs */}
