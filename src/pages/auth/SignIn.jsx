@@ -59,7 +59,8 @@ export default function SignIn() {
     if (!isMobileDevice()) return mobileRequiredPath("/member/app-sign-in");
 
     const inviteRes = await getMyInvites();
-    const invites = inviteRes?.data?.data || [];
+    const inviteData = inviteRes?.data?.data;
+    const invites = Array.isArray(inviteData) ? inviteData : (inviteData?.content ?? []);
 
     // Untested against the live backend yet, unlike getMyInvites above —
     // don't let a wrong/broken endpoint here block sign-in entirely.
