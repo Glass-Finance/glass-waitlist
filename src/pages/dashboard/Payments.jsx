@@ -8,7 +8,7 @@ import {
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { useSlug } from "../../hooks/useSlug";
-import { getErrorMessage } from "../../utils/errorHandler";
+import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
 
 const PLAN_STATUS = {
@@ -248,20 +248,24 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
     true;
 
   async function handleSubmit() {
+    const startIso = form.startDate ? new Date(form.startDate).toISOString() : new Date().toISOString();
     const payload = {
-      title: form.name, description: form.description, amount: Number(form.amount),
+      title: form.name,
+      amount: Number(form.amount),
       paymentType: planType === "recurring" ? "RECURRING" : "ONE_TIME",
-      slug: slugState.slug, activateImmediately: form.activateImmediately ?? true,
-      audience: "ALL_MEMBERS", amountMode: "FIXED", visibility: "PUBLIC",
+      slug: slugState.slug,
+      activateImmediately: form.activateImmediately ?? true,
+      ...(form.description?.trim() ? { description: form.description.trim() } : {}),
       ...(planType === "recurring" ? {
         recurringPlan: {
           frequency: form.frequency,
-          startAt: new Date(form.startDate || new Date()).toISOString(),
-          ...(form.billingDay ? { billingDay: Number(form.billingDay) } : { billingDay: new Date(form.startDate || new Date()).getDate() }),
+          startAt: startIso,
+          billingDay: form.billingDay ? Number(form.billingDay) : new Date(startIso).getDate(),
         },
       } : {}),
-      ...(form.startDate && planType !== "recurring" ? { startAt: new Date(form.startDate).toISOString() } : {}),
+      ...(planType !== "recurring" && form.startDate ? { startAt: startIso } : {}),
     };
+    if (import.meta.env.DEV) console.log("[CreatePlan] payload →", payload);
     const ok = await onCreate(payload);
     if (ok) setSuccess(true);
   }
@@ -801,13 +805,22 @@ export default function Payments() {
   }), [plans]);
 
   async function handleCreate(payload) {
-    try { await planPlans.create.mutateAsync(payload); return true; }
-    catch { return false; }
+    try {
+      await planPlans.create.mutateAsync(payload);
+      return true;
+    } catch (err) {
+      notifyError(err, { context: "Create payment plan" });
+      return false;
+    }
   }
 
   async function handleSaveEdit(paymentLinkId, payload) {
-    try { await planPlans.update.mutateAsync({ paymentLinkId, payload }); setEditingPlan(null); }
-    catch { /* error surfaced via mutation */ }
+    try {
+      await planPlans.update.mutateAsync({ paymentLinkId, payload });
+      setEditingPlan(null);
+    } catch (err) {
+      notifyError(err, { context: "Update payment plan" });
+    }
   }
 
   return (
