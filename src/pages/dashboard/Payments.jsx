@@ -164,15 +164,27 @@ function Step2({ planType, form, onChange, slugState }) {
           </div>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className={`grid gap-3 ${planType === "recurring" ? "grid-cols-2" : "grid-cols-1"}`}>
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Start Date</label>
           <input type="date" className={inputCls} value={form.startDate || ""} onChange={(e) => onChange("startDate", e.target.value)} />
         </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Due Date</label>
-          <input type="date" className={inputCls} value={form.dueDate || ""} onChange={(e) => onChange("dueDate", e.target.value)} />
-        </div>
+        {planType === "recurring" && (
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">
+              Billing Day {form.frequency === "WEEKLY" ? "(1=Mon, 7=Sun)" : "(day of month)"}
+            </label>
+            <input
+              type="number"
+              className={inputCls}
+              value={form.billingDay || ""}
+              min={1}
+              max={form.frequency === "WEEKLY" ? 7 : 28}
+              placeholder={form.frequency === "WEEKLY" ? "1–7" : "1–28"}
+              onChange={(e) => onChange("billingDay", e.target.value)}
+            />
+          </div>
+        )}
       </div>
       <div>
         <label className="block text-xs font-medium text-gray-700 mb-1">Auto Reminder</label>
@@ -198,9 +210,11 @@ function Step3({ planType, form, slug }) {
     { label: "Plan Type", value: planType === "recurring" ? "Recurring" : "One Time" },
     { label: "Amount",    value: form.amount ? formatNaira(Number(form.amount)) : "—" },
     ...(planType === "recurring"
-      ? [{ label: "Frequency", value: (FREQUENCIES.find((f) => f.value === form.frequency)?.label ?? form.frequency) || "—" }]
+      ? [
+          { label: "Frequency", value: (FREQUENCIES.find((f) => f.value === form.frequency)?.label ?? form.frequency) || "—" },
+          { label: "Billing Day", value: form.billingDay || "—" },
+        ]
       : []),
-    { label: "Due Date", value: form.dueDate || "—" },
     { label: "Activate", value: (form.activateImmediately ?? true) ? "Immediately" : "Manually later" },
   ];
   return (
@@ -225,7 +239,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
   const [step, setStep] = useState(1);
   const [planType, setPlanType] = useState("recurring");
   const [success, setSuccess] = useState(false);
-  const [form, setForm] = useState({ name: "", description: "", amount: "", frequency: "", startDate: "", dueDate: "", reminder: "", activateImmediately: true });
+  const [form, setForm] = useState({ name: "", description: "", amount: "", frequency: "", startDate: "", billingDay: "", reminder: "", activateImmediately: true });
   const slugState = useSlug("PAYMENT_LINK");
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const canContinue =
@@ -239,8 +253,13 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
       paymentType: planType === "recurring" ? "RECURRING" : "ONE_TIME",
       slug: slugState.slug, activateImmediately: form.activateImmediately ?? true,
       audience: "ALL_MEMBERS", amountMode: "FIXED", visibility: "PUBLIC",
-      ...(planType === "recurring" ? { recurringPlan: { frequency: form.frequency, startAt: new Date(form.startDate || new Date()).toISOString(), billingDay: new Date(form.startDate || new Date()).getDate() } } : {}),
-      ...(form.dueDate ? { dueAt: new Date(form.dueDate).toISOString() } : {}),
+      ...(planType === "recurring" ? {
+        recurringPlan: {
+          frequency: form.frequency,
+          startAt: new Date(form.startDate || new Date()).toISOString(),
+          ...(form.billingDay ? { billingDay: Number(form.billingDay) } : { billingDay: new Date(form.startDate || new Date()).getDate() }),
+        },
+      } : {}),
       ...(form.startDate && planType !== "recurring" ? { startAt: new Date(form.startDate).toISOString() } : {}),
     };
     const ok = await onCreate(payload);
@@ -305,9 +324,9 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
   const [form, setForm] = useState({
     name: plan.name ?? "",
     amount: String(plan.amount ?? ""),
-    frequency: plan.frequency ?? "",
-    startDate: toDateInput(plan.startAt),
-    dueDate: toDateInput(plan.dueAt),
+    frequency: plan.frequency ?? plan.recurringPlan?.frequency ?? "",
+    startDate: toDateInput(plan.startAt ?? plan.recurringPlan?.startAt),
+    billingDay: String(plan.recurringPlan?.billingDay ?? ""),
   });
   const isRecurring = plan.type === "RECURRING";
 
@@ -315,9 +334,13 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
     const payload = {
       title: form.name,
       amount: Number(form.amount),
-      ...(isRecurring && form.frequency ? { recurringPlan: { frequency: form.frequency } } : {}),
+      ...(isRecurring && form.frequency ? {
+        recurringPlan: {
+          frequency: form.frequency,
+          ...(form.billingDay ? { billingDay: Number(form.billingDay) } : {}),
+        },
+      } : {}),
       ...(form.startDate ? { startAt: new Date(form.startDate).toISOString() } : {}),
-      ...(form.dueDate ? { dueAt: new Date(form.dueDate).toISOString() } : {}),
     };
     await onSave(plan.id, payload);
   }
@@ -359,15 +382,27 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className={`grid gap-3 ${isRecurring ? "grid-cols-2" : "grid-cols-1"}`}>
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1.5">Start Date</label>
               <input type="date" className={inputCls} value={form.startDate} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} />
             </div>
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">End Date</label>
-              <input type="date" className={inputCls} value={form.dueDate} onChange={(e) => setForm((f) => ({ ...f, dueDate: e.target.value }))} />
-            </div>
+            {isRecurring && (
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Billing Day {form.frequency === "WEEKLY" ? "(1=Mon, 7=Sun)" : "(day of month)"}
+                </label>
+                <input
+                  type="number"
+                  className={inputCls}
+                  value={form.billingDay}
+                  min={1}
+                  max={form.frequency === "WEEKLY" ? 7 : 28}
+                  placeholder={form.frequency === "WEEKLY" ? "1–7" : "1–28"}
+                  onChange={(e) => setForm((f) => ({ ...f, billingDay: e.target.value }))}
+                />
+              </div>
+            )}
           </div>
         </div>
 
