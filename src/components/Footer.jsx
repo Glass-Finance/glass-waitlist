@@ -74,7 +74,7 @@
 //             href="/"
 //             className="inline-flex items-center gap-2 no-underline mb-3"
 //           >
-//             <img src={logo} alt="Glass" className="w-7 h-7" decoding="async" loading="lazy" />
+//             <img src={logo} alt="Glass" className="w-7 h-7" />
 //             <span className="font-bold text-[20px] text-white">Glass</span>
 //           </a>
 //         </div>
@@ -194,7 +194,7 @@ export default function Footer() {
             href="/"
             className="inline-flex items-center gap-2 no-underline mb-3"
           >
-            <img src={logo} alt="Glass" className="w-7 h-7" decoding="async" loading="lazy" />
+            <img src={logo} alt="Glass" className="w-7 h-7" />
             <span className="font-bold text-[20px] text-white">Glass</span>
           </a>
         </div>

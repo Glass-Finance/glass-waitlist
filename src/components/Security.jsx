@@ -2,9 +2,9 @@ import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import BlurText from "./ui/BlurText";
 
-import icon1 from "../assets/security/icon1.webp";
-import icon2 from "../assets/security/icon2.webp";
-import icon3 from "../assets/security/icon3.webp";
+import icon1 from "../assets/security/icon1.png";
+import icon2 from "../assets/security/icon2.png";
+import icon3 from "../assets/security/icon3.png";
 
 const cards = [
   {
@@ -232,7 +232,7 @@ export default function Security() {
                         width: 28,
                         height: 28,
                         objectFit: "contain",
-                      }} decoding="async" loading="lazy"
+                      }}
                     />
                   </div>
                 </div>

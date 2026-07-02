@@ -1,14 +1,14 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { motion } from "motion/react";
-import icon1 from "../../assets/icon/frame1.webp";
-import icon2 from "../../assets/icon/frame2.webp";
-import icon3 from "../../assets/icon/frame3.webp";
-import icon4 from "../../assets/icon/frame4.webp";
-import featurePayment from "../../assets/solution/payment.webp";
-import featureReminder from "../../assets/solution/reminder.webp";
-import featureInstant from "../../assets/solution/instant.webp";
-import featureFlexible from "../../assets/solution/flexible.webp";
-import lightBg from "../../assets/solution/bg-light.webp";
+import icon1 from "../../assets/icon/frame1.png";
+import icon2 from "../../assets/icon/frame2.png";
+import icon3 from "../../assets/icon/frame3.png";
+import icon4 from "../../assets/icon/frame4.png";
+import featurePayment from "../../assets/solution/payment.png";
+import featureReminder from "../../assets/solution/reminder.png";
+import featureInstant from "../../assets/solution/instant.png";
+import featureFlexible from "../../assets/solution/flexible.png";
+import lightBg from "../../assets/solution/bg-light.png";
 
 const features = [
   {
@@ -229,7 +229,7 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
       <div ref={sheenRef} style={{ position: "absolute", inset: 0, borderRadius: 14, pointerEvents: "none", zIndex: 20, opacity: 0, transition: "opacity 0.2s ease" }} />
 
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "clamp(16px,3vw,28px) clamp(14px,2.5vw,20px) 0px" }}>
-        <img src={icon} alt="" style={{ width: "clamp(36px,5vw,50px)", height: "clamp(36px,5vw,50px)", objectFit: "contain", flexShrink: 0 }} decoding="async" loading="lazy" />
+        <img src={icon} alt="" style={{ width: "clamp(36px,5vw,50px)", height: "clamp(36px,5vw,50px)", objectFit: "contain", flexShrink: 0 }} />
         <div style={{ minWidth: 0 }}>
           <h3 style={{ fontSize: "clamp(16px,2.5vw,18px)", fontWeight: 700, color: "#0f1d6e", lineHeight: 1.3, marginBottom: 6 }}>
             {title}
@@ -241,9 +241,9 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
       </div>
 
       <div className="solution-illus" style={{ position: "relative", height: "clamp(160px, 45vw, 240px)", overflow: "hidden" }}>
-        <img src={lightBg} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.3 }} draggable={false} decoding="async" loading="lazy" />
+        <img src={lightBg} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.3 }} draggable={false} />
         <div className="solution-fade" style={{ position: "absolute", top: 0, left: 0, right: 0, height: "18%", background: "linear-gradient(to bottom, #EFEFF1 0%, rgba(239,239,241,0.7) 55%, transparent 100%)", pointerEvents: "none", zIndex: 5 }} />
-        <img src={illustration} alt={title} style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "85%", height: "auto", objectFit: "contain", zIndex: 10 }} draggable={false} decoding="async" loading="lazy" />
+        <img src={illustration} alt={title} style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "85%", height: "auto", objectFit: "contain", zIndex: 10 }} draggable={false} />
       </div>
     </div>
   );

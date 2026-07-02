@@ -13,7 +13,7 @@ import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 
 // ── Import your actual assets ──────────────────────────────────────────────
 import glassLogo from "../../../assets/cta/ctalogo.png";
-import authHeroBg from "../../../assets/auth/mobile-auth.webp";
+import authHeroBg from "../../../assets/auth/mobile-auth.png";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -147,7 +147,7 @@ function MobileShell({ children, step }) {
             src={authHeroBg}
             alt=""
             className="absolute inset-0 w-full h-full object-cover"
-            draggable={false} decoding="async" loading="lazy"
+            draggable={false}
           />
 
           {/* Logo */}
@@ -156,7 +156,7 @@ function MobileShell({ children, step }) {
             alt="Glass"
             className="absolute top-10 left-5 h-9 w-auto object-contain"
             draggable={false}
-            // style={{ filter: "brightness(0) invert(1)" }} decoding="async" loading="lazy"
+            // style={{ filter: "brightness(0) invert(1)" }}
           />
           {/* Tagline */}
           {/* <p

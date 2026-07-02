@@ -15,7 +15,7 @@ export default function CheckEmail() {
       {/* Glass logo top left */}
       <header className="px-8 py-3 flex-shrink-0">
         <div className="flex items-center gap-2">
-          <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain" decoding="async" loading="lazy" />
+          <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain" />
           <span className="font-semibold text-gray-900 text-base" style={{ fontFamily: "var(--font-sans)" }}>
             Glass
           </span>

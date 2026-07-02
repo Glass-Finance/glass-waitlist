@@ -1,6 +1,6 @@
 // import { useEffect, useRef } from "react";
 // import { Clock, CreditCard, Eye, Lightbulb } from "lucide-react";
-// import Problem from "../../assets/problem2.webp";
+// import Problem from "../../assets/problem2.png";
 // import BlurText from "../ui/BlurText";
 
 // const problems = [
@@ -157,7 +157,7 @@
 //                 alt="Manual reconciliation on laptop and phone"
 //                 className="absolute inset-0 w-full h-full object-cover"
 //                 style={{ objectPosition: "50% 40%" }}
-// decoding="async" loading="lazy"               />
+//               />
 //             </div>
 
 //             <div
@@ -200,7 +200,7 @@
 
 import { useEffect, useRef } from "react";
 import { Clock, CreditCard, Eye, Lightbulb } from "lucide-react";
-import Problem from "../../assets/problem2.webp";
+import Problem from "../../assets/problem2.png";
 import BlurText from "../ui/BlurText";
 
 const problems = [
@@ -362,7 +362,7 @@ export default function MembersProblem() {
                 src={Problem}
                 alt="Manual reconciliation on laptop and phone"
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{ objectPosition: "50% 40%" }} decoding="async" loading="lazy"
+                style={{ objectPosition: "50% 40%" }}
               />
             </div>
 

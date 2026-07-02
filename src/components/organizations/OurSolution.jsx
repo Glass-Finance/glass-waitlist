@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import icon1 from "../../assets/icon/frame1.webp";
-import icon2 from "../../assets/icon/frame2.webp";
-import icon3 from "../../assets/icon/frame3.webp";
-import icon4 from "../../assets/icon/frame4.webp";
-import featureAutomate from "../../assets/solution/automate.webp";
-import featureRecover from "../../assets/solution/recover.webp";
-import featureProof from "../../assets/solution/proof.webp";
-import featureMonitor from "../../assets/solution/monitor.webp";
-import Overlay from "../../assets/Overlay2.webp";
-import lightBg from "../../assets/solution/bg-light.webp";
+import icon1 from "../../assets/icon/frame1.png";
+import icon2 from "../../assets/icon/frame2.png";
+import icon3 from "../../assets/icon/frame3.png";
+import icon4 from "../../assets/icon/frame4.png";
+import featureAutomate from "../../assets/solution/automate.png";
+import featureRecover from "../../assets/solution/recover.png";
+import featureProof from "../../assets/solution/proof.png";
+import featureMonitor from "../../assets/solution/monitor.png";
+import Overlay from "../../assets/Overlay2.png";
+import lightBg from "../../assets/solution/bg-light.png";
 
 const features = [
   {
@@ -281,7 +281,7 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
             height: "clamp(36px,5vw,50px)",
             objectFit: "contain",
             flexShrink: 0,
-          }} decoding="async" loading="lazy"
+          }}
         />
         <div style={{ minWidth: 0 }}>
           {/* Title types first */}
@@ -330,7 +330,7 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
             objectFit: "cover",
             opacity: 0.3,
           }}
-          draggable={false} decoding="async" loading="lazy"
+          draggable={false}
         />
         <div
           className="solution-fade"
@@ -359,7 +359,7 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
             objectFit: "contain",
             zIndex: 10,
           }}
-          draggable={false} decoding="async" loading="lazy"
+          draggable={false}
         />
       </div>
     </div>

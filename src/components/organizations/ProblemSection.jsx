@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 // import { useEffect, useRef } from "react";
 // import { Clock, Eye, Lightbulb } from "lucide-react";
-// import Problem from "../../assets/problem.webp";
-// import Overlay from "../../assets/Overlay.webp";
+// import Problem from "../../assets/problem.png";
+// import Overlay from "../../assets/Overlay.png";
 
 // const problems = [
 //   {
@@ -100,7 +100,7 @@
 //                 alt="Manual reconciliation on laptop and phone"
 //                 className="absolute inset-0 w-full h-full object-cover"
 //                 style={{ objectPosition: "50% 40%" }}
-// decoding="async" loading="lazy"               />
+//               />
 //             </div>
 
 //             <div
@@ -153,7 +153,7 @@
 
 import { useEffect, useRef } from "react";
 import { Clock, Eye, Lightbulb } from "lucide-react";
-import Problem from "../../assets/problem.webp";
+import Problem from "../../assets/problem.png";
 import BlurText from "../ui/BlurText";
 
 const problems = [
@@ -312,7 +312,7 @@ export default function ProblemSection() {
                 src={Problem}
                 alt="Manual reconciliation on laptop and phone"
                 className="absolute inset-0 w-full h-full object-cover"
-                style={{ objectPosition: "50% 40%" }} decoding="async" loading="lazy"
+                style={{ objectPosition: "50% 40%" }}
               />
             </div>
 

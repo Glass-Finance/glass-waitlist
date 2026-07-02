@@ -4,8 +4,8 @@ import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
-import waveBg from "../../assets/hero/hero.webp";
-import iphone from "../../assets/hero/iphone.webp";
+import waveBg from "../../assets/hero/hero.jpg";
+import iphone from "../../assets/hero/iphone.png";
 import BlurText from "../ui/BlurText";
 import VariableProximity from "../ui/VariableProximity";
 import MembersDashboard from "../MemberDashboardOverlay";
@@ -276,7 +276,7 @@ export default function MembersHero() {
                 zIndex: 10,
                 objectFit: "contain",
               }}
-              draggable={false} decoding="async" loading="lazy"
+              draggable={false}
             />
           </motion.div>
         </div>
@@ -400,7 +400,7 @@ export default function MembersHero() {
                 display: "block",
                 filter: "drop-shadow(0 16px 40px rgba(120,10,160,0.5))",
               }}
-              draggable={false} decoding="async" loading="lazy"
+              draggable={false}
             />
           </div>
         </div>

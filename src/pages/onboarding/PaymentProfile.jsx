@@ -15,7 +15,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bell, ChevronDown, Check } from "lucide-react";
 import GlassLogo from "../../assets/Glass.png";
-import Background from "../../assets/background.webp";
+import Background from "../../assets/background.png";
 import client from "../../api/client";
 import { notifyError } from "../../utils/errorHandler";
 
@@ -166,7 +166,7 @@ export default function PaymentProfile() {
 
       <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-2">
-          <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" decoding="async" loading="lazy" />
+          <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
         </div>
         <div className="flex items-center gap-4">

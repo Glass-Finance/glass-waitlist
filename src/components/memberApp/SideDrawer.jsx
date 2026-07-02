@@ -76,7 +76,7 @@ export default function SideDrawer({ open, onClose }) {
               <img
                 src="/Glass.png"
                 alt="Glass"
-                style={{ width: 30, height: 30 }} decoding="async" loading="lazy"
+                style={{ width: 30, height: 30 }}
               />
             </div>
             <span style={{ fontSize: 18, fontWeight: 500, color: "#111" }}>

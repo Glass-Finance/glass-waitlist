@@ -77,7 +77,7 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
             src={step.img}
             alt={step.label}
             className="w-full h-auto block"
-            draggable={false} decoding="async" loading="lazy"
+            draggable={false}
           />
           <div style={glassBadge}>
             <span
@@ -115,7 +115,7 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
             ref={iconRef}
             src={step.stepIcon}
             alt=""
-            style={{ width: 32, height: 32, objectFit: "contain", marginBottom: 8 }} decoding="async" loading="lazy"
+            style={{ width: 32, height: 32, objectFit: "contain", marginBottom: 8 }}
           />
           <p style={{ fontSize: 12, fontWeight: 700, color: "#0f1d6e", lineHeight: 1.3, margin: 0 }}>
             {step.label}
@@ -135,12 +135,12 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
             ref={iconRef}
             src={step.stepIcon}
             alt=""
-            style={{ width: 40, height: 40, objectFit: "contain", marginBottom: 10 }} decoding="async" loading="lazy"
+            style={{ width: 40, height: 40, objectFit: "contain", marginBottom: 10 }}
           />
           <p className="text-[13px] font-bold text-[#0f1d6e] leading-snug">{step.label}</p>
         </div>
         <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
-          <img src={step.img} alt={step.label} className="w-full h-auto block" draggable={false} decoding="async" loading="lazy" />
+          <img src={step.img} alt={step.label} className="w-full h-auto block" draggable={false} />
           <div ref={badgeRef} style={{ ...glassBadge, bottom: 16, right: 16, padding: "10px 18px" }}>
             <span
               style={{

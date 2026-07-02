@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { Reveal } from "../Reveal";
 import { motion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import waveBg from "../../assets/hero/hero.webp";
+import waveBg from "../../assets/hero/hero.jpg";
 
 // ─── Toast data ───────────────────────────────────────────────────────────────
 const TOASTS = [
@@ -290,8 +290,6 @@ function DashboardOverlay() {
                   onError={(e) => {
                     e.target.style.display = "none";
                   }}
-                  decoding="async"
-                  loading="lazy"
                 />
               </div>
               <div

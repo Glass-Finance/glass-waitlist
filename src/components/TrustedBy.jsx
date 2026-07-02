@@ -79,8 +79,6 @@ export default function TrustedBy() {
                   e.target.style.display = "none";
                   e.target.parentElement.innerHTML = `<span style="color:#9099b2;font-weight:600;font-size:15px;white-space:nowrap">${item.name}</span>`;
                 }}
-                decoding="async"
-                loading="lazy"
               />
             </div>
           ))}
