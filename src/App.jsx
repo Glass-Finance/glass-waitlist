@@ -8,6 +8,7 @@ import {
 // ── Landing pages ──────────────────────────────────────────────────────────────
 import OrganizationsHome from "./pages/OrganizationsHome";
 import MembersHome from "./pages/MembersHome";
+import InviteLanding from "./pages/InviteLanding";
 
 // ── Auth pages ─────────────────────────────────────────────────────────────────
 import SignUp from "./pages/auth/SignUp";
@@ -80,6 +81,9 @@ function App() {
         {/* ── Public landing ── */}
         <Route path="/" element={<OrganizationsHome />} />
         <Route path="/members" element={<MembersHome />} />
+
+        {/* ── Invite deep-link — not device-gated so email links work on any device ── */}
+        <Route path="/invite" element={<InviteLanding />} />
 
         {/* ── Auth ──
             /sign-up is the COMMUNITY OWNER entry point (desktop-first,

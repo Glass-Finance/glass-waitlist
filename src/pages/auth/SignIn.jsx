@@ -58,6 +58,11 @@ export default function SignIn() {
     // never built for that viewport.
     if (!isMobileDevice()) return mobileRequiredPath("/member/app-sign-in");
 
+    // Honor a ?return= param set by /invite landing page (or any deep link).
+    // Only trust paths that start with /member/ to prevent open redirect.
+    const returnTo = new URLSearchParams(location.search).get("return");
+    if (returnTo && returnTo.startsWith("/member/")) return returnTo;
+
     const inviteRes = await getMyInvites();
     const inviteData = inviteRes?.data?.data;
     const invites = Array.isArray(inviteData) ? inviteData : (inviteData?.content ?? []);
