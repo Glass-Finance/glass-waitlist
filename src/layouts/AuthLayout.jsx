@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import AuthPanel from "../assets/auth/auth-panel.png";
+import AuthPanel from "../assets/auth/auth-panel.webp";
 import glassLogo from "../assets/cta/ctalogo.png";
 
 export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
@@ -17,6 +17,8 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
             src={AuthPanel}
             alt="Glass Finance"
             className="absolute inset-0 w-full h-full object-cover"
+            fetchpriority="high"
+            decoding="async"
           />
 
           {/* Logo */}

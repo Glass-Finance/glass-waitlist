@@ -240,7 +240,7 @@
 //                 src={community.logo}
 //                 alt={community.name}
 //                 className="w-10 h-10 rounded object-cover flex-shrink-0"
-//               />
+// decoding="async" loading="lazy"               />
 //             ) : (
 //               <div
 //                 className={`w-10 h-10 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
@@ -595,7 +595,7 @@ function CommunityCard({ community, onClick }) {
               <img
                 src={logoUrl}
                 alt={community.name}
-                className="w-10 h-10 rounded object-cover flex-shrink-0"
+                className="w-10 h-10 rounded object-cover flex-shrink-0" decoding="async" loading="lazy"
               />
             ) : (
               <div

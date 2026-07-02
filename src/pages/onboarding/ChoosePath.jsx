@@ -1,9 +1,9 @@
 // import { useState } from "react";
 // import { useNavigate, useLocation } from "react-router-dom";
 // import GlassLogo from "../../assets/Glass.png";
-// import CreateCommunityIcon from "../../assets/auth/create-community.png";
-// import JoinCommunityIcon from "../../assets/auth/join-community.png";
-// import Background from "../../assets/background.png";
+// import CreateCommunityIcon from "../../assets/auth/create-community.webp";
+// import JoinCommunityIcon from "../../assets/auth/join-community.webp";
+// import Background from "../../assets/background.webp";
 
 // export default function ChoosePath() {
 //   const navigate = useNavigate();
@@ -46,7 +46,7 @@
 //       {/* ── Navbar ── */}
 //       <header className="flex items-center px-8 py-5 flex-shrink-0">
 //         <div className="flex items-center gap-2">
-//           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
+//           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" decoding="async" loading="lazy" />
 //           <span className="font-bold text-gray-900 text-base">Glass</span>
 //         </div>
 //       </header>
@@ -94,7 +94,7 @@
 
 //                 {/* Icon */}
 //                 <div className="mt-6 mb-5">
-//                   <img src={option.icon} alt={option.title} className="w-14 h-14 object-contain mx-auto" />
+//                   <img src={option.icon} alt={option.title} className="w-14 h-14 object-contain mx-auto" decoding="async" loading="lazy" />
 //                 </div>
 
 //                 {/* Text */}
@@ -135,9 +135,9 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import GlassLogo from "../../assets/Glass.png";
-import CreateCommunityIcon from "../../assets/auth/create-community.png";
-import JoinCommunityIcon from "../../assets/auth/join-community.png";
-import Background from "../../assets/background.png";
+import CreateCommunityIcon from "../../assets/auth/create-community.webp";
+import JoinCommunityIcon from "../../assets/auth/join-community.webp";
+import Background from "../../assets/background.webp";
 
 export default function ChoosePath() {
   const navigate = useNavigate();
@@ -169,7 +169,7 @@ export default function ChoosePath() {
     >
       <header className="flex items-center px-8 py-5 flex-shrink-0">
         <div className="flex items-center gap-2">
-          <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
+          <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" decoding="async" loading="lazy" />
           <span className="font-bold text-gray-900 text-base">Glass</span>
         </div>
       </header>
@@ -206,7 +206,7 @@ export default function ChoosePath() {
                   )}
                 </div>
                 <div className="mt-6 mb-5">
-                  <img src={option.icon} alt={option.title} className="w-14 h-14 object-contain mx-auto" />
+                  <img src={option.icon} alt={option.title} className="w-14 h-14 object-contain mx-auto" decoding="async" loading="lazy" />
                 </div>
                 <h3 className="font-semibold text-gray-900 text-base mb-2">{option.title}</h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{option.description}</p>

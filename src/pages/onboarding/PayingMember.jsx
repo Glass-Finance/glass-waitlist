@@ -1,9 +1,9 @@
 // import { useState } from "react";
 // import { useNavigate, useLocation } from "react-router-dom";
 // import GlassLogo from "../../assets/Glass.png";
-// import PayingMemberIcon from "../../assets/auth/paying-dues.png";
-// import ExemptPaymentIcon from "../../assets/auth/exempt-payments.png";
-// import Background from "../../assets/background.png";
+// import PayingMemberIcon from "../../assets/auth/paying-dues.webp";
+// import ExemptPaymentIcon from "../../assets/auth/exempt-payments.webp";
+// import Background from "../../assets/background.webp";
 
 // export default function PayingMember() {
 //   const navigate = useNavigate();
@@ -37,7 +37,7 @@
 //     >
 //       {/* Glass logo top left */}
 //       <div className="absolute top-5 left-8 flex items-center gap-2">
-//         <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
+//         <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" decoding="async" loading="lazy" />
 //         <span className="font-semibold text-gray-900" style={{ fontFamily: "var(--font-sans)" }}>Glass</span>
 //       </div>
 
@@ -82,7 +82,7 @@
 
 //                 {/* Icon */}
 //                 <div className="mb-3 mt-2">
-//                   <img src={opt.icon} alt={opt.label} className="w-12 h-12 object-contain mx-auto" />
+//                   <img src={opt.icon} alt={opt.label} className="w-12 h-12 object-contain mx-auto" decoding="async" loading="lazy" />
 //                 </div>
 
 //                 {/* Label */}
@@ -123,9 +123,9 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import GlassLogo from "../../assets/Glass.png";
-import PayingMemberIcon from "../../assets/auth/paying-dues.png";
-import ExemptPaymentIcon from "../../assets/auth/exempt-payments.png";
-import Background from "../../assets/background.png";
+import PayingMemberIcon from "../../assets/auth/paying-dues.webp";
+import ExemptPaymentIcon from "../../assets/auth/exempt-payments.webp";
+import Background from "../../assets/background.webp";
 
 export default function PayingMember() {
   const navigate = useNavigate();
@@ -149,7 +149,7 @@ export default function PayingMember() {
       style={{ backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
     >
       <div className="absolute top-5 left-8 flex items-center gap-2">
-        <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
+        <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" decoding="async" loading="lazy" />
         <span className="font-semibold text-gray-900">Glass</span>
       </div>
 
@@ -185,7 +185,7 @@ export default function PayingMember() {
                   )}
                 </div>
                 <div className="mb-3 mt-2">
-                  <img src={opt.icon} alt={opt.label} className="w-12 h-12 object-contain mx-auto" />
+                  <img src={opt.icon} alt={opt.label} className="w-12 h-12 object-contain mx-auto" decoding="async" loading="lazy" />
                 </div>
                 <span className="text-sm font-medium text-gray-900">{opt.label}</span>
               </button>

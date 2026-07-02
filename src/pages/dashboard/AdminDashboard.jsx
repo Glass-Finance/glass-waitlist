@@ -5,14 +5,14 @@
 // } from "lucide-react";
 // import Sidebar from "../../components/dashboard/Sidebar";
 // import Topbar from "../../components/dashboard/Topbar";
-// import totalMembersIcon     from "../../assets/dashboard/tdesign-member.png";
-// import inactiveMembersIcon  from "../../assets/dashboard/inactive-members.png";
-// import totalContribIcon     from "../../assets/dashboard/tcontributions.png";
-// import activePlansIcon      from "../../assets/dashboard/active-plans.png";
-// import TimerIcon            from "../../assets/dashboard/timer.png";
-// import RecurringPayment from "../../assets/dashboard/recurring-payment.png";
-// import OneTimePayment from "../../assets/dashboard/one-time-payment.png";
-// import Background from "../../assets/dashboard/dashbackground.png"
+// import totalMembersIcon     from "../../assets/dashboard/tdesign-member.webp";
+// import inactiveMembersIcon  from "../../assets/dashboard/inactive-members.webp";
+// import totalContribIcon     from "../../assets/dashboard/tcontributions.webp";
+// import activePlansIcon      from "../../assets/dashboard/active-plans.webp";
+// import TimerIcon            from "../../assets/dashboard/timer.webp";
+// import RecurringPayment from "../../assets/dashboard/recurring-payment.webp";
+// import OneTimePayment from "../../assets/dashboard/one-time-payment.webp";
+// import Background from "../../assets/dashboard/dashbackground.webp"
 
 
 // // ── Data ──────────────────────────────────────────────────────────────────────
@@ -127,7 +127,7 @@
 //               <div className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center ${sel ? "bg-[#002FA7] border-[#002FA7]" : "border-gray-300 bg-transparent"}`}>
 //                 {sel && <Check size={10} color="white" strokeWidth={3}/>}
 //               </div>
-//               <div className="mt-5 mb-2"><img src={opt.icon} alt={opt.title} className="w-6 h-6 mx-auto" /></div>
+//               <div className="mt-5 mb-2"><img src={opt.icon} alt={opt.title} className="w-6 h-6 mx-auto" decoding="async" loading="lazy" /></div>
 //               <p className="text-md font-small text-gray-900 text-center">{opt.title}</p>
 //               <p className="text-xs text-gray-500 text-center">{opt.desc}</p>
 //             </button>
@@ -338,7 +338,7 @@
 //               <Info size={14} className="text-[#002FA7]"/>
 //             </div>
 //             <div className="flex items-center gap-2.5">
-//               <img src={s.icon} alt={s.label} className="w-8 h-8 object-contain flex-shrink-0"/>
+//               <img src={s.icon} alt={s.label} className="w-8 h-8 object-contain flex-shrink-0" decoding="async" loading="lazy"/>
 //               <span className="text-[15px] font-bold text-black">{s.value}</span>
 //             </div>
 //           </div>
@@ -497,7 +497,7 @@
 //                     <td className="px-5 py-3">
 //                       <div className="flex items-center gap-2">
 //                         <button className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center hover:bg-gray-50 cursor-pointer">
-//                           <img src={TimerIcon} className="w-2.5 h-2.5 object-contain" alt="timer"/>
+//                           <img src={TimerIcon} className="w-2.5 h-2.5 object-contain" alt="timer" decoding="async" loading="lazy"/>
 //                         </button>
 //                         <button className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer">
 //                           <MoreHorizontal size={12}/>
@@ -541,14 +541,14 @@ import { useCommunityDashboard } from "../../hooks/useCommunityDashboard";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { usePayments, useInitiatePayment } from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
-import totalMembersIcon    from "../../assets/dashboard/tdesign-member.png";
-import inactiveMembersIcon from "../../assets/dashboard/inactive-members.png";
-import totalContribIcon    from "../../assets/dashboard/tcontributions.png";
-import activePlansIcon     from "../../assets/dashboard/active-plans.png";
-import TimerIcon           from "../../assets/dashboard/timer.png";
-import RecurringPayment    from "../../assets/dashboard/recurring-payment.png";
-import OneTimePayment      from "../../assets/dashboard/one-time-payment.png";
-import Background          from "../../assets/dashboard/dashbackground.png";
+import totalMembersIcon    from "../../assets/dashboard/tdesign-member.webp";
+import inactiveMembersIcon from "../../assets/dashboard/inactive-members.webp";
+import totalContribIcon    from "../../assets/dashboard/tcontributions.webp";
+import activePlansIcon     from "../../assets/dashboard/active-plans.webp";
+import TimerIcon           from "../../assets/dashboard/timer.webp";
+import RecurringPayment    from "../../assets/dashboard/recurring-payment.webp";
+import OneTimePayment      from "../../assets/dashboard/one-time-payment.webp";
+import Background          from "../../assets/dashboard/dashbackground.webp";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function formatNaira(amount) {
@@ -791,7 +791,7 @@ function DashboardContent({ isPaying, communityId }) {
               <Info size={13} className="text-[#002FA7]"/>
             </div>
             <div className="flex items-center gap-2.5">
-              <img src={s.icon} alt={s.label} className="w-7 h-7 object-contain flex-shrink-0"/>
+              <img src={s.icon} alt={s.label} className="w-7 h-7 object-contain flex-shrink-0" decoding="async" loading="lazy"/>
               {isLoading ? (
                 <Skeleton className="h-4 w-16" />
               ) : (
@@ -1097,7 +1097,7 @@ function DashboardContent({ isPaying, communityId }) {
                             title="Send reminder — coming soon"
                             className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center cursor-not-allowed opacity-40"
                           >
-                            <img src={TimerIcon} className="w-2.5 h-2.5 object-contain" alt="Send reminder"/>
+                            <img src={TimerIcon} className="w-2.5 h-2.5 object-contain" alt="Send reminder" decoding="async" loading="lazy"/>
                           </button>
                           <button
                             disabled

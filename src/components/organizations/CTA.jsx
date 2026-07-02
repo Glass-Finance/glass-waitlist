@@ -26,12 +26,12 @@ import BlurText from "../ui/BlurText";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 
-import icon1 from "../../assets/cta/icon1.png";
-import icon2 from "../../assets/cta/icon2.png";
-import icon3 from "../../assets/cta/icon3.png";
-import icon4 from "../../assets/cta/icon4.png";
-import icon5 from "../../assets/cta/icon5.png";
-import icon6 from "../../assets/cta/icon6.png";
+import icon1 from "../../assets/cta/icon1.webp";
+import icon2 from "../../assets/cta/icon2.webp";
+import icon3 from "../../assets/cta/icon3.webp";
+import icon4 from "../../assets/cta/icon4.webp";
+import icon5 from "../../assets/cta/icon5.webp";
+import icon6 from "../../assets/cta/icon6.webp";
 import logo from "../../assets/cta/ctalogo.png";
 
 /* ─── Icon layout config ───────────────────────────────────────────── */
@@ -188,7 +188,7 @@ function FloatingIcon({ icon, inView }) {
           height: "100%",
           objectFit: "contain",
           display: "block",
-        }}
+        }} decoding="async" loading="lazy"
       />
     </div>
   );
@@ -292,7 +292,7 @@ export default function CTA() {
               objectFit: "contain",
               // filter: "brightness(0) invert(1)",
               opacity: 0.88,
-            }}
+            }} decoding="async" loading="lazy"
           />
         </div>
 

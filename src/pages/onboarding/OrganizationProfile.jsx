@@ -72,7 +72,7 @@
 //       {/* ── Navbar ── */}
 //       <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 flex-shrink-0">
 //         <div className="flex items-center gap-2">
-//           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
+//           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" decoding="async" loading="lazy" />
 //           <span className="font-semibold text-base text-gray-900">Glass</span>
 //         </div>
 //         <div className="flex items-center gap-4">
@@ -222,7 +222,7 @@
 //                   onChange={(e) => handleFile(e.target.files[0])}
 //                 />
 //                 {logo ? (
-//                   <img src={logo} alt="preview" className="h-16 object-contain mb-2" />
+//                   <img src={logo} alt="preview" className="h-16 object-contain mb-2" decoding="async" loading="lazy" />
 //                 ) : (
 //                   <Upload size={28} className="text-gray-400 mb-3" />
 //                 )}
@@ -254,7 +254,7 @@
 // import { useNavigate } from "react-router-dom";
 // import { Bell, Upload } from "lucide-react";
 // import GlassLogo from "../../assets/Glass.png";
-// import Background from "../../assets/background.png";
+// import Background from "../../assets/background.webp";
 
 // const CATEGORIES = [
 //   "Alumni Association",
@@ -330,7 +330,7 @@
 //       {/* ── Navbar ── */}
 //       <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-gray-200 flex-shrink-0">
 //         <div className="flex items-center gap-2">
-//           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
+//           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" decoding="async" loading="lazy" />
 //           <span className="font-semibold text-base text-gray-900">Glass</span>
 //         </div>
 //         <div className="flex items-center gap-4">
@@ -474,7 +474,7 @@
 //                   onChange={(e) => handleFile(e.target.files[0])}
 //                 />
 //                 {logo ? (
-//                   <img src={logo} alt="preview" className="h-16 object-contain mb-2" />
+//                   <img src={logo} alt="preview" className="h-16 object-contain mb-2" decoding="async" loading="lazy" />
 //                 ) : (
 //                   <Upload size={28} className="text-gray-400 mb-3" />
 //                 )}
@@ -516,7 +516,7 @@ import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bell, Upload, Check, X as XIcon, Loader2 } from "lucide-react";
 import GlassLogo from "../../assets/Glass.png";
-import Background from "../../assets/background.png";
+import Background from "../../assets/background.webp";
 import client from "../../api/client";
 import { useSlug } from "../../hooks/useSlug";
 import { useAuth } from "../../store/AuthContext";
@@ -650,7 +650,7 @@ export default function OrganizationProfile() {
       {/* Navbar */}
       <header className="flex items-center justify-between px-8 py-4 bg-[#C9CBCF] border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-2">
-          <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
+          <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" decoding="async" loading="lazy" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
         </div>
         <div className="flex items-center gap-4">
@@ -764,7 +764,7 @@ export default function OrganizationProfile() {
                 <input ref={fileRef} type="file" accept="image/png,image/jpeg" className="hidden"
                   onChange={(e) => handleFile(e.target.files[0])} />
                 {logoUrl
-                  ? <img src={logoUrl} alt="preview" className="h-16 object-contain mb-2" />
+                  ? <img src={logoUrl} alt="preview" className="h-16 object-contain mb-2" decoding="async" loading="lazy" />
                   : <Upload size={28} className="text-gray-400 mb-3" />}
                 <p className="text-sm text-gray-500 text-center">
                   <span className="font-medium underline text-[#002FA7]">Upload</span> or Drag and Drop Logo Here

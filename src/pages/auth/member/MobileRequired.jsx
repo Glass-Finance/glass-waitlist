@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import GlassLogo from "../../../assets/Glass.png";
-import Background from "../../../assets/background.png";
+import Background from "../../../assets/background.webp";
 import QRCodeCanvas from "../../../components/dashboard/QRCode";
 import { buildMobileUrl } from "../../../utils/deviceRedirect";
 import { useAuth } from "../../../store/AuthContext";
@@ -30,7 +30,7 @@ export default function MobileRequired() {
     >
       <header className="px-8 py-3 flex-shrink-0">
         <div className="flex items-center gap-2">
-          <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain" />
+          <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain" decoding="async" loading="lazy" />
           <span
             className="font-semibold text-gray-900 text-base"
             style={{ fontFamily: "var(--font-sans)" }}

@@ -1,6 +1,6 @@
 // import { useNavigate, useLocation, Outlet } from "react-router-dom";
 // import { Search } from "lucide-react";
-// import Background from "../../../assets/background.png";
+// import Background from "../../../assets/background.webp";
 
 // const TABS = [
 //   {
@@ -97,7 +97,7 @@
 
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { Search, ChevronRight } from "lucide-react";
-import Background from "../../../assets/background.png";
+import Background from "../../../assets/background.webp";
 
 const TABS = [
   { label: "Account",   defaultPath: "/dashboard/settings/account",                  match: "account"   },
