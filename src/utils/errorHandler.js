@@ -65,6 +65,11 @@ function extractServerMessage(data) {
     return payload.message;
   }
 
+  // { description: "..." } — used by this backend alongside a generic message
+  if (typeof payload.description === "string" && !isTooGeneric(payload.description)) {
+    return payload.description;
+  }
+
   // { error: "..." } — only when it's specific enough to be useful
   if (typeof payload.error === "string" && !isTooGeneric(payload.error)) {
     return payload.error;

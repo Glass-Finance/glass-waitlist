@@ -13,6 +13,17 @@ export const getMyInvites = () =>
 export const getInvite = (inviteId) =>
   client.get(`/communities/invites/${inviteId}`);
 
+// GET /api/v1/communities/{communityIdentifier}/invites
+// — admin: list all invites for a community (filterable by status)
+export const getCommunityInvites = (communityId, params) =>
+  client.get(`/communities/${communityId}/invites`, { params });
+
+// POST /api/v1/communities/{communityIdentifier}/invites
+// — admin: invite a registered user by email; backend sends the invite email
+// payload: { email, roleId, billingExempt? }
+export const createCommunityInvite = (communityId, payload) =>
+  client.post(`/communities/${communityId}/invites`, payload);
+
 // PATCH /api/v1/communities/{communityIdentifier}/invites/{inviteId}/accept
 export const acceptInvite = (communityId, inviteId) =>
   client.patch(`/communities/${communityId}/invites/${inviteId}/accept`);
@@ -22,7 +33,7 @@ export const rejectInvite = (communityId, inviteId) =>
   client.patch(`/communities/${communityId}/invites/${inviteId}/reject`);
 
 // PATCH /api/v1/communities/{communityIdentifier}/invites/{inviteId}/revoke
-// (admin only — included for completeness)
+// (admin only)
 export const revokeInvite = (communityId, inviteId) =>
   client.patch(`/communities/${communityId}/invites/${inviteId}/revoke`);
 

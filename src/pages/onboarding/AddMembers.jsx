@@ -437,7 +437,7 @@ import { notifyError } from "../../utils/errorHandler";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { toastProgress, toastSuccess } from "../../utils/toast";
 import { useRoles } from "../../hooks/useCommunityMembers";
-import { addCommunityMember } from "../../api/communities";
+import { createCommunityInvite } from "../../api/invites";
 
 // Mirrors MemberAccess.jsx's fallback — used when /roles/community hasn't
 // resolved yet (or never returns a "Member" role) so onboarding still has
@@ -658,7 +658,7 @@ export default function AddMembers() {
       if (!communityId) { setError("Community ID missing."); return; }
       const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
       const results = await Promise.allSettled(
-        emails.map((email) => addCommunityMember(communityId, { email, roleId: defaultRoleId }))
+        emails.map((email) => createCommunityInvite(communityId, { email, roleId: defaultRoleId }))
       );
       const succeeded = results.filter((r) => r.status === "fulfilled").length;
       if (succeeded === 0) {
@@ -705,9 +705,9 @@ export default function AddMembers() {
       if (filled.length === 0) { setShowSuccess(true); return; }
       if (!communityId) { setError("Community ID missing."); return; }
 
-      const toastId = toastProgress("Adding members…", "Usually takes 5–10 seconds");
+      const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
       const results = await Promise.allSettled(
-        filled.map((m) => addCommunityMember(communityId, { email: m.email, roleId: m.roleId }))
+        filled.map((m) => createCommunityInvite(communityId, { email: m.email, roleId: m.roleId }))
       );
       const succeeded = results.filter((r) => r.status === "fulfilled").length;
       if (succeeded === 0) {
@@ -716,12 +716,12 @@ export default function AddMembers() {
       }
       const failed = results.length - succeeded;
       toastSuccess(
-        `${succeeded} member${succeeded === 1 ? "" : "s"} added${failed ? `, ${failed} failed` : ""}`,
+        `${succeeded} invite${succeeded === 1 ? "" : "s"} sent${failed ? `, ${failed} failed` : ""}`,
         { id: toastId }
       );
       setShowSuccess(true);
     } catch (err) {
-      setError(notifyError(err, { context: "Add members", fallback: "Failed to add members. You can add them from the dashboard later." }));
+      setError(notifyError(err, { context: "Send invites", fallback: "Failed to send invites. You can invite members from the dashboard later." }));
     } finally {
       setLoading(false);
     }

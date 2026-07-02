@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, UserX, Clock, ShieldCheck } from "lucide-react";
+import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, UserX, Clock, ShieldCheck, Copy, Check } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
+import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
 import { getErrorMessage } from "../../utils/errorHandler";
@@ -104,7 +105,7 @@ export default function Members() {
   const [selected, setSelected] = useState([]);
 
   const { members, obligations, isLoading, error } = useMembersWithPayments(communityId);
-  const { addMember, removeMember } = useCommunityMembers(communityId);
+  const { inviteMember, removeMember } = useCommunityMembers(communityId);
   const { data: rolesData } = useRoles();
   const usingFallbackRoles = !rolesData?.length;
   const roles = usingFallbackRoles ? FALLBACK_ROLES : rolesData;
@@ -145,7 +146,7 @@ export default function Members() {
 
   async function handleAdd(payload) {
     try {
-      await addMember.mutateAsync(payload);
+      await inviteMember.mutateAsync(payload);
       return true;
     } catch {
       return false;
@@ -318,72 +319,53 @@ export default function Members() {
         <AddMemberModal
           onClose={() => setModalOpen(false)}
           onAdd={handleAdd}
-          adding={addMember.isPending}
-          error={addMember.error ? getErrorMessage(addMember.error) : null}
+          adding={inviteMember.isPending}
+          error={inviteMember.error ? getErrorMessage(inviteMember.error) : null}
           roles={roles}
           rolesUnavailable={usingFallbackRoles}
+          inviteLink={communityId ? `${APP_ORIGIN}/member/join?community=${communityId}` : null}
         />
       )}
     </div>
   );
 }
 
-function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable }) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable, inviteLink }) {
   const [email, setEmail] = useState("");
   const [roleId, setRoleId] = useState(roles[0]?.id ?? "");
   const [billingExempt, setBillingExempt] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const ok = await onAdd({
-      firstName: firstName.trim(),
-      lastName: lastName.trim(),
-      email: email.trim(),
-      roleId,
-      billingExempt,
-    });
+    const ok = await onAdd({ email: email.trim(), roleId, billingExempt });
     if (ok) onClose();
   }
 
-  const isReady = email.trim() && firstName.trim() && lastName.trim() && !rolesUnavailable;
+  function copyInviteLink() {
+    if (!inviteLink) return;
+    navigator.clipboard.writeText(inviteLink);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  }
+
+  const isReady = email.trim() && !rolesUnavailable;
+  const isNotRegistered = error?.toLowerCase().includes("registered");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm" onClick={e => e.target === e.currentTarget && onClose()}>
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
         <div className="flex items-start justify-between mb-5">
-          <h2 className="text-base font-semibold text-black">Add Member</h2>
+          <div>
+            <h2 className="text-base font-semibold text-black">Invite Member</h2>
+            <p className="text-xs text-gray-400 mt-0.5">An invite email will be sent to their address.</p>
+          </div>
           <button type="button" onClick={onClose} className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 bg-transparent cursor-pointer"><X size={14} /></button>
         </div>
 
         <div className="flex flex-col gap-3.5">
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-700 mb-1">First Name</label>
-              <input
-                type="text"
-                required
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                placeholder="First name"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1C2B8A]"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Last Name</label>
-              <input
-                type="text"
-                required
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                placeholder="Last name"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1C2B8A]"
-              />
-            </div>
-          </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-1.5">Email</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
               required
@@ -394,11 +376,11 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-1.5">Role</label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Role</label>
             <select
               value={roleId}
               onChange={(e) => setRoleId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-[#1C2B8A] bg-white"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1C2B8A] bg-white"
             >
               {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>
@@ -412,14 +394,36 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
           </label>
         </div>
 
-        {error && <p className="text-xs text-red-500 mt-3">{error}</p>}
+        {error && (
+          <div className="mt-3">
+            <p className="text-xs text-red-500">{error}</p>
+            {isNotRegistered && inviteLink && (
+              <div className="mt-2.5 rounded-lg p-3" style={{ background: "#EEF2FF", border: "1px solid #C7D2FE" }}>
+                <p className="text-xs text-gray-700 mb-2">
+                  Share your community link so they can register and join:
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="flex-1 text-xs text-[#1C2B8A] truncate font-medium">{inviteLink}</span>
+                  <button
+                    type="button"
+                    onClick={copyInviteLink}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#1C2B8A] border-none cursor-pointer flex-shrink-0 hover:opacity-90"
+                  >
+                    {linkCopied ? <Check size={11} /> : <Copy size={11} />}
+                    {linkCopied ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <button
           type="submit"
           disabled={adding || !isReady}
           className="w-full mt-4 px-4 py-2 rounded bg-[#1C2B8A] text-white text-xs font-medium hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
         >
-          {adding ? "Adding…" : "Add Member"}
+          {adding ? "Sending…" : "Send Invite"}
         </button>
       </form>
     </div>

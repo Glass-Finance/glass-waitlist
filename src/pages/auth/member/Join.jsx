@@ -186,7 +186,7 @@ function MobileShell({ children, step }) {
             borderRadius: "20px 20px 0 0",
             marginTop: -28,
             overflowY: "auto",
-            overflow: "hidden",
+            overflowX: "hidden",
           }}
         >
           {children}
@@ -673,6 +673,7 @@ export default function Join() {
     lastName,
     phone,
     password,
+    confirmPassword,
     loading: setLoading,
     setError,
   }) {
@@ -683,6 +684,7 @@ export default function Join() {
         lastName: lastName.trim(),
         phoneNumber: phone.trim(),
         password,
+        confirmPassword,
         ...(token && { inviteToken: token }),
       };
       const authData = await register(payload);
@@ -696,9 +698,15 @@ export default function Join() {
     }
   }
 
-  function handleVerified(authData) {
-    maybeStoreSession(authData);
-    finishAndRoute();
+  async function handleVerified(authData) {
+    if (authData?.accessToken) {
+      await setSession(authData);
+      finishAndRoute();
+    } else {
+      // Verify succeeded but no token returned — direct to sign-in so they
+      // can log in with the account they just created.
+      navigate("/member/app-sign-in", { replace: true });
+    }
   }
 
   return (

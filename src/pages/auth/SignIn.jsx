@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { getMyInvites, getMyCommunityJoinRequests } from "../../api/invites";
@@ -20,7 +20,9 @@ import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/
 // behavior both entry points need.
 export default function SignIn() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+  const isMemberSignIn = location.pathname === "/member/app-sign-in";
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -171,12 +173,21 @@ export default function SignIn() {
 
         <GoogleAuthButton onAuthenticated={handleGoogleAuth} label="signin_with" />
 
-        <p className="text-sm text-center text-gray-500 pb-2">
-          New User?{" "}
-          <Link to="/sign-up" className="font-semibold" style={{ color: "#1C2B8A" }}>
-           Create Account
-          </Link>
-        </p>
+        {isMemberSignIn ? (
+          <p className="text-sm text-center text-gray-500 pb-2">
+            New to Glass?{" "}
+            <span className="font-semibold" style={{ color: "#1C2B8A" }}>
+              Use the invite link your admin shared with you.
+            </span>
+          </p>
+        ) : (
+          <p className="text-sm text-center text-gray-500 pb-2">
+            New User?{" "}
+            <Link to="/sign-up" className="font-semibold" style={{ color: "#1C2B8A" }}>
+              Create Account
+            </Link>
+          </p>
+        )}
       </div>
     </AuthLayout>
   );

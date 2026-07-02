@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getCommunityMembers,
-  addCommunityMember,
   updateCommunityMember,
   removeCommunityMember,
 } from "../api/communities";
+import { createCommunityInvite } from "../api/invites";
 import { getRoles } from "../api/roles";
 
 function unwrapList(res) {
@@ -31,10 +31,10 @@ export function useCommunityMembers(communityId) {
     queryClient.invalidateQueries({ queryKey: ["community", communityId, "members"] });
   }
 
-  const addMember = useMutation({
-    mutationFn: (payload) => addCommunityMember(communityId, payload),
+  const inviteMember = useMutation({
+    mutationFn: (payload) => createCommunityInvite(communityId, payload),
     onSuccess: invalidate,
-    meta: { successMessage: "Member added" },
+    meta: { successMessage: "Invite sent" },
   });
 
   const updateMember = useMutation({
@@ -53,7 +53,7 @@ export function useCommunityMembers(communityId) {
     members: query.data ?? [],
     isLoading: query.isLoading,
     error: query.error,
-    addMember,
+    inviteMember,
     updateMember,
     removeMember,
   };

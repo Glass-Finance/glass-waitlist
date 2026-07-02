@@ -158,14 +158,16 @@ export function AuthProvider({ children }) {
     setToken(authData.accessToken);
     setUser(user);
 
-    pendo.identify({
-      visitor: {
-        id: user.id,
-        email: user.email,
-        platformRoleCode: user.role,
-        emailVerified: user.emailVerified,
-      },
-    });
+    if (typeof pendo !== "undefined") {
+      pendo.identify({
+        visitor: {
+          id: user.id,
+          email: user.email,
+          platformRoleCode: user.role,
+          emailVerified: user.emailVerified,
+        },
+      });
+    }
 
     return user;
   }, [queryClient]);
@@ -205,14 +207,16 @@ export function AuthProvider({ children }) {
     setToken(authData.accessToken);
     setUser(user);
 
-    pendo.identify({
-      visitor: {
-        id: user.id,
-        email: user.email,
-        platformRoleCode: user.role,
-        emailVerified: user.emailVerified,
-      },
-    });
+    if (typeof pendo !== "undefined") {
+      pendo.identify({
+        visitor: {
+          id: user.id,
+          email: user.email,
+          platformRoleCode: user.role,
+          emailVerified: user.emailVerified,
+        },
+      });
+    }
 
     return user;
   }, [queryClient]);
@@ -260,7 +264,7 @@ export function AuthProvider({ children }) {
       });
 
       // Re-identify with enriched profile + community (account) data
-      if (profile.id) {
+      if (profile.id && typeof pendo !== "undefined") {
         const pendoPayload = {
           visitor: {
             id: profile.id,
