@@ -53,7 +53,7 @@ function firstName(user) {
 // ---------------------------------------------------------------------------
 // Hero card
 // ---------------------------------------------------------------------------
-function HeroCard({ nextDue, onPay }) {
+function HeroCard({ nextDue, onPay, communityName }) {
   if (!nextDue) {
     return (
       <div
@@ -63,10 +63,22 @@ function HeroCard({ nextDue, onPay }) {
           background: "#002FA7",
           padding: "28px 20px",
           textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 8,
         }}
       >
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.8)", margin: 0 }}>
-          You're all caught up — nothing due right now.
+        {communityName && communityName !== "Your Community" && (
+          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", margin: 0 }}>
+            {communityName}
+          </p>
+        )}
+        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.9)", margin: 0, fontWeight: 500 }}>
+          You're all caught up
+        </p>
+        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: 0 }}>
+          Nothing due right now.
         </p>
       </div>
     );
@@ -503,7 +515,7 @@ export default function Home() {
         ) : (
           <>
             {/* ── Hero card ───────────────────────────────────────────────────── */}
-            <HeroCard nextDue={nextDue} onPay={handlePay} />
+            <HeroCard nextDue={nextDue} onPay={handlePay} communityName={communityName} />
 
             {/* ── Upcoming Payments ────────────────────────────────────────────── */}
             <div
