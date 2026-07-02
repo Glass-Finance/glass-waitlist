@@ -1,111 +1,87 @@
-import React, { useRef } from "react";
-import Overlay from "../assets/Overlay2.png";
+import { useRef, useEffect } from "react";
+
+const trustedLogos = [
+  { name: "The Babcock Torch", logo: "/logos/babcock-torch.png" },
+  { name: "Babcock University", logo: "/logos/babcock.png" },
+  { name: "Cowrywise", logo: "/logos/cowrywise.png" },
+  { name: "GDG Lagos", logo: "/logos/gdg-lagos.png" },
+  { name: "ICAN", logo: "/logos/ican.png" },
+];
 
 export default function TrustedBy() {
-  const scrollRef = useRef(null);
-  const isDown = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
+  const labelRef = useRef(null);
+  const logoRefs = useRef([]);
 
-  const handleMouseDown = (e) => {
-    isDown.current = true;
-    startX.current = e.pageX - scrollRef.current.offsetLeft;
-    scrollLeft.current = scrollRef.current.scrollLeft;
-  };
+  useEffect(() => {
+    const io1 = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = "1";
+          e.target.style.transform = "translateY(0)";
+          io1.disconnect();
+        }
+      },
+      { threshold: 0.5 }
+    );
 
-  const handleMouseMove = (e) => {
-    if (!isDown.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX.current) * 1.5;
-    scrollRef.current.scrollLeft = scrollLeft.current - walk;
-  };
+    const io2 = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.style.opacity = "1";
+            e.target.style.transform = "translateY(0)";
+            io2.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
 
-  const handleMouseUp = () => {
-    isDown.current = false;
-  };
+    if (labelRef.current) {
+      labelRef.current.style.opacity = "0";
+      labelRef.current.style.transform = "translateY(12px)";
+      labelRef.current.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+      io1.observe(labelRef.current);
+    }
 
-  const trustedLogos = [
-    {
-      name: "The Babcock Torch",
-      logo: "/logos/babcock-torch.png", // Replace with actual path
-      alt: "The Babcock Torch logo",
-    },
+    logoRefs.current.forEach((el, i) => {
+      if (!el) return;
+      el.style.opacity = "0";
+      el.style.transform = "translateY(16px)";
+      el.style.transition = `opacity 0.5s ease ${i * 80}ms, transform 0.55s cubic-bezier(0.22,1,0.36,1) ${i * 80}ms`;
+      io2.observe(el);
+    });
 
-    {
-      name: "GDG Lagos",
-      logo: "/logos/gdg-lagos.png", // Replace with actual path
-      alt: "GDG Lagos logo",
-    },
-  ];
+    return () => { io1.disconnect(); io2.disconnect(); };
+  }, []);
 
   return (
-    <section className="bg-[#F7F8FC] pb-16 px-6 md:px-12 lg:px-24">
-      {/* Same overlay as problem section */}
-      <div
-        className="relative inset-0 z-0 pointer-events-none"
-        style={{
-          backgroundImage: `url(${Overlay})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          opacity: 0.6,
-        }}
-      />
+    <section className="bg-[#F7F8FC] py-16 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <p className="text-2xl font-bold mb-8">
-            Trusted by forward-thinking communities
-          </p>
-        </div>
-
-        {/* Logos Container - Carousel */}
-        <div
-          className="relative overflow-hidden cursor-grab active:cursor-grabbing"
-          ref={scrollRef}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+        <p
+          ref={labelRef}
+          className="text-center text-[13px] font-semibold text-[#9099b2] uppercase tracking-widest mb-10"
         >
-          <div className="flex items-center gap-12 md:gap-16 animate-scroll">
-            {/* First set of logos */}
-            {trustedLogos.map((item, index) => (
-              <div
-                key={`logo-1-${index}`}
-                className="flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100"
-              >
-                <img
-                  src={item.logo}
-                  alt={item.alt}
-                  className="h-12 md:h-16 w-auto object-contain"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                    e.target.parentElement.innerHTML = `<div class="text-gray-400 font-semibold text-lg whitespace-nowrap">${item.name}</div>`;
-                  }}
-                />
-              </div>
-            ))}
-
-            {/* Duplicate set for seamless loop */}
-            {trustedLogos.map((item, index) => (
-              <div
-                key={`logo-2-${index}`}
-                className="flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100"
-              >
-                <img
-                  src={item.logo}
-                  alt={item.alt}
-                  className="h-12 md:h-16 w-auto object-contain"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                    e.target.parentElement.innerHTML = `<div class="text-gray-400 font-semibold text-lg whitespace-nowrap">${item.name}</div>`;
-                  }}
-                />
-              </div>
-            ))}
-          </div>
+          Trusted by forward-thinking communities
+        </p>
+        <div className="flex items-center justify-center gap-10 md:gap-16 flex-wrap">
+          {trustedLogos.map((item, i) => (
+            <div
+              key={item.name}
+              ref={(el) => (logoRefs.current[i] = el)}
+              className="grayscale hover:grayscale-0 opacity-50 hover:opacity-90 transition-all duration-300"
+            >
+              <img
+                src={item.logo}
+                alt={item.name}
+                className="h-10 md:h-14 w-auto object-contain"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  e.target.parentElement.innerHTML = `<span style="color:#9099b2;font-weight:600;font-size:15px;white-space:nowrap">${item.name}</span>`;
+                }}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </section>

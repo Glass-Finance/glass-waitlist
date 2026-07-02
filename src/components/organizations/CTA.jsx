@@ -21,6 +21,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BlurText from "../ui/BlurText";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
@@ -32,8 +33,6 @@ import icon4 from "../../assets/cta/icon4.png";
 import icon5 from "../../assets/cta/icon5.png";
 import icon6 from "../../assets/cta/icon6.png";
 import logo from "../../assets/cta/ctalogo.png";
-
-const TALLY = "https://tally.so/r/WOEblj";
 
 /* ─── Icon layout config ───────────────────────────────────────────── */
 const icons = [
@@ -197,6 +196,7 @@ function FloatingIcon({ icon, inView }) {
 
 /* ─── CTA ──────────────────────────────────────────────────────────── */
 export default function CTA() {
+  const navigate = useNavigate();
   const sectionRef = useRef(null);
   const cardRef = useRef(null);
   const btnRef = useRef(null);
@@ -321,7 +321,7 @@ export default function CTA() {
         </h2>
 
         {/* ── Subtext ── */}
-        <div
+        <p
           style={{
             fontSize: "clamp(13px, 3vw, 16px)",
             color: "rgba(255,255,255,0.52)",
@@ -331,20 +331,13 @@ export default function CTA() {
             zIndex: 5,
           }}
         >
-          <BlurText
-            text="Simplify payments. Eliminate follow-ups."
-            animateBy="words"
-            direction="top"
-            delay={70}
-            stepDuration={0.35}
-            centered
-          />
-        </div>
+          Simplify payments. Eliminate follow-ups.
+        </p>
 
-        {/* ── Button ── */}
-        {/* <button
+        {/* ── Button — magnetic pull on hover ── */}
+        <button
           ref={btnRef}
-          onClick={() => window.open(TALLY, "_blank", "noopener,noreferrer")}
+          onClick={() => navigate("/sign-up")}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -358,21 +351,26 @@ export default function CTA() {
             border: "none",
             cursor: "pointer",
             boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
-            transition: "transform 0.2s ease, box-shadow 0.2s ease",
+            transition: "transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s ease",
             position: "relative",
             zIndex: 5,
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "translateY(-4px) scale(1.03)";
-            e.currentTarget.style.boxShadow =
-              "0 14px 40px rgba(0,0,0,0.35), 0 0 0 3px rgba(255,255,255,0.15)";
+          onMouseMove={(e) => {
+            const btn = e.currentTarget;
+            const r = btn.getBoundingClientRect();
+            const cx = r.left + r.width / 2;
+            const cy = r.top + r.height / 2;
+            const dx = ((e.clientX - cx) / (r.width / 2)) * 10;
+            const dy = ((e.clientY - cy) / (r.height / 2)) * 6;
+            btn.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(1.04)`;
+            btn.style.boxShadow = "0 14px 40px rgba(0,0,0,0.35), 0 0 0 3px rgba(255,255,255,0.15)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0) scale(1)";
+            e.currentTarget.style.transform = "translate(0,0) scale(1)";
             e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.25)";
           }}
         >
-          Join A Community
+          Create Your Community
           <motion.span
             animate={{ x: [0, 5, 0] }}
             transition={{
@@ -384,7 +382,7 @@ export default function CTA() {
           >
             <ArrowRight className="w-4 h-4" />
           </motion.span>
-        </button> */}
+        </button>
       </div>
     </section>
   );

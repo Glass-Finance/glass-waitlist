@@ -5,11 +5,12 @@ import ProblemSection from "../components/organizations/ProblemSection";
 import OurSolution from "../components/organizations/OurSolution";
 import GetStarted from "../components/organizations/GetStarted";
 import Usecases from "../components/Usecases";
-import Security from "../components/Security";
-import WhyGlass from "../components/WhyGlass";
-import CTA from "../components/organizations/CTA";
-import Footer from "../components/Footer";
 import TrustedBy from "../components/TrustedBy";
+import Security from "../components/Security";
+import Pricing from "../components/Pricing";
+import CTA from "../components/organizations/CTA";
+import WhyGlass from "../components/WhyGlass";
+import Footer from "../components/Footer";
 
 export default function OrganizationsHome() {
   useScrollReveal();
@@ -24,6 +25,7 @@ export default function OrganizationsHome() {
       <Usecases />
       <TrustedBy />
       <Security />
+      <Pricing />
       <CTA />
       <WhyGlass />
       <Footer />

@@ -303,13 +303,7 @@ export default function MembersProblem() {
         <div className="text-center mb-16">
           <div className="mb-6">
             <span className="inline-flex items-center border border-[#1C2B8A]/30 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full">
-              <BlurText
-                text="THE PROBLEM"
-                delay={40}
-                animateBy="characters"
-                direction="top"
-                stepDuration={0.28}
-              />
+              THE PROBLEM
             </span>
           </div>
 
@@ -324,16 +318,9 @@ export default function MembersProblem() {
             />
           </h2>
 
-          <div className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed">
-            <BlurText
-              text="Without centralized visibility, time is wasted and trust begins to weaken."
-              delay={40}
-              animateBy="words"
-              direction="top"
-              stepDuration={0.28}
-              centered
-            />
-          </div>
+          <p className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed">
+            Without a central place to pay, receipts pile up in chats and members fall behind without realising it.
+          </p>
         </div>
 
         {/* ── Body ── */}

@@ -91,7 +91,7 @@ export default function WhyGlass() {
   }, []);
 
   return (
-    <section className="relative bg-[#F7F8FC] py-20 md:py-28 overflow-hidden">
+    <section className="relative bg-white py-20 md:py-28 overflow-hidden">
       <div className="max-w-[1140px] mx-auto px-6">
 
         {/* ── Header ── */}
@@ -119,17 +119,9 @@ export default function WhyGlass() {
             />
           </h2>
 
-          {/* Subtext — BlurText, slightly slower stagger */}
-          <div className="text-[16px] text-[#9099b2] max-w-[640px] mx-auto leading-relaxed">
-            <BlurText
-              text="Everything you need to know about using Glass, from setting up dues to tracking payments and ensuring full transparency."
-              animateBy="words"
-              direction="top"
-              delay={35}
-              stepDuration={0.32}
-              centered
-            />
-          </div>
+          <p className="text-[16px] text-[#9099b2] max-w-[640px] mx-auto leading-relaxed text-center">
+            Everything you need to know about using Glass, from setting up dues to tracking payments and ensuring full transparency.
+          </p>
         </div>
 
         {/* ── Accordion ── */}
@@ -185,7 +177,7 @@ export default function WhyGlass() {
         <div className="flex justify-center">
           <a
             ref={btnRef}
-            href="/contact"
+            href="mailto:glasspayhq@gmail.com"
             className="inline-flex items-center gap-2.5 bg-[#0f1d6e] text-white font-semibold text-[15px] px-7 py-3.5 rounded-full no-underline shadow-lg shadow-[#0f1d6e]/25"
             style={{
               transition: "background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease",

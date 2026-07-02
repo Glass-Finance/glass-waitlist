@@ -98,9 +98,15 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
             Launch Transparent Payments
             <br className="hidden md:block" /> in Minutes
           </motion.h2>
-          <p className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed">
+          <motion.p
+            className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed"
+            initial={{ clipPath: "inset(0% 0% 100% 0%)", opacity: 0 }}
+            whileInView={{ clipPath: "inset(0% 0% 0% 0%)", opacity: 1 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.7, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          >
             Set up your community, link member payment methods, and let Glass handle the rest.
-          </p>
+          </motion.p>
         </div>
       </div>
 

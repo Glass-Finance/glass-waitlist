@@ -1,15 +1,15 @@
-import React from "react";
 import Navbar from "../components/Navbar";
 import MembersHero from "../components/members/MembersHero";
 import MembersHowItWorks from "../components/members/MembersHowItWorks";
 import MembersProblem from "../components/members/MembersProblem";
 import MembersSolution from "../components/members/MembersSolution";
 import Security from "../components/Security";
-import Footer from "../components/Footer";
 import TrustedBy from "../components/TrustedBy";
+import Pricing from "../components/Pricing";
 import UseCases from "../components/Usecases";
 import WhyGlass from "../components/WhyGlass";
 import MembersCTA from "../components/members/MembersCTA";
+import Footer from "../components/Footer";
 
 export default function MembersHome() {
   return (
@@ -22,6 +22,7 @@ export default function MembersHome() {
       <UseCases />
       <TrustedBy />
       <Security />
+      <Pricing />
       <MembersCTA />
       <WhyGlass />
       <Footer />

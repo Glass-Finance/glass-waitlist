@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronRight, Search, Menu, X } from "lucide-react";
+import { ChevronRight, Menu, X } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { motion, useScroll, useSpring } from "motion/react";
+
+const scrollTo = (id) =>
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
 
   const viewMode =
     location.pathname === "/members" ? "members" : "organizations";
@@ -23,6 +30,10 @@ export default function Navbar() {
   };
 
   return (
+    <>
+    <motion.div
+      style={{ scaleX, transformOrigin: "0% 50%", background: "linear-gradient(90deg, #002FA7 0%, #4f46e5 60%, #7c3aed 100%)", height: 3, position: "fixed", top: 0, left: 0, right: 0, zIndex: 200, pointerEvents: "none" }}
+    />
     <nav
       className={`fixed top-0 left-0 right-0 z-50 min-h-[68px] transition-all duration-300 ${
         scrolled
@@ -96,11 +107,17 @@ export default function Navbar() {
 
         {/* ── Nav Links (desktop) ── */}
         <div className="hidden lg:flex items-center gap-7">
-          <button className="flex items-center gap-1 text-[13.5px] text-white hover:text-white/55 transition-colors font-medium cursor-pointer">
-            Use Cases <ChevronDown className="w-3.5 h-3.5 mt-px" />
+          <button
+            onClick={() => scrollTo("use-cases")}
+            className="text-[13.5px] text-white hover:text-white/55 transition-colors font-medium cursor-pointer"
+          >
+            Use Cases
           </button>
-          <button className="text-[13.5px] text-white hover:text-white/55 transition-colors font-medium cursor-pointer">
-            Contact Us
+          <button
+            onClick={() => scrollTo("how-it-works")}
+            className="text-[13.5px] text-white hover:text-white/55 transition-colors font-medium cursor-pointer"
+          >
+            How It Works
           </button>
         </div>
 
@@ -146,13 +163,16 @@ export default function Navbar() {
         <div className="lg:hidden bg-[#0B0F2E]/98 backdrop-blur-xl border-b border-white/[0.08]">
           <div className="px-6 py-5 space-y-4">
             <div className="space-y-1 pt-1">
-              {["Use Cases", "Contact Us"].map((item) => (
+              {[
+                { label: "Use Cases", id: "use-cases" },
+                { label: "How It Works", id: "how-it-works" },
+              ].map(({ label, id }) => (
                 <button
-                  key={item}
+                  key={label}
+                  onClick={() => { scrollTo(id); setMenuOpen(false); }}
                   className="flex items-center justify-between w-full py-3 text-[14px] font-medium text-white/60 hover:text-white transition-colors border-b border-white/[0.05]"
                 >
-                  {item}
-                  {item === "Use Cases" && <ChevronDown className="w-4 h-4" />}
+                  {label}
                 </button>
               ))}
             </div>
@@ -193,5 +213,6 @@ export default function Navbar() {
         </div>
       )}
     </nav>
+    </>
   );
 }

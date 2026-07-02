@@ -62,10 +62,10 @@ function BlurText({
 
   const from =
     direction === "top"
-      ? { filter: "blur(10px)", opacity: 0, y: -28 }
-      : { filter: "blur(10px)", opacity: 0, y: 28 };
+      ? { filter: "blur(8px)", opacity: 0, y: -18 }
+      : { filter: "blur(8px)", opacity: 0, y: 18 };
   const to = [
-    { filter: "blur(4px)", opacity: 0.5, y: direction === "top" ? 4 : -4 },
+    { filter: "blur(3px)", opacity: 0.5, y: direction === "top" ? 2 : -2 },
     { filter: "blur(0px)", opacity: 1, y: 0 },
   ];
   const totalDuration = stepDuration * to.length;
@@ -330,6 +330,7 @@ function FlipCard({ title, desc, variant, entryDelay }) {
       ref={cardRef}
       onMouseEnter={() => setFlipped(true)}
       onMouseLeave={() => setFlipped(false)}
+      onTouchStart={(e) => { e.preventDefault(); setFlipped((f) => !f); }}
       style={{
         perspective: "1200px",
         height: "380px",
@@ -514,30 +515,9 @@ export default function UseCases() {
 
       <section
         ref={containerRef}
-        className="bg-[#F7F8FC] py-20 md:py-28 relative overflow-hidden"
+        className="bg-white py-20 md:py-28 relative overflow-hidden"
         id="use-cases"
       >
-        {/* Ambient glows */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <motion.div
-            className="absolute top-[-80px] right-[-80px] w-[400px] h-[400px] rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(28,43,138,0.07) 0%, transparent 70%)",
-            }}
-            animate={{ scale: [1, 1.1, 1], opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 8, repeat: Infinity }}
-          />
-          <motion.div
-            className="absolute bottom-[-60px] left-[-60px] w-[320px] h-[320px] rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%)",
-            }}
-            animate={{ scale: [1.1, 1, 1.1], opacity: [0.5, 0.9, 0.5] }}
-            transition={{ duration: 10, repeat: Infinity, delay: 3 }}
-          />
-        </div>
 
         <div className="max-w-[1140px] mx-auto px-6 relative z-10">
           {/* ── Header ── */}
@@ -550,14 +530,9 @@ export default function UseCases() {
                 justifyContent: "center",
               }}
             >
-              <BlurText
-                text="Use Cases"
-                animateBy="words"
-                direction="top"
-                delay={60}
-                stepDuration={0.4}
-                className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full"
-              />
+              <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full">
+                Use Cases
+              </span>
             </div>
 
             {/* Headline */}
@@ -601,14 +576,7 @@ export default function UseCases() {
                   textAlign: "center",
                 }}
               >
-                <BlurText
-                  text="Whether you run a small club or a national association, Glass scales with you."
-                  animateBy="words"
-                  direction="top"
-                  delay={28}
-                  stepDuration={0.35}
-                  centered
-                />
+                Whether you run a small club or a national association, Glass scales with you.
               </p>
             </div>
           </div>

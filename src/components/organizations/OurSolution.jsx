@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import icon1 from "../../assets/icon/frame1.png";
 import icon2 from "../../assets/icon/frame2.png";
@@ -83,11 +83,11 @@ function BlurText({
 
   const fromSnapshot =
     direction === "top"
-      ? { filter: "blur(10px)", opacity: 0, y: -30 }
-      : { filter: "blur(10px)", opacity: 0, y: 30 };
+      ? { filter: "blur(8px)", opacity: 0, y: -18 }
+      : { filter: "blur(8px)", opacity: 0, y: 18 };
 
   const toSnapshots = [
-    { filter: "blur(4px)", opacity: 0.5, y: direction === "top" ? 4 : -4 },
+    { filter: "blur(3px)", opacity: 0.5, y: direction === "top" ? 2 : -2 },
     { filter: "blur(0px)", opacity: 1, y: 0 },
   ];
 
@@ -130,63 +130,6 @@ function BlurText({
           {animateBy === "words" && index < elements.length - 1 && "\u00A0"}
         </motion.span>
       ))}
-    </span>
-  );
-}
-
-// ─── TextType — scroll-triggered, plays once, no loop ─────────────────────────
-function TextType({
-  text,
-  typingSpeed = 28,
-  initialDelay = 0,
-  showCursor = true,
-  cursorCharacter = "|",
-  className = "",
-  onComplete,
-  trigger = false,
-}) {
-  const [displayed, setDisplayed] = useState("");
-  const [done, setDone] = useState(false);
-  const indexRef = useRef(0);
-  const timerRef = useRef(null);
-
-  useEffect(() => {
-    if (!trigger || done) return;
-    setDisplayed("");
-    indexRef.current = 0;
-
-    const tick = () => {
-      if (indexRef.current >= text.length) {
-        setDone(true);
-        onComplete?.();
-        return;
-      }
-      setDisplayed(text.slice(0, indexRef.current + 1));
-      indexRef.current += 1;
-      timerRef.current = setTimeout(tick, typingSpeed);
-    };
-
-    timerRef.current = setTimeout(tick, initialDelay);
-    return () => clearTimeout(timerRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trigger]);
-
-  return (
-    <span className={`text-type ${className}`} style={{ display: "inline" }}>
-      <span className="text-type__content">{displayed}</span>
-      {showCursor && !done && (
-        <span
-          style={{
-            display: "inline-block",
-            marginLeft: "1px",
-            animation: "ttCursorBlink 0.55s step-end infinite",
-            color: "inherit",
-            fontWeight: 300,
-          }}
-        >
-          {cursorCharacter}
-        </span>
-      )}
     </span>
   );
 }
@@ -281,30 +224,9 @@ function useTilt(strength = 14) {
 }
 
 // ─── Feature card ─────────────────────────────────────────────────────────────
-function FeatureCard({
-  icon,
-  title,
-  desc,
-  illustration,
-  entryDelay,
-  sectionInView,
-}) {
+function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
   const { cardRef, sheenRef, onMouseMove, onMouseEnter, onMouseLeave } =
     useTilt(14);
-  const [titleDone, setTitleDone] = useState(false);
-  const [triggered, setTriggered] = useState(false);
-
-  useEffect(() => {
-    if (sectionInView && !triggered) {
-      const t = setTimeout(() => setTriggered(true), entryDelay);
-      return () => clearTimeout(t);
-    }
-    // Reset when section leaves so it re-animates on next scroll-in
-    if (!sectionInView) {
-      setTriggered(false);
-      setTitleDone(false);
-    }
-  }, [sectionInView, entryDelay]);
 
   return (
     <div
@@ -361,7 +283,7 @@ function FeatureCard({
             flexShrink: 0,
           }}
         />
-        <div className="solution-text-block" style={{ minWidth: 0 }}>
+        <div style={{ minWidth: 0 }}>
           {/* Title types first */}
           <h3
             style={{
@@ -370,35 +292,20 @@ function FeatureCard({
               color: "#0f1d6e",
               lineHeight: 1.3,
               marginBottom: 6,
-              minHeight: "clamp(1.2em, 5vw, 1.4em)",
             }}
           >
-            <TextType
-              text={title}
-              typingSpeed={30}
-              trigger={triggered}
-              showCursor={!titleDone}
-              onComplete={() => setTitleDone(true)}
-            />
+            {title}
           </h3>
 
-          {/* Desc types only after title finishes */}
           <p
             style={{
               fontSize: "clamp(14px,2vw,14px)",
               color: "rgba(0,0,0,0.6)",
               lineHeight: 1.6,
               margin: 0,
-              minHeight: "clamp(2.2em, 14vw, 3em)",
             }}
           >
-            <TextType
-              text={desc}
-              typingSpeed={18}
-              initialDelay={100}
-              trigger={titleDone}
-              showCursor={titleDone}
-            />
+            {desc}
           </p>
         </div>
       </div>
@@ -461,20 +368,6 @@ function FeatureCard({
 
 // ─── Main export ──────────────────────────────────────────────────────────────
 export default function OurSolution() {
-  const sectionRef = useRef(null);
-  const [sectionInView, setSectionInView] = useState(false);
-
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setSectionInView(entry.isIntersecting),
-      { threshold: 0.15 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <>
       <style>{`
@@ -482,20 +375,14 @@ export default function OurSolution() {
         from { opacity: 0; transform: perspective(900px) translateY(32px) rotateX(6deg); }
         to   { opacity: 1; transform: perspective(900px) translateY(0px) rotateX(0deg); }
       }
-      @keyframes ttCursorBlink {
-        0%, 100% { opacity: 1; }
-        50%       { opacity: 0; }
-      }
       @media (min-width: 640px) and (max-width: 1023px) {
-        .solution-text-block { height: 90px !important; overflow: hidden !important; }
         .solution-illus { height: 180px !important; }
         .solution-fade { height: 8% !important; background: linear-gradient(to bottom, #EFEFF1 0%, transparent 100%) !important; }
       }
     `}</style>
 
       <section
-        ref={sectionRef}
-        className="py-20 md:py-28 relative"
+        className="py-20 md:py-28 relative bg-white"
         id="solution"
       >
         {/*
@@ -515,14 +402,9 @@ export default function OurSolution() {
                 justifyContent: "center",
               }}
             >
-              <BlurText
-                text="Our Solution"
-                animateBy="words"
-                direction="top"
-                delay={60}
-                stepDuration={0.4}
-                className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full"
-              />
+              <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full">
+                Our Solution
+              </span>
             </div>
 
             <h2
@@ -554,14 +436,7 @@ export default function OurSolution() {
                 lineHeight: 1.7,
               }}
             >
-              <BlurText
-                text="Centralize payments, records, and visibility in one shared system, so your team stops chasing and starts leading."
-                animateBy="words"
-                direction="top"
-                delay={30}
-                stepDuration={0.35}
-                centered
-              />
+              Centralize payments, records, and visibility in one shared system, so your team stops chasing and starts leading.
             </p>
           </div>
 
@@ -575,7 +450,6 @@ export default function OurSolution() {
                 desc={desc}
                 illustration={illustration}
                 entryDelay={200 + i * 120}
-                sectionInView={sectionInView}
               />
             ))}
           </div>

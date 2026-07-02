@@ -252,17 +252,10 @@ export default function ProblemSection() {
           {/* Badge: same span + classes, BlurText inside */}
           <div className="mb-6">
             <span className="inline-flex items-center border border-[#1C2B8A]/30 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full">
-              <BlurText
-                text="THE PROBLEM"
-                delay={40}
-                animateBy="characters"
-                direction="top"
-                stepDuration={0.28}
-              />
+              THE PROBLEM
             </span>
           </div>
 
-          {/* Headline: same h2 wrapper, BlurText replaces inner text */}
           <h2 className="text-[clamp(26px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-4">
             <BlurText
               text="Still spending weekends chasing payments?"
@@ -274,17 +267,9 @@ export default function ProblemSection() {
             />
           </h2>
 
-          {/* Subtext: same p wrapper */}
-          <div className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed">
-            <BlurText
-              text="Without centralized visibility, time is wasted and trust begins to weaken."
-              delay={40}
-              animateBy="words"
-              direction="top"
-              stepDuration={0.28}
-              centered
-            />
-          </div>
+          <p className="text-[17px] text-[#00000099] max-w-[720px] mx-auto leading-relaxed">
+            Without centralized visibility, time is wasted and trust begins to weaken.
+          </p>
         </div>
 
         {/* ── Body — identical grid ── */}

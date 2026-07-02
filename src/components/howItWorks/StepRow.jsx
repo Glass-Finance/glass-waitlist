@@ -1,6 +1,18 @@
+import { useRef, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
+const ICON_POP_CSS = `
+@keyframes iconPop {
+  0%   { transform: scale(1) rotate(0deg); }
+  35%  { transform: scale(1.28) rotate(-6deg); }
+  65%  { transform: scale(0.92) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.step-icon-pop { animation: iconPop 0.55s cubic-bezier(0.22,1,0.36,1) forwards; }
+`;
+
 export default function StepRow({ step, index, innerRef, badgeRef }) {
+  const iconRef = useRef(null);
   // Per the Figma reference, the label is always to the left of the image
   // — it never flips. What alternates is the whole card's position: step 1
   // hugs the far right of the section, step 2 the far left, step 3 the far
@@ -18,6 +30,18 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
     [0, 1, 1, 0],
   );
   const rowY = useTransform(scrollYProgress, [0, 0.18], [40, 0]);
+
+  useEffect(() => {
+    let fired = false;
+    const unsub = scrollYProgress.on("change", (v) => {
+      if (!fired && v > 0.12 && iconRef.current) {
+        fired = true;
+        iconRef.current.classList.add("step-icon-pop");
+        unsub();
+      }
+    });
+    return unsub;
+  }, [scrollYProgress]);
 
   const glassCard = {
     background: "rgba(255,255,255,0.6)",
@@ -43,6 +67,8 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
   };
 
   return (
+    <>
+    <style>{ICON_POP_CSS}</style>
     <motion.div ref={innerRef} style={{ opacity: rowOpacity, y: rowY }}>
       {/* ── Mobile — label overlaps top-left of image ── */}
       <div className="flex flex-col md:hidden" style={{ position: "relative" }}>
@@ -86,6 +112,7 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
           }}
         >
           <img
+            ref={iconRef}
             src={step.stepIcon}
             alt=""
             style={{ width: 32, height: 32, objectFit: "contain", marginBottom: 8 }}
@@ -105,6 +132,7 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
           style={glassCard}
         >
           <img
+            ref={iconRef}
             src={step.stepIcon}
             alt=""
             style={{ width: 40, height: 40, objectFit: "contain", marginBottom: 10 }}
@@ -131,5 +159,6 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
         <div className="absolute top-6 right-[-15px] w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/4 bg-[#E8ECF8]/28 -z-20" />
       </div>
     </motion.div>
+    </>
   );
 }

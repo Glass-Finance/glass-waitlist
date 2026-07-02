@@ -122,7 +122,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/cta/ctalogo.png";
-import TextType from "./ui/TextType";
 import BlurText from "./ui/BlurText";
 
 const links = {
@@ -176,13 +175,13 @@ export default function Footer() {
             />
           </h2>
           <p className="text-[16px] text-white/60 max-w-[720px] mx-auto leading-relaxed mb-10">
-            Join 10+ other forward-thinking communities on the waitlist today.
+            Join communities already running transparent finances on Glass.
           </p>
           <button
             onClick={() => navigate("/sign-up")}
             className="inline-flex items-center gap-2 bg-white text-[#0f1640] text-[15px] font-semibold px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/20"
           >
-            Get Started
+            Get Started Free
           </button>
         </div>
       </div>
@@ -204,14 +203,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-30 mb-12">
           {Object.entries(links).map(([section, items]) => (
             <div key={section}>
-              <TextType
-                text={section}
-                typingSpeed={50}
-                loop={false}
-                showCursor={false}
-                startOnVisible
-                className="text-[13px] font-bold text-white mb-4"
-              />
+              <p className="text-[13px] font-bold text-white mb-4">{section}</p>
               <ul className="space-y-2.5 list-none p-0 m-0">
                 {items.map((item) => (
                   <li key={item}>

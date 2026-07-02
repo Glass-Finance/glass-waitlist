@@ -4,8 +4,6 @@ import { Reveal } from "../Reveal";
 import { motion } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import waveBg from "../../assets/hero/hero.jpg";
-import TextType from "../ui/TextType";
-import BlurText from "../ui/BlurText";
 
 // ─── Toast data ───────────────────────────────────────────────────────────────
 const TOASTS = [
@@ -64,26 +62,22 @@ function DashboardOverlay() {
 
   useEffect(() => {
     const canvas = document.getElementById("hero-static-canvas");
-    if (canvas) {
-      const resize = () => {
-        canvas.width = canvas.offsetWidth || window.innerWidth;
-        canvas.height = canvas.offsetHeight || window.innerHeight;
-        const ctx = canvas.getContext("2d");
-        const w = canvas.width,
-          h = canvas.height;
-        const imageData = ctx.createImageData(w, h);
-        const data = imageData.data;
-        for (let i = 0; i < data.length; i += 4) {
-          const v = Math.random() > 0.5 ? 255 : 0;
-          data[i] = data[i + 1] = data[i + 2] = v;
-          data[i + 3] = 255;
-        }
-        ctx.putImageData(imageData, 0, 0);
-      };
-      resize();
-      window.addEventListener("resize", resize);
-      return () => window.removeEventListener("resize", resize);
-    }
+    if (!canvas) return;
+    const draw = () => {
+      canvas.width = canvas.offsetWidth || window.innerWidth;
+      canvas.height = canvas.offsetHeight || window.innerHeight;
+      const ctx = canvas.getContext("2d");
+      const img = ctx.createImageData(canvas.width, canvas.height);
+      for (let i = 0; i < img.data.length; i += 4) {
+        const v = Math.random() > 0.5 ? 255 : 0;
+        img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+        img.data[i + 3] = 255;
+      }
+      ctx.putImageData(img, 0, 0);
+    };
+    draw();
+    window.addEventListener("resize", draw);
+    return () => window.removeEventListener("resize", draw);
   }, []);
 
   useEffect(() => {
@@ -1460,11 +1454,6 @@ export default function Hero() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // index.css sets `scroll-behavior: smooth` globally for anchor links —
-    // that also hijacks plain scrollTo() calls, turning this reset into a
-    // visible multi-hundred-ms slide instead of an instant jump. Suppressing
-    // it has to survive past the browser's next paint, or restoring it
-    // synchronously here wins the race and the scroll still animates.
     const root = document.documentElement;
     const prevBehavior = root.style.scrollBehavior;
     root.style.scrollBehavior = "auto";
@@ -1475,6 +1464,15 @@ export default function Hero() {
   }, []);
 
   return (
+    <>
+    <style>{`
+      @keyframes waveDrift {
+        0%   { transform: scale(1.06) translate(0px, 0px); }
+        30%  { transform: scale(1.09) translate(-16px, -8px); }
+        65%  { transform: scale(1.07) translate(12px, -14px); }
+        100% { transform: scale(1.06) translate(0px, 0px); }
+      }
+    `}</style>
     <section className="relative overflow-hidden pt-[68px]">
       <div
         className="absolute inset-0 w-full h-full"
@@ -1482,6 +1480,8 @@ export default function Hero() {
           backgroundImage: `url(${waveBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          animation: "waveDrift 28s ease-in-out infinite",
+          willChange: "transform",
         }}
       />
       <div
@@ -1494,12 +1494,7 @@ export default function Hero() {
       <canvas
         id="hero-static-canvas"
         className="absolute inset-0 pointer-events-none select-none"
-        style={{
-          width: "100%",
-          height: "100%",
-          opacity: 0.028,
-          mixBlendMode: "screen",
-        }}
+        style={{ width: "100%", height: "100%", opacity: 0.035, mixBlendMode: "screen" }}
       />
       <div className="pointer-events-none absolute inset-0 select-none overflow-hidden">
         <div
@@ -1535,17 +1530,20 @@ export default function Hero() {
       >
         <Reveal variant="up" delay={80}>
           <h1
-            className="font-bold text-white leading-[1.05] tracking-tight  mb-5 text-center max-w-[480px] lg:max-w-[720px] mx-auto"
-            style={{ fontSize: "clamp(38px,7.5vw,72px)" }}
+            className="font-bold text-white leading-[1.05] tracking-tight mb-5 text-center max-w-[480px] lg:max-w-[720px] mx-auto"
+            style={{ fontSize: "clamp(44px,7vw,70px)" }}
           >
-            <TextType
-              text="Community Finance Crystal Clear"
-              typingSpeed={55}
-              loop={false}
-              showCursor={true}
-              hideCursorOnComplete={true}
-              className="text-[clamp(44px,7vw,70px)] font-bold text-white leading-[1.05] tracking-tight"
-            />
+            Community Finance{" "}
+            <span
+              style={{
+                background: "linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              Crystal Clear
+            </span>
           </h1>
         </Reveal>
         <Reveal variant="up" delay={160}>
@@ -1559,8 +1557,19 @@ export default function Hero() {
             {/* ── FIXED: navigates to org onboarding entry point ── */}
             <button
               onClick={() => navigate("/sign-up")}
-              className="inline-flex items-center gap-2 bg-white text-[#0d1022] text-[15px] px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer"
-              style={{ fontFamily: "Inter,sans-serif", fontWeight: 500 }}
+              className="inline-flex items-center gap-2 bg-white text-[#0d1022] text-[15px] px-8 py-3.5 rounded-full shadow-lg shadow-black/30 cursor-pointer"
+              style={{ fontFamily: "Inter,sans-serif", fontWeight: 500, transition: "transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s ease" }}
+              onMouseMove={(e) => {
+                const r = e.currentTarget.getBoundingClientRect();
+                const dx = ((e.clientX - (r.left + r.width / 2)) / (r.width / 2)) * 10;
+                const dy = ((e.clientY - (r.top + r.height / 2)) / (r.height / 2)) * 6;
+                e.currentTarget.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(1.04)`;
+                e.currentTarget.style.boxShadow = "0 18px 48px rgba(255,255,255,0.25), 0 4px 16px rgba(0,0,0,0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translate(0,0) scale(1)";
+                e.currentTarget.style.boxShadow = "";
+              }}
             >
               Create Your Community
               <motion.span
@@ -1604,5 +1613,6 @@ export default function Hero() {
         }}
       />
     </section>
+    </>
   );
 }

@@ -23,9 +23,11 @@
  */
 
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BlurText from "../ui/BlurText";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
+import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 
 import icon1 from "../../assets/cta/icon1.png";
 import icon2 from "../../assets/cta/icon2.png";
@@ -199,10 +201,15 @@ function FloatingIcon({ icon, inView }) {
 
 /* ─── CTA ──────────────────────────────────────────────────────────── */
 export default function CTA() {
+  const navigate = useNavigate();
   const sectionRef = useRef(null);
   const cardRef = useRef(null);
   const btnRef = useRef(null);
   const [inView, setInView] = useState(false);
+
+  function handleJoin() {
+    navigate(isMobileDevice() ? "/member/join" : mobileRequiredPath("/member/join"));
+  }
 
   /* Section enters viewport */
   useEffect(() => {
@@ -323,7 +330,7 @@ export default function CTA() {
         </h2>
 
         {/* ── Subtext ── */}
-        <div
+        <p
           style={{
             fontSize: "clamp(13px, 3vw, 16px)",
             color: "rgba(255,255,255,0.52)",
@@ -333,20 +340,13 @@ export default function CTA() {
             zIndex: 5,
           }}
         >
-          <BlurText
-            text="Simplify payments. Eliminate follow-ups."
-            animateBy="words"
-            direction="top"
-            delay={70}
-            stepDuration={0.35}
-            centered
-          />
-        </div>
+          Pay dues, track your history, and get receipts — all in one place.
+        </p>
 
         {/* ── Button ── */}
-        {/* <button
+        <button
           ref={btnRef}
-          onClick={() => window.open(TALLY, "_blank", "noopener,noreferrer")}
+          onClick={handleJoin}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -366,8 +366,7 @@ export default function CTA() {
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "translateY(-4px) scale(1.03)";
-            e.currentTarget.style.boxShadow =
-              "0 14px 40px rgba(0,0,0,0.35), 0 0 0 3px rgba(255,255,255,0.15)";
+            e.currentTarget.style.boxShadow = "0 14px 40px rgba(0,0,0,0.35), 0 0 0 3px rgba(255,255,255,0.15)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = "translateY(0) scale(1)";
@@ -377,16 +376,12 @@ export default function CTA() {
           Join A Community
           <motion.span
             animate={{ x: [0, 5, 0] }}
-            transition={{
-              duration: 1.4,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
             style={{ display: "inline-flex", alignItems: "center" }}
           >
             <ArrowRight className="w-4 h-4" />
           </motion.span>
-        </button> */}
+        </button>
       </div>
     </section>
   );

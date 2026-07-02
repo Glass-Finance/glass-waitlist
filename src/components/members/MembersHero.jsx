@@ -38,29 +38,23 @@ export default function MembersHero() {
   }, []);
 
   useEffect(() => {
-    // ── Static TV noise — drawn ONCE, frozen in place, very subtle ───────────
-    const canvas = document.getElementById("hero-static-canvas");
-    if (canvas) {
-      const resize = () => {
-        canvas.width = canvas.offsetWidth || window.innerWidth;
-        canvas.height = canvas.offsetHeight || window.innerHeight;
-        // Redraw once after resize
-        const ctx = canvas.getContext("2d");
-        const w = canvas.width,
-          h = canvas.height;
-        const imageData = ctx.createImageData(w, h);
-        const data = imageData.data;
-        for (let i = 0; i < data.length; i += 4) {
-          const v = Math.random() > 0.5 ? 255 : 0;
-          data[i] = data[i + 1] = data[i + 2] = v;
-          data[i + 3] = 255;
-        }
-        ctx.putImageData(imageData, 0, 0);
-      };
-      resize();
-      window.addEventListener("resize", resize);
-      return () => window.removeEventListener("resize", resize);
-    }
+    const canvas = document.getElementById("members-hero-canvas");
+    if (!canvas) return;
+    const draw = () => {
+      canvas.width = canvas.offsetWidth || window.innerWidth;
+      canvas.height = canvas.offsetHeight || window.innerHeight;
+      const ctx = canvas.getContext("2d");
+      const img = ctx.createImageData(canvas.width, canvas.height);
+      for (let i = 0; i < img.data.length; i += 4) {
+        const v = Math.random() > 0.5 ? 255 : 0;
+        img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+        img.data[i + 3] = 255;
+      }
+      ctx.putImageData(img, 0, 0);
+    };
+    draw();
+    window.addEventListener("resize", draw);
+    return () => window.removeEventListener("resize", draw);
   }, []);
 
   const [waveOpacity, setWaveOpacity] = useState(0);
@@ -75,6 +69,15 @@ export default function MembersHero() {
   }, []);
 
   return (
+    <>
+    <style>{`
+      @keyframes waveDrift {
+        0%   { transform: scale(1.06) translate(0px, 0px); }
+        30%  { transform: scale(1.09) translate(-16px, -8px); }
+        65%  { transform: scale(1.07) translate(12px, -14px); }
+        100% { transform: scale(1.06) translate(0px, 0px); }
+      }
+    `}</style>
     <section
       ref={sectionRef}
       className="relative min-h-screen flex flex-col justify-center pt-[68px] overflow-hidden"
@@ -86,6 +89,8 @@ export default function MembersHero() {
           backgroundImage: `url(${waveBg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          animation: "waveDrift 28s ease-in-out infinite",
+          willChange: "transform",
         }}
       />
 
@@ -104,16 +109,11 @@ export default function MembersHero() {
             "linear-gradient(105deg, rgba(2,3,18,0.82) 0%, rgba(3,4,22,0.78) 35%, rgba(6,3,20,0.65) 60%, rgba(10,4,24,0.45) 100%)",
         }}
       />
-      {/* ── 3. TV static noise — frozen, one-time draw, very subtle ── */}
+
       <canvas
-        id="hero-static-canvas"
+        id="members-hero-canvas"
         className="absolute inset-0 pointer-events-none select-none"
-        style={{
-          width: "100%",
-          height: "100%",
-          opacity: 0.028,
-          mixBlendMode: "screen",
-        }}
+        style={{ width: "100%", height: "100%", opacity: 0.035, mixBlendMode: "screen" }}
       />
 
       {/* Glow blobs */}
@@ -416,5 +416,6 @@ export default function MembersHero() {
         }}
       />
     </section>
+    </>
   );
 }

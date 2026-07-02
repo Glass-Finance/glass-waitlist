@@ -47,5 +47,5 @@ const steps = [
 
 export default function GetStarted() {
   const navigate = useNavigate();
-  return <HowItWorksSection steps={steps} onCtaClick={() => navigate("/sign-up")} />;
+  return <HowItWorksSection steps={steps} onCtaClick={() => navigate("/sign-up")} ctaLabel="Get Started Free" />;
 }
