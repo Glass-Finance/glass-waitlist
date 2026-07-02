@@ -69,7 +69,7 @@ export function useCommunityJoinRequests(communityId) {
   const query = useQuery({
     queryKey: ["community", communityId, "join-requests"],
     queryFn: async () => {
-      const res = await getCommunityJoinRequests(communityId);
+      const res = await getCommunityJoinRequests(communityId, { status: "PENDING" });
       const data = res.data?.data;
       return Array.isArray(data) ? data : (data?.content ?? []);
     },
