@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, UserX, Clock, ShieldCheck, Copy, Check } from "lucide-react";
+import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, UserX, Clock, ShieldCheck, Copy, Check, UserCheck } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
-import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
+import { useCommunityMembers, useCommunityJoinRequests, useRoles } from "../../hooks/useCommunityMembers";
 import { getErrorMessage } from "../../utils/errorHandler";
 
 const FALLBACK_ROLES = [
@@ -106,6 +106,7 @@ export default function Members() {
 
   const { members, obligations, isLoading, error } = useMembersWithPayments(communityId);
   const { inviteMember, removeMember } = useCommunityMembers(communityId);
+  const { joinRequests, isActing, approve, reject } = useCommunityJoinRequests(communityId);
   const { data: rolesData } = useRoles();
   const usingFallbackRoles = !rolesData?.length;
   const roles = usingFallbackRoles ? FALLBACK_ROLES : rolesData;
@@ -191,6 +192,55 @@ export default function Members() {
           <Plus size={13} /> Add Member
         </button>
       </div>
+
+      {/* Pending join requests */}
+      {joinRequests.length > 0 && (
+        <div className="bg-white rounded-xl border border-amber-100 mb-5 overflow-hidden" style={{ boxShadow: "0 1px 4px rgba(180,83,9,0.07)" }}>
+          <div className="flex items-center gap-2 px-5 py-3 border-b border-amber-50" style={{ background: "#FFFBEB" }}>
+            <Clock size={13} style={{ color: "#b45309" }} />
+            <span className="text-xs font-semibold" style={{ color: "#b45309" }}>
+              {joinRequests.length} Pending Join {joinRequests.length === 1 ? "Request" : "Requests"}
+            </span>
+          </div>
+          <div className="divide-y divide-gray-50">
+            {joinRequests.map((req) => {
+              const name = [req.user?.firstName, req.user?.lastName].filter(Boolean).join(" ") || req.user?.email || "Unknown";
+              const email = req.user?.email ?? "—";
+              const initials = name.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
+              return (
+                <div key={req.id} className="flex items-center justify-between px-5 py-3 gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ background: "#1C2B8A" }}>
+                      {initials}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-black truncate">{name}</p>
+                      <p className="text-xs text-gray-400 truncate">{email}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <button
+                      onClick={() => reject(req.id)}
+                      disabled={isActing}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+                    >
+                      Decline
+                    </button>
+                    <button
+                      onClick={() => approve(req.id)}
+                      disabled={isActing}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-white border-none cursor-pointer disabled:opacity-50 hover:opacity-90"
+                      style={{ background: "#1C2B8A" }}
+                    >
+                      <UserCheck size={11} /> Approve
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-4 gap-3 mb-5">

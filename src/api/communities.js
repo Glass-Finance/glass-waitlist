@@ -42,6 +42,20 @@ export const updateCommunityMember = (communityId, memberId, payload) =>
 export const removeCommunityMember = (communityId, memberId) =>
   client.patch(`/communities/${communityId}/members/${memberId}/remove`);
 
+// ─── Join requests (admin) ────────────────────────────────────────────────────
+
+// GET /api/v1/communities/{communityIdentifier}/join-requests
+export const getCommunityJoinRequests = (communityId, params) =>
+  client.get(`/communities/${communityId}/join-requests`, { params });
+
+// PATCH /api/v1/communities/{communityIdentifier}/join-requests/{requestId}/approve
+export const approveJoinRequest = (communityId, requestId) =>
+  client.patch(`/communities/${communityId}/join-requests/${requestId}/approve`);
+
+// PATCH /api/v1/communities/{communityIdentifier}/join-requests/{requestId}/reject
+export const rejectJoinRequest = (communityId, requestId) =>
+  client.patch(`/communities/${communityId}/join-requests/${requestId}/reject`);
+
 // ─── Payout account ───────────────────────────────────────────────────────────
 
 // GET /api/v1/communities/{communityIdentifier}/account
