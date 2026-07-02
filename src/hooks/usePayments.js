@@ -88,6 +88,20 @@ function shapeAuthorisation(raw) {
   };
 }
 
+// /communities/me returns different shapes depending on role:
+//   admin/owner → { name, slug, logo, owned: true, ... }
+//   member      → { community: { name, slug, logo, ... }, memberRole, owned: false, ... }
+// Normalize to always have name/slug/logo at the top level.
+function normalizeCommunity(c) {
+  if (!c) return null;
+  return {
+    ...c,
+    name: c.name ?? c.community?.name,
+    slug: c.slug ?? c.community?.slug,
+    logo: c.logo ?? c.community?.logo,
+  };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Main hook — Home screen data
 // Returns: { nextDue, upcoming[], user, community, isLoading, error }
@@ -153,7 +167,7 @@ export function usePayments() {
       upcoming,
       history: transactions,
       user: userQuery.data,
-      community: communitiesQuery.data?.[0] ?? null,
+      community: normalizeCommunity(communitiesQuery.data?.[0]),
     },
     isLoading:
       obligationsQuery.isLoading ||

@@ -8,7 +8,13 @@ function getInitials(name = "") {
 
 export default function MyCommunities() {
   const navigate = useNavigate();
-  const { data: communities = [], isLoading } = useMyCommunities();
+  const { data: raw = [], isLoading } = useMyCommunities();
+  const communities = raw.map((c) => ({
+    ...c,
+    name: c.name ?? c.community?.name,
+    slug: c.slug ?? c.community?.slug,
+    logo: c.logo ?? c.community?.logo,
+  }));
   const leaveCommunity = useLeaveCommunity();
 
   function handleLeave(community) {
