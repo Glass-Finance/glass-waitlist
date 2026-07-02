@@ -1,6 +1,8 @@
 import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Mail, Clock } from "lucide-react";
+import { useEffect } from "react";
+import { ChevronLeft, Mail, Clock, Home } from "lucide-react";
+import { useCommunities } from "../../hooks/useCommunities";
 
 function Avatar({ name }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
@@ -30,6 +32,18 @@ export default function Invites() {
   const { invites, isLoading, error, accept, reject, isAccepting, isRejecting, refresh } =
     useInvites();
   const { joinRequests, isLoading: joinRequestsLoading } = useMyJoinRequests();
+  const { data: communitiesData } = useCommunities();
+
+  const isEmpty = !isLoading && !joinRequestsLoading && invites.length === 0 && joinRequests.length === 0;
+  const isAlreadyMember = (communitiesData?.communities?.length ?? 0) > 0;
+
+  // Member was added directly by an admin (no pending invite needed) — send
+  // them straight to home instead of leaving them on an empty invite page.
+  useEffect(() => {
+    if (isEmpty && isAlreadyMember) {
+      navigate("/member/home", { replace: true });
+    }
+  }, [isEmpty, isAlreadyMember, navigate]);
 
   async function handleAccept(invite) {
     await accept(invite.id);
@@ -118,13 +132,32 @@ export default function Invites() {
               No invitations yet
             </p>
             <p style={{ fontSize: 13, color: "#888", margin: 0, maxWidth: 260, lineHeight: 1.5 }}>
-              Ask a community admin to send you an invite link, or have them add you directly by your email or phone number.
+              If your admin has already added you, you're good to go — head to your home screen.
             </p>
+            <button
+              onClick={() => navigate("/member/home", { replace: true })}
+              style={{
+                marginTop: 6,
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "10px 20px",
+                borderRadius: 8,
+                border: "none",
+                background: "#002FA7",
+                color: "#fff",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              <Home size={14} />
+              Go to Home
+            </button>
             <button
               onClick={refresh}
               disabled={isLoading}
               style={{
-                marginTop: 6,
                 padding: "9px 18px",
                 borderRadius: 8,
                 border: "1.5px solid #002FA7",
