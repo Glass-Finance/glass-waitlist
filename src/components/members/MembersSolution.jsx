@@ -229,7 +229,7 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
       <div ref={sheenRef} style={{ position: "absolute", inset: 0, borderRadius: 14, pointerEvents: "none", zIndex: 20, opacity: 0, transition: "opacity 0.2s ease" }} />
 
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "clamp(16px,3vw,28px) clamp(14px,2.5vw,20px) 0px" }}>
-        <img src={icon} alt="" style={{ width: "clamp(36px,5vw,50px)", height: "clamp(36px,5vw,50px)", objectFit: "contain", flexShrink: 0 }} />
+        <img src={icon} alt="" style={{ width: "clamp(36px,5vw,50px)", height: "clamp(36px,5vw,50px)", objectFit: "contain", flexShrink: 0 }} loading="lazy" decoding="async" />
         <div style={{ minWidth: 0 }}>
           <h3 style={{ fontSize: "clamp(16px,2.5vw,18px)", fontWeight: 700, color: "#0f1d6e", lineHeight: 1.3, marginBottom: 6 }}>
             {title}
@@ -241,9 +241,9 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
       </div>
 
       <div className="solution-illus" style={{ position: "relative", height: "clamp(160px, 45vw, 240px)", overflow: "hidden" }}>
-        <img src={lightBg} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.3 }} draggable={false} />
+        <img src={lightBg} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.3 }} draggable={false} loading="lazy" decoding="async" />
         <div className="solution-fade" style={{ position: "absolute", top: 0, left: 0, right: 0, height: "18%", background: "linear-gradient(to bottom, #EFEFF1 0%, rgba(239,239,241,0.7) 55%, transparent 100%)", pointerEvents: "none", zIndex: 5 }} />
-        <img src={illustration} alt={title} style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "85%", height: "auto", objectFit: "contain", zIndex: 10 }} draggable={false} />
+        <img src={illustration} alt={title} style={{ position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "85%", height: "auto", objectFit: "contain", zIndex: 10 }} draggable={false} loading="lazy" decoding="async" />
       </div>
     </div>
   );

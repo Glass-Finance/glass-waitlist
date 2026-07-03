@@ -282,6 +282,8 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
             objectFit: "contain",
             flexShrink: 0,
           }}
+          loading="lazy"
+          decoding="async"
         />
         <div style={{ minWidth: 0 }}>
           {/* Title types first */}
@@ -331,6 +333,8 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
             opacity: 0.3,
           }}
           draggable={false}
+          loading="lazy"
+          decoding="async"
         />
         <div
           className="solution-fade"
@@ -360,6 +364,8 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
             zIndex: 10,
           }}
           draggable={false}
+          loading="lazy"
+          decoding="async"
         />
       </div>
     </div>

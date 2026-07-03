@@ -363,6 +363,8 @@ export default function MembersProblem() {
                 alt="Manual reconciliation on laptop and phone"
                 className="absolute inset-0 w-full h-full object-cover"
                 style={{ objectPosition: "50% 40%" }}
+                loading="lazy"
+                decoding="async"
               />
             </div>
 

@@ -387,6 +387,8 @@ function FlipCard({ title, desc, variant, entryDelay }) {
               opacity: 0.55,
               pointerEvents: "none",
             }}
+            loading="lazy"
+            decoding="async"
           />
 
           {/* Bottom-right corner line — imported asset (rotated 180°) */}
@@ -404,6 +406,8 @@ function FlipCard({ title, desc, variant, entryDelay }) {
               opacity: 0.45,
               pointerEvents: "none",
             }}
+            loading="lazy"
+            decoding="async"
           />
 
           {/* Icon circle — your imported image */}
@@ -416,6 +420,8 @@ function FlipCard({ title, desc, variant, entryDelay }) {
               objectFit: "contain",
               marginBottom: 4,
             }}
+            loading="lazy"
+            decoding="async"
           />
 
           {/* Title */}

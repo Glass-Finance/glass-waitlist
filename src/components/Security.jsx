@@ -233,6 +233,8 @@ export default function Security() {
                         height: 28,
                         objectFit: "contain",
                       }}
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 </div>

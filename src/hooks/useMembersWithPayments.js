@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCommunityMembers } from "../api/communities";
 import { getCommunityObligations, getCommunityTransactions } from "../api/transactions";
+import { getCommunityPaymentLinks } from "../api/payments";
 
 function unwrapList(res) {
   const data = res.data?.data;
@@ -47,9 +48,25 @@ export function useMembersWithPayments(communityId) {
     staleTime: 1000 * 60 * 2,
   });
 
+  // Obligations are generated for a member on a delay (next billing cycle,
+  // a scheduled job, etc.), so a just-added member can have zero obligation
+  // records for days even though they're enrolled in an active plan --
+  // without this, the Members table shows "no plan" for every fresh account.
+  // Mirrors the same gap-covering fallback usePayments.js already applies
+  // on the member's own Home/Upcoming screens.
+  const paymentLinksQuery = useQuery({
+    queryKey: ["community", communityId, "payment-links"],
+    queryFn: async () => unwrapList(await getCommunityPaymentLinks(communityId)),
+    enabled,
+    staleTime: 1000 * 60 * 2,
+  });
+
   const members = membersQuery.data ?? [];
   const obligations = obligationsQuery.data ?? [];
   const transactions = transactionsQuery.data ?? [];
+  const activePlanIds = (paymentLinksQuery.data ?? [])
+    .filter((p) => (p.status ?? "").toUpperCase() === "ACTIVE")
+    .map((p) => p.id);
 
   const enriched = members.map((member) => {
     const memberObligations = obligations.filter((o) =>
@@ -61,8 +78,17 @@ export function useMembersWithPayments(communityId) {
 
     const planIds = new Set(memberObligations.map((o) => o.paymentLink?.id ?? o.recurringPlan?.id));
     const paidCount = memberObligations.filter((o) => (o.status ?? "").toUpperCase() === "PAID").length;
-    const totalCount = memberObligations.length;
     const failedCount = memberTransactions.filter((t) => (t.status ?? "").toUpperCase() === "FAILED").length;
+
+    // Exempt members genuinely have no dues -- only fill the gap for
+    // everyone else, and only for plans that don't already have a real
+    // obligation counted above (avoids double-counting).
+    if (!member.billingExempt) {
+      for (const planId of activePlanIds) {
+        if (!planIds.has(planId)) planIds.add(planId);
+      }
+    }
+    const totalCount = Math.max(memberObligations.length, planIds.size);
 
     return {
       ...member,
@@ -80,7 +106,15 @@ export function useMembersWithPayments(communityId) {
     members: enriched,
     obligations,
     transactions,
-    isLoading: membersQuery.isLoading || obligationsQuery.isLoading || transactionsQuery.isLoading,
-    error: membersQuery.error || obligationsQuery.error || transactionsQuery.error,
+    isLoading:
+      membersQuery.isLoading ||
+      obligationsQuery.isLoading ||
+      transactionsQuery.isLoading ||
+      paymentLinksQuery.isLoading,
+    error:
+      membersQuery.error ||
+      obligationsQuery.error ||
+      transactionsQuery.error ||
+      paymentLinksQuery.error,
   };
 }

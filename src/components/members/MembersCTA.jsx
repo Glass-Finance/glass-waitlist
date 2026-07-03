@@ -194,6 +194,8 @@ function FloatingIcon({ icon, inView }) {
           objectFit: "contain",
           display: "block",
         }}
+        loading="lazy"
+        decoding="async"
       />
     </div>
   );
@@ -302,6 +304,8 @@ export default function CTA() {
               // filter: "brightness(0) invert(1)",
               opacity: 0.88,
             }}
+            loading="lazy"
+            decoding="async"
           />
         </div>
 

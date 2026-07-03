@@ -75,6 +75,8 @@ export default function TrustedBy() {
                 src={item.logo}
                 alt={item.name}
                 className="h-10 md:h-14 w-auto object-contain"
+                loading="lazy"
+                decoding="async"
                 onError={(e) => {
                   e.target.style.display = "none";
                   e.target.parentElement.innerHTML = `<span style="color:#9099b2;font-weight:600;font-size:15px;white-space:nowrap">${item.name}</span>`;

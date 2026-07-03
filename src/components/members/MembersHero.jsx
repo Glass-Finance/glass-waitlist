@@ -268,6 +268,18 @@ export default function MembersHero() {
               marginLeft: "-90px",
             }}
           >
+            {/* loading="lazy" here (and on the mobile copy below) is
+                deliberate, not an oversight: this and the mobile-only
+                <img> further down both render the same 444KB iphone.png,
+                one hidden via `hidden sm:flex` and the other via
+                `sm:hidden`. display:none doesn't stop an eager <img> from
+                fetching, so without this every visitor downloaded BOTH
+                copies. Browsers skip fetching a lazy image with no
+                generated box (i.e. currently display:none), so only the
+                one actually visible at the matching breakpoint loads --
+                whichever one that is still loads promptly since it's in
+                the initial viewport, "lazy" here just means "skip if
+                hidden," not "defer until scrolled to." */}
             <img
               src={iphone}
               alt="Glass app on iPhone"
@@ -277,6 +289,8 @@ export default function MembersHero() {
                 objectFit: "contain",
               }}
               draggable={false}
+              loading="lazy"
+              decoding="async"
             />
           </motion.div>
         </div>
@@ -390,6 +404,8 @@ export default function MembersHero() {
                 <MembersDashboard />
               </div> */}
             </div>
+            {/* See the desktop copy of this <img> above for why
+                loading="lazy" is deliberate here, not an oversight. */}
             <img
               src={iphone}
               alt="Glass app on iPhone"
@@ -401,6 +417,8 @@ export default function MembersHero() {
                 filter: "drop-shadow(0 16px 40px rgba(120,10,160,0.5))",
               }}
               draggable={false}
+              loading="lazy"
+              decoding="async"
             />
           </div>
         </div>
