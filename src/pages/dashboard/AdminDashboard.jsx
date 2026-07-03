@@ -638,7 +638,9 @@ function DashboardContent({ isPaying, communityId }) {
           idempotencyKey: crypto.randomUUID(),
           amount: item.amount,
           savePaymentMethod: item.type === "recurring",
-          ...(item.id ? { obligationId: item.id } : {}),
+          // item.obligationId is null for unmatched payment-link items;
+          // item.id in that case is the payment link ID, not an obligation ID.
+          ...(item.obligationId ? { obligationId: item.obligationId } : {}),
         },
       });
       const url = res.data?.data?.authorizationUrl;
