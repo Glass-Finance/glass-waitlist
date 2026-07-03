@@ -222,7 +222,7 @@ function PaymentRow({ item, onPay, paying }) {
 export default function UpcomingPayments() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("All");
-  const { data, isLoading, error: loadError } = usePayments();
+  const { data, isLoading, error: loadError, refresh } = usePayments();
 
   const upcoming = data?.upcoming ?? [];
   const filtered = upcoming.filter((item) => {
@@ -307,13 +307,29 @@ export default function UpcomingPayments() {
             Loading…
           </p>
         ) : loadError ? (
-          <p style={{ textAlign: "center", color: "#DC2626", fontSize: 14, padding: "20px 0" }}>
-            Couldn't load upcoming payments.
-          </p>
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <p style={{ color: "#DC2626", fontSize: 14, margin: "0 0 8px" }}>
+              Couldn't load upcoming payments.
+            </p>
+            <button
+              onClick={refresh}
+              style={{ background: "none", border: "none", color: "#002FA7", fontSize: 13, fontWeight: 600, textDecoration: "underline", cursor: "pointer", padding: 0 }}
+            >
+              Try again
+            </button>
+          </div>
         ) : filtered.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#999", fontSize: 14, padding: "20px 0" }}>
-            Nothing due right now.
-          </p>
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <p style={{ color: "#999", fontSize: 14, margin: "0 0 8px" }}>
+              Nothing due right now.
+            </p>
+            <button
+              onClick={refresh}
+              style={{ background: "none", border: "none", color: "#002FA7", fontSize: 13, fontWeight: 600, textDecoration: "underline", cursor: "pointer", padding: 0 }}
+            >
+              Check again
+            </button>
+          </div>
         ) : (
           filtered.map((item) => (
             <PaymentRow key={item.id} item={item} onPay={handlePay} />

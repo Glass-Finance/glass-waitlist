@@ -53,7 +53,7 @@ function firstName(user) {
 // ---------------------------------------------------------------------------
 // Hero card
 // ---------------------------------------------------------------------------
-function HeroCard({ nextDue, onPay, communityName }) {
+function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   if (!nextDue) {
     return (
       <div
@@ -74,12 +74,43 @@ function HeroCard({ nextDue, onPay, communityName }) {
             {communityName}
           </p>
         )}
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.9)", margin: 0, fontWeight: 500 }}>
-          You're all caught up
-        </p>
-        <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: 0 }}>
-          Nothing due right now.
-        </p>
+        {error ? (
+          <>
+            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.9)", margin: 0, fontWeight: 500 }}>
+              Couldn't load your payment info
+            </p>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: 0 }}>
+              Check your connection and try again.
+            </p>
+          </>
+        ) : (
+          <>
+            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.9)", margin: 0, fontWeight: 500 }}>
+              You're all caught up
+            </p>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: 0 }}>
+              Nothing due right now.
+            </p>
+          </>
+        )}
+        {onRefresh && (
+          <button
+            onClick={onRefresh}
+            style={{
+              marginTop: 4,
+              background: "none",
+              border: "none",
+              color: "rgba(255,255,255,0.75)",
+              fontSize: 12,
+              fontWeight: 600,
+              textDecoration: "underline",
+              cursor: "pointer",
+              padding: 0,
+            }}
+          >
+            Check again
+          </button>
+        )}
       </div>
     );
   }
@@ -359,7 +390,7 @@ function HistoryRow({ item }) {
 // ---------------------------------------------------------------------------
 export default function Home() {
   const navigate = useNavigate();
-  const { data, isLoading } = usePayments();
+  const { data, isLoading, error, refresh } = usePayments();
 
   const nextDue = data?.nextDue ?? null;
   const upcoming = (data?.upcoming ?? [])
@@ -539,7 +570,7 @@ export default function Home() {
         ) : (
           <>
             {/* ── Hero card ───────────────────────────────────────────────────── */}
-            <HeroCard nextDue={nextDue} onPay={handlePay} communityName={communityName} />
+            <HeroCard nextDue={nextDue} onPay={handlePay} communityName={communityName} error={error} onRefresh={refresh} />
 
             {/* ── Upcoming Payments ────────────────────────────────────────────── */}
             <div

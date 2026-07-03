@@ -133,6 +133,8 @@ function normalizeCommunity(c) {
 // Returns: { nextDue, upcoming[], user, community, isLoading, error }
 // ─────────────────────────────────────────────────────────────────────────────
 export function usePayments() {
+  const queryClient = useQueryClient();
+
   const obligationsQuery = useQuery({
     queryKey: ["obligations"],
     queryFn: async () => {
@@ -265,11 +267,27 @@ export function usePayments() {
       obligationsQuery.isLoading ||
       transactionsQuery.isLoading ||
       userQuery.isLoading,
+    // Previously only checked 3 of the 4 queries this hook runs -- a
+    // failure in communitiesQuery or paymentLinksQuery (the one that
+    // actually powers the "unmatched plans" fallback below) was silently
+    // swallowed into an empty upcoming[] with no error surfaced anywhere,
+    // making a real fetch failure indistinguishable from "genuinely no
+    // payments due" in the UI.
     error:
       obligationsQuery.error ||
       transactionsQuery.error ||
       userQuery.error ||
+      communitiesQuery.error ||
+      paymentLinksQuery.error ||
       null,
+    // For a manual "Check again" affordance -- refetches everything this
+    // hook depends on, not just whichever query happens to be visible.
+    refresh: () => {
+      queryClient.invalidateQueries({ queryKey: ["communities"] });
+      queryClient.invalidateQueries({ queryKey: ["obligations"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["payment-links"] });
+    },
   };
 }
 
