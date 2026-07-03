@@ -28,6 +28,15 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Show a banner if the user was mid-verification (registered but not yet
+  // confirmed email) and then refreshed or navigated away.
+  const [pendingVerificationEmail] = useState(() => {
+    try {
+      const raw = sessionStorage.getItem("glass_pending_member_verification");
+      return raw ? JSON.parse(raw).email : null;
+    } catch { return null; }
+  });
+
   // client.js's 401 interceptor hard-redirects here on session expiry — a
   // toast shown right before that navigation gets wiped along with
   // everything else, so it leaves this flag for the destination to read.
@@ -111,6 +120,25 @@ export default function SignIn() {
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
       <div className="w-full max-w-sm flex flex-col my-auto gap-6">
+        {pendingVerificationEmail && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            <p className="text-xs font-semibold text-amber-800 mb-1">Email verification pending</p>
+            <p className="text-xs text-amber-700 leading-relaxed">
+              You registered with <span className="font-medium">{pendingVerificationEmail}</span> but didn't finish verifying.
+              Check your inbox — and spam folder — for the 6-digit code.
+            </p>
+            <p className="text-xs text-amber-700 leading-relaxed mt-1">
+              Codes expire after 15 minutes. If yours has expired, go back and register again to receive a fresh one.
+            </p>
+            <Link
+              to="/member/join"
+              className="text-xs font-semibold mt-2 inline-block"
+              style={{ color: "#92400e" }}
+            >
+              Back to registration →
+            </Link>
+          </div>
+        )}
         <div>
           <h1 className="text-xl font-bold text-gray-900 mb-1">Sign in To Your Account</h1>
           <p className="text-sm text-gray-500">Enter your credentials to continue.</p>

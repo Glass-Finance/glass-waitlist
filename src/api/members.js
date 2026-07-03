@@ -110,9 +110,10 @@ export const verifyPayment = (reference) =>
 // COMMUNITY PAYMENT LINKS (visible to members)
 // ─────────────────────────────────────────────────────────────────────────────
 
-// GET /api/v1/payment-links — list visible payment links
-export const getPaymentLinks = () =>
-  client.get("/payment-links");
+// GET /api/v1/payment-links — list visible payment links (member-accessible)
+// Accepts query params: communityIdentifier, status, paymentType, audience, etc.
+export const getPaymentLinks = (params = {}) =>
+  client.get("/payment-links", { params });
 
 // GET /api/v1/payment-links/{paymentLinkIdentifier}
 export const getPaymentLink = (id) =>

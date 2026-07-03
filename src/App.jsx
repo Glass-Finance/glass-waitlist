@@ -36,6 +36,7 @@ import Payments from "./pages/dashboard/Payments";
 import Members from "./pages/dashboard/Members";
 import MemberDetail from "./pages/dashboard/MemberDetail";
 import AdminNotifications from "./pages/dashboard/Notifications";
+import PaymentCallback from "./pages/dashboard/PaymentCallback";
 
 // ── Settings ───────────────────────────────────────────────────────────────────
 import Settings from "./pages/dashboard/settings/Settings";
@@ -225,9 +226,9 @@ function App() {
             Uses ProtectedRoute (no role) so both admin and member tokens
             are accepted. Not behind MemberDeviceGuard: the browser that
             completes the payment may be any browser, not just the member
-            app's device. ── */}
+            app's device. Desktop-designed for admin pay flow. ── */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/payment/callback" element={<PaymentSuccess />} />
+          <Route path="/payment/callback" element={<PaymentCallback />} />
         </Route>
 
         {/* ── Catch-all ── */}

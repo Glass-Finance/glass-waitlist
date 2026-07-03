@@ -201,12 +201,19 @@ function MobileShell({ children, step }) {
 // ---------------------------------------------------------------------------
 // Step 2 — OTP  (6 boxes with dash in middle like Figma)
 // ---------------------------------------------------------------------------
+const PENDING_KEY = "glass_pending_member_verification";
+
 function StepOTP({ email, onVerified, onBack }) {
   const [digits, setDigits] = useState(Array(OTP_LENGTH).fill(""));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(30);
   const inputRefs = useRef([]);
+
+  // Focus first box on mount so the keyboard opens immediately on mobile
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
 
   useEffect(() => {
     if (resendCooldown <= 0) return;
@@ -215,12 +222,11 @@ function StepOTP({ email, onVerified, onBack }) {
   }, [resendCooldown]);
 
   function handleDigitChange(index, value) {
+    // Handle full paste (e.g. from SMS autofill or clipboard)
     if (value.length > 1) {
       const pasted = value.replace(/\D/g, "").slice(0, OTP_LENGTH).split("");
-      const next = [...digits];
-      pasted.forEach((ch, i) => {
-        if (i < OTP_LENGTH) next[i] = ch;
-      });
+      const next = Array(OTP_LENGTH).fill("");
+      pasted.forEach((ch, i) => { next[i] = ch; });
       setDigits(next);
       inputRefs.current[Math.min(pasted.length, OTP_LENGTH - 1)]?.focus();
       return;
@@ -234,8 +240,14 @@ function StepOTP({ email, onVerified, onBack }) {
   }
 
   function handleKeyDown(index, e) {
-    if (e.key === "Backspace" && !digits[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+    if (e.key === "Backspace") {
+      if (digits[index]) {
+        const next = [...digits];
+        next[index] = "";
+        setDigits(next);
+      } else if (index > 0) {
+        inputRefs.current[index - 1]?.focus();
+      }
     }
   }
 
@@ -249,6 +261,7 @@ function StepOTP({ email, onVerified, onBack }) {
     setError("");
     try {
       const result = await verifyEmail({ email, token: code });
+      sessionStorage.removeItem(PENDING_KEY);
       onVerified(result);
     } catch (err) {
       setError(notifyError(err, { context: "Verify OTP", fallback: "That code didn't work. Please try again.", silent: true }));
@@ -261,7 +274,7 @@ function StepOTP({ email, onVerified, onBack }) {
 
   async function handleResend() {
     if (resendCooldown > 0) return;
-    setResendCooldown(30);
+    setResendCooldown(60);
     setError("");
     try {
       await resendVerification({ email });
@@ -270,57 +283,44 @@ function StepOTP({ email, onVerified, onBack }) {
     }
   }
 
-  // Figma shows: [box][box][box] — [box][box][box]
   const firstThree = [0, 1, 2];
-  const lastThree = [3, 4, 5];
-  const allFilled = digits.every(Boolean);
+  const lastThree  = [3, 4, 5];
+  const allFilled  = digits.every(Boolean);
 
   function OTPBox({ index }) {
     return (
       <input
         ref={(el) => (inputRefs.current[index] = el)}
-        type="text"
+        type="tel"
         inputMode="numeric"
-        maxLength={1}
+        pattern="\d*"
+        maxLength={6}
         value={digits[index]}
         onChange={(e) => handleDigitChange(index, e.target.value)}
         onKeyDown={(e) => handleKeyDown(index, e)}
         autoComplete={index === 0 ? "one-time-code" : "off"}
         aria-label={`Digit ${index + 1} of ${OTP_LENGTH}`}
-        className="
-        w-10 h-12
-        sm:w-12 sm:h-14
-        rounded-lg
-        text-center
-        text-lg
-        font-bold
-        text-gray-900
-        outline-none
-        transition-all
-        duration-150
-        caret-transparent
-        bg-white
-        flex-shrink-0
-      "
+        className="w-12 h-14 rounded-xl text-center text-xl font-bold text-gray-900 outline-none transition-all duration-150 caret-transparent bg-white flex-shrink-0"
         style={{
           border: digits[index] ? "2px solid #1C2B8A" : "1.5px solid #D0D5E8",
+          fontSize: 22,
         }}
       />
     );
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-xl font-bold text-gray-900  my-5">
+        <h1 className="text-xl font-bold text-gray-900 my-5">
           Verification Code Sent
         </h1>
-        <p className="text-md text-gray-500 mb-2">
-          Enter the 6-digit code that was sent to
+        <p className="text-sm text-gray-500 mb-1">
+          Enter the 6-digit code sent to
         </p>
-        <p className="font-semibold text-md text-gray-900 mb-2">{email}</p>
+        <p className="font-semibold text-sm text-gray-900 mb-1">{email}</p>
         <button
-          onClick={onBack}
+          onClick={() => { sessionStorage.removeItem(PENDING_KEY); onBack(); }}
           className="text-sm font-medium mt-1"
           style={{ color: "#1C2B8A" }}
         >
@@ -328,34 +328,27 @@ function StepOTP({ email, onVerified, onBack }) {
         </button>
       </div>
 
+      {/* Spam notice */}
+      <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3">
+        <p className="text-xs text-amber-700 leading-relaxed">
+          <span className="font-semibold">Can't find the email?</span> Check your spam or junk folder — emails from Yahoo addresses often end up there. If the code has expired, tap <span className="font-semibold">Resend</span> to get a new one. If you accidentally closed this page and came back, you can enter the original code if it's still within 15 minutes, or resend to get a fresh one.
+        </p>
+      </div>
+
       {/* OTP boxes — split with dash */}
-      <div className="w-full overflow-hidden">
-        <div className="flex items-center gap-2">
-          <div className="flex gap-2">
-            {firstThree.map((i) => (
-              <OTPBox key={i} index={i} />
-            ))}
-          </div>
-
-          <span className="text-gray-400 text-xl font-light flex-shrink-0">
-            —
-          </span>
-
-          <div className="flex gap-2">
-            {lastThree.map((i) => (
-              <OTPBox key={i} index={i} />
-            ))}
-          </div>
+      <div className="flex items-center justify-between gap-2 px-1">
+        <div className="flex gap-2">
+          {firstThree.map((i) => <OTPBox key={i} index={i} />)}
+        </div>
+        <span className="text-gray-400 text-xl font-light flex-shrink-0">—</span>
+        <div className="flex gap-2">
+          {lastThree.map((i) => <OTPBox key={i} index={i} />)}
         </div>
       </div>
 
       <ErrorMessage message={error} />
 
-      <PrimaryButton
-        onClick={handleVerify}
-        loading={loading}
-        disabled={!allFilled}
-      >
+      <PrimaryButton onClick={handleVerify} loading={loading} disabled={!allFilled}>
         Continue
       </PrimaryButton>
 
@@ -606,8 +599,15 @@ export default function Join() {
   const { community, consumeCommunity } = useJoinCommunityParam();
   const { setSession } = useAuth();
 
-  const [step, setStep] = useState(STEPS.PROFILE);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => {
+    try {
+      const pending = sessionStorage.getItem(PENDING_KEY);
+      return pending ? JSON.parse(pending).email : "";
+    } catch { return ""; }
+  });
+  const [step, setStep] = useState(() =>
+    email ? STEPS.OTP : STEPS.PROFILE
+  );
 
   // Some backends issue a session immediately on register, others only
   // after email verification — store it the moment either response
@@ -660,7 +660,10 @@ export default function Join() {
   }
 
   function handleBack() {
-    if (step === STEPS.OTP) setStep(STEPS.PROFILE);
+    if (step === STEPS.OTP) {
+      sessionStorage.removeItem(PENDING_KEY);
+      setStep(STEPS.PROFILE);
+    }
   }
 
   // Registration has to happen before any verification code can be sent —
@@ -689,6 +692,7 @@ export default function Join() {
       };
       const authData = await register(payload);
       maybeStoreSession(authData);
+      sessionStorage.setItem(PENDING_KEY, JSON.stringify({ email: enteredEmail }));
       setEmail(enteredEmail);
       setStep(STEPS.OTP);
     } catch (err) {
@@ -699,6 +703,7 @@ export default function Join() {
   }
 
   async function handleVerified(authData) {
+    sessionStorage.removeItem(PENDING_KEY);
     if (authData?.accessToken) {
       await setSession(authData);
       finishAndRoute();

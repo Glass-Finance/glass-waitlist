@@ -27,7 +27,9 @@ function usePaymentLinkData(linkId) {
     queryKey: ["payment-link", linkId],
     queryFn: async () => {
       const res = await getPaymentLink(linkId);
-      return res.data?.data ?? res.data;
+      // GET /payment-links/{id} wraps the link as { paymentLink, obligations }
+      const data = res.data?.data;
+      return data?.paymentLink ?? data ?? res.data;
     },
     enabled: !!linkId,
   });

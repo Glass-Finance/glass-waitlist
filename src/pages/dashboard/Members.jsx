@@ -7,9 +7,13 @@ import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers, useCommunityJoinRequests, useRoles } from "../../hooks/useCommunityMembers";
 import { getErrorMessage } from "../../utils/errorHandler";
 
+// Only these three roles should be assignable when inviting members.
+const ALLOWED_ROLE_NAMES = new Set(["Community Owner", "Community Admin", "Community Member"]);
+
 const FALLBACK_ROLES = [
-  { id: "MEMBER", name: "Member" },
-  { id: "ADMIN", name: "Admin" },
+  { id: "COMMUNITY_OWNER", name: "Community Owner" },
+  { id: "COMMUNITY_ADMIN", name: "Community Admin" },
+  { id: "COMMUNITY_MEMBER", name: "Community Member" },
 ];
 
 const SORT_OPTIONS = ["Recently Paid", "Name A-Z", "Date Joined"];
@@ -108,8 +112,9 @@ export default function Members() {
   const { inviteMember, removeMember } = useCommunityMembers(communityId);
   const { joinRequests, isActing, approve, reject } = useCommunityJoinRequests(communityId);
   const { data: rolesData } = useRoles();
-  const usingFallbackRoles = !rolesData?.length;
-  const roles = usingFallbackRoles ? FALLBACK_ROLES : rolesData;
+  const filteredRoles = rolesData ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name)) : [];
+  const usingFallbackRoles = !filteredRoles.length;
+  const roles = usingFallbackRoles ? FALLBACK_ROLES : filteredRoles;
 
   const planOptions = useMemo(
     () => [...new Set(obligations.map((o) => o.paymentLink?.title).filter(Boolean))],
@@ -382,7 +387,8 @@ export default function Members() {
 
 function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable, inviteLink }) {
   const [email, setEmail] = useState("");
-  const [roleId, setRoleId] = useState(roles[0]?.id ?? "");
+  const defaultRole = roles.find((r) => r.name === "Community Member") ?? roles[0];
+  const [roleId, setRoleId] = useState(defaultRole?.id ?? "");
   const [billingExempt, setBillingExempt] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
 

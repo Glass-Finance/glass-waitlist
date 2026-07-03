@@ -7,7 +7,7 @@ import {
   initiatePayment,
   getMe,
   getMyCommunities,
-  getMemberCommunityPaymentLinks,
+  getPaymentLinks,
 } from "../api/members";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -207,29 +207,19 @@ export function usePayments() {
     rawActiveCommunity?.community?.id ??
     null;
 
-  // Confirmed via a live 403 (backend: "Community permission is required:
-  // community.payment_links.read") that regular members can never
-  // successfully call this -- it's admin-only despite the URL being
-  // shared with the admin-side call. It only appeared to work in earlier
-  // testing because that was against an admin/paying-admin account, which
-  // does hold that permission. retry: false so we don't hammer a
-  // permanent 403 with backoff on every mount, and its failure is
-  // deliberately NOT included in the blocking `error` below -- a
-  // member's real obligations (from getMyObligations, which they can
-  // read) should still render even though the "active plan with no
-  // obligation yet" fallback can't. Once the backend grants members this
-  // permission (or exposes a member-scoped equivalent), this will start
-  // working with no frontend change needed.
+  // GET /payment-links is the member-accessible endpoint (visibility-gated).
+  // Filter by communityIdentifier so members only see their active community's links.
   const paymentLinksQuery = useQuery({
     queryKey: ["payment-links", communityIdentifier],
     queryFn: async () => {
-      const res = await getMemberCommunityPaymentLinks(communityIdentifier);
+      const res = await getPaymentLinks(
+        communityIdentifier ? { communityIdentifier, status: "ACTIVE" } : { status: "ACTIVE" }
+      );
       return unwrapList(res).map((raw) => shapePaymentLink(raw, communitySlug ?? communityIdentifier));
     },
     enabled: !!communityIdentifier,
     staleTime: 1000 * 60 * 2,
     refetchOnMount: "always",
-    retry: false,
   });
 
   const allObligations = obligationsQuery.data ?? [];
@@ -264,7 +254,14 @@ export function usePayments() {
       !obligations.some((o) => o.paymentLinkId === link.id)
   );
 
-  const upcoming = [...unpaidObligations, ...unmatchedLinks];
+  // Enrich items: if the obligation/link response didn't carry community logo
+  // back (not always populated by the backend), fall back to the logo we got
+  // from the communities list — which always returns it.
+  const activeLogo = normalizeCommunity(rawActiveCommunity)?.logo ?? null;
+  const enrichLogo = (item) =>
+    item.logo?.url ? item : { ...item, logo: activeLogo };
+
+  const upcoming = [...unpaidObligations, ...unmatchedLinks].map(enrichLogo);
 
   // nextDue = first item (obligations take priority via sort order above)
   const nextDue = upcoming[0] ?? null;
