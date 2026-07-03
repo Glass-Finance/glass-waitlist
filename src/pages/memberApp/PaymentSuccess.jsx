@@ -9,7 +9,7 @@ const MAX_POLLS = 20;
 
 function isTerminal(status) {
   const s = (status ?? "").toUpperCase();
-  return s === "SUCCESS" || s === "FAILED";
+  return s === "SUCCESS" || s === "SUCCESSFUL" || s === "FAILED";
 }
 
 export default function PaymentSuccess() {
@@ -58,7 +58,8 @@ export default function PaymentSuccess() {
         if (cancelled) return;
 
         if (isTerminal(status)) {
-          const finalState = status.toUpperCase() === "SUCCESS" ? "success" : "failed";
+          const s = status.toUpperCase();
+          const finalState = (s === "SUCCESS" || s === "SUCCESSFUL") ? "success" : "failed";
           invalidateCaches();
           if (finalState === "success") setAutoRedirectIn(4);
           setState(finalState);
