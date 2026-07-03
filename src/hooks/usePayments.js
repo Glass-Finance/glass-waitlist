@@ -53,7 +53,7 @@ function shapeObligation(raw) {
   };
 }
 
-function shapePaymentLink(raw) {
+function shapePaymentLink(raw, fallbackCommunitySlug) {
   return {
     id: raw.id,
     amount: raw.amount,
@@ -61,6 +61,7 @@ function shapePaymentLink(raw) {
     name: raw.title ?? raw.name ?? "Payment",
     description: raw.title ?? raw.name ?? "Payment",
     communityName: raw.community?.name,
+    communitySlug: raw.community?.slug ?? fallbackCommunitySlug,
     dueDate: raw.dueAt ?? null,
     type: raw.paymentType === "RECURRING" || raw.recurringPlan ? "recurring" : "one-time",
     status: "PENDING",
@@ -198,7 +199,7 @@ export function usePayments() {
     queryKey: ["payment-links", communitySlug],
     queryFn: async () => {
       const res = await getMemberCommunityPaymentLinks(communitySlug);
-      return unwrapList(res).map(shapePaymentLink);
+      return unwrapList(res).map((raw) => shapePaymentLink(raw, communitySlug));
     },
     enabled: !!communitySlug,
     staleTime: 1000 * 60 * 2,
@@ -306,8 +307,8 @@ export function useInitiatePayment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ paymentLinkId, payload }) =>
-      initiatePayment(paymentLinkId, payload),
+    mutationFn: ({ communityId, paymentLinkId, payload }) =>
+      initiatePayment(communityId, paymentLinkId, payload),
     onSuccess: () => {
       // Refresh obligations and transactions after successful payment
       queryClient.invalidateQueries({ queryKey: ["obligations"] });

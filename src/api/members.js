@@ -95,11 +95,11 @@ export const resolveAccount = (bankCode, accountNumber) =>
 // PAYMENT — initiate payment for an obligation / payment link
 // ─────────────────────────────────────────────────────────────────────────────
 
-// POST /api/v1/payment-links/{paymentLinkIdentifier}/pay
+// POST /api/v1/communities/{communityIdentifier}/payment-links/{paymentLinkIdentifier}/pay
 // payload: { idempotencyKey, amount, savePaymentMethod, obligationId, metadata }
 // response.data.data: { transactionId, reference, authorizationUrl, accessCode, amount, currency }
-export const initiatePayment = (paymentLinkId, payload) =>
-  client.post(`/payment-links/${paymentLinkId}/pay`, payload);
+export const initiatePayment = (communityId, paymentLinkId, payload) =>
+  client.post(`/communities/${communityId}/payment-links/${paymentLinkId}/pay`, payload);
 
 // POST /api/v1/payments/callback/verify?reference=xxx — reference is a query
 // param, not a body field.
