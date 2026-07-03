@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../store/AuthContext";
+import LoadingScreen from "../components/LoadingScreen";
 
 /**
  * Requires only an authenticated session, no role check — community
@@ -11,7 +12,7 @@ export default function MemberProtectedRoute() {
   const { token, loading } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingScreen />;
   }
 
   if (!token) {
