@@ -194,11 +194,13 @@ import {
   LayoutDashboard,
   CreditCard,
   Users,
+  Bell,
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
   LogOut,
 } from "lucide-react";
+import { useNotifications } from "../../hooks/useNotifications";
 import { useAuth } from "../../store/AuthContext";
 import { useCommunities } from "../../hooks/useCommunities";
 import { useMyMemberRecord } from "../../hooks/useMyAccount";
@@ -210,10 +212,11 @@ import { resolveIsPayingAdmin } from "../../utils/communityRole";
 // (?community=slug — see AdminDashboard.jsx) distinct from the
 // /dashboard/home communities-overview page.
 const NAV = [
-  { icon: LayoutDashboard, label: "Dashboard", segment: "home", path: "admin" },
-  { icon: CreditCard, label: "Payments", segment: "payments", path: "payments" },
-  { icon: Users, label: "Members", segment: "members", path: "members" },
-  { icon: Settings, label: "Settings", segment: "settings", path: "settings" },
+  { icon: LayoutDashboard, label: "Dashboard",     segment: "home",          path: "admin" },
+  { icon: CreditCard,      label: "Payment Plans", segment: "payments",      path: "payments" },
+  { icon: Users,           label: "Members",       segment: "members",       path: "members" },
+  { icon: Bell,            label: "Notifications", segment: "notifications", path: "notifications", global: true },
+  { icon: Settings,        label: "Settings",      segment: "settings",      path: "settings",      global: true },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -233,7 +236,8 @@ function getInitials(name = "") {
 // has to be resolved by the caller (see resolveIsPayingAdmin) since it's
 // per-community, not derivable from the slug alone.
 function communityPath(slug, path, isPaying = false) {
-  if (path === "settings") return "/dashboard/settings";
+  // Global pages — no community scoping needed
+  if (path === "settings" || path === "notifications") return `/dashboard/${path}`;
   const resolvedPath = path === "admin" && isPaying ? "admin/paying" : path;
   return `/dashboard/${resolvedPath}?community=${slug}`;
 }
@@ -251,6 +255,7 @@ export default function Sidebar() {
 
   const { data: communitiesData, isLoading: loading } = useCommunities();
   const communities = communitiesData?.communities ?? [];
+  const { unreadCount } = useNotifications();
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -527,14 +532,19 @@ export default function Sidebar() {
 
         {/* Nav links */}
         <nav style={{ flex: 1, padding: "10px 8px", overflowY: "auto" }}>
-          {NAV.map(({ icon: Icon, label, segment, path }) => {
+          {NAV.map(({ icon: Icon, label, segment, path, global: isGlobal }) => {
             const isActive = activeSegment === segment;
-            const href = activeCommunity
-              ? communityPath(activeCommunity.slug, path, activeCommunityIsPaying)
-              : segment === "home"
-                ? "/dashboard/home"
-                : null; // no community selected, or segment has no route yet
+            // Global pages (Notifications, Settings) always resolve regardless
+            // of whether a community is selected
+            const href = isGlobal
+              ? `/dashboard/${path}`
+              : activeCommunity
+                ? communityPath(activeCommunity.slug, path, activeCommunityIsPaying)
+                : segment === "home"
+                  ? "/dashboard/home"
+                  : null;
             const isDisabled = !href;
+            const badge = segment === "notifications" && unreadCount > 0 ? unreadCount : 0;
 
             return (
               <button
@@ -551,11 +561,7 @@ export default function Sidebar() {
                   border: "none",
                   cursor: isDisabled ? "default" : "pointer",
                   background: isActive ? "#e6eeff" : "transparent",
-                  color: isActive
-                    ? "#002FA7"
-                    : isDisabled
-                      ? "#d1d5db"
-                      : "#6b7280",
+                  color: isActive ? "#002FA7" : isDisabled ? "#d1d5db" : "#6b7280",
                   fontWeight: isActive ? 700 : 500,
                   fontSize: 12,
                   marginBottom: 2,
@@ -569,12 +575,22 @@ export default function Sidebar() {
                     e.currentTarget.style.background = "#f9fafb";
                 }}
                 onMouseLeave={(e) => {
-                  if (!isActive)
-                    e.currentTarget.style.background = "transparent";
+                  if (!isActive) e.currentTarget.style.background = "transparent";
                 }}
               >
                 <Icon size={14} style={{ flexShrink: 0 }} />
-                <span>{label}</span>
+                <span style={{ flex: 1 }}>{label}</span>
+                {badge > 0 && (
+                  <span style={{
+                    minWidth: 18, height: 18, borderRadius: 99,
+                    background: "#e11d48", color: "#fff",
+                    fontSize: 10, fontWeight: 700,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    padding: "0 4px", flexShrink: 0,
+                  }}>
+                    {badge > 99 ? "99+" : badge}
+                  </span>
+                )}
               </button>
             );
           })}

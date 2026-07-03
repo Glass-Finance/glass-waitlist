@@ -32,23 +32,28 @@ export function useNotifications() {
   const query = useQuery({
     queryKey: ["notifications"],
     queryFn: fetchNotifications,
-    staleTime: 1000 * 30,       // 30s — notifications are time-sensitive
+    staleTime: 1000 * 20,
     gcTime:    1000 * 60 * 5,
+    // Poll every 30s so the bell updates without requiring a page reload.
+    // Window focus already triggers a refetch via TanStack Query's defaults.
+    refetchInterval: 1000 * 30,
+    refetchIntervalInBackground: false, // pause polling when tab is hidden
     select: (data) => {
       const notifications = data?.content ?? [];
-      // Newest first
       return [...notifications].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
     },
   });
 
-  // ── Unread count (used by bottom nav bell dot) ─────────────────────────────
+  // ── Unread count (used by topbar bell + sidebar badge) ────────────────────
   const countQuery = useQuery({
     queryKey: ["notifications", "unread-count"],
     queryFn: fetchUnreadCount,
-    staleTime: 1000 * 30,
+    staleTime: 1000 * 20,
     gcTime:    1000 * 60 * 5,
+    refetchInterval: 1000 * 30,
+    refetchIntervalInBackground: false,
     select: (data) =>
       typeof data === "number" ? data : (data?.count ?? data?.unreadCount ?? 0),
   });
