@@ -1,8 +1,10 @@
 import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { ChevronLeft, Mail, Clock, Home } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, Mail, Clock, Home, Info } from "lucide-react";
 import { useCommunities } from "../../hooks/useCommunities";
+import { getInvite } from "../../api/invites";
+import { PENDING_INVITE_KEY } from "../InviteLanding";
 
 function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
@@ -41,6 +43,39 @@ export default function Invites() {
 
   const isEmpty = !isLoading && !joinRequestsLoading && invites.length === 0 && joinRequests.length === 0;
   const isAlreadyMember = (communitiesData?.communities?.length ?? 0) > 0;
+
+  // A "Review Invite" email link lands on /invite?inviteId=... which stashes
+  // the id here before redirecting to this (unfiltered) list — resolve it
+  // once so we can highlight/scroll to that specific invite, or tell the
+  // user it's no longer pending instead of leaving them to guess why it's
+  // not obviously there.
+  const [highlightId, setHighlightId] = useState(null);
+  const [staleNotice, setStaleNotice] = useState(null);
+  const cardRefs = useRef({});
+
+  useEffect(() => {
+    const pendingId = sessionStorage.getItem(PENDING_INVITE_KEY);
+    if (!pendingId) return;
+    sessionStorage.removeItem(PENDING_INVITE_KEY);
+
+    getInvite(pendingId)
+      .then((res) => {
+        const invite = res.data?.data ?? res.data;
+        if (invite?.status === "PENDING") {
+          setHighlightId(pendingId);
+        } else {
+          setStaleNotice("That invite has already been responded to.");
+        }
+      })
+      .catch(() => {
+        setStaleNotice("That invite is no longer available — it may have expired or already been handled.");
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!highlightId) return;
+    cardRefs.current[highlightId]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [highlightId, invites]);
 
   // Member was added directly by an admin (no pending invite needed) — send
   // them straight to home instead of leaving them on an empty invite page.
@@ -101,6 +136,25 @@ export default function Invites() {
       </div>
 
       <div style={{ padding: "0 16px" }}>
+        {staleNotice && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              background: "#FEF3C7",
+              color: "#92400E",
+              fontSize: 12.5,
+              fontWeight: 500,
+              padding: "10px 12px",
+              borderRadius: 10,
+              marginBottom: 12,
+            }}
+          >
+            <Info size={14} strokeWidth={2} style={{ flexShrink: 0 }} />
+            {staleNotice}
+          </div>
+        )}
         {isLoading || joinRequestsLoading ? (
           <p style={{ fontSize: 13, color: "#888", padding: "24px 4px" }}>
             Loading invites...
@@ -181,12 +235,17 @@ export default function Invites() {
             {invites.map((invite) => (
               <div
                 key={invite.id}
+                ref={(el) => (cardRefs.current[invite.id] = el)}
                 style={{
                   background: "#fff",
                   borderRadius: 14,
                   padding: 14,
                   marginBottom: 12,
-                  boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
+                  boxShadow:
+                    invite.id === highlightId
+                      ? "0 0 0 2px #002FA7, 0 1px 6px rgba(0,0,0,0.06)"
+                      : "0 1px 6px rgba(0,0,0,0.06)",
+                  transition: "box-shadow 0.3s ease",
                 }}
               >
                 <div

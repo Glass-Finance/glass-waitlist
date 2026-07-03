@@ -2,7 +2,10 @@ import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../store/AuthContext";
 
-const PENDING_INVITE_KEY = "glass_pending_invite";
+// Exported so Invites.jsx can read back the specific invite the email
+// link pointed at, to highlight it instead of just landing on the
+// unfiltered list of every pending invite.
+export const PENDING_INVITE_KEY = "glass_pending_invite";
 
 export default function InviteLanding() {
   const navigate = useNavigate();
