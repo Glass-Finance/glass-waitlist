@@ -97,9 +97,7 @@ export default function PaymentSummary() {
     if (!obligation?.paymentLink?.id) return;
     setError("");
     try {
-      const communityId = obligation.community?.slug ?? obligation.community?.id ?? navState.communitySlug;
       const res = await initiatePayment.mutateAsync({
-        communityId,
         paymentLinkId: obligation.paymentLink.id,
         payload: {
           idempotencyKey: crypto.randomUUID(),

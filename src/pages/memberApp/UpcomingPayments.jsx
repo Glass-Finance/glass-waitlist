@@ -236,11 +236,7 @@ export default function UpcomingPayments() {
     // See Home.jsx's handlePay -- PaymentSummary's own fetch may not carry
     // community info back, so pass along what we already have as a fallback.
     navigate(`/member/pay/${item.id}${suffix}`, {
-      state: {
-        communityName: item.communityName,
-        communityLogo: item.logo,
-        communitySlug: item.communitySlug,
-      },
+      state: { communityName: item.communityName, communityLogo: item.logo },
     });
   }
 

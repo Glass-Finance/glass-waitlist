@@ -633,7 +633,6 @@ function DashboardContent({ isPaying, communityId }) {
   async function handlePayMine(item) {
     try {
       const res = await initiatePayment.mutateAsync({
-        communityId: item.communitySlug ?? communityId,
         paymentLinkId: item.paymentLinkId,
         payload: {
           idempotencyKey: crypto.randomUUID(),

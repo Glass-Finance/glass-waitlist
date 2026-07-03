@@ -307,8 +307,8 @@ export function useInitiatePayment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ communityId, paymentLinkId, payload }) =>
-      initiatePayment(communityId, paymentLinkId, payload),
+    mutationFn: ({ paymentLinkId, payload }) =>
+      initiatePayment(paymentLinkId, payload),
     onSuccess: () => {
       // Refresh obligations and transactions after successful payment
       queryClient.invalidateQueries({ queryKey: ["obligations"] });
