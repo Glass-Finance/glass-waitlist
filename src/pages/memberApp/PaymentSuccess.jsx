@@ -1,80 +1,11 @@
-// import { useEffect, useRef, useState } from "react";
-// import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-// import { ChevronLeft, Check, X, Loader2 } from "lucide-react";
-// import { verifyPayment } from "../../api/members";
-
-// // Paystack's redirect (and the immediate-charge path in PaymentSummary.jsx)
-// // both attach ?reference= — that's the only way to know what actually
-// // happened. /payments/callback/verify can return a non-terminal status
-// // (verificationQueued: true) right after redirect since the gateway's own
-// // webhook hasn't landed yet, so this polls briefly instead of trusting the
-// // first response.
-// const POLL_INTERVAL_MS = 2500;
-// const MAX_POLLS = 5;
-
-// function isTerminal(status) {
-//   const s = (status ?? "").toUpperCase();
-//   return s === "SUCCESS" || s === "FAILED";
-// }
-
-// export default function PaymentSuccess() {
-//   const navigate = useNavigate();
-//   const { paymentId } = useParams();
-//   const [searchParams] = useSearchParams();
-//   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
-
-//   // Admin pay-mine flow stores the dashboard URL before redirecting to Paystack.
-//   // useState initializer runs once on mount so the key is consumed exactly once.
-//   const [returnTo] = useState(() => {
-//     const v = sessionStorage.getItem("paymentReturnTo");
-//     if (v) sessionStorage.removeItem("paymentReturnTo");
-//     return v ?? null;
-//   });
-
-//   // "checking" | "success" | "failed" | "unknown"
-//   const [state, setState] = useState(reference ? "checking" : "unknown");
-//   const attemptsRef = useRef(0);
-
-//   useEffect(() => {
-//     if (!reference) return;
-//     let cancelled = false;
-
-//     async function poll() {
-//       try {
-//         const res = await verifyPayment(reference);
-//         const status = res.data?.data?.status;
-//         if (cancelled) return;
-//         if (isTerminal(status)) {
-//           setState(status.toUpperCase() === "SUCCESS" ? "success" : "failed");
-//           return;
-//         }
-//       } catch {
-//         // Network/4xx — fall through to retry/give-up logic below rather
-//         // than asserting success or failure off a request that didn't work.
-//       }
-//       attemptsRef.current += 1;
-//       if (cancelled) return;
-//       if (attemptsRef.current >= MAX_POLLS) {
-//         setState("unknown");
-//         return;
-//       }
-//       setTimeout(poll, POLL_INTERVAL_MS);
-//     }
-
-//     poll();
-//     return () => {
-//       cancelled = true;
-//     };
-//   }, [reference]);
-
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { ChevronLeft, Check, X, Loader2 } from "lucide-react";
+import { ChevronLeft, Check, X, Loader2, Clock } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 
-const POLL_INTERVAL_MS = 2500;
-const MAX_POLLS = 5;
+const POLL_INTERVAL_MS = 3000;
+const MAX_POLLS = 20;
 
 function isTerminal(status) {
   const s = (status ?? "").toUpperCase();
@@ -94,8 +25,23 @@ export default function PaymentSuccess() {
     return v ?? null;
   });
 
+  // "checking" | "success" | "failed" | "processing" | "unknown"
   const [state, setState] = useState(reference ? "checking" : "unknown");
+  const [autoRedirectIn, setAutoRedirectIn] = useState(null);
   const attemptsRef = useRef(0);
+  const wasQueuedRef = useRef(false);
+
+  function invalidateCaches() {
+    queryClient.invalidateQueries({ queryKey: ["obligations"] });
+    queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    queryClient.invalidateQueries({ queryKey: ["payment-links"] });
+    queryClient.invalidateQueries({ queryKey: ["authorisations"] });
+    queryClient.invalidateQueries({ queryKey: ["community"] });
+    if (paymentId) {
+      queryClient.invalidateQueries({ queryKey: ["obligation", paymentId] });
+      queryClient.invalidateQueries({ queryKey: ["payment-link", paymentId] });
+    }
+  }
 
   useEffect(() => {
     if (!reference) return;
@@ -104,77 +50,92 @@ export default function PaymentSuccess() {
     async function poll() {
       try {
         const res = await verifyPayment(reference);
-        const status = res.data?.data?.status;
-        if (cancelled) return;
-        if (isTerminal(status)) {
-          const finalState =
-            status.toUpperCase() === "SUCCESS" ? "success" : "failed";
-          setState(finalState);
+        const data = res.data?.data ?? {};
+        const { status, verificationQueued } = data;
 
-          if (finalState === "success") {
-            // Payment is now confirmed against the gateway — every cache that
-            // could reflect it is stale. paymentId may be an obligationId or a
-            // payment-link id depending on how this screen was reached, so we
-            // invalidate both rather than branching on `via`.
-            queryClient.invalidateQueries({ queryKey: ["obligations"] });
-            queryClient.invalidateQueries({ queryKey: ["transactions"] });
-            queryClient.invalidateQueries({ queryKey: ["payment-links"] }); // prefix match, all communities
-            queryClient.invalidateQueries({ queryKey: ["authorisations"] }); // savePaymentMethod may have added one
-            if (paymentId) {
-              queryClient.invalidateQueries({
-                queryKey: ["obligation", paymentId],
-              });
-              queryClient.invalidateQueries({
-                queryKey: ["payment-link", paymentId],
-              });
-            }
-          }
+        if (verificationQueued) wasQueuedRef.current = true;
+
+        if (cancelled) return;
+
+        if (isTerminal(status)) {
+          const finalState = status.toUpperCase() === "SUCCESS" ? "success" : "failed";
+          invalidateCaches();
+          if (finalState === "success") setAutoRedirectIn(4);
+          setState(finalState);
           return;
         }
       } catch {
         // fall through to retry
       }
+
       attemptsRef.current += 1;
       if (cancelled) return;
+
       if (attemptsRef.current >= MAX_POLLS) {
-        setState("unknown");
+        invalidateCaches();
+        setState(wasQueuedRef.current ? "processing" : "unknown");
         return;
       }
+
       setTimeout(poll, POLL_INTERVAL_MS);
     }
 
     poll();
-    return () => {
-      cancelled = true;
-    };
-  }, [reference, queryClient, paymentId]);
+    return () => { cancelled = true; };
+  }, [reference]);
+
+  // Auto-redirect after confirmed success
+  useEffect(() => {
+    if (autoRedirectIn === null) return;
+    if (autoRedirectIn <= 0) {
+      navigate(returnTo ?? "/member/home");
+      return;
+    }
+    const t = setTimeout(() => setAutoRedirectIn((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [autoRedirectIn, navigate, returnTo]);
+
+  const dest = returnTo ?? "/member/home";
+  const backLabel = returnTo ? "Back to Dashboard" : "Go to Home";
 
   const content = {
     checking: {
-      icon: (
-        <Loader2
-          size={44}
-          className="text-white animate-spin"
-          strokeWidth={2.5}
-        />
-      ),
+      icon: <Loader2 size={44} className="text-white animate-spin" strokeWidth={2.5} />,
       bg: "#111111",
       text: "Confirming payment…",
+      sub: null,
+      action: null,
     },
     success: {
       icon: <Check size={44} color="white" strokeWidth={2.5} />,
       bg: "#111111",
       text: "Payment Successful",
+      sub: autoRedirectIn != null ? `Redirecting in ${autoRedirectIn}s…` : null,
+      action: { label: backLabel, to: dest },
     },
     failed: {
       icon: <X size={44} color="white" strokeWidth={2.5} />,
       bg: "#DC2626",
       text: "Payment Failed",
+      sub: null,
+      action: {
+        label: returnTo ? "Back to Dashboard" : "Try again",
+        to: returnTo ?? (paymentId ? `/member/pay/${paymentId}` : "/member/upcoming"),
+      },
+    },
+    processing: {
+      icon: <Clock size={44} color="white" strokeWidth={2} />,
+      bg: "#1C2B8A",
+      text: "Payment Processing",
+      sub: "Your payment went through — confirmation is taking a moment. You'll get a notification when it's ready.",
+      action: { label: backLabel, to: dest },
     },
     unknown: {
       icon: <Loader2 size={44} className="text-white" strokeWidth={2.5} />,
       bg: "#6B7280",
-      text: "We couldn't confirm this payment yet — check Transactions shortly.",
+      text: "Still confirming…",
+      sub: "Check your Transactions tab in a moment.",
+      action: { label: backLabel, to: dest },
     },
   }[state];
 
@@ -188,10 +149,10 @@ export default function PaymentSuccess() {
         margin: "0 auto",
       }}
     >
-      {/* ── Top bar ── */}
+      {/* Top bar */}
       <div className="flex items-center px-4 pt-10 pb-4 relative">
         <button
-          onClick={() => navigate(returnTo ?? "/member/home")}
+          onClick={() => navigate(dest)}
           className="w-9 h-9 rounded-full bg-[#D4D4D4] flex items-center justify-center cursor-pointer"
         >
           <ChevronLeft size={18} className="text-gray-700" />
@@ -201,7 +162,7 @@ export default function PaymentSuccess() {
         </h1>
       </div>
 
-      {/* ── Status content — centred vertically ── */}
+      {/* Status */}
       <div className="flex-1 flex flex-col items-center mt-10 gap-4 px-8">
         <div
           className="w-[100px] h-[100px] rounded-full flex items-center justify-center flex-shrink-0"
@@ -214,27 +175,19 @@ export default function PaymentSuccess() {
           {content.text}
         </p>
 
-        {state === "failed" && (
-          <button
-            onClick={() =>
-              navigate(
-                returnTo ??
-                  (paymentId ? `/member/pay/${paymentId}` : "/member/upcoming"),
-              )
-            }
-            className="text-sm font-semibold mt-2 cursor-pointer"
-            style={{ color: "#002FA7" }}
-          >
-            {returnTo ? "Back to Dashboard" : "Try again"}
-          </button>
+        {content.sub && (
+          <p className="text-[13px] text-gray-500 text-center leading-snug -mt-2">
+            {content.sub}
+          </p>
         )}
-        {(state === "success" || state === "unknown") && (
+
+        {content.action && (
           <button
-            onClick={() => navigate(returnTo ?? "/member/home")}
+            onClick={() => navigate(content.action.to)}
             className="text-sm font-semibold mt-2 cursor-pointer"
             style={{ color: "#002FA7" }}
           >
-            {returnTo ? "Back to Dashboard" : "Go to Home"}
+            {content.action.label}
           </button>
         )}
       </div>
