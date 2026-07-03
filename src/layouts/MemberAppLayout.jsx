@@ -17,16 +17,11 @@ export default function MemberAppLayout() {
   return (
     <div className="flex justify-center items-start min-h-screen bg-[#EBEBEB]">
       <div
-        className="relative bg-[#EBEBEB] w-full max-w-[390px] min-h-screen overflow-hidden"
+        className="relative bg-[#EBEBEB] w-full max-w-[390px] min-h-screen"
         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
       >
-        
-
-        {/* Scrollable content */}
-        <main
-          className="flex-1 overflow-y-auto overscroll-contain"
-          style={{ paddingBottom: "80px" }}
-        >
+        {/* Content — window scrolls naturally; paddingBottom clears the fixed nav */}
+        <main style={{ paddingBottom: "88px" }}>
           <Outlet />
         </main>
 

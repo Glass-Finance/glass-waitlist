@@ -1,14 +1,78 @@
+// import { useEffect, useRef, useState } from "react";
+// import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+// import { ChevronLeft, Check, X, Loader2 } from "lucide-react";
+// import { verifyPayment } from "../../api/members";
+
+// // Paystack's redirect (and the immediate-charge path in PaymentSummary.jsx)
+// // both attach ?reference= — that's the only way to know what actually
+// // happened. /payments/callback/verify can return a non-terminal status
+// // (verificationQueued: true) right after redirect since the gateway's own
+// // webhook hasn't landed yet, so this polls briefly instead of trusting the
+// // first response.
+// const POLL_INTERVAL_MS = 2500;
+// const MAX_POLLS = 5;
+
+// function isTerminal(status) {
+//   const s = (status ?? "").toUpperCase();
+//   return s === "SUCCESS" || s === "FAILED";
+// }
+
+// export default function PaymentSuccess() {
+//   const navigate = useNavigate();
+//   const { paymentId } = useParams();
+//   const [searchParams] = useSearchParams();
+//   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
+
+//   // Admin pay-mine flow stores the dashboard URL before redirecting to Paystack.
+//   // useState initializer runs once on mount so the key is consumed exactly once.
+//   const [returnTo] = useState(() => {
+//     const v = sessionStorage.getItem("paymentReturnTo");
+//     if (v) sessionStorage.removeItem("paymentReturnTo");
+//     return v ?? null;
+//   });
+
+//   // "checking" | "success" | "failed" | "unknown"
+//   const [state, setState] = useState(reference ? "checking" : "unknown");
+//   const attemptsRef = useRef(0);
+
+//   useEffect(() => {
+//     if (!reference) return;
+//     let cancelled = false;
+
+//     async function poll() {
+//       try {
+//         const res = await verifyPayment(reference);
+//         const status = res.data?.data?.status;
+//         if (cancelled) return;
+//         if (isTerminal(status)) {
+//           setState(status.toUpperCase() === "SUCCESS" ? "success" : "failed");
+//           return;
+//         }
+//       } catch {
+//         // Network/4xx — fall through to retry/give-up logic below rather
+//         // than asserting success or failure off a request that didn't work.
+//       }
+//       attemptsRef.current += 1;
+//       if (cancelled) return;
+//       if (attemptsRef.current >= MAX_POLLS) {
+//         setState("unknown");
+//         return;
+//       }
+//       setTimeout(poll, POLL_INTERVAL_MS);
+//     }
+
+//     poll();
+//     return () => {
+//       cancelled = true;
+//     };
+//   }, [reference]);
+
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Check, X, Loader2 } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 
-// Paystack's redirect (and the immediate-charge path in PaymentSummary.jsx)
-// both attach ?reference= — that's the only way to know what actually
-// happened. /payments/callback/verify can return a non-terminal status
-// (verificationQueued: true) right after redirect since the gateway's own
-// webhook hasn't landed yet, so this polls briefly instead of trusting the
-// first response.
 const POLL_INTERVAL_MS = 2500;
 const MAX_POLLS = 5;
 
@@ -19,19 +83,17 @@ function isTerminal(status) {
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { paymentId } = useParams();
   const [searchParams] = useSearchParams();
   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
 
-  // Admin pay-mine flow stores the dashboard URL before redirecting to Paystack.
-  // useState initializer runs once on mount so the key is consumed exactly once.
   const [returnTo] = useState(() => {
     const v = sessionStorage.getItem("paymentReturnTo");
     if (v) sessionStorage.removeItem("paymentReturnTo");
     return v ?? null;
   });
 
-  // "checking" | "success" | "failed" | "unknown"
   const [state, setState] = useState(reference ? "checking" : "unknown");
   const attemptsRef = useRef(0);
 
@@ -45,12 +107,32 @@ export default function PaymentSuccess() {
         const status = res.data?.data?.status;
         if (cancelled) return;
         if (isTerminal(status)) {
-          setState(status.toUpperCase() === "SUCCESS" ? "success" : "failed");
+          const finalState =
+            status.toUpperCase() === "SUCCESS" ? "success" : "failed";
+          setState(finalState);
+
+          if (finalState === "success") {
+            // Payment is now confirmed against the gateway — every cache that
+            // could reflect it is stale. paymentId may be an obligationId or a
+            // payment-link id depending on how this screen was reached, so we
+            // invalidate both rather than branching on `via`.
+            queryClient.invalidateQueries({ queryKey: ["obligations"] });
+            queryClient.invalidateQueries({ queryKey: ["transactions"] });
+            queryClient.invalidateQueries({ queryKey: ["payment-links"] }); // prefix match, all communities
+            queryClient.invalidateQueries({ queryKey: ["authorisations"] }); // savePaymentMethod may have added one
+            if (paymentId) {
+              queryClient.invalidateQueries({
+                queryKey: ["obligation", paymentId],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ["payment-link", paymentId],
+              });
+            }
+          }
           return;
         }
       } catch {
-        // Network/4xx — fall through to retry/give-up logic below rather
-        // than asserting success or failure off a request that didn't work.
+        // fall through to retry
       }
       attemptsRef.current += 1;
       if (cancelled) return;
@@ -65,11 +147,17 @@ export default function PaymentSuccess() {
     return () => {
       cancelled = true;
     };
-  }, [reference]);
+  }, [reference, queryClient, paymentId]);
 
   const content = {
     checking: {
-      icon: <Loader2 size={44} className="text-white animate-spin" strokeWidth={2.5} />,
+      icon: (
+        <Loader2
+          size={44}
+          className="text-white animate-spin"
+          strokeWidth={2.5}
+        />
+      ),
       bg: "#111111",
       text: "Confirming payment…",
     },
@@ -128,7 +216,12 @@ export default function PaymentSuccess() {
 
         {state === "failed" && (
           <button
-            onClick={() => navigate(returnTo ?? (paymentId ? `/member/pay/${paymentId}` : "/member/upcoming"))}
+            onClick={() =>
+              navigate(
+                returnTo ??
+                  (paymentId ? `/member/pay/${paymentId}` : "/member/upcoming"),
+              )
+            }
             className="text-sm font-semibold mt-2 cursor-pointer"
             style={{ color: "#002FA7" }}
           >

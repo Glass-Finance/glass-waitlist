@@ -1,5 +1,62 @@
+// import { useEffect, useRef, useState } from "react";
+// import { useNavigate, useSearchParams } from "react-router-dom";
+// import { Check, X, Loader2, ArrowLeft } from "lucide-react";
+// import { verifyPayment } from "../../api/members";
+
+// const POLL_INTERVAL_MS = 2500;
+// const MAX_POLLS = 5;
+
+// function isTerminal(status) {
+//   const s = (status ?? "").toUpperCase();
+//   return s === "SUCCESS" || s === "FAILED";
+// }
+
+// export default function PaymentCallback() {
+//   const navigate = useNavigate();
+//   const [searchParams] = useSearchParams();
+//   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
+
+//   const [returnTo] = useState(() => {
+//     const v = sessionStorage.getItem("paymentReturnTo");
+//     if (v) sessionStorage.removeItem("paymentReturnTo");
+//     return v ?? "/dashboard/admin";
+//   });
+
+//   const [state, setState] = useState(reference ? "checking" : "unknown");
+//   const attemptsRef = useRef(0);
+
+//   useEffect(() => {
+//     if (!reference) return;
+//     let cancelled = false;
+
+//     async function poll() {
+//       try {
+//         const res = await verifyPayment(reference);
+//         const status = res.data?.data?.status;
+//         if (cancelled) return;
+//         if (isTerminal(status)) {
+//           setState(status.toUpperCase() === "SUCCESS" ? "success" : "failed");
+//           return;
+//         }
+//       } catch {
+//         // fall through to retry
+//       }
+//       attemptsRef.current += 1;
+//       if (cancelled) return;
+//       if (attemptsRef.current >= MAX_POLLS) {
+//         setState("unknown");
+//         return;
+//       }
+//       setTimeout(poll, POLL_INTERVAL_MS);
+//     }
+
+//     poll();
+//     return () => { cancelled = true; };
+//   }, [reference]);
+
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Check, X, Loader2, ArrowLeft } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 
@@ -13,17 +70,11 @@ function isTerminal(status) {
 
 export default function PaymentCallback() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
 
-  const [returnTo] = useState(() => {
-    const v = sessionStorage.getItem("paymentReturnTo");
-    if (v) sessionStorage.removeItem("paymentReturnTo");
-    return v ?? "/dashboard/admin";
-  });
-
-  const [state, setState] = useState(reference ? "checking" : "unknown");
-  const attemptsRef = useRef(0);
+  // ...unchanged state/returnTo setup...
 
   useEffect(() => {
     if (!reference) return;
@@ -35,7 +86,25 @@ export default function PaymentCallback() {
         const status = res.data?.data?.status;
         if (cancelled) return;
         if (isTerminal(status)) {
-          setState(status.toUpperCase() === "SUCCESS" ? "success" : "failed");
+          const finalState =
+            status.toUpperCase() === "SUCCESS" ? "success" : "failed";
+          setState(finalState);
+
+          // Payment resolved — every cache that reads payment-derived data
+          // is now stale. Invalidate broadly rather than guessing every key,
+          // since this fires rarely (once per payment) and correctness here
+          // matters more than shaving a few refetches.
+          queryClient.invalidateQueries({
+            predicate: (query) => {
+              const key = query.queryKey[0];
+              return [
+                "community", // admin dashboard: community/members/transactions/activity
+                "obligations", // member usePayments — upcoming list
+                "transactions", // member usePayments — history
+                "authorisations", // useManagePayments — saved methods
+              ].includes(key);
+            },
+          });
           return;
         }
       } catch {
@@ -51,12 +120,20 @@ export default function PaymentCallback() {
     }
 
     poll();
-    return () => { cancelled = true; };
-  }, [reference]);
+    return () => {
+      cancelled = true;
+    };
+  }, [reference, queryClient]);
 
   const config = {
     checking: {
-      icon: <Loader2 size={40} className="animate-spin" style={{ color: "#1C2B8A" }} />,
+      icon: (
+        <Loader2
+          size={40}
+          className="animate-spin"
+          style={{ color: "#1C2B8A" }}
+        />
+      ),
       iconBg: "#EEF2FF",
       title: "Confirming payment…",
       subtitle: "Please wait while we verify your transaction.",
@@ -73,14 +150,16 @@ export default function PaymentCallback() {
       icon: <X size={40} strokeWidth={2.5} color="#fff" />,
       iconBg: "#DC2626",
       title: "Payment Failed",
-      subtitle: "Something went wrong with this payment. Please try again from the dashboard.",
+      subtitle:
+        "Something went wrong with this payment. Please try again from the dashboard.",
       buttonLabel: "Back to Dashboard",
     },
     unknown: {
       icon: <Loader2 size={40} strokeWidth={2} style={{ color: "#6B7280" }} />,
       iconBg: "#F3F4F6",
       title: "Still confirming…",
-      subtitle: "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
+      subtitle:
+        "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
       buttonLabel: "Back to Dashboard",
     },
   }[state];
@@ -88,7 +167,10 @@ export default function PaymentCallback() {
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ background: "#F4F6FA", fontFamily: "'Inter', system-ui, sans-serif" }}
+      style={{
+        background: "#F4F6FA",
+        fontFamily: "'Inter', system-ui, sans-serif",
+      }}
     >
       {/* Top bar */}
       <div className="flex items-center px-8 pt-8 pb-4">
@@ -115,8 +197,12 @@ export default function PaymentCallback() {
             {config.icon}
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{config.title}</h1>
-          <p className="text-sm text-gray-500 leading-relaxed mb-2">{config.subtitle}</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            {config.title}
+          </h1>
+          <p className="text-sm text-gray-500 leading-relaxed mb-2">
+            {config.subtitle}
+          </p>
 
           {reference && state !== "checking" && (
             <p className="text-xs text-gray-400 mt-1 mb-6 font-mono break-all">
