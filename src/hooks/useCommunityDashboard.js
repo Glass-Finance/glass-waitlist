@@ -90,6 +90,7 @@ export function useCommunityDashboard(communityId) {
     enabled,
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 10,
+    refetchOnMount: "always",
     select: (data) => {
       const list = Array.isArray(data)
         ? data

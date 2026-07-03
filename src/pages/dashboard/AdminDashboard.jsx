@@ -576,11 +576,13 @@ function timeAgo(dateString) {
 }
 
 const STATUS_STYLE = {
-  paid:    { bg: "#ecfdf5", color: "#059669", label: "Paid"    },
-  success: { bg: "#ecfdf5", color: "#059669", label: "Paid"    },
-  unpaid:  { bg: "#fff1f2", color: "#e11d48", label: "Unpaid"  },
-  pending: { bg: "#fffbeb", color: "#b45309", label: "Pending" },
-  failed:  { bg: "#fff1f2", color: "#e11d48", label: "Failed"  },
+  paid:       { bg: "#ecfdf5", color: "#059669", label: "Paid"    },
+  success:    { bg: "#ecfdf5", color: "#059669", label: "Paid"    },
+  successful: { bg: "#ecfdf5", color: "#059669", label: "Paid"    },
+  unpaid:     { bg: "#fff1f2", color: "#e11d48", label: "Unpaid"  },
+  pending:    { bg: "#fffbeb", color: "#b45309", label: "Pending" },
+  initiated:  { bg: "#fffbeb", color: "#b45309", label: "Pending" },
+  failed:     { bg: "#fff1f2", color: "#e11d48", label: "Failed"  },
 };
 
 function statusStyle(status = "") {
@@ -1237,7 +1239,13 @@ function DashboardContent({ isPaying, communityId }) {
                       className="border-b border-[#f3f4f8] hover:bg-[#fafbff] transition-colors cursor-default"
                     >
                       <td className="px-5 py-3 text-xs font-medium text-[#002FA7]">
-                        {tx.memberName ?? tx.userName ?? "—"}
+                        {(() => {
+                          const u = tx.member?.user ?? tx.user ?? tx.payer ?? tx.member ?? {};
+                          const f = u.firstName ?? tx.firstName ?? "";
+                          const l = u.lastName ?? tx.lastName ?? "";
+                          const full = `${f} ${l}`.trim();
+                          return full || u.email || tx.memberName ?? tx.userName ?? "—";
+                        })()}
                       </td>
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-1.5">
@@ -1254,7 +1262,7 @@ function DashboardContent({ isPaying, communityId }) {
                         {formatDate(tx.createdAt ?? tx.date)}
                       </td>
                       <td className="px-5 py-3 text-xs text-black">
-                        {tx.email ?? tx.memberEmail ?? "—"}
+                        {tx.member?.user?.email ?? tx.user?.email ?? tx.payer?.email ?? tx.email ?? tx.memberEmail ?? "—"}
                       </td>
                       <td className="px-5 py-3">
                         <span
