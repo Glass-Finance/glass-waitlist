@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Landmark } from "lucide-react";
 import { getObligation, getPaymentLink } from "../../api/members";
@@ -63,23 +63,33 @@ function MethodIcon() {
 // ─── Payment Summary screen ───────────────────────────────────────────────────
 export default function PaymentSummary() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { paymentId } = useParams();
   const [searchParams] = useSearchParams();
   const viaLink = searchParams.get("via") === "link";
   const [error, setError] = useState("");
 
-  const { data: obligationData, isLoading: obligationLoading } = useObligation(!viaLink ? paymentId : null);
-  const { data: linkRaw, isLoading: linkLoading } = usePaymentLinkData(viaLink ? paymentId : null);
+  const { data: obligationData, isLoading: obligationLoading, error: obligationError } = useObligation(!viaLink ? paymentId : null);
+  const { data: linkRaw, isLoading: linkLoading, error: linkError } = usePaymentLinkData(viaLink ? paymentId : null);
 
   const obligation = viaLink ? normalizeLinkToObligation(linkRaw) : obligationData;
   const isLoading = viaLink ? linkLoading : obligationLoading;
+  // Distinct from `error` (the payment-initiation error below) -- this one
+  // means the payment itself couldn't be found/loaded, not that paying it
+  // failed. Previously silent: the button would just stay disabled with no
+  // indication why, indistinguishable from a slow network.
+  const loadError = viaLink ? linkError : obligationError;
 
   const { data: authorisations } = useManagePayments();
   const initiatePayment = useInitiatePayment();
 
-  const communityName = obligation?.community?.name ?? "Community";
+  // Fall back to whatever Home/UpcomingPayments already knew about this
+  // community — the fresh obligation/payment-link fetch above isn't
+  // guaranteed to carry it back (see handlePay in those two pages).
+  const navState = location.state ?? {};
+  const communityName = obligation?.community?.name ?? navState.communityName ?? "Community";
   const communityInitials = communityName.slice(0, 2).toUpperCase();
-  const communityLogo = obligation?.community?.logo;
+  const communityLogo = obligation?.community?.logo ?? navState.communityLogo;
   const isRecurring = !!obligation?.recurringPlan;
   const savedMethod = authorisations?.find((a) => (a.status ?? "").toUpperCase() === "ACTIVE");
 
@@ -123,6 +133,23 @@ export default function PaymentSummary() {
     return (
       <div className="flex items-center justify-center min-h-screen" style={{ background: "#E8E8E8" }}>
         <p className="text-sm text-gray-400">Loading…</p>
+      </div>
+    );
+  }
+
+  if (loadError || !obligation) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 min-h-screen px-6 text-center" style={{ background: "#E8E8E8" }}>
+        <p className="text-sm text-gray-600">
+          {getErrorMessage(loadError, "Couldn't load this payment. It may no longer be available.")}
+        </p>
+        <button
+          onClick={() => navigate(-1)}
+          className="px-4 py-2 rounded-lg text-sm font-semibold text-white cursor-pointer"
+          style={{ background: "#002FA7" }}
+        >
+          Go back
+        </button>
       </div>
     );
   }

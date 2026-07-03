@@ -384,7 +384,13 @@ export default function Home() {
 
   function handlePay(payment) {
     const suffix = payment._isLink ? "?via=link" : "";
-    navigate(`/member/pay/${payment.id}${suffix}`);
+    // PaymentSummary re-fetches from a different endpoint (obligation detail,
+    // or the standalone payment-link detail for the ?via=link case) that may
+    // not carry community info back -- pass along what we already know here
+    // as a fallback so the community name/logo don't regress on that screen.
+    navigate(`/member/pay/${payment.id}${suffix}`, {
+      state: { communityName: payment.communityName, communityLogo: payment.logo },
+    });
   }
 
   return (
