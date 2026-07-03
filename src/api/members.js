@@ -119,7 +119,14 @@ export const getPaymentLink = (id) =>
   client.get(`/payment-links/${id}`);
 
 // GET /api/v1/communities/{communityIdentifier}/payment-links
-// Member-accessible: same URL as admin but with read-only scope via member token.
+// NOT actually member-accessible despite the name/URL being shared with the
+// admin-side call -- confirmed via a live 403 that this requires the
+// community.payment_links.read permission, which regular members don't
+// hold. Kept in use (see usePayments.js's paymentLinksQuery) so the
+// "active plan with no obligation yet" fallback self-heals the moment the
+// backend grants members this permission or adds a member-scoped
+// equivalent, but its failure is treated as non-blocking everywhere it's
+// called from.
 export const getMemberCommunityPaymentLinks = (communityIdentifier) =>
   client.get(`/communities/${communityIdentifier}/payment-links`);
 

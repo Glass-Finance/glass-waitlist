@@ -207,6 +207,19 @@ export function usePayments() {
     rawActiveCommunity?.community?.id ??
     null;
 
+  // Confirmed via a live 403 (backend: "Community permission is required:
+  // community.payment_links.read") that regular members can never
+  // successfully call this -- it's admin-only despite the URL being
+  // shared with the admin-side call. It only appeared to work in earlier
+  // testing because that was against an admin/paying-admin account, which
+  // does hold that permission. retry: false so we don't hammer a
+  // permanent 403 with backoff on every mount, and its failure is
+  // deliberately NOT included in the blocking `error` below -- a
+  // member's real obligations (from getMyObligations, which they can
+  // read) should still render even though the "active plan with no
+  // obligation yet" fallback can't. Once the backend grants members this
+  // permission (or exposes a member-scoped equivalent), this will start
+  // working with no frontend change needed.
   const paymentLinksQuery = useQuery({
     queryKey: ["payment-links", communityIdentifier],
     queryFn: async () => {
@@ -216,6 +229,7 @@ export function usePayments() {
     enabled: !!communityIdentifier,
     staleTime: 1000 * 60 * 2,
     refetchOnMount: "always",
+    retry: false,
   });
 
   const allObligations = obligationsQuery.data ?? [];
@@ -267,18 +281,17 @@ export function usePayments() {
       obligationsQuery.isLoading ||
       transactionsQuery.isLoading ||
       userQuery.isLoading,
-    // Previously only checked 3 of the 4 queries this hook runs -- a
-    // failure in communitiesQuery or paymentLinksQuery (the one that
-    // actually powers the "unmatched plans" fallback below) was silently
-    // swallowed into an empty upcoming[] with no error surfaced anywhere,
-    // making a real fetch failure indistinguishable from "genuinely no
-    // payments due" in the UI.
+    // communitiesQuery failing is genuinely blocking (no community context
+    // at all to render). paymentLinksQuery failing is NOT -- it's a known,
+    // permanent 403 for regular members (see comment above), and a
+    // member's real obligations should still render normally regardless,
+    // so its failure is deliberately excluded here rather than blocking
+    // the whole page with a "try again" that can never succeed.
     error:
       obligationsQuery.error ||
       transactionsQuery.error ||
       userQuery.error ||
       communitiesQuery.error ||
-      paymentLinksQuery.error ||
       null,
     // For a manual "Check again" affordance -- refetches everything this
     // hook depends on, not just whichever query happens to be visible.
