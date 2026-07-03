@@ -162,6 +162,13 @@ export function usePayments() {
     staleTime: 1000 * 60 * 10,
   });
 
+  // refetchOnMount: "always" matters here specifically -- accepting an
+  // invite invalidates this query, but Home isn't mounted yet at that
+  // moment (still on the Invites screen), so there's no active observer
+  // for invalidateQueries to force-refetch. Without this, landing on Home
+  // right after accepting can render with the pre-accept communities list,
+  // which silently breaks the community/payment-links resolution below for
+  // a member who just joined.
   const communitiesQuery = useQuery({
     queryKey: ["communities"],
     queryFn: async () => {
@@ -169,6 +176,7 @@ export function usePayments() {
       return unwrapList(res);
     },
     staleTime: 1000 * 60 * 5,
+    refetchOnMount: "always",
   });
 
   // Active community: prefer whatever the member last selected in MyCommunities,
