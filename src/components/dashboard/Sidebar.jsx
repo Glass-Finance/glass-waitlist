@@ -215,8 +215,8 @@ const NAV = [
   { icon: LayoutDashboard, label: "Dashboard",     segment: "home",          path: "admin" },
   { icon: CreditCard,      label: "Payment Plans", segment: "payments",      path: "payments" },
   { icon: Users,           label: "Members",       segment: "members",       path: "members" },
-  { icon: Bell,            label: "Notifications", segment: "notifications", path: "notifications", global: true },
-  { icon: Settings,        label: "Settings",      segment: "settings",      path: "settings",      global: true },
+  { icon: Bell,            label: "Notifications", segment: "notifications", path: "notifications" },
+  { icon: Settings,        label: "Settings",      segment: "settings",      path: "settings" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -532,17 +532,17 @@ export default function Sidebar() {
 
         {/* Nav links */}
         <nav style={{ flex: 1, padding: "10px 8px", overflowY: "auto" }}>
-          {NAV.map(({ icon: Icon, label, segment, path, global: isGlobal }) => {
+          {NAV.map(({ icon: Icon, label, segment, path }) => {
             const isActive = activeSegment === segment;
-            // Global pages (Notifications, Settings) always resolve regardless
-            // of whether a community is selected
-            const href = isGlobal
-              ? `/dashboard/${path}`
-              : activeCommunity
-                ? communityPath(activeCommunity.slug, path, activeCommunityIsPaying)
-                : segment === "home"
-                  ? "/dashboard/home"
-                  : null;
+            // Every nav item except "Dashboard" (which points at the
+            // communities overview when none is selected) requires an
+            // active community — matches the blue-rail community picker
+            // being the only way to get into a community's admin area.
+            const href = activeCommunity
+              ? communityPath(activeCommunity.slug, path, activeCommunityIsPaying)
+              : segment === "home"
+                ? "/dashboard/home"
+                : null;
             const isDisabled = !href;
             const badge = segment === "notifications" && unreadCount > 0 ? unreadCount : 0;
 

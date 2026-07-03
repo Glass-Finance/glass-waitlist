@@ -507,7 +507,7 @@ import {
   Grid,
   List,
 } from "lucide-react";
-import { useCommunities } from "../../hooks/useCommunities";
+import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
 import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin } from "../../utils/communityRole";
 
@@ -672,7 +672,7 @@ function CommunityCard({ community, onClick }) {
 export default function CommunitiesHome() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data, isLoading, error } = useCommunities();
+  const { data, isLoading, error } = useCommunitiesWithMetrics();
 
   const communities = data?.communities ?? [];
 
