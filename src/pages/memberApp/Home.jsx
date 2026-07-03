@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Bell, ChevronDown, Clock } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
 import SideDrawer from "../../components/memberApp/SideDrawer";
@@ -370,6 +370,17 @@ export default function Home() {
   const communityInitial = communityName.charAt(0).toUpperCase();
   const communityLogo = data?.community?.logo;
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Seed active community in localStorage the first time the member lands here
+  useEffect(() => {
+    if (!data?.community) return;
+    try {
+      if (!localStorage.getItem("glass_member_community")) {
+        const { name, slug, id } = data.community;
+        localStorage.setItem("glass_member_community", JSON.stringify({ name, slug, id }));
+      }
+    } catch { /* ignore */ }
+  }, [data?.community]);
 
   function handlePay(payment) {
     const suffix = payment._isLink ? "?via=link" : "";

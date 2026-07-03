@@ -1,9 +1,20 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, LogOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 
 function getInitials(name = "") {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
+}
+
+function setActiveMemberCommunity(c) {
+  try {
+    localStorage.setItem(
+      "glass_member_community",
+      JSON.stringify({ id: c.id, slug: c.slug, name: c.name })
+    );
+  } catch {
+    /* ignore */
+  }
 }
 
 export default function MyCommunities() {
@@ -14,12 +25,19 @@ export default function MyCommunities() {
     name: c.name ?? c.community?.name,
     slug: c.slug ?? c.community?.slug,
     logo: c.logo ?? c.community?.logo,
+    id: c.id ?? c.community?.id,
   }));
   const leaveCommunity = useLeaveCommunity();
 
-  function handleLeave(community) {
-    if (!window.confirm(`Leave ${community.name}? You'll need a new invite to rejoin.`)) return;
-    leaveCommunity.mutate(community.slug ?? community.id);
+  function handleSelect(c) {
+    setActiveMemberCommunity(c);
+    navigate("/member/home");
+  }
+
+  function handleLeave(e, c) {
+    e.stopPropagation();
+    if (!window.confirm(`Leave ${c.name}? You'll need a new invite to rejoin.`)) return;
+    leaveCommunity.mutate(c.slug ?? c.id);
   }
 
   return (
@@ -44,11 +62,13 @@ export default function MyCommunities() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {communities.map((c) => (
-              <div
+              <button
                 key={c.id}
+                onClick={() => handleSelect(c)}
                 style={{
-                  display: "flex", alignItems: "center", gap: 12, background: "#fff", borderRadius: 14,
-                  padding: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
+                  display: "flex", alignItems: "center", gap: 12, background: "#fff",
+                  borderRadius: 14, padding: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
+                  border: "none", cursor: "pointer", textAlign: "left", width: "100%",
                 }}
               >
                 <div style={{ width: 44, height: 44, borderRadius: 12, background: "#1C2B8A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0, overflow: "hidden" }}>
@@ -62,17 +82,19 @@ export default function MyCommunities() {
                   <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{c.name}</p>
                   <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>{c.owned ? "Admin" : "Member"}</p>
                 </div>
-                {!c.owned && (
+                {!c.owned ? (
                   <button
-                    onClick={() => handleLeave(c)}
+                    onClick={(e) => handleLeave(e, c)}
                     disabled={leaveCommunity.isPending}
                     title="Leave community"
                     style={{ background: "none", border: "none", cursor: "pointer", padding: 6, color: "#DC2626", flexShrink: 0 }}
                   >
                     <LogOut size={16} />
                   </button>
+                ) : (
+                  <ChevronRight size={16} style={{ color: "#ccc", flexShrink: 0 }} />
                 )}
-              </div>
+              </button>
             ))}
           </div>
         )}

@@ -58,6 +58,7 @@ export function useCommunityDashboard(communityId) {
     enabled,
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 10,
+    refetchOnMount: "always",
   });
 
   // ── Members list — for the table, not just the count ────────────────────────
@@ -71,6 +72,7 @@ export function useCommunityDashboard(communityId) {
     enabled,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 15,
+    refetchOnMount: "always",
     select: (data) => {
       const list = Array.isArray(data)
         ? data

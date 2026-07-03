@@ -41,6 +41,7 @@ function shapeObligation(raw) {
     name: raw.paymentLink?.title ?? raw.description ?? "Payment",
     description: raw.paymentLink?.title ?? raw.description ?? "Payment",
     communityName: raw.community?.name,
+    communitySlug: raw.community?.slug,
     dueDate: raw.dueAt,
     type: raw.recurringPlan ? "recurring" : "one-time",
     status: (raw.status ?? "PENDING").toUpperCase(),
@@ -80,11 +81,12 @@ function shapeTransaction(raw) {
     amountPaid: raw.amountPaid,
     description: raw.description ?? raw.paymentLink?.title ?? "Payment",
     communityName: raw.community?.name,
+    communitySlug: raw.community?.slug,
     date: raw.paidAt ?? raw.createdAt,
     status: (raw.status ?? "").toLowerCase(), // "success" | "failed" | "pending" | "initiated"
     channel: raw.channel,
     currency: raw.currency ?? "NGN",
-    reference: raw.internalReference, // matches Topbar.jsx search results' field name
+    reference: raw.internalReference,
   };
 }
 
@@ -168,11 +170,25 @@ export function usePayments() {
     staleTime: 1000 * 60 * 5,
   });
 
-  // Resolve the community slug — member records nest the community object
-  // one level deep: { community: { slug } } instead of { slug } directly.
-  const rawFirstCommunity = communitiesQuery.data?.[0] ?? null;
+  // Active community: prefer whatever the member last selected in MyCommunities,
+  // falling back to the first community returned by the API.
+  const storedCommunity = (() => {
+    try { return JSON.parse(localStorage.getItem("glass_member_community") ?? "null"); }
+    catch { return null; }
+  })();
+
+  const rawCommunities = communitiesQuery.data ?? [];
+
+  // Match stored slug/id against the fetched list so we get the full object.
+  const rawActiveCommunity = storedCommunity
+    ? (rawCommunities.find((c) =>
+        (c.slug ?? c.community?.slug) === storedCommunity.slug ||
+        (c.id   ?? c.community?.id)   === storedCommunity.id
+      ) ?? rawCommunities[0])
+    : rawCommunities[0];
+
   const communitySlug =
-    rawFirstCommunity?.slug ?? rawFirstCommunity?.community?.slug ?? null;
+    rawActiveCommunity?.slug ?? rawActiveCommunity?.community?.slug ?? null;
 
   // Fetch active payment plans for this community.  Using the community-scoped
   // URL (/communities/{slug}/payment-links) because the global /payment-links
@@ -189,9 +205,17 @@ export function usePayments() {
     refetchOnMount: "always",
   });
 
-  const obligations = obligationsQuery.data ?? [];
-  const transactions = transactionsQuery.data ?? [];
+  const allObligations = obligationsQuery.data ?? [];
+  const allTransactions = transactionsQuery.data ?? [];
   const paymentLinks = paymentLinksQuery.data ?? [];
+
+  // Scope to the active community when one is known
+  const obligations = communitySlug
+    ? allObligations.filter((o) => !o.communitySlug || o.communitySlug === communitySlug)
+    : allObligations;
+  const transactions = communitySlug
+    ? allTransactions.filter((t) => !t.communitySlug || t.communitySlug === communitySlug)
+    : allTransactions;
 
   // Sort obligations: overdue first, then by dueDate ascending
   const sorted = [...obligations].sort((a, b) => {
@@ -223,7 +247,7 @@ export function usePayments() {
       upcoming,
       history: transactions,
       user: userQuery.data,
-      community: normalizeCommunity(communitiesQuery.data?.[0]),
+      community: normalizeCommunity(rawActiveCommunity),
     },
     isLoading:
       obligationsQuery.isLoading ||

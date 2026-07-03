@@ -555,7 +555,7 @@ export default function Sidebar() {
                   width: "100%",
                   display: "flex",
                   alignItems: "center",
-                  gap: 6,
+                  gap: 4,
                   padding: "9px 10px",
                   borderRadius: 8,
                   border: "none",
