@@ -823,6 +823,7 @@ function DashboardContent({ isPaying, communityId }) {
   }
 
   return (
+    <>
     <main
       className="flex-1 px-6 py-5 overflow-y-auto"
       style={{
@@ -1240,6 +1241,7 @@ function DashboardContent({ isPaying, communityId }) {
         onClose={() => setPayingItem(null)}
       />
     )}
+    </>
   );
 }
 
