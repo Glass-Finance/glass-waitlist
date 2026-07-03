@@ -96,11 +96,6 @@ export const resolveAccount = (bankCode, accountNumber) =>
 // ─────────────────────────────────────────────────────────────────────────────
 
 // POST /api/v1/payments/pay/payment-links/{paymentLinkIdentifier}
-// Confirmed via backend Swagger docs -- not community-scoped in the URL at
-// all (two earlier guesses were both wrong: the bare /payment-links/{id}/pay
-// 404'd with "No static resource", and the community-scoped
-// /communities/{id}/payment-links/{id}/pay that replaced it doesn't match
-// the actual controller mapping either).
 // payload: { idempotencyKey, amount, savePaymentMethod, obligationId, metadata }
 // response.data.data: { transactionId, reference, authorizationUrl, accessCode, amount, currency }
 export const initiatePayment = (paymentLinkId, payload) =>

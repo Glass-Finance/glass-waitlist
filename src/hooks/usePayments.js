@@ -190,18 +190,20 @@ export function usePayments() {
 
   const communitySlug =
     rawActiveCommunity?.slug ?? rawActiveCommunity?.community?.slug ?? null;
+  // Use id as fallback identifier when no slug exists
+  const communityIdentifier =
+    communitySlug ??
+    rawActiveCommunity?.id ??
+    rawActiveCommunity?.community?.id ??
+    null;
 
-  // Fetch active payment plans for this community.  Using the community-scoped
-  // URL (/communities/{slug}/payment-links) because the global /payment-links
-  // endpoint may not be available; the admin uses the same URL and the backend
-  // should honour member tokens for reads.
   const paymentLinksQuery = useQuery({
-    queryKey: ["payment-links", communitySlug],
+    queryKey: ["payment-links", communityIdentifier],
     queryFn: async () => {
-      const res = await getMemberCommunityPaymentLinks(communitySlug);
-      return unwrapList(res).map((raw) => shapePaymentLink(raw, communitySlug));
+      const res = await getMemberCommunityPaymentLinks(communityIdentifier);
+      return unwrapList(res).map((raw) => shapePaymentLink(raw, communitySlug ?? communityIdentifier));
     },
-    enabled: !!communitySlug,
+    enabled: !!communityIdentifier,
     staleTime: 1000 * 60 * 2,
     refetchOnMount: "always",
   });
@@ -229,11 +231,12 @@ export function usePayments() {
 
   const unpaidObligations = sorted.filter((o) => o.status !== "PAID");
 
-  // Payment links that are ACTIVE and have no corresponding obligation yet
-  // (covers plans created before the member joined, or backend timing gaps).
+  // Payment links that are ACTIVE (or have no status set) and have no
+  // corresponding obligation yet (covers plans created before the member
+  // joined, or backend timing gaps).
   const unmatchedLinks = paymentLinks.filter(
     (link) =>
-      link.linkStatus === "ACTIVE" &&
+      (link.linkStatus === "ACTIVE" || !link.linkStatus) &&
       !obligations.some((o) => o.paymentLinkId === link.id)
   );
 
@@ -310,7 +313,6 @@ export function useInitiatePayment() {
     mutationFn: ({ paymentLinkId, payload }) =>
       initiatePayment(paymentLinkId, payload),
     onSuccess: () => {
-      // Refresh obligations and transactions after successful payment
       queryClient.invalidateQueries({ queryKey: ["obligations"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },

@@ -118,28 +118,20 @@ export function useNotifications() {
     },
   });
 
-  // ── Clear all (dismiss + remove from list) ─────────────────────────────────
+  // ── Clear all (mark all read + remove from local view) ────────────────────
   const clearAllMutation = useMutation({
-    mutationFn: clearAllNotifications,
+    // PATCH /notifications/read-all — marks all as read on the backend.
+    // The optimistic update below removes them from the local list immediately.
+    mutationFn: markAllRead,
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["notifications"] });
-      const previous = queryClient.getQueryData(["notifications"]);
-      // Optimistically empty the list immediately
       queryClient.setQueryData(["notifications"], (old) =>
         old ? { ...old, content: [] } : old
       );
       queryClient.setQueryData(["notifications", "unread-count"], 0);
-      return { previous };
-    },
-    onError: (_err, _vars, ctx) => {
-      // If DELETE isn't supported, fall back to marking all read instead
-      // but keep the UI cleared — user explicitly asked to clear
-      markAllRead().catch(() => {});
-      // Roll back only if we have the previous data
-      if (ctx?.previous) queryClient.setQueryData(["notifications"], ctx.previous);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      // Refresh the count only — keep the list empty until the next poll cycle.
       queryClient.invalidateQueries({ queryKey: ["notifications", "unread-count"] });
     },
   });
