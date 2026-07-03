@@ -73,8 +73,14 @@ export default function PaymentCallback() {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
+  const [returnTo] = useState(() => {
+    const v = sessionStorage.getItem("paymentReturnTo");
+    if (v) sessionStorage.removeItem("paymentReturnTo");
+    return v ?? "/dashboard/admin";
+  });
 
-  // ...unchanged state/returnTo setup...
+  const [state, setState] = useState(reference ? "checking" : "unknown");
+  const attemptsRef = useRef(0);
 
   useEffect(() => {
     if (!reference) return;
