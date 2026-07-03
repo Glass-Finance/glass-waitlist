@@ -7,16 +7,28 @@ import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
 
 const FALLBACK_MEMBER_ROLE = { id: "MEMBER", name: "Member" };
 
+// The role name field's exact casing/wording isn't guaranteed by the
+// backend, and an exact-match lookup that fails leaves the Promote button
+// silently disabled forever (no error, nothing to click) -- so try the
+// stable roleCode/code enum first, then fall back to a looser name match.
+function findRoleId(roles, code) {
+  const list = roles ?? [];
+  return (
+    list.find((r) => (r.code ?? r.roleCode ?? "").toUpperCase() === code)?.id ??
+    list.find((r) => (r.name ?? "").trim().toLowerCase() === code.toLowerCase())?.id ??
+    list.find((r) => (r.name ?? "").toLowerCase().includes(code.toLowerCase()))?.id
+  );
+}
+
 export default function MemberAccess() {
   // useActiveCommunityId() returns the community slug (preferred over id)
   // since both the Sidebar and CommunitiesHome set ?community= to the slug.
   const communitySlug = useActiveCommunityId();
   const [copied, setCopied] = useState(false);
   const { members, isLoading, removeMember, updateMember } = useCommunityMembers(communitySlug);
-  const { data: rolesData } = useRoles();
-  const memberRoleId = (rolesData ?? []).find((r) => r.name?.toLowerCase() === "member")?.id
-    ?? FALLBACK_MEMBER_ROLE.id;
-  const adminRoleId = (rolesData ?? []).find((r) => r.name?.toLowerCase() === "admin")?.id;
+  const { data: rolesData, isLoading: rolesLoading } = useRoles();
+  const memberRoleId = findRoleId(rolesData, "MEMBER") ?? FALLBACK_MEMBER_ROLE.id;
+  const adminRoleId = findRoleId(rolesData, "ADMIN");
 
   const inviteLink = communitySlug
     ? `${APP_ORIGIN}/member/join?community=${communitySlug}`
@@ -85,6 +97,11 @@ export default function MemberAccess() {
       <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Admin management</p>
         <p className="text-xs text-gray-500 mb-4">Promote members to admin or revoke admin access.</p>
+        {!rolesLoading && !adminRoleId && (
+          <p className="text-xs text-red-500 mb-3">
+            Couldn't find an Admin role on the server — Promote is disabled until this is resolved.
+          </p>
+        )}
 
         <div className="flex flex-col">
           {isLoading ? (

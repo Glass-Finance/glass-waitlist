@@ -17,8 +17,14 @@ export const updateCommunity = (communityId, payload) =>
 // ─── Members ──────────────────────────────────────────────────────────────────
 
 // GET /api/v1/communities/{communityIdentifier}/members
-export const getCommunityMembers = (communityId) =>
-  client.get(`/communities/${communityId}/members`);
+// Removing a member is a soft-delete on the backend (status flips off
+// ACTIVE, exitedAt gets set — the row isn't dropped), so an unfiltered
+// fetch keeps returning removed members forever. Default to status=ACTIVE
+// unless the caller explicitly asks for something else.
+export const getCommunityMembers = (communityId, params = {}) =>
+  client.get(`/communities/${communityId}/members`, {
+    params: { status: "ACTIVE", ...params },
+  });
 
 // GET /api/v1/communities/{communityIdentifier}/members/{memberId}
 export const getCommunityMember = (communityId, memberId) =>
