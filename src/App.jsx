@@ -221,6 +221,14 @@ function App() {
           </Route>
         </Route>
 
+        {/* ── Payment callback — Paystack redirects here after checkout.
+            Not behind MemberDeviceGuard: the browser that completes the
+            payment may be the system browser on mobile (not the in-app
+            webview), so the device check must not block this route. ── */}
+        <Route element={<MemberProtectedRoute />}>
+          <Route path="/payment/callback" element={<PaymentSuccess />} />
+        </Route>
+
         {/* ── Catch-all ── */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

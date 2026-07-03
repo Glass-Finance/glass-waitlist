@@ -120,11 +120,20 @@ export default function PaymentSuccess() {
 
         {state === "failed" && (
           <button
-            onClick={() => navigate(`/member/pay/${paymentId}`)}
+            onClick={() => navigate(paymentId ? `/member/pay/${paymentId}` : "/member/upcoming")}
             className="text-sm font-semibold mt-2 cursor-pointer"
             style={{ color: "#002FA7" }}
           >
             Try again
+          </button>
+        )}
+        {(state === "success" || state === "unknown") && (
+          <button
+            onClick={() => navigate("/member/home")}
+            className="text-sm font-semibold mt-2 cursor-pointer"
+            style={{ color: "#002FA7" }}
+          >
+            Go to Home
           </button>
         )}
       </div>
