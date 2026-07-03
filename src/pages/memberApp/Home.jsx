@@ -368,6 +368,7 @@ export default function Home() {
   const history = (data?.history ?? []).slice(0, 3);
   const communityName = data?.community?.name ?? "Your Community";
   const communityInitial = communityName.charAt(0).toUpperCase();
+  const communityLogo = data?.community?.logo;
   const [menuOpen, setMenuOpen] = useState(false);
 
   function handlePay(payment) {
@@ -442,9 +443,14 @@ export default function Home() {
                   fontSize: 11,
                   fontWeight: 700,
                   flexShrink: 0,
+                  overflow: "hidden",
                 }}
               >
-                {communityInitial}
+                {communityLogo?.url ? (
+                  <img src={communityLogo.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  communityInitial
+                )}
               </div>
               <span
                 style={{

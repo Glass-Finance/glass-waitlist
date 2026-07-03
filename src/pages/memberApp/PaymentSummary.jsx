@@ -46,6 +46,7 @@ export default function PaymentSummary() {
 
   const communityName = obligation?.community?.name ?? "Community";
   const communityInitials = communityName.slice(0, 2).toUpperCase();
+  const communityLogo = obligation?.community?.logo;
   const isRecurring = !!obligation?.recurringPlan;
   const savedMethod = authorisations?.find((a) => (a.status ?? "").toUpperCase() === "ACTIVE");
 
@@ -123,7 +124,11 @@ export default function PaymentSummary() {
               className="w-11 h-11 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 border border-gray-100"
               style={{ background: "#f0f4ff" }}
             >
-              <span className="text-[10px] font-bold text-[#1C2B8A]">{communityInitials}</span>
+              {communityLogo?.url ? (
+                <img src={communityLogo.url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-[10px] font-bold text-[#1C2B8A]">{communityInitials}</span>
+              )}
             </div>
             <span className="text-[14px] font-medium text-gray-900">{communityName}</span>
           </div>

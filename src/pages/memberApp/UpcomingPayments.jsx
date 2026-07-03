@@ -133,9 +133,14 @@ function PaymentRow({ item, onPay, paying }) {
             fontSize: 13,
             fontWeight: 700,
             color: item.logoColor,
+            overflow: "hidden",
           }}
         >
-          {item.logoText}
+          {item.logo?.url ? (
+            <img src={item.logo.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          ) : (
+            item.logoText
+          )}
         </div>
         <span
           style={{

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { ChevronLeft, Mail, Clock, Home } from "lucide-react";
 import { useCommunities } from "../../hooks/useCommunities";
 
-function Avatar({ name }) {
+function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
   return (
     <div
@@ -20,9 +20,14 @@ function Avatar({ name }) {
         fontSize: 13,
         fontWeight: 700,
         flexShrink: 0,
+        overflow: "hidden",
       }}
     >
-      {initials}
+      {logo?.url ? (
+        <img src={logo.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      ) : (
+        initials
+      )}
     </div>
   );
 }
@@ -192,7 +197,7 @@ export default function Invites() {
                     marginBottom: 14,
                   }}
                 >
-                  <Avatar name={invite.community?.name} />
+                  <Avatar name={invite.community?.name} logo={invite.community?.logo} />
                   <div style={{ minWidth: 0 }}>
                     <p
                       style={{
@@ -269,7 +274,7 @@ export default function Invites() {
                   gap: 12,
                 }}
               >
-                <Avatar name={req.community?.name} />
+                <Avatar name={req.community?.name} logo={req.community?.logo} />
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <p
                     style={{

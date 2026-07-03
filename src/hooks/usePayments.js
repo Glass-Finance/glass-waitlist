@@ -47,6 +47,7 @@ function shapeObligation(raw) {
     obligationId: raw.id,
     logoColor: "#1C2B8A",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
+    logo: raw.community?.logo,
   };
 }
 

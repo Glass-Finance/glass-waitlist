@@ -57,9 +57,8 @@ import { getMyInvites, acceptInvite, rejectInvite, getMyCommunityJoinRequests } 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/v1/communities/invites/me returns objects shaped like:
 //   { id, community: { id, slug, name, ... }, invitedUser, roleCode, status, ... }
-// There is NO flat `communityId` field — accept/reject must use
-// invite.community.id (or .slug) which we resolve internally here so
-// callers only ever need the invite's own id.
+// accept/reject are unscoped (PATCH /communities/invites/{inviteId}/accept|reject)
+// — they act on the authenticated user's own invite, no community id needed.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function useInvites() {
@@ -79,18 +78,8 @@ export function useInvites() {
     staleTime: 1000 * 60,
   });
 
-  function resolveCommunityId(inviteId) {
-    const invite = query.data?.find((i) => i.id === inviteId);
-    return invite?.community?.slug ?? invite?.community?.id ?? null;
-  }
-
   const acceptMutation = useMutation({
-    mutationFn: async (inviteId) => {
-      const communityId = resolveCommunityId(inviteId);
-      if (!communityId)
-        throw new Error("Cannot resolve community for this invite.");
-      return acceptInvite(communityId, inviteId);
-    },
+    mutationFn: (inviteId) => acceptInvite(inviteId),
     onMutate: async (inviteId) => {
       await queryClient.cancelQueries({ queryKey: ["invites", "me"] });
       const previous = queryClient.getQueryData(["invites", "me"]);
@@ -111,12 +100,7 @@ export function useInvites() {
   });
 
   const rejectMutation = useMutation({
-    mutationFn: async (inviteId) => {
-      const communityId = resolveCommunityId(inviteId);
-      if (!communityId)
-        throw new Error("Cannot resolve community for this invite.");
-      return rejectInvite(communityId, inviteId);
-    },
+    mutationFn: (inviteId) => rejectInvite(inviteId),
     onMutate: async (inviteId) => {
       await queryClient.cancelQueries({ queryKey: ["invites", "me"] });
       const previous = queryClient.getQueryData(["invites", "me"]);

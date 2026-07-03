@@ -24,13 +24,13 @@ export const getCommunityInvites = (communityId, params) =>
 export const createCommunityInvite = (communityId, payload) =>
   client.post(`/communities/${communityId}/invites`, payload);
 
-// PATCH /api/v1/communities/{communityIdentifier}/invites/{inviteId}/accept
-export const acceptInvite = (communityId, inviteId) =>
-  client.patch(`/communities/${communityId}/invites/${inviteId}/accept`);
+// PATCH /api/v1/communities/invites/{inviteId}/accept
+export const acceptInvite = (inviteId) =>
+  client.patch(`/communities/invites/${inviteId}/accept`);
 
-// PATCH /api/v1/communities/{communityIdentifier}/invites/{inviteId}/reject
-export const rejectInvite = (communityId, inviteId) =>
-  client.patch(`/communities/${communityId}/invites/${inviteId}/reject`);
+// PATCH /api/v1/communities/invites/{inviteId}/reject
+export const rejectInvite = (inviteId) =>
+  client.patch(`/communities/invites/${inviteId}/reject`);
 
 // PATCH /api/v1/communities/{communityIdentifier}/invites/{inviteId}/revoke
 // (admin only)

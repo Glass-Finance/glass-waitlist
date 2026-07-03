@@ -23,7 +23,7 @@ function isPaymentNotification(n) {
   return type.includes("PAYMENT") || type.includes("OBLIGATION") || type.includes("AUTO_PAY");
 }
 
-function Avatar({ name }) {
+function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
   return (
     <div
@@ -40,9 +40,14 @@ function Avatar({ name }) {
         fontSize: 14,
         fontWeight: 700,
         flexShrink: 0,
+        overflow: "hidden",
       }}
     >
-      {initials}
+      {logo?.url ? (
+        <img src={logo.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      ) : (
+        initials
+      )}
     </div>
   );
 }
@@ -142,7 +147,7 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-        <Avatar name={invite.community?.name} />
+        <Avatar name={invite.community?.name} logo={invite.community?.logo} />
         <div style={{ minWidth: 0 }}>
           <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>
             {invite.community?.name ?? "Community"}
