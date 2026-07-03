@@ -137,13 +137,14 @@ export default function ForgotPassword() {
 
             <div>
               <Label>Verification Code</Label>
-              <div className="flex gap-2 mt-1.5">
+              <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
                 {otp.map((digit, i) => (
                   <input
                     key={i}
                     ref={(el) => (inputRefs.current[i] = el)}
                     type="text"
                     inputMode="numeric"
+                    pattern="[0-9]*"
                     maxLength={1}
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
@@ -152,10 +153,22 @@ export default function ForgotPassword() {
                       if (e.key === "Enter" && otpComplete) handleVerify();
                     }}
                     onPaste={handleOtpPaste}
-                    className="w-full aspect-square text-center text-xl font-bold rounded-xl border-2 outline-none transition-colors bg-white"
+                    onFocus={(e) => (e.target.style.borderColor = "#1C2B8A")}
+                    onBlur={(e) => (e.target.style.borderColor = digit ? "#1C2B8A" : "#e5e7eb")}
                     style={{
-                      borderColor: digit ? "#1C2B8A" : "#e5e7eb",
-                      caretColor: "transparent",
+                      flex: 1,
+                      height: 52,
+                      minWidth: 0,
+                      textAlign: "center",
+                      fontSize: 22,
+                      fontWeight: 700,
+                      borderRadius: 12,
+                      border: `2px solid ${digit ? "#1C2B8A" : "#e5e7eb"}`,
+                      outline: "none",
+                      background: "#fff",
+                      color: "#111827",
+                      transition: "border-color .15s",
+                      fontFamily: "Inter, sans-serif",
                     }}
                   />
                 ))}
