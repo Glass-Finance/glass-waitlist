@@ -579,7 +579,7 @@ export default function Sidebar() {
                 }}
               >
                 <Icon size={14} style={{ flexShrink: 0 }} />
-                <span style={{ flex: 1 }}>{label}</span>
+                <span style={{ flex: 1, textAlign: "left" }}>{label}</span>
                 {badge > 0 && (
                   <span style={{
                     minWidth: 18, height: 18, borderRadius: 99,
