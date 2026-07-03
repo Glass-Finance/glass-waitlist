@@ -521,6 +521,7 @@ import client from "../../api/client";
 import { useSlug } from "../../hooks/useSlug";
 import { useAuth } from "../../store/AuthContext";
 import { notifyError } from "../../utils/errorHandler";
+import { resizeImageFile } from "../../utils/resizeImage";
 
 const CATEGORIES = [
   "Alumni Association", "Faith Community", "Professional Association",
@@ -600,8 +601,9 @@ export default function OrganizationProfile() {
       // 1. Upload logo (optional — skip if no file selected)
       let logoFileId = undefined;
       if (logoFile) {
+        const resizedLogo = await resizeImageFile(logoFile);
         const fd = new FormData();
-        fd.append("file", logoFile);
+        fd.append("file", resizedLogo);
         fd.append("fileCategory", "COMMUNITY_LOGO");
         const uploadRes = await client.post("/file/upload", fd, {
           headers: { "Content-Type": "multipart/form-data" },

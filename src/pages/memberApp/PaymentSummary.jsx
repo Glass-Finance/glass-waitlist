@@ -125,7 +125,7 @@ export default function PaymentSummary() {
               style={{ background: "#f0f4ff" }}
             >
               {communityLogo?.url ? (
-                <img src={communityLogo.url} alt="" className="w-full h-full object-cover" />
+                <img src={communityLogo.url} alt="" decoding="async" className="w-full h-full object-cover" />
               ) : (
                 <span className="text-[10px] font-bold text-[#1C2B8A]">{communityInitials}</span>
               )}

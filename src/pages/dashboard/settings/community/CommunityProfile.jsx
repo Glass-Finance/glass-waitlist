@@ -3,6 +3,7 @@ import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunity, useUpdateCommunity } from "../../../../hooks/useCommunity";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { getErrorMessage } from "../../../../utils/errorHandler";
+import { resizeImageFile } from "../../../../utils/resizeImage";
 
 const CATEGORIES = [
   "Alumni Association",
@@ -102,7 +103,8 @@ export default function CommunityProfile() {
     setLogoPreview(URL.createObjectURL(file));
     setError("");
     try {
-      const uploadRes = await uploadFile.mutateAsync({ file, fileCategory: "COMMUNITY_LOGO" });
+      const resized = await resizeImageFile(file);
+      const uploadRes = await uploadFile.mutateAsync({ file: resized, fileCategory: "COMMUNITY_LOGO" });
       const fileData = uploadRes.data?.data ?? uploadRes.data;
       const logoFileId = fileData?.id ?? fileData?.fileId;
       await updateCommunity.mutateAsync({ logoFileId });

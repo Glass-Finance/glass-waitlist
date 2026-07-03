@@ -53,7 +53,7 @@ export default function MyCommunities() {
               >
                 <div style={{ width: 44, height: 44, borderRadius: 12, background: "#1C2B8A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0, overflow: "hidden" }}>
                   {c.logo?.url ? (
-                    <img src={c.logo.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img src={c.logo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : (
                     getInitials(c.name) || "?"
                   )}

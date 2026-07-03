@@ -137,7 +137,7 @@ function PaymentRow({ item, onPay, paying }) {
           }}
         >
           {item.logo?.url ? (
-            <img src={item.logo.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            <img src={item.logo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           ) : (
             item.logoText
           )}

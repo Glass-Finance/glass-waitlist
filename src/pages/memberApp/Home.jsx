@@ -447,7 +447,7 @@ export default function Home() {
                 }}
               >
                 {communityLogo?.url ? (
-                  <img src={communityLogo.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img src={communityLogo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 ) : (
                   communityInitial
                 )}

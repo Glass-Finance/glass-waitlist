@@ -44,7 +44,7 @@ function Avatar({ name, logo }) {
       }}
     >
       {logo?.url ? (
-        <img src={logo.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={logo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       ) : (
         initials
       )}
