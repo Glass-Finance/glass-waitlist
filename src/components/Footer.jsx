@@ -223,8 +223,8 @@ export default function Footer() {
         {/* Copyright */}
         <div className="border-t border-white/10 pt-7 text-center">
           <p className="text-[13px] text-white/50">
-            Copyright © {new Date().getFullYear()} Glass | Made for Nigerian
-            communities
+            Copyright © {new Date().getFullYear()} Glass Limited | Made for
+            Nigerian communities
           </p>
         </div>
       </div>

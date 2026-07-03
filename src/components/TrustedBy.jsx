@@ -1,11 +1,12 @@
 import { useRef, useEffect } from "react";
 
+// Trimmed to just the two confirmed partners. GDG Babcock is intentionally
+// left out for now -- the only GDG asset in public/logos/ is
+// gdg-lagos.png, which has "GDG Lagos" baked directly into the image
+// (wrong chapter), not just a text label. Add it back once a correct
+// GDG Babcock logo file is dropped into public/logos/.
 const trustedLogos = [
   { name: "The Babcock Torch", logo: "/logos/babcock-torch.png" },
-  { name: "Babcock University", logo: "/logos/babcock.png" },
-  { name: "Cowrywise", logo: "/logos/cowrywise.png" },
-  { name: "GDG Lagos", logo: "/logos/gdg-lagos.png" },
-  { name: "ICAN", logo: "/logos/ican.png" },
 ];
 
 export default function TrustedBy() {

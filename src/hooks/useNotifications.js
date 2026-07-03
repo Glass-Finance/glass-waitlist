@@ -25,12 +25,6 @@ async function markAllRead() {
   return res.data;
 }
 
-// DELETE /api/v1/notifications — dismiss/clear all notifications
-async function clearAllNotifications() {
-  const res = await client.delete("/notifications");
-  return res.data;
-}
-
 export function useNotifications() {
   const queryClient = useQueryClient();
 
