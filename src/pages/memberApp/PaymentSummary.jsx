@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Landmark } from "lucide-react";
-import { getObligation } from "../../api/members";
+import { getObligation, getPaymentLink } from "../../api/members";
 import { useManagePayments, useInitiatePayment } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { toastSuccess } from "../../utils/toast";
@@ -22,6 +22,32 @@ function useObligation(obligationId) {
   });
 }
 
+function usePaymentLinkData(linkId) {
+  return useQuery({
+    queryKey: ["payment-link", linkId],
+    queryFn: async () => {
+      const res = await getPaymentLink(linkId);
+      return res.data?.data ?? res.data;
+    },
+    enabled: !!linkId,
+  });
+}
+
+// Normalize a payment link into the same shape the component renders.
+function normalizeLinkToObligation(link) {
+  if (!link) return null;
+  return {
+    id: undefined,
+    amount: link.amount,
+    community: link.community,
+    recurringPlan: link.recurringPlan ?? null,
+    paymentLink: {
+      id: link.id,
+      title: link.title ?? link.name,
+    },
+  };
+}
+
 // ─── Saved-method icon ────────────────────────────────────────────────────────
 function MethodIcon() {
   return (
@@ -38,9 +64,16 @@ function MethodIcon() {
 export default function PaymentSummary() {
   const navigate = useNavigate();
   const { paymentId } = useParams();
+  const [searchParams] = useSearchParams();
+  const viaLink = searchParams.get("via") === "link";
   const [error, setError] = useState("");
 
-  const { data: obligation, isLoading } = useObligation(paymentId);
+  const { data: obligationData, isLoading: obligationLoading } = useObligation(!viaLink ? paymentId : null);
+  const { data: linkRaw, isLoading: linkLoading } = usePaymentLinkData(viaLink ? paymentId : null);
+
+  const obligation = viaLink ? normalizeLinkToObligation(linkRaw) : obligationData;
+  const isLoading = viaLink ? linkLoading : obligationLoading;
+
   const { data: authorisations } = useManagePayments();
   const initiatePayment = useInitiatePayment();
 
@@ -60,7 +93,7 @@ export default function PaymentSummary() {
           idempotencyKey: crypto.randomUUID(),
           amount: obligation.amount,
           savePaymentMethod: isRecurring,
-          obligationId: obligation.id,
+          ...(obligation.id ? { obligationId: obligation.id } : {}),
         },
       });
       const url = res.data?.data?.authorizationUrl;

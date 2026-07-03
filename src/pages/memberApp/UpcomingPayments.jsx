@@ -232,7 +232,8 @@ export default function UpcomingPayments() {
   });
 
   function handlePay(item) {
-    navigate(`/member/pay/${item.id}`);
+    const suffix = item._isLink ? "?via=link" : "";
+    navigate(`/member/pay/${item.id}${suffix}`);
   }
 
   return (

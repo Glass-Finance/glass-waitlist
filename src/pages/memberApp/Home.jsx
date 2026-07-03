@@ -372,7 +372,8 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   function handlePay(payment) {
-    navigate(`/member/pay/${payment.id}`);
+    const suffix = payment._isLink ? "?via=link" : "";
+    navigate(`/member/pay/${payment.id}${suffix}`);
   }
 
   return (

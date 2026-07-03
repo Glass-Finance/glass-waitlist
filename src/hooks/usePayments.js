@@ -7,6 +7,7 @@ import {
   initiatePayment,
   getMe,
   getMyCommunities,
+  getMemberCommunityPaymentLinks,
 } from "../api/members";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -48,6 +49,27 @@ function shapeObligation(raw) {
     logoColor: "#1C2B8A",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
     logo: raw.community?.logo,
+  };
+}
+
+function shapePaymentLink(raw) {
+  return {
+    id: raw.id,
+    amount: raw.amount,
+    amountPaid: 0,
+    name: raw.title ?? raw.name ?? "Payment",
+    description: raw.title ?? raw.name ?? "Payment",
+    communityName: raw.community?.name,
+    dueDate: raw.dueAt ?? null,
+    type: raw.paymentType === "RECURRING" || raw.recurringPlan ? "recurring" : "one-time",
+    status: "PENDING",
+    linkStatus: (raw.status ?? "").toUpperCase(),
+    paymentLinkId: raw.id,
+    obligationId: null,
+    logoColor: "#1C2B8A",
+    logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
+    logo: raw.community?.logo,
+    _isLink: true,
   };
 }
 
@@ -114,7 +136,8 @@ export function usePayments() {
       const res = await getMyObligations();
       return unwrapList(res).map(shapeObligation);
     },
-    staleTime: 1000 * 60 * 2, // 2 minutes
+    staleTime: 1000 * 60 * 2,
+    refetchOnMount: "always",
   });
 
   const transactionsQuery = useQuery({
@@ -124,6 +147,7 @@ export function usePayments() {
       return unwrapList(res).map(shapeTransaction);
     },
     staleTime: 1000 * 60 * 2,
+    refetchOnMount: "always",
   });
 
   const userQuery = useQuery({
@@ -144,8 +168,30 @@ export function usePayments() {
     staleTime: 1000 * 60 * 5,
   });
 
+  // Resolve the community slug — member records nest the community object
+  // one level deep: { community: { slug } } instead of { slug } directly.
+  const rawFirstCommunity = communitiesQuery.data?.[0] ?? null;
+  const communitySlug =
+    rawFirstCommunity?.slug ?? rawFirstCommunity?.community?.slug ?? null;
+
+  // Fetch active payment plans for this community.  Using the community-scoped
+  // URL (/communities/{slug}/payment-links) because the global /payment-links
+  // endpoint may not be available; the admin uses the same URL and the backend
+  // should honour member tokens for reads.
+  const paymentLinksQuery = useQuery({
+    queryKey: ["payment-links", communitySlug],
+    queryFn: async () => {
+      const res = await getMemberCommunityPaymentLinks(communitySlug);
+      return unwrapList(res).map(shapePaymentLink);
+    },
+    enabled: !!communitySlug,
+    staleTime: 1000 * 60 * 2,
+    refetchOnMount: "always",
+  });
+
   const obligations = obligationsQuery.data ?? [];
   const transactions = transactionsQuery.data ?? [];
+  const paymentLinks = paymentLinksQuery.data ?? [];
 
   // Sort obligations: overdue first, then by dueDate ascending
   const sorted = [...obligations].sort((a, b) => {
@@ -156,11 +202,20 @@ export function usePayments() {
     return da - db;
   });
 
-  // nextDue = first unpaid/overdue obligation
-  const nextDue = sorted.find((o) => o.status !== "PAID") ?? null;
+  const unpaidObligations = sorted.filter((o) => o.status !== "PAID");
 
-  // upcoming = all unpaid obligations (includes overdue for display)
-  const upcoming = sorted.filter((o) => o.status !== "PAID");
+  // Payment links that are ACTIVE and have no corresponding obligation yet
+  // (covers plans created before the member joined, or backend timing gaps).
+  const unmatchedLinks = paymentLinks.filter(
+    (link) =>
+      link.linkStatus === "ACTIVE" &&
+      !obligations.some((o) => o.paymentLinkId === link.id)
+  );
+
+  const upcoming = [...unpaidObligations, ...unmatchedLinks];
+
+  // nextDue = first item (obligations take priority via sort order above)
+  const nextDue = upcoming[0] ?? null;
 
   return {
     data: {

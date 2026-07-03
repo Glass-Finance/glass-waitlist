@@ -37,5 +37,6 @@ export function useTransactions() {
         .sort((a, b) => new Date(b.date) - new Date(a.date));
     },
     staleTime: 1000 * 60 * 2,
+    refetchOnMount: "always",
   });
 }

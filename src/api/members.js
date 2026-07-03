@@ -120,6 +120,11 @@ export const getPaymentLinks = () =>
 export const getPaymentLink = (id) =>
   client.get(`/payment-links/${id}`);
 
+// GET /api/v1/communities/{communityIdentifier}/payment-links
+// Member-accessible: same URL as admin but with read-only scope via member token.
+export const getMemberCommunityPaymentLinks = (communityIdentifier) =>
+  client.get(`/communities/${communityIdentifier}/payment-links`);
+
 // ─────────────────────────────────────────────────────────────────────────────
 // NOTIFICATIONS
 // ─────────────────────────────────────────────────────────────────────────────
