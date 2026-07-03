@@ -634,7 +634,12 @@ function DashboardContent({ isPaying, communityId }) {
     try {
       const res = await initiatePayment.mutateAsync({
         paymentLinkId: item.paymentLinkId,
-        payload: { email: myPayments?.user?.email },
+        payload: {
+          idempotencyKey: crypto.randomUUID(),
+          amount: item.amount,
+          savePaymentMethod: item.type === "recurring",
+          ...(item.id ? { obligationId: item.id } : {}),
+        },
       });
       const url = res.data?.data?.authorizationUrl;
       if (url) window.location.href = url;

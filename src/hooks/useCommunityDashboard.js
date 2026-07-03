@@ -131,7 +131,11 @@ export function useCommunityDashboard(communityId) {
 
   const members = {
     list: membersQuery.data ?? [],
-    total: metrics.totalMembers ?? membersQuery.data?.length ?? 0,
+    // Prefer the actual fetched list count — community metrics can lag after
+    // member deletions. Fall back to metrics only while the list is loading.
+    total: membersQuery.data != null
+      ? membersQuery.data.length
+      : (metrics.totalMembers ?? 0),
     inactive: metrics.inactiveMembers ?? 0,
     overdue: metrics.overdueMembers ?? 0,
   };
