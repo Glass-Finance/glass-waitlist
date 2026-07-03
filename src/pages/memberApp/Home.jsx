@@ -389,7 +389,11 @@ export default function Home() {
     // not carry community info back -- pass along what we already know here
     // as a fallback so the community name/logo don't regress on that screen.
     navigate(`/member/pay/${payment.id}${suffix}`, {
-      state: { communityName: payment.communityName, communityLogo: payment.logo },
+      state: {
+        communityName: payment.communityName,
+        communityLogo: payment.logo,
+        communitySlug: payment.communitySlug,
+      },
     });
   }
 
