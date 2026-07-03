@@ -16,13 +16,17 @@ function formatTime(dateStr) {
 
 function categorize(n) {
   const t = (n.notificationType ?? n.type ?? "").toUpperCase();
+  const title = (n.title ?? n.subject ?? "").toUpperCase();
   if (
     t.includes("FAIL") || t.includes("URGENT") || t.includes("ALERT") ||
     t.includes("DEFAULT") || t.includes("OVERDUE") || t.includes("SUSPEND")
   ) return "urgent";
   if (
     t.includes("MEMBER") || t.includes("JOIN") || t.includes("COMMUNITY") ||
-    t.includes("INVITE") || t.includes("DEPART") || t.includes("REMOVE")
+    t.includes("INVITE") || t.includes("DEPART") || t.includes("REMOVE") ||
+    t.includes("PROFILE") || t.includes("AVATAR") || t.includes("IMAGE") ||
+    title.includes("PROFILE") || title.includes("IMAGE") || title.includes("AVATAR") ||
+    title.includes("JOINED") || title.includes("MEMBER")
   ) return "member";
   // Covers PAYMENT, DUES, CONTRIBUTION, COLLECTION, etc.
   return "payment";
