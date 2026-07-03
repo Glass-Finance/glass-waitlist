@@ -82,7 +82,11 @@ function App() {
         <Route path="/" element={<OrganizationsHome />} />
         <Route path="/members" element={<MembersHome />} />
 
-        {/* ── Invite deep-link — not device-gated so email links work on any device ── */}
+        {/* ── Invite deep-link — not device-gated so email links work on any
+            device. Backend's "Review Invite" email button links to
+            /invites?inviteId=... (plural) — the singular /invite alias is
+            kept in case anything else already points at it. ── */}
+        <Route path="/invites" element={<InviteLanding />} />
         <Route path="/invite" element={<InviteLanding />} />
 
         {/* ── Auth ──
