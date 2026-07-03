@@ -24,6 +24,7 @@ import PayingMember from "./pages/onboarding/PayingMember";
 import OrganizationProfile from "./pages/onboarding/OrganizationProfile";
 import PaymentProfile from "./pages/onboarding/PaymentProfile";
 import AddMembers from "./pages/onboarding/AddMembers";
+import DesktopRequired from "./pages/onboarding/DesktopRequired";
 
 // ── Admin dashboard layout + pages ────────────────────────────────────────────
 import DashboardLayout from "./layouts/DashboardLayout";
@@ -72,6 +73,7 @@ import MemberNotificationSettings from "./pages/memberApp/settings/account/Notif
 import ProtectedRoute from "./routes/ProtectedRoute";
 import MemberProtectedRoute from "./routes/MemberProtectedRoute";
 import MemberDeviceGuard from "./routes/MemberDeviceGuard";
+import DesktopDeviceGuard from "./routes/DesktopDeviceGuard";
 import MobileRequired from "./pages/auth/member/MobileRequired";
 
 function App() {
@@ -116,18 +118,24 @@ function App() {
         <Route path="/member/mobile-required" element={<MobileRequired />} />
         <Route path="/check-email" element={<CheckEmail />} />
 
-        {/* ── Onboarding ── */}
-        <Route path="/onboarding/choose-path" element={<ChoosePath />} />
-        <Route path="/onboarding/paying-member" element={<PayingMember />} />
-        <Route
-          path="/onboarding/organization-profile"
-          element={<OrganizationProfile />}
-        />
-        <Route
-          path="/onboarding/payment-profile"
-          element={<PaymentProfile />}
-        />
-        <Route path="/onboarding/members" element={<AddMembers />} />
+        {/* ── Onboarding — desktop-only, fixed-width layout never adapted
+            for mobile, so it's gated the same way the mobile-only member
+            app is gated in the opposite direction (see DesktopDeviceGuard /
+            MemberDeviceGuard). ── */}
+        <Route path="/onboarding/desktop-required" element={<DesktopRequired />} />
+        <Route element={<DesktopDeviceGuard />}>
+          <Route path="/onboarding/choose-path" element={<ChoosePath />} />
+          <Route path="/onboarding/paying-member" element={<PayingMember />} />
+          <Route
+            path="/onboarding/organization-profile"
+            element={<OrganizationProfile />}
+          />
+          <Route
+            path="/onboarding/payment-profile"
+            element={<PaymentProfile />}
+          />
+          <Route path="/onboarding/members" element={<AddMembers />} />
+        </Route>
 
         {/* ── Admin dashboard ── */}
         <Route element={<ProtectedRoute requiredRole="admin" />}>
