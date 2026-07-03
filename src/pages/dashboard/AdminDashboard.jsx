@@ -654,56 +654,64 @@ function AdminPaymentModal({ item, onClose }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.45)" }}
+      style={{ background: "rgba(0,0,0,0.5)" }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl w-full max-w-sm mx-4 overflow-hidden shadow-xl">
-        {/* Header */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 cursor-pointer bg-transparent border-none p-0">
-            <X size={18} />
-          </button>
-          <h2 className="text-[15px] font-semibold text-gray-900">Payment Summary</h2>
-        </div>
-
-        <div className="p-5 flex flex-col gap-3">
-          {/* Community + payment method */}
-          <div className="bg-gray-50 rounded-xl px-4 py-4">
-            <div className="flex items-center gap-3 pb-3 mb-3 border-b border-gray-100">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border border-gray-100"
-                style={{ background: "#f0f4ff" }}
-              >
-                {item.logo?.url ? (
-                  <img src={item.logo.url} alt="" className="w-full h-full object-cover rounded-xl" />
-                ) : (
-                  <span className="text-[10px] font-bold text-[#1C2B8A]">{communityInitials}</span>
-                )}
-              </div>
-              <span className="text-sm font-medium text-gray-900">{item.communityName ?? "Community"}</span>
-            </div>
-
-            <div className="bg-white rounded-lg px-4 py-3">
-              {savedMethod ? (
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#EEF2FF" }}>
-                    <Landmark size={14} className="text-[#1C2B8A]" />
-                  </div>
-                  <span className="text-sm text-gray-800">
-                    {savedMethod.bank ?? "Bank"} ●●●● {savedMethod.last4}
-                  </span>
-                </div>
+      <div
+        className="bg-white rounded-2xl overflow-hidden shadow-2xl"
+        style={{ width: 560, maxHeight: "90vh", overflowY: "auto" }}
+      >
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border border-gray-100"
+              style={{ background: "#f0f4ff" }}
+            >
+              {item.logo?.url ? (
+                <img src={item.logo.url} alt="" className="w-full h-full object-cover rounded-xl" />
               ) : (
-                <p className="text-xs text-gray-500">You'll choose how to pay on the next screen.</p>
+                <span className="text-[11px] font-bold text-[#1C2B8A]">{communityInitials}</span>
               )}
             </div>
+            <div>
+              <p className="text-[11px] text-gray-400 uppercase tracking-wide font-medium">Paying to</p>
+              <p className="text-[15px] font-semibold text-gray-900 leading-tight">{item.communityName ?? "Community"}</p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 cursor-pointer bg-transparent border-none transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
 
-          {/* Plan details */}
-          <div className="bg-gray-50 rounded-xl px-4 py-4">
-            <p className="text-sm text-gray-800 mb-3">Plan Details</p>
-            <div className="flex items-center justify-between mb-2.5">
-              <span className="text-xs text-gray-500">Payment Schedule:</span>
+        {/* ── Amount hero ── */}
+        <div
+          className="px-7 py-8 text-center"
+          style={{ background: "linear-gradient(135deg, #1C2B8A 0%, #002FA7 100%)" }}
+        >
+          <p className="text-[12px] text-blue-200 uppercase tracking-widest mb-2 font-medium">Amount Due</p>
+          <p className="text-[42px] font-bold text-white leading-none mb-3">{formatNaira(item.amount)}</p>
+          <span
+            className="inline-block text-[11px] font-semibold px-4 py-1 rounded-full"
+            style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}
+          >
+            {isRecurring ? "Recurring Payment" : "One-Time Payment"}
+          </span>
+        </div>
+
+        {/* ── Plan details ── */}
+        <div className="px-7 py-6 border-b border-gray-100">
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">Plan Details</p>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Plan Name</span>
+              <span className="text-sm font-medium text-gray-900">{item.name ?? "—"}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Schedule</span>
               <span
                 className="text-[11px] font-semibold px-3 py-0.5 rounded-full"
                 style={{ background: "#EEF1FB", color: "#1C2B8A" }}
@@ -711,26 +719,77 @@ function AdminPaymentModal({ item, onClose }) {
                 {isRecurring ? "Recurring" : "One-Time"}
               </span>
             </div>
-            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-gray-100">
-              <span className="text-xs text-gray-500">Plan:</span>
-              <span className="text-sm text-gray-900">{item.name ?? "—"}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-500">Total:</span>
-              <span className="text-[15px] font-bold text-gray-900">{formatNaira(item.amount)}</span>
+            {item.dueDate && (
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500">Due Date</span>
+                <span className="text-sm font-medium text-gray-900">
+                  {new Date(item.dueDate).toLocaleDateString("en-NG", { month: "long", day: "numeric", year: "numeric" })}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+              <span className="text-sm font-semibold text-gray-700">Total</span>
+              <span className="text-[17px] font-bold text-gray-900">{formatNaira(item.amount)}</span>
             </div>
           </div>
+        </div>
 
-          {error && <p className="text-xs text-red-500">{error}</p>}
+        {/* ── Payment method ── */}
+        <div className="px-7 py-5 border-b border-gray-100">
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">Payment Method</p>
+          {savedMethod ? (
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-100 bg-gray-50">
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: "#EEF2FF" }}
+              >
+                <Landmark size={16} className="text-[#1C2B8A]" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-900">
+                  {savedMethod.bank ?? "Bank"} ●●●● {savedMethod.last4}
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5">Saved payment method</p>
+              </div>
+            </div>
+          ) : (
+            <div className="px-4 py-3 rounded-xl border border-dashed border-gray-200 bg-gray-50">
+              <p className="text-sm text-gray-500">
+                You'll select your payment method on the next screen.
+              </p>
+            </div>
+          )}
+        </div>
 
-          <button
-            onClick={handlePay}
-            disabled={initiatePayment.isPending}
-            className="w-full py-3.5 rounded-lg text-sm font-semibold text-white cursor-pointer disabled:opacity-70 border-none"
-            style={{ background: "#002FA7" }}
-          >
-            {initiatePayment.isPending ? "Processing…" : "Make Payment"}
-          </button>
+        {/* ── Footer ── */}
+        <div className="px-7 py-5 bg-gray-50 flex items-center justify-between gap-3">
+          {error ? (
+            <p className="text-xs text-red-500">{error}</p>
+          ) : (
+            <p className="text-xs text-gray-400">
+              You'll be redirected to complete payment securely.
+            </p>
+          )}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <button
+              onClick={onClose}
+              className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handlePay}
+              disabled={initiatePayment.isPending}
+              className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white cursor-pointer disabled:opacity-60 border-none transition-opacity flex items-center gap-2"
+              style={{ background: "#002FA7" }}
+            >
+              {initiatePayment.isPending ? (
+                <><Loader2 size={14} className="animate-spin" /> Processing…</>
+              ) : (
+                `Pay ${formatNaira(item.amount)}`
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
