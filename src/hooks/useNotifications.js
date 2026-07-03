@@ -25,6 +25,12 @@ async function markAllRead() {
   return res.data;
 }
 
+// DELETE /api/v1/notifications — dismiss/clear all notifications
+async function clearAllNotifications() {
+  const res = await client.delete("/notifications");
+  return res.data;
+}
+
 export function useNotifications() {
   const queryClient = useQueryClient();
 
@@ -100,11 +106,36 @@ export function useNotifications() {
           ? { ...old, content: old.content.map((n) => ({ ...n, readFlag: true })) }
           : old
       );
-      // Zero out the count immediately
       queryClient.setQueryData(["notifications", "unread-count"], 0);
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(["notifications"], ctx.previous);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications", "unread-count"] });
+    },
+  });
+
+  // ── Clear all (dismiss + remove from list) ─────────────────────────────────
+  const clearAllMutation = useMutation({
+    mutationFn: clearAllNotifications,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["notifications"] });
+      const previous = queryClient.getQueryData(["notifications"]);
+      // Optimistically empty the list immediately
+      queryClient.setQueryData(["notifications"], (old) =>
+        old ? { ...old, content: [] } : old
+      );
+      queryClient.setQueryData(["notifications", "unread-count"], 0);
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      // If DELETE isn't supported, fall back to marking all read instead
+      // but keep the UI cleared — user explicitly asked to clear
+      markAllRead().catch(() => {});
+      // Roll back only if we have the previous data
       if (ctx?.previous) queryClient.setQueryData(["notifications"], ctx.previous);
     },
     onSettled: () => {
@@ -121,6 +152,8 @@ export function useNotifications() {
     markRead:         (id) => markReadMutation.mutate(id),
     markAllRead:      () => markAllReadMutation.mutate(),
     isMarkingAllRead: markAllReadMutation.isPending,
+    clearAll:         () => clearAllMutation.mutate(),
+    isClearing:       clearAllMutation.isPending,
   };
 }
 

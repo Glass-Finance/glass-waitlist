@@ -94,8 +94,11 @@ function SectionGroup({ sectionKey, items, onMarkRead }) {
 }
 
 export default function Notifications() {
-  const { notifications, isLoading, unreadCount, markRead, markAllRead, isMarkingAllRead } =
-    useNotifications();
+  const {
+    notifications, isLoading, unreadCount,
+    markRead, markAllRead, isMarkingAllRead,
+    clearAll, isClearing,
+  } = useNotifications();
   const [tab, setTab] = useState("All");
 
   const byCategory = useMemo(() => ({
@@ -121,12 +124,12 @@ export default function Notifications() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => markAllRead()}
-            disabled={isMarkingAllRead || notifications.length === 0}
+            onClick={() => clearAll()}
+            disabled={isClearing || notifications.length === 0}
             className="text-sm font-medium bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
             style={{ color: "#E53E3E" }}
           >
-            Clear All
+            {isClearing ? "Clearing…" : "Clear All"}
           </button>
           <button
             onClick={() => markAllRead()}
