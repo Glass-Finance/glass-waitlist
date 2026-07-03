@@ -23,6 +23,14 @@ export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
 
+  // Admin pay-mine flow stores the dashboard URL before redirecting to Paystack.
+  // useState initializer runs once on mount so the key is consumed exactly once.
+  const [returnTo] = useState(() => {
+    const v = sessionStorage.getItem("paymentReturnTo");
+    if (v) sessionStorage.removeItem("paymentReturnTo");
+    return v ?? null;
+  });
+
   // "checking" | "success" | "failed" | "unknown"
   const [state, setState] = useState(reference ? "checking" : "unknown");
   const attemptsRef = useRef(0);
@@ -95,7 +103,7 @@ export default function PaymentSuccess() {
       {/* ── Top bar ── */}
       <div className="flex items-center px-4 pt-10 pb-4 relative">
         <button
-          onClick={() => navigate("/member/home")}
+          onClick={() => navigate(returnTo ?? "/member/home")}
           className="w-9 h-9 rounded-full bg-[#D4D4D4] flex items-center justify-center cursor-pointer"
         >
           <ChevronLeft size={18} className="text-gray-700" />
@@ -120,20 +128,20 @@ export default function PaymentSuccess() {
 
         {state === "failed" && (
           <button
-            onClick={() => navigate(paymentId ? `/member/pay/${paymentId}` : "/member/upcoming")}
+            onClick={() => navigate(returnTo ?? (paymentId ? `/member/pay/${paymentId}` : "/member/upcoming"))}
             className="text-sm font-semibold mt-2 cursor-pointer"
             style={{ color: "#002FA7" }}
           >
-            Try again
+            {returnTo ? "Back to Dashboard" : "Try again"}
           </button>
         )}
         {(state === "success" || state === "unknown") && (
           <button
-            onClick={() => navigate("/member/home")}
+            onClick={() => navigate(returnTo ?? "/member/home")}
             className="text-sm font-semibold mt-2 cursor-pointer"
             style={{ color: "#002FA7" }}
           >
-            Go to Home
+            {returnTo ? "Back to Dashboard" : "Go to Home"}
           </button>
         )}
       </div>

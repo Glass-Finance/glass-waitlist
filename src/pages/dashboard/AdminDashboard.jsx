@@ -535,12 +535,13 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   Info, Download, MoreHorizontal, Plus, ChevronDown,
   Search, X, ArrowLeft, Check, AlertTriangle, AlertCircle,
-  Loader2,
+  Loader2, Landmark,
 } from "lucide-react";
 import { useCommunityDashboard } from "../../hooks/useCommunityDashboard";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
-import { usePayments, useInitiatePayment } from "../../hooks/usePayments";
+import { usePayments, useInitiatePayment, useManagePayments } from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
+import { getErrorMessage } from "../../utils/errorHandler";
 import totalMembersIcon    from "../../assets/dashboard/tdesign-member.png";
 import inactiveMembersIcon from "../../assets/dashboard/inactive-members.png";
 import totalContribIcon    from "../../assets/dashboard/tcontributions.png";
@@ -613,13 +614,137 @@ function ActivityIcon({ type, color }) {
   );
 }
 
+// ── Admin payment confirmation modal ──────────────────────────────────────────
+function AdminPaymentModal({ item, onClose }) {
+  const initiatePayment = useInitiatePayment();
+  const { data: authorisations } = useManagePayments();
+  const [error, setError] = useState("");
+
+  const savedMethod = (authorisations ?? []).find(
+    (a) => (a.status ?? "").toUpperCase() === "ACTIVE"
+  );
+  const isRecurring = item.type === "recurring";
+  const communityInitials = (item.communityName ?? "C").slice(0, 2).toUpperCase();
+
+  async function handlePay() {
+    setError("");
+    try {
+      // Store current URL so /payment/callback can send the admin back here
+      sessionStorage.setItem("paymentReturnTo", window.location.pathname + window.location.search);
+      const res = await initiatePayment.mutateAsync({
+        paymentLinkId: item.paymentLinkId,
+        payload: {
+          idempotencyKey: crypto.randomUUID(),
+          amount: item.amount,
+          savePaymentMethod: isRecurring,
+          ...(item.obligationId ? { obligationId: item.obligationId } : {}),
+        },
+      });
+      const url = res.data?.data?.authorizationUrl;
+      if (url) {
+        window.location.href = url;
+      } else {
+        onClose();
+      }
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not start payment. Please try again."));
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: "rgba(0,0,0,0.45)" }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-white rounded-2xl w-full max-w-sm mx-4 overflow-hidden shadow-xl">
+        {/* Header */}
+        <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 cursor-pointer bg-transparent border-none p-0">
+            <X size={18} />
+          </button>
+          <h2 className="text-[15px] font-semibold text-gray-900">Payment Summary</h2>
+        </div>
+
+        <div className="p-5 flex flex-col gap-3">
+          {/* Community + payment method */}
+          <div className="bg-gray-50 rounded-xl px-4 py-4">
+            <div className="flex items-center gap-3 pb-3 mb-3 border-b border-gray-100">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border border-gray-100"
+                style={{ background: "#f0f4ff" }}
+              >
+                {item.logo?.url ? (
+                  <img src={item.logo.url} alt="" className="w-full h-full object-cover rounded-xl" />
+                ) : (
+                  <span className="text-[10px] font-bold text-[#1C2B8A]">{communityInitials}</span>
+                )}
+              </div>
+              <span className="text-sm font-medium text-gray-900">{item.communityName ?? "Community"}</span>
+            </div>
+
+            <div className="bg-white rounded-lg px-4 py-3">
+              {savedMethod ? (
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#EEF2FF" }}>
+                    <Landmark size={14} className="text-[#1C2B8A]" />
+                  </div>
+                  <span className="text-sm text-gray-800">
+                    {savedMethod.bank ?? "Bank"} ●●●● {savedMethod.last4}
+                  </span>
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500">You'll choose how to pay on the next screen.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Plan details */}
+          <div className="bg-gray-50 rounded-xl px-4 py-4">
+            <p className="text-sm text-gray-800 mb-3">Plan Details</p>
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-xs text-gray-500">Payment Schedule:</span>
+              <span
+                className="text-[11px] font-semibold px-3 py-0.5 rounded-full"
+                style={{ background: "#EEF1FB", color: "#1C2B8A" }}
+              >
+                {isRecurring ? "Recurring" : "One-Time"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-gray-100">
+              <span className="text-xs text-gray-500">Plan:</span>
+              <span className="text-sm text-gray-900">{item.name ?? "—"}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-500">Total:</span>
+              <span className="text-[15px] font-bold text-gray-900">{formatNaira(item.amount)}</span>
+            </div>
+          </div>
+
+          {error && <p className="text-xs text-red-500">{error}</p>}
+
+          <button
+            onClick={handlePay}
+            disabled={initiatePayment.isPending}
+            className="w-full py-3.5 rounded-lg text-sm font-semibold text-white cursor-pointer disabled:opacity-70 border-none"
+            style={{ background: "#002FA7" }}
+          >
+            {initiatePayment.isPending ? "Processing…" : "Make Payment"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Dashboard content ─────────────────────────────────────────────────────────
 function DashboardContent({ isPaying, communityId }) {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [search, setSearch]           = useState("");
-  const [sortDir, setSortDir]         = useState("desc"); // desc = Recent, asc = Oldest
+  const [search, setSearch]             = useState("");
+  const [sortDir, setSortDir]           = useState("desc"); // desc = Recent, asc = Oldest
   const [alertVisible, setAlertVisible] = useState(true);
+  const [payingItem, setPayingItem]     = useState(null);
 
   const { balances, members, transactions, activity, isLoading, error } =
     useCommunityDashboard(communityId);
@@ -627,27 +752,11 @@ function DashboardContent({ isPaying, communityId }) {
 
   // Paying admin's own dues, as a member of this community
   const { data: myPayments } = usePayments();
-  const initiatePayment = useInitiatePayment();
   const myUpcoming = myPayments?.upcoming ?? [];
 
-  async function handlePayMine(item) {
-    try {
-      const res = await initiatePayment.mutateAsync({
-        paymentLinkId: item.paymentLinkId,
-        payload: {
-          idempotencyKey: crypto.randomUUID(),
-          amount: item.amount,
-          savePaymentMethod: item.type === "recurring",
-          // item.obligationId is null for unmatched payment-link items;
-          // item.id in that case is the payment link ID, not an obligation ID.
-          ...(item.obligationId ? { obligationId: item.obligationId } : {}),
-        },
-      });
-      const url = res.data?.data?.authorizationUrl;
-      if (url) window.location.href = url;
-    } catch {
-      // Surfaced via initiatePayment.error in the table below
-    }
+  // Open the confirmation modal instead of calling the API directly
+  function handlePayMine(item) {
+    setPayingItem(item);
   }
 
   // ── Derived stats ─────────────────────────────────────────────────────────
@@ -769,8 +878,7 @@ function DashboardContent({ isPaying, communityId }) {
             <div className="flex items-center gap-2 ml-4 flex-shrink-0">
               <button
                 onClick={() => handlePayMine(due)}
-                disabled={initiatePayment.isPending}
-                className="px-4 py-2 rounded-sm text-xs font-semibold text-[#002FA7] border cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 rounded-sm text-xs font-semibold text-[#002FA7] border cursor-pointer"
               >
                 Pay Now
               </button>
@@ -847,8 +955,7 @@ function DashboardContent({ isPaying, communityId }) {
                       <td className="py-3">
                         <button
                           onClick={() => handlePayMine(row)}
-                          disabled={initiatePayment.isPending}
-                          className="text-xs font-semibold text-[#002FA7] hover:underline bg-transparent border-none cursor-pointer disabled:opacity-50"
+                          className="text-xs font-semibold text-[#002FA7] hover:underline bg-transparent border-none cursor-pointer"
                         >
                           Pay Now
                         </button>
@@ -1125,6 +1232,14 @@ function DashboardContent({ isPaying, communityId }) {
       </div>
 
     </main>
+
+    {/* Payment confirmation modal */}
+    {payingItem && (
+      <AdminPaymentModal
+        item={payingItem}
+        onClose={() => setPayingItem(null)}
+      />
+    )}
   );
 }
 
