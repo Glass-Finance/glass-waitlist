@@ -164,12 +164,12 @@ function Step2({ planType, form, onChange, slugState }) {
           </div>
         )}
       </div>
-      <div className={`grid gap-3 ${planType === "recurring" ? "grid-cols-2" : "grid-cols-1"}`}>
+      <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">Start Date</label>
           <input type="date" className={inputCls} value={form.startDate || ""} onChange={(e) => onChange("startDate", e.target.value)} />
         </div>
-        {planType === "recurring" && (
+        {planType === "recurring" ? (
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Billing Day {form.frequency === "WEEKLY" ? "(1=Mon, 7=Sun)" : "(day of month)"}
@@ -182,6 +182,19 @@ function Step2({ planType, form, onChange, slugState }) {
               max={form.frequency === "WEEKLY" ? 7 : 28}
               placeholder={form.frequency === "WEEKLY" ? "1–7" : "1–28"}
               onChange={(e) => onChange("billingDay", e.target.value)}
+            />
+          </div>
+        ) : (
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">
+              Due Date <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              className={inputCls}
+              value={form.dueDate || ""}
+              min={form.startDate || undefined}
+              onChange={(e) => onChange("dueDate", e.target.value)}
             />
           </div>
         )}
@@ -211,10 +224,12 @@ function Step3({ planType, form, slug }) {
     { label: "Amount",    value: form.amount ? formatNaira(Number(form.amount)) : "—" },
     ...(planType === "recurring"
       ? [
-          { label: "Frequency", value: (FREQUENCIES.find((f) => f.value === form.frequency)?.label ?? form.frequency) || "—" },
+          { label: "Frequency",   value: (FREQUENCIES.find((f) => f.value === form.frequency)?.label ?? form.frequency) || "—" },
           { label: "Billing Day", value: form.billingDay || "—" },
         ]
-      : []),
+      : [
+          { label: "Due Date", value: form.dueDate ? new Date(form.dueDate).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" }) : "—" },
+        ]),
     { label: "Activate", value: (form.activateImmediately ?? true) ? "Immediately" : "Manually later" },
   ];
   return (
@@ -239,12 +254,15 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
   const [step, setStep] = useState(1);
   const [planType, setPlanType] = useState("recurring");
   const [success, setSuccess] = useState(false);
-  const [form, setForm] = useState({ name: "", description: "", amount: "", frequency: "", startDate: "", billingDay: "", reminder: "", activateImmediately: true });
+  const [form, setForm] = useState({ name: "", description: "", amount: "", frequency: "", startDate: "", dueDate: "", billingDay: "", reminder: "", activateImmediately: true });
   const slugState = useSlug("PAYMENT_LINK");
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const canContinue =
     step === 1 ? !!planType :
-    step === 2 ? !!(form.name && form.amount && slugState.slug && (planType === "one_time" || form.frequency)) :
+    step === 2 ? !!(
+      form.name && form.amount && slugState.slug &&
+      (planType === "recurring" ? form.frequency : form.dueDate)
+    ) :
     true;
 
   async function handleSubmit() {
@@ -265,8 +283,10 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
           startAt: startIso,
           billingDay: form.billingDay ? Number(form.billingDay) : new Date(startIso).getDate(),
         },
-      } : {}),
-      ...(planType !== "recurring" && form.startDate ? { startAt: startIso } : {}),
+      } : {
+        ...(form.startDate ? { startAt: startIso } : {}),
+        dueAt: new Date(form.dueDate).toISOString(),
+      }),
     };
     if (import.meta.env.DEV) console.log("[CreatePlan] payload →", payload);
     const ok = await onCreate(payload);
