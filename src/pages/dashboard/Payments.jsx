@@ -821,8 +821,10 @@ function PlanMembersModal({ plan, communityId, onClose }) {
   // Build memberId/userId → obligation info for THIS plan only.
   const obligationByMemberId = useMemo(() => {
     const map = {};
-    for (const ob of allObligations) {
-      if (String(ob.paymentLink?.id) !== String(plan.id)) continue;
+    const planObs = allObligations.filter(ob => String(ob.paymentLink?.id) === String(plan.id));
+    console.log("[PlanModal] allObligations:", allObligations.length, "plan.id:", plan.id, "matched:", planObs.length);
+    if (allObligations.length > 0) console.log("[PlanModal] sample obligation:", JSON.stringify(allObligations[0]));
+    for (const ob of planObs) {
       const mid = String(ob.member?.id ?? "");
       const uid = String(ob.member?.user?.id ?? ob.user?.id ?? "");
       const info = {
@@ -833,17 +835,16 @@ function PlanMembersModal({ plan, communityId, onClose }) {
       if (mid) map[mid] = info;
       if (uid) map[uid] = info;
     }
+    console.log("[PlanModal] obligationByMemberId keys:", Object.keys(map));
     return map;
   }, [allObligations, plan.id, plan.amount]);
 
   function getObligationInfo(m) {
     const mid = String(m.member?.id ?? m.memberId ?? "");
     const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
-    return (
-      (mid && obligationByMemberId[mid]) ||
-      (uid && obligationByMemberId[uid]) ||
-      null
-    );
+    const result = (mid && obligationByMemberId[mid]) || (uid && obligationByMemberId[uid]) || null;
+    if (!result) console.log("[PlanModal] no obligation match — mid:", mid, "uid:", uid, "keys:", Object.keys(obligationByMemberId));
+    return result;
   }
 
   function resolveMember(m) {
