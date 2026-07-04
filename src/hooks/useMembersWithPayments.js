@@ -77,7 +77,7 @@ export function useMembersWithPayments(communityId) {
       .sort((a, b) => new Date(b.paidAt ?? b.createdAt ?? 0) - new Date(a.paidAt ?? a.createdAt ?? 0));
 
     const planIds = new Set(memberObligations.map((o) => o.paymentLink?.id ?? o.recurringPlan?.id));
-    const paidCount = memberObligations.filter((o) => (o.status ?? "").toUpperCase() === "PAID").length;
+    const paidCount = memberObligations.filter((o) => { const s = (o.status ?? "").toUpperCase(); return s === "PAID" || s === "SUCCESSFUL"; }).length;
     const failedCount = memberTransactions.filter((t) => (t.status ?? "").toUpperCase() === "FAILED").length;
 
     // Exempt members genuinely have no dues -- only fill the gap for

@@ -36,7 +36,8 @@ function StatCard({ label, value }) {
 
 function PlanCard({ plan }) {
   const isRecurring = !!plan.recurringPlan;
-  const isPaid = (plan.status ?? "").toUpperCase() === "PAID";
+  const s = (plan.status ?? "").toUpperCase();
+  const isPaid = s === "PAID" || s === "SUCCESSFUL";
   return (
     <div className="bg-white rounded-xl border border-gray-100 p-4" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <div className="flex items-start justify-between mb-2">
@@ -84,7 +85,7 @@ export default function MemberDetail() {
   }
 
   const totalPaid = member.transactions
-    .filter((t) => (t.status ?? "").toUpperCase() === "SUCCESS" || (t.status ?? "").toUpperCase() === "PAID")
+    .filter((t) => { const s = (t.status ?? "").toUpperCase(); return s === "SUCCESS" || s === "SUCCESSFUL" || s === "PAID"; })
     .reduce((sum, t) => sum + (t.amount ?? 0), 0);
 
   // Distinct plans (one card per payment link, latest obligation for that link)
@@ -163,7 +164,7 @@ export default function MemberDetail() {
                 ) : (
                   member.transactions.map((t) => {
                     const statusLabel = (t.status ?? "pending").charAt(0).toUpperCase() + (t.status ?? "pending").slice(1).toLowerCase();
-                    const isPaid = statusLabel.toLowerCase() === "success" || statusLabel.toLowerCase() === "paid";
+                    const isPaid = ["success", "successful", "paid"].includes(statusLabel.toLowerCase());
                     return (
                       <tr key={t.id} className="border-b border-gray-50">
                         <td className="px-5 py-3 text-sm text-gray-700">{t.paymentLink?.title ?? t.description ?? "—"}</td>
