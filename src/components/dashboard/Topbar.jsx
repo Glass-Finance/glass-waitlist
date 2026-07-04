@@ -232,6 +232,7 @@ export default function Topbar({
             <NotificationsPanel
               notifications={notifications}
               isLoading={isLoading}
+              unreadCount={unreadCount}
               onMarkRead={markRead}
               onMarkAllRead={markAllRead}
               onClose={() => setPanelOpen(false)}

@@ -1,80 +1,255 @@
 import { useNavigate } from "react-router-dom";
-import { CheckCheck, Bell } from "lucide-react";
+import { Bell } from "lucide-react";
 
-function timeAgo(dateStr) {
+// ── Timestamp: "Today 9:00 AM" / "Yesterday 3:30 PM" / "Mar 12, 9:00 AM"
+function formatTimestamp(dateStr) {
   if (!dateStr) return "";
-  const diffMs = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diffMs / 60000);
-  if (mins < 1) return "now";
-  if (mins < 60) return `${mins}m`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h`;
-  return `${Math.floor(hrs / 24)}d`;
+  const d = new Date(dateStr);
+  const now = new Date();
+  const time = d.toLocaleTimeString("en-NG", { hour: "numeric", minute: "2-digit", hour12: true });
+
+  const todayStr = now.toDateString();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+
+  if (d.toDateString() === todayStr) return `Today ${time}`;
+  if (d.toDateString() === yesterday.toDateString()) return `Yesterday ${time}`;
+  return d.toLocaleDateString("en-NG", { month: "short", day: "numeric" }) + `, ${time}`;
 }
 
-export default function NotificationsPanel({ notifications, isLoading, onMarkRead, onMarkAllRead, onClose }) {
+// Notifications whose type signals urgency get the red left-border section
+const URGENT_TYPES = ["FAILED", "DEFAULTER", "OVERDUE", "ATTENTION", "URGENT", "ERROR", "ALERT"];
+
+function isUrgent(n) {
+  const t = (n.notificationType ?? n.type ?? "").toUpperCase();
+  return URGENT_TYPES.some((k) => t.includes(k));
+}
+
+// ── Single notification card ──────────────────────────────────────────────────
+function NotifCard({ n, accentColor, onMarkRead }) {
+  const isRead = n.readFlag ?? n.isRead ?? n.read ?? false;
+  const title = n.title ?? n.subject ?? "Notification";
+  const body  = n.message ?? n.body ?? null;
+  const time  = formatTimestamp(n.createdAt ?? n.timestamp);
+
+  return (
+    <button
+      onClick={() => !isRead && onMarkRead?.(n.id)}
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 12,
+        width: "100%",
+        background: "#ffffff",
+        borderRadius: 10,
+        padding: "12px 14px",
+        border: "none",
+        borderLeft: `3px solid ${accentColor}`,
+        cursor: "pointer",
+        textAlign: "left",
+        opacity: isRead ? 0.7 : 1,
+        transition: "opacity 0.15s",
+      }}
+    >
+      {/* Avatar */}
+      <div
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: "50%",
+          background: "#D9D9D9",
+          flexShrink: 0,
+          marginTop: 1,
+        }}
+      />
+
+      {/* Text */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p
+          style={{
+            fontSize: 13,
+            fontWeight: isRead ? 500 : 600,
+            color: "#111",
+            margin: 0,
+            lineHeight: 1.35,
+          }}
+        >
+          {title}
+        </p>
+        {body && (
+          <p
+            style={{
+              fontSize: 12,
+              color: "#666",
+              margin: "3px 0 0",
+              lineHeight: 1.4,
+            }}
+          >
+            {body}
+          </p>
+        )}
+        <p
+          style={{
+            fontSize: 11,
+            color: "#999",
+            margin: "5px 0 0",
+          }}
+        >
+          {time}
+        </p>
+      </div>
+    </button>
+  );
+}
+
+// ── Section with a label + list of cards ─────────────────────────────────────
+function Section({ label, items, accentColor, onMarkRead }) {
+  if (items.length === 0) return null;
+  return (
+    <div style={{ marginBottom: 6 }}>
+      <p
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          color: "#999",
+          letterSpacing: "0.03em",
+          padding: "10px 14px 6px",
+          margin: 0,
+        }}
+      >
+        {label}
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, padding: "0 10px" }}>
+        {items.map((n) => (
+          <NotifCard
+            key={n.id}
+            n={n}
+            accentColor={accentColor}
+            onMarkRead={onMarkRead}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Panel ─────────────────────────────────────────────────────────────────────
+export default function NotificationsPanel({
+  notifications,
+  isLoading,
+  unreadCount,
+  onMarkRead,
+  onMarkAllRead,
+  onClose,
+}) {
   const navigate = useNavigate();
+
+  const urgent  = notifications.filter((n) => isUrgent(n));
+  const activity = notifications.filter((n) => !isUrgent(n));
+
+  const count = unreadCount ?? notifications.filter((n) => !(n.readFlag ?? n.isRead ?? n.read)).length;
 
   return (
     <div
-      className="absolute right-0 top-full mt-2 w-[360px] bg-white rounded-xl border border-gray-100 shadow-lg z-50 overflow-hidden"
+      style={{
+        position: "absolute",
+        right: 0,
+        top: "calc(100% + 10px)",
+        width: 380,
+        background: "#F2F2F2",
+        borderRadius: 14,
+        boxShadow: "0 8px 32px rgba(0,0,0,0.14)",
+        zIndex: 50,
+        overflow: "hidden",
+      }}
       role="menu"
     >
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-        <p className="text-sm font-bold text-gray-900">Notifications</p>
+      {/* Header */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "14px 16px 10px",
+        }}
+      >
+        <p style={{ fontSize: 15, fontWeight: 700, color: "#111", margin: 0 }}>
+          Notifications{count > 0 && (
+            <span
+              style={{
+                marginLeft: 7,
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#555",
+              }}
+            >
+              {count}
+            </span>
+          )}
+        </p>
         <button
           onClick={onMarkAllRead}
-          className="flex items-center gap-1 text-[11px] font-semibold text-[#002FA7] bg-transparent border-none cursor-pointer hover:opacity-70"
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: "#002FA7",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
+          }}
         >
-          <CheckCheck size={12} />
           Mark all read
         </button>
       </div>
 
-      <div className="max-h-[360px] overflow-y-auto">
+      {/* Body */}
+      <div style={{ maxHeight: 420, overflowY: "auto", paddingBottom: 6 }}>
         {isLoading ? (
-          <p className="text-xs text-gray-400 text-center py-8">Loading…</p>
+          <p style={{ textAlign: "center", fontSize: 12, color: "#999", padding: "32px 0" }}>
+            Loading…
+          </p>
         ) : notifications.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-10">
-            <Bell size={20} className="text-gray-300" />
-            <p className="text-xs text-gray-400">No notifications yet.</p>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "40px 0" }}>
+            <Bell size={22} style={{ color: "#ccc" }} />
+            <p style={{ fontSize: 12, color: "#aaa", margin: 0 }}>No notifications yet.</p>
           </div>
         ) : (
-          notifications.slice(0, 8).map((n) => {
-            const isRead = n.isRead ?? n.read ?? false;
-            return (
-              <button
-                key={n.id}
-                onClick={() => !isRead && onMarkRead(n.id)}
-                className="w-full text-left flex items-start gap-2.5 px-4 py-3 border-b border-gray-50 bg-transparent border-l-0 border-r-0 border-t-0 cursor-pointer hover:bg-gray-50 transition-colors"
-              >
-                <span
-                  className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0"
-                  style={{ background: isRead ? "transparent" : "#002FA7" }}
-                />
-                <div className="flex-1 min-w-0">
-                  <p className={`text-xs leading-snug ${isRead ? "text-gray-500" : "text-gray-900 font-medium"}`}>
-                    {n.title ?? n.subject ?? n.message ?? "Notification"}
-                  </p>
-                  {n.title && n.message && (
-                    <p className="text-[11px] text-gray-400 mt-0.5 line-clamp-2">{n.message}</p>
-                  )}
-                  <p className="text-[10px] text-gray-400 mt-1">{timeAgo(n.createdAt)}</p>
-                </div>
-              </button>
-            );
-          })
+          <>
+            <Section
+              label="Urgent"
+              items={urgent}
+              accentColor="#EF4444"
+              onMarkRead={onMarkRead}
+            />
+            <Section
+              label="Payment Activity"
+              items={activity}
+              accentColor="#CA8A04"
+              onMarkRead={onMarkRead}
+            />
+          </>
         )}
       </div>
 
+      {/* Footer */}
       <button
-        onClick={() => {
-          onClose?.();
-          navigate("/dashboard/notifications");
+        onClick={() => { onClose?.(); navigate("/dashboard/notifications"); }}
+        style={{
+          display: "block",
+          width: "100%",
+          textAlign: "center",
+          fontSize: 12,
+          fontWeight: 600,
+          color: "#002FA7",
+          background: "#EBEBEB",
+          border: "none",
+          borderTop: "1px solid #E5E5E5",
+          cursor: "pointer",
+          padding: "10px 0",
         }}
-        className="w-full text-center text-xs font-semibold text-[#002FA7] bg-gray-50 border-none cursor-pointer py-2.5 hover:bg-gray-100 transition-colors"
       >
-        View all
+        View all notifications
       </button>
     </div>
   );
