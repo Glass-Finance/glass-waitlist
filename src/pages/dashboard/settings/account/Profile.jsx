@@ -57,6 +57,7 @@ export default function Profile() {
     try {
       if (form.firstName !== savedForm.firstName || form.lastName !== savedForm.lastName || form.phone !== savedForm.phone) {
         await updateProfile.mutateAsync({
+          username: user?.username,
           userData: {
             firstName: form.firstName,
             lastName: form.lastName,

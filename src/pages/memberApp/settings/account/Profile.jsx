@@ -54,9 +54,12 @@ export default function Profile() {
     setError("");
     try {
       await updateProfile.mutateAsync({
-        firstName: form.firstName,
-        lastName: form.lastName,
-        phoneNumber: form.phone,
+        username: user?.username,
+        userData: {
+          firstName: form.firstName,
+          lastName: form.lastName,
+          phoneNumber: form.phone,
+        },
       });
       setSavedForm(form);
       setSaved(true);

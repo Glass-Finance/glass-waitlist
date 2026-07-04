@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useSearchParams, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Landmark } from "lucide-react";
-import { getObligation, getPaymentLink } from "../../api/members";
+import { getObligation, getPaymentLink, initiatePayment as initiatePaymentApi } from "../../api/members";
 import { useManagePayments, useInitiatePayment } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { toastSuccess } from "../../utils/toast";
@@ -85,6 +85,28 @@ export default function PaymentSummary() {
   const { data: authorisations } = useManagePayments();
   const initiatePayment = useInitiatePayment();
 
+  // Stable idempotency key for this payment session — same key used for both
+  // the pre-fetch and the actual pay button so the backend treats them as one.
+  const idempotencyKeyRef = useRef(crypto.randomUUID());
+  const [prefetch, setPrefetch] = useState(null);
+
+  // Pre-fetch the initiate-payment response as soon as the obligation loads
+  // so we can show the real billedAmount (obligation + platform fee) before
+  // the member confirms. Silent failure — falls back to obligation.amount.
+  useEffect(() => {
+    if (!obligation?.paymentLink?.id || prefetch) return;
+    let cancelled = false;
+    initiatePaymentApi(obligation.paymentLink.id, {
+      idempotencyKey: idempotencyKeyRef.current,
+      amount: obligation.amount,
+      savePaymentMethod: !!obligation.recurringPlan,
+      ...(obligation.id ? { obligationId: obligation.id } : {}),
+    })
+      .then((res) => { if (!cancelled) setPrefetch(res.data?.data ?? null); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [obligation?.paymentLink?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Fall back to whatever Home/UpcomingPayments already knew about this
   // community — the fresh obligation/payment-link fetch above isn't
   // guaranteed to carry it back (see handlePay in those two pages).
@@ -98,11 +120,26 @@ export default function PaymentSummary() {
   async function handlePay() {
     if (!obligation?.paymentLink?.id) return;
     setError("");
+
+    // If the pre-fetch already obtained an authorizationUrl or a direct
+    // reference, use it without re-initiating (same idempotency key means
+    // a second call would return the same result anyway).
+    if (prefetch) {
+      const url = prefetch.authorizationUrl;
+      const reference = prefetch.reference;
+      if (url) { window.location.href = url; return; }
+      if (reference) {
+        toastSuccess("Payment sent", { reference });
+        navigate(`/member/pay/${paymentId}/success?reference=${reference}`);
+        return;
+      }
+    }
+
     try {
       const res = await initiatePayment.mutateAsync({
         paymentLinkId: obligation.paymentLink.id,
         payload: {
-          idempotencyKey: crypto.randomUUID(),
+          idempotencyKey: idempotencyKeyRef.current,
           amount: obligation.amount,
           savePaymentMethod: isRecurring,
           ...(obligation.id ? { obligationId: obligation.id } : {}),
@@ -114,17 +151,11 @@ export default function PaymentSummary() {
         window.location.href = url;
       } else {
         // No authorizationUrl means this charged immediately against a
-        // saved method rather than redirecting to Paystack's hosted page —
-        // PaymentSuccess still needs the reference to verify the actual
-        // outcome, so it travels as a query param same as Paystack's own
-        // redirect would carry it.
+        // saved method rather than redirecting to Paystack's hosted page.
         toastSuccess("Payment sent", { reference });
         navigate(`/member/pay/${paymentId}/success?reference=${reference}`);
       }
     } catch (err) {
-      // No notifyError() here — initiatePayment is a useMutation, so the
-      // global mutationCache handler in main.jsx already toasts it. This
-      // just grabs the same message for the inline text under the button.
       setError(getErrorMessage(err, "Could not start payment. Please try again."));
     }
   }
@@ -238,10 +269,27 @@ export default function PaymentSummary() {
             <span className="text-[14px] text-gray-900">{obligation?.paymentLink?.title ?? "—"}</span>
           </div>
 
-          <div className="flex items-center justify-between">
-            <span className="text-[13px] text-gray-500">Total:</span>
-            <span className="text-[15px] font-bold text-gray-900">{fmt(obligation?.amount)}</span>
-          </div>
+          {prefetch?.billedAmount != null && prefetch.billedAmount !== obligation?.amount ? (
+            <>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[13px] text-gray-500">Amount:</span>
+                <span className="text-[14px] text-gray-900">{fmt(obligation?.amount)}</span>
+              </div>
+              <div className="flex items-center justify-between mb-2.5 pb-3 border-b border-gray-100">
+                <span className="text-[13px] text-gray-500">Platform Fee:</span>
+                <span className="text-[13px] text-gray-600">{fmt(prefetch.billedAmount - (obligation?.amount ?? 0))}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] text-gray-500">Total Charged:</span>
+                <span className="text-[15px] font-bold text-gray-900">{fmt(prefetch.billedAmount)}</span>
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] text-gray-500">Total:</span>
+              <span className="text-[15px] font-bold text-gray-900">{fmt(obligation?.amount)}</span>
+            </div>
+          )}
         </div>
 
         {error && <p className="text-sm text-red-500 px-1">{error}</p>}

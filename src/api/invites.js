@@ -24,6 +24,12 @@ export const getCommunityInvites = (communityId, params) =>
 export const createCommunityInvite = (communityId, payload) =>
   client.post(`/communities/${communityId}/invites`, payload);
 
+// POST /api/v1/communities/{communityIdentifier}/invites/bulk
+// — admin: invite multiple users at once
+// payload: { invites: [{ email, roleId, billingExempt? }] }
+export const bulkCreateCommunityInvites = (communityId, payload) =>
+  client.post(`/communities/${communityId}/invites/bulk`, payload);
+
 // PATCH /api/v1/communities/invites/{inviteId}/accept
 export const acceptInvite = (inviteId) =>
   client.patch(`/communities/invites/${inviteId}/accept`);

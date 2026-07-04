@@ -432,12 +432,11 @@ import Papa from "papaparse";
 import { Bell, Download, CloudUpload, Copy, Check, X, FileSpreadsheet } from "lucide-react";
 import GlassLogo from "../../assets/Glass.png";
 import Background from "../../assets/background.png";
-import { toast } from "sonner";
 import { notifyError } from "../../utils/errorHandler";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { toastProgress, toastSuccess } from "../../utils/toast";
 import { useRoles } from "../../hooks/useCommunityMembers";
-import { createCommunityInvite } from "../../api/invites";
+import { bulkCreateCommunityInvites } from "../../api/invites";
 
 const ALLOWED_ROLE_NAMES = new Set(["Community Member", "Admin", "Treasurer"]);
 const FALLBACK_ROLES = [{ id: "", name: "Community Member" }];
@@ -652,14 +651,6 @@ export default function AddMembers() {
     setFileUrl("");
   }
 
-  // Manual tab's own submit — sends the entered emails immediately and
-  // finishes onboarding, rather than waiting for a separate page-level
-  // button (the design has no second control on this tab). There's no
-  // bulk-create endpoint (the only confirmed contract is the singular
-  // POST /communities/{id}/members, {email, roleId}), so each email goes
-  // through its own call; allSettled so one bad email doesn't block the
-  // rest. phoneNumbers isn't part of that contract either, so it's no
-  // longer sent — collecting it here was never wired to anything real.
   async function handleSendInvite() {
     if (emails.length === 0) return;
     setError("");
@@ -668,21 +659,10 @@ export default function AddMembers() {
       if (!communityId) { setError("Community ID missing."); return; }
       if (!selectedRoleId) { setError("Roles are still loading — please wait a moment."); return; }
       const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
-      const results = await Promise.allSettled(
-        emails.map((email) =>
-          createCommunityInvite(communityId, { email, roleId: selectedRoleId, billingExempt })
-        )
-      );
-      const succeeded = results.filter((r) => r.status === "fulfilled").length;
-      if (succeeded === 0) {
-        toast.dismiss(toastId);
-        throw results.find((r) => r.status === "rejected")?.reason ?? new Error("Failed to send invites.");
-      }
-      const failed = results.length - succeeded;
-      toastSuccess(
-        `${succeeded} invite${succeeded === 1 ? "" : "s"} sent${failed ? `, ${failed} failed` : ""}`,
-        { id: toastId }
-      );
+      await bulkCreateCommunityInvites(communityId, {
+        invites: emails.map((email) => ({ email, roleId: selectedRoleId, billingExempt })),
+      });
+      toastSuccess(`${emails.length} invite${emails.length === 1 ? "" : "s"} sent`, { id: toastId });
       setEmails([]);
       setPhoneNumbers("");
       setShowSuccess(true);
@@ -693,12 +673,6 @@ export default function AddMembers() {
     }
   }
 
-  // Upload tab's submit — CSV file and CSV-from-URL both end up here. No
-  // bulk-create endpoint exists (only the singular POST
-  // /communities/{id}/members, {email, roleId} is confirmed), so each row
-  // is its own request; allSettled so a few bad rows don't block the rest.
-  // Uses the already-fetched urlCsvText rather than re-fetching the URL a
-  // second time if the preview step already pulled it down.
   const handleSubmit = async () => {
     setError("");
     setLoading(true);
@@ -711,7 +685,7 @@ export default function AddMembers() {
       } else if (fileUrl.trim()) {
         members = (await parseCsvFromUrl(fileUrl.trim())).map((row) => csvRowToMember(row, rolesData, selectedRoleId));
       } else {
-        members = []; // nothing provided — same as before, just finish onboarding
+        members = [];
       }
 
       const filled = members.filter((m) => m.email);
@@ -719,19 +693,10 @@ export default function AddMembers() {
       if (!communityId) { setError("Community ID missing."); return; }
 
       const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
-      const results = await Promise.allSettled(
-        filled.map((m) => createCommunityInvite(communityId, { email: m.email, roleId: m.roleId }))
-      );
-      const succeeded = results.filter((r) => r.status === "fulfilled").length;
-      if (succeeded === 0) {
-        toast.dismiss(toastId);
-        throw results.find((r) => r.status === "rejected")?.reason ?? new Error("Failed to add members.");
-      }
-      const failed = results.length - succeeded;
-      toastSuccess(
-        `${succeeded} invite${succeeded === 1 ? "" : "s"} sent${failed ? `, ${failed} failed` : ""}`,
-        { id: toastId }
-      );
+      await bulkCreateCommunityInvites(communityId, {
+        invites: filled.map((m) => ({ email: m.email, roleId: m.roleId })),
+      });
+      toastSuccess(`${filled.length} invite${filled.length === 1 ? "" : "s"} sent`, { id: toastId });
       setShowSuccess(true);
     } catch (err) {
       setError(notifyError(err, { context: "Send invites", fallback: "Failed to send invites. You can invite members from the dashboard later." }));
