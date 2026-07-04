@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import client from "../api/client";
+import { getCommunityMembers } from "../api/communities";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/v1/communities/{communityIdentifier}
@@ -18,8 +19,11 @@ async function fetchCommunity(id) {
 // count in the Create Payment Plan modal.
 // ─────────────────────────────────────────────────────────────────────────────
 async function fetchMembers(id) {
-  const res = await client.get(`/communities/${id}/members`);
-  return res.data.data;
+  // Use getCommunityMembers so we get status=ACTIVE by default —
+  // the raw endpoint includes soft-deleted members and inflates the count.
+  const res = await getCommunityMembers(id);
+  const data = res.data?.data;
+  return Array.isArray(data) ? data : (data?.content ?? []);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -124,8 +128,16 @@ export function useCommunityDashboard(communityId) {
 
   // ── Stat-card friendly shape, pulled straight from community.metrics ────────
   const metrics = communityQuery.data?.metrics ?? {};
+
+  // Compute collected from actual successful transactions — backend's
+  // collectedAmount only tracks settlements and returns 0 even after payments.
+  const SUCCESS_STATUSES = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
+  const computedCollected = (transactionsQuery.data ?? [])
+    .filter((t) => SUCCESS_STATUSES.has((t.status ?? "").toUpperCase()))
+    .reduce((sum, t) => sum + (t.amount ?? 0), 0);
+
   const balances = {
-    totalContributions: metrics.collectedAmount ?? 0,
+    totalContributions: computedCollected,
     outstanding: metrics.outstandingAmount ?? 0,
     currency: metrics.currency ?? "NGN",
   };

@@ -1,6 +1,7 @@
 import { useQuery, useQueries } from "@tanstack/react-query";
 import client from "../api/client";
-import { getCommunity } from "../api/communities";
+import { getCommunity, getCommunityMembers } from "../api/communities";
+import { getCommunityTransactions } from "../api/transactions";
 
 // GET /api/v1/communities/me
 // Returns a PAGINATED envelope: { content: [...], pageNumber, pageSize, totalElements, totalPages, last }
@@ -54,10 +55,67 @@ export function useCommunitiesWithMetrics(params = {}) {
     })),
   });
 
-  const enriched = communities.map((c, i) => ({
-    ...c,
-    metrics: detailQueries[i]?.data?.metrics ?? c.metrics ?? {},
-  }));
+  // Fetch the ACTIVE member list per community so the card shows the real
+  // count — metrics.totalMembers from the backend includes soft-deleted
+  // members and is always higher than the true active headcount.
+  // Shares the ["community", id, "members"] cache key with useMembersWithPayments
+  // so the request is reused when the admin has already visited Members page.
+  const memberListQueries = useQueries({
+    queries: communities.map((c) => ({
+      queryKey: ["community", c.slug ?? c.id, "members"],
+      queryFn: async () => {
+        const res = await getCommunityMembers(c.slug ?? c.id);
+        const data = res.data?.data;
+        return Array.isArray(data) ? data : (data?.content ?? []);
+      },
+      enabled: !!listQuery.data,
+      staleTime: 1000 * 60 * 2,
+    })),
+  });
+
+  // Fetch transactions per community to compute actual collectedAmount —
+  // the backend's metrics.collectedAmount only tracks settlements (transfers
+  // to the community's account) and returns 0 even when members have paid.
+  // Shares the ["community", id, "transactions"] cache key with useMembersWithPayments.
+  const txListQueries = useQueries({
+    queries: communities.map((c) => ({
+      queryKey: ["community", c.slug ?? c.id, "transactions"],
+      queryFn: async () => {
+        const res = await getCommunityTransactions(c.slug ?? c.id);
+        const data = res.data?.data;
+        return Array.isArray(data) ? data : (data?.content ?? []);
+      },
+      enabled: !!listQuery.data,
+      staleTime: 1000 * 60 * 2,
+    })),
+  });
+
+  const SUCCESS_STATUSES = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
+
+  const enriched = communities.map((c, i) => {
+    const baseMetrics = detailQueries[i]?.data?.metrics ?? c.metrics ?? {};
+    const activeMemberList = memberListQueries[i]?.data;
+    const txList = txListQueries[i]?.data;
+
+    const computedCollected = txList != null
+      ? txList
+          .filter((t) => SUCCESS_STATUSES.has((t.status ?? "").toUpperCase()))
+          .reduce((sum, t) => sum + (t.amount ?? 0), 0)
+      : null;
+
+    return {
+      ...c,
+      metrics: {
+        ...baseMetrics,
+        totalMembers: activeMemberList != null
+          ? activeMemberList.length
+          : (baseMetrics.totalMembers ?? null),
+        collectedAmount: computedCollected != null
+          ? computedCollected
+          : (baseMetrics.collectedAmount ?? null),
+      },
+    };
+  });
 
   return {
     ...listQuery,

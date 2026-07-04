@@ -647,7 +647,7 @@ function CommunityCard({ community, onClick }) {
             <span className="text-xs text-gray-500">
               Outstanding:{" "}
               <strong className="text-red-500">
-                {outstanding != null ? formatNaira(outstanding) : "—"}
+                {outstanding != null && outstanding > 0 ? formatNaira(outstanding) : "—"}
               </strong>
             </span>
           </>

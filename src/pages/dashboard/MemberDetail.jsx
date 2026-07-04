@@ -42,10 +42,10 @@ function PlanCard({ plan, successfulLinkIds }) {
     s === "SUCCESSFUL" ||
     (!!plan.paymentLink?.id && successfulLinkIds?.has(plan.paymentLink.id));
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-4" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-white rounded-md border border-gray-100 p-4" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <div className="flex items-start justify-between mb-2">
-        <p className="text-sm font-bold text-[#0f1d6e]">{plan.paymentLink?.title ?? "Plan"}</p>
-        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full" style={{ color: isPaid ? "#059669" : "#e11d48", background: isPaid ? "#ecfdf5" : "#fff1f2" }}>
+        <p className="text-sm font-medium text-[#0f1d6e ] pt-0.5">{plan.paymentLink?.title ?? "Plan"}</p>
+        <span className="text-xs font-semibold px-2.5 py-2.5 rounded-full" style={{ color: isPaid ? "#059669" : "#e11d48", background: isPaid ? "#ecfdf5" : "#fff1f2" }}>
           {isPaid ? "Paid" : "Unpaid"}
         </span>
       </div>
@@ -178,7 +178,7 @@ export default function MemberDetail() {
                     const isPaid = ["success", "successful", "paid"].includes(statusLabel.toLowerCase());
                     return (
                       <tr key={t.id} className="border-b border-gray-50">
-                        <td className="px-5 py-3 text-sm text-gray-700">{t.paymentLink?.title ?? t.description ?? "—"}</td>
+                        <td className="px-5 py-3 text-sm font-medium text-[#0f1d6e]">{t.paymentLink?.title ?? t.description ?? "—"}</td>
                         <td className="px-5 py-3 text-sm font-semibold text-gray-900">{formatNaira(t.amount)}</td>
                         <td className="px-5 py-3">
                           <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ color: isPaid ? "#059669" : "#dc2626", background: isPaid ? "#ecfdf5" : "#fff1f2" }}>
