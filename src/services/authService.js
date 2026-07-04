@@ -94,6 +94,32 @@ export async function verifyMfaLogin({ challengeToken, code }) {
 }
 
 /**
+ * Initiate TOTP MFA setup — returns { secret, qrCodeUri } or { qrCodeImage, secret }.
+ */
+export async function setupMfaTotp() {
+  const { data } = await client.post("/auth/mfa/totp/setup");
+  return data.data;
+}
+
+/**
+ * Verify the TOTP code from the authenticator app to activate MFA.
+ * @param {string} code - 6-digit TOTP code
+ */
+export async function enableMfaTotp({ code }) {
+  const { data } = await client.post("/auth/mfa/totp/verify", { code });
+  return data.data;
+}
+
+/**
+ * Disable MFA — requires the current TOTP code to confirm.
+ * @param {string} code - 6-digit TOTP code
+ */
+export async function disableMfaTotp({ code }) {
+  const { data } = await client.post("/auth/mfa/totp/disable", { code });
+  return data.data;
+}
+
+/**
  * Persist auth tokens + basic user info to localStorage.
  */
 export function storeAuthSession(authData) {

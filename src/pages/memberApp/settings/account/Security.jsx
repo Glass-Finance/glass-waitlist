@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, Lock, ShieldCheck } from "lucide-react";
 
 const ITEMS = [
   { Icon: Lock, label: "Password", desc: "Change your account password", to: "/member/security/password" },
-  { Icon: ShieldCheck, label: "Authentication", desc: "Two-factor and SMS verification", to: "/member/security/authentication" },
+  { Icon: ShieldCheck, label: "Multi-Factor Authentication", desc: "Secure your account with an authenticator app", to: "/member/security/authentication" },
 ];
 
 export default function Security() {

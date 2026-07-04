@@ -127,28 +127,28 @@ export default function Security() {
         </div>
       </div>
 
-      {/* 2FA */}
-      <div className="bg-[#f6f6f6] rounded-2xl p-6" style={{ border: "1px solid #f6f6f6" }}>
-        <p className="text-sm font-semibold text-gray-900 mb-0.5">Two-factor authentication</p>
+      {/* MFA */}
+      <div className="bg-[#f6f6f6] rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+        <p className="text-sm font-semibold text-gray-900 mb-0.5">Multi-Factor Authentication (MFA)</p>
         <p className="text-xs text-gray-500 mb-5">Add an extra layer of protection to your account.</p>
 
         <div className="flex items-center justify-between py-3 border-b border-gray-100">
           <div>
-            <p className="text-sm text-gray-900">Enable 2FA</p>
-            <p className="text-xs text-gray-500">Require a verification code on every login</p>
+            <p className="text-sm text-gray-900">Authenticator App (TOTP)</p>
+            <p className="text-xs text-gray-500">Require a time-based code from an authenticator app at login</p>
           </div>
           <DisabledToggle />
         </div>
         <div className="flex items-center justify-between py-3">
           <div>
             <p className="text-sm text-gray-900">SMS verification</p>
-            <p className="text-xs text-gray-500">Send OTP to phone number</p>
+            <p className="text-xs text-gray-500">Receive a one-time code via SMS at login</p>
           </div>
           <DisabledToggle />
         </div>
 
         <p className="text-xs text-gray-400 mt-3">
-          Two-factor authentication setup is coming soon.
+          MFA management is available in your account security settings on mobile.
         </p>
       </div>
     </div>

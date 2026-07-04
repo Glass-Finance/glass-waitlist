@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
+import { verifyMfaLogin } from "../../services/authService";
 import { getMyInvites, getMyCommunityJoinRequests } from "../../api/invites";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { notifyError } from "../../utils/errorHandler";
@@ -21,12 +22,17 @@ import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/
 export default function SignIn() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, setSession } = useAuth();
   const isMemberSignIn = location.pathname === "/member/app-sign-in";
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // MFA challenge state — set after login() returns mfaRequired: true
+  const [mfaChallenge, setMfaChallenge] = useState(null); // { mfaChallengeToken }
+  const [mfaCode, setMfaCode] = useState("");
+  const mfaInputRef = useRef(null);
 
   // Show a banner if the user was mid-verification (registered but not yet
   // confirmed email) and then refreshed or navigated away.
@@ -98,10 +104,35 @@ export default function SignIn() {
     setLoading(true);
     setError("");
     try {
-      const user = await login(form.email.trim().toLowerCase(), form.password);
-      navigate(await resolveDestination(user), { replace: true });
+      const result = await login(form.email.trim().toLowerCase(), form.password);
+      if (result?.mfaRequired) {
+        setMfaChallenge({ mfaChallengeToken: result.mfaChallengeToken });
+        setTimeout(() => mfaInputRef.current?.focus(), 50);
+        return;
+      }
+      navigate(await resolveDestination(result), { replace: true });
     } catch (err) {
       setError(notifyError(err, { context: "Sign in", fallback: "Incorrect email or password." }));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleMfaVerify() {
+    if (mfaCode.length !== 6) return;
+    setLoading(true);
+    setError("");
+    try {
+      const authData = await verifyMfaLogin({
+        challengeToken: mfaChallenge.mfaChallengeToken,
+        code: mfaCode,
+      });
+      const user = await setSession(authData);
+      navigate(await resolveDestination(user), { replace: true });
+    } catch (err) {
+      setError(notifyError(err, { context: "MFA verification", fallback: "Invalid code. Please try again." }));
+      setMfaCode("");
+      mfaInputRef.current?.focus();
     } finally {
       setLoading(false);
     }
@@ -116,6 +147,59 @@ export default function SignIn() {
   }
 
   const isReady = form.email.trim() && form.password;
+
+  // ── MFA challenge screen ──────────────────────────────────────────────────────
+  if (mfaChallenge) {
+    return (
+      <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
+        <div className="w-full max-w-sm flex flex-col my-auto gap-6">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
+              <ShieldCheck size={22} style={{ color: "#002FA7" }} />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900 mb-1">Enter MFA Code</h1>
+              <p className="text-sm text-gray-500">Open your authenticator app and enter the 6-digit code.</p>
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="mfa-code">Authentication Code</Label>
+            <TextInput
+              id="mfa-code"
+              ref={mfaInputRef}
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              placeholder="000000"
+              value={mfaCode}
+              onChange={(e) => { setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6)); setError(""); }}
+              onKeyDown={(e) => e.key === "Enter" && handleMfaVerify()}
+              autoComplete="one-time-code"
+              disabled={loading}
+            />
+            <ErrorMessage message={error} />
+          </div>
+
+          <PrimaryButton onClick={handleMfaVerify} loading={loading} disabled={mfaCode.length !== 6}>
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 size={16} className="animate-spin" />
+                <span>Verifying…</span>
+              </span>
+            ) : "Verify Code"}
+          </PrimaryButton>
+
+          <button
+            onClick={() => { setMfaChallenge(null); setMfaCode(""); setError(""); }}
+            className="text-sm text-center text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer"
+          >
+            ← Back to sign in
+          </button>
+        </div>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
