@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, UserX, Clock, ShieldCheck, Copy, Check, UserCheck } from "lucide-react";
+import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, UserX, Clock, ShieldCheck, Copy, Check, UserCheck, Building2, ChevronRight, DollarSign } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
@@ -94,6 +94,71 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
         </div>
       </div>
     </>
+  );
+}
+
+function EmptyState({ onAddMember, onCreatePlan }) {
+  const steps = [
+    {
+      icon: <Check size={15} />,
+      iconStyle: { background: "#ecfdf5", color: "#059669" },
+      title: "Community Created",
+      subtitle: "Your community is live and ready",
+      done: true,
+      action: null,
+    },
+    {
+      icon: <Users size={15} />,
+      iconStyle: { background: "#1C2B8A", color: "#ffffff" },
+      title: "Add Your First Members",
+      subtitle: "Invite Via Link, CSV Upload, or Manually",
+      done: false,
+      action: onAddMember,
+    },
+    {
+      icon: <DollarSign size={15} />,
+      iconStyle: { background: "#1C2B8A", color: "#ffffff" },
+      title: "Create A Payment Plan",
+      subtitle: "Set Up Dues and Start Collecting",
+      done: false,
+      action: onCreatePlan,
+    },
+  ];
+
+  return (
+    <div className="flex flex-col items-center py-14 px-6">
+      <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6" style={{ background: "#E6EEFF" }}>
+        <Building2 size={38} style={{ color: "#1C2B8A" }} />
+      </div>
+      <h2 className="text-xl font-bold text-gray-900 text-center mb-2 max-w-sm">
+        Your Community Is Set Up. Let's Get It Moving.
+      </h2>
+      <p className="text-sm text-gray-400 text-center mb-8 max-w-sm">
+        Your dashboard will come alive once you add members and create payment plans. Start with the steps below.
+      </p>
+      <div className="w-full max-w-lg flex flex-col gap-2">
+        {steps.map((step, i) => (
+          <button
+            key={i}
+            onClick={step.action ?? undefined}
+            disabled={!step.action}
+            className={`w-full bg-white rounded-xl border border-gray-100 px-5 py-4 flex items-center gap-4 text-left transition-colors
+              ${step.action ? "cursor-pointer hover:bg-blue-50/30" : "cursor-default"}`}
+            style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
+          >
+            <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+              style={step.iconStyle}>
+              {step.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className={`text-sm font-bold ${step.done ? "text-gray-400" : "text-gray-900"}`}>{step.title}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{step.subtitle}</p>
+            </div>
+            {!step.done && <ChevronRight size={16} className="text-gray-400 flex-shrink-0" />}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -247,15 +312,25 @@ export default function Members() {
         </div>
       )}
 
-      {/* Stats */}
+      {/* Empty state — shown instead of stats + table when community has no members yet */}
+      {!isLoading && !error && members.length === 0 && (
+        <EmptyState
+          onAddMember={() => setModalOpen(true)}
+          onCreatePlan={() => navigate("/dashboard/payments")}
+        />
+      )}
+
+      {/* Stats — only when there are members */}
+      {members.length > 0 && (
       <div className="grid grid-cols-4 gap-3 mb-5">
         <StatCard icon={Users} label="Total Members" value={String(stats.total)} color="#1C2B8A" bg="#E6EEFF" />
         <StatCard icon={UserX} label="Active Members" value={String(stats.active)} color="#dc2626" bg="#FFE9EC" />
         <StatCard icon={Clock} label="Inactive" value={String(stats.inactive)} color="#b45309" bg="#FFF8E7" />
         <StatCard icon={ShieldCheck} label="Admins" value={String(stats.admins)} color="#7c3aed" bg="#F3EEFF" />
       </div>
+      )}
 
-      <div className="bg-white rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+      {members.length > 0 && <div className="bg-white rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
         <div className="flex items-center justify-between px-5 py-4">
           <span className="text-sm font-medium text-black">Member Payments</span>
           <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-all bg-white cursor-pointer">
@@ -368,7 +443,7 @@ export default function Members() {
             </tbody>
           </table>
         </div>
-      </div>
+      </div>}
 
       {modalOpen && (
         <AddMemberModal

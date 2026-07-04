@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Plus, MoreHorizontal, X, RefreshCw, Zap, Check, ArrowLeft, Loader2,
   Wallet, ListChecks, Clock, XCircle, Pencil, Users, Search, Filter,
-  ChevronDown, RotateCcw, Bell,
+  ChevronDown, RotateCcw, Bell, Pause, Play, Trash2,
 } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
@@ -667,32 +667,71 @@ function PlanMembersModal({ plan, communityId, onClose }) {
   );
 }
 
+// ── Dropdown menu item ────────────────────────────────────────────────────────
+function MenuItem({ icon, label, onClick, disabled, danger }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs font-medium bg-transparent border-none cursor-pointer transition-colors text-left
+        ${disabled ? "text-gray-300 cursor-not-allowed" : danger ? "text-red-500 hover:bg-red-50" : "text-gray-700 hover:bg-gray-50"}`}
+    >
+      {icon && <span className="flex-shrink-0">{icon}</span>}
+      {label}
+    </button>
+  );
+}
+
 // ── Plan card "..." overflow menu ─────────────────────────────────────────────
-function PlanOverflowMenu({ plan, planPlans }) {
+function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers }) {
   const [open, setOpen] = useState(false);
   const status = plan.status;
-  const actions = [];
-  if (status !== "ARCHIVED")
-    actions.push({ label: "Archive", run: () => planPlans.archive.mutate(plan.id) });
-  actions.push({ label: "Duplicate", run: () => planPlans.duplicate.mutate(plan.id) });
+  const isActive = status === "ACTIVE";
+  const isPaused = status === "PAUSED";
+  const isDraft  = status === "DRAFT";
+  const close = () => setOpen(false);
 
-  if (!actions.length) return null;
   return (
     <div className="relative">
       <button onClick={() => setOpen((o) => !o)}
-        className="w-7 h-7 rounded-lg border-none bg-transparent flex items-center justify-center text-gray-500 hover:bg-gray-100 cursor-pointer">
+        className="w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer">
         <MoreHorizontal size={14} />
       </button>
       {open && (
         <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-gray-100 shadow-lg z-20 overflow-hidden min-w-[120px]">
-            {actions.map((a) => (
-              <button key={a.label} onClick={() => { a.run(); setOpen(false); }}
-                className="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 bg-transparent border-none cursor-pointer">
-                {a.label}
-              </button>
-            ))}
+          <div className="fixed inset-0 z-10" onClick={close} />
+          <div className="absolute right-0 top-full mt-1 bg-white rounded-xl border border-gray-100 shadow-xl z-20 overflow-hidden min-w-[180px] py-1">
+            <MenuItem icon={<Pencil size={13} />} label="Edit Plan" onClick={() => { onEdit(plan); close(); }} />
+            <MenuItem icon={<Bell size={13} />}   label="Send Reminder" disabled />
+            <MenuItem icon={<Users size={13} />}  label="View Members" onClick={() => { onViewMembers(plan); close(); }} />
+            {(isActive || isPaused) && (
+              <>
+                <div className="h-px bg-gray-100 my-1" />
+                {isActive && (
+                  <MenuItem icon={<Pause size={13} />} label="Pause Plan"
+                    onClick={() => { planPlans.pause.mutate(plan.id); close(); }} />
+                )}
+                {isPaused && (
+                  <MenuItem icon={<Play size={13} />} label="Resume Plan"
+                    onClick={() => { planPlans.resume.mutate(plan.id); close(); }} />
+                )}
+                <MenuItem icon={<Trash2 size={13} />} label="End Plan" danger
+                  onClick={() => { if (window.confirm(`End "${plan.name}"? This will mark it as expired.`)) { planPlans.expire.mutate(plan.id); close(); } }} />
+              </>
+            )}
+            {isDraft && (
+              <>
+                <div className="h-px bg-gray-100 my-1" />
+                <MenuItem label="Activate" onClick={() => { planPlans.activate.mutate(plan.id); close(); }} />
+              </>
+            )}
+            {status !== "ARCHIVED" && (
+              <>
+                <div className="h-px bg-gray-100 my-1" />
+                <MenuItem label="Archive"   onClick={() => { planPlans.archive.mutate(plan.id); close(); }} />
+                <MenuItem label="Duplicate" onClick={() => { planPlans.duplicate.mutate(plan.id); close(); }} />
+              </>
+            )}
           </div>
         </>
       )}
@@ -703,10 +742,6 @@ function PlanOverflowMenu({ plan, planPlans }) {
 // ── Plan card ─────────────────────────────────────────────────────────────────
 function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers }) {
   const ps = PLAN_STATUS[plan.status] ?? PLAN_STATUS.DRAFT;
-  const status = plan.status;
-  const isActive = status === "ACTIVE";
-  const isPaused = status === "PAUSED";
-  const isDraft  = status === "DRAFT";
 
   const freqLabel = plan.type === "RECURRING"
     ? (FREQUENCIES.find((f) => f.value === plan.frequency)?.label ?? plan.frequency ?? "Recurring")
@@ -722,7 +757,7 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers }) {
           <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: ps.color }} />
           {ps.label}
         </span>
-        <PlanOverflowMenu plan={plan} planPlans={planPlans} />
+        <PlanOverflowMenu plan={plan} planPlans={planPlans} onEdit={onEdit} onViewMembers={onViewMembers} />
       </div>
 
       {/* Name */}
@@ -755,56 +790,8 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers }) {
           </p>
         </div>
       </div>
-
-      {/* Inline actions */}
-      <div className="flex items-center gap-0 pt-1 border-t border-gray-100 flex-wrap">
-        <ActionBtn icon={<Pencil size={11} />} label="Edit Plan" onClick={() => onEdit(plan)} />
-        <Divider />
-        <ActionBtn icon={<Bell size={11} />} label="Send Reminder" disabled title="Send reminder — coming soon" />
-        <Divider />
-        <ActionBtn icon={<Users size={11} />} label="View Members" onClick={() => onViewMembers(plan)} />
-        {(isActive || isPaused) && (
-          <>
-            <Divider />
-            {isActive && (
-              <ActionBtn label="Pause Plan" onClick={() => planPlans.pause.mutate(plan.id)} />
-            )}
-            {isPaused && (
-              <ActionBtn label="Resume Plan" onClick={() => planPlans.resume.mutate(plan.id)} />
-            )}
-            <Divider />
-            <ActionBtn label="End Plan" danger onClick={() => {
-              if (window.confirm(`End "${plan.name}"? This will mark it as expired.`)) planPlans.expire.mutate(plan.id);
-            }} />
-          </>
-        )}
-        {isDraft && (
-          <>
-            <Divider />
-            <ActionBtn label="Activate" onClick={() => planPlans.activate.mutate(plan.id)} />
-          </>
-        )}
-      </div>
     </div>
   );
-}
-
-function ActionBtn({ icon, label, onClick, disabled, danger, title }) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      title={title}
-      className={`flex items-center gap-1 px-2 py-1 text-[11px] font-medium bg-transparent border-none cursor-pointer rounded transition-colors
-        ${disabled ? "text-gray-300 cursor-not-allowed" : danger ? "text-red-500 hover:bg-red-50" : "text-gray-500 hover:text-gray-800 hover:bg-gray-50"}`}
-    >
-      {icon}{label}
-    </button>
-  );
-}
-
-function Divider() {
-  return <span className="w-px h-4 bg-gray-200 mx-0.5 flex-shrink-0" />;
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
