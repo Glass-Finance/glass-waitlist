@@ -406,11 +406,14 @@ function NoCommunityState({ navigate }) {
       }}
     >
       {/* Icon */}
-      <img
-        src={joinCommunityIcon}
-        alt=""
-        style={{ width: 88, height: 88, objectFit: "contain", marginBottom: 28, filter: "brightness(0)" }}
-      />
+      <div style={{
+        width: 80, height: 80, borderRadius: "50%",
+        background: "#E4E4F0",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        marginBottom: 28, flexShrink: 0,
+      }}>
+        <img src={joinCommunityIcon} alt="" style={{ width: 44, height: 44, objectFit: "contain" }} />
+      </div>
 
       <p
         style={{
