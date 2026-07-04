@@ -88,6 +88,7 @@ function shapeTransaction(raw) {
     channel: raw.channel,
     currency: raw.currency ?? "NGN",
     reference: raw.internalReference,
+    paymentLinkId: raw.paymentLink?.id,
   };
 }
 
@@ -248,11 +249,22 @@ export function usePayments() {
   // Payment links that are ACTIVE (or have no status set) and have no
   // corresponding obligation yet (covers plans created before the member
   // joined, or backend timing gaps).
-  const unmatchedLinks = paymentLinks.filter(
-    (link) =>
-      (link.linkStatus === "ACTIVE" || !link.linkStatus) &&
-      !obligations.some((o) => o.paymentLinkId === link.id)
-  );
+  const unmatchedLinks = paymentLinks.filter((link) => {
+  const isActive = link.linkStatus === "ACTIVE" || !link.linkStatus;
+  if (!isActive) return false;
+  if (obligations.some((o) => o.paymentLinkId === link.id)) return false;
+  // No obligation record doesn't necessarily mean unpaid — a one-time link
+  // can already have a successful transaction with no obligation ever
+  // created for it. Recurring links are excluded from this check since a
+  // past successful cycle shouldn't hide the next one's due payment.
+  if (link.type === "one-time") {
+    const alreadyPaid = allTransactions.some(
+      (t) => t.paymentLinkId === link.id && t.status === "successful"
+    );
+    if (alreadyPaid) return false;
+  }
+  return true;
+});
 
   // Enrich items: if the obligation/link response didn't carry community logo
   // back (not always populated by the backend), fall back to the logo we got
