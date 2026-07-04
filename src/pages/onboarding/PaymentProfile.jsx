@@ -72,6 +72,7 @@ export default function PaymentProfile() {
   const [accNumber,   setAccNumber]   = useState("");
   const [accName,     setAccName]     = useState("");
   const [resolving,   setResolving]   = useState(false);
+  const [manualMode,  setManualMode]  = useState(false);
   const [saving,      setSaving]      = useState(false);
   const [error,       setError]       = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
@@ -96,7 +97,11 @@ export default function PaymentProfile() {
 
   // Auto-resolve when both bank + 10-digit account are set
   useEffect(() => {
-    if (!bankCode || accNumber.length !== 10) { setAccName(""); return; }
+    if (!bankCode || accNumber.length !== 10) {
+      if (!manualMode) setAccName("");
+      setError("");
+      return;
+    }
     const timer = setTimeout(async () => {
       setResolving(true);
       setError("");
@@ -104,22 +109,34 @@ export default function PaymentProfile() {
         const { data } = await client.get("/finance/resolve-account", {
           params: { bankCode, accountNumber: accNumber },
         });
-        if (data.success) setAccName(data.data?.accountName ?? "");
-        else setError("Could not resolve account. Check the number and try again.");
-      } catch (err) {
-        setError(notifyError(err, { context: "Resolve account", fallback: "Could not resolve account. Check the number and try again.", silent: true }));
+        const name =
+          data?.data?.accountName ??
+          data?.accountName ??
+          (data?.success === false ? null : data?.name ?? null);
+        if (name) {
+          setAccName(name);
+          setManualMode(false);
+        } else {
+          setError("Couldn't auto-verify this account. Enter the account name manually below.");
+          setManualMode(true);
+        }
+      } catch {
+        setError("Couldn't auto-verify this account. Enter the account name manually below.");
+        setManualMode(true);
       } finally {
         setResolving(false);
       }
-    }, 700); // debounce
+    }, 700);
     return () => clearTimeout(timer);
-  }, [bankCode, accNumber]);
+  }, [bankCode, accNumber]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleBankChange = (e) => {
     const selected = banks.find((b) => b.code === e.target.value);
     setBankCode(selected?.code ?? "");
     setBankName(selected?.name ?? "");
     setAccName("");
+    setManualMode(false);
+    setError("");
   };
 
   // Resolve-account can be down for reasons that have nothing to do with
@@ -134,7 +151,7 @@ export default function PaymentProfile() {
   };
 
   const handleSave = async () => {
-    if (!accName)   { setError("Please enter a valid account number and bank first."); return; }
+    if (!accName.trim()) { setError("Account name is required."); return; }
     if (!communityId) { setError("Community ID missing — go back and retry."); return; }
     setSaving(true);
     setError("");
@@ -143,6 +160,7 @@ export default function PaymentProfile() {
         settlementBank:     bankName,
         settlementBankCode: bankCode,
         accountNumber:      accNumber,
+        accountName:        accName.trim(),
       });
       setShowSuccess(true);
       setTimeout(() => {
@@ -242,21 +260,32 @@ export default function PaymentProfile() {
               {/* Resolved account name */}
               <div className="mb-2">
                 <label className="text-sm text-gray-700 block mb-1.5">Account Name</label>
-                <input
-                  type="text"
-                  value={resolving ? "Verifying…" : accName}
-                  readOnly
-                  placeholder="Account name will appear here"
-                  className={inputCls + " bg-gray-50 text-gray-700"}
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={resolving ? "Verifying…" : accName}
+                    readOnly={!manualMode}
+                    onChange={(e) => manualMode && setAccName(e.target.value)}
+                    placeholder={manualMode ? "Type account name" : "Account name will appear here"}
+                    className={inputCls + (!manualMode ? " bg-gray-50 cursor-default select-none" : "")}
+                    style={{ color: resolving ? "#9CA3AF" : undefined }}
+                  />
+                  {accName && !resolving && !manualMode && (
+                    <Check size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500" />
+                  )}
+                </div>
               </div>
 
-              {error && <p className="text-sm text-red-500 mt-3">{error}</p>}
+              {error && (
+                <p className="text-sm mt-3" style={{ color: manualMode ? "#B45309" : "#EF4444" }}>
+                  {error}
+                </p>
+              )}
             </div>
 
             <button
               onClick={handleSave}
-              disabled={saving || resolving || !accName}
+              disabled={saving || resolving || !accName.trim()}
               className="w-full mt-6 py-3.5 rounded-lg text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
               style={{ background: "#002FA7" }}
             >
