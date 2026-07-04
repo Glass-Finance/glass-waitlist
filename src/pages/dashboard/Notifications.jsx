@@ -93,6 +93,50 @@ function SectionGroup({ sectionKey, items, onMarkRead }) {
   );
 }
 
+// Date separator label used by the All-tab chronological view
+function dayLabel(dateStr) {
+  if (!dateStr) return "Earlier";
+  const d = new Date(dateStr);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return "Today";
+  if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
+  return d.toLocaleDateString("en-NG", { weekday: "long", month: "short", day: "numeric" });
+}
+
+// All-tab: strict newest-first with date separators only (no category grouping)
+function ChronologicalList({ items, onMarkRead }) {
+  if (items.length === 0) return null;
+
+  // Group into ordered day buckets while preserving chronological order
+  const buckets = [];
+  let currentLabel = null;
+  for (const n of items) {
+    const label = dayLabel(n.createdAt);
+    if (label !== currentLabel) {
+      buckets.push({ label, notifications: [] });
+      currentLabel = label;
+    }
+    buckets[buckets.length - 1].notifications.push(n);
+  }
+
+  return (
+    <>
+      {buckets.map(({ label, notifications }) => (
+        <div key={label}>
+          <p className="px-5 py-2.5 text-xs font-semibold text-gray-400 bg-gray-50 border-b border-gray-100 uppercase tracking-wider">
+            {label}
+          </p>
+          {notifications.map((n) => (
+            <NotificationRow key={n.id} n={n} onMarkRead={onMarkRead} />
+          ))}
+        </div>
+      ))}
+    </>
+  );
+}
+
 export default function Notifications() {
   const {
     notifications, isLoading, unreadCount,
@@ -188,11 +232,8 @@ export default function Notifications() {
             <p className="text-sm text-gray-400">No {tab.toLowerCase()} notifications.</p>
           </div>
         ) : tab === "All" ? (
-          <>
-            <SectionGroup sectionKey="urgent" items={byCategory.urgent} onMarkRead={markRead} />
-            <SectionGroup sectionKey="payment" items={byCategory.payment} onMarkRead={markRead} />
-            <SectionGroup sectionKey="member" items={byCategory.member} onMarkRead={markRead} />
-          </>
+          // Chronological — newest first with date separators; left-border colour still shows category
+          <ChronologicalList items={notifications} onMarkRead={markRead} />
         ) : (
           tabItems.map((n) => <NotificationRow key={n.id} n={n} onMarkRead={markRead} />)
         )}
