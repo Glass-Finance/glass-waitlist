@@ -58,19 +58,20 @@ function AccountModal({ onClose, onSave, isSaving }) {
   const [accNumber, setAccNumber] = useState("");
   const [accName, setAccName] = useState("");
   const [resolving, setResolving] = useState(false);
-  const [error, setError] = useState("");
+  const [resolveError, setResolveError] = useState(""); // non-blocking warning
+  const [manualMode, setManualMode] = useState(false); // allow typing accName after resolve fails
 
   useEffect(() => {
     getBanks()
       .then(({ data }) => {
-        if (!data.success) return;
+        const list = data?.data ?? data;
+        const arr = Array.isArray(list) ? list : (list?.content ?? []);
         const seen = new Set();
-        const unique = (data.data ?? []).filter((b) => {
+        setBanks(arr.filter((b) => {
           if (seen.has(b.code)) return false;
           seen.add(b.code);
           return true;
-        });
-        setBanks(unique);
+        }));
       })
       .catch((err) =>
         notifyError(err, { context: "Load banks", fallback: "Couldn't load the bank list." }),
@@ -79,37 +80,58 @@ function AccountModal({ onClose, onSave, isSaving }) {
 
   // Auto-resolve account name once we have a full 10-digit number + bank
   useEffect(() => {
-    if (!bankCode || accNumber.length !== 10) { setAccName(""); return; }
+    if (!bankCode || accNumber.length !== 10) {
+      if (!manualMode) setAccName("");
+      setResolveError("");
+      return;
+    }
     const timer = setTimeout(async () => {
       setResolving(true);
-      setError("");
+      setResolveError("");
       try {
         const { data } = await resolveAccount(bankCode, accNumber);
-        if (data.success) setAccName(data.data?.accountName ?? "");
-        else setError("Could not verify account. Check the number and bank, then try again.");
-      } catch (err) {
-        setError(getErrorMessage(err, "Could not verify account. Check the number and bank, then try again."));
+        // Backend may wrap in { success, data: { accountName } } or return flat
+        const name =
+          data?.data?.accountName ??
+          data?.accountName ??
+          (data?.success === false ? null : data?.name ?? null);
+        if (name) {
+          setAccName(name);
+          setManualMode(false);
+        } else {
+          setResolveError("Couldn't auto-verify this account. Enter the account name manually.");
+          setManualMode(true);
+        }
+      } catch {
+        setResolveError("Couldn't auto-verify this account. Enter the account name manually.");
+        setManualMode(true);
       } finally {
         setResolving(false);
       }
     }, 700);
     return () => clearTimeout(timer);
-  }, [bankCode, accNumber]);
+  }, [bankCode, accNumber]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleBankChange(e) {
     const selected = banks.find((b) => b.code === e.target.value);
     setBankCode(selected?.code ?? "");
     setBankName(selected?.name ?? "");
     setAccName("");
+    setManualMode(false);
+    setResolveError("");
   }
 
   function handleSave() {
-    if (!accName) {
-      setError("Please enter a valid account number — the account name must resolve before saving.");
+    if (!accName.trim()) {
+      setResolveError("Account name is required.");
       return;
     }
-    setError("");
-    onSave({ settlementBank: bankName, settlementBankCode: bankCode, accountNumber: accNumber });
+    onSave({
+      settlementBank: bankName,
+      settlementBankCode: bankCode,
+      accountNumber: accNumber,
+      accountName: accName.trim(),
+    });
   }
 
   return (
@@ -182,19 +204,20 @@ function AccountModal({ onClose, onSave, isSaving }) {
               </div>
             </div>
 
-            {/* Row 2 — resolved account name */}
+            {/* Row 2 — resolved account name (editable when auto-resolve fails) */}
             <div>
               <label className="block text-xs text-gray-600 mb-1.5">Account Name</label>
               <div className="relative">
                 <input
                   type="text"
-                  readOnly
+                  readOnly={!manualMode}
                   value={resolving ? "Verifying account…" : accName}
-                  placeholder=""
-                  className={inputCls + " cursor-default select-none"}
+                  onChange={(e) => manualMode && setAccName(e.target.value)}
+                  placeholder={manualMode ? "Type account name" : ""}
+                  className={inputCls + (manualMode ? "" : " cursor-default select-none")}
                   style={{ color: resolving ? "#999" : "#111" }}
                 />
-                {accName && !resolving && (
+                {accName && !resolving && !manualMode && (
                   <Check
                     size={14}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
@@ -203,14 +226,18 @@ function AccountModal({ onClose, onSave, isSaving }) {
               </div>
             </div>
 
-            {error && <p className="text-xs text-red-500">{error}</p>}
+            {resolveError && (
+              <p className="text-xs" style={{ color: manualMode ? "#B45309" : "#DC2626" }}>
+                {resolveError}
+              </p>
+            )}
           </div>
 
           {/* Footer */}
           <div className="flex justify-end mt-6">
             <button
               onClick={handleSave}
-              disabled={isSaving || resolving || !accName}
+              disabled={isSaving || resolving || !accName.trim()}
               className="px-6 py-2.5 rounded-full text-sm font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
             >
               {isSaving ? "Saving…" : "Save Changes"}
