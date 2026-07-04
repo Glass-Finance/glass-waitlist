@@ -1446,7 +1446,7 @@ function DashboardContent({ isPaying, communityId }) {
                             const f = u.firstName ?? tx.firstName ?? "";
                             const l = u.lastName ?? tx.lastName ?? "";
                             const full = `${f} ${l}`.trim();
-                            return full || u.email || tx.member?.email ?? tx.user?.email ?? tx.email ?? "—";
+                            return full || u.email || (tx.member?.email ?? tx.user?.email ?? tx.email ?? "—");
                           })()}
                         </td>
                         <td className="px-5 py-3">
