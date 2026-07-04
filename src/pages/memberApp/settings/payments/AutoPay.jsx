@@ -25,28 +25,75 @@ export default function AutoPay() {
   const { data, isLoading: paymentsLoading } = usePayments();
   const { data: authorisations, isLoading: authsLoading, toggleAutoPay } = useManagePayments();
 
+  // Build a flat list of plans: all recurring upcoming obligations, deduped by plan ID
   const recurringPlans = useMemo(() => {
-    const plans = (data?.upcoming ?? []).filter((o) => o.type === "recurring");
     const seen = new Map();
-    for (const p of plans) {
-      const key = `${p.name}__${p.communityName}`;
-      if (!seen.has(key)) seen.set(key, p);
+    for (const o of data?.upcoming ?? []) {
+      if (o.type !== "recurring") continue;
+      const key = o.paymentLinkId ?? `${o.name}__${o.communityName}`;
+      if (!seen.has(key)) seen.set(key, o);
     }
     return [...seen.values()];
   }, [data]);
 
+  // Authorisation plans — derived from consent entries (covers plans that
+  // have auto-pay active but may no longer have a matching upcoming obligation)
+  const authPlans = useMemo(() => {
+    const seen = new Map();
+    for (const auth of authorisations ?? []) {
+      for (const c of auth.consents ?? []) {
+        if (c.revoked) continue;
+        const key = c.paymentLinkId ?? `${c.paymentLinkTitle}__${c.communityName}`;
+        if (!seen.has(key)) {
+          seen.set(key, {
+            paymentLinkId: c.paymentLinkId,
+            name: c.paymentLinkTitle ?? "Payment Plan",
+            communityName: c.communityName ?? "",
+            amount: null,
+            auth,
+          });
+        }
+      }
+    }
+    return [...seen.values()];
+  }, [authorisations]);
+
+  // Merge: prefer upcoming obligations, overlay auth info
+  const allPlans = useMemo(() => {
+    const result = new Map();
+    // Seed with recurring obligations
+    for (const p of recurringPlans) {
+      const key = p.paymentLinkId ?? `${p.name}__${p.communityName}`;
+      result.set(key, { ...p, auth: null });
+    }
+    // Overlay auth info
+    for (const ap of authPlans) {
+      const key = ap.paymentLinkId ?? `${ap.name}__${ap.communityName}`;
+      if (result.has(key)) {
+        result.get(key).auth = ap.auth;
+      } else {
+        result.set(key, ap);
+      }
+    }
+    return [...result.values()];
+  }, [recurringPlans, authPlans]);
+
   function findAuthForPlan(plan) {
     for (const auth of authorisations ?? []) {
-      const consent = auth.consents.find(
-        (c) => !c.revoked && c.paymentLinkTitle === plan.name && c.communityName === plan.communityName
-      );
+      const consent = auth.consents.find((c) => {
+        if (c.revoked) return false;
+        // Match by ID first (most reliable), then fall back to title+community
+        if (plan.paymentLinkId && c.paymentLinkId) return c.paymentLinkId === plan.paymentLinkId;
+        return c.paymentLinkTitle === plan.name && c.communityName === plan.communityName;
+      });
       if (consent) return auth;
     }
     return null;
   }
 
-  function handleToggle(auth) {
-    if (!auth) return;
+  function handleToggle(plan) {
+    const auth = findAuthForPlan(plan);
+    if (!auth) return; // can't disable what isn't enabled
     if (!window.confirm("Turning this off removes the saved payment method for this plan — auto-pay will stop for every plan tied to it.")) return;
     toggleAutoPay(auth.id, false);
   }
@@ -66,31 +113,33 @@ export default function AutoPay() {
       </div>
 
       <div style={{ padding: "0 16px" }}>
-        <div style={{ background: "#fff", borderRadius: 14, padding: 4, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+        <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           {isLoading ? (
             <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "20px 0" }}>Loading…</p>
-          ) : recurringPlans.length === 0 ? (
+          ) : allPlans.length === 0 ? (
             <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "20px 0" }}>
               You're not on any recurring plans yet.
             </p>
           ) : (
-            recurringPlans.map((plan, i) => {
+            allPlans.map((plan, i) => {
               const auth = findAuthForPlan(plan);
+              const isOn = !!auth;
               return (
                 <div
-                  key={`${plan.name}-${plan.communityName}`}
+                  key={plan.paymentLinkId ?? `${plan.name}-${plan.communityName}`}
                   style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 12px",
-                    borderBottom: i < recurringPlans.length - 1 ? "1px solid #F2F2F2" : "none",
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    padding: "16px",
+                    borderBottom: i < allPlans.length - 1 ? "1px solid #F2F2F2" : "none",
                   }}
                 >
                   <div style={{ minWidth: 0, paddingRight: 12 }}>
-                    <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{plan.name}</p>
-                    <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>
-                      {plan.communityName} · {formatNaira(plan.amount)}
+                    <p style={{ fontSize: 15, fontWeight: 500, color: "#111", margin: 0 }}>{plan.name}</p>
+                    <p style={{ fontSize: 13, color: "#999", margin: "3px 0 0" }}>
+                      {[plan.communityName, plan.amount != null ? formatNaira(plan.amount) : null].filter(Boolean).join(" · ")}
                     </p>
                   </div>
-                  <Toggle on={!!auth} onChange={() => handleToggle(auth)} />
+                  <Toggle on={isOn} onChange={() => handleToggle(plan)} />
                 </div>
               );
             })
