@@ -708,44 +708,48 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers }) {
   const isPaused = status === "PAUSED";
   const isDraft  = status === "DRAFT";
 
+  const freqLabel = plan.type === "RECURRING"
+    ? (FREQUENCIES.find((f) => f.value === plan.frequency)?.label ?? plan.frequency ?? "Recurring")
+    : "One-Time";
+
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-4 flex flex-col gap-3"
-      style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-white rounded-2xl border border-gray-100 p-5 flex flex-col gap-4"
+      style={{ boxShadow: "0 1px 6px rgba(0,47,167,0.07)" }}>
       {/* Status + overflow */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full flex items-center gap-1.5"
+        <span className="text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5"
           style={{ color: ps.color, background: ps.bg }}>
-          <span className="w-1.5 h-1.5 rounded-full" style={{ background: ps.color }} />
+          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: ps.color }} />
           {ps.label}
         </span>
         <PlanOverflowMenu plan={plan} planPlans={planPlans} />
       </div>
 
       {/* Name */}
-      <p className="text-sm font-semibold text-black">{plan.name}</p>
+      <p className="text-[15px] font-bold text-black leading-snug">{plan.name}</p>
 
-      {/* Amount + collected */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-[13px] font-semibold text-gray-900">{formatNaira(plan.amount)}</span>
-          <span className="text-[11px] font-medium px-2 py-0.5 rounded-full" style={{ color: "#7c3aed", background: "#f3eeff" }}>
-            {plan.type === "RECURRING"
-              ? (FREQUENCIES.find((f) => f.value === plan.frequency)?.label ?? plan.frequency ?? "Recurring")
-              : "One-Time"}
+      {/* Amount + frequency + collected */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="text-[22px] font-extrabold text-gray-900 leading-none">{formatNaira(plan.amount)}</span>
+          <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
+            style={{ color: "#7c3aed", background: "#f3eeff" }}>
+            {freqLabel}
           </span>
         </div>
-        <span className="text-xs text-gray-400">
-          {formatCompact(plan.amountCollected)}/{formatCompact(plan.expectedAmount)} Collected
+        <span className="text-xs text-gray-400 flex-shrink-0">
+          <span className="font-semibold text-gray-600">{formatCompact(plan.amountCollected)}</span>
+          /{formatCompact(plan.expectedAmount)} Collected
         </span>
       </div>
 
-      {/* Progress */}
+      {/* Progress bar */}
       <div>
-        <div className="h-2 rounded-full bg-gray-100 overflow-hidden mb-1.5">
-          <div className="h-full rounded-full" style={{ width: `${plan.pct}%`, background: barColor }} />
+        <div className="h-2.5 rounded-full bg-gray-100 overflow-hidden mb-2">
+          <div className="h-full rounded-full transition-all" style={{ width: `${plan.pct}%`, background: barColor }} />
         </div>
         <div className="flex items-center justify-between">
-          <p className="text-xs text-gray-400">{plan.paidCount} / {plan.totalCount} members paid</p>
+          <p className="text-xs text-gray-500 font-medium">{plan.paidCount} / {plan.totalCount} members paid</p>
           <p className="text-xs text-gray-400">
             Due {plan.dueAt ? new Date(plan.dueAt).toLocaleDateString("en-NG", { month: "short", day: "numeric" }) : "—"}
           </p>
@@ -753,7 +757,7 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers }) {
       </div>
 
       {/* Inline actions */}
-      <div className="flex items-center gap-0 pt-2 border-t border-gray-100 flex-wrap">
+      <div className="flex items-center gap-0 pt-1 border-t border-gray-100 flex-wrap">
         <ActionBtn icon={<Pencil size={11} />} label="Edit Plan" onClick={() => onEdit(plan)} />
         <Divider />
         <ActionBtn icon={<Bell size={11} />} label="Send Reminder" disabled title="Send reminder — coming soon" />
