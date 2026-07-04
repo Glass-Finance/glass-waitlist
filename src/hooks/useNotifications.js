@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import client from "../api/client";
 import { useActiveCommunityId } from "./useActiveCommunityId";
@@ -7,14 +8,6 @@ async function fetchNotifications(communityId) {
   const params = { pageSize: 50 };
   if (communityId) params.communityId = communityId;
   const res = await client.get("/notifications", { params });
-  return res.data.data;
-}
-
-// GET /api/v1/notifications/unread-count
-async function fetchUnreadCount(communityId) {
-  const params = {};
-  if (communityId) params.communityId = communityId;
-  const res = await client.get("/notifications/unread-count", { params });
   return res.data.data;
 }
 
@@ -41,7 +34,6 @@ export function useNotifications() {
   const queryClient = useQueryClient();
 
   const listKey  = ["notifications", communityId, "list"];
-  const countKey = ["notifications", communityId, "count"];
 
   // ── Main list ──────────────────────────────────────────────────────────────
   const query = useQuery({
@@ -64,17 +56,13 @@ export function useNotifications() {
     },
   });
 
-  // ── Unread count ───────────────────────────────────────────────────────────
-  const countQuery = useQuery({
-    queryKey: countKey,
-    queryFn: () => fetchUnreadCount(communityId),
-    staleTime: 1000 * 20,
-    gcTime:    1000 * 60 * 5,
-    refetchInterval: 1000 * 30,
-    refetchIntervalInBackground: false,
-    select: (data) =>
-      typeof data === "number" ? data : (data?.count ?? data?.unreadCount ?? 0),
-  });
+  // Derive unread count from the already-filtered list so the badge always
+  // reflects only the current community (the backend /unread-count endpoint
+  // returns a global total and cannot be scoped per community).
+  const unreadCount = useMemo(
+    () => (query.data ?? []).filter((n) => !n.readFlag).length,
+    [query.data]
+  );
 
   // ── Mark one read ──────────────────────────────────────────────────────────
   const markReadMutation = useMutation({
@@ -99,7 +87,6 @@ export function useNotifications() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: listKey });
-      queryClient.invalidateQueries({ queryKey: countKey });
     },
   });
 
@@ -114,7 +101,6 @@ export function useNotifications() {
           ? { ...old, content: old.content.map((n) => ({ ...n, readFlag: true })) }
           : old
       );
-      queryClient.setQueryData(countKey, 0);
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
@@ -122,7 +108,6 @@ export function useNotifications() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: listKey });
-      queryClient.invalidateQueries({ queryKey: countKey });
     },
   });
 
@@ -135,10 +120,9 @@ export function useNotifications() {
       queryClient.setQueryData(listKey, (old) =>
         old ? { ...old, content: [] } : old
       );
-      queryClient.setQueryData(countKey, 0);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: countKey });
+      queryClient.invalidateQueries({ queryKey: listKey });
     },
   });
 
@@ -146,7 +130,7 @@ export function useNotifications() {
     notifications:    query.data ?? [],
     isLoading:        query.isLoading,
     error:            query.error,
-    unreadCount:      countQuery.data ?? 0,
+    unreadCount,
     markRead:         (id) => markReadMutation.mutate(id),
     markAllRead:      () => markAllReadMutation.mutate(),
     isMarkingAllRead: markAllReadMutation.isPending,
