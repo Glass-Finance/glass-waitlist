@@ -827,10 +827,34 @@ function PlanMembersModal({ plan, communityId, onClose }) {
   function getJoinedAt(m){ return resolveMember(m).joinedAt ?? m.member?.joinedAt ?? m.joinedAt ?? null; }
 
   function getStatus(m) {
-    return (m.obligationStatus ?? m.status ?? "PENDING").toUpperCase();
+    const raw =
+      m.obligationStatus ??
+      m.obligation?.status ??
+      m.member?.obligationStatus ??
+      m.paymentStatus ??
+      m.status ??
+      "PENDING";
+    return raw.toUpperCase();
   }
-  function getAmountPaid(m) { return m.amountPaid ?? 0; }
-  function getAmountDue(m)  { return m.amount ?? m.amountDue ?? plan.amount ?? 0; }
+  function getAmountPaid(m) {
+    return (
+      m.amountPaid ??
+      m.paidAmount ??
+      m.obligation?.amountPaid ??
+      m.obligation?.paidAmount ??
+      0
+    );
+  }
+  function getAmountDue(m) {
+    return (
+      m.amount ??
+      m.amountDue ??
+      m.obligation?.amount ??
+      m.obligation?.amountDue ??
+      plan.amount ??
+      0
+    );
+  }
 
   function statusStyle(s) {
     if (s === "PAID")    return { bg: "#ecfdf5", color: "#059669", label: "Paid" };

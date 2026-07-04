@@ -48,7 +48,7 @@ export const duplicatePaymentLink = (communityId, paymentLinkId, payload) =>
 
 // POST — sends an immediate reminder to unpaid members for this payment link
 export const sendPaymentLinkReminder = (communityId, paymentLinkId) =>
-  client.post(`/communities/${communityId}/payment-links/${paymentLinkId}/remind`, {
+  client.post(`/communities/${communityId}/payment-links/${paymentLinkId}/reminders`, {
     reminderFrequency: "EVERY_3_DAYS",
     reminderChannels: ["IN_APP"],
   });
