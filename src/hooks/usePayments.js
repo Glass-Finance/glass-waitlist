@@ -44,7 +44,7 @@ function shapeObligation(raw) {
     communitySlug: raw.community?.slug,
     dueDate: raw.dueAt,
     type: raw.recurringPlan ? "recurring" : "one-time",
-    status: (raw.status ?? "PENDING").toUpperCase(),
+    status: (() => { const s = (raw.status ?? "PENDING").toUpperCase(); return s === "SUCCESSFUL" ? "PAID" : s; })(),
     paymentLinkId: raw.paymentLink?.id,
     obligationId: raw.id,
     logoColor: "#1C2B8A",

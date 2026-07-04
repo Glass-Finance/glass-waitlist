@@ -19,7 +19,7 @@ function monthLabel(dateStr) {
 }
 
 function statusLabel(status) {
-  if (status === "success") return "Success";
+  if (status === "success" || status === "successful") return "Success";
   if (status === "failed") return "Failed";
   return "Pending";
 }

@@ -1121,7 +1121,7 @@ function DashboardContent({ isPaying, communityId }) {
                 <tbody>
                   {myUpcoming.map((row) => {
                     const s = statusStyle(
-                      row.status === "PAID" ? "paid" : "unpaid",
+                      (row.status === "PAID" || row.status === "SUCCESSFUL") ? "paid" : "unpaid",
                     );
                     return (
                       <tr
@@ -1440,14 +1440,13 @@ function DashboardContent({ isPaying, communityId }) {
                       >
                         <td className="px-5 py-3 text-xs font-medium text-[#002FA7]">
                           {(() => {
-                            const f =
-                              tx.member?.firstName ?? tx.user?.firstName ?? "";
-                            const l =
-                              tx.member?.lastName ?? tx.user?.lastName ?? "";
+                            // Try nested user object first (community member record),
+                            // then flat user object, then direct fields on transaction
+                            const u = tx.member?.user ?? tx.user ?? tx.payer ?? tx.member ?? {};
+                            const f = u.firstName ?? tx.firstName ?? "";
+                            const l = u.lastName ?? tx.lastName ?? "";
                             const full = `${f} ${l}`.trim();
-                            return (
-                              full || tx.member?.email || tx.user?.email || "—"
-                            );
+                            return full || u.email || tx.member?.email ?? tx.user?.email ?? tx.email ?? "—";
                           })()}
                         </td>
                         <td className="px-5 py-3">
@@ -1465,7 +1464,7 @@ function DashboardContent({ isPaying, communityId }) {
                           {formatDate(tx.createdAt ?? tx.date)}
                         </td>
                         <td className="px-5 py-3 text-xs text-black">
-                          {tx.member?.email ?? tx.user?.email ?? "—"}
+                          {tx.member?.user?.email ?? tx.user?.email ?? tx.payer?.email ?? tx.member?.email ?? tx.email ?? "—"}
                         </td>
                         <td className="px-5 py-3">
                           <span

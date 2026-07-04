@@ -15,7 +15,7 @@ function shapeTransaction(raw) {
     description: raw.description ?? raw.paymentLink?.title ?? "Payment",
     communityName: raw.community?.name,
     date: raw.paidAt ?? raw.createdAt,
-    status: (raw.status ?? "").toLowerCase(), // "success" | "failed" | "pending" | "initiated"
+    status: (() => { const s = (raw.status ?? "").toLowerCase(); return s === "successful" ? "success" : s; })(),
     type: raw.recurringPlan ? "recurring" : "one-time",
     planName: raw.paymentLink?.title,
     channel: raw.channel,
