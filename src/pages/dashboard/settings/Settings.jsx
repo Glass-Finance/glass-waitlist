@@ -95,6 +95,7 @@
 
 
 
+import { useRef, useState } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { Search, ChevronRight } from "lucide-react";
 import Background from "../../../assets/background.png";
@@ -142,6 +143,13 @@ const PARENT_PATH = {
   Community: "/dashboard/settings/community",
 };
 
+// Flat index for search — label, description, path, and which tab it lives in
+const ALL_SETTINGS = [
+  ...ACCOUNT_ITEMS.map(i => ({ ...i, tab: "Account" })),
+  ...FINANCE_ITEMS.map(i => ({ ...i, tab: "Finance" })),
+  ...COMMUNITY_ITEMS.map(i => ({ ...i, tab: "Community" })),
+];
+
 // Parent breadcrumb crumb — click to go back to that tab's menu list.
 function BreadcrumbParent({ parent }) {
   const navigate = useNavigate();
@@ -182,16 +190,31 @@ export default function Settings() {
   const location = useLocation();
   const path     = location.pathname;
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchRef = useRef(null);
+
   const activeTab = TABS.find(t => path.includes(t.match))?.label || "Account";
 
-  // Determine if we're on the top-level tab (show menu) vs a sub-page (show Outlet)
   const isAccountMenu   = path === "/dashboard/settings/account";
   const isFinanceMenu   = path === "/dashboard/settings/finance";
   const isCommunityMenu = path === "/dashboard/settings/community";
 
-  // Breadcrumb — only on sub-pages
   const crumbKey   = Object.keys(BREADCRUMB_MAP).find(k => path.includes(k));
   const breadcrumb = crumbKey ? BREADCRUMB_MAP[crumbKey] : null;
+
+  const q = searchQuery.trim().toLowerCase();
+  const searchResults = q.length > 0
+    ? ALL_SETTINGS.filter(
+        s => s.label.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q)
+      )
+    : [];
+
+  function handleSearchSelect(item) {
+    setSearchQuery("");
+    setSearchOpen(false);
+    navigate(item.path);
+  }
 
   return (
     <div
@@ -209,14 +232,52 @@ export default function Settings() {
           <h1 className="text-lg font-bold text-gray-900 mb-1">Settings</h1>
           <p className="text-xs text-gray-500">A full picture of your community's financial activity.</p>
         </div>
-        <div className="relative">
-          <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+        {/* Search with live results dropdown */}
+        <div className="relative" ref={searchRef}>
+          <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           <input
             type="text"
             placeholder="Find A Setting"
-            className="pl-9 pr-4 py-2 rounded-md text-xs text-gray-700 placeholder-gray-400 "
-            style={{ border: "1px solid #000000", width: "220px" }}
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setSearchOpen(true); }}
+            onFocus={() => setSearchOpen(true)}
+            onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
+            className="pl-9 pr-4 py-2 rounded-md text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-colors"
+            style={{ border: "1px solid #D0D0D0", width: "220px", background: "#fff" }}
           />
+
+          {/* Dropdown results */}
+          {searchOpen && searchResults.length > 0 && (
+            <div
+              className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg overflow-hidden z-50"
+              style={{ width: 280, border: "1px solid #E5E7EB" }}
+            >
+              {searchResults.map((item) => (
+                <button
+                  key={item.path}
+                  onMouseDown={() => handleSearchSelect(item)}
+                  className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors border-none bg-transparent cursor-pointer border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-gray-900">{item.label}</p>
+                    <p className="text-xs text-gray-400 mt-0.5 truncate">{item.tab} · {item.desc}</p>
+                  </div>
+                  <ChevronRight size={13} className="text-gray-300 flex-shrink-0 mt-0.5" />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* No results */}
+          {searchOpen && q.length > 0 && searchResults.length === 0 && (
+            <div
+              className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg z-50 px-4 py-3"
+              style={{ width: 240, border: "1px solid #E5E7EB" }}
+            >
+              <p className="text-xs text-gray-400">No settings match "{searchQuery}"</p>
+            </div>
+          )}
         </div>
       </div>
 
