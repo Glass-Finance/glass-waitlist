@@ -9,6 +9,7 @@ import {
   expirePaymentLink,
   archivePaymentLink,
   duplicatePaymentLink,
+  sendPaymentLinkReminder,
 } from "../api/payments";
 
 function unwrapList(res) {
@@ -107,6 +108,11 @@ export function usePaymentPlans(communityId) {
     meta: { successMessage: "Payment plan duplicated" },
   });
 
+  const sendReminder = useMutation({
+    mutationFn: (paymentLinkId) => sendPaymentLinkReminder(communityId, paymentLinkId),
+    meta: { successMessage: "Reminder sent to unpaid members" },
+  });
+
   return {
     plans: query.data ?? [],
     isLoading: query.isLoading,
@@ -119,5 +125,6 @@ export function usePaymentPlans(communityId) {
     expire,
     archive,
     duplicate,
+    sendReminder,
   };
 }

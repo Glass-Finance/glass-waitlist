@@ -45,3 +45,10 @@ export const archivePaymentLink   = patchAction("archive");
 // POST — creates a new payment link from an existing one
 export const duplicatePaymentLink = (communityId, paymentLinkId, payload) =>
   client.post(`/communities/${communityId}/payment-links/${paymentLinkId}/duplicate`, payload);
+
+// POST — sends an immediate reminder to unpaid members for this payment link
+export const sendPaymentLinkReminder = (communityId, paymentLinkId) =>
+  client.post(`/communities/${communityId}/payment-links/${paymentLinkId}/remind`, {
+    reminderFrequency: "EVERY_3_DAYS",
+    reminderChannels: ["IN_APP"],
+  });

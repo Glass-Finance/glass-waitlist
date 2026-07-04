@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Bell, ChevronDown, Clock } from "lucide-react";
+import { Bell, ChevronDown, Clock, Users } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
 import SideDrawer from "../../components/memberApp/SideDrawer";
 
@@ -388,9 +388,102 @@ function HistoryRow({ item }) {
 // ---------------------------------------------------------------------------
 // Home — root export
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Empty state — no community yet
+// ---------------------------------------------------------------------------
+function NoCommunityState({ navigate }) {
+  return (
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "60px 32px 80px",
+        textAlign: "center",
+      }}
+    >
+      {/* Icon circle */}
+      <div
+        style={{
+          width: 88,
+          height: 88,
+          borderRadius: "50%",
+          background: "#E4E9F8",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 28,
+        }}
+      >
+        <Users size={40} strokeWidth={1.5} style={{ color: "#1C2B8A" }} />
+      </div>
+
+      <p
+        style={{
+          fontSize: 20,
+          fontWeight: 700,
+          color: "#111",
+          margin: "0 0 10px",
+          lineHeight: 1.3,
+        }}
+      >
+        You Are Not In Any<br />Community Yet
+      </p>
+      <p
+        style={{
+          fontSize: 14,
+          color: "#888",
+          margin: "0 0 36px",
+          lineHeight: 1.6,
+          maxWidth: 260,
+        }}
+      >
+        Join a community to start tracking your dues and payments.
+      </p>
+
+      {/* Primary CTA */}
+      <button
+        onClick={() => navigate("/member/notifications")}
+        style={{
+          width: "100%",
+          maxWidth: 300,
+          padding: "16px 0",
+          borderRadius: 10,
+          border: "none",
+          background: "#002FA7",
+          color: "#fff",
+          fontSize: 15,
+          fontWeight: 600,
+          cursor: "pointer",
+          marginBottom: 16,
+        }}
+      >
+        Join A Community
+      </button>
+
+      {/* Secondary link */}
+      <button
+        onClick={() => navigate("/member/notifications")}
+        style={{
+          background: "none",
+          border: "none",
+          color: "#002FA7",
+          fontSize: 14,
+          fontWeight: 600,
+          cursor: "pointer",
+        }}
+      >
+        Check Your Invites
+      </button>
+    </div>
+  );
+}
+
 export default function Home() {
   const navigate = useNavigate();
-  const { data, isLoading, error, refresh } = usePayments();
+  const { data, isLoading, error, refresh, hasNoCommunity } = usePayments();
 
   const nextDue = data?.nextDue ?? null;
   const upcoming = (data?.upcoming ?? [])
@@ -567,6 +660,8 @@ export default function Home() {
           <p style={{ textAlign: "center", color: "#999", fontSize: 13 }}>
             Loading…
           </p>
+        ) : hasNoCommunity ? (
+          <NoCommunityState navigate={navigate} />
         ) : (
           <>
             {/* ── Hero card ───────────────────────────────────────────────────── */}

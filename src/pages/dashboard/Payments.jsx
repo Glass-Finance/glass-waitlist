@@ -1152,7 +1152,10 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers }) {
             <MenuItem
               icon={<Bell size={13} />}
               label="Send Reminder"
-              disabled
+              onClick={() => {
+                planPlans.sendReminder.mutate(plan.id);
+                close();
+              }}
             />
             <MenuItem
               icon={<Users size={13} />}
