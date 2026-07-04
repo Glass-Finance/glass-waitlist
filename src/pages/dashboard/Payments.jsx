@@ -29,6 +29,7 @@ import { useSlug } from "../../hooks/useSlug";
 import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
 import { getCommunityMembers } from "../../api/communities";
+import { getCommunityObligations, getCommunityTransactions } from "../../api/transactions";
 
 const PLAN_STATUS = {
   ACTIVE: { bg: "#ecfdf5", color: "#059669", label: "Active" },
@@ -1178,7 +1179,7 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers }) {
 }
 
 // ── Plan card ─────────────────────────────────────────────────────────────────
-function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers }) {
+function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers, metrics }) {
   const ps = PLAN_STATUS[plan.status] ?? PLAN_STATUS.DRAFT;
 
   const freqLabel =
@@ -1187,6 +1188,17 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers }) {
         plan.frequency ??
         "Recurring")
       : "One-Time";
+
+  // Prefer computed metrics (from obligations/transactions) over the list
+  // endpoint's metrics which are never populated server-side.
+  const cm         = metrics ?? {};
+  const paidCount  = cm.paidCount  ?? plan.paidCount  ?? 0;
+  const totalCount = cm.totalCount ?? plan.totalCount  ?? 0;
+  const collected  = cm.collected  ?? plan.amountCollected ?? 0;
+  const expected   = totalCount > 0 && plan.amount > 0
+    ? plan.amount * totalCount
+    : (plan.expectedAmount ?? 0);
+  const pct        = expected > 0 ? Math.min(100, Math.round((collected / expected) * 100)) : 0;
 
   return (
     <div
@@ -1233,9 +1245,9 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers }) {
         </div>
         <span className="text-xs text-gray-400 flex-shrink-0">
           <span className="font-semibold text-gray-600">
-            {formatCompact(plan.amountCollected)}
+            {formatCompact(collected)}
           </span>
-          /{formatCompact(plan.expectedAmount)} Collected
+          /{formatCompact(expected)} Collected
         </span>
       </div>
 
@@ -1244,12 +1256,12 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers }) {
         <div className="h-2.5 rounded-full bg-gray-100 overflow-hidden mb-2">
           <div
             className="h-full rounded-full transition-all"
-            style={{ width: `${plan.pct}%`, background: barColor }}
+            style={{ width: `${pct}%`, background: barColor }}
           />
         </div>
         <div className="flex items-center justify-between">
           <p className="text-xs text-gray-500 font-medium">
-            {plan.paidCount} / {plan.totalCount} members paid
+            {paidCount} / {totalCount} members paid
           </p>
           <p className="text-xs text-gray-400">
             Due{" "}
@@ -1277,6 +1289,61 @@ export default function Payments() {
   const planPlans = usePaymentPlans(communityId);
   const { plans, isLoading: plansLoading } = planPlans;
 
+  // Obligations — who is enrolled in each plan and whether they've paid
+  const { data: obligations = [] } = useQuery({
+    queryKey: ["community", communityId, "obligations"],
+    queryFn: async () => {
+      const res = await getCommunityObligations(communityId);
+      const data = res.data?.data;
+      return Array.isArray(data) ? data : (data?.content ?? []);
+    },
+    enabled: !!communityId,
+    staleTime: 1000 * 60 * 2,
+  });
+
+  // Transactions — actual amounts collected per plan
+  const { data: transactions = [] } = useQuery({
+    queryKey: ["community", communityId, "transactions"],
+    queryFn: async () => {
+      const res = await getCommunityTransactions(communityId);
+      const data = res.data?.data;
+      return Array.isArray(data) ? data : (data?.content ?? []);
+    },
+    enabled: !!communityId,
+    staleTime: 1000 * 60 * 2,
+  });
+
+  // Compute per-plan: paidCount, totalCount (unique members), collected
+  const planMetrics = useMemo(() => {
+    const SUCCESS = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
+    const byPlan = {};
+
+    for (const ob of obligations) {
+      const planId = ob.paymentLink?.id;
+      if (!planId) continue;
+      if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
+      const mid = String(ob.member?.id ?? ob.member?.user?.id ?? ob.user?.id ?? ob.id ?? "");
+      if (mid) byPlan[planId].memberIds.add(mid);
+      const s = (ob.status ?? "").toUpperCase();
+      if (s === "PAID" || s === "SUCCESSFUL") byPlan[planId].paidCount++;
+    }
+
+    for (const tx of transactions) {
+      const planId = tx.paymentLink?.id;
+      if (!planId) continue;
+      if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
+      if (SUCCESS.has((tx.status ?? "").toUpperCase())) {
+        byPlan[planId].collected += tx.amount ?? 0;
+      }
+    }
+
+    const result = {};
+    for (const [id, m] of Object.entries(byPlan)) {
+      result[id] = { collected: m.collected, paidCount: m.paidCount, totalCount: m.memberIds.size };
+    }
+    return result;
+  }, [obligations, transactions]);
+
   const filtered = useMemo(() => {
     if (tab === "Recurring") return plans.filter((p) => p.type === "RECURRING");
     if (tab === "One Time") return plans.filter((p) => p.type !== "RECURRING");
@@ -1285,15 +1352,21 @@ export default function Payments() {
 
   const stats = useMemo(
     () => ({
-      collected: plans.reduce((sum, p) => sum + (p.amountCollected ?? 0), 0),
+      // Use computed collected from transactions (list endpoint metrics are empty)
+      collected: Object.values(planMetrics).reduce((sum, m) => sum + (m.collected ?? 0), 0),
       active: plans.filter((p) => p.status === "ACTIVE").length,
       yetToPay: plans.reduce(
-        (sum, p) => sum + (p.unpaidCount ?? 0) + (p.partialCount ?? 0),
+        (sum, p) => {
+          const cm = planMetrics[p.id] ?? {};
+          const total = cm.totalCount ?? 0;
+          const paid  = cm.paidCount  ?? 0;
+          return sum + Math.max(0, total - paid);
+        },
         0,
       ),
       failed: plans.filter((p) => p.status === "EXPIRED").length,
     }),
-    [plans],
+    [plans, planMetrics],
   );
 
   async function handleCreate(payload) {
@@ -1396,6 +1469,7 @@ export default function Payments() {
               barColor={BAR_COLORS[i % BAR_COLORS.length]}
               onEdit={setEditingPlan}
               onViewMembers={setViewingMembersPlan}
+              metrics={planMetrics[plan.id]}
             />
           ))}
         </div>
