@@ -426,7 +426,7 @@
  *
  * Invite link format: {APP_ORIGIN}/member/join?community={communitySlug}
  */
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Papa from "papaparse";
 import { Bell, Download, CloudUpload, Copy, Check, X, FileSpreadsheet } from "lucide-react";
@@ -439,10 +439,8 @@ import { toastProgress, toastSuccess } from "../../utils/toast";
 import { useRoles } from "../../hooks/useCommunityMembers";
 import { createCommunityInvite } from "../../api/invites";
 
-// Mirrors MemberAccess.jsx's fallback — used when /roles/community hasn't
-// resolved yet (or never returns a "Member" role) so onboarding still has
-// a roleId to send rather than submitting members with none at all.
-const FALLBACK_MEMBER_ROLE_ID = "MEMBER";
+const ALLOWED_ROLE_NAMES = new Set(["Community Member", "Admin", "Treasurer"]);
+const FALLBACK_ROLES = [{ id: "", name: "Community Member" }];
 
 const STEPS = [
   { id: "organization", label: "Organization Profile" },
@@ -535,11 +533,23 @@ export default function AddMembers() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const fileRef   = useRef(null);
-  const { data: roles } = useRoles();
-  const defaultRoleId = (roles ?? []).find((r) => r.name?.toLowerCase() === "member")?.id
-    ?? FALLBACK_MEMBER_ROLE_ID;
+  const { data: rolesData, isLoading: rolesLoading } = useRoles();
+  const roles = rolesData ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name)) : [];
+  const finalRoles = roles.length ? roles : FALLBACK_ROLES;
 
   const { email, communityId, communitySlug, communityName } = location.state ?? {};
+
+  const [selectedRoleId, setSelectedRoleId] = useState("");
+  const [billingExempt,  setBillingExempt]  = useState(false);
+
+  // Set default to "Community Member" once roles resolve
+  useEffect(() => {
+    if (finalRoles.length && !selectedRoleId) {
+      const memberRole =
+        finalRoles.find((r) => r.name === "Community Member") ?? finalRoles[0];
+      if (memberRole?.id) setSelectedRoleId(memberRole.id);
+    }
+  }, [finalRoles]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // /join/{slug} isn't a route this app has ever had — it fell through to
   // the catch-all and silently redirected to the public homepage, so this
@@ -656,9 +666,12 @@ export default function AddMembers() {
     setLoading(true);
     try {
       if (!communityId) { setError("Community ID missing."); return; }
+      if (!selectedRoleId) { setError("Roles are still loading — please wait a moment."); return; }
       const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
       const results = await Promise.allSettled(
-        emails.map((email) => createCommunityInvite(communityId, { email, roleId: defaultRoleId }))
+        emails.map((email) =>
+          createCommunityInvite(communityId, { email, roleId: selectedRoleId, billingExempt })
+        )
       );
       const succeeded = results.filter((r) => r.status === "fulfilled").length;
       if (succeeded === 0) {
@@ -692,11 +705,11 @@ export default function AddMembers() {
     try {
       let members;
       if (uploadedFile) {
-        members = (await parseCsvFile(uploadedFile)).map((row) => csvRowToMember(row, roles, defaultRoleId));
+        members = (await parseCsvFile(uploadedFile)).map((row) => csvRowToMember(row, rolesData, selectedRoleId));
       } else if (urlCsvText) {
-        members = parseCsvText(urlCsvText).map((row) => csvRowToMember(row, roles, defaultRoleId));
+        members = parseCsvText(urlCsvText).map((row) => csvRowToMember(row, rolesData, selectedRoleId));
       } else if (fileUrl.trim()) {
-        members = (await parseCsvFromUrl(fileUrl.trim())).map((row) => csvRowToMember(row, roles, defaultRoleId));
+        members = (await parseCsvFromUrl(fileUrl.trim())).map((row) => csvRowToMember(row, rolesData, selectedRoleId));
       } else {
         members = []; // nothing provided — same as before, just finish onboarding
       }
@@ -974,11 +987,43 @@ export default function AddMembers() {
                     className={`${inputCls} mb-5`}
                   />
 
+                  <p className="text-sm font-medium text-gray-900 mb-2">Role:</p>
+                  <div className="relative mb-4">
+                    <select
+                      value={selectedRoleId}
+                      onChange={(e) => setSelectedRoleId(e.target.value)}
+                      disabled={rolesLoading}
+                      className={`${inputCls} appearance-none pr-8 ${rolesLoading ? "opacity-50" : ""}`}
+                    >
+                      {rolesLoading
+                        ? <option>Loading roles…</option>
+                        : finalRoles.map((r) => (
+                            <option key={r.id} value={r.id}>{r.name}</option>
+                          ))
+                      }
+                    </select>
+                    <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+
+                  <label className="flex items-center gap-2.5 text-sm text-gray-700 mb-5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={billingExempt}
+                      onChange={(e) => setBillingExempt(e.target.checked)}
+                      className="w-4 h-4 accent-[#002FA7] cursor-pointer"
+                    />
+                    Exempt from billing
+                    <span className="text-xs text-gray-400 font-normal">(no payment reminders will be sent)</span>
+                  </label>
+
                   {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
 
                   <div className="flex justify-end">
-                    <button onClick={handleSendInvite} disabled={emails.length === 0 || loading}
-                      className="px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50">
+                    <button
+                      onClick={handleSendInvite}
+                      disabled={emails.length === 0 || loading || rolesLoading || !selectedRoleId}
+                      className="px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
+                    >
                       {loading ? "Sending…" : "Send Invite"}
                     </button>
                   </div>
