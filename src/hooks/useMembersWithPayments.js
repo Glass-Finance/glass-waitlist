@@ -36,7 +36,14 @@ export function useMembersWithPayments(communityId) {
 
   const obligationsQuery = useQuery({
     queryKey: ["community", communityId, "obligations"],
-    queryFn: async () => unwrapList(await getCommunityObligations(communityId)),
+    queryFn: async () => {
+      const list = unwrapList(await getCommunityObligations(communityId));
+      if (list.length > 0) {
+        const statuses = [...new Set(list.map((o) => o.status))];
+        console.log("[obligations] distinct statuses:", statuses, "first:", JSON.stringify(list[0], null, 2).slice(0, 500));
+      }
+      return list;
+    },
     enabled,
     staleTime: 1000 * 60 * 2,
   });
@@ -77,7 +84,24 @@ export function useMembersWithPayments(communityId) {
       .sort((a, b) => new Date(b.paidAt ?? b.createdAt ?? 0) - new Date(a.paidAt ?? a.createdAt ?? 0));
 
     const planIds = new Set(memberObligations.map((o) => o.paymentLink?.id ?? o.recurringPlan?.id));
-    const paidCount = memberObligations.filter((o) => { const s = (o.status ?? "").toUpperCase(); return s === "PAID" || s === "SUCCESSFUL"; }).length;
+
+    // Set of obligation IDs that have a successful transaction (backend may not
+    // update obligation.status to PAID immediately after payment verification)
+    const successStatuses = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
+    const paidObligationIds = new Set(
+      memberTransactions
+        .filter((t) => successStatuses.has((t.status ?? "").toUpperCase()))
+        .map((t) => t.obligationId)
+        .filter(Boolean)
+    );
+
+    const paidCount = memberObligations.filter((o) => {
+      const s = (o.status ?? "").toUpperCase();
+      if (s === "PAID" || s === "SUCCESSFUL") return true;
+      // Fallback: a successful transaction references this obligation
+      return paidObligationIds.has(o.id);
+    }).length;
+
     const failedCount = memberTransactions.filter((t) => (t.status ?? "").toUpperCase() === "FAILED").length;
 
     // Exempt members genuinely have no dues -- only fill the gap for
