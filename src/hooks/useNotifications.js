@@ -40,9 +40,15 @@ export function useNotifications() {
     refetchIntervalInBackground: false, // pause polling when tab is hidden
     select: (data) => {
       const notifications = data?.content ?? [];
-      return [...notifications].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
+      const clearedAt = Number(localStorage.getItem("glass_notifications_cleared_at") ?? 0);
+      return [...notifications]
+        .filter((n) => {
+          if (!clearedAt) return true;
+          // Hide read notifications that were present before the last clear.
+          if (n.readFlag && new Date(n.createdAt).getTime() <= clearedAt) return false;
+          return true;
+        })
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     },
   });
 
@@ -112,20 +118,20 @@ export function useNotifications() {
     },
   });
 
-  // ── Clear all (mark all read + remove from local view) ────────────────────
+  // ── Clear all (mark all read + hide from view persistently) ─────────────
   const clearAllMutation = useMutation({
-    // PATCH /notifications/read-all — marks all as read on the backend.
-    // The optimistic update below removes them from the local list immediately.
     mutationFn: markAllRead,
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ["notifications"] });
+      // Record the cleared timestamp so the select filter keeps them hidden
+      // even after the poll refetches read notifications from the backend.
+      localStorage.setItem("glass_notifications_cleared_at", String(Date.now()));
       queryClient.setQueryData(["notifications"], (old) =>
         old ? { ...old, content: [] } : old
       );
       queryClient.setQueryData(["notifications", "unread-count"], 0);
     },
     onSettled: () => {
-      // Refresh the count only — keep the list empty until the next poll cycle.
       queryClient.invalidateQueries({ queryKey: ["notifications", "unread-count"] });
     },
   });

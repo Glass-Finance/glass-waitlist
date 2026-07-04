@@ -60,8 +60,11 @@ function NotificationRow({ n, onMarkRead }) {
   return (
     <button
       onClick={() => !isRead && onMarkRead(n.id)}
-      className="w-full text-left flex items-start gap-3 px-5 py-4 border-b border-gray-100 last:border-b-0 bg-transparent cursor-pointer hover:bg-gray-50 transition-colors"
-      style={{ borderLeft: `3px solid ${borderColor}` }}
+      className="w-full text-left flex items-start gap-3 px-4 py-4 bg-white rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"
+      style={{
+        border: "1px solid #E5E7EB",
+        borderLeft: `3px solid ${borderColor}`,
+      }}
     >
       <Avatar title={title} />
       <div className="flex-1 min-w-0">
@@ -85,10 +88,12 @@ function SectionGroup({ sectionKey, items, onMarkRead }) {
   const { label } = SECTION_CONFIG[sectionKey];
   return (
     <div>
-      <p className="px-5 py-2.5 text-xs font-semibold text-gray-400 bg-gray-50 border-b border-gray-100 uppercase tracking-wider">
+      <p className="py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
         {label}
       </p>
-      {items.map((n) => <NotificationRow key={n.id} n={n} onMarkRead={onMarkRead} />)}
+      <div className="flex flex-col gap-2">
+        {items.map((n) => <NotificationRow key={n.id} n={n} onMarkRead={onMarkRead} />)}
+      </div>
     </div>
   );
 }
@@ -109,7 +114,6 @@ function dayLabel(dateStr) {
 function ChronologicalList({ items, onMarkRead }) {
   if (items.length === 0) return null;
 
-  // Group into ordered day buckets while preserving chronological order
   const buckets = [];
   let currentLabel = null;
   for (const n of items) {
@@ -124,8 +128,8 @@ function ChronologicalList({ items, onMarkRead }) {
   return (
     <>
       {buckets.map(({ label, notifications }) => (
-        <div key={label}>
-          <p className="px-5 py-2.5 text-xs font-semibold text-gray-400 bg-gray-50 border-b border-gray-100 uppercase tracking-wider">
+        <div key={label} className="flex flex-col gap-2">
+          <p className="pt-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
             {label}
           </p>
           {notifications.map((n) => (
@@ -157,9 +161,9 @@ export default function Notifications() {
   }, [notifications, tab]);
 
   return (
-    <div className="flex flex-col h-full px-8 py-6 overflow-y-auto">
+    <div className="flex flex-col h-full px-8 py-6" style={{ minHeight: 0 }}>
       {/* Header */}
-      <div className="flex items-start justify-between mb-5">
+      <div className="flex items-start justify-between mb-5 flex-shrink-0">
         <div>
           <h1 className="text-xl font-bold text-gray-900 mb-1">Notifications</h1>
           <p className="text-sm text-gray-400">
@@ -186,7 +190,7 @@ export default function Notifications() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center border-b border-gray-100 mb-5">
+      <div className="flex items-center border-b border-gray-100 mb-5 flex-shrink-0">
         {TABS.map((t) => {
           const count =
             t === "All" ? notifications.length :
@@ -217,8 +221,8 @@ export default function Notifications() {
         })}
       </div>
 
-      {/* Notification list */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      {/* Notification list — independently scrollable */}
+      <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
         {isLoading ? (
           <p className="text-xs text-gray-400 text-center py-12">Loading…</p>
         ) : notifications.length === 0 ? (
@@ -232,10 +236,11 @@ export default function Notifications() {
             <p className="text-sm text-gray-400">No {tab.toLowerCase()} notifications.</p>
           </div>
         ) : tab === "All" ? (
-          // Chronological — newest first with date separators; left-border colour still shows category
           <ChronologicalList items={notifications} onMarkRead={markRead} />
         ) : (
-          tabItems.map((n) => <NotificationRow key={n.id} n={n} onMarkRead={markRead} />)
+          <div className="flex flex-col gap-2">
+            {tabItems.map((n) => <NotificationRow key={n.id} n={n} onMarkRead={markRead} />)}
+          </div>
         )}
       </div>
     </div>
