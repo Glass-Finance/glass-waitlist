@@ -34,6 +34,7 @@ function deriveStatus(obligation) {
 
 // Shape the raw obligation response into what the UI expects
 function shapeObligation(raw) {
+  const plType = (raw.paymentLink?.paymentType ?? raw.paymentLink?.type ?? "").toUpperCase();
   return {
     id: raw.id,
     amount: raw.amount,
@@ -43,7 +44,9 @@ function shapeObligation(raw) {
     communityName: raw.community?.name,
     communitySlug: raw.community?.slug,
     dueDate: raw.dueAt,
-    type: raw.recurringPlan ? "recurring" : "one-time",
+    // recurringPlan field + paymentType on the link both indicate a recurring plan
+    type: (raw.recurringPlan || plType === "RECURRING") ? "recurring" : "one-time",
+    frequency: raw.paymentLink?.frequency ?? raw.paymentLink?.billingFrequency ?? null,
     status: (() => { const s = (raw.status ?? "PENDING").toUpperCase(); return s === "SUCCESSFUL" ? "PAID" : s; })(),
     paymentLinkId: raw.paymentLink?.id,
     obligationId: raw.id,
@@ -98,6 +101,9 @@ function shapeAuthorisation(raw) {
     bank: raw.bank,
     bankCode: raw.bankCode,
     last4: raw.last4 ?? "****",
+    expMonth: raw.expMonth ?? raw.exp_month ?? null,
+    expYear: raw.expYear ?? raw.exp_year ?? null,
+    cardType: raw.cardType ?? raw.brand ?? raw.channel ?? null,
     channel: raw.channel,
     reusable: raw.reusable,
     status: raw.status,
