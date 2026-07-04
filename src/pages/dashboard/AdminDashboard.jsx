@@ -529,7 +529,7 @@
 //   return <DashboardContent isPaying={true} />;
 // }
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   Info,
@@ -545,9 +545,14 @@ import {
   AlertCircle,
   Loader2,
   Landmark,
+  Copy,
+  UploadCloud,
+  Link as LinkIcon,
 } from "lucide-react";
 import { useCommunityDashboard } from "../../hooks/useCommunityDashboard";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
+import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
+import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import {
   usePayments,
   useInitiatePayment,
@@ -878,6 +883,316 @@ function AdminPaymentModal({ item, onClose }) {
   );
 }
 
+// ── Add Member modal ──────────────────────────────────────────────────────────
+const ALLOWED_ROLE_NAMES = new Set(["Community Member", "Community Admin", "Community Manager"]);
+const FALLBACK_ROLES = [{ id: "member", name: "Community Member" }];
+const CSV_TEMPLATE = "First Name,Last Name,Email Address,Phone Number,Member ID,Role/Title\nFatimah,Yahya,Fatimah@example.com,0812990293,A23434,Student";
+
+function AddMemberModal({ onClose, communityId }) {
+  const [tab, setTab] = useState("upload");
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
+  const [dragOver, setDragOver] = useState(false);
+  const [csvFile, setCsvFile] = useState(null);
+  const [csvRows, setCsvRows] = useState([]);
+  const [csvError, setCsvError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadDone, setUploadDone] = useState(false);
+  const [email, setEmail] = useState("");
+  const [billingExempt, setBillingExempt] = useState(false);
+  const [manualError, setManualError] = useState("");
+  const fileRef = useRef(null);
+
+  const inviteLink = communityId ? `${APP_ORIGIN}/member/join?community=${communityId}` : "";
+  const { inviteMember } = useCommunityMembers(communityId);
+  const { data: rolesData } = useRoles();
+  const roles = (rolesData ?? []).filter((r) => ALLOWED_ROLE_NAMES.has(r.name));
+  const finalRoles = roles.length ? roles : FALLBACK_ROLES;
+  const defaultRole = finalRoles.find((r) => r.name === "Community Member") ?? finalRoles[0];
+  const [roleId, setRoleId] = useState(defaultRole?.id ?? "");
+
+  function copyLink() {
+    if (!inviteLink) return;
+    navigator.clipboard.writeText(inviteLink);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  }
+
+  function downloadTemplate() {
+    const blob = new Blob([CSV_TEMPLATE], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "members-template.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function parseCSV(text) {
+    const lines = text.trim().split("\n");
+    if (lines.length < 2) return [];
+    return lines.slice(1).map((line) => {
+      const [firstName, lastName, email, phone, memberId, role] = line.split(",").map(s => s?.trim() ?? "");
+      return { firstName, lastName, email, phone, memberId, role };
+    }).filter((r) => r.email);
+  }
+
+  function handleFile(file) {
+    if (!file || !file.name.endsWith(".csv")) {
+      setCsvError("Please upload a .csv file.");
+      return;
+    }
+    setCsvError("");
+    setCsvFile(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const rows = parseCSV(e.target.result);
+      setCsvRows(rows);
+    };
+    reader.readAsText(file);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setDragOver(false);
+    handleFile(e.dataTransfer.files[0]);
+  }
+
+  async function handleUploadCSV() {
+    if (!csvRows.length) return;
+    setUploading(true);
+    let ok = 0;
+    for (const row of csvRows) {
+      if (!row.email) continue;
+      try {
+        await inviteMember.mutateAsync({ email: row.email, roleId: finalRoles[0]?.id ?? "", billingExempt: false });
+        ok++;
+      } catch {
+        // skip failed rows silently
+      }
+    }
+    setUploading(false);
+    setUploadDone(true);
+    setCsvRows([]);
+    setCsvFile(null);
+  }
+
+  async function handleManualAdd(e) {
+    e.preventDefault();
+    setManualError("");
+    try {
+      await inviteMember.mutateAsync({ email: email.trim(), roleId, billingExempt });
+      setEmail("");
+      setBillingExempt(false);
+      onClose();
+    } catch (err) {
+      setManualError(err?.response?.data?.description ?? err?.message ?? "Failed to send invite.");
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-start justify-between px-6 pt-5 pb-4">
+          <div>
+            <h2 className="text-base font-semibold text-black">Add your members</h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Add your members now or invite them to join on their own.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 bg-transparent cursor-pointer flex-shrink-0"
+          >
+            <X size={14} />
+          </button>
+        </div>
+
+        <div className="px-6 pb-6 flex flex-col gap-4">
+          {/* Invite link banner */}
+          <div className="rounded-xl px-4 py-3 flex items-center justify-between gap-4" style={{ background: "#EEF2FF", border: "1px solid #C7D2FE" }}>
+            <div>
+              <p className="text-xs font-semibold text-gray-900">Your community is ready to grow.</p>
+              <p className="text-xs text-gray-500 mt-0.5">Copy this link and share it with your members to get them on Glass.</p>
+            </div>
+            <button
+              onClick={copyLink}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[#1C2B8A] text-xs font-semibold text-[#1C2B8A] bg-white hover:bg-blue-50 cursor-pointer flex-shrink-0 whitespace-nowrap"
+            >
+              {linkCopied ? <Check size={12} /> : <Copy size={12} />}
+              {linkCopied ? "Copied!" : "Copy Link"}
+            </button>
+          </div>
+
+          {/* Direct add section */}
+          <div className="rounded-xl border border-gray-100 p-5" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+            <p className="text-sm font-semibold text-gray-900 mb-4">Prefer To Add Members Directly?</p>
+
+            {/* Tabs */}
+            <div className="flex gap-6 border-b border-gray-100 mb-5">
+              {["upload", "manual"].map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={`pb-2.5 text-xs font-semibold capitalize border-b-2 transition-colors bg-transparent border-l-0 border-r-0 border-t-0 cursor-pointer
+                    ${tab === t ? "border-[#1C2B8A] text-[#1C2B8A]" : "border-transparent text-gray-400 hover:text-gray-700"}`}
+                >
+                  {t === "upload" ? "Upload" : "Manual"}
+                </button>
+              ))}
+            </div>
+
+            {tab === "upload" && (
+              <div className="flex flex-col gap-4">
+                {/* Template */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-semibold text-gray-800">Upload a CSV</p>
+                    <button
+                      onClick={downloadTemplate}
+                      className="flex items-center gap-1 text-xs font-semibold text-[#1C2B8A] bg-transparent border-none cursor-pointer hover:opacity-80"
+                    >
+                      <Download size={12} /> Download Template
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 mb-3">Upload a CSV file with following sample information</p>
+                  <div className="rounded-lg border border-gray-100 overflow-hidden text-xs">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          {["First Name", "Last Name", "Email Address", "Phone Number", "Member ID", "Role/Title"].map((h) => (
+                            <th key={h} className="px-3 py-2 text-left text-[11px] font-semibold text-gray-500 whitespace-nowrap border-b border-gray-100">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="px-3 py-2 text-gray-700">Fatimah</td>
+                          <td className="px-3 py-2 text-gray-700">Yahya</td>
+                          <td className="px-3 py-2 text-gray-400">Fati***ya@**.com</td>
+                          <td className="px-3 py-2 text-gray-700">0812990293</td>
+                          <td className="px-3 py-2 text-gray-700">A23434</td>
+                          <td className="px-3 py-2 text-gray-700">Student</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Drop zone */}
+                <div
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={handleDrop}
+                  onClick={() => fileRef.current?.click()}
+                  className="rounded-xl border-2 border-dashed flex flex-col items-center justify-center py-10 gap-2 cursor-pointer transition-colors"
+                  style={{ borderColor: dragOver ? "#1C2B8A" : "#E5E7EB", background: dragOver ? "#EEF2FF" : "#FAFAFA" }}
+                >
+                  <UploadCloud size={28} style={{ color: dragOver ? "#1C2B8A" : "#9CA3AF" }} />
+                  <p className="text-xs text-gray-500">
+                    Drag and Drop CSV here or{" "}
+                    <span className="font-semibold text-[#1C2B8A] underline">Browse</span>
+                  </p>
+                  {csvFile && <p className="text-xs text-green-600 font-medium">{csvFile.name} — {csvRows.length} rows</p>}
+                  {csvError && <p className="text-xs text-red-500">{csvError}</p>}
+                  <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
+                </div>
+
+                {/* URL upload */}
+                <div>
+                  <p className="text-xs font-semibold text-gray-700 mb-2">Or Upload from URL</p>
+                  <div className="flex gap-2">
+                    <input
+                      value={urlInput}
+                      onChange={(e) => setUrlInput(e.target.value)}
+                      placeholder="Add File Url"
+                      className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1C2B8A] text-gray-600 placeholder-gray-400"
+                    />
+                    <button
+                      onClick={async () => {
+                        if (!urlInput.trim()) return;
+                        try {
+                          const res = await fetch(urlInput.trim());
+                          const text = await res.text();
+                          const rows = parseCSV(text);
+                          setCsvRows(rows);
+                          setCsvFile({ name: "from-url.csv" });
+                          setCsvError("");
+                        } catch {
+                          setCsvError("Failed to fetch CSV from URL.");
+                        }
+                      }}
+                      className="px-4 py-2 rounded-lg bg-gray-100 text-xs font-semibold text-gray-600 border-none cursor-pointer hover:bg-gray-200"
+                    >
+                      Upload
+                    </button>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                {uploadDone && (
+                  <p className="text-xs text-green-600 font-medium">Invites sent successfully.</p>
+                )}
+                {csvRows.length > 0 && !uploadDone && (
+                  <button
+                    onClick={handleUploadCSV}
+                    disabled={uploading}
+                    className="w-full py-2.5 rounded-lg bg-[#1C2B8A] text-white text-xs font-semibold border-none cursor-pointer hover:opacity-90 disabled:opacity-60"
+                  >
+                    {uploading ? `Sending invites… (${csvRows.length} members)` : `Send Invites to ${csvRows.length} Members`}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {tab === "manual" && (
+              <form onSubmit={handleManualAdd} className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="member@email.com"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1C2B8A]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Role</label>
+                  <select
+                    value={roleId}
+                    onChange={(e) => setRoleId(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1C2B8A] bg-white"
+                  >
+                    {finalRoles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+                  </select>
+                </div>
+                <label className="flex items-center gap-2 text-xs text-gray-600">
+                  <input type="checkbox" checked={billingExempt} onChange={(e) => setBillingExempt(e.target.checked)} />
+                  Exempt from billing
+                </label>
+                {manualError && <p className="text-xs text-red-500">{manualError}</p>}
+                <button
+                  type="submit"
+                  disabled={!email.trim() || inviteMember.isPending}
+                  className="w-full py-2.5 rounded-lg bg-[#1C2B8A] text-white text-xs font-semibold border-none cursor-pointer hover:opacity-90 disabled:opacity-50"
+                >
+                  {inviteMember.isPending ? "Sending…" : "Send Invite"}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Dashboard content ─────────────────────────────────────────────────────────
 function DashboardContent({ isPaying, communityId }) {
   const navigate = useNavigate();
@@ -886,6 +1201,7 @@ function DashboardContent({ isPaying, communityId }) {
   const [sortDir, setSortDir] = useState("desc"); // desc = Recent, asc = Oldest
   const [alertVisible, setAlertVisible] = useState(true);
   const [payingItem, setPayingItem] = useState(null);
+  const [addMemberOpen, setAddMemberOpen] = useState(false);
 
   const { balances, members, transactions, obligations, activity, isLoading, error } =
     useCommunityDashboard(communityId);
@@ -1066,9 +1382,7 @@ function DashboardContent({ isPaying, communityId }) {
               Create Payment Plan
             </button>
             <button
-              onClick={() =>
-                navigate(`/dashboard/members?community=${communityId ?? ""}`)
-              }
+              onClick={() => setAddMemberOpen(true)}
               className="px-4 py-2 rounded text-xs font-medium text-white bg-[#1C2B8A] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
             >
               <Plus size={14} /> Add Member
@@ -1582,6 +1896,14 @@ function DashboardContent({ isPaying, communityId }) {
         <AdminPaymentModal
           item={payingItem}
           onClose={() => setPayingItem(null)}
+        />
+      )}
+
+      {/* Add member modal */}
+      {addMemberOpen && (
+        <AddMemberModal
+          communityId={communityId}
+          onClose={() => setAddMemberOpen(false)}
         />
       )}
     </>
