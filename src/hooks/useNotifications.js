@@ -1,15 +1,20 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import client from "../api/client";
+import { useActiveCommunityId } from "./useActiveCommunityId";
 
-// GET /api/v1/notifications — returns a paginated envelope: { content, pageNumber, pageSize, totalElements, totalPages, last }
-async function fetchNotifications() {
-  const res = await client.get("/notifications", { params: { pageSize: 50 } });
+// GET /api/v1/notifications — paginated envelope: { content, pageNumber, ... }
+async function fetchNotifications(communityId) {
+  const params = { pageSize: 50 };
+  if (communityId) params.communityId = communityId;
+  const res = await client.get("/notifications", { params });
   return res.data.data;
 }
 
 // GET /api/v1/notifications/unread-count
-async function fetchUnreadCount() {
-  const res = await client.get("/notifications/unread-count");
+async function fetchUnreadCount(communityId) {
+  const params = {};
+  if (communityId) params.communityId = communityId;
+  const res = await client.get("/notifications/unread-count", { params });
   return res.data.data;
 }
 
@@ -25,26 +30,33 @@ async function markAllRead() {
   return res.data;
 }
 
+function clearedAtKey(communityId) {
+  return communityId
+    ? `glass_notifications_cleared_at_${communityId}`
+    : "glass_notifications_cleared_at";
+}
+
 export function useNotifications() {
+  const communityId = useActiveCommunityId();
   const queryClient = useQueryClient();
+
+  const listKey  = ["notifications", communityId, "list"];
+  const countKey = ["notifications", communityId, "count"];
 
   // ── Main list ──────────────────────────────────────────────────────────────
   const query = useQuery({
-    queryKey: ["notifications"],
-    queryFn: fetchNotifications,
+    queryKey: listKey,
+    queryFn: () => fetchNotifications(communityId),
     staleTime: 1000 * 20,
     gcTime:    1000 * 60 * 5,
-    // Poll every 30s so the bell updates without requiring a page reload.
-    // Window focus already triggers a refetch via TanStack Query's defaults.
     refetchInterval: 1000 * 30,
-    refetchIntervalInBackground: false, // pause polling when tab is hidden
+    refetchIntervalInBackground: false,
     select: (data) => {
       const notifications = data?.content ?? [];
-      const clearedAt = Number(localStorage.getItem("glass_notifications_cleared_at") ?? 0);
+      const clearedAt = Number(localStorage.getItem(clearedAtKey(communityId)) ?? 0);
       return [...notifications]
         .filter((n) => {
           if (!clearedAt) return true;
-          // Hide read notifications that were present before the last clear.
           if (n.readFlag && new Date(n.createdAt).getTime() <= clearedAt) return false;
           return true;
         })
@@ -52,10 +64,10 @@ export function useNotifications() {
     },
   });
 
-  // ── Unread count (used by topbar bell + sidebar badge) ────────────────────
+  // ── Unread count ───────────────────────────────────────────────────────────
   const countQuery = useQuery({
-    queryKey: ["notifications", "unread-count"],
-    queryFn: fetchUnreadCount,
+    queryKey: countKey,
+    queryFn: () => fetchUnreadCount(communityId),
     staleTime: 1000 * 20,
     gcTime:    1000 * 60 * 5,
     refetchInterval: 1000 * 30,
@@ -68,12 +80,9 @@ export function useNotifications() {
   const markReadMutation = useMutation({
     mutationFn: markOneRead,
     onMutate: async (notificationId) => {
-      await queryClient.cancelQueries({ queryKey: ["notifications"] });
-      const previous = queryClient.getQueryData(["notifications"]);
-
-      // Optimistically flip readFlag — the cache holds the raw paginated
-      // envelope ({ content: [...] }), not the flat array `select` derives.
-      queryClient.setQueryData(["notifications"], (old) =>
+      await queryClient.cancelQueries({ queryKey: listKey });
+      const previous = queryClient.getQueryData(listKey);
+      queryClient.setQueryData(listKey, (old) =>
         old
           ? {
               ...old,
@@ -86,11 +95,11 @@ export function useNotifications() {
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(["notifications"], ctx.previous);
+      if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      queryClient.invalidateQueries({ queryKey: ["notifications", "unread-count"] });
+      queryClient.invalidateQueries({ queryKey: listKey });
+      queryClient.invalidateQueries({ queryKey: countKey });
     },
   });
 
@@ -98,41 +107,38 @@ export function useNotifications() {
   const markAllReadMutation = useMutation({
     mutationFn: markAllRead,
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["notifications"] });
-      const previous = queryClient.getQueryData(["notifications"]);
-
-      queryClient.setQueryData(["notifications"], (old) =>
+      await queryClient.cancelQueries({ queryKey: listKey });
+      const previous = queryClient.getQueryData(listKey);
+      queryClient.setQueryData(listKey, (old) =>
         old
           ? { ...old, content: old.content.map((n) => ({ ...n, readFlag: true })) }
           : old
       );
-      queryClient.setQueryData(["notifications", "unread-count"], 0);
+      queryClient.setQueryData(countKey, 0);
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.previous) queryClient.setQueryData(["notifications"], ctx.previous);
+      if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      queryClient.invalidateQueries({ queryKey: ["notifications", "unread-count"] });
+      queryClient.invalidateQueries({ queryKey: listKey });
+      queryClient.invalidateQueries({ queryKey: countKey });
     },
   });
 
-  // ── Clear all (mark all read + hide from view persistently) ─────────────
+  // ── Clear all (mark read + hide from view persistently per community) ──────
   const clearAllMutation = useMutation({
     mutationFn: markAllRead,
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ["notifications"] });
-      // Record the cleared timestamp so the select filter keeps them hidden
-      // even after the poll refetches read notifications from the backend.
-      localStorage.setItem("glass_notifications_cleared_at", String(Date.now()));
-      queryClient.setQueryData(["notifications"], (old) =>
+      await queryClient.cancelQueries({ queryKey: listKey });
+      localStorage.setItem(clearedAtKey(communityId), String(Date.now()));
+      queryClient.setQueryData(listKey, (old) =>
         old ? { ...old, content: [] } : old
       );
-      queryClient.setQueryData(["notifications", "unread-count"], 0);
+      queryClient.setQueryData(countKey, 0);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications", "unread-count"] });
+      queryClient.invalidateQueries({ queryKey: countKey });
     },
   });
 
