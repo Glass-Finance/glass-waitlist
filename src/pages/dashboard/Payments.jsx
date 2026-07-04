@@ -818,33 +818,51 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     });
   }, [planMembersData, communityMembersData, activeMemberIds]);
 
-  // Build memberId/userId → obligation info for THIS plan only.
+  // Build a lookup for obligation status keyed by every reachable ID for this plan.
+  // Obligations use ob.member.userId (flat) not ob.member.user.id (nested).
+  // Plan members carry communityMemberId, so we bridge via communityMembersData:
+  //   communityMemberId → userId → obligation info
   const obligationByMemberId = useMemo(() => {
+    // Step 1: communityMemberId → userId from the authoritative member list
+    const cmToUser = {};
+    for (const cm of communityMembersData ?? []) {
+      if (cm.id && cm.user?.id) cmToUser[String(cm.id)] = String(cm.user.id);
+    }
+
+    // Step 2: index obligations by userId and email
     const map = {};
-    const planObs = allObligations.filter(ob => String(ob.paymentLink?.id) === String(plan.id));
-    console.log("[PlanModal] allObligations:", allObligations.length, "plan.id:", plan.id, "matched:", planObs.length);
-    if (allObligations.length > 0) console.log("[PlanModal] sample obligation:", JSON.stringify(allObligations[0]));
-    for (const ob of planObs) {
-      const mid = String(ob.member?.id ?? "");
-      const uid = String(ob.member?.user?.id ?? ob.user?.id ?? "");
+    for (const ob of allObligations) {
+      if (String(ob.paymentLink?.id) !== String(plan.id)) continue;
       const info = {
         status: (ob.status ?? "PENDING").toUpperCase(),
         amountPaid: ob.amountPaid ?? ob.paidAmount ?? 0,
         amountDue: ob.amount ?? ob.amountDue ?? plan.amount ?? 0,
       };
-      if (mid) map[mid] = info;
-      if (uid) map[uid] = info;
+      // ob.member.userId is a flat field (not ob.member.user.id)
+      const userId = String(ob.member?.userId ?? ob.member?.user?.id ?? ob.user?.id ?? "");
+      const email  = ob.member?.email ?? ob.user?.email ?? "";
+      if (userId) map[userId] = info;
+      if (email)  map[email]  = info;
     }
-    console.log("[PlanModal] obligationByMemberId keys:", Object.keys(map));
+
+    // Step 3: add communityMemberId entries so plan members can match directly
+    for (const [cmId, userId] of Object.entries(cmToUser)) {
+      if (map[userId]) map[cmId] = map[userId];
+    }
+
     return map;
-  }, [allObligations, plan.id, plan.amount]);
+  }, [allObligations, communityMembersData, plan.id, plan.amount]);
 
   function getObligationInfo(m) {
-    const mid = String(m.member?.id ?? m.memberId ?? "");
-    const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
-    const result = (mid && obligationByMemberId[mid]) || (uid && obligationByMemberId[uid]) || null;
-    if (!result) console.log("[PlanModal] no obligation match — mid:", mid, "uid:", uid, "keys:", Object.keys(obligationByMemberId));
-    return result;
+    const mid   = String(m.member?.id ?? m.memberId ?? "");
+    const uid   = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
+    const email = memberLookup.byMemberId[mid]?.email ?? memberLookup.byUserId[uid]?.email ?? "";
+    return (
+      (mid   && obligationByMemberId[mid])   ||
+      (uid   && obligationByMemberId[uid])   ||
+      (email && obligationByMemberId[email]) ||
+      null
+    );
   }
 
   function resolveMember(m) {
