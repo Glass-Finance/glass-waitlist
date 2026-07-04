@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Bell } from "lucide-react";
+import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
 
 function formatTimestamp(dateStr) {
   if (!dateStr) return "";
@@ -24,23 +24,26 @@ function dayLabel(dateStr) {
   return d.toLocaleDateString("en-NG", { weekday: "long", month: "short", day: "numeric" });
 }
 
-// Resolve community info from either embedded notification fields or the passed map
+// Resolve community info if the backend ever starts returning it
 function resolveCommunity(n, communityMap) {
-  const embedded = n.community ?? null;
-  if (embedded) return embedded;
+  if (n.community) return n.community;
   const id = n.communityId ?? n.community_id ?? null;
-  if (id && communityMap) return communityMap.get(id) ?? null;
-  return null;
+  return (id && communityMap) ? (communityMap.get(id) ?? null) : null;
 }
 
-// Community avatar: logo image if available, else coloured initial
-function CommunityAvatar({ community }) {
-  const name  = community?.name ?? community?.communityName ?? "";
-  const logo  = community?.logo?.url ?? community?.logoUrl ?? null;
-  const initial = name.trim().charAt(0).toUpperCase() || "G";
-  const colors = ["#1C2B8A", "#7C3AED", "#D97706", "#059669", "#DC2626", "#0284C7"];
-  const color  = colors[(initial.charCodeAt(0) ?? 0) % colors.length];
+function notifMeta(n) {
+  const t = (n.notificationType ?? n.type ?? "").toUpperCase();
+  if (t.includes("FAIL") || t.includes("URGENT") || t.includes("ALERT") || t.includes("OVERDUE") || t.includes("DEFAULT"))
+    return { color: "#EF4444", bg: "#FEF2F2", Icon: AlertCircle };
+  if (t.includes("MEMBER") || t.includes("JOIN") || t.includes("COMMUNITY") || t.includes("INVITE"))
+    return { color: "#1C2B8A", bg: "#EEF2FF", Icon: Users };
+  return { color: "#CA8A04", bg: "#FFFBEB", Icon: CreditCard };
+}
 
+// Shows community logo when available; falls back to a type-coloured icon circle
+function NotifAvatar({ n, community }) {
+  const logo = community?.logo?.url ?? community?.logoUrl ?? null;
+  const name = community?.name ?? "";
   if (logo) {
     return (
       <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, overflow: "hidden", marginTop: 1 }}>
@@ -48,22 +51,15 @@ function CommunityAvatar({ community }) {
       </div>
     );
   }
+  const { color, bg, Icon } = notifMeta(n);
   return (
     <div style={{
       width: 36, height: 36, borderRadius: "50%", flexShrink: 0, marginTop: 1,
-      background: color, display: "flex", alignItems: "center", justifyContent: "center",
+      background: bg, display: "flex", alignItems: "center", justifyContent: "center",
     }}>
-      <span style={{ fontSize: 13, fontWeight: 700, color: "#fff" }}>{initial}</span>
+      <Icon size={16} color={color} strokeWidth={2} />
     </div>
   );
-}
-
-// Left border colour based on notification type
-function accentColor(n) {
-  const t = (n.notificationType ?? n.type ?? "").toUpperCase();
-  if (t.includes("FAIL") || t.includes("URGENT") || t.includes("ALERT") || t.includes("OVERDUE")) return "#EF4444";
-  if (t.includes("MEMBER") || t.includes("JOIN") || t.includes("COMMUNITY") || t.includes("INVITE")) return "#1C2B8A";
-  return "#CA8A04";
 }
 
 function NotifCard({ n, communityMap, onMarkRead }) {
@@ -73,7 +69,7 @@ function NotifCard({ n, communityMap, onMarkRead }) {
   const time      = formatTimestamp(n.createdAt ?? n.timestamp);
   const community = resolveCommunity(n, communityMap);
   const commName  = community?.name ?? community?.communityName ?? n.communityName ?? null;
-  const border    = accentColor(n);
+  const { color: borderColor } = notifMeta(n);
 
   return (
     <button
@@ -82,26 +78,23 @@ function NotifCard({ n, communityMap, onMarkRead }) {
         display: "flex", alignItems: "flex-start", gap: 10, width: "100%",
         background: isRead ? "#F9F9F9" : "#ffffff",
         borderRadius: 10, padding: "11px 13px",
-        border: "none", borderLeft: `3px solid ${border}`,
+        border: "none", borderLeft: `3px solid ${borderColor}`,
         cursor: "pointer", textAlign: "left",
-        transition: "background 0.15s",
-        outline: "none",
+        transition: "background 0.15s", outline: "none",
       }}
     >
-      <CommunityAvatar community={community} />
+      <NotifAvatar n={n} community={community} />
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        {/* Community name tag */}
         {commName && (
           <p style={{
             fontSize: 10, fontWeight: 600, color: "#002FA7",
-            margin: "0 0 3px", textTransform: "uppercase", letterSpacing: "0.04em",
+            margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em",
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           }}>
             {commName}
           </p>
         )}
-
         <p style={{
           fontSize: 13, fontWeight: isRead ? 500 : 600,
           color: isRead ? "#666" : "#111",
@@ -110,26 +103,19 @@ function NotifCard({ n, communityMap, onMarkRead }) {
         }}>
           {title}
         </p>
-
         {body && (
           <p style={{
-            fontSize: 11.5, color: "#888",
-            margin: "3px 0 0", lineHeight: 1.4,
+            fontSize: 11.5, color: "#888", margin: "3px 0 0", lineHeight: 1.4,
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           }}>
             {body}
           </p>
         )}
-
         <p style={{ fontSize: 10.5, color: "#aaa", margin: "5px 0 0" }}>{time}</p>
       </div>
 
-      {/* Unread dot */}
       {!isRead && (
-        <div style={{
-          width: 7, height: 7, borderRadius: "50%",
-          background: "#1C2B8A", flexShrink: 0, marginTop: 4,
-        }} />
+        <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#1C2B8A", flexShrink: 0, marginTop: 4 }} />
       )}
     </button>
   );

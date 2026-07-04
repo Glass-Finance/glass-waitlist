@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Bell } from "lucide-react";
+import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
 import { useNotifications } from "../../hooks/useNotifications";
 
 function formatTime(dateStr) {
@@ -41,11 +41,17 @@ const SECTION_CONFIG = {
 const TABS = ["All", "Urgent", "Payments", "Members"];
 const TAB_CAT = { Urgent: "urgent", Payments: "payment", Members: "member" };
 
-function Avatar({ title }) {
-  const letter = (title ?? "?").trim().charAt(0).toUpperCase() || "?";
+const ICON_META = {
+  urgent:  { bg: "#FEF2F2", color: "#EF4444", Icon: AlertCircle },
+  payment: { bg: "#FFFBEB", color: "#CA8A04", Icon: CreditCard  },
+  member:  { bg: "#EEF2FF", color: "#1C2B8A", Icon: Users       },
+};
+
+function Avatar({ cat }) {
+  const { bg, color, Icon } = ICON_META[cat] ?? ICON_META.payment;
   return (
-    <div className="w-9 h-9 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center">
-      <span className="text-xs font-semibold text-gray-500">{letter}</span>
+    <div className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: bg }}>
+      <Icon size={16} color={color} strokeWidth={2} />
     </div>
   );
 }
@@ -66,7 +72,7 @@ function NotificationRow({ n, onMarkRead }) {
         borderLeft: `3px solid ${borderColor}`,
       }}
     >
-      <Avatar title={title} />
+      <Avatar cat={cat} />
       <div className="flex-1 min-w-0">
         <p className={`text-sm leading-snug ${isRead ? "text-gray-500" : "text-gray-900 font-semibold"}`}>
           {title}
