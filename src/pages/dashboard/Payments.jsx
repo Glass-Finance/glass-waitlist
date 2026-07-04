@@ -18,7 +18,6 @@ import {
   Search,
   Filter,
   ChevronDown,
-  RotateCcw,
   Bell,
   Pause,
   Play,
@@ -29,6 +28,7 @@ import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { useSlug } from "../../hooks/useSlug";
 import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
+import { getCommunityMembers } from "../../api/communities";
 
 const PLAN_STATUS = {
   ACTIVE: { bg: "#ecfdf5", color: "#059669", label: "Active" },
@@ -744,88 +744,111 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
 }
 
 // ── Plan members modal ────────────────────────────────────────────────────────
-function memberStatusStyle(paid, total) {
-  if (total === 0) return { bg: "#f5f6fa", color: "#6b7280" };
-  if (paid === total) return { bg: "#ecfdf5", color: "#059669" };
-  if (paid === 0) return { bg: "#fff1f2", color: "#e11d48" };
-  return { bg: "#fffbeb", color: "#b45309" };
-}
-
 function PlanMembersModal({ plan, communityId, onClose }) {
   const [search, setSearch] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
-  const [sort, setSort] = useState("Recent");
-  const [sortOpen, setSortOpen] = useState(false);
   const [selected, setSelected] = useState([]);
 
-  const { data, isLoading } = useQuery({
+  // Plan-specific obligation statuses
+  const { data: planMembersData, isLoading } = useQuery({
     queryKey: ["plan-members", communityId, plan.id],
     queryFn: async () => {
-      const res = await getPaymentLinkMembers(communityId, plan.id, {
-        pageSize: 200,
-      });
+      const res = await getPaymentLinkMembers(communityId, plan.id, { pageSize: 500 });
       const raw = res.data?.data;
       return Array.isArray(raw) ? raw : (raw?.content ?? []);
     },
     enabled: !!(communityId && plan.id),
     staleTime: 1000 * 60,
   });
-  const members = data ?? [];
 
-  function getName(m) {
+  // Community members — for reliable name + email resolution
+  const { data: communityMembersData } = useQuery({
+    queryKey: ["community", communityId, "members"],
+    queryFn: async () => {
+      const res = await getCommunityMembers(communityId);
+      const data = res.data?.data;
+      return Array.isArray(data) ? data : (data?.content ?? []);
+    },
+    enabled: !!communityId,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  // Build memberId / userId → { name, email, joinedAt } lookup
+  const memberLookup = useMemo(() => {
+    const byMemberId = {};
+    const byUserId = {};
+    for (const m of communityMembersData ?? []) {
+      const first = m.user?.firstName ?? m.firstName ?? "";
+      const last  = m.user?.lastName  ?? m.lastName  ?? "";
+      const name  = `${first} ${last}`.trim() || null;
+      const email = m.user?.email ?? m.email ?? null;
+      const info  = { name, email, joinedAt: m.joinedAt ?? m.member?.joinedAt ?? null };
+      if (m.id)       byMemberId[String(m.id)] = info;
+      if (m.user?.id) byUserId[String(m.user.id)] = info;
+    }
+    return { byMemberId, byUserId };
+  }, [communityMembersData]);
+
+  const planMembers = planMembersData ?? [];
+
+  function resolveMember(m) {
+    const mid = String(m.member?.id ?? m.memberId ?? "");
+    const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
+    const fromLookup =
+      (mid && memberLookup.byMemberId[mid]) ||
+      (uid && memberLookup.byUserId[uid]);
+    if (fromLookup) return fromLookup;
     const u = m.member?.user ?? m.user ?? m.member ?? {};
     const f = u.firstName ?? m.firstName ?? "";
-    const l = u.lastName ?? m.lastName ?? "";
-    return `${f} ${l}`.trim() || u.email || m.email || "Member";
-  }
-  function getEmail(m) {
-    return m.member?.user?.email ?? m.user?.email ?? m.email ?? "—";
-  }
-  function getJoinedAt(m) {
-    return m.member?.joinedAt ?? m.member?.createdAt ?? m.joinedAt ?? null;
-  }
-  function getPaid(m) {
-    return m.paidCount ?? (m.obligationStatus === "PAID" ? 1 : 0);
-  }
-  function getTotal(m) {
-    return m.totalCount ?? 1;
+    const l = u.lastName  ?? m.lastName  ?? "";
+    return {
+      name:     `${f} ${l}`.trim() || null,
+      email:    u.email ?? m.email ?? null,
+      joinedAt: m.member?.joinedAt ?? m.joinedAt ?? null,
+    };
   }
 
-  const filtered = members.filter((m) => {
-    const name = getName(m).toLowerCase();
-    const email = getEmail(m).toLowerCase();
+  function getName(m)    { const r = resolveMember(m); return r.name ?? r.email ?? "Member"; }
+  function getEmail(m)   { return resolveMember(m).email ?? "—"; }
+  function getJoinedAt(m){ return resolveMember(m).joinedAt ?? m.member?.joinedAt ?? m.joinedAt ?? null; }
+
+  function getStatus(m) {
+    return (m.obligationStatus ?? m.status ?? "PENDING").toUpperCase();
+  }
+  function getAmountPaid(m) { return m.amountPaid ?? 0; }
+  function getAmountDue(m)  { return m.amount ?? m.amountDue ?? plan.amount ?? 0; }
+
+  function statusStyle(s) {
+    if (s === "PAID")    return { bg: "#ecfdf5", color: "#059669", label: "Paid" };
+    if (s === "OVERDUE") return { bg: "#fff1f2", color: "#e11d48", label: "Overdue" };
+    if (s === "DUE")     return { bg: "#fffbeb", color: "#b45309", label: "Due" };
+    if (s === "WAIVED")  return { bg: "#f5f6fa", color: "#6b7280", label: "Waived" };
+    return                      { bg: "#fffbeb", color: "#b45309", label: "Pending" };
+  }
+
+  const filtered = planMembers.filter((m) => {
     const q = search.toLowerCase();
-    if (q && !name.includes(q) && !email.includes(q)) return false;
-    if (
-      statusFilter === "Paid" &&
-      !(getPaid(m) === getTotal(m) && getTotal(m) > 0)
-    )
-      return false;
-    if (statusFilter === "Unpaid" && getPaid(m) !== 0) return false;
-    if (
-      statusFilter === "Partial" &&
-      !(getPaid(m) > 0 && getPaid(m) < getTotal(m))
-    )
-      return false;
+    if (q && !getName(m).toLowerCase().includes(q) && !getEmail(m).toLowerCase().includes(q)) return false;
+    if (statusFilter === "Paid"    && getStatus(m) !== "PAID")    return false;
+    if (statusFilter === "Unpaid"  && getStatus(m) === "PAID")    return false;
+    if (statusFilter === "Overdue" && getStatus(m) !== "OVERDUE") return false;
     return true;
   });
 
-  const activeChips = statusFilter
-    ? [{ key: "status", label: statusFilter }]
-    : [];
+  const paidCount      = planMembers.filter(m => getStatus(m) === "PAID").length;
+  const totalCount     = planMembers.length;
+  const totalCollected = planMembers.reduce((sum, m) => sum + getAmountPaid(m), 0);
 
   function exportCsv() {
     const rows = selected.length
       ? filtered.filter((m) => selected.includes(m.id ?? getName(m)))
       : filtered;
-    const header = "Name,Email,Paid,Total,Date Joined\n";
-    const body = rows
-      .map(
-        (m) =>
-          `${getName(m)},${getEmail(m)},${getPaid(m)},${getTotal(m)},${formatDate(getJoinedAt(m))}`,
-      )
-      .join("\n");
+    const header = "Name,Email,Status,Amount Paid,Amount Due,Date Joined\n";
+    const body = rows.map((m) => {
+      const s = statusStyle(getStatus(m));
+      return `${getName(m)},${getEmail(m)},${s.label},${getAmountPaid(m)},${getAmountDue(m)},${formatDate(getJoinedAt(m))}`;
+    }).join("\n");
     const blob = new Blob([header + body], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -844,11 +867,9 @@ function PlanMembersModal({ plan, communityId, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <div>
-            <h2 className="text-base font-semibold text-black">
-              Members List ({plan.name})
-            </h2>
+            <h2 className="text-base font-semibold text-black">{plan.name} — Members</h2>
             <p className="text-xs text-gray-400 mt-0.5">
-              You can edit or pause any plan at any time.
+              {isLoading ? "Loading…" : `${paidCount} / ${totalCount} paid · ${formatNaira(totalCollected)} collected`}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -856,7 +877,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
               onClick={exportCsv}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1C2B8A] text-xs font-semibold text-[#1C2B8A] hover:bg-blue-50 bg-white cursor-pointer"
             >
-              Export Csv
+              Export CSV
             </button>
             <button
               onClick={onClose}
@@ -884,17 +905,13 @@ function PlanMembersModal({ plan, communityId, onClose }) {
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 bg-white cursor-pointer"
             >
               <Filter size={12} /> Filter
+              {statusFilter && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-[#1C2B8A] flex-shrink-0" />}
             </button>
             {filterOpen && (
               <>
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setFilterOpen(false)}
-                />
+                <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)} />
                 <div className="absolute left-0 top-full mt-2 bg-white rounded-xl border border-gray-100 shadow-lg z-20 p-4 w-52">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Status
-                  </label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
@@ -902,75 +919,28 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                   >
                     <option value="">All</option>
                     <option>Paid</option>
-                    <option>Partial</option>
                     <option>Unpaid</option>
+                    <option>Overdue</option>
                   </select>
-                  <button
-                    onClick={() => setFilterOpen(false)}
-                    className="w-full px-3 py-2 rounded-lg bg-[#1C2B8A] text-white text-xs font-semibold border-none cursor-pointer"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-          <div className="relative">
-            <button
-              onClick={() => setSortOpen((o) => !o)}
-              className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-gray-600 cursor-pointer"
-            >
-              Sort by: {sort} <ChevronDown size={11} />
-            </button>
-            {sortOpen && (
-              <>
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setSortOpen(false)}
-                />
-                <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-gray-100 shadow-lg z-20 overflow-hidden min-w-[140px]">
-                  {["Recent", "Name A-Z"].map((o) => (
+                  <div className="flex gap-2">
                     <button
-                      key={o}
-                      onClick={() => {
-                        setSort(o);
-                        setSortOpen(false);
-                      }}
-                      className="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 bg-transparent border-none cursor-pointer"
+                      onClick={() => { setStatusFilter(""); setFilterOpen(false); }}
+                      className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-500 cursor-pointer bg-white"
                     >
-                      {o}
+                      Clear
                     </button>
-                  ))}
+                    <button
+                      onClick={() => setFilterOpen(false)}
+                      className="flex-1 px-3 py-2 rounded-lg bg-[#1C2B8A] text-white text-xs font-semibold border-none cursor-pointer"
+                    >
+                      Apply
+                    </button>
+                  </div>
                 </div>
               </>
             )}
           </div>
         </div>
-
-        {activeChips.length > 0 && (
-          <div className="flex items-center gap-2 px-6 pb-2">
-            {activeChips.map((chip) => (
-              <span
-                key={chip.key}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100 text-xs text-gray-700"
-              >
-                {chip.label}
-                <button
-                  onClick={() => setStatusFilter("")}
-                  className="bg-transparent border-none cursor-pointer p-0 flex items-center"
-                >
-                  <X size={10} className="text-gray-400" />
-                </button>
-              </span>
-            ))}
-            <button
-              onClick={() => setStatusFilter("")}
-              className="text-xs font-semibold text-[#1C2B8A] bg-transparent border-none cursor-pointer"
-            >
-              Clear All
-            </button>
-          </div>
-        )}
 
         {/* Table */}
         <div className="flex-1 overflow-y-auto">
@@ -980,31 +950,14 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                 <th className="px-5 py-2.5 w-8">
                   <input
                     type="checkbox"
-                    checked={
-                      selected.length === filtered.length && filtered.length > 0
-                    }
+                    checked={selected.length === filtered.length && filtered.length > 0}
                     onChange={(e) =>
-                      setSelected(
-                        e.target.checked
-                          ? filtered.map((m) => m.id ?? getName(m))
-                          : [],
-                      )
+                      setSelected(e.target.checked ? filtered.map((m) => m.id ?? getName(m)) : [])
                     }
                   />
                 </th>
-                {[
-                  "Members",
-                  "Plans",
-                  "Status",
-                  "Date",
-                  "Email",
-                  "Date Joined",
-                  "Actions",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap"
-                  >
+                {["Member", "Email", "Status", "Paid", "Total Due", "Date Joined"].map((h) => (
+                  <th key={h} className="px-4 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">
                     {h}
                   </th>
                 ))}
@@ -1013,85 +966,49 @@ function PlanMembersModal({ plan, communityId, onClose }) {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="px-5 py-10 text-center text-xs text-gray-400"
-                  >
-                    Loading…
-                  </td>
+                  <td colSpan={7} className="px-5 py-10 text-center text-xs text-gray-400">Loading…</td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={8}
-                    className="px-5 py-10 text-center text-xs text-gray-400"
-                  >
-                    No members found.
+                  <td colSpan={7} className="px-5 py-10 text-center text-xs text-gray-400">
+                    {planMembers.length === 0 ? "No members enrolled in this plan." : "No members match your filter."}
                   </td>
                 </tr>
               ) : (
                 filtered.map((m, i) => {
                   const key = m.id ?? i;
-                  const paid = getPaid(m),
-                    total = getTotal(m);
-                  const s = memberStatusStyle(paid, total);
+                  const s   = statusStyle(getStatus(m));
                   return (
-                    <tr
-                      key={key}
-                      className="border-b border-gray-50 hover:bg-blue-50/20 transition-colors"
-                    >
+                    <tr key={key} className="border-b border-gray-50 hover:bg-blue-50/20 transition-colors">
                       <td className="px-5 py-3">
                         <input
                           type="checkbox"
                           checked={selected.includes(key)}
                           onChange={() =>
-                            setSelected((p) =>
-                              p.includes(key)
-                                ? p.filter((x) => x !== key)
-                                : [...p, key],
-                            )
+                            setSelected((p) => p.includes(key) ? p.filter((x) => x !== key) : [...p, key])
                           }
                         />
                       </td>
-                      <td className="px-4 py-3 text-xs font-semibold text-[#1C2B8A]">
+                      <td className="px-4 py-3 text-xs font-semibold text-[#1C2B8A] whitespace-nowrap">
                         {getName(m)}
                       </td>
-                      <td className="px-4 py-3 text-xs text-gray-600">
-                        {m.planCount ?? total}
-                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-500">{getEmail(m)}</td>
                       <td className="px-4 py-3">
                         <span
-                          className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                          className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap"
                           style={{ color: s.color, background: s.bg }}
                         >
-                          {paid}/{total} Paid
+                          {s.label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-xs text-gray-500">
-                        {formatDate(m.lastPaymentDate)}
+                      <td className="px-4 py-3 text-xs font-medium text-gray-800">
+                        {formatNaira(getAmountPaid(m))}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-500">
-                        {getEmail(m)}
+                        {formatNaira(getAmountDue(m))}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-500">
                         {formatDate(getJoinedAt(m))}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-1.5">
-                          <button
-                            disabled
-                            title="Send reminder — coming soon"
-                            className="w-7 h-7 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-300 cursor-not-allowed"
-                          >
-                            <RotateCcw size={11} />
-                          </button>
-                          <button
-                            disabled
-                            className="w-7 h-7 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-300 cursor-not-allowed"
-                          >
-                            <MoreHorizontal size={11} />
-                          </button>
-                        </div>
                       </td>
                     </tr>
                   );
@@ -1100,6 +1017,23 @@ function PlanMembersModal({ plan, communityId, onClose }) {
             </tbody>
           </table>
         </div>
+
+        {/* Footer count */}
+        {!isLoading && planMembers.length > 0 && (
+          <div className="px-6 py-3 border-t border-gray-100 flex items-center justify-between">
+            <span className="text-xs text-gray-400">
+              Showing {filtered.length} of {planMembers.length} members
+            </span>
+            {statusFilter && (
+              <button
+                onClick={() => setStatusFilter("")}
+                className="text-xs font-semibold text-[#1C2B8A] bg-transparent border-none cursor-pointer"
+              >
+                Clear filter
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

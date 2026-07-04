@@ -289,7 +289,9 @@ export function usePayments() {
     isLoading:
       obligationsQuery.isLoading ||
       transactionsQuery.isLoading ||
-      userQuery.isLoading,
+      userQuery.isLoading ||
+      communitiesQuery.isLoading,
+    hasNoCommunity: !communitiesQuery.isLoading && rawCommunities.length === 0,
     // communitiesQuery failing is genuinely blocking (no community context
     // at all to render). paymentLinksQuery failing is NOT -- it's a known,
     // permanent 403 for regular members (see comment above), and a
