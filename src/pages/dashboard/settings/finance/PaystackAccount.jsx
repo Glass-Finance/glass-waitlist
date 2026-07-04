@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, Check, Info } from "lucide-react";
+import { ChevronDown, Check, Info, X } from "lucide-react";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityAccount } from "../../../../hooks/useCommunityAccount";
 import { useCommunity } from "../../../../hooks/useCommunity";
@@ -129,9 +129,17 @@ function AccountModal({ onClose, onSave, isSaving }) {
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <h2 className="text-[17px] font-bold text-gray-900 mb-1.5">
-            Set up your payment Account
-          </h2>
+          <div className="flex items-start justify-between mb-1.5">
+            <h2 className="text-[17px] font-bold text-gray-900">
+              Set up your payment Account
+            </h2>
+            <button
+              onClick={onClose}
+              className="w-7 h-7 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-200 transition-colors flex-shrink-0 ml-4 mt-0.5"
+            >
+              <X size={15} />
+            </button>
+          </div>
           <p className="text-sm text-gray-400 mb-6">
             This is where Glass will collect and manage dues on behalf of your community.
           </p>
