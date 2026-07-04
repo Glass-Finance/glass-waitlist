@@ -887,7 +887,7 @@ function DashboardContent({ isPaying, communityId }) {
   const [alertVisible, setAlertVisible] = useState(true);
   const [payingItem, setPayingItem] = useState(null);
 
-  const { balances, members, transactions, activity, isLoading, error } =
+  const { balances, members, transactions, obligations, activity, isLoading, error } =
     useCommunityDashboard(communityId);
   const { plans, isLoading: plansLoading } = usePaymentPlans(communityId);
 
@@ -963,6 +963,47 @@ function DashboardContent({ isPaying, communityId }) {
     const full = `${f} ${l}`.trim();
     return full || null;
   }
+
+  // ── Per-plan metrics computed from obligations + transactions ────────────────
+  // getCommunityPaymentLinks doesn't populate raw.metrics, so paidCount /
+  // totalCount / pct are all 0 from shapePlan. We recompute them here from the
+  // obligations (audience size + paid status) and transactions (amount collected).
+  const planMetrics = useMemo(() => {
+    const SUCCESS_STATUSES = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
+    const byPlan = {};
+
+    // Obligations tell us who's in each plan and whether they've paid
+    for (const ob of obligations) {
+      const planId = ob.paymentLink?.id;
+      if (!planId) continue;
+      if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, seenMemberIds: new Set() };
+
+      const mid = String(ob.member?.id ?? ob.member?.user?.id ?? ob.user?.id ?? ob.id ?? Math.random());
+      if (!byPlan[planId].seenMemberIds.has(mid)) {
+        byPlan[planId].seenMemberIds.add(mid);
+      }
+
+      const s = (ob.status ?? "").toUpperCase();
+      if (s === "PAID" || s === "SUCCESSFUL") byPlan[planId].paidCount++;
+    }
+
+    // Transactions tell us the real amount collected
+    for (const tx of transactions) {
+      const planId = tx.paymentLink?.id;
+      if (!planId) continue;
+      if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, seenMemberIds: new Set() };
+      if (SUCCESS_STATUSES.has((tx.status ?? "").toUpperCase())) {
+        byPlan[planId].collected += tx.amount ?? 0;
+      }
+    }
+
+    // Freeze member sets into counts
+    const result = {};
+    for (const [id, m] of Object.entries(byPlan)) {
+      result[id] = { collected: m.collected, paidCount: m.paidCount, totalCount: m.seenMemberIds.size };
+    }
+    return result;
+  }, [obligations, transactions]);
 
   // ── Filter payments by search ─────────────────────────────────────────────
   const filteredTransactions = useMemo(() => {
@@ -1236,7 +1277,12 @@ function DashboardContent({ isPaying, communityId }) {
             ) : (
               <div className="flex flex-col gap-3">
                 {plans.map((p) => {
-                  const pct = p.pct;
+                  const cm = planMetrics[p.id] ?? {};
+                  const paidCount  = cm.paidCount  ?? p.paidCount  ?? 0;
+                  const totalCount = cm.totalCount  > 0 ? cm.totalCount : (p.totalCount > 0 ? p.totalCount : members.total);
+                  const collected  = cm.collected   ?? p.amountCollected ?? 0;
+                  const expected   = p.amount > 0 && totalCount > 0 ? p.amount * totalCount : p.expectedAmount ?? 0;
+                  const pct        = expected > 0 ? Math.min(100, Math.round((collected / expected) * 100)) : 0;
                   return (
                     <div
                       key={p.id}
@@ -1259,7 +1305,7 @@ function DashboardContent({ isPaying, communityId }) {
                         </span>
                       </div>
                       <p className="text-[11px] text-gray-400 mb-2">
-                        {p.paidCount} / {p.totalCount} members paid
+                        {paidCount} / {totalCount} members paid
                       </p>
                       <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
                         <div

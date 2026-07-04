@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import client from "../api/client";
 import { getCommunityMembers } from "../api/communities";
+import { getCommunityObligations } from "../api/transactions";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/v1/communities/{communityIdentifier}
@@ -105,6 +106,21 @@ export function useCommunityDashboard(communityId) {
     },
   });
 
+  // ── Obligations — used to compute per-plan paid counts on the dashboard.
+  // Shares the ["community", communityId, "obligations"] key with
+  // useMembersWithPayments so the cache is reused when Members page was visited.
+  const obligationsQuery = useQuery({
+    queryKey: ["community", communityId, "obligations"],
+    queryFn: async () => {
+      const res = await getCommunityObligations(communityId);
+      const data = res.data?.data;
+      return Array.isArray(data) ? data : (data?.content ?? []);
+    },
+    enabled,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 10,
+  });
+
   // ── Activity feed — separate from the rest so its skeleton doesn't wait
   // on members/transactions, and a failure here doesn't blank the page ──────
   const activityQuery = useQuery({
@@ -158,6 +174,7 @@ export function useCommunityDashboard(communityId) {
     balances,
     members,
     transactions: transactionsQuery.data ?? [],
+    obligations: obligationsQuery.data ?? [],
     activity: {
       list: activityQuery.data ?? [],
       isLoading: activityQuery.isLoading,
