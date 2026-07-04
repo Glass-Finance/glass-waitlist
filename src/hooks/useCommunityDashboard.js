@@ -40,10 +40,7 @@ async function fetchTransactions(id) {
   // Paginated server-side — request a large page so the "Recent Activity"
   // sort below isn't silently working off a single default-sized page.
   const res = await client.get(`/communities/${id}/finance/transactions`, { params: { pageSize: 1000 } });
-  const data = res.data.data;
-  const first = Array.isArray(data) ? data[0] : data?.content?.[0];
-  if (first) console.log("[transactions] first tx keys:", Object.keys(first), "sample:", JSON.stringify(first, null, 2).slice(0, 600));
-  return data;
+  return res.data.data;
 }
 
 /**

@@ -36,14 +36,7 @@ export function useMembersWithPayments(communityId) {
 
   const obligationsQuery = useQuery({
     queryKey: ["community", communityId, "obligations"],
-    queryFn: async () => {
-      const list = unwrapList(await getCommunityObligations(communityId));
-      if (list.length > 0) {
-        const statuses = [...new Set(list.map((o) => o.status))];
-        console.log("[obligations] distinct statuses:", statuses, "first:", JSON.stringify(list[0], null, 2).slice(0, 500));
-      }
-      return list;
-    },
+    queryFn: async () => unwrapList(await getCommunityObligations(communityId)),
     enabled,
     staleTime: 1000 * 60 * 2,
   });
@@ -88,18 +81,19 @@ export function useMembersWithPayments(communityId) {
     // Set of obligation IDs that have a successful transaction (backend may not
     // update obligation.status to PAID immediately after payment verification)
     const successStatuses = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
-    const paidObligationIds = new Set(
-      memberTransactions
-        .filter((t) => successStatuses.has((t.status ?? "").toUpperCase()))
-        .map((t) => t.obligationId)
-        .filter(Boolean)
+    const successfulTxs = memberTransactions.filter((t) =>
+      successStatuses.has((t.status ?? "").toUpperCase())
     );
+    // Fallback 1: obligation ID on transaction (works when backend sets it)
+    const paidObligationIds = new Set(successfulTxs.map((t) => t.obligationId).filter(Boolean));
+    // Fallback 2: payment link ID match (covers payment-link flow where obligationId is null)
+    const paidLinkIds = new Set(successfulTxs.map((t) => t.paymentLink?.id).filter(Boolean));
 
     const paidCount = memberObligations.filter((o) => {
       const s = (o.status ?? "").toUpperCase();
       if (s === "PAID" || s === "SUCCESSFUL") return true;
-      // Fallback: a successful transaction references this obligation
-      return paidObligationIds.has(o.id);
+      if (paidObligationIds.has(o.id)) return true;
+      return !!o.paymentLink?.id && paidLinkIds.has(o.paymentLink.id);
     }).length;
 
     const failedCount = memberTransactions.filter((t) => (t.status ?? "").toUpperCase() === "FAILED").length;

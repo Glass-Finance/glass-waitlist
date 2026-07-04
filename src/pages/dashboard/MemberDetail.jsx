@@ -34,10 +34,13 @@ function StatCard({ label, value }) {
   );
 }
 
-function PlanCard({ plan }) {
+function PlanCard({ plan, successfulLinkIds }) {
   const isRecurring = !!plan.recurringPlan;
   const s = (plan.status ?? "").toUpperCase();
-  const isPaid = s === "PAID" || s === "SUCCESSFUL";
+  const isPaid =
+    s === "PAID" ||
+    s === "SUCCESSFUL" ||
+    (!!plan.paymentLink?.id && successfulLinkIds?.has(plan.paymentLink.id));
   return (
     <div className="bg-white rounded-xl border border-gray-100 p-4" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <div className="flex items-start justify-between mb-2">
@@ -84,9 +87,17 @@ export default function MemberDetail() {
     return <div className="px-6 py-6 text-xs text-gray-400">Member not found.</div>;
   }
 
-  const totalPaid = member.transactions
-    .filter((t) => { const s = (t.status ?? "").toUpperCase(); return s === "SUCCESS" || s === "SUCCESSFUL" || s === "PAID"; })
-    .reduce((sum, t) => sum + (t.amount ?? 0), 0);
+  const successStatuses = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
+  const successfulTxs = member.transactions.filter((t) =>
+    successStatuses.has((t.status ?? "").toUpperCase())
+  );
+  const totalPaid = successfulTxs.reduce((sum, t) => sum + (t.amount ?? t.amountPaid ?? 0), 0);
+
+  // Payment link IDs that have at least one successful transaction —
+  // used to show plan cards as Paid when the backend hasn't updated obligation.status
+  const successfulLinkIds = new Set(
+    successfulTxs.map((t) => t.paymentLink?.id).filter(Boolean)
+  );
 
   // Distinct plans (one card per payment link, latest obligation for that link)
   const distinctPlans = Array.from(
@@ -139,7 +150,7 @@ export default function MemberDetail() {
           <p className="text-xs text-gray-400 py-8 text-center">No plans assigned yet.</p>
         ) : (
           <div className="grid grid-cols-2 gap-3">
-            {distinctPlans.map((plan) => <PlanCard key={plan.id} plan={plan} />)}
+            {distinctPlans.map((plan) => <PlanCard key={plan.id} plan={plan} successfulLinkIds={successfulLinkIds} />)}
           </div>
         )
       )}
