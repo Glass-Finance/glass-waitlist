@@ -933,6 +933,37 @@ function DashboardContent({ isPaying, communityId }) {
     [isLoading, plansLoading, members, balances, activePlanCount],
   );
 
+  // ── Member name lookup — transactions only carry email, not full name ────────
+  // Build two maps (by member ID and by user ID) so we can resolve the display
+  // name regardless of which ID the transaction's member object contains.
+  const memberNameMap = useMemo(() => {
+    const byMemberId = {};
+    const byUserId = {};
+    for (const m of members.list ?? []) {
+      const first = m.user?.firstName ?? m.firstName ?? "";
+      const last  = m.user?.lastName  ?? m.lastName  ?? "";
+      const name  = `${first} ${last}`.trim() || m.user?.email || m.email || null;
+      if (!name) continue;
+      if (m.id)        byMemberId[String(m.id)] = name;
+      if (m.user?.id)  byUserId[String(m.user.id)] = name;
+    }
+    return { byMemberId, byUserId };
+  }, [members.list]);
+
+  function resolveMemberName(tx) {
+    // 1. Try the members list (most reliable — has proper first/last name)
+    const mid = tx.member?.id ?? tx.memberId;
+    if (mid && memberNameMap.byMemberId[String(mid)]) return memberNameMap.byMemberId[String(mid)];
+    const uid = tx.member?.user?.id ?? tx.user?.id ?? tx.userId;
+    if (uid && memberNameMap.byUserId[String(uid)]) return memberNameMap.byUserId[String(uid)];
+    // 2. Fall back to whatever name fields the transaction itself carries
+    const u = tx.member?.user ?? tx.user ?? tx.payer ?? tx.member ?? {};
+    const f = u.firstName ?? tx.firstName ?? "";
+    const l = u.lastName  ?? tx.lastName  ?? "";
+    const full = `${f} ${l}`.trim();
+    return full || null;
+  }
+
   // ── Filter payments by search ─────────────────────────────────────────────
   const filteredTransactions = useMemo(() => {
     let list = transactions;
@@ -1439,15 +1470,7 @@ function DashboardContent({ isPaying, communityId }) {
                         className="border-b border-[#f3f4f8] hover:bg-[#fafbff] transition-colors cursor-default"
                       >
                         <td className="px-5 py-3 text-xs font-medium text-[#002FA7]">
-                          {(() => {
-                            // Try nested user object first (community member record),
-                            // then flat user object, then direct fields on transaction
-                            const u = tx.member?.user ?? tx.user ?? tx.payer ?? tx.member ?? {};
-                            const f = u.firstName ?? tx.firstName ?? "";
-                            const l = u.lastName ?? tx.lastName ?? "";
-                            const full = `${f} ${l}`.trim();
-                            return full || u.email || (tx.member?.email ?? tx.user?.email ?? tx.email ?? "—");
-                          })()}
+                          {resolveMemberName(tx) ?? (tx.member?.user?.email ?? tx.user?.email ?? tx.email ?? "—")}
                         </td>
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-1.5">
