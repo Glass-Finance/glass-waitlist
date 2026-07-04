@@ -1276,13 +1276,15 @@ function DashboardContent({ isPaying, communityId }) {
               </p>
             ) : (
               <div className="flex flex-col gap-3">
-                {plans.map((p) => {
+                {plans.map((p, idx) => {
                   const cm = planMetrics[p.id] ?? {};
                   const paidCount  = cm.paidCount  ?? p.paidCount  ?? 0;
                   const totalCount = cm.totalCount  > 0 ? cm.totalCount : (p.totalCount > 0 ? p.totalCount : members.total);
                   const collected  = cm.collected   ?? p.amountCollected ?? 0;
                   const expected   = p.amount > 0 && totalCount > 0 ? p.amount * totalCount : p.expectedAmount ?? 0;
                   const pct        = expected > 0 ? Math.min(100, Math.round((collected / expected) * 100)) : 0;
+                  const BAR_COLORS = ["#d4a017", "#7c3aed", "#099DA8", "#059669", "#1C2B8A", "#e11d48"];
+                  const barColor   = BAR_COLORS[idx % BAR_COLORS.length];
                   return (
                     <div
                       key={p.id}
@@ -1309,8 +1311,8 @@ function DashboardContent({ isPaying, communityId }) {
                       </p>
                       <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-[#7c3aed]"
-                          style={{ width: `${pct}%` }}
+                          className="h-full rounded-full"
+                          style={{ width: `${pct}%`, background: barColor }}
                         />
                       </div>
                       <p className="text-[11px] text-gray-400 text-right mt-1">

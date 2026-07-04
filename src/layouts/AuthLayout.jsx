@@ -33,13 +33,25 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
 
           {/* Welcome text — mobile only, sits at the bottom of the hero */}
           {heroTitle && (
-            <p
-              className="md:hidden absolute bottom-10 left-0 right-0 text-center
-                         text-white font-medium leading-snug px-8 pb-10 z-10"
-              style={{ fontSize: "clamp(22px, 4vw, 22px)" }}
+            <div
+              className="md:hidden absolute bottom-0 left-0 right-0 text-center
+                         px-8 pb-10 z-10 flex flex-col items-center gap-1"
             >
-              {heroTitle}
-            </p>
+              <p
+                className="text-white font-medium leading-snug"
+                style={{ fontSize: "clamp(22px, 4vw, 22px)" }}
+              >
+                {heroTitle}
+              </p>
+              {heroSubtitle && (
+                <p
+                  className="text-white font-medium leading-snug opacity-90"
+                  style={{ fontSize: "clamp(18px, 3.5vw, 18px)" }}
+                >
+                  {heroSubtitle}
+                </p>
+              )}
+            </div>
           )}
 
           {/* Center text — desktop only (unchanged) */}

@@ -776,22 +776,34 @@ function PlanMembersModal({ plan, communityId, onClose }) {
   });
 
   // Build memberId / userId → { name, email, joinedAt } lookup
-  const memberLookup = useMemo(() => {
+  // Also track which IDs are currently active so removed members are hidden.
+  const { memberLookup, activeMemberIds } = useMemo(() => {
     const byMemberId = {};
     const byUserId = {};
+    const activeIds = new Set();
     for (const m of communityMembersData ?? []) {
       const first = m.user?.firstName ?? m.firstName ?? "";
       const last  = m.user?.lastName  ?? m.lastName  ?? "";
       const name  = `${first} ${last}`.trim() || null;
       const email = m.user?.email ?? m.email ?? null;
       const info  = { name, email, joinedAt: m.joinedAt ?? m.member?.joinedAt ?? null };
-      if (m.id)       byMemberId[String(m.id)] = info;
-      if (m.user?.id) byUserId[String(m.user.id)] = info;
+      if (m.id)       { byMemberId[String(m.id)] = info; activeIds.add(String(m.id)); }
+      if (m.user?.id) { byUserId[String(m.user.id)] = info; activeIds.add(String(m.user.id)); }
     }
-    return { byMemberId, byUserId };
+    return { memberLookup: { byMemberId, byUserId }, activeMemberIds: activeIds };
   }, [communityMembersData]);
 
-  const planMembers = planMembersData ?? [];
+  // Only show members who are still active in the community; removed members
+  // still appear in getPaymentLinkMembers but should be filtered out here.
+  const planMembers = useMemo(() => {
+    const all = planMembersData ?? [];
+    if (!communityMembersData) return all; // don't filter while community list is loading
+    return all.filter((m) => {
+      const mid = String(m.member?.id ?? m.memberId ?? "");
+      const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
+      return activeMemberIds.has(mid) || activeMemberIds.has(uid);
+    });
+  }, [planMembersData, communityMembersData, activeMemberIds]);
 
   function resolveMember(m) {
     const mid = String(m.member?.id ?? m.memberId ?? "");
