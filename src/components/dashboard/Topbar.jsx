@@ -7,12 +7,13 @@
  * Actions: Bell → opens notification dropdown panel
  *          User avatar → navigate to /dashboard/settings
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Bell, Loader2 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
-import { useNotifications } from "../../hooks/useNotifications";
+import { useAllNotifications } from "../../hooks/useNotifications";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
+import { useCommunities } from "../../hooks/useCommunities";
 import client from "../../api/client";
 import NotificationsPanel from "./NotificationsPanel";
 
@@ -47,8 +48,21 @@ export default function Topbar({
   const navigate = useNavigate();
   const { user } = useAuth();
   const communityId = useActiveCommunityId();
+
+  // Panel uses all-community notifications so the dropdown is universal
   const { notifications, isLoading, unreadCount, markRead, markAllRead } =
-    useNotifications();
+    useAllNotifications();
+
+  // Build a communityId/slug → community lookup for the panel cards
+  const { data: communitiesData } = useCommunities();
+  const communityMap = useMemo(() => {
+    const map = new Map();
+    for (const c of communitiesData?.communities ?? []) {
+      if (c.id)   map.set(c.id,   c);
+      if (c.slug) map.set(c.slug, c);
+    }
+    return map;
+  }, [communitiesData]);
   const [panelOpen, setPanelOpen] = useState(false);
   const panelRef = useRef(null);
 
@@ -233,6 +247,7 @@ export default function Topbar({
               notifications={notifications}
               isLoading={isLoading}
               unreadCount={unreadCount}
+              communityMap={communityMap}
               onMarkRead={markRead}
               onMarkAllRead={markAllRead}
               onClose={() => setPanelOpen(false)}

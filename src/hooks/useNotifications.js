@@ -139,6 +139,69 @@ export function useNotifications() {
   };
 }
 
+// ── Universal (all-community) hook — used by the Topbar dropdown panel ────────
+// Does NOT scope by communityId so the panel shows every notification the
+// user has, regardless of which community is currently active.
+export function useAllNotifications() {
+  const queryClient = useQueryClient();
+  const listKey = ["notifications", "all", "list"];
+
+  const query = useQuery({
+    queryKey: listKey,
+    queryFn: () => fetchNotifications(null),
+    staleTime: 1000 * 20,
+    gcTime:    1000 * 60 * 5,
+    refetchInterval: 1000 * 30,
+    refetchIntervalInBackground: false,
+    select: (data) =>
+      [...(data?.content ?? [])].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      ),
+  });
+
+  const markReadMutation = useMutation({
+    mutationFn: markOneRead,
+    onMutate: async (notificationId) => {
+      await queryClient.cancelQueries({ queryKey: listKey });
+      const previous = queryClient.getQueryData(listKey);
+      queryClient.setQueryData(listKey, (old) =>
+        old ? { ...old, content: old.content.map((n) => n.id === notificationId ? { ...n, readFlag: true } : n) } : old
+      );
+      return { previous };
+    },
+    onError: (_e, _v, ctx) => { if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous); },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: listKey }),
+  });
+
+  const markAllReadMutation = useMutation({
+    mutationFn: markAllRead,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: listKey });
+      const previous = queryClient.getQueryData(listKey);
+      queryClient.setQueryData(listKey, (old) =>
+        old ? { ...old, content: old.content.map((n) => ({ ...n, readFlag: true })) } : old
+      );
+      return { previous };
+    },
+    onError: (_e, _v, ctx) => { if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous); },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: listKey }),
+  });
+
+  const unreadCount = useMemo(
+    () => (query.data ?? []).filter((n) => !n.readFlag).length,
+    [query.data]
+  );
+
+  return {
+    notifications:    query.data ?? [],
+    isLoading:        query.isLoading,
+    unreadCount,
+    markRead:         (id) => markReadMutation.mutate(id),
+    markAllRead:      () => markAllReadMutation.mutate(),
+    isMarkingAllRead: markAllReadMutation.isPending,
+  };
+}
+
 // GET /api/v1/notifications/preferences
 async function fetchPreferences() {
   const res = await client.get("/notifications/preferences");
