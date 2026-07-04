@@ -183,6 +183,7 @@ export function useNotificationPreferences() {
   return {
     preferences: query.data ?? {},
     isLoading: query.isLoading,
+    error: query.error,
     update: (key, value) => update.mutate({ [key]: value }),
   };
 }

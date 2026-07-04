@@ -1,43 +1,103 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, RefreshCw } from "lucide-react";
 import { useNotificationPreferences } from "../../../../hooks/useNotifications";
 
-function Toggle({ on, onChange }) {
+function Toggle({ on, onChange, disabled }) {
   return (
     <button
-      onClick={() => onChange(!on)}
-      style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}
+      onClick={() => !disabled && onChange(!on)}
+      style={{
+        background: "none", border: "none",
+        cursor: disabled ? "not-allowed" : "pointer",
+        padding: 0, flexShrink: 0, opacity: disabled ? 0.5 : 1,
+      }}
     >
-      <div style={{ width: 40, height: 22, borderRadius: 999, background: on ? "#002FA7" : "#D1D5DB", position: "relative", transition: "background 0.2s" }}>
-        <div style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff", position: "absolute", top: 3, left: on ? 21 : 3, transition: "left 0.2s" }} />
+      <div style={{
+        width: 40, height: 22, borderRadius: 999,
+        background: on ? "#002FA7" : "#D1D5DB",
+        position: "relative", transition: "background 0.2s",
+      }}>
+        <div style={{
+          width: 16, height: 16, borderRadius: "50%", background: "#fff",
+          position: "absolute", top: 3, left: on ? 21 : 3,
+          transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+        }} />
       </div>
     </button>
   );
 }
 
-function Row({ label, desc, value, onChange, last = false }) {
+function Row({ label, desc, value, onChange, disabled, last = false }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 12px", borderBottom: last ? "none" : "1px solid #F2F2F2" }}>
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "14px 16px",
+      borderBottom: last ? "none" : "1px solid #F2F2F2",
+    }}>
       <div style={{ minWidth: 0, paddingRight: 12 }}>
         <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{label}</p>
-        <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>{desc}</p>
+        {desc && <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>{desc}</p>}
       </div>
-      <Toggle on={value} onChange={onChange} />
+      <Toggle on={!!value} onChange={onChange} disabled={disabled} />
     </div>
   );
 }
 
-export default function Notifications() {
+function Section({ title, children }) {
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <p style={{
+        fontSize: 11, fontWeight: 700, color: "#999", margin: "0 4px 8px",
+        textTransform: "uppercase", letterSpacing: 0.6,
+      }}>
+        {title}
+      </p>
+      <div style={{
+        background: "#fff", borderRadius: 14,
+        boxShadow: "0 1px 6px rgba(0,0,0,0.05)", overflow: "hidden",
+      }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function SkeletonRow({ last }) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "16px", borderBottom: last ? "none" : "1px solid #F2F2F2",
+    }}>
+      <div>
+        <div style={{ width: 140, height: 13, borderRadius: 6, background: "#EBEBEB", marginBottom: 6 }} />
+        <div style={{ width: 200, height: 11, borderRadius: 6, background: "#F2F2F2" }} />
+      </div>
+      <div style={{ width: 40, height: 22, borderRadius: 999, background: "#EBEBEB", flexShrink: 0 }} />
+    </div>
+  );
+}
+
+export default function NotificationSettings() {
   const navigate = useNavigate();
-  const { preferences, isLoading, update } = useNotificationPreferences();
-  const get = (key) => preferences[key] ?? true;
+  const { preferences, isLoading, error, update } = useNotificationPreferences();
+
+  const get = (key, defaultVal = true) => preferences[key] ?? defaultVal;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#EBEBEB", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{
+      minHeight: "100vh", background: "#EBEBEB",
+      fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40,
+    }}>
+      {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 16px 16px" }}>
         <button
           onClick={() => navigate(-1)}
-          style={{ width: 36, height: 36, borderRadius: "50%", background: "#fff", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }}
+          style={{
+            width: 36, height: 36, borderRadius: "50%", background: "#fff",
+            border: "none", cursor: "pointer", display: "flex",
+            alignItems: "center", justifyContent: "center",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.1)", flexShrink: 0,
+          }}
         >
           <ChevronLeft size={18} strokeWidth={2} style={{ color: "#111" }} />
         </button>
@@ -45,15 +105,137 @@ export default function Notifications() {
       </div>
 
       <div style={{ padding: "0 16px" }}>
-        {isLoading && <p style={{ textAlign: "center", color: "#999", fontSize: 13 }}>Loading…</p>}
+        {/* Error state */}
+        {error && !isLoading && (
+          <div style={{
+            background: "#FFF0F0", border: "1px solid #FECACA", borderRadius: 12,
+            padding: "14px 16px", marginBottom: 20,
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+          }}>
+            <p style={{ fontSize: 13, color: "#DC2626", margin: 0 }}>
+              Couldn't load preferences.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                color: "#DC2626", display: "flex", alignItems: "center", gap: 4,
+                fontSize: 12, fontWeight: 600, padding: 0,
+              }}
+            >
+              <RefreshCw size={13} /> Retry
+            </button>
+          </div>
+        )}
 
-        <p style={{ fontSize: 12, fontWeight: 600, color: "#999", margin: "0 4px 8px", textTransform: "uppercase", letterSpacing: 0.4 }}>
-          Notification channels
-        </p>
-        <div style={{ background: "#fff", borderRadius: 14, padding: 4, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
-          <Row label="In-app notifications" desc="Show notifications inside the app" value={get("inAppEnabled")} onChange={(v) => update("inAppEnabled", v)} />
-          <Row label="Email notifications" desc="Send updates to your email address" value={get("emailEnabled")} onChange={(v) => update("emailEnabled", v)} />
-          <Row label="WhatsApp notifications" desc="Send updates to your WhatsApp number" value={get("whatsappEnabled")} onChange={(v) => update("whatsappEnabled", v)} last />
+        {/* ── Channels ───────────────────────────────────────────────────────── */}
+        <Section title="Notification channels">
+          {isLoading ? (
+            <>
+              <SkeletonRow />
+              <SkeletonRow />
+              <SkeletonRow last />
+            </>
+          ) : (
+            <>
+              <Row
+                label="In-app"
+                desc="Show notifications inside the app"
+                value={get("inAppEnabled")}
+                onChange={(v) => update("inAppEnabled", v)}
+              />
+              <Row
+                label="Email"
+                desc="Send updates to your email address"
+                value={get("emailEnabled")}
+                onChange={(v) => update("emailEnabled", v)}
+              />
+              <Row
+                label="WhatsApp"
+                desc="Send updates to your WhatsApp number"
+                value={get("whatsappEnabled")}
+                onChange={(v) => update("whatsappEnabled", v)}
+                last
+              />
+            </>
+          )}
+        </Section>
+
+        {/* ── Payments ───────────────────────────────────────────────────────── */}
+        <Section title="Payments">
+          {isLoading ? (
+            <>
+              <SkeletonRow />
+              <SkeletonRow />
+              <SkeletonRow last />
+            </>
+          ) : (
+            <>
+              <Row
+                label="Payment reminders"
+                desc="Get reminded before a payment is due"
+                value={get("paymentReminderEnabled")}
+                onChange={(v) => update("paymentReminderEnabled", v)}
+              />
+              <Row
+                label="Payment receipts"
+                desc="Confirmation when a payment goes through"
+                value={get("paymentReceiptEnabled")}
+                onChange={(v) => update("paymentReceiptEnabled", v)}
+              />
+              <Row
+                label="Auto-Pay alerts"
+                desc="Notified 3 days before an auto-pay charge"
+                value={get("autoPayAlertEnabled")}
+                onChange={(v) => update("autoPayAlertEnabled", v)}
+                last
+              />
+            </>
+          )}
+        </Section>
+
+        {/* ── Community ──────────────────────────────────────────────────────── */}
+        <Section title="Community">
+          {isLoading ? (
+            <>
+              <SkeletonRow />
+              <SkeletonRow last />
+            </>
+          ) : (
+            <>
+              <Row
+                label="Community updates"
+                desc="Announcements from community admins"
+                value={get("communityUpdateEnabled")}
+                onChange={(v) => update("communityUpdateEnabled", v)}
+              />
+              <Row
+                label="Invitations"
+                desc="When you're invited to join a community"
+                value={get("inviteNotificationEnabled")}
+                onChange={(v) => update("inviteNotificationEnabled", v)}
+                last
+              />
+            </>
+          )}
+        </Section>
+
+        {/* Info note */}
+        <div style={{
+          display: "flex", alignItems: "flex-start", gap: 8,
+          padding: "12px 14px", borderRadius: 10, background: "#D7E2FF",
+        }}>
+          <div style={{
+            width: 16, height: 16, borderRadius: "50%",
+            border: "1.5px solid #002FA7", display: "flex",
+            alignItems: "center", justifyContent: "center",
+            flexShrink: 0, marginTop: 1,
+          }}>
+            <span style={{ fontSize: 9, fontWeight: 700, color: "#002FA7" }}>i</span>
+          </div>
+          <p style={{ fontSize: 12, color: "#333", margin: 0, lineHeight: 1.5 }}>
+            Changes take effect immediately. Critical security alerts are always sent regardless of your preferences.
+          </p>
         </div>
       </div>
     </div>
