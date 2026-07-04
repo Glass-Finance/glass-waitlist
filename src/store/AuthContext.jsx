@@ -21,6 +21,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useRef,
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -102,6 +103,9 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
+  // Prevents the token-change effect from firing a second refreshUser()
+  // while restore() is already in the middle of one.
+  const isRestoringRef = useRef(false);
 
   // Stay in sync if another tab logs out
   useEffect(() => {
@@ -318,16 +322,20 @@ export function AuthProvider({ children }) {
         setLoading(false);
         return;
       }
+      isRestoringRef.current = true;
       setToken(storedToken);
       setUser(readStoredUser());
       await refreshUser();
+      isRestoringRef.current = false;
       setLoading(false);
     }
     restore();
   }, [refreshUser]);
 
+  // Only fires for token changes that happen AFTER the initial restore
+  // (login, setSession, OAuth). The restore() above handles its own refresh.
   useEffect(() => {
-    if (token) refreshUser();
+    if (token && !isRestoringRef.current) refreshUser();
   }, [token, refreshUser]);
 
   // ── Derive role helpers ────────────────────────────────────────────────────
