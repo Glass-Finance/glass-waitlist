@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Bell, ChevronDown, Clock, Users } from "lucide-react";
+import { Bell, ChevronDown, Clock } from "lucide-react";
+import joinCommunityIcon from "../../assets/auth/join-community.png";
 import { usePayments } from "../../hooks/usePayments";
 import SideDrawer from "../../components/memberApp/SideDrawer";
 
@@ -404,21 +405,12 @@ function NoCommunityState({ navigate }) {
         textAlign: "center",
       }}
     >
-      {/* Icon circle */}
-      <div
-        style={{
-          width: 88,
-          height: 88,
-          borderRadius: "50%",
-          background: "#E4E9F8",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 28,
-        }}
-      >
-        <Users size={40} strokeWidth={1.5} style={{ color: "#1C2B8A" }} />
-      </div>
+      {/* Icon */}
+      <img
+        src={joinCommunityIcon}
+        alt=""
+        style={{ width: 88, height: 88, objectFit: "contain", marginBottom: 28 }}
+      />
 
       <p
         style={{

@@ -46,7 +46,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
               {heroSubtitle && (
                 <p
                   className="text-white font-medium leading-snug opacity-90"
-                  style={{ fontSize: "clamp(18px, 3.5vw, 18px)" }}
+                  style={{ fontSize: "clamp(22px, 4vw, 22px)" }}
                 >
                   {heroSubtitle}
                 </p>
