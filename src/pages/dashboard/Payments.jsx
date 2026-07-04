@@ -790,6 +790,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
 
   // Build memberId / userId → { name, email, joinedAt } lookup
   // Also track which IDs are currently active so removed members are hidden.
+  // getCommunityMembers returns a flat shape: cm.userId (not cm.user.id).
   const { memberLookup, activeMemberIds } = useMemo(() => {
     const byMemberId = {};
     const byUserId = {};
@@ -800,8 +801,10 @@ function PlanMembersModal({ plan, communityId, onClose }) {
       const name  = `${first} ${last}`.trim() || null;
       const email = m.user?.email ?? m.email ?? null;
       const info  = { name, email, joinedAt: m.joinedAt ?? m.member?.joinedAt ?? null };
-      if (m.id)       { byMemberId[String(m.id)] = info; activeIds.add(String(m.id)); }
-      if (m.user?.id) { byUserId[String(m.user.id)] = info; activeIds.add(String(m.user.id)); }
+      // cm.id = community membership ID; cm.userId = user's global ID (flat field)
+      const userId = m.userId ?? m.user?.id ?? null;
+      if (m.id)     { byMemberId[String(m.id)] = info; activeIds.add(String(m.id)); }
+      if (userId)   { byUserId[String(userId)]  = info; activeIds.add(String(userId)); }
     }
     return { memberLookup: { byMemberId, byUserId }, activeMemberIds: activeIds };
   }, [communityMembersData]);
@@ -823,10 +826,11 @@ function PlanMembersModal({ plan, communityId, onClose }) {
   // Plan members carry communityMemberId, so we bridge via communityMembersData:
   //   communityMemberId → userId → obligation info
   const obligationByMemberId = useMemo(() => {
-    // Step 1: communityMemberId → userId from the authoritative member list
+    // Step 1: communityMemberId → userId (cm.userId is flat, not cm.user.id)
     const cmToUser = {};
     for (const cm of communityMembersData ?? []) {
-      if (cm.id && cm.user?.id) cmToUser[String(cm.id)] = String(cm.user.id);
+      const userId = cm.userId ?? cm.user?.id ?? "";
+      if (cm.id && userId) cmToUser[String(cm.id)] = String(userId);
     }
 
     // Step 2: index obligations by userId and email
@@ -856,7 +860,12 @@ function PlanMembersModal({ plan, communityId, onClose }) {
   function getObligationInfo(m) {
     const mid   = String(m.member?.id ?? m.memberId ?? "");
     const uid   = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
-    const email = memberLookup.byMemberId[mid]?.email ?? memberLookup.byUserId[uid]?.email ?? "";
+    // Use the plan member's own email (flat field) as well as the lookup email
+    const email =
+      m.email ??
+      memberLookup.byMemberId[mid]?.email ??
+      memberLookup.byUserId[uid]?.email ??
+      "";
     return (
       (mid   && obligationByMemberId[mid])   ||
       (uid   && obligationByMemberId[uid])   ||
@@ -872,6 +881,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
       (mid && memberLookup.byMemberId[mid]) ||
       (uid && memberLookup.byUserId[uid]);
     if (fromLookup) return fromLookup;
+    // Flat plan-member response: firstName/lastName/email at the top level
     const u = m.member?.user ?? m.user ?? m.member ?? {};
     const f = u.firstName ?? m.firstName ?? "";
     const l = u.lastName  ?? m.lastName  ?? "";
@@ -914,6 +924,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     if (s === "OVERDUE") return { bg: "#fff1f2", color: "#e11d48", label: "Overdue" };
     if (s === "DUE")     return { bg: "#fffbeb", color: "#b45309", label: "Due" };
     if (s === "WAIVED")  return { bg: "#f5f6fa", color: "#6b7280", label: "Waived" };
+    if (s === "NONE")    return { bg: "#f5f6fa", color: "#9ca3af", label: "N/A" };
     return                      { bg: "#fffbeb", color: "#b45309", label: "Pending" };
   }
 
