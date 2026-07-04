@@ -775,6 +775,19 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     staleTime: 1000 * 60 * 5,
   });
 
+  // Obligations — authoritative source for paid/due status per member
+  // Uses the same cache key as the main Payments page so no extra request.
+  const { data: allObligations = [] } = useQuery({
+    queryKey: ["community", communityId, "obligations"],
+    queryFn: async () => {
+      const res = await getCommunityObligations(communityId);
+      const data = res.data?.data;
+      return Array.isArray(data) ? data : (data?.content ?? []);
+    },
+    enabled: !!communityId,
+    staleTime: 1000 * 60 * 2,
+  });
+
   // Build memberId / userId → { name, email, joinedAt } lookup
   // Also track which IDs are currently active so removed members are hidden.
   const { memberLookup, activeMemberIds } = useMemo(() => {
@@ -805,6 +818,34 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     });
   }, [planMembersData, communityMembersData, activeMemberIds]);
 
+  // Build memberId/userId → obligation info for THIS plan only.
+  const obligationByMemberId = useMemo(() => {
+    const map = {};
+    for (const ob of allObligations) {
+      if (String(ob.paymentLink?.id) !== String(plan.id)) continue;
+      const mid = String(ob.member?.id ?? "");
+      const uid = String(ob.member?.user?.id ?? ob.user?.id ?? "");
+      const info = {
+        status: (ob.status ?? "PENDING").toUpperCase(),
+        amountPaid: ob.amountPaid ?? ob.paidAmount ?? 0,
+        amountDue: ob.amount ?? ob.amountDue ?? plan.amount ?? 0,
+      };
+      if (mid) map[mid] = info;
+      if (uid) map[uid] = info;
+    }
+    return map;
+  }, [allObligations, plan.id, plan.amount]);
+
+  function getObligationInfo(m) {
+    const mid = String(m.member?.id ?? m.memberId ?? "");
+    const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
+    return (
+      (mid && obligationByMemberId[mid]) ||
+      (uid && obligationByMemberId[uid]) ||
+      null
+    );
+  }
+
   function resolveMember(m) {
     const mid = String(m.member?.id ?? m.memberId ?? "");
     const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
@@ -827,6 +868,8 @@ function PlanMembersModal({ plan, communityId, onClose }) {
   function getJoinedAt(m){ return resolveMember(m).joinedAt ?? m.member?.joinedAt ?? m.joinedAt ?? null; }
 
   function getStatus(m) {
+    const ob = getObligationInfo(m);
+    if (ob) return ob.status;
     const raw =
       m.obligationStatus ??
       m.obligation?.status ??
@@ -837,23 +880,14 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     return raw.toUpperCase();
   }
   function getAmountPaid(m) {
-    return (
-      m.amountPaid ??
-      m.paidAmount ??
-      m.obligation?.amountPaid ??
-      m.obligation?.paidAmount ??
-      0
-    );
+    const ob = getObligationInfo(m);
+    if (ob) return ob.amountPaid;
+    return m.amountPaid ?? m.paidAmount ?? m.obligation?.amountPaid ?? 0;
   }
   function getAmountDue(m) {
-    return (
-      m.amount ??
-      m.amountDue ??
-      m.obligation?.amount ??
-      m.obligation?.amountDue ??
-      plan.amount ??
-      0
-    );
+    const ob = getObligationInfo(m);
+    if (ob) return ob.amountDue;
+    return m.amount ?? m.amountDue ?? m.obligation?.amount ?? plan.amount ?? 0;
   }
 
   function statusStyle(s) {
@@ -1123,10 +1157,7 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers }) {
             <MenuItem
               icon={<Bell size={13} />}
               label="Send Reminder"
-              onClick={() => {
-                planPlans.sendReminder.mutate(plan.id);
-                close();
-              }}
+              disabled
             />
             <MenuItem
               icon={<Users size={13} />}
