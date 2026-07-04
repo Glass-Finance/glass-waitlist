@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { Home, ArrowLeftRight, CalendarClock, Bell, Menu } from "lucide-react";
 import SideDrawer from "../components/memberApp/SideDrawer";
+import InvitePopup from "../components/memberApp/InvitePopup";
 
 const TABS = [
   { to: "/member/home", label: "Home", Icon: Home },
@@ -24,6 +25,9 @@ export default function MemberAppLayout() {
         <main style={{ paddingBottom: "88px" }}>
           <Outlet />
         </main>
+
+        {/* Invite popup — shown when the user has pending community invites */}
+        <InvitePopup />
 
         {/* Bottom nav */}
         <nav
