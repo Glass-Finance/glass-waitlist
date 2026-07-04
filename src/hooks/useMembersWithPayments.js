@@ -12,10 +12,14 @@ function unwrapList(res) {
 function memberIdsMatch(member, ref) {
   if (!ref) return false;
   const refId = ref.id ?? ref;
+  const mUid = member.user?.id;
+  const rUid = ref.user?.id;
   return (
     member.id === refId ||
-    member.user?.id === refId ||
-    member.user?.id === ref.user?.id
+    (mUid != null && mUid === refId) ||
+    // Only match by user-id pair when both sides actually have one —
+    // undefined === undefined would silently match every member
+    (mUid != null && rUid != null && mUid === rUid)
   );
 }
 
