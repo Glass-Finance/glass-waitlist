@@ -735,7 +735,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
           <button
             onClick={handleSave}
             disabled={!isReady || saving}
-            className="px-8 py-2.5 rounded-full text-xs font-normal text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-8 py-2.5 rounded-full text-sm font-semibold text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? "Saving…" : "Save Changes"}
           </button>
