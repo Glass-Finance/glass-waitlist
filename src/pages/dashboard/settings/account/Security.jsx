@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import QRCode from "qrcode";
 import { Eye, EyeOff, ShieldCheck, Shield, Copy, Check, Loader2, X } from "lucide-react";
 import { useUpdatePassword, useMe } from "../../../../hooks/useMyAccount";
 import { setupMfaTotp, enableMfaTotp, disableMfaTotp } from "../../../../services/authService";
@@ -20,7 +21,6 @@ function MfaModal({ mode, onClose, onSuccess }) {
     setError("");
     try {
       const data = await setupMfaTotp();
-      console.log("[MFA setup response]", data);
       setSetupData(data);
       setStage("qr");
     } catch (err) {
@@ -67,9 +67,17 @@ function MfaModal({ mode, onClose, onSuccess }) {
     });
   }
 
-  const qrSrc = setupData?.qrCodeImage ?? setupData?.qrCodeDataUri ?? setupData?.qrCode ?? setupData?.qrImageUrl ?? null;
-  const qrUri = setupData?.qrCodeUri ?? setupData?.otpAuthUri ?? setupData?.otpauth_url ?? setupData?.qrUrl ?? setupData?.uri ?? null;
-  const secret = setupData?.secret ?? setupData?.totpSecret ?? setupData?.secretKey ?? setupData?.key ?? null;
+  const otpauthUri = setupData?.otpauthUri ?? setupData?.qrCodeUri ?? setupData?.otpAuthUri ?? setupData?.otpauth_url ?? setupData?.uri ?? null;
+  const secret = setupData?.secret ?? setupData?.totpSecret ?? setupData?.secretKey ?? setupData?.key
+    ?? (otpauthUri ? new URLSearchParams(otpauthUri.split("?")[1]).get("secret") : null);
+  const [qrSrc, setQrSrc] = useState(null);
+
+  useEffect(() => {
+    if (!otpauthUri) return;
+    QRCode.toDataURL(otpauthUri, { width: 200, margin: 1 })
+      .then(setQrSrc)
+      .catch(() => setQrSrc(null));
+  }, [otpauthUri]);
 
   const inputCls = "w-full px-4 py-2.5 rounded-md border border-gray-300 text-gray-900 text-sm outline-none text-center tracking-widest font-mono text-lg transition-all focus:border-[#002FA7]";
 
@@ -126,10 +134,10 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 <div className="flex justify-center p-4 bg-white rounded-xl border border-gray-200">
                   <img src={qrSrc} alt="MFA QR code" className="w-44 h-44" />
                 </div>
-              ) : qrUri ? (
+              ) : otpauthUri ? (
                 <div className="bg-gray-50 rounded-xl p-3 border border-gray-200">
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">QR URI</p>
-                  <p className="text-xs text-gray-600 break-all leading-relaxed">{qrUri}</p>
+                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Copy this URI into your authenticator app</p>
+                  <p className="text-xs text-gray-600 break-all leading-relaxed">{otpauthUri}</p>
                 </div>
               ) : null}
 
