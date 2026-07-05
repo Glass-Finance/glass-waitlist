@@ -50,6 +50,7 @@ import PaystackAccount from "./pages/dashboard/settings/finance/PaystackAccount"
 import CommunityProfile from "./pages/dashboard/settings/community/CommunityProfile";
 import MemberAccess from "./pages/dashboard/settings/community/MemberAccess";
 import SystemConfig from "./pages/dashboard/settings/admin/SystemConfig";
+import AdminPanel from "./pages/dashboard/AdminPanel";
 
 // ── Member app layout + pages ──────────────────────────────────────────────────
 import MemberAppLayout from "./layouts/MemberAppLayout";
@@ -152,6 +153,7 @@ function App() {
             <Route path="notifications" element={<AdminNotifications />} />
 
             <Route path="system-config" element={<SystemConfig />} />
+            <Route path="admin-panel" element={<AdminPanel />} />
 
             <Route path="settings" element={<Settings />}>
               <Route index element={<Navigate to="account" replace />} />
