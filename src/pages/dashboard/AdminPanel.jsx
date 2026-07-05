@@ -2,8 +2,9 @@ import { useState, useRef } from "react";
 import {
   Search, Building2, Users, CreditCard, BarChart2, Bell,
   ChevronLeft, ChevronRight, X, Check, Loader2,
-  ShieldAlert, ShieldCheck, RefreshCw, Edit2, Wallet,
+  ShieldAlert, ShieldCheck, RefreshCw, Edit2, Wallet, SlidersHorizontal,
 } from "lucide-react";
+import SystemConfig from "./settings/admin/SystemConfig";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getAdminCommunities, setCommissionOverride,
@@ -114,12 +115,24 @@ function Pager({ page, totalPages, onPage }) {
   );
 }
 
-function TableShell({ isLoading, isEmpty, children }) {
+function TableShell({ isLoading, isEmpty, error, children }) {
+  const is403 = error?.response?.status === 403;
   return (
     <div className="bg-white rounded-2xl overflow-hidden" style={{ border: "1px solid #E5E7EB" }}>
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
           <Loader2 size={20} className="animate-spin text-gray-300" />
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center justify-center py-16 gap-2">
+          <p className="text-xs font-semibold text-red-500">
+            {is403 ? "Access denied" : "Failed to load"}
+          </p>
+          <p className="text-xs text-gray-400">
+            {is403
+              ? "Platform admin rights required to view this data."
+              : (error.message ?? "An error occurred.")}
+          </p>
         </div>
       ) : isEmpty ? (
         <div className="flex flex-col items-center justify-center py-16 gap-2">
@@ -331,12 +344,12 @@ function CommunitiesSection() {
   const debouncedSet = useDebounce(v => { setDebouncedSearch(v); setPage(0); });
 
   const params = {
-    pageNumber: page, pageSize: PAGE_SIZE,
+    page, size: PAGE_SIZE,
     ...(debouncedSearch ? { search: debouncedSearch } : {}),
     ...(status !== "ALL" ? { status } : {}),
   };
 
-  const { data, isLoading, isFetching } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["admin-communities", params],
     queryFn: () => getAdminCommunities(params).then(unwrap),
     staleTime: 60_000,
@@ -362,7 +375,7 @@ function CommunitiesSection() {
         </>}
       />
 
-      <TableShell isLoading={isLoading} isEmpty={items.length === 0}>
+      <TableShell isLoading={isLoading} isEmpty={items.length === 0} error={error}>
         <table className="w-full border-collapse">
           <thead>
             <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
@@ -440,12 +453,12 @@ function AccountsSection() {
   const debouncedSet = useDebounce(v => { setDebouncedSearch(v); setPage(0); });
 
   const params = {
-    pageNumber: page, pageSize: PAGE_SIZE,
+    page, size: PAGE_SIZE,
     ...(debouncedSearch ? { search: debouncedSearch } : {}),
     ...(status !== "ALL" ? { status } : {}),
   };
 
-  const { data, isLoading, isFetching } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["admin-community-accounts", params],
     queryFn: () => getAdminCommunityAccounts(params).then(unwrap),
     staleTime: 60_000,
@@ -476,7 +489,7 @@ function AccountsSection() {
         </>}
       />
 
-      <TableShell isLoading={isLoading} isEmpty={items.length === 0}>
+      <TableShell isLoading={isLoading} isEmpty={items.length === 0} error={error}>
         <table className="w-full border-collapse">
           <thead>
             <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
@@ -583,12 +596,12 @@ function UsersSection() {
   const debouncedSet = useDebounce(v => { setDebouncedSearch(v); setPage(0); });
 
   const params = {
-    pageNumber: page, pageSize: PAGE_SIZE,
+    page, size: PAGE_SIZE,
     ...(debouncedSearch ? { search: debouncedSearch } : {}),
     ...(enabledFilter !== "ALL" ? { enabled: enabledFilter === "ACTIVE" } : {}),
   };
 
-  const { data, isLoading, isFetching } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["admin-users", params],
     queryFn: () => getAdminUsers(params).then(unwrap),
     staleTime: 60_000,
@@ -618,7 +631,7 @@ function UsersSection() {
         </>}
       />
 
-      <TableShell isLoading={isLoading} isEmpty={items.length === 0}>
+      <TableShell isLoading={isLoading} isEmpty={items.length === 0} error={error}>
         <table className="w-full border-collapse">
           <thead>
             <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
@@ -701,14 +714,14 @@ function PaymentLinksSection() {
   const debouncedSet = useDebounce(v => { setDebouncedSearch(v); setPage(0); });
 
   const params = {
-    pageNumber: page, pageSize: PAGE_SIZE,
+    page, size: PAGE_SIZE,
     ...(debouncedSearch ? { search: debouncedSearch } : {}),
     ...(status !== "ALL" ? { status } : {}),
     ...(type !== "ALL" ? { paymentType: type } : {}),
     includeMetrics: true,
   };
 
-  const { data, isLoading, isFetching } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["admin-payment-links", params],
     queryFn: () => getAdminPaymentLinks(params).then(unwrap),
     staleTime: 60_000,
@@ -740,7 +753,7 @@ function PaymentLinksSection() {
         </>}
       />
 
-      <TableShell isLoading={isLoading} isEmpty={items.length === 0}>
+      <TableShell isLoading={isLoading} isEmpty={items.length === 0} error={error}>
         <table className="w-full border-collapse">
           <thead>
             <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
@@ -1000,9 +1013,9 @@ function NotificationsSection() {
   const [page, setPage] = useState(0);
   const [showCreate, setShowCreate] = useState(false);
 
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["admin-notification-jobs", { pageNumber: page, pageSize: PAGE_SIZE }],
-    queryFn: () => getAdminNotificationJobs({ pageNumber: page, pageSize: PAGE_SIZE }).then(unwrap),
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["admin-notification-jobs", { page, size: PAGE_SIZE }],
+    queryFn: () => getAdminNotificationJobs({ page, size: PAGE_SIZE }).then(unwrap),
     staleTime: 30_000,
     placeholderData: p => p,
   });
@@ -1023,7 +1036,7 @@ function NotificationsSection() {
         }
       />
 
-      <TableShell isLoading={isLoading} isEmpty={items.length === 0}>
+      <TableShell isLoading={isLoading} isEmpty={items.length === 0} error={error}>
         <table className="w-full border-collapse">
           <thead>
             <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
@@ -1077,12 +1090,13 @@ function NotificationsSection() {
 // ─── Shell ────────────────────────────────────────────────────────────────────
 
 const TABS = [
-  { id: "communities",   label: "Communities",   Icon: Building2  },
-  { id: "accounts",      label: "Accounts",      Icon: Wallet     },
-  { id: "users",         label: "Users",         Icon: Users      },
-  { id: "payment-links", label: "Payment Links", Icon: CreditCard },
-  { id: "balances",      label: "Balances",      Icon: BarChart2  },
-  { id: "notifications", label: "Notifications", Icon: Bell       },
+  { id: "communities",   label: "Communities",   Icon: Building2        },
+  { id: "accounts",      label: "Accounts",      Icon: Wallet           },
+  { id: "users",         label: "Users",         Icon: Users            },
+  { id: "payment-links", label: "Payment Links", Icon: CreditCard       },
+  { id: "balances",      label: "Balances",      Icon: BarChart2        },
+  { id: "notifications", label: "Notifications", Icon: Bell             },
+  { id: "system-config", label: "System Config", Icon: SlidersHorizontal},
 ];
 
 export default function AdminPanel() {
@@ -1122,6 +1136,7 @@ export default function AdminPanel() {
       {activeTab === "payment-links" && <PaymentLinksSection  />}
       {activeTab === "balances"      && <BalancesSection      />}
       {activeTab === "notifications" && <NotificationsSection />}
+      {activeTab === "system-config" && <SystemConfig         />}
     </div>
   );
 }

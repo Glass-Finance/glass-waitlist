@@ -240,8 +240,8 @@ export default function SystemConfig() {
   }
 
   const params = {
-    pageNumber: page,
-    pageSize: PAGE_SIZE,
+    page,
+    size: PAGE_SIZE,
     ...(debouncedSearch.trim() ? { search: debouncedSearch.trim() } : {}),
     ...(activeCategory !== "ALL" ? { category: activeCategory } : {}),
   };
