@@ -1396,6 +1396,8 @@ export default function Payments() {
     },
     enabled: !!communityId,
     staleTime: 1000 * 60 * 2,
+    gcTime:    1000 * 60 * 30,
+    refetchOnMount: "always",
   });
 
   // Transactions — actual amounts collected per plan
@@ -1408,6 +1410,8 @@ export default function Payments() {
     },
     enabled: !!communityId,
     staleTime: 1000 * 60 * 2,
+    gcTime:    1000 * 60 * 30,
+    refetchOnMount: "always",
   });
 
   // Compute per-plan: paidCount, totalCount (unique members), collected

@@ -142,20 +142,34 @@ export function usePayments() {
   const obligationsQuery = useQuery({
     queryKey: ["obligations"],
     queryFn: async () => {
-      const res = await getMyObligations();
-      return unwrapList(res).map(shapeObligation);
+      try {
+        const res = await getMyObligations();
+        return unwrapList(res).map(shapeObligation);
+      } catch (err) {
+        // 404 means the member has no obligations yet — that's a valid empty
+        // state, not a real error. Don't block the page for it.
+        if (err?.response?.status === 404) return [];
+        throw err;
+      }
     },
     staleTime: 1000 * 60 * 2,
+    gcTime:    1000 * 60 * 30,
     refetchOnMount: "always",
   });
 
   const transactionsQuery = useQuery({
     queryKey: ["transactions"],
     queryFn: async () => {
-      const res = await getMyTransactions();
-      return unwrapList(res).map(shapeTransaction);
+      try {
+        const res = await getMyTransactions();
+        return unwrapList(res).map(shapeTransaction);
+      } catch (err) {
+        if (err?.response?.status === 404) return [];
+        throw err;
+      }
     },
     staleTime: 1000 * 60 * 2,
+    gcTime:    1000 * 60 * 30,
     refetchOnMount: "always",
   });
 
@@ -295,16 +309,13 @@ export function usePayments() {
       userQuery.isLoading ||
       communitiesQuery.isLoading,
     hasNoCommunity: !communitiesQuery.isLoading && rawCommunities.length === 0,
-    // communitiesQuery failing is genuinely blocking (no community context
-    // at all to render). paymentLinksQuery failing is NOT -- it's a known,
-    // permanent 403 for regular members (see comment above), and a
-    // member's real obligations should still render normally regardless,
-    // so its failure is deliberately excluded here rather than blocking
-    // the whole page with a "try again" that can never succeed.
+    // Only obligations + communities are truly blocking for the Upcoming
+    // Payments view. Transactions and user-profile failures are secondary:
+    // missing transactions means the "already paid" filter is conservative,
+    // and missing user data is only used for display. Neither warrants an
+    // error wall that prevents members from seeing their obligations.
     error:
       obligationsQuery.error ||
-      transactionsQuery.error ||
-      userQuery.error ||
       communitiesQuery.error ||
       null,
     // For a manual "Check again" affordance -- refetches everything this
