@@ -49,6 +49,7 @@ import AutoPay from "./pages/dashboard/settings/finance/AutoPay";
 import PaystackAccount from "./pages/dashboard/settings/finance/PaystackAccount";
 import CommunityProfile from "./pages/dashboard/settings/community/CommunityProfile";
 import MemberAccess from "./pages/dashboard/settings/community/MemberAccess";
+import SystemConfig from "./pages/dashboard/settings/admin/SystemConfig";
 
 // ── Member app layout + pages ──────────────────────────────────────────────────
 import MemberAppLayout from "./layouts/MemberAppLayout";
@@ -149,6 +150,8 @@ function App() {
             <Route path="members" element={<Members />} />
             <Route path="members/:memberId" element={<MemberDetail />} />
             <Route path="notifications" element={<AdminNotifications />} />
+
+            <Route path="system-config" element={<SystemConfig />} />
 
             <Route path="settings" element={<Settings />}>
               <Route index element={<Navigate to="account" replace />} />

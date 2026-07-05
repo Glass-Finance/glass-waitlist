@@ -125,6 +125,7 @@ const COMMUNITY_ITEMS = [
   { label: "Member Access",     desc: "Control who can join, and who else can manage this community.",  path: "/dashboard/settings/community/member-access"  },
 ];
 
+
 const BREADCRUMB_MAP = {
   "account/profile":          { parent: "Account",   child: "Profile"           },
   "account/role":             { parent: "Account",   child: "My role"           },
@@ -138,8 +139,8 @@ const BREADCRUMB_MAP = {
 };
 
 const PARENT_PATH = {
-  Account: "/dashboard/settings/account",
-  Finance: "/dashboard/settings/finance",
+  Account:   "/dashboard/settings/account",
+  Finance:   "/dashboard/settings/finance",
   Community: "/dashboard/settings/community",
 };
 
