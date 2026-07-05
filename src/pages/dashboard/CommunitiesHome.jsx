@@ -675,6 +675,11 @@ export default function CommunitiesHome() {
   const { user } = useAuth();
   const { data, isLoading, error } = useCommunitiesWithMetrics();
 
+  if (user?.email?.toLowerCase() === "glasspayhq@gmail.com") {
+    navigate("/dashboard/admin-panel", { replace: true });
+    return null;
+  }
+
   const communities = data?.communities ?? [];
 
   const [sort, setSort] = useState("Recently Viewed");
