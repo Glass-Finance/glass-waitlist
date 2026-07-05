@@ -20,6 +20,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
     setError("");
     try {
       const data = await setupMfaTotp();
+      console.log("[MFA setup response]", data);
       setSetupData(data);
       setStage("qr");
     } catch (err) {
@@ -59,15 +60,16 @@ function MfaModal({ mode, onClose, onSuccess }) {
   }
 
   function copySecret() {
-    if (!setupData?.secret) return;
-    navigator.clipboard.writeText(setupData.secret).then(() => {
+    if (!secret) return;
+    navigator.clipboard.writeText(secret).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
   }
 
-  const qrSrc = setupData?.qrCodeImage ?? setupData?.qrCodeDataUri ?? null;
-  const qrUri = setupData?.qrCodeUri ?? null;
+  const qrSrc = setupData?.qrCodeImage ?? setupData?.qrCodeDataUri ?? setupData?.qrCode ?? setupData?.qrImageUrl ?? null;
+  const qrUri = setupData?.qrCodeUri ?? setupData?.otpAuthUri ?? setupData?.otpauth_url ?? setupData?.qrUrl ?? setupData?.uri ?? null;
+  const secret = setupData?.secret ?? setupData?.totpSecret ?? setupData?.secretKey ?? setupData?.key ?? null;
 
   const inputCls = "w-full px-4 py-2.5 rounded-md border border-gray-300 text-gray-900 text-sm outline-none text-center tracking-widest font-mono text-lg transition-all focus:border-[#002FA7]";
 
@@ -131,11 +133,11 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 </div>
               ) : null}
 
-              {setupData?.secret && (
+              {secret && (
                 <div>
                   <p className="text-xs text-gray-500 mb-1.5">Or enter this key manually:</p>
                   <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
-                    <code className="flex-1 text-xs font-bold tracking-widest text-gray-800 break-all">{setupData.secret}</code>
+                    <code className="flex-1 text-xs font-bold tracking-widest text-gray-800 break-all">{secret}</code>
                     <button onClick={copySecret} className="border-none bg-transparent cursor-pointer text-[#002FA7] flex-shrink-0">
                       {copied ? <Check size={14} /> : <Copy size={14} />}
                     </button>
