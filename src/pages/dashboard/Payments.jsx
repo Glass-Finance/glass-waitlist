@@ -46,10 +46,10 @@ const FREQUENCIES = [
 ];
 const REMINDERS = ["Every Day", "Every 3 Days", "Every Week", "Every 2 Weeks"];
 const TABS = ["All Plans", "Recurring", "One Time"];
-const BAR_COLORS = ["#d4a017", "#7c3aed", "#1C2B8A", "#059669"];
+const BAR_COLORS = ["#d4a017", "#7c3aed", "#002FA7", "#059669"];
 
 const inputCls =
-  "w-full px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 bg-white outline-none transition-all focus:border-[#1C2B8A]";
+  "w-full px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 bg-white outline-none transition-all focus:border-[#002FA7]";
 
 function formatNaira(amount) {
   return new Intl.NumberFormat("en-NG", {
@@ -120,19 +120,19 @@ function StepIndicator({ current }) {
             <div className="flex flex-col items-center gap-1 flex-shrink-0">
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center font-medium text-xs border
-                ${done ? "bg-[#1C2B8A] border-[#1C2B8A] text-white" : active ? "border-[#1C2B8A] text-[#1C2B8A] bg-white" : "border-gray-300 text-gray-400 bg-white"}`}
+                ${done ? "bg-[#002FA7] border-[#002FA7] text-white" : active ? "border-[#002FA7] text-[#002FA7] bg-white" : "border-gray-300 text-gray-400 bg-white"}`}
               >
                 {done ? <Check size={13} /> : s.n}
               </div>
               <span
-                className={`text-[11px] whitespace-nowrap ${active ? "font-semibold text-[#1C2B8A]" : done ? "text-gray-600" : "text-gray-400"}`}
+                className={`text-[11px] whitespace-nowrap ${active ? "font-semibold text-[#002FA7]" : done ? "text-gray-600" : "text-gray-400"}`}
               >
                 {s.label}
               </span>
             </div>
             {i < steps.length - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-2 mb-4 ${done ? "bg-[#1C2B8A]" : "bg-gray-200"}`}
+                className={`flex-1 h-0.5 mx-2 mb-4 ${done ? "bg-[#002FA7]" : "bg-gray-200"}`}
               />
             )}
           </div>
@@ -168,10 +168,10 @@ function Step1({ value, onChange }) {
             <button
               key={opt.id}
               onClick={() => onChange(opt.id)}
-              className={`p-5 rounded-xl text-left border-2 transition-all relative ${sel ? "border-[#1C2B8A] bg-blue-50" : "border-gray-200 bg-gray-50"}`}
+              className={`p-5 rounded-xl text-left border-2 transition-all relative ${sel ? "border-[#002FA7] bg-blue-50" : "border-gray-200 bg-gray-50"}`}
             >
               <div
-                className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center ${sel ? "bg-[#1C2B8A] border-[#1C2B8A]" : "border-gray-300"}`}
+                className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center ${sel ? "bg-[#002FA7] border-[#002FA7]" : "border-gray-300"}`}
               >
                 {sel && <Check size={10} color="white" strokeWidth={3} />}
               </div>
@@ -520,7 +520,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
               </p>
               <button
                 onClick={onClose}
-                className="px-6 py-2 rounded bg-[#1C2B8A] text-white font-medium text-xs cursor-pointer border-none"
+                className="px-6 py-2 rounded bg-[#002FA7] text-white font-medium text-xs cursor-pointer border-none"
               >
                 Done
               </button>
@@ -572,7 +572,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
                 slugState.checking ||
                 slugState.available === false
               }
-              className={`px-6 py-2 rounded text-xs font-medium border-none cursor-pointer ${canContinue ? "bg-[#1C2B8A] text-white hover:opacity-90" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+              className={`px-6 py-2 rounded text-xs font-medium border-none cursor-pointer ${canContinue ? "bg-[#002FA7] text-white hover:opacity-90" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
             >
               {creating ? "Creating…" : step === 3 ? "Create Plan" : "Continue"}
             </button>
@@ -734,7 +734,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
           <button
             onClick={handleSave}
             disabled={!isReady || saving}
-            className="px-8 py-2.5 rounded-full text-sm font-semibold text-white bg-[#1C2B8A] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-8 py-2.5 rounded-full text-sm font-semibold text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? "Saving…" : "Save Changes"}
           </button>
@@ -976,7 +976,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
           <div className="flex items-center gap-3">
             <button
               onClick={exportCsv}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#1C2B8A] text-xs font-semibold text-[#1C2B8A] hover:bg-blue-50 bg-white cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#002FA7] text-xs font-semibold text-[#002FA7] hover:bg-blue-50 bg-white cursor-pointer"
             >
               Export CSV
             </button>
@@ -1006,7 +1006,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 bg-white cursor-pointer"
             >
               <Filter size={12} /> Filter
-              {statusFilter && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-[#1C2B8A] flex-shrink-0" />}
+              {statusFilter && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-[#002FA7] flex-shrink-0" />}
             </button>
             {filterOpen && (
               <>
@@ -1032,7 +1032,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                     </button>
                     <button
                       onClick={() => setFilterOpen(false)}
-                      className="flex-1 px-3 py-2 rounded-lg bg-[#1C2B8A] text-white text-xs font-semibold border-none cursor-pointer"
+                      className="flex-1 px-3 py-2 rounded-lg bg-[#002FA7] text-white text-xs font-semibold border-none cursor-pointer"
                     >
                       Apply
                     </button>
@@ -1090,7 +1090,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                           }
                         />
                       </td>
-                      <td className="px-4 py-3 text-xs font-semibold text-[#1C2B8A] whitespace-nowrap">
+                      <td className="px-4 py-3 text-xs font-semibold text-[#002FA7] whitespace-nowrap">
                         {getName(m)}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-500">{getEmail(m)}</td>
@@ -1128,7 +1128,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
             {statusFilter && (
               <button
                 onClick={() => setStatusFilter("")}
-                className="text-xs font-semibold text-[#1C2B8A] bg-transparent border-none cursor-pointer"
+                className="text-xs font-semibold text-[#002FA7] bg-transparent border-none cursor-pointer"
               >
                 Clear filter
               </button>
@@ -1501,7 +1501,7 @@ export default function Payments() {
         </div>
         <button
           onClick={() => setCreateOpen(true)}
-          className="px-4 py-2 rounded text-xs font-medium text-white bg-[#1C2B8A] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
+          className="px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
         >
           <Plus size={13} /> Create Payment Plan
         </button>
@@ -1513,7 +1513,7 @@ export default function Payments() {
           icon={Wallet}
           label="Total Amount Collected"
           value={formatNaira(stats.collected)}
-          color="#1C2B8A"
+          color="#002FA7"
           bg="#E6EEFF"
         />
         <StatCard

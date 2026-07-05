@@ -64,7 +64,7 @@ export default function DesktopRequired() {
             className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl mb-4"
             style={{ background: "#EEF2FF", border: "1px solid #C7D2FE" }}
           >
-            <span className="text-sm text-[#1C2B8A] font-medium truncate">{url}</span>
+            <span className="text-sm text-[#002FA7] font-medium truncate">{url}</span>
             <button
               onClick={handleCopy}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white border-none cursor-pointer flex-shrink-0 hover:opacity-90"

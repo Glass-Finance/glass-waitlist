@@ -35,7 +35,7 @@ function categorize(n) {
 const SECTION_CONFIG = {
   urgent:  { label: "Urgent",            border: "#E53E3E" },
   payment: { label: "Payment Activity",  border: "#D69E2E" },
-  member:  { label: "Community Activity",border: "#1C2B8A" },
+  member:  { label: "Community Activity",border: "#002FA7" },
 };
 
 const TABS = ["All", "Urgent", "Payments", "Members"];
@@ -44,7 +44,7 @@ const TAB_CAT = { Urgent: "urgent", Payments: "payment", Members: "member" };
 const ICON_META = {
   urgent:  { bg: "#FEF2F2", color: "#EF4444", Icon: AlertCircle },
   payment: { bg: "#FFFBEB", color: "#CA8A04", Icon: CreditCard  },
-  member:  { bg: "#EEF2FF", color: "#1C2B8A", Icon: Users       },
+  member:  { bg: "#EEF2FF", color: "#002FA7", Icon: Users       },
 };
 
 function Avatar({ cat }) {
@@ -83,7 +83,7 @@ function NotificationRow({ n, onMarkRead }) {
         <p className="text-[11px] text-gray-400 mt-1.5">{formatTime(n.createdAt)}</p>
       </div>
       {!isRead && (
-        <span className="w-2 h-2 rounded-full bg-[#1C2B8A] flex-shrink-0 mt-1.5" />
+        <span className="w-2 h-2 rounded-full bg-[#002FA7] flex-shrink-0 mt-1.5" />
       )}
     </button>
   );
@@ -167,13 +167,13 @@ export default function Notifications() {
   }, [notifications, tab]);
 
   return (
-    <div className="flex flex-col h-full px-8 py-6" style={{ minHeight: 0 }}>
+    <div className="flex flex-col h-full px-6 py-6" style={{ minHeight: 0 }}>
       {/* Header */}
       <div className="flex items-start justify-between mb-5 flex-shrink-0">
         <div>
-          <h1 className="text-xl font-bold text-gray-900 mb-1">Notifications</h1>
+          <h1 className="text-xl font-bold text-black mb-1">Notifications</h1>
           <p className="text-sm text-gray-400">
-            A full picture of your community's financial activity.
+            Stay on top of payments, member activity, and alerts.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -188,7 +188,7 @@ export default function Notifications() {
           <button
             onClick={() => markAllRead()}
             disabled={isMarkingAllRead || unreadCount === 0}
-            className="px-4 py-2 rounded text-xs font-medium text-white bg-[#1C2B8A] hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
+            className="px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
           >
             Mark All As Read
           </button>
@@ -209,14 +209,14 @@ export default function Notifications() {
               key={t}
               onClick={() => setTab(t)}
               className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium bg-transparent border-none cursor-pointer transition-colors
-                ${active ? "text-gray-900 border-b-2 border-[#1C2B8A] -mb-px" : "text-gray-400 hover:text-gray-700"}`}
+                ${active ? "text-gray-900 border-b-2 border-[#002FA7] -mb-px" : "text-gray-400 hover:text-gray-700"}`}
             >
               {t}
               {count > 0 && (
                 <span
                   className="min-w-[18px] h-[18px] px-1 rounded text-[10px] font-bold flex items-center justify-center"
                   style={active
-                    ? { background: "#1C2B8A", color: "#fff" }
+                    ? { background: "#002FA7", color: "#fff" }
                     : { background: "#EFEFF1", color: "#6b7280" }}
                 >
                   {count}

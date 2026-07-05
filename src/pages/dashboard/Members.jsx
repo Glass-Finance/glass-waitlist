@@ -87,7 +87,7 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
           </div>
           <button
             onClick={() => { onApply({ plan, status }); onClose(); }}
-            className="px-3 py-2 rounded-lg bg-[#1C2B8A] text-white text-xs font-semibold border-none cursor-pointer"
+            className="px-3 py-2 rounded-lg bg-[#002FA7] text-white text-xs font-semibold border-none cursor-pointer"
           >
             Apply
           </button>
@@ -258,7 +258,7 @@ export default function Members() {
           <h1 className="text-xl font-bold text-black">Members</h1>
           <p className="text-sm text-gray-400 mt-0.5">A full picture of the members of your community</p>
         </div>
-        <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded text-xs font-medium text-white bg-[#1C2B8A] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer">
+        <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer">
           <Plus size={13} /> Add Member
         </button>
       </div>
@@ -280,7 +280,7 @@ export default function Members() {
               return (
                 <div key={req.id} className="flex items-center justify-between px-5 py-3 gap-4">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ background: "#1C2B8A" }}>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ background: "#002FA7" }}>
                       {initials}
                     </div>
                     <div className="min-w-0">
@@ -300,7 +300,7 @@ export default function Members() {
                       onClick={() => approve(req.id)}
                       disabled={isActing}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-white border-none cursor-pointer disabled:opacity-50 hover:opacity-90"
-                      style={{ background: "#1C2B8A" }}
+                      style={{ background: "#002FA7" }}
                     >
                       <UserCheck size={11} /> Approve
                     </button>
@@ -323,7 +323,7 @@ export default function Members() {
       {/* Stats — only when there are members */}
       {members.length > 0 && (
       <div className="grid grid-cols-4 gap-3 mb-5">
-        <StatCard icon={Users} label="Total Members" value={String(stats.total)} color="#1C2B8A" bg="#E6EEFF" />
+        <StatCard icon={Users} label="Total Members" value={String(stats.total)} color="#002FA7" bg="#E6EEFF" />
         <StatCard icon={UserX} label="Active Members" value={String(stats.active)} color="#dc2626" bg="#FFE9EC" />
         <StatCard icon={Clock} label="Inactive" value={String(stats.inactive)} color="#b45309" bg="#FFF8E7" />
         <StatCard icon={ShieldCheck} label="Admins" value={String(stats.admins)} color="#7c3aed" bg="#F3EEFF" />
@@ -382,7 +382,7 @@ export default function Members() {
                 </button>
               </span>
             ))}
-            <button onClick={() => setFilters({ plan: "", status: "" })} className="text-xs font-semibold text-[#1C2B8A] bg-transparent border-none cursor-pointer">
+            <button onClick={() => setFilters({ plan: "", status: "" })} className="text-xs font-semibold text-[#002FA7] bg-transparent border-none cursor-pointer">
               Clear All
             </button>
           </div>
@@ -417,7 +417,7 @@ export default function Members() {
                         <input type="checkbox" checked={selected.includes(m.id)} onChange={() => toggleSelect(m.id)} />
                       </td>
                       <td className="px-5 py-3">
-                        <button onClick={() => navigate(`/dashboard/members/${m.id}?community=${communityId}`)} className="text-xs font-semibold text-[#1C2B8A] hover:underline bg-transparent border-none cursor-pointer p-0">
+                        <button onClick={() => navigate(`/dashboard/members/${m.id}?community=${communityId}`)} className="text-xs font-semibold text-[#002FA7] hover:underline bg-transparent border-none cursor-pointer p-0">
                           {memberName(m)}
                         </button>
                       </td>
@@ -503,7 +503,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="member@email.com"
-              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1C2B8A]"
+              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#002FA7]"
             />
           </div>
           <div>
@@ -511,7 +511,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
             <select
               value={roleId}
               onChange={(e) => setRoleId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#1C2B8A] bg-white"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#002FA7] bg-white"
             >
               {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>
@@ -534,11 +534,11 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
                   Share your community link so they can register and join:
                 </p>
                 <div className="flex items-center gap-2">
-                  <span className="flex-1 text-xs text-[#1C2B8A] truncate font-medium">{inviteLink}</span>
+                  <span className="flex-1 text-xs text-[#002FA7] truncate font-medium">{inviteLink}</span>
                   <button
                     type="button"
                     onClick={copyInviteLink}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#1C2B8A] border-none cursor-pointer flex-shrink-0 hover:opacity-90"
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#002FA7] border-none cursor-pointer flex-shrink-0 hover:opacity-90"
                   >
                     {linkCopied ? <Check size={11} /> : <Copy size={11} />}
                     {linkCopied ? "Copied!" : "Copy"}
@@ -552,7 +552,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
         <button
           type="submit"
           disabled={adding || !isReady}
-          className="w-full mt-4 px-4 py-2 rounded bg-[#1C2B8A] text-white text-xs font-medium hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
+          className="w-full mt-4 px-4 py-2 rounded bg-[#002FA7] text-white text-xs font-medium hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
         >
           {adding ? "Sending…" : "Send Invite"}
         </button>

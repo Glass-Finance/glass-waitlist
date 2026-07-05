@@ -225,7 +225,7 @@
 //           {success ? (
 //             <div className="text-center py-10">
 //               <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4"><Check size={24} className="text-green-600" strokeWidth={2.5}/></div>
-//               <h3 className="text-lg font-extrabold text-[#0f1d6e] mb-2">Plan Created Successfully!</h3>
+//               <h3 className="text-lg font-extrabold text-[#002FA7] mb-2">Plan Created Successfully!</h3>
 //               <p className="text-sm text-gray-500 mb-6">Members assigned to this plan have been notified.</p>
 //               <button onClick={onClose} className="px-8 py-2.5 rounded-full bg-[#002FA7] text-white font-bold text-sm hover:opacity-90 border-none cursor-pointer">Done</button>
 //             </div>
@@ -270,7 +270,7 @@
 //             <line x1="16" y1="11" x2="22" y2="11" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round"/>
 //           </svg>
 //         </div>
-//         <h3 className="text-lg font-extrabold text-[#0f1d6e] mb-2">Add Member</h3>
+//         <h3 className="text-lg font-extrabold text-[#002FA7] mb-2">Add Member</h3>
 //         <p className="text-sm text-gray-500 mb-6 leading-relaxed">This feature is coming soon! You'll be able to invite and onboard new members directly from the dashboard.</p>
 //         <button onClick={onClose} className="px-8 py-2.5 rounded-full bg-[#002FA7] text-white font-bold text-sm hover:opacity-90 border-none cursor-pointer">Got it</button>
 //       </div>
@@ -731,7 +731,7 @@ function AdminPaymentModal({ item, onClose }) {
                   className="w-full h-full object-cover rounded-xl"
                 />
               ) : (
-                <span className="text-[11px] font-bold text-[#1C2B8A]">
+                <span className="text-[11px] font-bold text-[#002FA7]">
                   {communityInitials}
                 </span>
               )}
@@ -757,7 +757,7 @@ function AdminPaymentModal({ item, onClose }) {
         <div
           className="px-7 py-8 text-center"
           style={{
-            background: "linear-gradient(135deg, #1C2B8A 0%, #002FA7 100%)",
+            background: "linear-gradient(135deg, #002FA7 0%, #002FA7 100%)",
           }}
         >
           <p className="text-[12px] text-blue-200 uppercase tracking-widest mb-2 font-medium">
@@ -790,7 +790,7 @@ function AdminPaymentModal({ item, onClose }) {
               <span className="text-sm text-gray-500">Schedule</span>
               <span
                 className="text-[11px] font-semibold px-3 py-0.5 rounded-full"
-                style={{ background: "#EEF1FB", color: "#1C2B8A" }}
+                style={{ background: "#EEF1FB", color: "#002FA7" }}
               >
                 {isRecurring ? "Recurring" : "One-Time"}
               </span>
@@ -827,7 +827,7 @@ function AdminPaymentModal({ item, onClose }) {
                 className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ background: "#EEF2FF" }}
               >
-                <Landmark size={16} className="text-[#1C2B8A]" />
+                <Landmark size={16} className="text-[#002FA7]" />
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">
@@ -1452,7 +1452,7 @@ function DashboardContent({ isPaying, communityId }) {
             </button>
             <button
               onClick={() => setAddMemberOpen(true)}
-              className="px-4 py-2 rounded text-xs font-medium text-white bg-[#1C2B8A] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
+              className="px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
             >
               <Plus size={14} /> Add Member
             </button>
@@ -1666,7 +1666,7 @@ function DashboardContent({ isPaying, communityId }) {
                   const collected  = cm.collected   ?? p.amountCollected ?? 0;
                   const expected   = p.amount > 0 && totalCount > 0 ? p.amount * totalCount : p.expectedAmount ?? 0;
                   const pct        = expected > 0 ? Math.min(100, Math.round((collected / expected) * 100)) : 0;
-                  const BAR_COLORS = ["#d4a017", "#7c3aed", "#099DA8", "#059669", "#1C2B8A", "#e11d48"];
+                  const BAR_COLORS = ["#d4a017", "#7c3aed", "#099DA8", "#059669", "#002FA7", "#e11d48"];
                   const barColor   = BAR_COLORS[idx % BAR_COLORS.length];
                   return (
                     <div

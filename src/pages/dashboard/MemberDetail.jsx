@@ -29,7 +29,7 @@ function StatCard({ label, value }) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 px-4 py-3.5" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <p className="text-xs text-gray-400 mb-1">{label}</p>
-      <p className="text-base font-bold text-[#0f1d6e]">{value}</p>
+      <p className="text-base font-bold text-black">{value}</p>
     </div>
   );
 }
@@ -44,8 +44,8 @@ function PlanCard({ plan, successfulLinkIds }) {
   return (
     <div className="bg-white rounded-md border border-gray-100 p-4" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <div className="flex items-start justify-between mb-2">
-        <p className="text-sm font-medium text-[#0f1d6e ] pt-0.5">{plan.paymentLink?.title ?? "Plan"}</p>
-        <span className="text-xs font-semibold px-2.5 py-2.5 rounded-full" style={{ color: isPaid ? "#059669" : "#e11d48", background: isPaid ? "#ecfdf5" : "#fff1f2" }}>
+        <p className="text-sm font-medium text-black pt-0.5">{plan.paymentLink?.title ?? "Plan"}</p>
+        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full" style={{ color: isPaid ? "#059669" : "#e11d48", background: isPaid ? "#ecfdf5" : "#fff1f2" }}>
           {isPaid ? "Paid" : "Unpaid"}
         </span>
       </div>
@@ -113,7 +113,7 @@ export default function MemberDetail() {
       </div>
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h1 className="text-xl font-extrabold text-[#0f1d6e]">
+          <h1 className="text-xl font-bold text-black">
             Members <span className="text-gray-300 mx-1">›</span> {memberName(member)}
           </h1>
           <p className="text-sm text-gray-400 mt-0.5">A full picture of the members of your community</p>
@@ -121,7 +121,8 @@ export default function MemberDetail() {
         <button
           onClick={handleRemove}
           disabled={removeMember.isPending}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-red-600 hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
+          className="flex items-center gap-1.5 px-4 py-2 rounded text-xs font-medium text-white hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
+          style={{ background: "#E53E3E" }}
         >
           <UserMinus size={14} /> Remove Member
         </button>
@@ -158,7 +159,7 @@ export default function MemberDetail() {
       {tab === "Payment History" && (
         <div className="bg-white rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
           <div className="flex items-center justify-between px-5 py-4">
-            <span className="text-sm font-bold text-[#0f1d6e]">Member Payments</span>
+            <span className="text-sm font-medium text-black">Member Payments</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
@@ -178,7 +179,7 @@ export default function MemberDetail() {
                     const isPaid = ["success", "successful", "paid"].includes(statusLabel.toLowerCase());
                     return (
                       <tr key={t.id} className="border-b border-gray-50">
-                        <td className="px-5 py-3 text-sm font-medium text-[#0f1d6e]">{t.paymentLink?.title ?? t.description ?? "—"}</td>
+                        <td className="px-5 py-3 text-sm font-medium text-black">{t.paymentLink?.title ?? t.description ?? "—"}</td>
                         <td className="px-5 py-3 text-sm font-semibold text-gray-900">{formatNaira(t.amount)}</td>
                         <td className="px-5 py-3">
                           <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ color: isPaid ? "#059669" : "#dc2626", background: isPaid ? "#ecfdf5" : "#fff1f2" }}>

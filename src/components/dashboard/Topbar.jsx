@@ -263,7 +263,7 @@ export default function Topbar({
           onClick={() => navigate("/dashboard/settings")}
           className="flex items-center gap-2 bg-transparent border-none cursor-pointer hover:opacity-80 transition-opacity p-0"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1C2B8A] to-[#4f46e5] flex items-center justify-center text-white font-bold text-xs flex-shrink-0 select-none overflow-hidden">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#002FA7] to-[#4f46e5] flex items-center justify-center text-white font-bold text-xs flex-shrink-0 select-none overflow-hidden">
             {user?.profileImage?.url ? (
               <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
             ) : (
