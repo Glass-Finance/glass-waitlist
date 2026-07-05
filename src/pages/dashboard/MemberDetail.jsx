@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, UserMinus, Phone, MessageCircle, Download } from "lucide-react";
+import { UserMinus, Phone, MessageCircle, Download } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers } from "../../hooks/useCommunityMembers";
@@ -114,15 +114,15 @@ export default function MemberDetail() {
         backgroundPosition: "center",
       }}
     >
-      <div className="flex items-start justify-between mb-1">
-        <button onClick={() => navigate(`/dashboard/members?community=${communityId}`)} className="flex items-center gap-1.5 text-xs text-gray-400 bg-transparent border-none cursor-pointer hover:text-gray-600 mb-1">
-          <ChevronLeft size={12} /> Members
-        </button>
-      </div>
       <div className="flex items-start justify-between mb-5">
         <div>
           <h1 className="text-xl font-bold text-black">
-            <span className="text-gray-400 font-medium">Members</span>
+            <button
+              onClick={() => navigate(`/dashboard/members?community=${communityId}`)}
+              className="text-gray-400 font-medium bg-transparent border-none p-0 cursor-pointer hover:text-gray-600 hover:underline"
+            >
+              Members
+            </button>
             <span className="text-gray-300 mx-1">›</span> {memberName(member)}
           </h1>
           <p className="text-sm text-gray-400 mt-0.5">A full picture of the members of your community</p>
