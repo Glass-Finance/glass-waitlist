@@ -667,7 +667,7 @@ export default function Sidebar() {
                 style={{
                   fontSize: 12,
                   fontWeight: 700,
-                  color: "#002FA7",
+                  color: "#000000",
                   lineHeight: 1.3,
                 }}
               >

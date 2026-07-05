@@ -139,7 +139,7 @@ export default function Topbar({
     searchMembers.length || searchTransactions.length || searchPaymentLinks.length || searchSettlements.length;
 
   return (
-    <header className="h-14 bg-white border-b border-[#EFEFF1] flex items-center gap-4 px-6 sticky top-0 z-50 flex-shrink-0">
+    <header className="h-14 bg-[#EFEFF1E5] border-b border-[#EFEFF1] flex items-center gap-4 px-6 sticky top-0 z-50 flex-shrink-0">
       {/* Search */}
       <div className="relative flex-1 max-w-[420px]" ref={searchRef}>
         <div className="flex items-center gap-2 bg-white rounded-md px-3 py-2 border border-gray-100 focus-within:ring-1 focus-within:ring-[#002FA7]">

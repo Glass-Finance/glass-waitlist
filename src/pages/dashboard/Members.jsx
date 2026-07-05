@@ -50,7 +50,7 @@ function statusStyle(paid, total) {
 
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-[#EFEFF1E5] rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <div>
         <p className="text-xs text-gray-400 mb-1">{label}</p>
         <p className="text-[13px] font-semibold text-black">{value}</p>

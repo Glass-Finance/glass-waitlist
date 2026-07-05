@@ -84,7 +84,7 @@ function toDateInput(iso) {
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
     <div
-      className="bg-white rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between"
+      className="bg-[#EFEFF1E5] rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between"
       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
     >
       <div>
@@ -490,7 +490,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
       className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
         <div className="flex items-start justify-between px-6 pt-5">
           <div>
             <h2 className="text-base font-semibold text-black">
@@ -623,7 +623,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
       className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
+      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl p-6">
         <div className="flex items-start justify-between mb-5">
           <div>
             <h2 className="text-base font-semibold text-black">
@@ -735,7 +735,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
           <button
             onClick={handleSave}
             disabled={!isReady || saving}
-            className="px-8 py-2.5 rounded-full text-sm font-semibold text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-8 py-2.5 rounded-full text-xs font-normal text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? "Saving…" : "Save Changes"}
           </button>
@@ -965,7 +965,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
       className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <div>

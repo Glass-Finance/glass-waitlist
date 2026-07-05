@@ -227,10 +227,10 @@ export default function Notifications() {
               {t}
               {count > 0 && (
                 <span
-                  className="min-w-[18px] h-[18px] px-1 rounded text-[10px] font-bold flex items-center justify-center"
+                  className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
                   style={active
-                    ? { background: "linear-gradient(135deg, #3b5bdb, #002FA7)", color: "#fff", boxShadow: "0 1px 2px rgba(0,47,167,0.35), inset 0 1px 0 rgba(255,255,255,0.25)" }
-                    : { background: "#EFEFF1", color: "#6b7280" }}
+                    ? { background: "#EEF2FF", color: "#002FA7", border: "1px solid #002FA7" }
+                    : { background: "#fff", color: "#6b7280", border: "1px solid #E5E7EB" }}
                 >
                   {count}
                 </span>
