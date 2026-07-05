@@ -28,7 +28,7 @@ const memberPhone = (m) => m?.user?.phoneNumber ?? m?.phoneNumber ?? "—";
 
 function StatCard({ label, value }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 px-4 py-3.5" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-[#EFEFF1E5] rounded-xl border border-gray-100 px-4 py-3.5" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <p className="text-xs text-gray-400 mb-1">{label}</p>
       <p className="text-base font-bold text-black">{value}</p>
     </div>
@@ -43,7 +43,7 @@ function PlanCard({ plan, successfulLinkIds }) {
     s === "SUCCESSFUL" ||
     (!!plan.paymentLink?.id && successfulLinkIds?.has(plan.paymentLink.id));
   return (
-    <div className="bg-white rounded-md border border-gray-100 p-4" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-[#EFEFF1E5] rounded-md border border-gray-100 p-4" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <div className="flex items-start justify-between mb-2">
         <p className="text-sm font-medium text-black pt-0.5">{plan.paymentLink?.title ?? "Plan"}</p>
         <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full" style={{ color: isPaid ? "#059669" : "#e11d48", background: isPaid ? "#ecfdf5" : "#fff1f2" }}>
@@ -122,7 +122,8 @@ export default function MemberDetail() {
       <div className="flex items-start justify-between mb-5">
         <div>
           <h1 className="text-xl font-bold text-black">
-            Members <span className="text-gray-300 mx-1">›</span> {memberName(member)}
+            <span className="text-gray-400 font-medium">Members</span>
+            <span className="text-gray-300 mx-1">›</span> {memberName(member)}
           </h1>
           <p className="text-sm text-gray-400 mt-0.5">A full picture of the members of your community</p>
         </div>
@@ -165,7 +166,7 @@ export default function MemberDetail() {
       )}
 
       {tab === "Payment History" && (
-        <div className="bg-white rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+        <div className="bg-[#EFEFF1E5] rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
           <div className="flex items-center justify-between px-5 py-4">
             <span className="text-sm font-medium text-black">Member Payments</span>
           </div>
@@ -210,7 +211,7 @@ export default function MemberDetail() {
       )}
 
       {tab === "Contact Details" && (
-        <div className="bg-white rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+        <div className="bg-[#EFEFF1E5] rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>

@@ -243,8 +243,16 @@ export default function Members() {
     const a = document.createElement("a");
     a.href = url;
     a.download = "members.csv";
+    // Revoking the object URL synchronously right after click() is a known
+    // footgun -- some browsers (Firefox especially) haven't finished
+    // processing the download yet, so the blob gets invalidated before it's
+    // actually read, silently failing the export. Appending to the DOM
+    // before clicking (not required in Chrome, but Firefox is more
+    // reliable with it) and deferring the revoke fixes both.
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
   const activeChips = [
@@ -338,7 +346,7 @@ export default function Members() {
       </div>
       )}
 
-      {members.length > 0 && <div className="bg-white rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+      {members.length > 0 && <div className="bg-[#EFEFF1E5] rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
         <div className="flex items-center justify-between px-5 py-4">
           <span className="text-sm font-medium text-black">Member Payments</span>
           <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-all bg-white cursor-pointer">

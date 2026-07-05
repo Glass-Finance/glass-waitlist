@@ -204,8 +204,11 @@ export default function Notifications() {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex items-center border-b border-gray-100 mb-5 flex-shrink-0">
+      {/* Tabs — matches Settings' Account/Finance/Community segmented style */}
+      <div
+        className="flex gap-1 mb-5 bg-[#EFEFF1] rounded-md p-1 w-fit flex-shrink-0"
+        style={{ border: "1px solid #fafafa" }}
+      >
         {TABS.map((t) => {
           const count =
             t === "All" ? notifications.length :
@@ -217,8 +220,8 @@ export default function Notifications() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium bg-transparent border-none cursor-pointer transition-colors
-                ${active ? "text-gray-900 border-b-2 border-[#002FA7] -mb-px" : "text-gray-400 hover:text-gray-700"}`}
+              className={`flex items-center gap-1.5 px-4 py-2 text-[13px] rounded transition-all cursor-pointer border-none font-medium
+                ${active ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-800"}`}
             >
               {t}
               {count > 0 && (

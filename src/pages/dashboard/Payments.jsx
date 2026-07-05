@@ -1300,7 +1300,7 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers, metrics })
 
   return (
     <div
-      className="bg-white rounded-2xl border border-gray-100 p-5 flex flex-col gap-4"
+      className="bg-[#EFEFF1E5] rounded-2xl border border-gray-100 p-5 flex flex-col gap-4"
       style={{ boxShadow: "0 1px 6px rgba(0,47,167,0.07)" }}
     >
       {/* Status + overflow */}
