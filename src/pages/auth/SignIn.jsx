@@ -66,6 +66,7 @@ export default function SignIn() {
   // by the *resulting* role/device, since neither knows in advance whether
   // this is a community owner or a mobile-only member.
   async function resolveDestination(user) {
+    if (user?.email?.toLowerCase() === "glasspayhq@gmail.com") return "/dashboard/admin-panel";
     if (user?.isAdmin) return "/dashboard/home";
 
     // The member app is mobile-only — a non-admin signing in from a

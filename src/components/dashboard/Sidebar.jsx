@@ -199,6 +199,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useAuth } from "../../store/AuthContext";
@@ -306,6 +307,155 @@ export default function Sidebar() {
   };
 
   const W = collapsed ? 0 : 220;
+
+  // ── Super-admin: stripped-down sidebar, no community nav ──────────────────
+  if (user?.email?.toLowerCase() === "glasspayhq@gmail.com") {
+    return (
+      <div className="flex h-screen sticky top-0 z-40 flex-shrink-0">
+        {/* Blue rail */}
+        <div
+          className="flex-shrink-0 bg-[#002FA7] flex flex-col items-center pt-3.5 pb-5"
+          style={{ width: 56 }}
+        >
+          <button
+            onClick={() => navigate("/dashboard/admin-panel")}
+            className="mb-4 p-0 bg-transparent border-none cursor-pointer"
+            title="Platform Admin"
+          >
+            <img
+              src="/Glass.png"
+              alt="Glass"
+              className="w-8 h-8 object-contain brightness-0 invert block"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+                if (e.currentTarget.nextSibling)
+                  e.currentTarget.nextSibling.style.display = "flex";
+              }}
+            />
+            <div
+              className="hidden w-8 h-8 rounded-md bg-white/25 items-center justify-center text-white font-black text-base"
+              aria-hidden="true"
+            >
+              G
+            </div>
+          </button>
+
+          <button
+            onClick={() => navigate("/dashboard/admin-panel")}
+            title="Platform Admin"
+            className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/20 text-white transition-all hover:bg-white/30"
+          >
+            <ShieldCheck size={16} />
+          </button>
+
+          <div className="flex-1" />
+
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            title="Log out"
+            className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/60 hover:bg-red-500/20 hover:text-red-300 transition-all disabled:opacity-50"
+          >
+            <LogOut size={15} />
+          </button>
+        </div>
+
+        {/* White panel */}
+        <div
+          style={{
+            width: 220,
+            background: "#fff",
+            borderRight: "1px solid #eef0f8",
+            display: "flex",
+            flexDirection: "column",
+            fontFamily: "Inter, sans-serif",
+          }}
+        >
+          <div
+            style={{
+              padding: "14px 12px 13px",
+              borderBottom: "1px solid #eef0f8",
+              minHeight: 56,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#002FA7", lineHeight: 1.3 }}>
+                Platform Admin
+              </div>
+              <span
+                style={{
+                  display: "inline-block",
+                  marginTop: 3,
+                  fontSize: 9,
+                  fontWeight: 700,
+                  color: "#7c3aed",
+                  background: "#f5f3ff",
+                  borderRadius: 99,
+                  padding: "1px 7px",
+                }}
+              >
+                Super Admin
+              </span>
+            </div>
+          </div>
+
+          <nav style={{ flex: 1, padding: "10px 8px" }}>
+            <button
+              onClick={() => navigate("/dashboard/admin-panel")}
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "9px 10px",
+                borderRadius: 8,
+                border: "none",
+                cursor: "pointer",
+                background: "#e6eeff",
+                color: "#002FA7",
+                fontWeight: 700,
+                fontSize: 12,
+                fontFamily: "Inter, sans-serif",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <ShieldCheck size={14} style={{ flexShrink: 0 }} />
+              <span>Admin Panel</span>
+            </button>
+          </nav>
+
+          <div
+            style={{
+              padding: "10px 12px",
+              borderTop: "1px solid #eef0f8",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <div
+              style={{
+                width: 28, height: 28, borderRadius: "50%",
+                background: "linear-gradient(135deg,#7c3aed,#002FA7)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: "#fff", fontSize: 10, fontWeight: 700,
+                flexShrink: 0,
+              }}
+            >
+              SA
+            </div>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <p style={{ fontSize: 11, fontWeight: 600, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {user?.email}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen sticky top-0 z-40 flex-shrink-0">
@@ -419,12 +569,23 @@ export default function Sidebar() {
           )}
         </div>
 
+        {/* Super-admin shortcut — only visible to glasspayhq@gmail.com */}
+        {user?.email?.toLowerCase() === "glasspayhq@gmail.com" && (
+          <button
+            onClick={() => navigate("/dashboard/admin-panel")}
+            title="Platform Admin"
+            className="mt-2 w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/50 hover:bg-white/20 hover:text-white transition-all"
+          >
+            <ShieldCheck size={15} />
+          </button>
+        )}
+
         {/* Logout button pinned to bottom of rail */}
         <button
           onClick={handleLogout}
           disabled={loggingOut}
           title="Log out"
-          className="mt-4 w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/60 hover:bg-red-500/20 hover:text-red-300 transition-all disabled:opacity-50"
+          className="mt-2 w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/60 hover:bg-red-500/20 hover:text-red-300 transition-all disabled:opacity-50"
         >
           <LogOut size={15} />
         </button>
