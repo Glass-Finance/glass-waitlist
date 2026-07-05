@@ -96,9 +96,12 @@
 
 
 import { useRef, useState } from "react";
-import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import { useNavigate, useLocation, Outlet, Navigate } from "react-router-dom";
 import { Search, ChevronRight } from "lucide-react";
 import Background from "../../../assets/background.png";
+import { useAuth } from "../../../store/AuthContext";
+
+const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";
 
 const TABS = [
   { label: "Account",   defaultPath: "/dashboard/settings/account",                  match: "account"   },
@@ -190,6 +193,13 @@ export default function Settings() {
   const navigate = useNavigate();
   const location = useLocation();
   const path     = location.pathname;
+  const { user } = useAuth();
+  const isSuperAdmin = user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL;
+
+  // Super-admin only gets Security — redirect any other settings path there
+  if (isSuperAdmin && !path.includes("account/security")) {
+    return <Navigate to="/dashboard/settings/account/security" replace />;
+  }
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -282,30 +292,32 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* Tab bar */}
-      <div
-        className="flex gap-1 mb-6 bg-[#EFEFF1] rounded-md p-1 w-fit"
-        style={{ border: "1px solid #fafafa" }}
-      >
-        {TABS.map(tab => {
-          const isActive = activeTab === tab.label;
-          return (
-            <button
-              key={tab.label}
-              onClick={() => navigate(tab.defaultPath)}
-              className={`px-6 py-2 text-[13px] rounded transition-all cursor-pointer border-none font-medium
-                ${isActive
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "bg-transparent text-gray-500 hover:text-gray-800"}`}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
+      {/* Tab bar — hidden for super-admin */}
+      {!isSuperAdmin && (
+        <div
+          className="flex gap-1 mb-6 bg-[#EFEFF1] rounded-md p-1 w-fit"
+          style={{ border: "1px solid #fafafa" }}
+        >
+          {TABS.map(tab => {
+            const isActive = activeTab === tab.label;
+            return (
+              <button
+                key={tab.label}
+                onClick={() => navigate(tab.defaultPath)}
+                className={`px-6 py-2 text-[13px] rounded transition-all cursor-pointer border-none font-medium
+                  ${isActive
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "bg-transparent text-gray-500 hover:text-gray-800"}`}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
-      {/* Breadcrumb — only shown on sub-pages */}
-      {breadcrumb && (
+      {/* Breadcrumb — only shown on sub-pages, hidden for super-admin */}
+      {breadcrumb && !isSuperAdmin && (
         <p className="text-sm text-gray-500 mb-5">
           <BreadcrumbParent parent={breadcrumb.parent} />
           <span className="mx-2 text-gray-400">›</span>
@@ -313,13 +325,13 @@ export default function Settings() {
         </p>
       )}
 
-      {/* Menu lists — shown when on top-level tab, before drilling into a sub-page */}
-      {isAccountMenu   && <MenuList items={ACCOUNT_ITEMS}   />}
-      {isFinanceMenu   && <MenuList items={FINANCE_ITEMS}   />}
-      {isCommunityMenu && <MenuList items={COMMUNITY_ITEMS} />}
+      {/* Menu lists — hidden for super-admin (redirected to security above) */}
+      {!isSuperAdmin && isAccountMenu   && <MenuList items={ACCOUNT_ITEMS}   />}
+      {!isSuperAdmin && isFinanceMenu   && <MenuList items={FINANCE_ITEMS}   />}
+      {!isSuperAdmin && isCommunityMenu && <MenuList items={COMMUNITY_ITEMS} />}
 
-      {/* Sub-page content — rendered for all sub-routes */}
-      {!isAccountMenu && !isFinanceMenu && !isCommunityMenu && <Outlet />}
+      {/* Sub-page content */}
+      {(isSuperAdmin || (!isAccountMenu && !isFinanceMenu && !isCommunityMenu)) && <Outlet />}
     </div>
   );
 }
