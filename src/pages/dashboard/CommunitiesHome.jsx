@@ -510,6 +510,7 @@ import {
 import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
 import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin } from "../../utils/communityRole";
+import Background from "../../assets/background.png";
 
 const SORT_OPTIONS = ["Recently Viewed", "A-Z", "Z-A", "Newest First"];
 
@@ -696,7 +697,14 @@ export default function CommunitiesHome() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div
+      className="flex flex-col h-full"
+      style={{
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-7 pt-7 pb-5">
         <div>

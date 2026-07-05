@@ -28,6 +28,7 @@ import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { useSlug } from "../../hooks/useSlug";
 import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
+import Background from "../../assets/background.png";
 import { getCommunityMembers } from "../../api/communities";
 import { getCommunityObligations, getCommunityTransactions } from "../../api/transactions";
 
@@ -168,16 +169,16 @@ function Step1({ value, onChange }) {
             <button
               key={opt.id}
               onClick={() => onChange(opt.id)}
-              className={`p-5 rounded-xl text-left border-2 transition-all relative ${sel ? "border-[#002FA7] bg-blue-50" : "border-gray-200 bg-gray-50"}`}
+              className={`p-6 min-h-[180px] rounded-xl text-left border-2 transition-all relative flex flex-col ${sel ? "border-[#002FA7] bg-blue-50" : "border-gray-200 bg-gray-50"}`}
             >
               <div
                 className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center ${sel ? "bg-[#002FA7] border-[#002FA7]" : "border-gray-300"}`}
               >
                 {sel && <Check size={10} color="white" strokeWidth={3} />}
               </div>
-              <div className="mt-4 mb-2 text-gray-600">{opt.icon}</div>
-              <p className="text-xs font-medium text-gray-900">{opt.title}</p>
-              <p className="text-xs text-gray-500">{opt.desc}</p>
+              <div className="mt-6 mb-3 text-gray-600">{opt.icon}</div>
+              <p className="text-sm font-medium text-gray-900">{opt.title}</p>
+              <p className="text-xs text-gray-500 mt-1">{opt.desc}</p>
             </button>
           );
         })}
@@ -1330,7 +1331,7 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers, metrics })
       {/* Amount + frequency + collected */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
-          <span className="text-[22px] font-extrabold text-gray-900 leading-none">
+          <span className="text-lg font-bold text-gray-900 leading-none">
             {formatNaira(plan.amount)}
           </span>
           <span
@@ -1490,7 +1491,14 @@ export default function Payments() {
   }
 
   return (
-    <div className="px-6 py-6 overflow-y-auto h-full">
+    <div
+      className="px-6 py-6 overflow-y-auto h-full"
+      style={{
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>

@@ -4,6 +4,7 @@ import { ChevronLeft, UserMinus, Phone, MessageCircle, Download } from "lucide-r
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers } from "../../hooks/useCommunityMembers";
+import Background from "../../assets/background.png";
 
 const TABS = ["All Plans", "Payment History", "Contact Details"];
 
@@ -105,7 +106,14 @@ export default function MemberDetail() {
   );
 
   return (
-    <div className="px-6 py-6 overflow-y-auto h-full">
+    <div
+      className="px-6 py-6 overflow-y-auto h-full"
+      style={{
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <div className="flex items-start justify-between mb-1">
         <button onClick={() => navigate(`/dashboard/members?community=${communityId}`)} className="flex items-center gap-1.5 text-xs text-gray-400 bg-transparent border-none cursor-pointer hover:text-gray-600 mb-1">
           <ChevronLeft size={12} /> Members

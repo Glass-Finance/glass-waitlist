@@ -568,7 +568,7 @@ import activePlansIcon from "../../assets/dashboard/active-plans.png";
 import TimerIcon from "../../assets/dashboard/timer.png";
 import RecurringPayment from "../../assets/dashboard/recurring-payment.png";
 import OneTimePayment from "../../assets/dashboard/one-time-payment.png";
-import Background from "../../assets/dashboard/dashbackground.png";
+import Background from "../../assets/background.png";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function formatNaira(amount) {

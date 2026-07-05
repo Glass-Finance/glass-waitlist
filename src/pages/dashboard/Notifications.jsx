@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
 import { useNotifications } from "../../hooks/useNotifications";
+import Background from "../../assets/background.png";
 
 function formatTime(dateStr) {
   if (!dateStr) return "";
@@ -167,7 +168,15 @@ export default function Notifications() {
   }, [notifications, tab]);
 
   return (
-    <div className="flex flex-col h-full px-6 py-6" style={{ minHeight: 0 }}>
+    <div
+      className="flex flex-col h-full px-6 py-6"
+      style={{
+        minHeight: 0,
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-5 flex-shrink-0">
         <div>

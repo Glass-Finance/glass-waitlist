@@ -6,6 +6,7 @@ import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers, useCommunityJoinRequests, useRoles } from "../../hooks/useCommunityMembers";
 import { getErrorMessage } from "../../utils/errorHandler";
+import Background from "../../assets/background.png";
 
 // Only these three roles should be assignable when inviting members.
 const ALLOWED_ROLE_NAMES = new Set(["Community Owner", "Community Admin", "Community Member"]);
@@ -252,7 +253,14 @@ export default function Members() {
   ].filter(Boolean);
 
   return (
-    <div className="px-6 py-6 overflow-y-auto h-full">
+    <div
+      className="px-6 py-6 overflow-y-auto h-full"
+      style={{
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <div className="flex items-start justify-between mb-5">
         <div>
           <h1 className="text-xl font-bold text-black">Members</h1>
