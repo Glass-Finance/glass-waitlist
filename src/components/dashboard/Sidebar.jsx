@@ -402,28 +402,43 @@ export default function Sidebar() {
           </div>
 
           <nav style={{ flex: 1, padding: "10px 8px" }}>
-            <button
-              onClick={() => navigate("/dashboard/admin-panel")}
-              style={{
-                width: "100%",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "9px 10px",
-                borderRadius: 8,
-                border: "none",
-                cursor: "pointer",
-                background: "#e6eeff",
-                color: "#002FA7",
-                fontWeight: 700,
-                fontSize: 12,
-                fontFamily: "Inter, sans-serif",
-                whiteSpace: "nowrap",
-              }}
-            >
-              <ShieldCheck size={14} style={{ flexShrink: 0 }} />
-              <span>Admin Panel</span>
-            </button>
+            {[
+              { icon: ShieldCheck, label: "Admin Panel", path: "/dashboard/admin-panel" },
+              { icon: Settings,    label: "Settings",    path: "/dashboard/settings/account/security" },
+            ].map(({ icon: Icon, label, path }) => {
+              const isActive = location.pathname.startsWith(
+                path === "/dashboard/admin-panel" ? "/dashboard/admin-panel" : "/dashboard/settings"
+              );
+              return (
+                <button
+                  key={path}
+                  onClick={() => navigate(path)}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "9px 10px",
+                    borderRadius: 8,
+                    border: "none",
+                    cursor: "pointer",
+                    background: isActive ? "#e6eeff" : "transparent",
+                    color: isActive ? "#002FA7" : "#6b7280",
+                    fontWeight: isActive ? 700 : 500,
+                    fontSize: 12,
+                    fontFamily: "Inter, sans-serif",
+                    whiteSpace: "nowrap",
+                    marginBottom: 2,
+                    transition: "all .15s",
+                  }}
+                  onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "#f9fafb"; }}
+                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+                >
+                  <Icon size={14} style={{ flexShrink: 0 }} />
+                  <span>{label}</span>
+                </button>
+              );
+            })}
           </nav>
 
           <div
