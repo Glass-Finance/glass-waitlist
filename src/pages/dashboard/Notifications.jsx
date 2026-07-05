@@ -220,7 +220,8 @@ export default function Notifications() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex items-center gap-1.5 px-4 py-2 text-[13px] rounded transition-all cursor-pointer border-none font-medium
+              className={`flex items-center gap-1.5 px-4 py-2 text-[13px] transition-all cursor-pointer border-none font-medium
+                ${t === "Urgent" ? "rounded-none" : "rounded"}
                 ${active ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-800"}`}
             >
               {t}
@@ -228,7 +229,7 @@ export default function Notifications() {
                 <span
                   className="min-w-[18px] h-[18px] px-1 rounded text-[10px] font-bold flex items-center justify-center"
                   style={active
-                    ? { background: "#002FA7", color: "#fff" }
+                    ? { background: "linear-gradient(135deg, #3b5bdb, #002FA7)", color: "#fff", boxShadow: "0 1px 2px rgba(0,47,167,0.35), inset 0 1px 0 rgba(255,255,255,0.25)" }
                     : { background: "#EFEFF1", color: "#6b7280" }}
                 >
                   {count}

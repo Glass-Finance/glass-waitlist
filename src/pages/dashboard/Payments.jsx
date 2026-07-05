@@ -1331,7 +1331,7 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers, metrics })
       {/* Amount + frequency + collected */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
-          <span className="text-lg font-bold text-gray-900 leading-none">
+          <span className="text-md font-semibold text-gray-900 leading-none">
             {formatNaira(plan.amount)}
           </span>
           <span
