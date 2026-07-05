@@ -11,6 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 function MfaModal({ mode, onClose, onSuccess }) {
   const [stage, setStage] = useState(mode === "setup" ? "idle" : "confirm");
   const [setupData, setSetupData] = useState(null);
+  const [recoveryCodes, setRecoveryCodes] = useState([]);
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,8 +35,9 @@ function MfaModal({ mode, onClose, onSuccess }) {
     setLoading(true);
     setError("");
     try {
-      await enableMfaTotp({ code });
-      onSuccess();
+      const result = await enableMfaTotp({ code });
+      setRecoveryCodes(result?.recoveryCodes ?? []);
+      setStage("recovery");
     } catch (err) {
       setError(getErrorMessage(err, "Invalid code. Please try again."));
       setCode("");
@@ -196,12 +198,38 @@ function MfaModal({ mode, onClose, onSuccess }) {
             </>
           )}
 
+          {/* Recovery codes — shown after MFA is successfully enabled */}
+          {stage === "recovery" && (
+            <div className="flex flex-col gap-3">
+              <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+                <p className="text-xs font-semibold text-green-800 mb-1">MFA enabled successfully</p>
+                <p className="text-xs text-green-700 leading-relaxed">Save these recovery codes somewhere safe. Each code can only be used once if you lose access to your authenticator app.</p>
+              </div>
+              {recoveryCodes.length > 0 && (
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 grid grid-cols-2 gap-2">
+                  {recoveryCodes.map((rc, i) => (
+                    <code key={i} className="text-xs font-mono font-bold text-gray-800 bg-white rounded px-2 py-1 border border-gray-200 text-center">{rc}</code>
+                  ))}
+                </div>
+              )}
+              <button
+                onClick={onSuccess}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer"
+                style={{ background: "#002FA7" }}
+              >
+                Done
+              </button>
+            </div>
+          )}
+
+          {stage !== "recovery" && (
           <button
             onClick={onClose}
             className="w-full py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
           >
             Cancel
           </button>
+          )}
         </div>
       </div>
     </div>
