@@ -195,7 +195,7 @@ export default function PaymentProfile() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col pt-10 px-6">
+        <aside className="w-64 flex-shrink-0 bg-[#EFEFF1E5] border-r border-gray-200 flex flex-col pt-10 px-6">
           {STEPS.map((step, i) => {
             const isActive    = step.id === "payment";
             const isCompleted = step.id === "organization";

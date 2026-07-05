@@ -434,7 +434,7 @@ export default function Sidebar() {
       <div
         style={{
           width: W,
-          background: "#fff",
+          background: "#EFEFF1E5",
           borderRight: "1px solid #eef0f8",
           display: "flex",
           flexDirection: "column",

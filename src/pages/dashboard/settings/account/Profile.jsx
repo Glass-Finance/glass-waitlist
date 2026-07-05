@@ -137,7 +137,7 @@ export default function Profile() {
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Profile</p>
         <p className="text-xs text-gray-500">Manage your personal information</p>
       </div>
-      <div className="bg-white rounded-lg p-4" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#EFEFF1E5] rounded-lg p-4" style={{ border: "1px solid #E5E7EB" }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -166,7 +166,7 @@ export default function Profile() {
       </div>
 
       {/* Personal Information */}
-      <div className="bg-white rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#EFEFF1E5] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-medium text-gray-900 mb-0.5">Personal Information</p>
         <p className="text-xs text-gray-500 mb-5">This is how your information will appear across glass</p>
 
@@ -218,7 +218,7 @@ export default function Profile() {
       )}
 
       {/* Delete Account */}
-      <div className="bg-white rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#EFEFF1E5] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Account</p>
         <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
         <div

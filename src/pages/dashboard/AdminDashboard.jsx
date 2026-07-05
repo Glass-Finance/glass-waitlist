@@ -1515,7 +1515,7 @@ function DashboardContent({ isPaying, communityId }) {
           {stats.map((s) => (
             <div
               key={s.label}
-              className="bg-white rounded-xl px-4 py-3 border border-[#eef0f8]"
+              className="bg-[#EFEFF1E5] rounded-xl px-4 py-3 border border-[#eef0f8]"
               style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
             >
               <div className="flex items-center justify-between mb-3">
@@ -1710,7 +1710,7 @@ function DashboardContent({ isPaying, communityId }) {
 
           {/* Recent Activity */}
           <div
-            className="bg-white rounded-xl border border-[#eef0f8] p-4"
+            className="bg-[#EFEFF1E5] rounded-xl border border-[#eef0f8] p-4"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <span className="text-sm font-medium text-black block mb-4">

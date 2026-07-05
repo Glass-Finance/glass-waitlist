@@ -172,7 +172,7 @@ function MenuList({ items }) {
         <button
           key={i}
           onClick={() => navigate(item.path)}
-          className="w-full flex items-center justify-between px-5 py-4 bg-white rounded-xl text-left hover:bg-gray-50 transition-all cursor-pointer border-none"
+          className="w-full flex items-center justify-between px-5 py-4 bg-[#EFEFF1E5] rounded-xl text-left hover:bg-gray-50 transition-all cursor-pointer border-none"
           style={{ border: "1px solid #E5E7EB" }}
         >
           <div>
