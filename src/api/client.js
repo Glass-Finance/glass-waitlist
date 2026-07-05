@@ -132,7 +132,9 @@ client.interceptors.response.use(
           { refreshToken, deviceInfo: navigator.userAgent }
         );
 
-        const data = res.data?.data;
+        // Some backend versions return { data: { accessToken } } (standard
+        // envelope) and others return { accessToken } directly. Handle both.
+        const data = res.data?.data ?? res.data;
         if (!data?.accessToken) throw new Error("No access token in refresh response");
 
         localStorage.setItem("accessToken", data.accessToken);

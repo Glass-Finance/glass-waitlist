@@ -123,8 +123,11 @@ export async function disableMfaTotp({ code }) {
  * Persist auth tokens + basic user info to localStorage.
  */
 export function storeAuthSession(authData) {
-  localStorage.setItem("accessToken", authData.accessToken);
-  localStorage.setItem("refreshToken", authData.refreshToken);
-  localStorage.setItem("userId", authData.userId);
-  localStorage.setItem("userEmail", authData.email);
+  if (authData.accessToken)  localStorage.setItem("accessToken",  authData.accessToken);
+  // Guard against storing the literal string "undefined" if the auth response
+  // omits refreshToken — an "undefined" string is truthy and fools the
+  // refresh-token check in client.js, causing the next refresh to fail.
+  if (authData.refreshToken) localStorage.setItem("refreshToken", authData.refreshToken);
+  if (authData.userId)       localStorage.setItem("userId",       authData.userId);
+  if (authData.email)        localStorage.setItem("userEmail",    authData.email);
 }
