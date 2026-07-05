@@ -98,7 +98,7 @@ export default function PaymentCallback() {
 
   const config = {
     checking: {
-      icon: <Loader2 size={40} className="animate-spin" style={{ color: "#1C2B8A" }} />,
+      icon: <Loader2 size={40} className="animate-spin" style={{ color: "#002FA7" }} />,
       iconBg: "#EEF2FF",
       title: "Confirming payment…",
       subtitle: "Please wait while we verify your transaction.",
@@ -121,7 +121,7 @@ export default function PaymentCallback() {
       buttonLabel: "Back to Dashboard",
     },
     processing: {
-      icon: <Clock size={40} style={{ color: "#1C2B8A" }} />,
+      icon: <Clock size={40} style={{ color: "#002FA7" }} />,
       iconBg: "#EEF2FF",
       title: "Payment Processing",
       subtitle: "Your payment went through but status confirmation is taking a moment. You'll receive a notification when it's ready — usually within a few minutes.",
@@ -178,7 +178,7 @@ export default function PaymentCallback() {
             <button
               onClick={() => navigate(returnTo)}
               className="mt-4 px-8 py-3 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
-              style={{ background: "#1C2B8A" }}
+              style={{ background: "#002FA7" }}
             >
               {config.buttonLabel}
             </button>

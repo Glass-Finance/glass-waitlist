@@ -23,7 +23,7 @@ function bankColor(name = "") {
   if (n.includes("fidelity")) return "#005B98";
   if (n.includes("polaris")) return "#6C2382";
   if (n.includes("wema")) return "#5C068C";
-  return "#1C2B8A";
+  return "#002FA7";
 }
 
 // Two-letter initials from the bank name

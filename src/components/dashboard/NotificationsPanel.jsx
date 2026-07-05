@@ -36,7 +36,7 @@ function notifMeta(n) {
   if (t.includes("FAIL") || t.includes("URGENT") || t.includes("ALERT") || t.includes("OVERDUE") || t.includes("DEFAULT"))
     return { color: "#EF4444", bg: "#FEF2F2", Icon: AlertCircle };
   if (t.includes("MEMBER") || t.includes("JOIN") || t.includes("COMMUNITY") || t.includes("INVITE"))
-    return { color: "#1C2B8A", bg: "#EEF2FF", Icon: Users };
+    return { color: "#002FA7", bg: "#EEF2FF", Icon: Users };
   return { color: "#CA8A04", bg: "#FFFBEB", Icon: CreditCard };
 }
 
@@ -115,7 +115,7 @@ function NotifCard({ n, communityMap, onMarkRead }) {
       </div>
 
       {!isRead && (
-        <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#1C2B8A", flexShrink: 0, marginTop: 4 }} />
+        <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#002FA7", flexShrink: 0, marginTop: 4 }} />
       )}
     </button>
   );

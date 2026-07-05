@@ -109,7 +109,7 @@ function EmptyState({ onAddMember, onCreatePlan }) {
     },
     {
       icon: <Users size={15} />,
-      iconStyle: { background: "#1C2B8A", color: "#ffffff" },
+      iconStyle: { background: "#002FA7", color: "#ffffff" },
       title: "Add Your First Members",
       subtitle: "Invite Via Link, CSV Upload, or Manually",
       done: false,
@@ -117,7 +117,7 @@ function EmptyState({ onAddMember, onCreatePlan }) {
     },
     {
       icon: <DollarSign size={15} />,
-      iconStyle: { background: "#1C2B8A", color: "#ffffff" },
+      iconStyle: { background: "#002FA7", color: "#ffffff" },
       title: "Create A Payment Plan",
       subtitle: "Set Up Dues and Start Collecting",
       done: false,
@@ -128,7 +128,7 @@ function EmptyState({ onAddMember, onCreatePlan }) {
   return (
     <div className="flex flex-col items-center py-14 px-6">
       <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6" style={{ background: "#E6EEFF" }}>
-        <Building2 size={38} style={{ color: "#1C2B8A" }} />
+        <Building2 size={38} style={{ color: "#002FA7" }} />
       </div>
       <h2 className="text-xl font-bold text-gray-900 text-center mb-2 max-w-sm">
         Your Community Is Set Up. Let's Get It Moving.
