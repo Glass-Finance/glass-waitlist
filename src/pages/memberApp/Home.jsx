@@ -332,7 +332,7 @@ function UpcomingRow({ payment, onPay }) {
 // History row
 // ---------------------------------------------------------------------------
 function HistoryRow({ item }) {
-  const isSuccess = item.status === "success";
+  const isSuccess = item.status === "success" || item.status === "successful";
   return (
     <div
       style={{
