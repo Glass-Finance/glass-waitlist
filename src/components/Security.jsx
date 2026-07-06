@@ -87,13 +87,13 @@ export default function Security() {
       </div>
       <div className="relative z-10 max-w-[1140px] mx-auto px-6">
         {/* ── Header ── */}
-        <div className="mb-16" style={{ textAlign: "center" }}>
+        <div className="mb-8 md:mb-16" style={{ textAlign: "center" }}>
           {/* Badge */}
           <div
             style={{
               display: "flex",
               justifyContent: "center",
-              marginBottom: 28,
+              marginBottom: "clamp(16px, 4vw, 28px)",
             }}
           >
             <motion.span
