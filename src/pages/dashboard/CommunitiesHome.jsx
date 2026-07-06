@@ -697,6 +697,16 @@ export default function CommunitiesHome() {
   });
 
   async function handleCommunityClick(community) {
+    if (!community.owned) {
+      try {
+        localStorage.setItem(
+          "glass_member_community",
+          JSON.stringify({ id: community.id, slug: community.slug, name: community.name })
+        );
+      } catch { /* ignore */ }
+      navigate("/member/home");
+      return;
+    }
     const id = community.slug ?? community.id;
     localStorage.setItem("glass_community", JSON.stringify(community));
     const isPaying = await resolveIsPayingAdmin(id);
