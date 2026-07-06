@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import Background from "../../assets/background.png";
 import {
   Search, Building2, Users, CreditCard, BarChart2, Bell,
   ChevronLeft, ChevronRight, X, Check, Loader2,

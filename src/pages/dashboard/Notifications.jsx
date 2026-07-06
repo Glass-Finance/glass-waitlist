@@ -1,7 +1,10 @@
 import { useState, useMemo } from "react";
 import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
-import { useNotifications } from "../../hooks/useNotifications";
+import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
+import { useAuth } from "../../store/AuthContext";
 import Background from "../../assets/background.png";
+
+const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";
 
 function formatTime(dateStr) {
   if (!dateStr) return "";
@@ -148,7 +151,55 @@ function ChronologicalList({ items, onMarkRead }) {
   );
 }
 
-export default function Notifications() {
+function SuperAdminNotifications() {
+  const {
+    notifications, isLoading, unreadCount,
+    markRead, markAllRead, isMarkingAllRead,
+  } = useAllNotifications();
+
+  return (
+    <div
+      className="flex flex-col h-full px-6 py-6"
+      style={{
+        minHeight: 0,
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="flex items-start justify-between mb-5 flex-shrink-0">
+        <div>
+          <h1 className="text-xl font-bold text-black mb-1">Notifications</h1>
+          <p className="text-sm text-gray-400">System alerts and platform events for your account.</p>
+        </div>
+        {unreadCount > 0 && (
+          <button
+            onClick={() => markAllRead()}
+            disabled={isMarkingAllRead}
+            className="px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
+          >
+            Mark All As Read
+          </button>
+        )}
+      </div>
+
+      <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
+        {isLoading ? (
+          <p className="text-xs text-gray-400 text-center py-12">Loading…</p>
+        ) : notifications.length === 0 ? (
+          <div className="flex flex-col items-center gap-2 py-16">
+            <Bell size={22} className="text-gray-300" />
+            <p className="text-sm text-gray-400">No notifications yet.</p>
+          </div>
+        ) : (
+          <ChronologicalList items={notifications} onMarkRead={markRead} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CommunityNotifications() {
   const {
     notifications, isLoading, unreadCount,
     markRead, markAllRead, isMarkingAllRead,
@@ -264,4 +315,11 @@ export default function Notifications() {
       </div>
     </div>
   );
+}
+
+export default function Notifications() {
+  const { user } = useAuth();
+  return user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL
+    ? <SuperAdminNotifications />
+    : <CommunityNotifications />;
 }

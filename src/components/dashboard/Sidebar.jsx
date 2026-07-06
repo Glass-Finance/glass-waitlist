@@ -420,12 +420,12 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
           <nav style={{ flex: 1, padding: "10px 8px" }}>
             {[
-              { icon: ShieldCheck, label: "Admin Panel", path: "/dashboard/admin-panel" },
-              { icon: Settings,    label: "Settings",    path: "/dashboard/settings/account/security" },
-            ].map(({ icon: Icon, label, path }) => {
-              const isActive = location.pathname.startsWith(
-                path === "/dashboard/admin-panel" ? "/dashboard/admin-panel" : "/dashboard/settings"
-              );
+              { icon: ShieldCheck, label: "Admin Panel",  path: "/dashboard/admin-panel",               match: "/dashboard/admin-panel" },
+              { icon: Bell,        label: "Notifications", path: "/dashboard/notifications",              match: "/dashboard/notifications" },
+              { icon: Settings,    label: "Settings",      path: "/dashboard/settings/account/security", match: "/dashboard/settings" },
+            ].map(({ icon: Icon, label, path, match }) => {
+              const isActive = location.pathname.startsWith(match);
+              const badge = label === "Notifications" && unreadCount > 0 ? unreadCount : 0;
               return (
                 <button
                   key={path}
@@ -455,7 +455,18 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
                 >
                   <Icon size={14} style={{ flexShrink: 0 }} />
-                  <span>{label}</span>
+                  <span style={{ flex: 1, textAlign: "left" }}>{label}</span>
+                  {badge > 0 && (
+                    <span style={{
+                      minWidth: 18, height: 18, borderRadius: 99,
+                      background: "#e11d48", color: "#fff",
+                      fontSize: 10, fontWeight: 700,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      padding: "0 4px", flexShrink: 0,
+                    }}>
+                      {badge > 99 ? "99+" : badge}
+                    </span>
+                  )}
                 </button>
               );
             })}
