@@ -18,6 +18,7 @@
 
 import { useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useInvites } from "../../hooks/useInvites";
 import {
   LayoutDashboard,
   CreditCard,
@@ -86,8 +87,10 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   const { data: communitiesData, isLoading: loading } = useCommunities();
   const communities = communitiesData?.communities ?? [];
   const { unreadCount } = useNotifications();
+  const { invites } = useInvites();
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [memberViewHint, setMemberViewHint] = useState(false);
 
   // Active route segment: /dashboard/admin → "home", /dashboard/payments →
   // "payments", etc. (matches the flat ?community= convention, not slugs-in-path)
@@ -659,10 +662,33 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         </nav>
 
         {/* Member View switch */}
-        <div style={{ padding: "0 8px 8px" }}>
+        <div style={{ padding: "0 8px 8px", position: "relative" }}>
           <div style={{ height: 1, background: "#eef0f8", marginBottom: 8 }} />
           <button
-            onClick={() => { navigate("/member/home"); onCloseMobile?.(); }}
+            onClick={() => {
+              const memberCommunity = communities.find((c) => !c.owned);
+              if (memberCommunity) {
+                // Set the active member community so Home loads the right one
+                try {
+                  localStorage.setItem(
+                    "glass_member_community",
+                    JSON.stringify({ id: memberCommunity.id, slug: memberCommunity.slug, name: memberCommunity.name })
+                  );
+                } catch { /* ignore */ }
+                navigate("/member/home");
+                onCloseMobile?.();
+                return;
+              }
+              const pendingInvites = invites.filter((i) => (i.status ?? "").toUpperCase() === "PENDING");
+              if (pendingInvites.length > 0) {
+                navigate("/member/invites");
+                onCloseMobile?.();
+                return;
+              }
+              // Nothing actionable — show hint
+              setMemberViewHint(true);
+              setTimeout(() => setMemberViewHint(false), 3500);
+            }}
             style={{
               width: "100%",
               display: "flex",
@@ -686,6 +712,36 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             <Smartphone size={14} style={{ flexShrink: 0 }} />
             <span style={{ flex: 1, textAlign: "left" }}>Member View</span>
           </button>
+
+          {memberViewHint && (
+            <div style={{
+              position: "absolute",
+              bottom: "calc(100% - 4px)",
+              left: 8,
+              right: 8,
+              background: "#1f2937",
+              color: "#f9fafb",
+              fontSize: 11,
+              lineHeight: 1.5,
+              padding: "8px 10px",
+              borderRadius: 8,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+              zIndex: 10,
+              pointerEvents: "none",
+            }}>
+              Ask another admin to invite you to their community, then come back here.
+              <div style={{
+                position: "absolute",
+                bottom: -5,
+                left: 18,
+                width: 10,
+                height: 10,
+                background: "#1f2937",
+                transform: "rotate(45deg)",
+                borderRadius: 2,
+              }} />
+            </div>
+          )}
         </div>
 
         {/* Bottom — user info strip */}
