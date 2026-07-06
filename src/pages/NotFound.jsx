@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import CtaLogo from "../assets/cta/ctalogo.png";
+import GlassLogo from "../assets/Glass.png";
 import Background from "../assets/background.png";
 import { usePageTitle } from "../hooks/usePageTitle";
 
@@ -18,9 +18,10 @@ export default function NotFound() {
     >
       {/* Logo — no container */}
       <img
-        src={CtaLogo}
+        src={GlassLogo}
         alt="Glass"
         className="w-10 h-10 object-contain mb-10"
+        style={{ filter: "brightness(0) saturate(100%) invert(10%) sepia(80%) saturate(5000%) hue-rotate(210deg) brightness(80%)" }}
       />
 
       {/* 404 */}
