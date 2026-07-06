@@ -244,7 +244,7 @@ function communityPath(slug, path, isPaying = false) {
 }
 
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen, onCloseMobile }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -311,14 +311,28 @@ export default function Sidebar() {
   // ── Super-admin: stripped-down sidebar, no community nav ──────────────────
   if (user?.email?.toLowerCase() === "glasspayhq@gmail.com") {
     return (
-      <div className="flex h-screen sticky top-0 z-40 flex-shrink-0">
+      <>
+        {mobileOpen && (
+          <div
+            className="fixed inset-0 bg-black/40 z-30 md:hidden"
+            onClick={onCloseMobile}
+          />
+        )}
+        <div
+          className={`fixed md:sticky top-0 left-0 h-screen z-40 flex-shrink-0 flex transition-transform duration-300 ${
+            mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          }`}
+        >
         {/* Blue rail */}
         <div
           className="flex-shrink-0 bg-[#002FA7] flex flex-col items-center pt-3.5 pb-5"
           style={{ width: 56 }}
         >
           <button
-            onClick={() => navigate("/dashboard/admin-panel")}
+            onClick={() => {
+              navigate("/dashboard/admin-panel");
+              onCloseMobile?.();
+            }}
             className="mb-4 p-0 bg-transparent border-none cursor-pointer"
             title="Platform Admin"
           >
@@ -341,7 +355,10 @@ export default function Sidebar() {
           </button>
 
           <button
-            onClick={() => navigate("/dashboard/admin-panel")}
+            onClick={() => {
+              navigate("/dashboard/admin-panel");
+              onCloseMobile?.();
+            }}
             title="Platform Admin"
             className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/20 text-white transition-all hover:bg-white/30"
           >
@@ -412,7 +429,10 @@ export default function Sidebar() {
               return (
                 <button
                   key={path}
-                  onClick={() => navigate(path)}
+                  onClick={() => {
+                    navigate(path);
+                    onCloseMobile?.();
+                  }}
                   style={{
                     width: "100%",
                     display: "flex",
@@ -468,12 +488,24 @@ export default function Sidebar() {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="flex h-screen sticky top-0 z-40 flex-shrink-0">
+    <>
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-30 md:hidden"
+          onClick={onCloseMobile}
+        />
+      )}
+      <div
+        className={`fixed md:sticky top-0 left-0 h-screen z-40 flex-shrink-0 flex transition-transform duration-300 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
+      >
       {/* ── Blue rail ─────────────────────────────────────────────────────── */}
       <div
         className="flex-shrink-0 bg-[#002FA7] flex flex-col items-center pt-3.5 pb-5"
@@ -481,7 +513,10 @@ export default function Sidebar() {
       >
         {/* Logo — goes to communities overview */}
         <button
-          onClick={() => navigate("/dashboard/home")}
+          onClick={() => {
+            navigate("/dashboard/home");
+            onCloseMobile?.();
+          }}
           className="mb-4 p-0 bg-transparent border-none cursor-pointer"
           title="Your Communities"
         >
@@ -505,7 +540,10 @@ export default function Sidebar() {
 
         {/* Home (communities overview) */}
         <button
-          onClick={() => navigate("/dashboard/home")}
+          onClick={() => {
+            navigate("/dashboard/home");
+            onCloseMobile?.();
+          }}
           title="Your Communities"
           className={`w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center mb-3 transition-all ${
             onCommunitiesOverview
@@ -558,6 +596,7 @@ export default function Sidebar() {
                     localStorage.setItem("glass_community", JSON.stringify(c));
                     const isPaying = await resolveIsPayingAdmin(c.slug);
                     navigate(communityPath(c.slug, "admin", isPaying));
+                    onCloseMobile?.();
                   }}
                   title={c.name}
                   className={`w-9 h-9 rounded-xl border cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 ${
@@ -587,7 +626,10 @@ export default function Sidebar() {
         {/* Super-admin shortcut — only visible to glasspayhq@gmail.com */}
         {user?.email?.toLowerCase() === "glasspayhq@gmail.com" && (
           <button
-            onClick={() => navigate("/dashboard/admin-panel")}
+            onClick={() => {
+              navigate("/dashboard/admin-panel");
+              onCloseMobile?.();
+            }}
             title="Platform Admin"
             className="mt-2 w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/50 hover:bg-white/20 hover:text-white transition-all"
           >
@@ -725,7 +767,12 @@ export default function Sidebar() {
             return (
               <button
                 key={segment}
-                onClick={() => href && navigate(href)}
+                onClick={() => {
+                  if (href) {
+                    navigate(href);
+                    onCloseMobile?.();
+                  }
+                }}
                 disabled={isDisabled}
                 style={{
                   width: "100%",
@@ -735,16 +782,15 @@ export default function Sidebar() {
                   padding: "9px 10px",
                   borderRadius: 8,
                   border: "none",
-                  cursor: isDisabled ? "default" : "pointer",
+                  cursor: isDisabled ? "not-allowed" : "pointer",
                   background: isActive ? "#e6eeff" : "transparent",
-                  color: isActive ? "#002FA7" : isDisabled ? "#d1d5db" : "#6b7280",
+                  color: isActive ? "#002FA7" : isDisabled ? "#9ca3af" : "#6b7280",
                   fontWeight: isActive ? 700 : 500,
                   fontSize: 12,
                   marginBottom: 2,
                   transition: "all .15s",
                   fontFamily: "Inter, sans-serif",
                   whiteSpace: "nowrap",
-                  opacity: isDisabled ? 0.5 : 1,
                 }}
                 onMouseEnter={(e) => {
                   if (!isActive && !isDisabled)
@@ -823,6 +869,7 @@ export default function Sidebar() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

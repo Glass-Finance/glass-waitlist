@@ -28,9 +28,9 @@ const memberPhone = (m) => m?.user?.phoneNumber ?? m?.phoneNumber ?? "—";
 
 function StatCard({ label, value }) {
   return (
-    <div className="bg-[#EFEFF1E5] rounded-xl border border-gray-100 px-4 py-3.5" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-[#EFEFF1E5] rounded-xl border border-gray-100 px-4 py-3" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <p className="text-xs text-gray-400 mb-1">{label}</p>
-      <p className="text-base font-bold text-black">{value}</p>
+      <p className="text-[13px] font-semibold text-black">{value}</p>
     </div>
   );
 }
@@ -51,7 +51,7 @@ function PlanCard({ plan, successfulLinkIds }) {
         </span>
       </div>
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-base font-extrabold text-gray-900">{formatNaira(plan.amount)}</span>
+        <span className="text-md font-semibold text-gray-900">{formatNaira(plan.amount)}</span>
         <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ color: "#7c3aed", background: "#f3eeff" }}>
           {isRecurring ? plan.recurringPlan?.frequency ?? "Recurring" : "One-Time"}
         </span>
@@ -107,16 +107,16 @@ export default function MemberDetail() {
 
   return (
     <div
-      className="px-6 py-6 overflow-y-auto h-full"
+      className="px-4 md:px-6 py-6 overflow-y-auto h-full"
       style={{
         backgroundImage: `url(${Background})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="flex items-start justify-between mb-5">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
         <div>
-          <h1 className="text-xl font-bold text-black">
+          <h1 className="text-lg font-bold text-black">
             <button
               onClick={() => navigate(`/dashboard/members?community=${communityId}`)}
               className="text-gray-400 font-medium bg-transparent border-none p-0 cursor-pointer hover:text-gray-600 hover:underline"
@@ -138,7 +138,7 @@ export default function MemberDetail() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-3 mb-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
         <StatCard label="Total Amount Paid" value={formatNaira(totalPaid)} />
         <StatCard label="Active Plans" value={String(member.planCount)} />
         <StatCard label="Plans Yet to pay" value={String(member.totalCount - member.paidCount)} />
@@ -159,7 +159,7 @@ export default function MemberDetail() {
         distinctPlans.length === 0 ? (
           <p className="text-xs text-gray-400 py-8 text-center">No plans assigned yet.</p>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {distinctPlans.map((plan) => <PlanCard key={plan.id} plan={plan} successfulLinkIds={successfulLinkIds} />)}
           </div>
         )

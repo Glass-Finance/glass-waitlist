@@ -541,7 +541,6 @@ import {
   X,
   ArrowLeft,
   Check,
-  AlertTriangle,
   AlertCircle,
   Loader2,
   Landmark,
@@ -568,6 +567,7 @@ import activePlansIcon from "../../assets/dashboard/active-plans.png";
 import TimerIcon from "../../assets/dashboard/timer.png";
 import RecurringPayment from "../../assets/dashboard/recurring-payment.png";
 import OneTimePayment from "../../assets/dashboard/one-time-payment.png";
+import WarnSignIcon from "../../assets/dashboard/warn-sign.png";
 import Background from "../../assets/background.png";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -612,6 +612,18 @@ const STATUS_STYLE = {
 
 function statusStyle(status = "") {
   return STATUS_STYLE[status.toLowerCase()] ?? STATUS_STYLE.pending;
+}
+
+const FREQUENCY_STYLE = {
+  MONTHLY:   { bg: "#FFF8E7", color: "#b45309", label: "Monthly" },
+  WEEKLY:    { bg: "#E6EEFF", color: "#002FA7", label: "Weekly" },
+  QUARTERLY: { bg: "#ECFDF5", color: "#0f766e", label: "Quarterly" },
+  YEARLY:    { bg: "#ECFDF5", color: "#059669", label: "Annually" },
+};
+
+function freqStyle(row) {
+  if (row.type !== "recurring") return { bg: "#F3EEFF", color: "#7c3aed", label: "One-Time" };
+  return FREQUENCY_STYLE[(row.frequency ?? "").toUpperCase()] ?? { bg: "#F3EEFF", color: "#7c3aed", label: "Recurring" };
 }
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
@@ -1039,7 +1051,7 @@ function AddMemberModal({ onClose, communityId }) {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-[#EFEFEF] rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between px-8 pt-7 pb-4">
           <div>
@@ -1093,7 +1105,7 @@ function AddMemberModal({ onClose, communityId }) {
                   </button>
                 </div>
 
-                <div className="rounded-md overflow-hidden mb-4" style={{ border: "1px solid #E5E7EB" }}>
+                <div className="rounded-md overflow-x-auto mb-4" style={{ border: "1px solid #E5E7EB" }}>
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="bg-gray-50">
@@ -1279,6 +1291,39 @@ function DashboardContent({ isPaying, communityId }) {
   // Paying admin's own dues, as a member of this community
   const { data: myPayments } = usePayments();
   const myUpcoming = myPayments?.upcoming ?? [];
+  const { data: myAuthorisations } = useManagePayments();
+
+  // "Your Payments" table controls — small local list, so sort/filter run
+  // client-side rather than round-tripping to the server.
+  const [myPaymentsSort, setMyPaymentsSort] = useState("desc"); // desc = soonest due first
+  const [myPaymentsFilter, setMyPaymentsFilter] = useState(null); // null | "paid" | "unpaid"
+  const [myPaymentsFilterOpen, setMyPaymentsFilterOpen] = useState(false);
+
+  const myUpcomingFiltered = useMemo(() => {
+    let rows = [...myUpcoming];
+    if (myPaymentsFilter) {
+      rows = rows.filter((row) => {
+        const isPaid = row.status === "PAID" || row.status === "SUCCESSFUL";
+        return myPaymentsFilter === "paid" ? isPaid : !isPaid;
+      });
+    }
+    rows.sort((a, b) => {
+      const ta = a.dueDate ? new Date(a.dueDate).getTime() : 0;
+      const tb = b.dueDate ? new Date(b.dueDate).getTime() : 0;
+      return myPaymentsSort === "desc" ? ta - tb : tb - ta;
+    });
+    return rows;
+  }, [myUpcoming, myPaymentsFilter, myPaymentsSort]);
+
+  // Auto-pay is "on" for a recurring plan when a non-revoked authorisation
+  // consent exists for it — same match rule as settings/finance/AutoPay.jsx.
+  function hasActiveAutoPay(item) {
+    return (myAuthorisations ?? []).some((auth) =>
+      auth.consents.some(
+        (c) => !c.revoked && c.paymentLinkTitle === item.name && c.communityName === item.communityName
+      )
+    );
+  }
 
   // Open the confirmation modal instead of calling the API directly
   function handlePayMine(item) {
@@ -1426,7 +1471,7 @@ function DashboardContent({ isPaying, communityId }) {
   return (
     <>
       <main
-        className="flex-1 px-6 py-5 overflow-y-auto"
+        className="flex-1 px-4 md:px-6 py-5 overflow-y-auto"
         style={{
           backgroundImage: `url(${Background})`,
           backgroundSize: "cover",
@@ -1434,7 +1479,7 @@ function DashboardContent({ isPaying, communityId }) {
         }}
       >
         {/* Page header */}
-        <div className="flex items-start justify-between mb-5">
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
           <div>
             <h1 className="text-xl font-bold text-black">Dashboard</h1>
             <p className="text-sm text-gray-400 mt-0.5">
@@ -1473,9 +1518,10 @@ function DashboardContent({ isPaying, communityId }) {
             return (
               <div className="flex items-start justify-between px-4 py-4 rounded-md mb-5 bg-[#D7E2FF] border border-blue-100">
                 <div className="flex items-start gap-6">
-                  <AlertTriangle
-                    size={18}
-                    className="text-[#002FA7] flex-shrink-0 mt-0.5"
+                  <img
+                    src={WarnSignIcon}
+                    alt=""
+                    className="w-[26px] h-[26px] object-contain flex-shrink-0 mt-1.5"
                   />
                   <div>
                     <p className="text-[13px] font-medium text-gray-800">
@@ -1489,6 +1535,14 @@ function DashboardContent({ isPaying, communityId }) {
                       {due.dueDate
                         ? ` due ${new Date(due.dueDate).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" })}`
                         : ""}
+                      {due.type === "recurring" && (
+                        <>
+                          {" · "}
+                          <span className="text-[#002FA7] font-medium">
+                            Auto-Pay is {hasActiveAutoPay(due) ? "on" : "off"}
+                          </span>
+                        </>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -1511,7 +1565,7 @@ function DashboardContent({ isPaying, communityId }) {
           })()}
 
         {/* Stats */}
-        <div className="grid grid-cols-5 gap-3 mb-5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
           {stats.map((s) => (
             <div
               key={s.label}
@@ -1552,16 +1606,61 @@ function DashboardContent({ isPaying, communityId }) {
               <span className="text-sm font-medium text-black">
                 Your Payments
               </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setMyPaymentsSort((d) => (d === "desc" ? "asc" : "desc"))}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-200 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
+                >
+                  Sort
+                  <ChevronDown
+                    size={11}
+                    className={myPaymentsSort === "asc" ? "rotate-180" : ""}
+                  />
+                </button>
+                <div className="relative">
+                  <button
+                    onClick={() => setMyPaymentsFilterOpen((o) => !o)}
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-200 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
+                  >
+                    Filter <ChevronDown size={11} />
+                  </button>
+                  {myPaymentsFilterOpen && (
+                    <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-gray-100 shadow-lg z-20 min-w-[110px] overflow-hidden">
+                      {[
+                        { key: null, label: "All" },
+                        { key: "unpaid", label: "Unpaid" },
+                        { key: "paid", label: "Paid" },
+                      ].map((opt) => (
+                        <button
+                          key={String(opt.key)}
+                          onClick={() => {
+                            setMyPaymentsFilter(opt.key);
+                            setMyPaymentsFilterOpen(false);
+                          }}
+                          className={`w-full px-3 py-2 text-left text-xs cursor-pointer border-none ${
+                            myPaymentsFilter === opt.key
+                              ? "bg-blue-50 font-medium text-[#002FA7]"
+                              : "bg-transparent text-gray-600 hover:bg-gray-50"
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-            {myUpcoming.length === 0 ? (
+            {myUpcomingFiltered.length === 0 ? (
               <p className="text-xs text-gray-400 text-center py-4">
                 Nothing due right now.
               </p>
             ) : (
+              <div className="overflow-x-auto">
               <table className="w-full text-sm border-collapse text-left">
                 <thead>
                   <tr className="border-b border-gray-100">
-                    {["Plan", "Amount", "Due Date", "Status", "Action"].map(
+                    {["Plan", "Frequency", "Amount", "Due Date", "Status", "Action"].map(
                       (h) => (
                         <th
                           key={h}
@@ -1574,22 +1673,30 @@ function DashboardContent({ isPaying, communityId }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {myUpcoming.map((row) => {
-                    const s = statusStyle(
-                      (row.status === "PAID" || row.status === "SUCCESSFUL") ? "paid" : "unpaid",
-                    );
+                  {myUpcomingFiltered.map((row) => {
+                    const isPaid = row.status === "PAID" || row.status === "SUCCESSFUL";
+                    const s = statusStyle(isPaid ? "paid" : "unpaid");
+                    const f = freqStyle(row);
                     return (
                       <tr
                         key={row.id}
-                        className="border-b border-gray-50 bg-gray-100"
+                        className="border-b border-gray-50"
                       >
-                        <td className="py-3 text-xs text-gray-800">
+                        <td className="py-3 px-2 text-xs font-medium text-gray-800">
                           {row.name}
                         </td>
-                        <td className="py-3 text-xs text-black">
+                        <td className="py-3 px-2">
+                          <span
+                            className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                            style={{ color: f.color, background: f.bg }}
+                          >
+                            {f.label}
+                          </span>
+                        </td>
+                        <td className="py-3 px-2 text-xs text-black">
                           {formatNaira(row.amount)}
                         </td>
-                        <td className="py-3 text-xs text-gray-500">
+                        <td className="py-3 px-2 text-xs text-gray-500">
                           {row.dueDate
                             ? new Date(row.dueDate).toLocaleDateString(
                                 "en-NG",
@@ -1601,7 +1708,7 @@ function DashboardContent({ isPaying, communityId }) {
                               )
                             : "—"}
                         </td>
-                        <td className="py-3">
+                        <td className="py-3 px-2">
                           <span
                             className="text-xs font-semibold px-2.5 py-1 rounded-full"
                             style={{ color: s.color, background: s.bg }}
@@ -1609,25 +1716,35 @@ function DashboardContent({ isPaying, communityId }) {
                             {s.label}
                           </span>
                         </td>
-                        <td className="py-3">
-                          <button
-                            onClick={() => handlePayMine(row)}
-                            className="text-xs font-semibold text-[#002FA7] hover:underline bg-transparent border-none cursor-pointer"
-                          >
-                            Pay Now
-                          </button>
+                        <td className="py-3 px-2">
+                          {isPaid ? (
+                            <button
+                              disabled
+                              className="px-4 py-1.5 rounded text-xs font-semibold text-gray-300 border border-gray-200 bg-white cursor-not-allowed"
+                            >
+                              Pay Now
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handlePayMine(row)}
+                              className="px-4 py-1.5 rounded text-xs font-semibold text-[#002FA7] border border-[#002FA7] bg-white hover:bg-blue-50 cursor-pointer transition-all"
+                            >
+                              Pay Now
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         )}
 
         {/* Payment Plans + Recent Activity */}
-        <div className="grid grid-cols-2 gap-3 mb-5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-5">
           {/* Payment Plans */}
           <div
             className="rounded-xl border border-[#eef0f8] p-4 bg-[#D7E2FF]"

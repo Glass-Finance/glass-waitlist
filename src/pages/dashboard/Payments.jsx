@@ -735,7 +735,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
           <button
             onClick={handleSave}
             disabled={!isReady || saving}
-            className="px-8 py-2.5 rounded-full text-sm font-semibold text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 rounded text-xs font-normal text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? "Saving…" : "Save Changes"}
           </button>
@@ -1045,7 +1045,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-auto">
           <table className="w-full text-sm border-collapse">
             <thead className="sticky top-0">
               <tr className="border-y border-gray-100 bg-gray-50">
@@ -1492,7 +1492,7 @@ export default function Payments() {
 
   return (
     <div
-      className="px-6 py-6 overflow-y-auto h-full"
+      className="px-4 md:px-6 py-6 overflow-y-auto h-full"
       style={{
         backgroundImage: `url(${Background})`,
         backgroundSize: "cover",
@@ -1500,7 +1500,7 @@ export default function Payments() {
       }}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-5">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
         <div>
           <h1 className="text-xl font-bold text-black">Payments</h1>
           <p className="text-sm text-gray-400 mt-0.5">
@@ -1516,7 +1516,7 @@ export default function Payments() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-3 mb-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
         <StatCard
           icon={Wallet}
           label="Total Amount Collected"
@@ -1569,7 +1569,7 @@ export default function Payments() {
           No payment plans yet.
         </p>
       ) : (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {filtered.map((plan, i) => (
             <PlanCard
               key={plan.id}

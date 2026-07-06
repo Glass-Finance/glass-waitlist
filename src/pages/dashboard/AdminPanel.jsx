@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import SystemConfig from "./settings/admin/SystemConfig";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Background from "../../assets/background.png";
 import {
   getAdminCommunities, setCommissionOverride,
   getAdminCommunityAccounts, verifyCommunityAccount,
@@ -118,7 +119,7 @@ function Pager({ page, totalPages, onPage }) {
 function TableShell({ isLoading, isEmpty, error, children }) {
   const is403 = error?.response?.status === 403;
   return (
-    <div className="bg-white rounded-2xl overflow-hidden" style={{ border: "1px solid #E5E7EB" }}>
+    <div className="bg-[#EFEFF1E5] rounded-2xl overflow-hidden" style={{ border: "1px solid #E5E7EB" }}>
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
           <Loader2 size={20} className="animate-spin text-gray-300" />
@@ -205,7 +206,7 @@ function ModalShell({ title, subtitle, onClose, children }) {
       style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E5E7EB" }}>
         <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <div>
             <h2 className="text-sm font-bold text-gray-900">{title}</h2>
@@ -837,7 +838,7 @@ function BalancesSection() {
       ) : (
         <>
           {/* Residual / reconciliation */}
-          <div className="bg-white rounded-2xl p-5 mb-4 flex items-center justify-between" style={{ border: "1px solid #E5E7EB" }}>
+          <div className="bg-[#EFEFF1E5] rounded-2xl p-5 mb-4 flex items-center justify-between" style={{ border: "1px solid #E5E7EB" }}>
             <div>
               <p className="text-xs text-gray-400 mb-1">Platform Residual</p>
               <p className="text-2xl font-bold text-gray-900">{fmt(data?.residual, currency)}</p>
@@ -850,7 +851,7 @@ function BalancesSection() {
           {/* Balance entries */}
           <div className="grid grid-cols-2 gap-4">
             {balances.map(b => (
-              <div key={b.code} className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
+              <div key={b.code} className="bg-[#EFEFF1E5] rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
                 <p className="text-[10px] text-gray-400 font-mono mb-1">{b.code}</p>
                 <p className="text-[15px] font-bold text-gray-900 mb-0.5">{fmt(b.amount, b.currency ?? currency)}</p>
                 <p className="text-xs text-gray-500">{b.displayName}</p>
@@ -1103,7 +1104,14 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("communities");
 
   return (
-    <div className="px-8 py-8 min-h-full">
+    <div
+      className="px-8 py-8 min-h-full"
+      style={{
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <div className="mb-6">
         <h1 className="text-lg font-bold text-gray-900 mb-1">Platform Admin</h1>
         <p className="text-xs text-gray-400">Glass internal operations — not visible to community owners.</p>

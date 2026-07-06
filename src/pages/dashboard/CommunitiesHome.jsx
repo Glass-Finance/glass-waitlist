@@ -19,7 +19,7 @@
 // //   return (
 // //     <div
 // //       onClick={onClick}
-// //       className="bg-[#EFEFF1E5] rounded-lg border border-gray-100 overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+// //       className="bg-white rounded-lg border border-gray-100 overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
 // //       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
 // //     >
 // //       {/* Card top */}
@@ -181,7 +181,7 @@
 // // Skeleton card
 // function CardSkeleton() {
 //   return (
-//     <div className="bg-[#EFEFF1E5] rounded-lg border border-gray-100 overflow-hidden animate-pulse">
+//     <div className="bg-white rounded-lg border border-gray-100 overflow-hidden animate-pulse">
 //       <div className="p-5">
 //         <div className="flex items-start gap-3 mb-4">
 //           <div className="w-10 h-10 bg-gray-200 rounded flex-shrink-0" />
@@ -229,7 +229,7 @@
 //   return (
 //     <div
 //       onClick={onClick}
-//       className="bg-[#EFEFF1E5] rounded-lg border border-gray-100 overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+//       className="bg-white rounded-lg border border-gray-100 overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
 //       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
 //     >
 //       <div className="p-5 flex-1">
@@ -536,7 +536,7 @@ function formatNaira(amount) {
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 function CardSkeleton() {
   return (
-    <div className="bg-[#EFEFF1E5] rounded-lg border border-gray-100 overflow-hidden animate-pulse">
+    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden animate-pulse">
       <div className="p-5">
         <div className="flex items-start gap-3 mb-4">
           <div className="w-10 h-10 bg-gray-200 rounded flex-shrink-0" />
@@ -586,7 +586,7 @@ function CommunityCard({ community, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="bg-[#EFEFF1E5] rounded-lg border border-gray-100 overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+      className="bg-white rounded-lg border border-gray-100 overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
     >
       <div className="p-5 flex-1">
@@ -711,7 +711,7 @@ export default function CommunitiesHome() {
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-7 pt-7 pb-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-7 pt-7 pb-5">
         <div>
           <h1 className="text-lg font-semibold text-[#000000]">
             Your Communities
@@ -739,7 +739,7 @@ export default function CommunitiesHome() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-3 px-7 pb-5">
+      <div className="flex items-center gap-3 px-4 md:px-7 pb-5">
         <div className="relative">
           <button
             onClick={() => setSortOpen((o) => !o)}
@@ -791,7 +791,7 @@ export default function CommunitiesHome() {
 
       {/* Error */}
       {error && (
-        <div className="mx-7 mb-5 flex items-center gap-2 px-4 py-3 rounded-lg bg-red-50 border border-red-100">
+        <div className="mx-4 md:mx-7 mb-5 flex items-center gap-2 px-4 py-3 rounded-lg bg-red-50 border border-red-100">
           <AlertCircle size={16} className="text-red-400 flex-shrink-0" />
           <p className="text-sm text-red-500">
             Couldn't load communities. Please refresh.
@@ -801,14 +801,14 @@ export default function CommunitiesHome() {
 
       {/* Grid / List */}
       <div
-        className={`px-7 pb-10 grid gap-4 ${
-          view === "grid" ? "grid-cols-3" : "grid-cols-1"
+        className={`px-4 md:px-7 pb-10 grid gap-4 ${
+          view === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
         }`}
       >
         {isLoading ? (
           Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)
         ) : sorted.length === 0 ? (
-          <div className="col-span-3 flex flex-col items-center justify-center py-20 gap-3">
+          <div className="col-span-full flex flex-col items-center justify-center py-20 gap-3">
             <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center">
               <Users size={24} className="text-[#002FA7]" />
             </div>
