@@ -1279,10 +1279,13 @@ function DashboardContent({ isPaying, communityId }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [search, setSearch] = useState("");
-  const [sortDir, setSortDir] = useState("desc"); // desc = Recent, asc = Oldest
+  const [sortDir, setSortDir] = useState("desc");
   const [alertVisible, setAlertVisible] = useState(true);
   const [payingItem, setPayingItem] = useState(null);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
+  const [gsDismissed, setGsDismissed] = useState(() => {
+    try { return localStorage.getItem(`gs_done_${communityId}`) === "1"; } catch { return false; }
+  });
 
   const { balances, members, transactions, obligations, activity, isLoading, error } =
     useCommunityDashboard(communityId);
@@ -1328,6 +1331,16 @@ function DashboardContent({ isPaying, communityId }) {
   // Open the confirmation modal instead of calling the API directly
   function handlePayMine(item) {
     setPayingItem(item);
+  }
+
+  // ── Getting started checklist ─────────────────────────────────────────────
+  const gsHasPlans   = plans.length > 0;
+  const gsHasMembers = (members?.total ?? 0) > 0;
+  const showGettingStarted = !isLoading && !plansLoading && !gsDismissed && (!gsHasPlans || !gsHasMembers);
+
+  function dismissGs() {
+    setGsDismissed(true);
+    try { localStorage.setItem(`gs_done_${communityId}`, "1"); } catch {}
   }
 
   // ── Derived stats ─────────────────────────────────────────────────────────
@@ -1503,6 +1516,89 @@ function DashboardContent({ isPaying, communityId }) {
             </button>
           </div>
         </div>
+
+        {/* Getting started checklist — shown until both a plan and members exist */}
+        {showGettingStarted && (
+          <div className="rounded-xl border border-blue-100 bg-[#EEF3FF] p-5 mb-5">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">Get your community ready</p>
+                <p className="text-xs text-gray-500 mt-0.5">Complete these steps to start collecting dues.</p>
+              </div>
+              <button
+                onClick={dismissGs}
+                className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer p-0 flex-shrink-0 mt-0.5"
+                aria-label="Dismiss"
+              >
+                <X size={15} />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2.5">
+              {/* Step 1 — always done (they're here) */}
+              <div className="flex items-center gap-3">
+                <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <Check size={11} className="text-emerald-600" strokeWidth={2.5} />
+                </span>
+                <span className="text-xs text-gray-400 line-through">Create your community</span>
+              </div>
+
+              {/* Step 2 — create a payment plan */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasPlans ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}>
+                    {gsHasPlans && <Check size={11} className="text-emerald-600" strokeWidth={2.5} />}
+                  </span>
+                  <span className={`text-xs ${gsHasPlans ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}>
+                    Create a payment plan
+                  </span>
+                </div>
+                {!gsHasPlans && (
+                  <button
+                    onClick={() => navigate(`/dashboard/payments?community=${communityId ?? ""}`)}
+                    className="text-xs font-semibold text-[#002FA7] bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
+                  >
+                    Create plan
+                  </button>
+                )}
+              </div>
+
+              {/* Step 3 — add members */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasMembers ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}>
+                    {gsHasMembers && <Check size={11} className="text-emerald-600" strokeWidth={2.5} />}
+                  </span>
+                  <span className={`text-xs ${gsHasMembers ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}>
+                    Add your first member
+                  </span>
+                </div>
+                {!gsHasMembers && (
+                  <button
+                    onClick={() => setAddMemberOpen(true)}
+                    className="text-xs font-semibold text-[#002FA7] bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
+                  >
+                    Add member
+                  </button>
+                )}
+              </div>
+
+              {/* Step 4 — payout account */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="w-5 h-5 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center flex-shrink-0" />
+                  <span className="text-xs text-gray-700 font-medium">Set up your payout account</span>
+                </div>
+                <button
+                  onClick={() => navigate("/dashboard/settings/finance/paystack")}
+                  className="text-xs font-semibold text-[#002FA7] bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
+                >
+                  Set up
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Alert — paying admin with an unpaid obligation */}
         {isPaying &&
