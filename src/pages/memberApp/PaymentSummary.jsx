@@ -121,25 +121,19 @@ export default function PaymentSummary() {
     if (!obligation?.paymentLink?.id) return;
     setError("");
 
-    // If the pre-fetch already obtained an authorizationUrl or a direct
-    // reference, use it without re-initiating (same idempotency key means
-    // a second call would return the same result anyway).
-    if (prefetch) {
-      const url = prefetch.authorizationUrl;
-      const reference = prefetch.reference;
-      if (url) {
-        sessionStorage.setItem("paymentReturnTo", "/member/home");
-        if (reference) sessionStorage.setItem("paymentPendingRef", reference);
-        window.location.href = url;
-        return;
-      }
-      if (reference) {
-        toastSuccess("Payment sent", { reference });
-        navigate(`/member/pay/${paymentId}/success?reference=${reference}`, { replace: true });
-        return;
-      }
+    // For direct charges (saved card, no Paystack redirect) the pre-fetched
+    // reference is still valid — the charge already went through on the backend.
+    if (prefetch?.reference && !prefetch?.authorizationUrl) {
+      toastSuccess("Payment sent", { reference: prefetch.reference });
+      navigate(`/member/pay/${paymentId}/success?reference=${prefetch.reference}`, { replace: true });
+      return;
     }
 
+    // For Paystack-hosted payments we always generate a fresh authorization
+    // URL on button click. The pre-fetched URL is only used to display the
+    // billed amount; reusing it for the redirect risks a "could not start
+    // this transaction" error from Paystack if the user lingered on this
+    // screen and the URL expired.
     try {
       const res = await initiatePayment.mutateAsync({
         paymentLinkId: obligation.paymentLink.id,
