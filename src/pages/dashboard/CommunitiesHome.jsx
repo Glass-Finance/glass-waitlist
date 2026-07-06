@@ -498,7 +498,7 @@
 // }
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import {
   ChevronDown,
   Users,
@@ -676,17 +676,15 @@ export default function CommunitiesHome() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data, isLoading, error } = useCommunitiesWithMetrics();
-
-  if (user?.email?.toLowerCase() === "glasspayhq@gmail.com") {
-    navigate("/dashboard/admin-panel", { replace: true });
-    return null;
-  }
-
-  const communities = data?.communities ?? [];
-
   const [sort, setSort] = useState("Recently Viewed");
   const [sortOpen, setSortOpen] = useState(false);
   const [view, setView] = useState("grid");
+
+  if (user?.email?.toLowerCase() === "glasspayhq@gmail.com") {
+    return <Navigate to="/dashboard/admin-panel" replace />;
+  }
+
+  const communities = data?.communities ?? [];
 
   const sorted = [...communities].sort((a, b) => {
     if (sort === "A-Z") return (a.name ?? "").localeCompare(b.name ?? "");
