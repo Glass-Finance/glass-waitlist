@@ -7,9 +7,10 @@ export default defineConfig({
     target: "esnext",
     rollupOptions: {
       output: {
-        manualChunks: {
-          "react-vendor": ["react", "react-dom", "react-router-dom"],
-          "query-vendor": ["@tanstack/react-query"],
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (/node_modules[\\/](react|react-dom|react-router-dom)[\\/]/.test(id)) return "react-vendor";
+          if (id.includes("node_modules/@tanstack/react-query") || id.includes("node_modules\\@tanstack\\react-query")) return "query-vendor";
         },
       },
     },
