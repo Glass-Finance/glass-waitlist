@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import {
   Search, Building2, Users, CreditCard, BarChart2, Bell,
   ChevronLeft, ChevronRight, X, Check, Loader2,
@@ -1101,6 +1102,7 @@ const TABS = [
 ];
 
 export default function AdminPanel() {
+  usePageTitle("Admin Panel");
   const [activeTab, setActiveTab] = useState("communities");
 
   return (

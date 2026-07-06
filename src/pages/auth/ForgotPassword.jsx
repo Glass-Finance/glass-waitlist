@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { Link, useNavigate } from "react-router-dom";
 import { forgotPassword } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
@@ -6,6 +7,7 @@ import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
 
 export default function ForgotPassword() {
+  usePageTitle("Reset your password");
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);

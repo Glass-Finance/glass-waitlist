@@ -511,6 +511,7 @@ import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
 import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin } from "../../utils/communityRole";
 import Background from "../../assets/background.png";
+import { usePageTitle } from "../../hooks/usePageTitle";
 
 const SORT_OPTIONS = ["Recently Viewed", "A-Z", "Z-A", "Newest First"];
 
@@ -671,6 +672,7 @@ function CommunityCard({ community, onClick }) {
 }
 
 export default function CommunitiesHome() {
+  usePageTitle("Your Communities");
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data, isLoading, error } = useCommunitiesWithMetrics();

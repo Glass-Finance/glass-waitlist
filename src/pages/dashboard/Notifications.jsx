@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
 import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
 import { useAuth } from "../../store/AuthContext";
@@ -152,6 +153,7 @@ function ChronologicalList({ items, onMarkRead }) {
 }
 
 function SuperAdminNotifications() {
+  usePageTitle("Notifications");
   const {
     notifications, isLoading, unreadCount,
     markRead, markAllRead, isMarkingAllRead,
@@ -200,6 +202,7 @@ function SuperAdminNotifications() {
 }
 
 function CommunityNotifications() {
+  usePageTitle("Notifications");
   const {
     notifications, isLoading, unreadCount,
     markRead, markAllRead, isMarkingAllRead,

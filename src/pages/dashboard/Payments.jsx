@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { useQuery } from "@tanstack/react-query";
 import {
   Plus,
@@ -1378,6 +1379,7 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers, metrics })
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function Payments() {
+  usePageTitle("Payments");
   const communityId = useActiveCommunityId();
   const [createOpen, setCreateOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);

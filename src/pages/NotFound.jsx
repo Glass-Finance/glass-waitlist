@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import GlassLogo from "../assets/Glass.png";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 export default function NotFound() {
+  usePageTitle("Page not found");
   const navigate = useNavigate();
 
   return (

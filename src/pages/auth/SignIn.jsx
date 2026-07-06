@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
@@ -20,6 +21,7 @@ import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/
 // CSS breakpoints, which is exactly the "one page, adapts by screen size"
 // behavior both entry points need.
 export default function SignIn() {
+  usePageTitle("Sign in");
   const navigate = useNavigate();
   const location = useLocation();
   const { login, setSession } = useAuth();

@@ -1,23 +1,38 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/cta/ctalogo.png";
 import BlurText from "./ui/BlurText";
 
 const links = {
-  Product: ["Features", "How It Works", "Pricing", "Integrations"],
-  "Use Cases": [
-    "Schools",
-    "Religious Organizations",
-    "Clubs",
-    "Professional Bodies",
+  Product: [
+    { label: "Features",     href: "/#solution"     },
+    { label: "How It Works", href: "/#how-it-works" },
+    { label: "Pricing",      href: "/#pricing"      },
+    { label: "Integrations", href: null             },
   ],
-  Resources: ["Help Centre"],
-  Company: ["About", "Team", "Careers", "Contact"],
-  Legal: ["Privacy", "Terms", "Security", "Cookie Policy"],
+  "Use Cases": [
+    { label: "Schools",                href: null },
+    { label: "Religious Organizations",href: null },
+    { label: "Clubs",                  href: null },
+    { label: "Professional Bodies",    href: null },
+  ],
+  Resources: [
+    { label: "Help Centre", href: "mailto:glasspayhq@gmail.com" },
+  ],
+  Company: [
+    { label: "About",    href: null                          },
+    { label: "Team",     href: null                          },
+    { label: "Careers",  href: null                          },
+    { label: "Contact",  href: "mailto:glasspayhq@gmail.com" },
+  ],
+  Legal: [
+    { label: "Privacy",       href: null          },
+    { label: "Terms",         href: null          },
+    { label: "Security",      href: "/#security"  },
+    { label: "Cookie Policy", href: null          },
+  ],
 };
 
 export default function Footer() {
-  const [contact, setContact] = useState("");
   const navigate = useNavigate();
 
   return (
@@ -84,14 +99,20 @@ export default function Footer() {
             <div key={section}>
               <p className="text-[13px] font-bold text-white mb-4">{section}</p>
               <ul className="space-y-2.5 list-none p-0 m-0">
-                {items.map((item) => (
-                  <li key={item}>
-                    <a
-                      href="#"
-                      className="text-[13px] text-white/60 hover:text-white no-underline transition-colors"
-                    >
-                      {item}
-                    </a>
+                {items.map(({ label, href }) => (
+                  <li key={label}>
+                    {href ? (
+                      <a
+                        href={href}
+                        className="text-[13px] text-white/60 hover:text-white no-underline transition-colors"
+                      >
+                        {label}
+                      </a>
+                    ) : (
+                      <span className="text-[13px] text-white/35 cursor-default select-none">
+                        {label}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

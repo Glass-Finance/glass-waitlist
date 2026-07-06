@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, UserX, Clock, ShieldCheck, Copy, Check, UserCheck, Building2, ChevronRight, DollarSign, Download } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
@@ -164,6 +165,7 @@ function EmptyState({ onAddMember, onCreatePlan }) {
 }
 
 export default function Members() {
+  usePageTitle("Members");
   const navigate = useNavigate();
   const communityId = useActiveCommunityId();
   const [search, setSearch] = useState("");

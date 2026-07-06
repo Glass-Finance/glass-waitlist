@@ -1,4 +1,5 @@
 import { useScrollReveal } from "../hooks/useScrollReveal";
+import { usePageTitle } from "../hooks/usePageTitle";
 import Navbar from "../components/Navbar";
 import Hero from "../components/organizations/Hero";
 import ProblemSection from "../components/organizations/ProblemSection";
@@ -12,6 +13,7 @@ import WhyGlass from "../components/WhyGlass";
 import Footer from "../components/Footer";
 
 export default function OrganizationsHome() {
+  usePageTitle("Community Finance, Crystal Clear");
   useScrollReveal();
 
   return (

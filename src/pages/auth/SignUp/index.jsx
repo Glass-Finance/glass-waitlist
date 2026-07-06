@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePageTitle } from "../../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../../../layouts/AuthLayout";
 import RegisterStep from "./RegisterStep";
@@ -7,6 +8,7 @@ import { useAuth } from "../../../store/AuthContext";
 
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function SignUp() {
+  usePageTitle("Create your account");
   const navigate = useNavigate();
   const { setSession } = useAuth();
   const [step, setStep] = useState(1);

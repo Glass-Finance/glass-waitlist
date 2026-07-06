@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import Navbar from "../components/Navbar";
 import MembersHero from "../components/members/MembersHero";
 import MembersHowItWorks from "../components/members/MembersHowItWorks";
@@ -12,6 +13,7 @@ import MembersCTA from "../components/members/MembersCTA";
 import Footer from "../components/Footer";
 
 export default function MembersHome() {
+  usePageTitle("Glass for Members");
   return (
     <div className="bg-[#F7F8FC]">
       <Navbar />
