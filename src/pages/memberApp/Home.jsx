@@ -62,8 +62,8 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
         style={{
           margin: "0 16px",
           borderRadius: 20,
-          background: isError ? "#FFF7F7" : "#F0FDF4",
-          border: `1.5px solid ${isError ? "#FECACA" : "#BBF7D0"}`,
+          background: isError ? "#FFF7F7" : "#EEF3FF",
+          border: `1.5px solid ${isError ? "#FECACA" : "#C7D7FF"}`,
           padding: "32px 24px",
           textAlign: "center",
           display: "flex",
@@ -74,7 +74,7 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
       >
         <div style={{
           width: 56, height: 56, borderRadius: "50%",
-          background: isError ? "#FEE2E2" : "#DCFCE7",
+          background: isError ? "#FEE2E2" : "#D7E2FF",
           display: "flex", alignItems: "center", justifyContent: "center",
           marginBottom: 8,
         }}>
@@ -85,13 +85,13 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
             </svg>
           ) : (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12l5 5 9-9" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M5 12l5 5 9-9" stroke="#002FA7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           )}
         </div>
 
         {communityName && communityName !== "Your Community" && (
-          <p style={{ fontSize: 12, color: isError ? "#EF4444" : "#16A34A", margin: "0 0 2px", fontWeight: 500 }}>
+          <p style={{ fontSize: 12, color: isError ? "#EF4444" : "#002FA7", margin: "0 0 2px", fontWeight: 500 }}>
             {communityName}
           </p>
         )}
@@ -114,9 +114,9 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
             style={{
               marginTop: 8,
               background: "none",
-              border: `1px solid ${isError ? "#FCA5A5" : "#86EFAC"}`,
+              border: `1px solid ${isError ? "#FCA5A5" : "#C7D7FF"}`,
               borderRadius: 20,
-              color: isError ? "#EF4444" : "#16A34A",
+              color: isError ? "#EF4444" : "#002FA7",
               fontSize: 12,
               fontWeight: 600,
               cursor: "pointer",

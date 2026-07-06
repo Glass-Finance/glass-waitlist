@@ -320,8 +320,8 @@ export default function UpcomingPayments() {
           </div>
         ) : filtered.length === 0 ? (
           <div style={{ padding: "48px 24px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#D7E2FF", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12l5 5 9-9"/>
               </svg>
             </div>

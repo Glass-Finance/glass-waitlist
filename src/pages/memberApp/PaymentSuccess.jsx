@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Check, X, Loader2, Clock } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 
-const POLL_INTERVAL_MS = 3000;
+const POLL_INTERVAL_MS = 1500;
 const MAX_POLLS = 20;
 
 function isTerminal(status) {

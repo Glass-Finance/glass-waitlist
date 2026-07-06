@@ -240,7 +240,7 @@ function App() {
             are accepted. Not behind MemberDeviceGuard: the browser that
             completes the payment may be any browser, not just the member
             app's device. Desktop-designed for admin pay flow. ── */}
-        <Route element={<ProtectedRoute />}>
+        <Route element={<ProtectedRoute signInPath="/member/app-sign-in" />}>
           <Route path="/payment/callback" element={<PaymentCallback />} />
         </Route>
 

@@ -10,7 +10,7 @@ import LoadingScreen from "../components/LoadingScreen";
  * isn't guaranteed and isAdmin/isMember is the single source of truth
  * already used by SignInStep's post-login redirect.
  */
-export default function ProtectedRoute({ requiredRole }) {
+export default function ProtectedRoute({ requiredRole, signInPath = "/sign-in" }) {
   const location = useLocation();
   const { token, isAdmin, isMember, loading } = useAuth();
 
@@ -19,7 +19,7 @@ export default function ProtectedRoute({ requiredRole }) {
   }
 
   if (!token) {
-    return <Navigate to="/sign-in" state={{ from: location }} replace />;
+    return <Navigate to={signInPath} state={{ from: location }} replace />;
   }
 
   if (requiredRole === "admin" && !isAdmin) {

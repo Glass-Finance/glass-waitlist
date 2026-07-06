@@ -127,7 +127,11 @@ export default function PaymentSummary() {
     if (prefetch) {
       const url = prefetch.authorizationUrl;
       const reference = prefetch.reference;
-      if (url) { window.location.href = url; return; }
+      if (url) {
+        sessionStorage.setItem("paymentReturnTo", "/member/home");
+        window.location.href = url;
+        return;
+      }
       if (reference) {
         toastSuccess("Payment sent", { reference });
         navigate(`/member/pay/${paymentId}/success?reference=${reference}`);
@@ -148,6 +152,7 @@ export default function PaymentSummary() {
       const url = res.data?.data?.authorizationUrl;
       const reference = res.data?.data?.reference;
       if (url) {
+        sessionStorage.setItem("paymentReturnTo", "/member/home");
         window.location.href = url;
       } else {
         // No authorizationUrl means this charged immediately against a
