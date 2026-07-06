@@ -21,7 +21,6 @@ export default function NotFound() {
         src={GlassLogo}
         alt="Glass"
         className="w-10 h-10 object-contain mb-10"
-        style={{ filter: "brightness(0) saturate(100%) invert(10%) sepia(80%) saturate(5000%) hue-rotate(210deg) brightness(80%)" }}
       />
 
       {/* 404 */}
