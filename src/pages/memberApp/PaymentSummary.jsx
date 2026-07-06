@@ -186,6 +186,9 @@ export default function PaymentSummary() {
     );
   }
 
+  // Shows when in test/beta mode. Set VITE_TEST_MODE=false in deployment env to hide.
+  const isTestMode = import.meta.env.VITE_TEST_MODE !== "false";
+
   return (
     <div
       className="flex flex-col min-h-screen"
@@ -208,6 +211,39 @@ export default function PaymentSummary() {
           Payment Summary
         </h1>
       </div>
+
+      {/* ── Test mode banner ── */}
+      {isTestMode && (
+        <div
+          className="mx-4 mb-3 rounded-xl px-4 py-3"
+          style={{ background: "#FFFBEB", border: "1.5px solid #FCD34D" }}
+        >
+          <p className="text-[12px] font-bold text-amber-800 mb-1.5">🧪 Test Mode — No real money is charged</p>
+          <p className="text-[11px] text-amber-700 mb-2">Use the card details below to complete this payment:</p>
+          <div className="rounded-lg px-3 py-2.5 flex flex-col gap-1" style={{ background: "#FEF3C7" }}>
+            <div className="flex justify-between text-[11px]">
+              <span className="text-amber-700">Card number</span>
+              <span className="font-mono font-bold text-amber-900 tracking-wide">4084 0840 8408 4081</span>
+            </div>
+            <div className="flex justify-between text-[11px]">
+              <span className="text-amber-700">Expiry</span>
+              <span className="font-mono font-bold text-amber-900">01/99</span>
+            </div>
+            <div className="flex justify-between text-[11px]">
+              <span className="text-amber-700">CVV</span>
+              <span className="font-mono font-bold text-amber-900">408</span>
+            </div>
+            <div className="flex justify-between text-[11px]">
+              <span className="text-amber-700">PIN</span>
+              <span className="font-mono font-bold text-amber-900">0000</span>
+            </div>
+            <div className="flex justify-between text-[11px]">
+              <span className="text-amber-700">OTP</span>
+              <span className="font-mono font-bold text-amber-900">123456</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col gap-3 px-4 pt-2">
         {/* ── Card 1: Community + saved method ── */}
