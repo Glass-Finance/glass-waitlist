@@ -305,8 +305,9 @@ export default function Profile() {
             Permanently remove your account and all associated data from Glass.
           </p>
           <button
-            onClick={() => setDeleteModal(true)}
-            className="ml-4 px-4 py-1.5 rounded-md text-xs font-medium text-red-600 transition-all flex-shrink-0 cursor-pointer hover:bg-red-50 bg-transparent"
+            disabled
+            title="Account deletion coming soon"
+            className="ml-4 px-4 py-1.5 rounded-md text-xs font-medium text-red-300 transition-all flex-shrink-0 cursor-not-allowed bg-transparent"
             style={{ border: "1px solid #FECACA" }}
           >
             Delete

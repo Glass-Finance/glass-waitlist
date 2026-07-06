@@ -265,8 +265,9 @@ export default function CommunityProfile() {
             Permanently remove this community and all associated data from Glass.
           </p>
           <button
-            onClick={() => setDeleteModal(true)}
-            className="ml-4 px-3 py-1.5 rounded-md text-xs text-red-600 bg-white transition-all flex-shrink-0 cursor-pointer hover:bg-red-50"
+            disabled
+            title="Community deletion coming soon"
+            className="ml-4 px-3 py-1.5 rounded-md text-xs text-red-300 bg-white transition-all flex-shrink-0 cursor-not-allowed"
             style={{ border: "1px solid #FECACA" }}
           >
             Delete
