@@ -69,7 +69,7 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
   return (
     <>
       <div className="fixed inset-0 z-10" onClick={onClose} />
-      <div className="absolute right-0 top-full mt-2 bg-white rounded-xl border border-gray-100 shadow-lg z-20 p-4 w-64">
+      <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 bg-white rounded-xl border border-gray-100 shadow-lg z-20 p-4 w-64">
         <div className="flex flex-col gap-3">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Plan</label>

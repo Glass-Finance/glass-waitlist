@@ -1453,19 +1453,19 @@ function DashboardContent({ isPaying, communityId }) {
     let list = transactions;
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter(
-        (t) =>
-          (t.memberName ?? t.description ?? "").toLowerCase().includes(q) ||
-          (t.planName ?? "").toLowerCase().includes(q) ||
-          (t.email ?? "").toLowerCase().includes(q),
-      );
+      list = list.filter((t) => {
+        const name  = (resolveMemberName(t) ?? "").toLowerCase();
+        const plan  = (t.planName ?? t.paymentLink?.title ?? t.description ?? "").toLowerCase();
+        const email = (t.member?.user?.email ?? t.user?.email ?? t.payer?.email ?? t.member?.email ?? t.email ?? "").toLowerCase();
+        return name.includes(q) || plan.includes(q) || email.includes(q);
+      });
     }
     return [...list].sort((a, b) => {
       const ta = new Date(a.createdAt ?? a.date ?? 0).getTime();
       const tb = new Date(b.createdAt ?? b.date ?? 0).getTime();
       return sortDir === "desc" ? tb - ta : ta - tb;
     });
-  }, [transactions, search, sortDir]);
+  }, [transactions, search, sortDir, memberNameMap]);
 
   // ── Recent activity — real audit-log feed (event/description/actor/result) ──
   const recentActivity = activity.list;
