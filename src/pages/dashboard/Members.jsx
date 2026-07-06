@@ -356,12 +356,12 @@ export default function Members() {
           </button>
         </div>
 
-        <div className="flex items-center justify-between px-5 pb-3 gap-3">
-          <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-100 flex-1 min-w-0 max-w-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-5 pb-3 gap-2">
+          <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-100 w-full sm:flex-1 sm:min-w-0 sm:max-w-xs">
             <Search size={12} className="text-gray-400" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search members…" className="flex-1 bg-transparent border-none outline-none text-xs text-gray-600 placeholder-gray-400" />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 self-end sm:self-auto">
             <div className="relative">
               <button onClick={() => setFilterOpen((o) => !o)} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 bg-white cursor-pointer">
                 <Filter size={12} /> Filter
