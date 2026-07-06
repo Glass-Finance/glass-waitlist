@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate, useLocation, Outlet, Navigate } from "react-router-dom";
+import { usePageTitle } from "../../../hooks/usePageTitle";
 import { Search, ChevronRight } from "lucide-react";
 import Background from "../../../assets/background.png";
 import { useAuth } from "../../../store/AuthContext";
@@ -97,6 +98,9 @@ export default function Settings() {
   const location = useLocation();
   const path     = location.pathname;
   const { user } = useAuth();
+
+  const titleKey = Object.keys(BREADCRUMB_MAP).find(k => path.includes(k));
+  usePageTitle(titleKey ? BREADCRUMB_MAP[titleKey].child : "Settings");
   const isSuperAdmin = user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL;
 
   // Super-admin only gets Security — redirect any other settings path there

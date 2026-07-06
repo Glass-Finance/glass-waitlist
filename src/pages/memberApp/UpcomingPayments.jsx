@@ -319,13 +319,17 @@ export default function UpcomingPayments() {
             </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "20px 0" }}>
-            <p style={{ color: "#999", fontSize: 14, margin: "0 0 8px" }}>
-              Nothing due right now.
-            </p>
+          <div style={{ padding: "48px 24px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12l5 5 9-9"/>
+              </svg>
+            </div>
+            <p style={{ fontSize: 14, fontWeight: 600, color: "#374151", margin: 0 }}>Nothing due right now</p>
+            <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0 }}>You're up to date on all payments.</p>
             <button
               onClick={refresh}
-              style={{ background: "none", border: "none", color: "#002FA7", fontSize: 13, fontWeight: 600, textDecoration: "underline", cursor: "pointer", padding: 0 }}
+              style={{ marginTop: 4, background: "none", border: "none", color: "#002FA7", fontSize: 13, fontWeight: 600, cursor: "pointer", padding: 0 }}
             >
               Check again
             </button>

@@ -256,16 +256,22 @@ export default function Transactions() {
       ) : groups.length === 0 ? (
         <div
           style={{
-            background: "#EFEFF1E5",
-            borderRadius: 16,
             margin: "0 12px",
-            padding: "32px 20px",
+            padding: "48px 24px",
             textAlign: "center",
-            color: "#9ca3af",
-            fontSize: 14,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 8,
           }}
         >
-          No transactions found.
+          <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#F3F4F6", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+            </svg>
+          </div>
+          <p style={{ fontSize: 14, fontWeight: 600, color: "#374151", margin: 0 }}>No transactions yet</p>
+          <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0 }}>Your payment history will appear here.</p>
         </div>
       ) : (
         groups.map(([label, txs]) => (

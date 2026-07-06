@@ -56,60 +56,74 @@ function firstName(user) {
 // ---------------------------------------------------------------------------
 function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   if (!nextDue) {
+    const isError = Boolean(error);
     return (
       <div
         style={{
           margin: "0 16px",
-          borderRadius: 16,
-          background: "#002FA7",
-          padding: "28px 20px",
+          borderRadius: 20,
+          background: isError ? "#FFF7F7" : "#F0FDF4",
+          border: `1.5px solid ${isError ? "#FECACA" : "#BBF7D0"}`,
+          padding: "32px 24px",
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 8,
+          gap: 6,
         }}
       >
+        <div style={{
+          width: 56, height: 56, borderRadius: "50%",
+          background: isError ? "#FEE2E2" : "#DCFCE7",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          marginBottom: 8,
+        }}>
+          {isError ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="#EF4444" strokeWidth="1.8"/>
+              <path d="M12 8v4M12 16h.01" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12l5 5 9-9" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          )}
+        </div>
+
         {communityName && communityName !== "Your Community" && (
-          <p style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", margin: 0 }}>
+          <p style={{ fontSize: 12, color: isError ? "#EF4444" : "#16A34A", margin: "0 0 2px", fontWeight: 500 }}>
             {communityName}
           </p>
         )}
-        {error ? (
+
+        {isError ? (
           <>
-            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.9)", margin: 0, fontWeight: 500 }}>
-              Couldn't load your payment info
-            </p>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: 0 }}>
-              Check your connection and try again.
-            </p>
+            <p style={{ fontSize: 15, color: "#111", fontWeight: 700, margin: 0 }}>Couldn't load payments</p>
+            <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0, lineHeight: 1.5 }}>Check your connection and try again.</p>
           </>
         ) : (
           <>
-            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.9)", margin: 0, fontWeight: 500 }}>
-              You're all caught up
-            </p>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: 0 }}>
-              Nothing due right now.
-            </p>
+            <p style={{ fontSize: 15, color: "#111", fontWeight: 700, margin: 0 }}>You're all caught up</p>
+            <p style={{ fontSize: 13, color: "#6B7280", margin: 0, lineHeight: 1.5 }}>No payments due right now.</p>
           </>
         )}
+
         {onRefresh && (
           <button
             onClick={onRefresh}
             style={{
-              marginTop: 4,
+              marginTop: 8,
               background: "none",
-              border: "none",
-              color: "rgba(255,255,255,0.75)",
+              border: `1px solid ${isError ? "#FCA5A5" : "#86EFAC"}`,
+              borderRadius: 20,
+              color: isError ? "#EF4444" : "#16A34A",
               fontSize: 12,
               fontWeight: 600,
-              textDecoration: "underline",
               cursor: "pointer",
-              padding: 0,
+              padding: "6px 18px",
             }}
           >
-            Check again
+            {isError ? "Try again" : "Check again"}
           </button>
         )}
       </div>
@@ -686,15 +700,10 @@ export default function Home() {
               </div>
 
               {upcoming.length === 0 ? (
-                <p
-                  style={{
-                    fontSize: 13,
-                    color: "#999",
-                    padding: "12px 0 16px",
-                  }}
-                >
-                  Nothing else due soon.
-                </p>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "16px 0", color: "#C0C4CC" }}>
+                  <Clock size={13} strokeWidth={1.8} />
+                  <span style={{ fontSize: 13, color: "#BABEC7" }}>Nothing else due soon.</span>
+                </div>
               ) : (
                 upcoming.map((p) => (
                   <UpcomingRow key={p.id} payment={p} onPay={handlePay} />
@@ -758,15 +767,12 @@ export default function Home() {
               </div>
 
               {history.length === 0 ? (
-                <p
-                  style={{
-                    fontSize: 13,
-                    color: "#999",
-                    padding: "12px 0 16px",
-                  }}
-                >
-                  No payments yet.
-                </p>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "16px 0", color: "#C0C4CC" }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C0C4CC" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+                  </svg>
+                  <span style={{ fontSize: 13, color: "#BABEC7" }}>No payments yet.</span>
+                </div>
               ) : (
                 history.map((item) => <HistoryRow key={item.id} item={item} />)
               )}
