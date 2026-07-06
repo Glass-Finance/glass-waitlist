@@ -28,6 +28,7 @@ import {
   PanelLeftOpen,
   LogOut,
   ShieldCheck,
+  Smartphone,
 } from "lucide-react";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useAuth } from "../../store/AuthContext";
@@ -656,6 +657,36 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             );
           })}
         </nav>
+
+        {/* Member View switch */}
+        <div style={{ padding: "0 8px 8px" }}>
+          <div style={{ height: 1, background: "#eef0f8", marginBottom: 8 }} />
+          <button
+            onClick={() => { navigate("/member/home"); onCloseMobile?.(); }}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "9px 10px",
+              borderRadius: 8,
+              border: "none",
+              cursor: "pointer",
+              background: "transparent",
+              color: "#6b7280",
+              fontWeight: 500,
+              fontSize: 12,
+              transition: "all .15s",
+              fontFamily: "Inter, sans-serif",
+              whiteSpace: "nowrap",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.color = "#002FA7"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#6b7280"; }}
+          >
+            <Smartphone size={14} style={{ flexShrink: 0 }} />
+            <span style={{ flex: 1, textAlign: "left" }}>Member View</span>
+          </button>
+        </div>
 
         {/* Bottom — user info strip */}
         {!collapsed && (

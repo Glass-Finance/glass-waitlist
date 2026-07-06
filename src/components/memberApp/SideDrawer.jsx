@@ -6,6 +6,7 @@ import {
   Settings,
   LogOut,
   X,
+  LayoutDashboard,
 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 
@@ -20,7 +21,7 @@ const NAV_ITEMS = [
 // every page — not just Home — has a way to reach Settings/My Communities.
 export default function SideDrawer({ open, onClose }) {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, isAdmin } = useAuth();
 
   async function handleLogout() {
     onClose();
@@ -137,6 +138,32 @@ export default function SideDrawer({ open, onClose }) {
               </span>
             </button>
           ))}
+
+          {isAdmin && (
+            <>
+              <div style={{ height: 1, background: "#0000000D", margin: "4px 0" }} />
+              <button
+                onClick={() => { onClose(); navigate("/dashboard/home"); }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "14px 12px",
+                  borderRadius: 12,
+                  border: "none",
+                  background: "none",
+                  cursor: "pointer",
+                  width: "100%",
+                  textAlign: "left",
+                }}
+              >
+                <LayoutDashboard size={20} strokeWidth={1.6} style={{ color: "#002FA7" }} />
+                <span style={{ fontSize: 15, fontWeight: 400, color: "#002FA7" }}>
+                  Admin Dashboard
+                </span>
+              </button>
+            </>
+          )}
         </nav>
 
         {/* Log out — pinned to bottom */}
