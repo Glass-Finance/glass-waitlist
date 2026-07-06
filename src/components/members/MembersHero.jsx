@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import waveBg from "../../assets/hero/hero.jpg";
 import iphone from "../../assets/hero/iphone.webp";
@@ -57,17 +57,6 @@ export default function MembersHero() {
     return () => window.removeEventListener("resize", draw);
   }, []);
 
-  const [waveOpacity, setWaveOpacity] = useState(0);
-  useEffect(() => {
-    const onScroll = () => {
-      if (!sectionRef.current) return;
-      const { top, height } = sectionRef.current.getBoundingClientRect();
-      setWaveOpacity(Math.min(1, Math.max(0, (-top / height - 0.45) / 0.25)));
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
     <>
     <style>{`
@@ -77,6 +66,10 @@ export default function MembersHero() {
         65%  { transform: scale(1.07) translate(12px, -14px); }
         100% { transform: scale(1.06) translate(0px, 0px); }
       }
+      @media (max-width: 640px) {
+        .hero-wave-bg { animation: none !important; transform: scale(1.06) !important; will-change: auto !important; }
+        .hero-blur-blobs { display: none !important; }
+      }
     `}</style>
     <section
       ref={sectionRef}
@@ -84,7 +77,7 @@ export default function MembersHero() {
     >
       {/* Wave background */}
       <div
-        className="absolute inset-0 w-full h-full"
+        className="hero-wave-bg absolute inset-0 w-full h-full"
         style={{
           backgroundImage: `url(${waveBg})`,
           backgroundSize: "cover",

@@ -1472,10 +1472,14 @@ export default function Hero() {
         65%  { transform: scale(1.07) translate(12px, -14px); }
         100% { transform: scale(1.06) translate(0px, 0px); }
       }
+      @media (max-width: 640px) {
+        .hero-wave-bg { animation: none !important; transform: scale(1.06) !important; will-change: auto !important; }
+        .hero-blur-blobs { display: none !important; }
+      }
     `}</style>
     <section className="relative overflow-hidden pt-[68px]">
       <div
-        className="absolute inset-0 w-full h-full"
+        className="hero-wave-bg absolute inset-0 w-full h-full"
         style={{
           backgroundImage: `url(${waveBg})`,
           backgroundSize: "cover",
@@ -1496,7 +1500,7 @@ export default function Hero() {
         className="absolute inset-0 pointer-events-none select-none"
         style={{ width: "100%", height: "100%", opacity: 0.035, mixBlendMode: "screen" }}
       />
-      <div className="pointer-events-none absolute inset-0 select-none overflow-hidden">
+      <div className="hero-blur-blobs pointer-events-none absolute inset-0 select-none overflow-hidden">
         <div
           className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[1000px] h-[560px]"
           style={{
