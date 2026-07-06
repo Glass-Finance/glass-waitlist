@@ -116,6 +116,10 @@ body {
   }
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Carousel scroll animation for TrustedBy logos */
 @keyframes scroll {
   0% {

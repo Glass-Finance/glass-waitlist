@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
+import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
 
 function getInitials(name = "") {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
@@ -28,10 +30,25 @@ export default function MyCommunities() {
     id: c.id ?? c.community?.id,
   }));
   const leaveCommunity = useLeaveCommunity();
+  const [navigatingId, setNavigatingId] = useState(null);
 
-  function handleSelect(c) {
-    setActiveMemberCommunity(c);
-    navigate("/member/home");
+  async function handleSelect(c) {
+    if (c.owned) {
+      setNavigatingId(c.id);
+      try {
+        localStorage.setItem("glass_community", JSON.stringify(c));
+        const isPaying = await resolveIsPayingAdmin(c.slug ?? c.id);
+        const path = isPaying
+          ? `/dashboard/admin/paying?community=${c.slug}`
+          : `/dashboard/admin?community=${c.slug}`;
+        navigate(path);
+      } finally {
+        setNavigatingId(null);
+      }
+    } else {
+      setActiveMemberCommunity(c);
+      navigate("/member/home");
+    }
   }
 
   function handleLeave(e, c) {
@@ -65,10 +82,12 @@ export default function MyCommunities() {
               <button
                 key={c.id}
                 onClick={() => handleSelect(c)}
+                disabled={navigatingId === c.id}
                 style={{
                   display: "flex", alignItems: "center", gap: 12, background: "#fff",
                   borderRadius: 14, padding: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
-                  border: "none", cursor: "pointer", textAlign: "left", width: "100%",
+                  border: "none", cursor: navigatingId === c.id ? "default" : "pointer",
+                  textAlign: "left", width: "100%", opacity: navigatingId === c.id ? 0.7 : 1,
                 }}
               >
                 <div style={{ width: 44, height: 44, borderRadius: 12, background: "#1C2B8A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 13, flexShrink: 0, overflow: "hidden" }}>
@@ -91,6 +110,8 @@ export default function MyCommunities() {
                   >
                     <LogOut size={16} />
                   </button>
+                ) : navigatingId === c.id ? (
+                  <div style={{ width: 16, height: 16, borderRadius: "50%", border: "2px solid #e5e7eb", borderTopColor: "#002FA7", flexShrink: 0, animation: "spin 0.7s linear infinite" }} />
                 ) : (
                   <ChevronRight size={16} style={{ color: "#ccc", flexShrink: 0 }} />
                 )}
