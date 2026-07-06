@@ -236,9 +236,9 @@ export default function Topbar({
       </div>
 
       {/* Right */}
-      <div className="ml-auto flex items-center gap-4">
+      <div className="relative ml-auto flex items-center gap-4" ref={panelRef}>
         {/* Bell */}
-        <div className="relative" ref={panelRef}>
+        <div className="relative">
           <button
             onClick={() => setPanelOpen((o) => !o)}
             className="relative bg-transparent border-none cursor-pointer text-gray-500 hover:text-gray-700 transition-colors p-0"
@@ -251,19 +251,19 @@ export default function Topbar({
               </span>
             )}
           </button>
-
-          {panelOpen && (
-            <NotificationsPanel
-              notifications={notifications}
-              isLoading={isLoading}
-              unreadCount={unreadCount}
-              communityMap={communityMap}
-              onMarkRead={markRead}
-              onMarkAllRead={markAllRead}
-              onClose={() => setPanelOpen(false)}
-            />
-          )}
         </div>
+
+        {panelOpen && (
+          <NotificationsPanel
+            notifications={notifications}
+            isLoading={isLoading}
+            unreadCount={unreadCount}
+            communityMap={communityMap}
+            onMarkRead={markRead}
+            onMarkAllRead={markAllRead}
+            onClose={() => setPanelOpen(false)}
+          />
+        )}
 
         {/* Divider */}
         <div className="w-px h-6 bg-[#eef0f8]" />
