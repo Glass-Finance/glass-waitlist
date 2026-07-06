@@ -158,8 +158,8 @@ export default function Profile() {
         <p className="text-xs text-gray-500">Manage your personal information</p>
       </div>
       <div className="bg-[#EFEFF1E5] rounded-lg p-4" style={{ border: "1px solid #E5E7EB" }}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <div className="w-11 h-11 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
               {photoPreview || profileImageUrl ? (
                 <img src={photoPreview ?? profileImageUrl} alt="" className="w-full h-full object-cover" />
@@ -167,9 +167,9 @@ export default function Profile() {
                 <span className="text-sm text-[#002FA7]">{initials}</span>
               )}
             </div>
-            <div>
-              <p className="text-sm text-gray-900">{isLoading ? "Loading…" : displayName}</p>
-              <p className="text-xs text-gray-500">{user?.email ?? ""}</p>
+            <div className="min-w-0">
+              <p className="text-sm text-gray-900 truncate">{isLoading ? "Loading…" : displayName}</p>
+              <p className="text-xs text-gray-500 truncate">{user?.email ?? ""}</p>
             </div>
           </div>
           <input ref={photoInputRef} type="file" accept="image/png,image/jpeg" className="hidden"
@@ -177,7 +177,7 @@ export default function Profile() {
           <button
             onClick={() => photoInputRef.current?.click()}
             disabled={uploadFile.isPending}
-            className="px-2 py-2 rounded-sm text-xs bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50"
+            className="flex-shrink-0 px-2 py-2 rounded-sm text-xs bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50"
             style={{ border: "1px solid" }}
           >
             {uploadFile.isPending ? "Uploading…" : "Change Photo"}
@@ -298,7 +298,7 @@ export default function Profile() {
         <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Account</p>
         <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
         <div
-          className="flex items-center justify-between px-4 py-3 rounded-lg"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 rounded-lg"
           style={{ border: "1px solid #FECACA", background: "#FFF5F5" }}
         >
           <p className="text-xs text-gray-700">
@@ -307,7 +307,7 @@ export default function Profile() {
           <button
             disabled
             title="Account deletion coming soon"
-            className="ml-4 px-4 py-1.5 rounded-md text-xs font-medium text-red-300 transition-all flex-shrink-0 cursor-not-allowed bg-transparent"
+            className="self-start sm:self-auto flex-shrink-0 px-4 py-1.5 rounded-md text-xs font-medium text-red-300 transition-all cursor-not-allowed bg-transparent"
             style={{ border: "1px solid #FECACA" }}
           >
             Delete

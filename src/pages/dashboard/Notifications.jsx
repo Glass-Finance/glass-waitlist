@@ -169,8 +169,8 @@ function SuperAdminNotifications() {
         backgroundPosition: "center",
       }}
     >
-      <div className="flex items-start justify-between mb-5 flex-shrink-0">
-        <div>
+      <div className="flex items-start gap-3 mb-5 flex-shrink-0">
+        <div className="flex-1 min-w-0">
           <h1 className="text-xl font-bold text-black mb-1">Notifications</h1>
           <p className="text-sm text-gray-400">System alerts and platform events for your account.</p>
         </div>
@@ -178,7 +178,7 @@ function SuperAdminNotifications() {
           <button
             onClick={() => markAllRead()}
             disabled={isMarkingAllRead}
-            className="px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
+            className="flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
           >
             Mark All As Read
           </button>
@@ -232,14 +232,14 @@ function CommunityNotifications() {
       }}
     >
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-5 flex-shrink-0 flex-wrap">
-        <div>
+      <div className="flex items-start gap-3 mb-5 flex-shrink-0">
+        <div className="flex-1 min-w-0">
           <h1 className="text-xl font-bold text-black mb-1">Notifications</h1>
           <p className="text-sm text-gray-400">
             Stay on top of payments, member activity, and alerts.
           </p>
         </div>
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-3 flex-shrink-0">
           <button
             onClick={() => clearAll()}
             disabled={isClearing || notifications.length === 0}

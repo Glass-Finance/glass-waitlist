@@ -271,12 +271,12 @@ export default function Members() {
         backgroundPosition: "center",
       }}
     >
-      <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
+      <div className="flex items-start justify-between gap-3 mb-5">
         <div>
           <h1 className="text-xl font-bold text-black">Members</h1>
           <p className="text-sm text-gray-400 mt-0.5">A full picture of the members of your community</p>
         </div>
-        <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer">
+        <button onClick={() => setModalOpen(true)} className="flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer">
           <Plus size={13} /> Add Member
         </button>
       </div>
@@ -410,13 +410,17 @@ export default function Members() {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-y border-gray-100">
-                <th className="px-5 py-2.5 w-8">
+                <th className="hidden sm:table-cell px-5 py-2.5 w-8">
                   <input type="checkbox" checked={selected.length === filtered.length && filtered.length > 0}
                     onChange={(e) => setSelected(e.target.checked ? filtered.map((m) => m.id) : [])} />
                 </th>
-                {["Members", "Plans", "Status", "Date", "Email", "Date Joined", "Actions"].map((h) => (
-                  <th key={h} className="px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">{h}</th>
-                ))}
+                <th className="px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Members</th>
+                <th className="px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Plans</th>
+                <th className="px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Status</th>
+                <th className="hidden md:table-cell px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Date</th>
+                <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Email</th>
+                <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Date Joined</th>
+                <th className="hidden sm:table-cell px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -431,7 +435,7 @@ export default function Members() {
                   const s = statusStyle(m.paidCount, m.totalCount);
                   return (
                     <tr key={m.id} className="border-b border-gray-50 hover:bg-blue-50/20 transition-colors">
-                      <td className="px-5 py-3">
+                      <td className="hidden sm:table-cell px-5 py-3">
                         <input type="checkbox" checked={selected.includes(m.id)} onChange={() => toggleSelect(m.id)} />
                       </td>
                       <td className="px-5 py-3">
@@ -445,10 +449,10 @@ export default function Members() {
                           {m.paidCount}/{m.totalCount} Paid
                         </span>
                       </td>
-                      <td className="px-5 py-3 text-xs text-gray-500">{formatDate(m.lastPaymentDate)}</td>
-                      <td className="px-5 py-3 text-xs text-gray-500">{memberEmail(m)}</td>
-                      <td className="px-5 py-3 text-xs text-gray-500">{formatDate(m.joinedAt ?? m.createdAt)}</td>
-                      <td className="px-5 py-3">
+                      <td className="hidden md:table-cell px-5 py-3 text-xs text-gray-500">{formatDate(m.lastPaymentDate)}</td>
+                      <td className="hidden lg:table-cell px-5 py-3 text-xs text-gray-500">{memberEmail(m)}</td>
+                      <td className="hidden lg:table-cell px-5 py-3 text-xs text-gray-500">{formatDate(m.joinedAt ?? m.createdAt)}</td>
+                      <td className="hidden sm:table-cell px-5 py-3">
                         <div className="flex gap-1.5">
                           <button disabled title="Resend reminder — coming soon" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-300 cursor-not-allowed"><RotateCcw size={11} /></button>
                           <button onClick={() => handleRemove(m)} title="Remove member" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"><UserMinus size={11} /></button>

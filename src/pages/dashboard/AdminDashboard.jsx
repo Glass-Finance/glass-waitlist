@@ -2067,22 +2067,13 @@ function DashboardContent({ isPaying, communityId }) {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="border-y border-[#eef0f8] bg-gray-50">
-                  {[
-                    "Member",
-                    "Plan",
-                    "Amount",
-                    "Date",
-                    "Email",
-                    "Status",
-                    "Actions",
-                  ].map((h) => (
-                    <th
-                      key={h}
-                      className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap"
-                    >
-                      {h}
-                    </th>
-                  ))}
+                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Member</th>
+                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Plan</th>
+                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Amount</th>
+                  <th className="hidden md:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Date</th>
+                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Email</th>
+                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Status</th>
+                  <th className="hidden sm:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -2127,10 +2118,10 @@ function DashboardContent({ isPaying, communityId }) {
                         <td className="px-5 py-3 text-xs text-black">
                           {formatNaira(tx.amount)}
                         </td>
-                        <td className="px-5 py-3 text-xs text-black">
+                        <td className="hidden md:table-cell px-5 py-3 text-xs text-black">
                           {formatDate(tx.createdAt ?? tx.date)}
                         </td>
-                        <td className="px-5 py-3 text-xs text-black">
+                        <td className="hidden lg:table-cell px-5 py-3 text-xs text-black">
                           {tx.member?.user?.email ?? tx.user?.email ?? tx.payer?.email ?? tx.member?.email ?? tx.email ?? "—"}
                         </td>
                         <td className="px-5 py-3">
@@ -2141,7 +2132,7 @@ function DashboardContent({ isPaying, communityId }) {
                             {s.label}
                           </span>
                         </td>
-                        <td className="px-5 py-3">
+                        <td className="hidden sm:table-cell px-5 py-3">
                           <div className="flex items-center gap-2">
                             <button
                               disabled

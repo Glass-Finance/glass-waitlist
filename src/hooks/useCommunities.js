@@ -68,7 +68,9 @@ export function useCommunitiesWithMetrics(params = {}) {
         const data = res.data?.data;
         return Array.isArray(data) ? data : (data?.content ?? []);
       },
-      enabled: !!listQuery.data,
+      // Only fetch the full member list for communities where the user is an
+      // admin/owner — non-admin members get 403 on this endpoint.
+      enabled: !!listQuery.data && !!c.owned,
       staleTime: 1000 * 60 * 2,
     })),
   });

@@ -614,12 +614,12 @@ function CommunityCard({ community, onClick }) {
               <p className="text-xs font-semibold text-[#000000]">
                 {community.name ?? community.slug}
               </p>
-              <div className="flex items-center gap-1 mt-0.5">
-                <Users size={11} className="text-gray-400" />
-                <span className="text-[10px] text-gray-400">
-                  {memberCount != null ? `${memberCount} Members` : "— Members"}
-                </span>
-              </div>
+              {memberCount != null && (
+                <div className="flex items-center gap-1 mt-0.5">
+                  <Users size={11} className="text-gray-400" />
+                  <span className="text-[10px] text-gray-400">{memberCount} Members</span>
+                </div>
+              )}
             </div>
           </div>
           <span
