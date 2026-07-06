@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import GlassLogo from "../assets/Glass.png";
+import Background from "../assets/background.png";
 import { usePageTitle } from "../hooks/usePageTitle";
 
 export default function NotFound() {
@@ -7,33 +8,53 @@ export default function NotFound() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
-      {/* Logo */}
-      <div className="w-12 h-12 rounded-2xl bg-[#002FA7] flex items-center justify-center mb-8">
-        <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain brightness-0 invert" />
-      </div>
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
+      style={{
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {/* Logo — no container */}
+      <img
+        src={GlassLogo}
+        alt="Glass"
+        className="w-10 h-10 object-contain mb-10"
+        style={{ filter: "brightness(0) saturate(100%) invert(10%) sepia(80%) saturate(5000%) hue-rotate(210deg) brightness(80%)" }}
+      />
 
       {/* 404 */}
-      <p className="text-[80px] font-black text-[#002FA7] leading-none mb-4 tracking-tight">404</p>
-
-      <h1 className="text-[22px] font-bold text-gray-900 mb-3">Page not found</h1>
-      <p className="text-[14px] text-gray-500 max-w-[320px] leading-relaxed mb-8">
-        The page you're looking for doesn't exist or may have been moved.
+      <p
+        className="font-black leading-none tracking-tighter mb-5 select-none"
+        style={{ fontSize: "clamp(96px, 20vw, 160px)", color: "#002FA7", opacity: 0.12 }}
+      >
+        404
       </p>
 
-      <div className="flex gap-3">
-        <button
-          onClick={() => navigate(-1)}
-          className="px-5 py-2.5 rounded-full border border-gray-200 text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer bg-white"
-        >
-          Go back
-        </button>
-        <button
-          onClick={() => navigate("/")}
-          className="px-5 py-2.5 rounded-full bg-[#002FA7] text-[13px] font-semibold text-white hover:bg-[#0027a0] transition-colors cursor-pointer border-none"
-        >
-          Go home
-        </button>
+      {/* Text sits over the large faded 404 */}
+      <div style={{ marginTop: "-2.5rem" }}>
+        <h1 className="text-[22px] font-bold text-gray-900 mb-2">Page not found</h1>
+        <p className="text-[14px] text-gray-500 max-w-[300px] leading-relaxed mb-8 mx-auto">
+          This page doesn't exist or may have been moved.
+        </p>
+
+        <div className="flex gap-3 justify-center">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-5 py-2.5 rounded-full text-[13px] font-medium text-gray-700 cursor-pointer transition-colors"
+            style={{ background: "#FFFFFF99", border: "1px solid #E5E7EB", backdropFilter: "blur(4px)" }}
+          >
+            Go back
+          </button>
+          <button
+            onClick={() => navigate("/")}
+            className="px-5 py-2.5 rounded-full text-[13px] font-semibold text-white cursor-pointer border-none transition-opacity hover:opacity-90"
+            style={{ background: "#002FA7" }}
+          >
+            Go home
+          </button>
+        </div>
       </div>
     </div>
   );
