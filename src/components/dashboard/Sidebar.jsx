@@ -424,12 +424,12 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 className="w-9 h-9 rounded-xl bg-white/10 animate-pulse"
               />
             ))
-          ) : communities.length === 0 ? (
+          ) : communities.filter((c) => c.owned).length === 0 ? (
             <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
               <span className="text-white/40 text-[10px]">—</span>
             </div>
           ) : (
-            communities.map((c) => {
+            communities.filter((c) => c.owned).map((c) => {
               const isActive = c.slug === urlSlug;
               const initials = getInitials(c.name);
               return (
