@@ -2,9 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import HowItWorksSection from "../howItWorks/HowItWorksSection";
 
-import work1 from "../../assets/work/mwork1.png";
-import work2 from "../../assets/work/mwork2.png";
-import work3 from "../../assets/work/mwork3.png";
+import work1 from "../../assets/work/mwork1.webp";
+import work2 from "../../assets/work/mwork2.webp";
+import work3 from "../../assets/work/mwork3.webp";
 import stepIcon1 from "../../assets/icon/step1.png";
 import stepIcon2 from "../../assets/icon/step2.png";
 import stepIcon3 from "../../assets/icon/step3.png";

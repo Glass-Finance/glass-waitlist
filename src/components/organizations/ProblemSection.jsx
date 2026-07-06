@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 // import { useEffect, useRef } from "react";
 // import { Clock, Eye, Lightbulb } from "lucide-react";
-// import Problem from "../../assets/problem.png";
+// import Problem from "../../assets/problem.webp";
 // import Overlay from "../../assets/Overlay.png";
 
 // const problems = [
@@ -153,7 +153,7 @@
 
 import { useEffect, useRef } from "react";
 import { Clock, Eye, Lightbulb } from "lucide-react";
-import Problem from "../../assets/problem.png";
+import Problem from "../../assets/problem.webp";
 import BlurText from "../ui/BlurText";
 
 const problems = [

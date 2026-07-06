@@ -4,11 +4,11 @@ import icon1 from "../../assets/icon/frame1.png";
 import icon2 from "../../assets/icon/frame2.png";
 import icon3 from "../../assets/icon/frame3.png";
 import icon4 from "../../assets/icon/frame4.png";
-import featurePayment from "../../assets/solution/payment.png";
-import featureReminder from "../../assets/solution/reminder.png";
-import featureInstant from "../../assets/solution/instant.png";
-import featureFlexible from "../../assets/solution/flexible.png";
-import lightBg from "../../assets/solution/bg-light.png";
+import featurePayment from "../../assets/solution/payment.webp";
+import featureReminder from "../../assets/solution/reminder.webp";
+import featureInstant from "../../assets/solution/instant.webp";
+import featureFlexible from "../../assets/solution/flexible.webp";
+import lightBg from "../../assets/solution/bg-light.webp";
 
 const features = [
   {

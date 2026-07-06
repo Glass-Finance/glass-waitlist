@@ -4,12 +4,12 @@ import icon1 from "../../assets/icon/frame1.png";
 import icon2 from "../../assets/icon/frame2.png";
 import icon3 from "../../assets/icon/frame3.png";
 import icon4 from "../../assets/icon/frame4.png";
-import featureAutomate from "../../assets/solution/automate.png";
-import featureRecover from "../../assets/solution/recover.png";
-import featureProof from "../../assets/solution/proof.png";
-import featureMonitor from "../../assets/solution/monitor.png";
+import featureAutomate from "../../assets/solution/automate.webp";
+import featureRecover from "../../assets/solution/recover.webp";
+import featureProof from "../../assets/solution/proof.webp";
+import featureMonitor from "../../assets/solution/monitor.webp";
 import Overlay from "../../assets/Overlay2.png";
-import lightBg from "../../assets/solution/bg-light.png";
+import lightBg from "../../assets/solution/bg-light.webp";
 
 const features = [
   {

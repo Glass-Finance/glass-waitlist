@@ -1,6 +1,6 @@
 // import { useEffect, useRef } from "react";
 // import { Clock, CreditCard, Eye, Lightbulb } from "lucide-react";
-// import Problem from "../../assets/problem2.png";
+// import Problem from "../../assets/problem2.webp";
 // import BlurText from "../ui/BlurText";
 
 // const problems = [
@@ -200,7 +200,7 @@
 
 import { useEffect, useRef } from "react";
 import { Clock, CreditCard, Eye, Lightbulb } from "lucide-react";
-import Problem from "../../assets/problem2.png";
+import Problem from "../../assets/problem2.webp";
 import BlurText from "../ui/BlurText";
 
 const problems = [
