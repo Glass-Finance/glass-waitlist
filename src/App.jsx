@@ -77,6 +77,7 @@ const MemberSettings = lazy(() => import("./pages/memberApp/settings/Settings"))
 const MemberProfile = lazy(() => import("./pages/memberApp/settings/account/Profile"));
 const MyCommunities = lazy(() => import("./pages/memberApp/settings/communities/MyCommunities"));
 const MemberSecurity = lazy(() => import("./pages/memberApp/settings/account/Security"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 const MemberPassword = lazy(() => import("./pages/memberApp/settings/account/Password"));
 const MemberTwoFactorAuth = lazy(() => import("./pages/memberApp/settings/account/TwoFactorAuth"));
 const MemberAutoPay = lazy(() => import("./pages/memberApp/settings/payments/AutoPay"));
@@ -244,7 +245,7 @@ function App() {
         </Route>
 
         {/* ── Catch-all ── */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       </Suspense>
     </Router>
