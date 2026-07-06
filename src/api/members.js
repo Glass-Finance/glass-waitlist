@@ -18,6 +18,9 @@ export const updatePassword = (payload) => client.patch("/user/password", payloa
 // PATCH /api/v1/user/email — { email, emailVerificationOtp }
 export const updateEmail = (payload) => client.patch("/user/email", payload);
 
+// DELETE /api/v1/user/me — permanently delete the authenticated user's account
+export const deleteAccount = () => client.delete("/user/me");
+
 // ─────────────────────────────────────────────────────────────────────────────
 // COMMUNITIES (member perspective)
 // ─────────────────────────────────────────────────────────────────────────────

@@ -14,6 +14,10 @@ export const getCommunity = (communityId) => client.get(`/communities/${communit
 export const updateCommunity = (communityId, payload) =>
   client.patch(`/communities/${communityId}`, payload);
 
+// DELETE /api/v1/communities/{communityIdentifier}
+export const deleteCommunity = (communityId) =>
+  client.delete(`/communities/${communityId}`);
+
 // ─── Members ──────────────────────────────────────────────────────────────────
 
 // GET /api/v1/communities/{communityIdentifier}/members

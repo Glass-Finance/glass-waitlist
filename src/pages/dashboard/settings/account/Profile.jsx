@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
-import { updateEmail } from "../../../../api/members";
+import { updateEmail, deleteAccount } from "../../../../api/members";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { useAuth } from "../../../../store/AuthContext";
 import { parseUserData } from "../../../../utils/userData";
 import EmailChangeModal from "../../../../components/auth/EmailChangeModal";
 
 export default function Profile() {
+  const navigate = useNavigate();
   const { data: user, isLoading } = useMe();
-  const { refreshUser } = useAuth();
+  const { refreshUser, logout } = useAuth();
   const updateProfile = useUpdateProfile();
   const uploadFile = useFileUpload();
   const photoInputRef = useRef(null);
@@ -21,6 +23,24 @@ export default function Profile() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [emailSaving, setEmailSaving] = useState(false);
+
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+
+  async function handleDeleteAccount() {
+    setDeleteLoading(true);
+    setDeleteError("");
+    try {
+      await deleteAccount();
+      await logout();
+      navigate("/sign-in");
+    } catch (err) {
+      setDeleteError(getErrorMessage(err, "Failed to delete account."));
+      setDeleteLoading(false);
+    }
+  }
 
   // user here is from useMe() (raw GET /user/me response). profileImage is
   // nested inside the userData blob, so parseUserData is the correct extractor.
@@ -217,6 +237,62 @@ export default function Profile() {
         />
       )}
 
+      {deleteModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.45)" }}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
+              style={{ background: "#FEE2E2" }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                <path d="M10 11v6M14 11v6" />
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+              </svg>
+            </div>
+
+            <h3 className="text-base font-semibold text-gray-900 mb-1">Delete Account</h3>
+            <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+              This will permanently delete your account and all associated data from Glass. This cannot be undone.
+            </p>
+
+            <label className="block text-xs font-medium text-gray-700 mb-1.5">
+              Type <strong>DELETE</strong> to confirm
+            </label>
+            <input
+              value={deleteConfirm}
+              onChange={(e) => setDeleteConfirm(e.target.value)}
+              placeholder="DELETE"
+              className="w-full border border-gray-300 px-3 py-2.5 rounded-lg text-xs outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 mb-4 transition-all"
+            />
+
+            {deleteError && <p className="text-xs text-red-500 mb-3">{deleteError}</p>}
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => { setDeleteModal(false); setDeleteConfirm(""); setDeleteError(""); }}
+                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors"
+                style={{ background: "#F3F4F6" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteConfirm !== "DELETE" || deleteLoading}
+                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50"
+                style={{ background: "#DC2626" }}
+              >
+                {deleteLoading ? "Deleting…" : "Delete Account"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Delete Account */}
       <div className="bg-[#EFEFF1E5] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Account</p>
@@ -229,9 +305,8 @@ export default function Profile() {
             Permanently remove your account and all associated data from Glass.
           </p>
           <button
-            disabled
-            title="Account deletion — coming soon"
-            className="ml-4 px-4 py-1.5 rounded-md text-xs font-medium text-red-300 transition-all flex-shrink-0 cursor-not-allowed bg-transparent"
+            onClick={() => setDeleteModal(true)}
+            className="ml-4 px-4 py-1.5 rounded-md text-xs font-medium text-red-600 transition-all flex-shrink-0 cursor-pointer hover:bg-red-50 bg-transparent"
             style={{ border: "1px solid #FECACA" }}
           >
             Delete
