@@ -5,6 +5,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "sonner";
 import { CheckCircle2, XCircle, AlertTriangle, Info, Loader2 } from "lucide-react";
 import App from "./App.jsx";
+import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import "./index.css";
 import { AuthProvider } from "./store/AuthContext.jsx";
 import { notifyError } from "./utils/errorHandler.js";
@@ -94,7 +95,9 @@ createRoot(document.getElementById("root")).render(
     <QueryClientProvider client={queryClient}>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <AuthProvider>
+          <ErrorBoundary>
           <App />
+          </ErrorBoundary>
 
           <Toaster
             position="bottom-right"
