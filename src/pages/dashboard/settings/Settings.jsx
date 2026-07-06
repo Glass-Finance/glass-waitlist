@@ -136,7 +136,7 @@ export default function Settings() {
 
   return (
     <div
-      className="flex flex-col h-full px-8 py-8 overflow-y-auto"
+      className="flex flex-col h-full px-4 py-6 md:px-8 md:py-8 overflow-y-auto"
       style={{
         backgroundImage: `url(${Background})`,
         backgroundSize: "cover",
@@ -145,7 +145,7 @@ export default function Settings() {
     >
 
       {/* Heading + Search */}
-      <div className="flex items-start justify-between mb-5">
+      <div className="flex items-start justify-between gap-3 mb-5 flex-wrap">
         <div>
           <h1 className="text-lg font-bold text-gray-900 mb-1">Settings</h1>
           <p className="text-xs text-gray-500">A full picture of your community's financial activity.</p>
@@ -161,8 +161,8 @@ export default function Settings() {
             onChange={(e) => { setSearchQuery(e.target.value); setSearchOpen(true); }}
             onFocus={() => setSearchOpen(true)}
             onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
-            className="pl-9 pr-4 py-2 rounded-md text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-colors"
-            style={{ border: "1px solid #D0D0D0", width: "220px", background: "#fff" }}
+            className="pl-9 pr-4 py-2 rounded-md text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-colors w-full max-w-[220px]"
+            style={{ border: "1px solid #D0D0D0", background: "#fff" }}
           />
 
           {/* Dropdown results */}

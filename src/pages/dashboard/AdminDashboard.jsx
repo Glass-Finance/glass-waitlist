@@ -721,13 +721,13 @@ function AdminPaymentModal({ item, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.5)" }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="bg-white rounded-2xl overflow-hidden shadow-2xl"
-        style={{ width: 560, maxHeight: "90vh", overflowY: "auto" }}
+        className="w-full bg-white rounded-2xl overflow-hidden shadow-2xl"
+        style={{ maxWidth: 560, maxHeight: "90vh", overflowY: "auto" }}
       >
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
@@ -2037,7 +2037,7 @@ function DashboardContent({ isPaying, communityId }) {
           </div>
 
           <div className="flex items-center justify-between px-5 py-3 gap-3">
-            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-[#eef0f8] w-72">
+            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-[#eef0f8] flex-1 min-w-0 max-w-xs">
               <Search size={12} className="text-gray-400 flex-shrink-0" />
               <input
                 value={search}

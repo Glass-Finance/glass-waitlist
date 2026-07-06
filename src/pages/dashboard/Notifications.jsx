@@ -161,7 +161,7 @@ function SuperAdminNotifications() {
 
   return (
     <div
-      className="flex flex-col h-full px-6 py-6"
+      className="flex flex-col h-full px-4 md:px-6 py-6"
       style={{
         minHeight: 0,
         backgroundImage: `url(${Background})`,
@@ -223,7 +223,7 @@ function CommunityNotifications() {
 
   return (
     <div
-      className="flex flex-col h-full px-6 py-6"
+      className="flex flex-col h-full px-4 md:px-6 py-6"
       style={{
         minHeight: 0,
         backgroundImage: `url(${Background})`,
@@ -232,14 +232,14 @@ function CommunityNotifications() {
       }}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-5 flex-shrink-0">
+      <div className="flex items-start justify-between gap-3 mb-5 flex-shrink-0 flex-wrap">
         <div>
           <h1 className="text-xl font-bold text-black mb-1">Notifications</h1>
           <p className="text-sm text-gray-400">
             Stay on top of payments, member activity, and alerts.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <button
             onClick={() => clearAll()}
             disabled={isClearing || notifications.length === 0}
@@ -259,8 +259,9 @@ function CommunityNotifications() {
       </div>
 
       {/* Tabs — matches Settings' Account/Finance/Community segmented style */}
+      <div className="overflow-x-auto flex-shrink-0 mb-5">
       <div
-        className="flex gap-1 mb-5 bg-[#EFEFF1] rounded-md p-1 w-fit flex-shrink-0"
+        className="flex gap-1 bg-[#EFEFF1] rounded-md p-1 w-fit"
         style={{ border: "1px solid #fafafa" }}
       >
         {TABS.map((t) => {
@@ -292,6 +293,7 @@ function CommunityNotifications() {
             </button>
           );
         })}
+      </div>
       </div>
 
       {/* Notification list — independently scrollable */}

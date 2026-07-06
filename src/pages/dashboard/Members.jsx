@@ -357,7 +357,7 @@ export default function Members() {
         </div>
 
         <div className="flex items-center justify-between px-5 pb-3 gap-3">
-          <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-100 w-72">
+          <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-100 flex-1 min-w-0 max-w-xs">
             <Search size={12} className="text-gray-400" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search members…" className="flex-1 bg-transparent border-none outline-none text-xs text-gray-600 placeholder-gray-400" />
           </div>

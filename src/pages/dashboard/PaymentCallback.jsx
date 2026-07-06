@@ -153,7 +153,7 @@ export default function PaymentCallback() {
       style={{ background: "#F4F6FA", fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       {/* Top bar */}
-      <div className="flex items-center px-8 pt-8 pb-4">
+      <div className="flex items-center px-4 md:px-8 pt-6 md:pt-8 pb-4">
         <button
           onClick={() => navigate(effectiveReturnTo, { replace: true })}
           className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
@@ -166,7 +166,7 @@ export default function PaymentCallback() {
       {/* Centered card */}
       <div className="flex-1 flex items-center justify-center px-4 pb-16">
         <div
-          className="w-full bg-white rounded-2xl shadow-sm flex flex-col items-center px-10 py-14 text-center"
+          className="w-full bg-white rounded-2xl shadow-sm flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center"
           style={{ maxWidth: 480 }}
         >
           <div

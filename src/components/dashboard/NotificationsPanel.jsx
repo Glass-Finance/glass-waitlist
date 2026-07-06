@@ -153,7 +153,7 @@ export default function NotificationsPanel({
     <div
       style={{
         position: "absolute", right: 0, top: "calc(100% + 10px)",
-        width: 390, background: "#F2F2F2",
+        width: 390, maxWidth: "calc(100vw - 16px)", background: "#F2F2F2",
         borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.14)",
         zIndex: 50, overflow: "hidden",
       }}

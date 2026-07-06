@@ -850,7 +850,7 @@ function BalancesSection() {
           </div>
 
           {/* Balance entries */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {balances.map(b => (
               <div key={b.code} className="bg-[#EFEFF1E5] rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
                 <p className="text-[10px] text-gray-400 font-mono mb-1">{b.code}</p>
@@ -1107,7 +1107,7 @@ export default function AdminPanel() {
 
   return (
     <div
-      className="px-8 py-8 min-h-full"
+      className="px-4 py-6 md:px-8 md:py-8 min-h-full"
       style={{
         backgroundImage: `url(${Background})`,
         backgroundSize: "cover",
@@ -1119,8 +1119,9 @@ export default function AdminPanel() {
         <p className="text-xs text-gray-400">Glass internal operations — not visible to community owners.</p>
       </div>
 
+      <div className="overflow-x-auto mb-8">
       <div
-        className="flex gap-1 mb-8 bg-[#EFEFF1] rounded-xl p-1 w-fit"
+        className="flex gap-1 bg-[#EFEFF1] rounded-xl p-1 w-fit"
         style={{ border: "1px solid #f0f0f0" }}
       >
         {TABS.map(({ id, label, Icon }) => {
@@ -1138,6 +1139,7 @@ export default function AdminPanel() {
             </button>
           );
         })}
+      </div>
       </div>
 
       {activeTab === "communities"   && <CommunitiesSection   />}

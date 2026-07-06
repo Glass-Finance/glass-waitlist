@@ -150,7 +150,7 @@ function Step1({ value, onChange }) {
       <p className="text-xs text-gray-500 mb-5">
         Choose the type of plan you want to create
       </p>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {[
           {
             id: "recurring",
@@ -247,7 +247,7 @@ function Step2({ planType, form, onChange, slugState }) {
           onChange={(e) => onChange("description", e.target.value)}
         />
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">
             Amount
@@ -282,7 +282,7 @@ function Step2({ planType, form, onChange, slugState }) {
           </div>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">
             Start Date
@@ -655,7 +655,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1.5">
                 Amount Per Member
@@ -693,7 +693,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
           </div>
 
           <div
-            className={`grid gap-3 ${isRecurring ? "grid-cols-2" : "grid-cols-1"}`}
+            className={`grid gap-3 ${isRecurring ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}
           >
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1.5">

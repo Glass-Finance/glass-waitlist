@@ -190,7 +190,7 @@ export default function Profile() {
         <p className="text-sm font-medium text-gray-900 mb-0.5">Personal Information</p>
         <p className="text-xs text-gray-500 mb-5">This is how your information will appear across glass</p>
 
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">First Name</label>
             <input name="firstName" value={form.firstName} onChange={handleChange} className={inputCls} />
@@ -201,7 +201,7 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Email Address</label>
             <input name="email" type="email" value={form.email} onChange={handleChange} className={inputCls} />
