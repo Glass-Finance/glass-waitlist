@@ -1,88 +1,92 @@
+import { Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
+import LoadingScreen from "./components/LoadingScreen";
 
-// ── Landing pages ──────────────────────────────────────────────────────────────
-import OrganizationsHome from "./pages/OrganizationsHome";
-import MembersHome from "./pages/MembersHome";
-import InviteLanding from "./pages/InviteLanding";
-
-// ── Auth pages ─────────────────────────────────────────────────────────────────
-import SignUp from "./pages/auth/SignUp";
-import SignIn from "./pages/auth/SignIn";
-import ForgotPassword from "./pages/auth/ForgotPassword";
-import ResetPassword from "./pages/auth/ResetPassword";
-import CheckEmail from "./pages/auth/member/CheckEmail";
-import Join from "./pages/auth/member/Join";
-
-// ── Onboarding pages ───────────────────────────────────────────────────────────
-import ChoosePath from "./pages/onboarding/ChoosePath";
-import PayingMember from "./pages/onboarding/PayingMember";
-import OrganizationProfile from "./pages/onboarding/OrganizationProfile";
-import PaymentProfile from "./pages/onboarding/PaymentProfile";
-import AddMembers from "./pages/onboarding/AddMembers";
-import DesktopRequired from "./pages/onboarding/DesktopRequired";
-
-// ── Admin dashboard layout + pages ────────────────────────────────────────────
-import DashboardLayout from "./layouts/DashboardLayout";
-import CommunitiesHome from "./pages/dashboard/CommunitiesHome";
-import AdminDashboard, {
-  PayingAdminDashboard,
-} from "./pages/dashboard/AdminDashboard";
-import Payments from "./pages/dashboard/Payments";
-import Members from "./pages/dashboard/Members";
-import MemberDetail from "./pages/dashboard/MemberDetail";
-import AdminNotifications from "./pages/dashboard/Notifications";
-import PaymentCallback from "./pages/dashboard/PaymentCallback";
-
-// ── Settings ───────────────────────────────────────────────────────────────────
-import Settings from "./pages/dashboard/settings/Settings";
-import Profile from "./pages/dashboard/settings/account/Profile";
-import Role from "./pages/dashboard/settings/account/Role";
-import NotificationSettings from "./pages/dashboard/settings/account/Notifications";
-import Security from "./pages/dashboard/settings/account/Security";
-import PaymentMethod from "./pages/dashboard/settings/finance/PaymentMethod";
-import AutoPay from "./pages/dashboard/settings/finance/AutoPay";
-import PaystackAccount from "./pages/dashboard/settings/finance/PaystackAccount";
-import CommunityProfile from "./pages/dashboard/settings/community/CommunityProfile";
-import MemberAccess from "./pages/dashboard/settings/community/MemberAccess";
-import SystemConfig from "./pages/dashboard/settings/admin/SystemConfig";
-import AdminPanel from "./pages/dashboard/AdminPanel";
-import SuperAdminRoute from "./routes/SuperAdminRoute";
-
-// ── Member app layout + pages ──────────────────────────────────────────────────
-import MemberAppLayout from "./layouts/MemberAppLayout";
-import MemberHome from "./pages/memberApp/Home";
-import MemberTransactions from "./pages/memberApp/Transactions";
-import MemberUpcoming from "./pages/memberApp/UpcomingPayments";
-import MemberNotifications from "./pages/memberApp/Notifications";
-import ManagePayments from "./pages/memberApp/ManagePayments";
-import PaymentSummary from "./pages/memberApp/PaymentSummary";
-import PaymentSuccess from "./pages/memberApp/PaymentSuccess";
-import Invites from "./pages/memberApp/Invites";
-import MemberSettings from "./pages/memberApp/settings/Settings";
-import MemberProfile from "./pages/memberApp/settings/account/Profile";
-import MyCommunities from "./pages/memberApp/settings/communities/MyCommunities";
-import MemberSecurity from "./pages/memberApp/settings/account/Security";
-import MemberPassword from "./pages/memberApp/settings/account/Password";
-import MemberTwoFactorAuth from "./pages/memberApp/settings/account/TwoFactorAuth";
-import MemberAutoPay from "./pages/memberApp/settings/payments/AutoPay";
-import MemberSavedCards from "./pages/memberApp/settings/payments/SavedCards";
-import MemberNotificationSettings from "./pages/memberApp/settings/account/Notifications";
-
-// ── Guards ───────────────────────────────────────────────────────────────────
+// ── Guards (eager — lightweight, needed for route resolution) ─────────────────
 import ProtectedRoute from "./routes/ProtectedRoute";
 import MemberProtectedRoute from "./routes/MemberProtectedRoute";
 import MemberDeviceGuard from "./routes/MemberDeviceGuard";
 import DesktopDeviceGuard from "./routes/DesktopDeviceGuard";
-import MobileRequired from "./pages/auth/member/MobileRequired";
+import SuperAdminRoute from "./routes/SuperAdminRoute";
+
+// ── Landing pages ─────────────────────────────────────────────────────────────
+const OrganizationsHome = lazy(() => import("./pages/OrganizationsHome"));
+const MembersHome = lazy(() => import("./pages/MembersHome"));
+const InviteLanding = lazy(() => import("./pages/InviteLanding"));
+
+// ── Auth pages ────────────────────────────────────────────────────────────────
+const SignUp = lazy(() => import("./pages/auth/SignUp"));
+const SignIn = lazy(() => import("./pages/auth/SignIn"));
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/auth/ResetPassword"));
+const CheckEmail = lazy(() => import("./pages/auth/member/CheckEmail"));
+const Join = lazy(() => import("./pages/auth/member/Join"));
+const MobileRequired = lazy(() => import("./pages/auth/member/MobileRequired"));
+
+// ── Onboarding pages ──────────────────────────────────────────────────────────
+const ChoosePath = lazy(() => import("./pages/onboarding/ChoosePath"));
+const PayingMember = lazy(() => import("./pages/onboarding/PayingMember"));
+const OrganizationProfile = lazy(() => import("./pages/onboarding/OrganizationProfile"));
+const PaymentProfile = lazy(() => import("./pages/onboarding/PaymentProfile"));
+const AddMembers = lazy(() => import("./pages/onboarding/AddMembers"));
+const DesktopRequired = lazy(() => import("./pages/onboarding/DesktopRequired"));
+
+// ── Admin dashboard layout + pages ───────────────────────────────────────────
+const DashboardLayout = lazy(() => import("./layouts/DashboardLayout"));
+const CommunitiesHome = lazy(() => import("./pages/dashboard/CommunitiesHome"));
+const AdminDashboard = lazy(() => import("./pages/dashboard/AdminDashboard"));
+const PayingAdminDashboard = lazy(() =>
+  import("./pages/dashboard/AdminDashboard").then((m) => ({ default: m.PayingAdminDashboard }))
+);
+const Payments = lazy(() => import("./pages/dashboard/Payments"));
+const Members = lazy(() => import("./pages/dashboard/Members"));
+const MemberDetail = lazy(() => import("./pages/dashboard/MemberDetail"));
+const AdminNotifications = lazy(() => import("./pages/dashboard/Notifications"));
+const PaymentCallback = lazy(() => import("./pages/dashboard/PaymentCallback"));
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+const Settings = lazy(() => import("./pages/dashboard/settings/Settings"));
+const Profile = lazy(() => import("./pages/dashboard/settings/account/Profile"));
+const Role = lazy(() => import("./pages/dashboard/settings/account/Role"));
+const NotificationSettings = lazy(() => import("./pages/dashboard/settings/account/Notifications"));
+const Security = lazy(() => import("./pages/dashboard/settings/account/Security"));
+const PaymentMethod = lazy(() => import("./pages/dashboard/settings/finance/PaymentMethod"));
+const AutoPay = lazy(() => import("./pages/dashboard/settings/finance/AutoPay"));
+const PaystackAccount = lazy(() => import("./pages/dashboard/settings/finance/PaystackAccount"));
+const CommunityProfile = lazy(() => import("./pages/dashboard/settings/community/CommunityProfile"));
+const MemberAccess = lazy(() => import("./pages/dashboard/settings/community/MemberAccess"));
+const SystemConfig = lazy(() => import("./pages/dashboard/settings/admin/SystemConfig"));
+const AdminPanel = lazy(() => import("./pages/dashboard/AdminPanel"));
+
+// ── Member app layout + pages ─────────────────────────────────────────────────
+const MemberAppLayout = lazy(() => import("./layouts/MemberAppLayout"));
+const MemberHome = lazy(() => import("./pages/memberApp/Home"));
+const MemberTransactions = lazy(() => import("./pages/memberApp/Transactions"));
+const MemberUpcoming = lazy(() => import("./pages/memberApp/UpcomingPayments"));
+const MemberNotifications = lazy(() => import("./pages/memberApp/Notifications"));
+const ManagePayments = lazy(() => import("./pages/memberApp/ManagePayments"));
+const PaymentSummary = lazy(() => import("./pages/memberApp/PaymentSummary"));
+const PaymentSuccess = lazy(() => import("./pages/memberApp/PaymentSuccess"));
+const Invites = lazy(() => import("./pages/memberApp/Invites"));
+const MemberSettings = lazy(() => import("./pages/memberApp/settings/Settings"));
+const MemberProfile = lazy(() => import("./pages/memberApp/settings/account/Profile"));
+const MyCommunities = lazy(() => import("./pages/memberApp/settings/communities/MyCommunities"));
+const MemberSecurity = lazy(() => import("./pages/memberApp/settings/account/Security"));
+const MemberPassword = lazy(() => import("./pages/memberApp/settings/account/Password"));
+const MemberTwoFactorAuth = lazy(() => import("./pages/memberApp/settings/account/TwoFactorAuth"));
+const MemberAutoPay = lazy(() => import("./pages/memberApp/settings/payments/AutoPay"));
+const MemberSavedCards = lazy(() => import("./pages/memberApp/settings/payments/SavedCards"));
+const MemberNotificationSettings = lazy(() => import("./pages/memberApp/settings/account/Notifications"));
 
 function App() {
   return (
     <Router>
+      <Suspense fallback={<LoadingScreen />}>
       <Routes>
         {/* ── Public landing ── */}
         <Route path="/" element={<OrganizationsHome />} />
@@ -242,6 +246,7 @@ function App() {
         {/* ── Catch-all ── */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </Suspense>
     </Router>
   );
 }

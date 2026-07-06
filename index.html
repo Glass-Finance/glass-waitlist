@@ -1,22 +1,51 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-NG">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/Glass.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- WebSite Schema: tells Google the site name is "Glasspay" -->
+    <!-- Structured data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Glasspay",
-      "url": "https://glasspay.app"
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "name": "Glasspay",
+          "url": "https://glasspay.app"
+        },
+        {
+          "@type": "Organization",
+          "name": "Glasspay",
+          "url": "https://glasspay.app",
+          "logo": "https://glasspay.app/Glass.png",
+          "email": "glasspayhq@gmail.com",
+          "sameAs": [
+            "https://x.com/glasspayhq",
+            "https://www.instagram.com/glasspayhq"
+          ]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Glasspay",
+          "applicationCategory": "FinanceApplication",
+          "operatingSystem": "Web",
+          "url": "https://glasspay.app",
+          "description": "Community finance platform for Nigerian associations, clubs, and schools.",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "NGN"
+          }
+        }
+      ]
     }
     </script>
 
     <!-- SEO -->
     <title>Glasspay — Community Finance Crystal Clear</title>
+    <meta name="robots" content="index, follow" />
     <meta
       name="description"
       content="Glasspay saves communities 15–20 hours monthly chasing payments. The transparent way for Nigerian associations, clubs, and schools to manage funds."
@@ -25,7 +54,9 @@
       name="keywords"
       content="community finance Nigeria, dues collection app, payment management Nigeria, associations fintech, clubs payment Nigeria"
     />
-    <link rel="canonical" href="https://glasspay.app" />
+    <link rel="canonical" href="https://glasspay.app/" />
+    <link rel="apple-touch-icon" href="/Glass.png" />
+    <meta name="theme-color" content="#002FA7" />
 
     <!-- Open Graph -->
     <meta property="og:title" content="Glasspay — Community Finance App Nigeria" />
@@ -33,13 +64,15 @@
       property="og:description"
       content="Glasspay — the transparent way for Nigerian associations, clubs, and schools to manage funds. Save 15–20 hours monthly."
     />
-    <meta property="og:url" content="https://glasspay.app" />
+    <meta property="og:url" content="https://glasspay.app/" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://glasspay.app/og-image.png" />
     <meta property="og:site_name" content="Glasspay" />
+    <meta property="og:locale" content="en_NG" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@glasspayhq" />
     <meta name="twitter:title" content="Glasspay — Community Finance App Nigeria" />
     <meta
       name="twitter:description"
@@ -47,13 +80,24 @@
     />
     <meta name="twitter:image" content="https://glasspay.app/og-image.png" />
 
-    <!-- Fonts -->
+    <!-- LCP preload -->
+    <link rel="preload" as="image" href="/hero.jpg" fetchpriority="high" />
+
+    <!-- Fonts (non-blocking) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      rel="preload"
+      as="style"
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@1,400&display=swap"
-      rel="stylesheet"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@1,400&display=swap"
+      />
+    </noscript>
 
     <!-- Pendo -->
     <script>
