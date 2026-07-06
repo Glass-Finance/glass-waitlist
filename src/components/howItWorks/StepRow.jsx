@@ -1,6 +1,10 @@
 import { useRef, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
+const isMobileScreen =
+  typeof window !== "undefined" &&
+  window.matchMedia("(max-width: 768px)").matches;
+
 const ICON_POP_CSS = `
 @keyframes iconPop {
   0%   { transform: scale(1) rotate(0deg); }
@@ -24,12 +28,20 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
     target: innerRef,
     offset: ["start 90%", "end 10%"],
   });
+  // On mobile lock to static values so Framer Motion never writes back to
+  // the DOM on every scroll tick — scroll-linked opacity/y is a desktop
+  // effect only. useScroll still runs so the icon-pop scroll threshold
+  // fires correctly when the row enters the viewport on both breakpoints.
   const rowOpacity = useTransform(
     scrollYProgress,
-    [0, 0.18, 0.75, 1],
-    [0, 1, 1, 0],
+    isMobileScreen ? [0, 1] : [0, 0.18, 0.75, 1],
+    isMobileScreen ? [1, 1] : [0, 1, 1, 0],
   );
-  const rowY = useTransform(scrollYProgress, [0, 0.18], [40, 0]);
+  const rowY = useTransform(
+    scrollYProgress,
+    isMobileScreen ? [0, 1] : [0, 0.18],
+    isMobileScreen ? [0, 0] : [40, 0],
+  );
 
   useEffect(() => {
     let fired = false;
@@ -43,13 +55,19 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
     return unsub;
   }, [scrollYProgress]);
 
-  const glassCard = {
-    background: "rgba(255,255,255,0.6)",
-    backdropFilter: "blur(12px)",
-    WebkitBackdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.8)",
-    boxShadow: "0 8px 30px rgba(15,29,110,0.1)",
-  };
+  const glassCard = isMobileScreen
+    ? {
+        background: "#fff",
+        border: "1px solid rgba(255,255,255,0.8)",
+        boxShadow: "0 8px 30px rgba(15,29,110,0.1)",
+      }
+    : {
+        background: "rgba(255,255,255,0.6)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        border: "1px solid rgba(255,255,255,0.8)",
+        boxShadow: "0 8px 30px rgba(15,29,110,0.1)",
+      };
   const glassBadge = {
     position: "absolute",
     bottom: 12,
@@ -59,9 +77,8 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
     gap: 8,
     borderRadius: 999,
     padding: "8px 14px",
-    background: "rgba(255,255,255,0.85)",
-    backdropFilter: "blur(12px)",
-    WebkitBackdropFilter: "blur(12px)",
+    background: isMobileScreen ? "#fff" : "rgba(255,255,255,0.85)",
+    ...(isMobileScreen ? {} : { backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }),
     border: "1px solid rgba(255,255,255,0.9)",
     boxShadow: "0 4px 20px rgba(15,29,110,0.14)",
   };

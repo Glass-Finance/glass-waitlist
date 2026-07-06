@@ -64,7 +64,7 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
 
   return (
     <section className="relative bg-[#F7F8FC] overflow-hidden py-24" id="how-it-works">
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="hidden sm:block absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
           className="absolute top-[8%] left-[4%] w-[360px] h-[360px] rounded-full bg-indigo-200/15 blur-[100px]"
           animate={{ scale: [1, 1.12, 1], opacity: [0.15, 0.3, 0.15] }}

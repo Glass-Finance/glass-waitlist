@@ -6,13 +6,19 @@ const buildKeyframes = (from, steps) => {
     ...Object.keys(from),
     ...steps.flatMap((s) => Object.keys(s)),
   ]);
-
   const keyframes = {};
   keys.forEach((k) => {
     keyframes[k] = [from[k], ...steps.map((s) => s[k])];
   });
   return keyframes;
 };
+
+// On mobile, filter:blur() on individual spans creates one compositing
+// layer per word and tanks scroll performance. Skip blur entirely on
+// narrow screens and use a plain opacity+translate reveal instead.
+const isMobileScreen =
+  typeof window !== "undefined" &&
+  window.matchMedia("(max-width: 640px)").matches;
 
 const BlurText = ({
   text = "",
@@ -51,20 +57,23 @@ const BlurText = ({
   const defaultFrom = useMemo(
     () =>
       direction === "top"
-        ? { filter: "blur(8px)", opacity: 0, y: -18 }
-        : { filter: "blur(8px)", opacity: 0, y: 18 },
+        ? isMobileScreen
+          ? { opacity: 0, y: -14 }
+          : { filter: "blur(8px)", opacity: 0, y: -18 }
+        : isMobileScreen
+          ? { opacity: 0, y: 14 }
+          : { filter: "blur(8px)", opacity: 0, y: 18 },
     [direction],
   );
 
   const defaultTo = useMemo(
-    () => [
-      {
-        filter: "blur(3px)",
-        opacity: 0.5,
-        y: direction === "top" ? 2 : -2,
-      },
-      { filter: "blur(0px)", opacity: 1, y: 0 },
-    ],
+    () =>
+      isMobileScreen
+        ? [{ opacity: 1, y: 0 }]
+        : [
+            { filter: "blur(3px)", opacity: 0.5, y: direction === "top" ? 2 : -2 },
+            { filter: "blur(0px)", opacity: 1, y: 0 },
+          ],
     [direction],
   );
 
@@ -73,7 +82,7 @@ const BlurText = ({
 
   const stepCount = toSnapshots.length + 1;
   const totalDuration = stepDuration * (stepCount - 1);
-  const times = Array.from({   length: stepCount }, (_, i) =>
+  const times = Array.from({ length: stepCount }, (_, i) =>
     stepCount === 1 ? 0 : i / (stepCount - 1),
   );
 
@@ -90,7 +99,6 @@ const BlurText = ({
     >
       {elements.map((segment, index) => {
         const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots);
-
         const spanTransition = {
           duration: totalDuration,
           times,
@@ -100,7 +108,9 @@ const BlurText = ({
 
         return (
           <motion.span
-            className="inline-block will-change-[transform,filter,opacity]"
+            className={isMobileScreen
+              ? "inline-block will-change-[transform,opacity]"
+              : "inline-block will-change-[transform,filter,opacity]"}
             key={index}
             initial={fromSnapshot}
             animate={inView ? animateKeyframes : fromSnapshot}

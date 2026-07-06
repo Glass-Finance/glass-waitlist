@@ -81,15 +81,21 @@ function BlurText({
     return () => observer.disconnect();
   }, [threshold]);
 
+  const mobile =
+    typeof window !== "undefined" &&
+    window.matchMedia("(max-width: 640px)").matches;
+
   const fromSnapshot =
     direction === "top"
-      ? { filter: "blur(8px)", opacity: 0, y: -18 }
-      : { filter: "blur(8px)", opacity: 0, y: 18 };
+      ? mobile ? { opacity: 0, y: -14 } : { filter: "blur(8px)", opacity: 0, y: -18 }
+      : mobile ? { opacity: 0, y: 14 }  : { filter: "blur(8px)", opacity: 0, y: 18 };
 
-  const toSnapshots = [
-    { filter: "blur(3px)", opacity: 0.5, y: direction === "top" ? 2 : -2 },
-    { filter: "blur(0px)", opacity: 1, y: 0 },
-  ];
+  const toSnapshots = mobile
+    ? [{ opacity: 1, y: 0 }]
+    : [
+        { filter: "blur(3px)", opacity: 0.5, y: direction === "top" ? 2 : -2 },
+        { filter: "blur(0px)", opacity: 1, y: 0 },
+      ];
 
   const stepCount = toSnapshots.length + 1;
   const totalDuration = stepDuration * (stepCount - 1);
@@ -112,7 +118,7 @@ function BlurText({
     >
       {elements.map((segment, index) => (
         <motion.span
-          className="inline-block will-change-[transform,filter,opacity]"
+          className={mobile ? "inline-block will-change-[transform,opacity]" : "inline-block will-change-[transform,filter,opacity]"}
           key={index}
           initial={fromSnapshot}
           animate={inView ? animateKeyframes : fromSnapshot}
