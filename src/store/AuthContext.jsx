@@ -323,11 +323,16 @@ export function AuthProvider({ children }) {
         return;
       }
       isRestoringRef.current = true;
+      window.__glassIsRestoring = true;
       setToken(storedToken);
       setUser(readStoredUser());
-      await refreshUser();
-      isRestoringRef.current = false;
-      setLoading(false);
+      try {
+        await refreshUser();
+      } finally {
+        window.__glassIsRestoring = false;
+        isRestoringRef.current = false;
+        setLoading(false);
+      }
     }
     restore();
   }, [refreshUser]);

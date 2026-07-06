@@ -28,6 +28,8 @@ export default function PaymentCallback() {
   const [returnTo] = useState(() => {
     const v = sessionStorage.getItem("paymentReturnTo");
     if (v) sessionStorage.removeItem("paymentReturnTo");
+    // Clear any pending-payment recovery flag now that we're on the callback page.
+    sessionStorage.removeItem("paymentPendingRef");
     return v ?? null;
   });
 
@@ -98,10 +100,12 @@ export default function PaymentCallback() {
   // Auto-redirect countdown after confirmed success
   useEffect(() => {
     if (autoRedirectIn === null) return;
-    if (autoRedirectIn <= 0) { navigate(effectiveReturnTo); return; }
+    if (autoRedirectIn <= 0) { navigate(effectiveReturnTo, { replace: true }); return; }
     const t = setTimeout(() => setAutoRedirectIn((n) => n - 1), 1000);
     return () => clearTimeout(t);
   }, [autoRedirectIn, navigate, effectiveReturnTo]);
+
+  const backLabel = isAdmin ? "Back to Dashboard" : "Go to Home";
 
   const config = {
     checking: {
@@ -118,28 +122,28 @@ export default function PaymentCallback() {
       subtitle: autoRedirectIn != null
         ? `Redirecting you in ${autoRedirectIn}s…`
         : "Your payment has been confirmed.",
-      buttonLabel: "Back to Dashboard",
+      buttonLabel: backLabel,
     },
     failed: {
       icon: <X size={40} strokeWidth={2.5} color="#fff" />,
       iconBg: "#DC2626",
       title: "Payment Failed",
-      subtitle: "Something went wrong with this payment. Please try again from the dashboard.",
-      buttonLabel: "Back to Dashboard",
+      subtitle: "Something went wrong with this payment. Please try again.",
+      buttonLabel: backLabel,
     },
     processing: {
       icon: <Clock size={40} style={{ color: "#002FA7" }} />,
       iconBg: "#EEF2FF",
       title: "Payment Processing",
       subtitle: "Your payment went through but status confirmation is taking a moment. You'll receive a notification when it's ready — usually within a few minutes.",
-      buttonLabel: "Back to Dashboard",
+      buttonLabel: backLabel,
     },
     unknown: {
       icon: <Loader2 size={40} strokeWidth={2} style={{ color: "#6B7280" }} />,
       iconBg: "#F3F4F6",
       title: "Still confirming…",
       subtitle: "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
-      buttonLabel: "Back to Dashboard",
+      buttonLabel: backLabel,
     },
   }[state];
 
@@ -151,11 +155,11 @@ export default function PaymentCallback() {
       {/* Top bar */}
       <div className="flex items-center px-8 pt-8 pb-4">
         <button
-          onClick={() => navigate(effectiveReturnTo)}
+          onClick={() => navigate(effectiveReturnTo, { replace: true })}
           className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
         >
           <ArrowLeft size={16} />
-          Back to Dashboard
+          {backLabel}
         </button>
       </div>
 
@@ -183,7 +187,7 @@ export default function PaymentCallback() {
 
           {config.buttonLabel && (
             <button
-              onClick={() => navigate(effectiveReturnTo)}
+              onClick={() => navigate(effectiveReturnTo, { replace: true })}
               className="mt-4 px-8 py-3 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
               style={{ background: "#002FA7" }}
             >

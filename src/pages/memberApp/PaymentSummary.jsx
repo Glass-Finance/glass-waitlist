@@ -129,12 +129,13 @@ export default function PaymentSummary() {
       const reference = prefetch.reference;
       if (url) {
         sessionStorage.setItem("paymentReturnTo", "/member/home");
+        if (reference) sessionStorage.setItem("paymentPendingRef", reference);
         window.location.href = url;
         return;
       }
       if (reference) {
         toastSuccess("Payment sent", { reference });
-        navigate(`/member/pay/${paymentId}/success?reference=${reference}`);
+        navigate(`/member/pay/${paymentId}/success?reference=${reference}`, { replace: true });
         return;
       }
     }
@@ -153,12 +154,13 @@ export default function PaymentSummary() {
       const reference = res.data?.data?.reference;
       if (url) {
         sessionStorage.setItem("paymentReturnTo", "/member/home");
+        if (reference) sessionStorage.setItem("paymentPendingRef", reference);
         window.location.href = url;
       } else {
         // No authorizationUrl means this charged immediately against a
         // saved method rather than redirecting to Paystack's hosted page.
         toastSuccess("Payment sent", { reference });
-        navigate(`/member/pay/${paymentId}/success?reference=${reference}`);
+        navigate(`/member/pay/${paymentId}/success?reference=${reference}`, { replace: true });
       }
     } catch (err) {
       setError(getErrorMessage(err, "Could not start payment. Please try again."));

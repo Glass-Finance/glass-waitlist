@@ -81,6 +81,15 @@ export default function SignIn() {
     const returnTo = new URLSearchParams(location.search).get("return");
     if (returnTo && returnTo.startsWith("/member/")) return returnTo;
 
+    // If the session expired mid-payment (while the user was on Paystack's
+    // page), PaymentSummary stored the reference before navigating away.
+    // Re-login should land them on the callback to finish verifying.
+    const pendingRef = sessionStorage.getItem("paymentPendingRef");
+    if (pendingRef) {
+      sessionStorage.removeItem("paymentPendingRef");
+      return `/payment/callback?reference=${pendingRef}`;
+    }
+
     const inviteRes = await getMyInvites();
     const inviteData = inviteRes?.data?.data;
     const invites = Array.isArray(inviteData) ? inviteData : (inviteData?.content ?? []);

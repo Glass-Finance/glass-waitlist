@@ -89,7 +89,7 @@ export default function PaymentSuccess() {
   useEffect(() => {
     if (autoRedirectIn === null) return;
     if (autoRedirectIn <= 0) {
-      navigate(returnTo ?? "/member/home");
+      navigate(returnTo ?? "/member/home", { replace: true });
       return;
     }
     const t = setTimeout(() => setAutoRedirectIn((n) => n - 1), 1000);
@@ -184,7 +184,7 @@ export default function PaymentSuccess() {
 
         {content.action && (
           <button
-            onClick={() => navigate(content.action.to)}
+            onClick={() => navigate(content.action.to, { replace: true })}
             className="text-sm font-semibold mt-2 cursor-pointer"
             style={{ color: "#002FA7" }}
           >

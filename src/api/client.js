@@ -33,6 +33,16 @@ function rejectQueue(err) {
 }
 
 function clearSessionAndRedirect() {
+  // AuthContext.restore() sets this flag while it is running its own
+  // refreshUser() call on startup. A 401 during that phase should NOT
+  // immediately log the user out — it is likely a transient network hiccup
+  // or an expired access token that is about to be swapped out. Suppressing
+  // the redirect here lets restore() complete and the component tree render;
+  // if the session is truly dead the next real API call (e.g. verifyPayment
+  // in PaymentCallback) will trigger clearSessionAndRedirect again without
+  // the flag set and the user will be taken to sign-in at that point.
+  if (window.__glassIsRestoring) return;
+
   localStorage.removeItem("accessToken");
   localStorage.removeItem("glass_user");
   localStorage.removeItem("refreshToken");
