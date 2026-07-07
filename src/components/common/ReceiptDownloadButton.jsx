@@ -29,8 +29,8 @@ export default function ReceiptDownloadButton({
   async function handleChoice(format) {
     setOpen(false);
     const { downloadReceiptPdf, downloadReceiptImage } = await import("../../utils/generateReceipt");
-    if (format === "pdf") downloadReceiptPdf(tx, { payerName });
-    else downloadReceiptImage(tx, { payerName });
+    if (format === "pdf") await downloadReceiptPdf(tx, { payerName });
+    else await downloadReceiptImage(tx, { payerName });
   }
 
   return (
