@@ -66,22 +66,22 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
       <div
         style={{
           margin: "0 16px",
-          borderRadius: 20,
-          background: isError ? "#FFF7F7" : "#EEF3FF",
-          border: `1.5px solid ${isError ? "#FECACA" : "#C7D7FF"}`,
-          padding: "32px 24px",
+          borderRadius: 16,
+          background: isError ? "#FFF7F7" : "#002FA7",
+          padding: "40px 24px 44px",
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 6,
+          gap: 0,
         }}
       >
+        {/* Icon bubble */}
         <div style={{
           width: 56, height: 56, borderRadius: "50%",
-          background: isError ? "#FEE2E2" : "#D7E2FF",
+          background: isError ? "#FEE2E2" : "rgba(255,255,255,0.15)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          marginBottom: 8,
+          marginBottom: 20,
         }}>
           {isError ? (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -89,47 +89,40 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
               <path d="M12 8v4M12 16h.01" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/>
             </svg>
           ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12l5 5 9-9" stroke="#002FA7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            /* Envelope icon */
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+              <rect x="2" y="4" width="20" height="16" rx="2" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8"/>
+              <path d="M2 7l10 7 10-7" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           )}
         </div>
 
-        {communityName && communityName !== "Your Community" && (
-          <p style={{ fontSize: 12, color: isError ? "#EF4444" : "#002FA7", margin: "0 0 2px", fontWeight: 500 }}>
-            {communityName}
-          </p>
-        )}
-
         {isError ? (
           <>
-            <p style={{ fontSize: 15, color: "#111", fontWeight: 700, margin: 0 }}>Couldn't load payments</p>
+            <p style={{ fontSize: 18, color: "#111", fontWeight: 700, margin: "0 0 6px" }}>Couldn't load payments</p>
             <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0, lineHeight: 1.5 }}>Check your connection and try again.</p>
+            <button
+              onClick={onRefresh}
+              style={{
+                marginTop: 16,
+                background: "none",
+                border: "1px solid #FCA5A5",
+                borderRadius: 20,
+                color: "#EF4444",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: "pointer",
+                padding: "6px 18px",
+              }}
+            >
+              Try again
+            </button>
           </>
         ) : (
           <>
-            <p style={{ fontSize: 15, color: "#111", fontWeight: 700, margin: 0 }}>You're all caught up</p>
-            <p style={{ fontSize: 13, color: "#6B7280", margin: 0, lineHeight: 1.5 }}>No payments due right now.</p>
+            <p style={{ fontSize: 20, color: "#fff", fontWeight: 600, margin: "0 0 8px", letterSpacing: "-0.2px" }}>No Payments Due</p>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: 0, lineHeight: 1.5 }}>New dues Will Appear Here</p>
           </>
-        )}
-
-        {onRefresh && (
-          <button
-            onClick={onRefresh}
-            style={{
-              marginTop: 8,
-              background: "none",
-              border: `1px solid ${isError ? "#FCA5A5" : "#C7D7FF"}`,
-              borderRadius: 20,
-              color: isError ? "#EF4444" : "#002FA7",
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: "pointer",
-              padding: "6px 18px",
-            }}
-          >
-            {isError ? "Try again" : "Check again"}
-          </button>
         )}
       </div>
     );
@@ -705,9 +698,16 @@ export default function Home() {
               </div>
 
               {upcoming.length === 0 ? (
-                <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "16px 0", color: "#C0C4CC" }}>
-                  <Clock size={13} strokeWidth={1.8} />
-                  <span style={{ fontSize: 13, color: "#BABEC7" }}>Nothing else due soon.</span>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "28px 16px 20px", textAlign: "center", gap: 0 }}>
+                  <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#EBEBEB", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <rect x="2" y="5" width="20" height="14" rx="2" fill="#B0B4C0"/>
+                      <path d="M2 10h20" stroke="#fff" strokeWidth="1.5"/>
+                      <rect x="5" y="14" width="4" height="2" rx="0.5" fill="#fff"/>
+                    </svg>
+                  </div>
+                  <p style={{ fontSize: 17, fontWeight: 600, color: "#111", margin: "0 0 6px" }}>No Upcoming Payments</p>
+                  <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0, lineHeight: 1.55, maxWidth: 220 }}>New Dues from community will show up here once scheduled</p>
                 </div>
               ) : (
                 upcoming.map((p) => (
@@ -772,11 +772,15 @@ export default function Home() {
               </div>
 
               {history.length === 0 ? (
-                <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "16px 0", color: "#C0C4CC" }}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C0C4CC" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
-                  </svg>
-                  <span style={{ fontSize: 13, color: "#BABEC7" }}>No payments yet.</span>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "28px 16px 20px", textAlign: "center", gap: 0 }}>
+                  <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#EBEBEB", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                      <rect x="4" y="3" width="16" height="18" rx="2" fill="#B0B4C0"/>
+                      <path d="M8 8h8M8 12h8M8 16h5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                  <p style={{ fontSize: 17, fontWeight: 600, color: "#111", margin: "0 0 6px" }}>No Payment History</p>
+                  <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0, lineHeight: 1.55, maxWidth: 230 }}>Once you make your transaction history will appear here.</p>
                 </div>
               ) : (
                 history.map((item) => <HistoryRow key={item.id} item={item} />)

@@ -905,7 +905,7 @@ function AdminPaymentModal({ item, onClose }) {
 // ── Add Member modal ──────────────────────────────────────────────────────────
 const ALLOWED_ROLE_NAMES = new Set(["Community Member", "Community Admin", "Community Manager"]);
 const FALLBACK_ROLES = [{ id: "member", name: "Community Member" }];
-const CSV_TEMPLATE = "First Name,Last Name,Email Address,Phone Number,Member ID,Role/Title\nFatimah,Yahya,Fatimah@example.com,0812990293,A23434,Student";
+const CSV_TEMPLATE = "First Name,Last Name,Email Address,Phone Number,Member ID,Role/Title\nMuhammed,Dorachinma,Muhammed@example.com,0812990293,A23434,Student";
 
 function AddMemberModal({ onClose, communityId }) {
   const [tab, setTab] = useState("upload");
@@ -1122,7 +1122,7 @@ function AddMemberModal({ onClose, communityId }) {
                     </thead>
                     <tbody>
                       <tr className="border-t border-gray-100">
-                        {["Fatimah", "Yahya", "Fati***ya@**.com", "0812990293", "A23434", "Student"].map((cell, i) => (
+                        {["Muhammed", "Dorachinma", "Muha***med@**.com", "0812990293", "A23434", "Student"].map((cell, i) => (
                           <td key={i} className={`px-4 py-3 ${i === 2 ? "text-[#002FA7] underline" : "text-gray-900"}`}>{cell}</td>
                         ))}
                       </tr>
