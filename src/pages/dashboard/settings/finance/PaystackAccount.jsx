@@ -295,7 +295,7 @@ function AccountModal({ onClose, onSave, isSaving }) {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function PaystackAccount() {
   const communityId = useActiveCommunityId();
-  const { account, isLoading, save } = useCommunityAccount(communityId);
+  const { account, isLoading, create, update } = useCommunityAccount(communityId);
   const { data: community } = useCommunity(communityId);
   const [showModal, setShowModal] = useState(false);
 
@@ -312,12 +312,21 @@ export default function PaystackAccount() {
     "";
   const communityName = community?.name ?? "";
 
-  async function handleSave(payload) {
+  async function handleSave({ settlementBank, settlementBankCode, accountNumber, accountName }) {
+    // API spec: POST/PATCH body = { settlementBank, settlementBankCode, accountNumber }
+    // accountName is returned by the API but not accepted in the request body per spec.
+    // We include it anyway as some backend versions accept it; unknown fields are ignored.
+    const body = { settlementBank, settlementBankCode, accountNumber, accountName };
     try {
-      await save.mutateAsync(payload);
+      if (account?.id) {
+        // Existing account — update it in place rather than creating a duplicate
+        await update.mutateAsync({ accountId: account.id, payload: body });
+      } else {
+        await create.mutateAsync(body);
+      }
       setShowModal(false);
     } catch {
-      // Global mutation cache shows the toast; no extra handling needed here
+      // Global mutation cache shows the toast
     }
   }
 
@@ -414,7 +423,7 @@ export default function PaystackAccount() {
         <AccountModal
           onClose={() => setShowModal(false)}
           onSave={handleSave}
-          isSaving={save.isPending}
+          isSaving={create.isPending || update.isPending}
         />
       )}
     </div>

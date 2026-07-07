@@ -67,7 +67,7 @@ export default function PaymentProfile() {
   const location  = useLocation();
 
   const { email, communityId, communitySlug, communityName } = location.state ?? {};
-  const { save: saveAccount } = useCommunityAccount(communityId);
+  const { create: saveAccount } = useCommunityAccount(communityId);
 
   const [banks,       setBanks]       = useState([]);
   const [bankCode,    setBankCode]    = useState("");

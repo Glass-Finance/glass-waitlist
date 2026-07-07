@@ -68,11 +68,20 @@ export const rejectJoinRequest = (communityId, requestId) =>
 
 // ─── Payout account ───────────────────────────────────────────────────────────
 
-// GET /api/v1/communities/{communityIdentifier}/account
+// GET /api/v1/communities/{communityIdentifier}/account  → data: [...]
 export const getCommunityAccount = (communityId) =>
   client.get(`/communities/${communityId}/account`);
 
 // POST /api/v1/communities/{communityIdentifier}/account
 // payload: { settlementBank, settlementBankCode, accountNumber }
-export const saveCommunityAccount = (communityId, payload) =>
+export const createCommunityAccount = (communityId, payload) =>
   client.post(`/communities/${communityId}/account`, payload);
+
+// PATCH /api/v1/communities/{communityIdentifier}/account/{accountId}
+// payload: { settlementBank, settlementBankCode, accountNumber }
+export const updateCommunityAccount = (communityId, accountId, payload) =>
+  client.patch(`/communities/${communityId}/account/${accountId}`, payload);
+
+// PATCH /api/v1/communities/{communityIdentifier}/account/{accountId}/default
+export const setDefaultCommunityAccount = (communityId, accountId) =>
+  client.patch(`/communities/${communityId}/account/${accountId}/default`);
