@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import backgroundUrl from "../assets/background.webp";
 
 async function imgToBase64(url) {
   try {
@@ -91,7 +92,10 @@ export async function downloadReceiptImage(tx, { payerName } = {}) {
 
   const statusColor = isSuccess ? "#0ECE7B" : isFailed ? "#EF4444" : "#F59E0B";
 
-  const logoB64 = await imgToBase64("/Glass.webp");
+  const [logoB64, bgB64] = await Promise.all([
+    imgToBase64("/Glass.webp"),
+    imgToBase64(backgroundUrl),
+  ]);
   const logoHtml = logoB64
     ? `<img src="${logoB64}" width="34" height="34" alt="" style="display:block;" />`
     : `<div style="width:34px;height:34px;background:#1843C8;display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:16px;font-weight:900;line-height:1;">G</span></div>`;
@@ -124,16 +128,12 @@ export async function downloadReceiptImage(tx, { payerName } = {}) {
   `;
 
   card.innerHTML = `
-    <div style="
-      background: linear-gradient(155deg, #001233 0%, #002FA7 65%, #0038D0 100%);
-      padding: 28px 28px 36px;
-      position: relative;
-      overflow: hidden;
-    ">
-      <div style="position:absolute;right:-55px;top:-60px;width:160px;height:280px;background:rgba(255,255,255,0.055);transform:rotate(22deg);pointer-events:none;"></div>
-      <div style="position:absolute;right:30px;top:-90px;width:80px;height:240px;background:rgba(255,255,255,0.035);transform:rotate(22deg);pointer-events:none;"></div>
+    <div style="position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;bottom:0;${bgB64 ? `background-image:url(${bgB64});` : "background-color:#001D7A;"}background-size:cover;background-position:center top;"></div>
+      <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(to bottom,rgba(0,8,30,0.44) 0%,rgba(0,12,45,0.62) 100%);"></div>
+      <div style="position:relative;z-index:1;padding:28px 28px 36px;">
 
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;position:relative;z-index:1;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;">
         <div style="display:flex;align-items:center;gap:10px;">
           ${logoHtml}
           <span style="color:#fff;font-size:18px;font-weight:800;letter-spacing:1px;text-transform:uppercase;">Glass</span>
@@ -150,6 +150,7 @@ export async function downloadReceiptImage(tx, { payerName } = {}) {
           <span style="color:${statusColor};font-size:12px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;">${status}</span>
         </div>
         <div style="color:rgba(255,255,255,0.45);font-size:11px;">${formatHeaderDate(tx.date ?? tx.createdAt)}</div>
+      </div>
       </div>
     </div>
 

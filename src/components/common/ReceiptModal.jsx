@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X, FileText, Image as ImageIcon, Share2 } from "lucide-react";
 import html2canvas from "html2canvas";
+import backgroundUrl from "../../assets/background.webp";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -68,7 +69,7 @@ function receiptRows(tx, payerName) {
 // ── ReceiptCard — rendered as real JSX for the in-app preview ────────────────
 // Rules: no border-radius on the outer card or logo, no overlapping sections.
 
-function ReceiptCard({ tx, payerName, logoB64, cardRef }) {
+function ReceiptCard({ tx, payerName, logoB64, bgB64, cardRef }) {
   const status = statusLabel(tx?.status);
   const isSuccess = status === "Successful";
   const isFailed = status === "Failed";
@@ -91,38 +92,35 @@ function ReceiptCard({ tx, payerName, logoB64, cardRef }) {
       }}
     >
       {/* ── HEADER ────────────────────────────────────────────────────────── */}
-      <div
-        style={{
-          background: "linear-gradient(155deg, #001233 0%, #002FA7 65%, #0038D0 100%)",
-          padding: "28px 28px 36px",
-          position: "relative",
-          overflow: "hidden",
-          // no border-radius
-        }}
-      >
-        {/* Angular decorative bands — matching Glass's geometric visual language */}
+      <div style={{ position: "relative", overflow: "hidden" }}>
+        {/* Glass background image */}
         <div
           style={{
             position: "absolute",
-            right: -55,
-            top: -60,
-            width: 160,
-            height: 280,
-            background: "rgba(255,255,255,0.055)",
-            transform: "rotate(22deg)",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: bgB64 ? `url(${bgB64})` : undefined,
+            backgroundColor: "#001D7A",
+            backgroundSize: "cover",
+            backgroundPosition: "center top",
           }}
         />
+        {/* Dark overlay — ensures white text stays readable */}
         <div
           style={{
             position: "absolute",
-            right: 30,
-            top: -90,
-            width: 80,
-            height: 240,
-            background: "rgba(255,255,255,0.035)",
-            transform: "rotate(22deg)",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background:
+              "linear-gradient(to bottom, rgba(0,8,30,0.44) 0%, rgba(0,12,45,0.62) 100%)",
           }}
         />
+        {/* Content wrapper */}
+        <div style={{ position: "relative", zIndex: 1, padding: "28px 28px 36px" }}>
 
         {/* Logo row */}
         <div
@@ -265,6 +263,7 @@ function ReceiptCard({ tx, payerName, logoB64, cardRef }) {
             {formatHeaderDate(tx?.date ?? tx?.createdAt)}
           </div>
         </div>
+        </div> {/* end content wrapper */}
       </div>
 
       {/* ── TRANSACTION DETAILS ───────────────────────────────────────────── */}
@@ -402,22 +401,20 @@ function ReceiptCard({ tx, payerName, logoB64, cardRef }) {
 export default function ReceiptModal({ tx, payerName, onClose }) {
   const cardRef = useRef(null);
   const [logoB64, setLogoB64] = useState(null);
+  const [bgB64, setBgB64] = useState(null);
   const [saving, setSaving] = useState(null); // "image" | "pdf" | "share" | null
 
   useEffect(() => {
-    fetch("/Glass.webp")
-      .then((r) => r.blob())
-      .then(
-        (b) =>
-          new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = () => resolve(null);
-            reader.readAsDataURL(b);
-          }),
-      )
-      .then(setLogoB64)
-      .catch(() => {});
+    function toB64(blob) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(blob);
+      });
+    }
+    fetch("/Glass.webp").then((r) => r.blob()).then(toB64).then(setLogoB64).catch(() => {});
+    fetch(backgroundUrl).then((r) => r.blob()).then(toB64).then(setBgB64).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -636,6 +633,7 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
             tx={tx}
             payerName={payerName}
             logoB64={logoB64}
+            bgB64={bgB64}
             cardRef={cardRef}
           />
         </div>
