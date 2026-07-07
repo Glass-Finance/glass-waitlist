@@ -79,7 +79,8 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { logout, user } = useAuth();
-  const userDisplayName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "";
+  const userDisplayName = ([user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
   const userInitials = (user?.firstName || user?.lastName)
     ? `${(user?.firstName ?? "")[0] ?? ""}${(user?.lastName ?? "")[0] ?? ""}`.toUpperCase()
     : (user?.email ?? "").slice(0, 2).toUpperCase() || "?";

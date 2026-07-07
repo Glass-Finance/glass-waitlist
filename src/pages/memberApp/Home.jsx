@@ -38,17 +38,22 @@ function formatDateShort(dateString) {
   });
 }
 
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function firstName(user) {
   try {
     const ud =
       typeof user?.userData === "string"
         ? JSON.parse(user.userData)
         : user?.userData;
-    if (ud?.firstName) return ud.firstName;
+    if (ud?.firstName) return toTitleCase(ud.firstName);
   } catch {
     /* ignore */
   }
-  return user?.email?.split("@")[0] ?? "there";
+  return toTitleCase(user?.firstName ?? user?.email?.split("@")[0] ?? "there");
 }
 
 // ---------------------------------------------------------------------------

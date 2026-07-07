@@ -20,12 +20,17 @@ const FALLBACK_ROLES = [
 
 const SORT_OPTIONS = ["Recently Paid", "Name A-Z", "Date Joined"];
 
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function memberName(m) {
-  if (m.name) return m.name;
+  if (m.name) return toTitleCase(m.name);
   const first = m.user?.firstName ?? m.firstName ?? "";
   const last = m.user?.lastName ?? m.lastName ?? "";
   const full = `${first} ${last}`.trim();
-  return full || m.user?.email || m.email || "Member";
+  return toTitleCase(full || m.user?.email || m.email || "Member");
 }
 const memberEmail = (m) => m.user?.email ?? m.email ?? "—";
 const memberRole = (m) => m.roleCode ?? m.role?.name ?? m.roleName ?? m.role ?? "Member";

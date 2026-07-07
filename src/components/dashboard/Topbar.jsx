@@ -35,9 +35,16 @@ function getInitials(user) {
   return (user.email ?? "?").slice(0, 2).toUpperCase();
 }
 
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function getDisplayName(user) {
   if (!user) return "Loading...";
-  if (user.firstName) return `${user.firstName} ${user.lastName ?? ""}`.trim();
+  if (user.firstName) {
+    return toTitleCase(`${user.firstName} ${user.lastName ?? ""}`.trim());
+  }
   return user.email ?? "User";
 }
 
@@ -183,7 +190,7 @@ export default function Topbar({
                         onClick={() => goToResult(`/dashboard/members/${m.id}?community=${communityId}`)}
                         className="w-full flex items-center justify-between gap-2.5 px-4 py-2 hover:bg-gray-50 text-left bg-transparent border-none cursor-pointer"
                       >
-                        <span className="text-xs font-medium text-gray-900">{m.firstName} {m.lastName}</span>
+                        <span className="text-xs font-medium text-gray-900">{toTitleCase(`${m.firstName ?? ""} ${m.lastName ?? ""}`.trim())}</span>
                         <span className="text-[11px] text-gray-400">{m.email}</span>
                       </button>
                     ))}

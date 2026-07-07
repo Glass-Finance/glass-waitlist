@@ -35,14 +35,14 @@ export default function Navbar() {
       style={{ scaleX, transformOrigin: "0% 50%", background: "linear-gradient(90deg, #002FA7 0%, #4f46e5 60%, #7c3aed 100%)", height: 3, position: "fixed", top: 0, left: 0, right: 0, zIndex: 200, pointerEvents: "none" }}
     />
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 min-h-[68px] transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 min-h-[80px] transition-all duration-300 ${
         scrolled
           ? "bg-[#07091F]/95 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_30px_rgba(0,0,0,0.4)]"
           : "bg-transparent"
       }`}
     >
       {/* ── Toggle pill mobile ── */}
-      <div className="lg:hidden bg-white/[0.07] border border-white/[0.1] flex">
+      <div className="lg:hidden bg-white/[0.07] border border-white/[0.1] flex mt-[6px] mx-3 rounded-full">
         <button
           onClick={() => {
             handleViewModeChange("organizations");
@@ -69,7 +69,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      <div className="max-w-[1280px] mx-auto px-8 lg:px-12 h-full flex items-center justify-between gap-6">
+      <div className="max-w-[1280px] mx-auto px-6 lg:px-12 h-full flex items-center justify-between gap-6 py-4">
         {/* ── Logo ── */}
         <Link
           to="/"

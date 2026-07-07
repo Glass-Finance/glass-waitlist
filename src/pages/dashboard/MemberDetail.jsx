@@ -18,12 +18,17 @@ function formatDate(d) {
   return new Date(d).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" });
 }
 
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function memberName(m) {
   if (!m) return "Member";
-  if (m.name) return m.name;
+  if (m.name) return toTitleCase(m.name);
   const first = m.user?.firstName ?? m.firstName ?? "";
   const last = m.user?.lastName ?? m.lastName ?? "";
-  return `${first} ${last}`.trim() || m.user?.email || m.email || "Member";
+  return toTitleCase(`${first} ${last}`.trim() || m.user?.email || m.email || "Member");
 }
 const memberEmail = (m) => m?.user?.email ?? m?.email ?? "—";
 const memberPhone = (m) => m?.user?.phoneNumber ?? m?.phoneNumber ?? "—";

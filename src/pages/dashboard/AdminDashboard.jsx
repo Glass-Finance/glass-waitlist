@@ -1388,7 +1388,8 @@ function DashboardContent({ isPaying, communityId }) {
     for (const m of members.list ?? []) {
       const first = m.user?.firstName ?? m.firstName ?? "";
       const last  = m.user?.lastName  ?? m.lastName  ?? "";
-      const name  = `${first} ${last}`.trim() || m.user?.email || m.email || null;
+      const raw   = `${first} ${last}`.trim() || m.user?.email || m.email || null;
+      const name  = raw ? raw.replace(/\b\w/g, (c) => c.toUpperCase()) : null;
       if (!name) continue;
       if (m.id)        byMemberId[String(m.id)] = name;
       if (m.user?.id)  byUserId[String(m.user.id)] = name;
@@ -1407,7 +1408,7 @@ function DashboardContent({ isPaying, communityId }) {
     const f = u.firstName ?? tx.firstName ?? "";
     const l = u.lastName  ?? tx.lastName  ?? "";
     const full = `${f} ${l}`.trim();
-    return full || null;
+    return full ? full.replace(/\b\w/g, (c) => c.toUpperCase()) : null;
   }
 
   // ── Per-plan metrics computed from obligations + transactions ────────────────
