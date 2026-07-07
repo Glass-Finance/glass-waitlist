@@ -256,7 +256,7 @@ export default function Topbar({
         </button>
 
         {/* Bell */}
-        <div className="relative">
+        <div className="relative flex items-center">
           <button
             onClick={() => setPanelOpen((o) => !o)}
             className="relative bg-transparent border-none cursor-pointer text-gray-500 hover:text-gray-700 transition-colors p-0"
