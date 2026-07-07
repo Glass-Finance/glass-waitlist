@@ -35,6 +35,69 @@ function bankInitials(name = "") {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
+// Bank code → Paystack CDN slug (fallback for accounts saved before logo capture)
+const BANK_CODE_SLUG = {
+  "044": "access-bank",
+  "063": "access-bank",
+  "050": "ecobank-nigeria",
+  "011": "first-bank-of-nigeria",
+  "214": "first-city-monument-bank",
+  "070": "fidelity-bank",
+  "058": "guaranty-trust-bank",
+  "030": "heritage-bank",
+  "301": "jaiz-bank",
+  "082": "keystone-bank",
+  "076": "polaris-bank",
+  "101": "providus-bank",
+  "221": "stanbic-ibtc-bank",
+  "068": "standard-chartered-bank",
+  "232": "sterling-bank",
+  "032": "union-bank-of-nigeria",
+  "033": "united-bank-for-africa",
+  "215": "unity-bank",
+  "035": "wema-bank",
+  "057": "zenith-bank",
+  "023": "citibank-nigeria",
+  "526": "parallex-bank",
+};
+
+function bankLogoUrl(account) {
+  // 1. Stored logo URL (captured at selection time)
+  const stored = account?.settlementBankLogo ?? account?.bankLogo ?? account?.logo;
+  if (stored) return stored;
+  // 2. Stored slug → Paystack CDN
+  const slug = account?.settlementBankSlug ?? account?.bankSlug ?? account?.slug;
+  if (slug) return `https://paystack.com/banks/${slug}.png`;
+  // 3. Bank code → Paystack CDN
+  const code = account?.settlementBankCode ?? account?.bankCode ?? account?.code;
+  if (code && BANK_CODE_SLUG[code]) return `https://paystack.com/banks/${BANK_CODE_SLUG[code]}.png`;
+  return null;
+}
+
+function BankAvatar({ bankName, logoUrl }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  if (logoUrl && !imgFailed) {
+    return (
+      <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden border border-gray-100 bg-white flex items-center justify-center">
+        <img
+          src={logoUrl}
+          alt={bankName}
+          className="w-full h-full object-contain"
+          onError={() => setImgFailed(true)}
+        />
+      </div>
+    );
+  }
+  return (
+    <div
+      className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
+      style={{ background: bankColor(bankName) }}
+    >
+      {bankInitials(bankName)}
+    </div>
+  );
+}
+
 function formatNaira(amount) {
   const n = Number(amount);
   if (!amount || isNaN(n)) return "—";
@@ -56,6 +119,7 @@ function AccountModal({ onClose, onSave, isSaving }) {
   const [banks, setBanks] = useState([]);
   const [bankCode, setBankCode] = useState("");
   const [bankName, setBankName] = useState("");
+  const [bankSlug, setBankSlug] = useState("");
   const [accNumber, setAccNumber] = useState("");
   const [accName, setAccName] = useState("");
   const [resolving, setResolving] = useState(false);
@@ -121,6 +185,7 @@ function AccountModal({ onClose, onSave, isSaving }) {
     onSave({
       settlementBank: bankName,
       settlementBankCode: bankCode,
+      settlementBankSlug: bankSlug,
       accountNumber: accNumber,
       accountName: accName.trim(),
     });
@@ -184,6 +249,7 @@ function AccountModal({ onClose, onSave, isSaving }) {
                     onChange={(bank) => {
                       setBankCode(bank.code);
                       setBankName(bank.name);
+                      setBankSlug(bank.slug ?? "");
                       setAccName("");
                       setManualMode(false);
                       setResolveError("");
@@ -280,12 +346,7 @@ export default function PaystackAccount() {
           {/* Account row */}
           <div className="flex items-center justify-between mb-5 pb-5 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
-                style={{ background: bankColor(bankName) }}
-              >
-                {bankInitials(bankName)}
-              </div>
+              <BankAvatar bankName={bankName} logoUrl={bankLogoUrl(account)} />
               <div>
                 <p className="text-sm font-semibold text-gray-900">
                   {account.accountName ?? account.name ?? "—"}

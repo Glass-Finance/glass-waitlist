@@ -72,6 +72,7 @@ export default function PaymentProfile() {
   const [banks,       setBanks]       = useState([]);
   const [bankCode,    setBankCode]    = useState("");
   const [bankName,    setBankName]    = useState("");
+  const [bankSlug,    setBankSlug]    = useState("");
   const [accNumber,   setAccNumber]   = useState("");
   const [accName,     setAccName]     = useState("");
   const [resolving,   setResolving]   = useState(false);
@@ -153,6 +154,7 @@ export default function PaymentProfile() {
       await saveAccount.mutateAsync({
         settlementBank:     bankName,
         settlementBankCode: bankCode,
+        settlementBankSlug: bankSlug,
         accountNumber:      accNumber,
         accountName:        accName.trim(),
       });
@@ -241,6 +243,7 @@ export default function PaymentProfile() {
                     onChange={(bank) => {
                       setBankCode(bank.code);
                       setBankName(bank.name);
+                      setBankSlug(bank.slug ?? "");
                       setAccName("");
                       setManualMode(false);
                       setError("");

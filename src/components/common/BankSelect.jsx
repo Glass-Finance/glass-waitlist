@@ -1,10 +1,47 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 
+const BANK_CODE_SLUG = {
+  "044": "access-bank", "063": "access-bank",
+  "050": "ecobank-nigeria", "011": "first-bank-of-nigeria",
+  "214": "first-city-monument-bank", "070": "fidelity-bank",
+  "058": "guaranty-trust-bank", "030": "heritage-bank",
+  "301": "jaiz-bank", "082": "keystone-bank",
+  "076": "polaris-bank", "101": "providus-bank",
+  "221": "stanbic-ibtc-bank", "068": "standard-chartered-bank",
+  "232": "sterling-bank", "032": "union-bank-of-nigeria",
+  "033": "united-bank-for-africa", "215": "unity-bank",
+  "035": "wema-bank", "057": "zenith-bank",
+  "023": "citibank-nigeria", "526": "parallex-bank",
+};
+
+function getBankLogoUrl(bank) {
+  if (bank.logo) return bank.logo;
+  const slug = bank.slug ?? BANK_CODE_SLUG[bank.code];
+  return slug ? `https://paystack.com/banks/${slug}.png` : null;
+}
+
+function BankLogo({ bank, size = 20 }) {
+  const [failed, setFailed] = useState(false);
+  const url = getBankLogoUrl(bank);
+  if (!url || failed) return null;
+  return (
+    <img
+      src={url}
+      alt=""
+      width={size}
+      height={size}
+      className="rounded flex-shrink-0 object-contain"
+      style={{ width: size, height: size }}
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 // A searchable bank picker — a plain native <select> is unusable once the
 // bank list runs into the hundreds, so this swaps in a filterable dropdown
 // with the same trigger-button footprint as the <select> it replaces.
-// `onChange` is called with the full { code, name } bank object.
+// `onChange` is called with the full { code, name, slug?, logo? } bank object.
 export default function BankSelect({ banks, value, onChange, placeholder = "Choose Bank", triggerClassName = "" }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -38,8 +75,11 @@ export default function BankSelect({ banks, value, onChange, placeholder = "Choo
         onClick={() => setOpen((o) => !o)}
         className={`w-full flex items-center justify-between gap-2 text-left cursor-pointer ${triggerClassName}`}
       >
-        <span className={`truncate ${selected ? "text-gray-800" : "text-gray-400"}`}>
-          {selected ? selected.name : placeholder}
+        <span className="flex items-center gap-2 min-w-0">
+          {selected && <BankLogo bank={selected} size={18} />}
+          <span className={`truncate ${selected ? "text-gray-800" : "text-gray-400"}`}>
+            {selected ? selected.name : placeholder}
+          </span>
         </span>
         <ChevronDown size={13} className="text-gray-400 flex-shrink-0" />
       </button>
@@ -69,10 +109,11 @@ export default function BankSelect({ banks, value, onChange, placeholder = "Choo
                     setOpen(false);
                     setQuery("");
                   }}
-                  className={`w-full text-left px-3 py-2 text-xs border-none cursor-pointer transition-colors ${
+                  className={`w-full flex items-center gap-2.5 text-left px-3 py-2 text-xs border-none cursor-pointer transition-colors ${
                     b.code === value ? "bg-blue-50 font-medium text-[#002FA7]" : "bg-transparent text-gray-700 hover:bg-gray-50"
                   }`}
                 >
+                  <BankLogo bank={b} size={18} />
                   {b.name}
                 </button>
               ))
