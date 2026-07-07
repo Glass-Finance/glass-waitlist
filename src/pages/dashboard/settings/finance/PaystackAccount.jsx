@@ -91,7 +91,7 @@ function formatDate(d) {
 // ─────────────────────────────────────────────────────────────────────────────
 // Change / Add account modal
 // ─────────────────────────────────────────────────────────────────────────────
-function AccountModal({ onClose, onSave, isSaving }) {
+function AccountModal({ onClose, onSave, isSaving, saveError }) {
   const [banks, setBanks] = useState([]);
   const [bankCode, setBankCode] = useState("");
   const [bankName, setBankName] = useState("");
@@ -274,8 +274,15 @@ function AccountModal({ onClose, onSave, isSaving }) {
             )}
           </div>
 
+          {/* Save error — shown when the API call itself fails (e.g. backend 502) */}
+          {saveError && (
+            <p className="text-xs text-red-600 mt-4">
+              {saveError}
+            </p>
+          )}
+
           {/* Footer */}
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-end mt-4">
             <button
               onClick={handleSave}
               disabled={isSaving || resolving || !accName.trim()}
@@ -298,6 +305,7 @@ export default function PaystackAccount() {
   const { account, isLoading, create, update } = useCommunityAccount(communityId);
   const { data: community } = useCommunity(communityId);
   const [showModal, setShowModal] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   const bankName =
     account?.settlementBank ??
@@ -313,20 +321,21 @@ export default function PaystackAccount() {
   const communityName = community?.name ?? "";
 
   async function handleSave({ settlementBank, settlementBankCode, accountNumber, accountName }) {
-    // API spec: POST/PATCH body = { settlementBank, settlementBankCode, accountNumber }
-    // accountName is returned by the API but not accepted in the request body per spec.
-    // We include it anyway as some backend versions accept it; unknown fields are ignored.
     const body = { settlementBank, settlementBankCode, accountNumber, accountName };
+    setSaveError("");
     try {
       if (account?.id) {
-        // Existing account — update it in place rather than creating a duplicate
         await update.mutateAsync({ accountId: account.id, payload: body });
       } else {
         await create.mutateAsync(body);
       }
       setShowModal(false);
-    } catch {
-      // Global mutation cache shows the toast
+    } catch (err) {
+      const desc =
+        err?.response?.data?.description ??
+        err?.response?.data?.message ??
+        "Couldn't save the account. Please try again.";
+      setSaveError(desc);
     }
   }
 
@@ -421,9 +430,10 @@ export default function PaystackAccount() {
 
       {showModal && (
         <AccountModal
-          onClose={() => setShowModal(false)}
+          onClose={() => { setShowModal(false); setSaveError(""); }}
           onSave={handleSave}
           isSaving={create.isPending || update.isPending}
+          saveError={saveError}
         />
       )}
     </div>
