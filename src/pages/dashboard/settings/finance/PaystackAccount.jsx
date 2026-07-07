@@ -143,8 +143,16 @@ function AccountModal({ onClose, onSave, isSaving }) {
           setResolveError("Couldn't auto-verify this account. Enter the account name manually.");
           setManualMode(true);
         }
-      } catch {
-        setResolveError("Couldn't auto-verify this account. Enter the account name manually.");
+      } catch (err) {
+        const desc =
+          err?.response?.data?.description ??
+          err?.response?.data?.message ??
+          null;
+        setResolveError(
+          desc
+            ? `${desc}. Enter the account name manually.`
+            : "Couldn't auto-verify this account. Enter the account name manually."
+        );
         setManualMode(true);
       } finally {
         setResolving(false);

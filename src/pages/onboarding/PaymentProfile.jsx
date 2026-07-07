@@ -124,8 +124,16 @@ export default function PaymentProfile() {
           setError("Couldn't auto-verify this account. Enter the account name manually below.");
           setManualMode(true);
         }
-      } catch {
-        setError("Couldn't auto-verify this account. Enter the account name manually below.");
+      } catch (err) {
+        const desc =
+          err?.response?.data?.description ??
+          err?.response?.data?.message ??
+          null;
+        setError(
+          desc
+            ? `${desc}. Enter the account name manually below.`
+            : "Couldn't auto-verify this account. Enter the account name manually below."
+        );
         setManualMode(true);
       } finally {
         setResolving(false);
