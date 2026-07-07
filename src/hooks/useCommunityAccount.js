@@ -8,7 +8,21 @@ export function useCommunityAccount(communityId) {
     queryKey: ["community", communityId, "account"],
     queryFn: async () => {
       const res = await getCommunityAccount(communityId);
-      return res.data?.data ?? null;
+      // Backend may wrap in { success, data: {...} } or return the object directly.
+      // Also handles { data: [account] } (array) or { data: { accounts: [...] } }.
+      const raw = res.data;
+      let account =
+        raw?.data ??
+        raw?.account ??
+        (Array.isArray(raw) ? raw[0] : null) ??
+        null;
+      // If the extracted value is an array (paginated list), take first item
+      if (Array.isArray(account)) account = account[0] ?? null;
+      if (import.meta.env.DEV) {
+        // eslint-disable-next-line no-console
+        console.log("[useCommunityAccount] raw:", raw, "→ account:", account);
+      }
+      return account ?? null;
     },
     enabled: !!communityId,
     staleTime: 1000 * 60 * 2,

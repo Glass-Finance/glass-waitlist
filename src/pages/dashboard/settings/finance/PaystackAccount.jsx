@@ -249,7 +249,12 @@ export default function PaystackAccount() {
   const { data: community } = useCommunity(communityId);
   const [showModal, setShowModal] = useState(false);
 
-  const bankName = account?.settlementBank ?? account?.bankName ?? "";
+  const bankName =
+    account?.settlementBank ??
+    account?.bankName ??
+    account?.bank ??
+    account?.bankTitle ??
+    "";
   const communityName = community?.name ?? "";
 
   async function handleSave(payload) {
@@ -283,9 +288,11 @@ export default function PaystackAccount() {
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-900">
-                  {account.accountName ?? "—"}
+                  {account.accountName ?? account.name ?? "—"}
                 </p>
-                <p className="text-xs text-gray-400">{account.accountNumber ?? "—"}</p>
+                <p className="text-xs text-gray-400">
+                  {account.accountNumber ?? account.number ?? account.acctNumber ?? "—"}
+                </p>
               </div>
             </div>
             <button
@@ -301,19 +308,19 @@ export default function PaystackAccount() {
             <div>
               <p className="text-xs text-gray-400 mb-0.5">Total Received</p>
               <p className="text-sm font-bold text-gray-900">
-                {formatNaira(account.totalReceived)}
+                {formatNaira(account.totalReceived ?? account.totalAmount ?? account.totalSettlement)}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-400 mb-0.5">Last Payout</p>
               <p className="text-sm font-bold text-gray-900">
-                {formatDate(account.lastPayoutAt ?? account.lastPayout)}
+                {formatDate(account.lastPayoutAt ?? account.lastPayout ?? account.lastSettlementAt ?? account.lastSettledAt)}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-400 mb-0.5">Account Added</p>
               <p className="text-sm font-bold text-gray-900">
-                {formatDate(account.createdAt ?? account.addedAt)}
+                {formatDate(account.createdAt ?? account.addedAt ?? account.dateCreated)}
               </p>
             </div>
           </div>
