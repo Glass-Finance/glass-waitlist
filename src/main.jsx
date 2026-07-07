@@ -26,6 +26,13 @@ if ("scrollRestoration" in window.history) {
   window.history.scrollRestoration = "manual";
 }
 
+// After a new deploy, old chunk hashes no longer exist on the server.
+// Vite fires this event when a dynamic import chunk fails to load —
+// a hard reload fetches the new index.html and fresh chunks.
+window.addEventListener("vite:preloadError", () => {
+  window.location.reload();
+});
+
 // Boot Pendo with an anonymous visitor. The SDK resolves the previous
 // visitor from cookies/localStorage if available, otherwise it falls back
 // to a new anonymous visitor. pendo.identify() is called later once the
