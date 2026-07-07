@@ -2,11 +2,24 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import banksData from "nigerian-bank-icons/assets/banks.json";
 
-const BANK_LOGO_BY_CODE = Object.fromEntries(banksData.map((b) => [b.code, b.logo]));
+// Exclude entries that point to the generic placeholder image — those banks
+// have no real logo in the package and should fall back to colored initials.
+const BANK_LOGO_BY_CODE = Object.fromEntries(
+  banksData
+    .filter((b) => !b.logo.includes("default-image"))
+    .map((b) => [b.code, b.logo])
+);
 
-function BankLogo({ code, size = 20 }) {
+// Resolve logo URL: prefer the logo URL returned by the Paystack banks API
+// (bank.logo), then the package map, then nothing (shows colored initials).
+function resolveBankLogo(bank) {
+  if (bank.logo && !bank.logo.includes("default-image")) return bank.logo;
+  return BANK_LOGO_BY_CODE[bank.code] ?? null;
+}
+
+function BankLogo({ bank, size = 20 }) {
   const [failed, setFailed] = useState(false);
-  const url = BANK_LOGO_BY_CODE[code] ?? null;
+  const url = resolveBankLogo(bank);
   if (!url || failed) return null;
   return (
     <img
@@ -59,7 +72,7 @@ export default function BankSelect({ banks, value, onChange, placeholder = "Choo
         className={`w-full flex items-center justify-between gap-2 text-left cursor-pointer ${triggerClassName}`}
       >
         <span className="flex items-center gap-2 min-w-0">
-          {selected && <BankLogo code={selected.code} size={18} />}
+          {selected && <BankLogo bank={selected} size={18} />}
           <span className={`truncate ${selected ? "text-gray-800" : "text-gray-400"}`}>
             {selected ? selected.name : placeholder}
           </span>
@@ -96,7 +109,7 @@ export default function BankSelect({ banks, value, onChange, placeholder = "Choo
                     b.code === value ? "bg-blue-50 font-medium text-[#002FA7]" : "bg-transparent text-gray-700 hover:bg-gray-50"
                   }`}
                 >
-                  <BankLogo code={b.code} size={18} />
+                  <BankLogo bank={b} size={18} />
                   {b.name}
                 </button>
               ))

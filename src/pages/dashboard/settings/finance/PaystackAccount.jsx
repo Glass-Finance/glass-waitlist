@@ -8,8 +8,12 @@ import { notifyError } from "../../../../utils/errorHandler";
 import BankSelect from "../../../../components/common/BankSelect";
 import banksData from "nigerian-bank-icons/assets/banks.json";
 
-// code → logo URL from the nigerian-bank-icons package (nigerianbanks.xyz CDN)
-const BANK_LOGO_BY_CODE = Object.fromEntries(banksData.map((b) => [b.code, b.logo]));
+// Exclude generic placeholder entries — banks without real logos use colored initials.
+const BANK_LOGO_BY_CODE = Object.fromEntries(
+  banksData
+    .filter((b) => !b.logo.includes("default-image"))
+    .map((b) => [b.code, b.logo])
+);
 
 const inputCls =
   "w-full border border-gray-300 px-3.5 py-2.5 rounded-lg text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-1 focus:ring-[#002FA7]/20 transition-all bg-white";
@@ -39,9 +43,14 @@ function bankInitials(name = "") {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-function BankAvatar({ bankCode, bankName }) {
+function BankAvatar({ bankCode, bankName, storedLogoUrl }) {
   const [imgFailed, setImgFailed] = useState(false);
-  const logoUrl = BANK_LOGO_BY_CODE[bankCode] ?? null;
+  // Prefer logo URL stored at account-save time (from Paystack API), then package map.
+  // Ignore URLs that are the generic placeholder.
+  const logoUrl =
+    (storedLogoUrl && !storedLogoUrl.includes("default-image") ? storedLogoUrl : null) ??
+    BANK_LOGO_BY_CODE[bankCode] ??
+    null;
   if (logoUrl && !imgFailed) {
     return (
       <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden border border-gray-100 bg-white flex items-center justify-center">
@@ -318,7 +327,11 @@ export default function PaystackAccount() {
           {/* Account row */}
           <div className="flex items-center justify-between mb-5 pb-5 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              <BankAvatar bankCode={bankCode} bankName={bankName} />
+              <BankAvatar
+                bankCode={bankCode}
+                bankName={bankName}
+                storedLogoUrl={account?.settlementBankLogo ?? account?.bankLogo ?? account?.logo}
+              />
               <div>
                 <p className="text-sm font-semibold text-gray-900">
                   {account.accountName ?? account.name ?? "—"}
