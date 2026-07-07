@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/cta/ctalogo.png";
+import logo from "../assets/cta/ctalogo.webp";
 import BlurText from "./ui/BlurText";
 
 const links = {

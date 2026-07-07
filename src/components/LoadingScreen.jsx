@@ -1,4 +1,4 @@
-import GlassLogo from "../assets/Glass.png";
+import GlassLogo from "../assets/Glass.webp";
 
 export default function LoadingScreen() {
   return (

@@ -7,7 +7,7 @@ import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers, useCommunityJoinRequests, useRoles } from "../../hooks/useCommunityMembers";
 import { getErrorMessage } from "../../utils/errorHandler";
-import Background from "../../assets/background.png";
+import Background from "../../assets/background.webp";
 
 // Only these three roles should be assignable when inviting members.
 const ALLOWED_ROLE_NAMES = new Set(["Community Owner", "Community Admin", "Community Member"]);

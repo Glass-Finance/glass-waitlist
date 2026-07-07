@@ -1,8 +1,8 @@
 // import { useState, useRef } from "react";
 // import { useNavigate } from "react-router-dom";
 // import { Bell, Download, CloudUpload, Copy, Trash2, Plus, Check } from "lucide-react";
-// import GlassLogo from "../../assets/Glass.png";
-// import Background from "../../assets/background.png";
+// import GlassLogo from "../../assets/Glass.webp";
+// import Background from "../../assets/background.webp";
 
 // const SIDEBAR_STEPS = [
 //   {
@@ -430,8 +430,8 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Papa from "papaparse";
 import { Bell, Download, CloudUpload, Copy, Check, X, FileSpreadsheet } from "lucide-react";
-import GlassLogo from "../../assets/Glass.png";
-import Background from "../../assets/background.png";
+import GlassLogo from "../../assets/Glass.webp";
+import Background from "../../assets/background.webp";
 import { notifyError } from "../../utils/errorHandler";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { toastProgress, toastSuccess } from "../../utils/toast";

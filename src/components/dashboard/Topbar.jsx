@@ -9,7 +9,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Bell, Loader2, Menu } from "lucide-react";
+import { Search, Bell, Loader2, Menu, HelpCircle } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { useAllNotifications } from "../../hooks/useNotifications";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
@@ -45,6 +45,7 @@ function getDisplayName(user) {
 export default function Topbar({
   searchPlaceholder = "Search members, payments, receipts...",
   onMenuClick,
+  onOpenTour,
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -140,7 +141,7 @@ export default function Topbar({
     searchMembers.length || searchTransactions.length || searchPaymentLinks.length || searchSettlements.length;
 
   return (
-    <header className="h-14 bg-[#EFEFF1E5] border-b border-[#EFEFF1] flex items-center gap-4 px-4 md:px-6 sticky top-0 z-50 flex-shrink-0">
+    <header className="h-14 bg-[#EFEFF1E5] border-b border-[#EFEFF1] flex items-center gap-6 px-4 md:px-8 sticky top-0 z-50 flex-shrink-0">
       {/* Hamburger — mobile only */}
       <button
         onClick={onMenuClick}
@@ -152,7 +153,7 @@ export default function Topbar({
 
       {/* Search */}
       <div className="relative flex-1 max-w-[420px] hidden md:block" ref={searchRef}>
-        <div className="flex items-center gap-2 bg-white rounded-md px-3 py-2 border border-gray-100 focus-within:ring-1 focus-within:ring-[#002FA7]">
+        <div className="flex items-center gap-2 bg-white rounded-md px-3.5 py-2.5 border border-gray-100 focus-within:ring-1 focus-within:ring-[#002FA7]">
           {searching ? (
             <Loader2 size={14} className="text-gray-400 flex-shrink-0 animate-spin" />
           ) : (
@@ -237,6 +238,16 @@ export default function Topbar({
 
       {/* Right */}
       <div className="relative ml-auto flex items-center gap-4" ref={panelRef}>
+        {/* Help — replay the first-launch dashboard tour */}
+        <button
+          onClick={onOpenTour}
+          className="hidden sm:block bg-transparent border-none cursor-pointer text-gray-500 hover:text-gray-700 transition-colors p-0"
+          aria-label="Take the dashboard tour"
+          title="Take the dashboard tour"
+        >
+          <HelpCircle size={18} />
+        </button>
+
         {/* Bell */}
         <div className="relative">
           <button

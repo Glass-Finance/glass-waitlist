@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { UserMinus, Phone, MessageCircle, Download } from "lucide-react";
+import { UserMinus, Phone, MessageCircle } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers } from "../../hooks/useCommunityMembers";
-import Background from "../../assets/background.png";
+import { useCommunity } from "../../hooks/useCommunity";
+import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
+import Background from "../../assets/background.webp";
 
 const TABS = ["All Plans", "Payment History", "Contact Details"];
 
@@ -71,6 +73,7 @@ export default function MemberDetail() {
 
   const { members, isLoading } = useMembersWithPayments(communityId);
   const { removeMember } = useCommunityMembers(communityId);
+  const { data: community } = useCommunity(communityId);
   const member = members.find((m) => String(m.id) === String(memberId));
 
   function handleRemove() {
@@ -198,7 +201,22 @@ export default function MemberDetail() {
                         <td className="px-5 py-3 text-sm text-gray-500">{t.channel ?? "—"}</td>
                         <td className="px-5 py-3 text-sm text-gray-500">{formatDate(t.paidAt ?? t.createdAt)}</td>
                         <td className="px-5 py-3">
-                          <button disabled title="Download receipt — coming soon" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-300 cursor-not-allowed"><Download size={11} /></button>
+                          <ReceiptDownloadButton
+                            tx={{
+                              amount: t.amount,
+                              description: t.paymentLink?.title ?? t.description,
+                              communityName: community?.name,
+                              date: t.paidAt ?? t.createdAt,
+                              channel: t.channel,
+                              reference: t.internalReference ?? t.id,
+                              status: t.status,
+                            }}
+                            payerName={memberName(member)}
+                            disabled={!isPaid}
+                            iconSize={11}
+                            title={isPaid ? "Download receipt" : "Receipts are only available for successful payments"}
+                            buttonClassName={`w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center ${isPaid ? "text-gray-500 hover:bg-gray-50 cursor-pointer" : "text-gray-300 cursor-not-allowed"}`}
+                          />
                         </td>
                       </tr>
                     );

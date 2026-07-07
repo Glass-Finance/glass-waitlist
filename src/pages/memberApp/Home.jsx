@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Bell, ChevronDown, Clock } from "lucide-react";
-import joinCommunityIcon from "../../assets/auth/join-community.png";
+import joinCommunityIcon from "../../assets/auth/join-community.webp";
 import { usePayments } from "../../hooks/usePayments";
 import SideDrawer from "../../components/memberApp/SideDrawer";
 

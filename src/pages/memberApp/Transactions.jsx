@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
+import { useAuth } from "../../store/AuthContext";
+import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
 
 const STATUS_OPTIONS = ["All Status", "Success", "Failed", "Pending"];
 
@@ -126,18 +128,20 @@ function Dropdown({ value, options, onChange }) {
 }
 
 // ─── Transaction row ──────────────────────────────────────────────────────────
-function TxRow({ tx }) {
+function TxRow({ tx, payerName }) {
+  const isSuccessful = statusLabel(tx.status) === "Success";
   return (
     <div
       style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        gap: 8,
         padding: "14px 20px",
         borderBottom: "1px solid #f3f4f6",
       }}
     >
-      <div>
+      <div style={{ minWidth: 0 }}>
         <p style={{ fontSize: 15, fontWeight: 500, color: "#111827", margin: 0 }}>
           {tx.description}
         </p>
@@ -153,11 +157,33 @@ function TxRow({ tx }) {
             : "—"}
         </p>
       </div>
-      <div style={{ textAlign: "right" }}>
-        <p style={{ fontSize: 15, fontWeight: 600, color: "#111827", margin: "0 0 4px" }}>
-          {formatNaira(tx.amount)}
-        </p>
-        <StatusBadge status={tx.status} />
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+        <div style={{ textAlign: "right" }}>
+          <p style={{ fontSize: 15, fontWeight: 600, color: "#111827", margin: "0 0 4px" }}>
+            {formatNaira(tx.amount)}
+          </p>
+          <StatusBadge status={tx.status} />
+        </div>
+        <ReceiptDownloadButton
+          tx={tx}
+          payerName={payerName}
+          disabled={!isSuccessful}
+          iconSize={13}
+          title={isSuccessful ? "Download receipt" : "Receipts are only available for successful payments"}
+          buttonStyle={{
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            border: "1px solid #e5e7eb",
+            background: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            cursor: isSuccessful ? "pointer" : "not-allowed",
+            color: isSuccessful ? "#374151" : "#d1d5db",
+          }}
+        />
       </div>
     </div>
   );
@@ -166,6 +192,8 @@ function TxRow({ tx }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Transactions() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const payerName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "";
   const [statusFilter, setStatusFilter] = useState("All Status");
   const { data: transactions = [], isLoading, error } = useTransactions();
 
@@ -298,7 +326,7 @@ export default function Transactions() {
               </span>
             </div>
             {txs.map((tx) => (
-              <TxRow key={tx.id} tx={tx} />
+              <TxRow key={tx.id} tx={tx} payerName={payerName} />
             ))}
           </div>
         ))

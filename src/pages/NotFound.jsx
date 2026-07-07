@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import GlassLogo from "../assets/Glass.png";
-import Background from "../assets/background.png";
+import GlassLogo from "../assets/Glass.webp";
+import Background from "../assets/background.webp";
 import { usePageTitle } from "../hooks/usePageTitle";
 
 export default function NotFound() {

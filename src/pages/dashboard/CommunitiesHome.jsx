@@ -1,7 +1,7 @@
 // // import { useState } from "react";
 // // import { useNavigate } from "react-router-dom";
 // // import { Search, Grid, List, ChevronDown, Users, Clock } from "lucide-react";
-// // import GridIcon from "../../assets/grid-icon.png";
+// // import GridIcon from "../../assets/grid-icon.webp";
 
 // // const COMMUNITIES = [
 // //   { tag: "KC", name: "Kings College Alumni", members: 24, role: "Admin",  totalPayments: "₦240,000", overdueMembers: 6,  nextPayment: null,           status: null   },
@@ -510,7 +510,7 @@ import {
 import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
 import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin } from "../../utils/communityRole";
-import Background from "../../assets/background.png";
+import Background from "../../assets/background.webp";
 import { usePageTitle } from "../../hooks/usePageTitle";
 
 const SORT_OPTIONS = ["Recently Viewed", "A-Z", "Z-A", "Newest First"];

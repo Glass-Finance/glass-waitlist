@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
-import waveBg from "../../assets/hero/hero.jpg";
+import waveBg from "../../assets/hero/hero.webp";
 import iphone from "../../assets/hero/iphone.webp";
 import BlurText from "../ui/BlurText";
 import VariableProximity from "../ui/VariableProximity";

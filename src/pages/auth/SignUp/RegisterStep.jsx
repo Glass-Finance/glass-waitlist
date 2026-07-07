@@ -174,8 +174,10 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
           </label>
           <div className="relative">
             <input
+              key={showPassword ? "text" : "password"}
               type={showPassword ? "text" : "password"}
               name="password"
+              autoComplete="new-password"
               value={form.password}
               onChange={handleChange}
               placeholder="Enter Your Password"

@@ -1,9 +1,9 @@
 // import { useState } from "react";
 // import { useNavigate, useLocation } from "react-router-dom";
-// import GlassLogo from "../../assets/Glass.png";
-// import PayingMemberIcon from "../../assets/auth/paying-dues.png";
-// import ExemptPaymentIcon from "../../assets/auth/exempt-payments.png";
-// import Background from "../../assets/background.png";
+// import GlassLogo from "../../assets/Glass.webp";
+// import PayingMemberIcon from "../../assets/auth/paying-dues.webp";
+// import ExemptPaymentIcon from "../../assets/auth/exempt-payments.webp";
+// import Background from "../../assets/background.webp";
 
 // export default function PayingMember() {
 //   const navigate = useNavigate();
@@ -122,10 +122,10 @@
  */
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import GlassLogo from "../../assets/Glass.png";
-import PayingMemberIcon from "../../assets/auth/paying-dues.png";
-import ExemptPaymentIcon from "../../assets/auth/exempt-payments.png";
-import Background from "../../assets/background.png";
+import GlassLogo from "../../assets/Glass.webp";
+import PayingMemberIcon from "../../assets/auth/paying-dues.webp";
+import ExemptPaymentIcon from "../../assets/auth/exempt-payments.webp";
+import Background from "../../assets/background.webp";
 
 export default function PayingMember() {
   const navigate = useNavigate();

@@ -5,14 +5,14 @@
 // } from "lucide-react";
 // import Sidebar from "../../components/dashboard/Sidebar";
 // import Topbar from "../../components/dashboard/Topbar";
-// import totalMembersIcon     from "../../assets/dashboard/tdesign-member.png";
-// import inactiveMembersIcon  from "../../assets/dashboard/inactive-members.png";
-// import totalContribIcon     from "../../assets/dashboard/tcontributions.png";
-// import activePlansIcon      from "../../assets/dashboard/active-plans.png";
-// import TimerIcon            from "../../assets/dashboard/timer.png";
-// import RecurringPayment from "../../assets/dashboard/recurring-payment.png";
-// import OneTimePayment from "../../assets/dashboard/one-time-payment.png";
-// import Background from "../../assets/dashboard/dashbackground.png"
+// import totalMembersIcon     from "../../assets/dashboard/tdesign-member.webp";
+// import inactiveMembersIcon  from "../../assets/dashboard/inactive-members.webp";
+// import totalContribIcon     from "../../assets/dashboard/tcontributions.webp";
+// import activePlansIcon      from "../../assets/dashboard/active-plans.webp";
+// import TimerIcon            from "../../assets/dashboard/timer.webp";
+// import RecurringPayment from "../../assets/dashboard/recurring-payment.webp";
+// import OneTimePayment from "../../assets/dashboard/one-time-payment.webp";
+// import Background from "../../assets/dashboard/dashbackground.webp"
 
 // // ── Data ──────────────────────────────────────────────────────────────────────
 // const STATS = [
@@ -552,6 +552,7 @@ import {
 import { useCommunityDashboard } from "../../hooks/useCommunityDashboard";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
+import { useCommunityAccount } from "../../hooks/useCommunityAccount";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import {
   usePayments,
@@ -560,15 +561,15 @@ import {
 } from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
 import { getErrorMessage } from "../../utils/errorHandler";
-import totalMembersIcon from "../../assets/dashboard/tdesign-member.png";
-import inactiveMembersIcon from "../../assets/dashboard/inactive-members.png";
-import totalContribIcon from "../../assets/dashboard/tcontributions.png";
-import activePlansIcon from "../../assets/dashboard/active-plans.png";
-import TimerIcon from "../../assets/dashboard/timer.png";
-import RecurringPayment from "../../assets/dashboard/recurring-payment.png";
-import OneTimePayment from "../../assets/dashboard/one-time-payment.png";
-import WarnSignIcon from "../../assets/dashboard/warn-sign.png";
-import Background from "../../assets/background.png";
+import totalMembersIcon from "../../assets/dashboard/tdesign-member.webp";
+import inactiveMembersIcon from "../../assets/dashboard/inactive-members.webp";
+import totalContribIcon from "../../assets/dashboard/tcontributions.webp";
+import activePlansIcon from "../../assets/dashboard/active-plans.webp";
+import TimerIcon from "../../assets/dashboard/timer.webp";
+import RecurringPayment from "../../assets/dashboard/recurring-payment.webp";
+import OneTimePayment from "../../assets/dashboard/one-time-payment.webp";
+import WarnSignIcon from "../../assets/dashboard/warn-sign.webp";
+import Background from "../../assets/background.webp";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function formatNaira(amount) {
@@ -1334,9 +1335,11 @@ function DashboardContent({ isPaying, communityId }) {
   }
 
   // ── Getting started checklist ─────────────────────────────────────────────
-  const gsHasPlans   = plans.length > 0;
-  const gsHasMembers = (members?.total ?? 0) > 0;
-  const showGettingStarted = !isLoading && !plansLoading && !gsDismissed && (!gsHasPlans || !gsHasMembers);
+  const { account: payoutAccount, isLoading: payoutLoading } = useCommunityAccount(communityId);
+  const gsHasPlans         = plans.length > 0;
+  const gsHasMembers       = (members?.total ?? 0) > 0;
+  const gsHasPayoutAccount = !!payoutAccount;
+  const showGettingStarted = !isLoading && !plansLoading && !payoutLoading && !gsDismissed && (!gsHasPlans || !gsHasMembers || !gsHasPayoutAccount);
 
   function dismissGs() {
     setGsDismissed(true);
@@ -1586,15 +1589,21 @@ function DashboardContent({ isPaying, communityId }) {
               {/* Step 4 — payout account */}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="w-5 h-5 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center flex-shrink-0" />
-                  <span className="text-xs text-gray-700 font-medium">Set up your payout account</span>
+                  <span className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasPayoutAccount ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}>
+                    {gsHasPayoutAccount && <Check size={11} className="text-emerald-600" strokeWidth={2.5} />}
+                  </span>
+                  <span className={`text-xs ${gsHasPayoutAccount ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}>
+                    Set up your payout account
+                  </span>
                 </div>
-                <button
-                  onClick={() => navigate("/dashboard/settings/finance/paystack")}
-                  className="text-xs font-semibold text-[#002FA7] bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
-                >
-                  Set up
-                </button>
+                {!gsHasPayoutAccount && (
+                  <button
+                    onClick={() => navigate("/dashboard/settings/finance/paystack")}
+                    className="text-xs font-semibold text-[#002FA7] bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
+                  >
+                    Set up
+                  </button>
+                )}
               </div>
             </div>
           </div>

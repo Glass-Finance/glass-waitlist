@@ -10,16 +10,19 @@ import { toastSuccess } from "../../../utils/toast";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import { useAuth } from "../../../store/AuthContext";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
+import { useCountdown, formatCountdown } from "../../../hooks/useCountdown";
 
 // ── Import your actual assets ──────────────────────────────────────────────
-import glassLogo from "../../../assets/cta/ctalogo.png";
-import authHeroBg from "../../../assets/auth/mobile-auth.png";
+import glassLogo from "../../../assets/cta/ctalogo.webp";
+import authHeroBg from "../../../assets/auth/mobile-auth.webp";
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 const OTP_LENGTH = 6;
 const STEPS = { PROFILE: "profile", OTP: "otp" };
+// Codes are valid for 15 minutes (see SignIn.jsx and the spam-notice copy below).
+const OTP_VALIDITY_SECONDS = 15 * 60;
 
 // ---------------------------------------------------------------------------
 // Shared primitives — light sheet style (matches Figma)
@@ -208,7 +211,11 @@ function StepOTP({ email, onVerified, onBack }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(30);
+  const [resendCount, setResendCount] = useState(0);
   const inputRefs = useRef([]);
+
+  const secondsLeft = useCountdown(OTP_VALIDITY_SECONDS, `${email}-${resendCount}`);
+  const codeExpired = secondsLeft <= 0;
 
   // Focus first box on mount so the keyboard opens immediately on mobile
   useEffect(() => {
@@ -278,6 +285,8 @@ function StepOTP({ email, onVerified, onBack }) {
     setError("");
     try {
       await resendVerification({ email });
+      setResendCount((c) => c + 1);
+      setDigits(Array(OTP_LENGTH).fill(""));
     } catch (err) {
       setError(notifyError(err, { context: "Resend OTP", fallback: "Could not resend. Please try again.", silent: true }));
     }
@@ -326,6 +335,11 @@ function StepOTP({ email, onVerified, onBack }) {
         >
           Wrong email?
         </button>
+        <p className={`text-xs mt-2 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
+          {codeExpired
+            ? "Your code has expired — request a new one below."
+            : `Code expires in ${formatCountdown(secondsLeft)}`}
+        </p>
       </div>
 
       {/* Spam notice */}
@@ -348,7 +362,7 @@ function StepOTP({ email, onVerified, onBack }) {
 
       <ErrorMessage message={error} />
 
-      <PrimaryButton onClick={handleVerify} loading={loading} disabled={!allFilled}>
+      <PrimaryButton onClick={handleVerify} loading={loading} disabled={!allFilled || codeExpired}>
         Continue
       </PrimaryButton>
 
@@ -508,6 +522,7 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
       <div>
         <Label htmlFor="password">Create Password</Label>
         <TextInput
+          key={showPw ? "text" : "password"}
           id="password"
           type={showPw ? "text" : "password"}
           placeholder="Enter Your Password"

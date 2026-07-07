@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import GlassLogo from "../../../assets/Glass.png";
-import Background from "../../../assets/background.png";
+import GlassLogo from "../../../assets/Glass.webp";
+import Background from "../../../assets/background.webp";
 import QRCodeCanvas from "../../../components/dashboard/QRCode";
 import { buildMobileUrl } from "../../../utils/deviceRedirect";
 import { useAuth } from "../../../store/AuthContext";

@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import SystemConfig from "./settings/admin/SystemConfig";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import Background from "../../assets/background.png";
+import Background from "../../assets/background.webp";
 import {
   getAdminCommunities, setCommissionOverride,
   getAdminCommunityAccounts, verifyCommunityAccount,

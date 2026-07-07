@@ -1,13 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
+import DashboardTour, { DASHBOARD_TOUR_SEEN_KEY } from "../components/dashboard/DashboardTour";
 
 export default function DashboardLayout() {
   // Sidebar is an off-canvas drawer below the md breakpoint (see
   // Sidebar.jsx) -- this state is lifted here since the hamburger that
   // opens it lives in the sibling Topbar, not Sidebar itself.
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
+
+  // Auto-show the first-launch walkthrough once per browser; the help icon
+  // in Topbar lets it be replayed on demand afterward.
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem(DASHBOARD_TOUR_SEEN_KEY)) setTourOpen(true);
+    } catch {
+      // localStorage unavailable (e.g. private browsing) — just skip the tour
+    }
+  }, []);
+
+  function closeTour() {
+    setTourOpen(false);
+    try { localStorage.setItem(DASHBOARD_TOUR_SEEN_KEY, "1"); } catch {}
+  }
 
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-[#F0F0F2]">
@@ -17,13 +34,15 @@ export default function DashboardLayout() {
       {/* ── Main ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Topbar */}
-        <Topbar onMenuClick={() => setMobileNavOpen(true)} />
+        <Topbar onMenuClick={() => setMobileNavOpen(true)} onOpenTour={() => setTourOpen(true)} />
 
         {/* Page content */}
         <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>
+
+      {tourOpen && <DashboardTour onClose={closeTour} />}
     </div>
   );
 }

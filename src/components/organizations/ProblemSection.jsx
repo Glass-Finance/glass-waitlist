@@ -2,7 +2,7 @@
 // import { useEffect, useRef } from "react";
 // import { Clock, Eye, Lightbulb } from "lucide-react";
 // import Problem from "../../assets/problem.webp";
-// import Overlay from "../../assets/Overlay.png";
+// import Overlay from "../../assets/Overlay.webp";
 
 // const problems = [
 //   {

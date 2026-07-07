@@ -29,7 +29,7 @@ import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { useSlug } from "../../hooks/useSlug";
 import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
-import Background from "../../assets/background.png";
+import Background from "../../assets/background.webp";
 import { getCommunityMembers } from "../../api/communities";
 import { getCommunityObligations, getCommunityTransactions } from "../../api/transactions";
 

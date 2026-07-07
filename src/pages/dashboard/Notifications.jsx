@@ -3,7 +3,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
 import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
 import { useAuth } from "../../store/AuthContext";
-import Background from "../../assets/background.png";
+import Background from "../../assets/background.webp";
 
 const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";
 

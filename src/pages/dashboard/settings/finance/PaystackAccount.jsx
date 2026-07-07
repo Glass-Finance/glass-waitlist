@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, Check, Info, X } from "lucide-react";
+import { Check, Info, X } from "lucide-react";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityAccount } from "../../../../hooks/useCommunityAccount";
 import { useCommunity } from "../../../../hooks/useCommunity";
 import { getBanks, resolveAccount } from "../../../../api/members";
 import { getErrorMessage, notifyError } from "../../../../utils/errorHandler";
+import BankSelect from "../../../../components/common/BankSelect";
 
 const inputCls =
   "w-full border border-gray-300 px-3.5 py-2.5 rounded-lg text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-1 focus:ring-[#002FA7]/20 transition-all bg-white";
@@ -112,15 +113,6 @@ function AccountModal({ onClose, onSave, isSaving }) {
     return () => clearTimeout(timer);
   }, [bankCode, accNumber]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function handleBankChange(e) {
-    const selected = banks.find((b) => b.code === e.target.value);
-    setBankCode(selected?.code ?? "");
-    setBankName(selected?.name ?? "");
-    setAccName("");
-    setManualMode(false);
-    setResolveError("");
-  }
-
   function handleSave() {
     if (!accName.trim()) {
       setResolveError("Account name is required.");
@@ -185,20 +177,19 @@ function AccountModal({ onClose, onSave, isSaving }) {
                   placeholder="0457359705"
                   className={inputCls + " flex-1"}
                 />
-                <div className="relative flex-1">
-                  <select
+                <div className="flex-1">
+                  <BankSelect
+                    banks={banks}
                     value={bankCode}
-                    onChange={handleBankChange}
-                    className={inputCls + " appearance-none pr-8"}
-                  >
-                    <option value="" disabled>Select bank</option>
-                    {banks.map((b) => (
-                      <option key={b.code} value={b.code}>{b.name}</option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    size={13}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                    onChange={(bank) => {
+                      setBankCode(bank.code);
+                      setBankName(bank.name);
+                      setAccName("");
+                      setManualMode(false);
+                      setResolveError("");
+                    }}
+                    placeholder="Select bank"
+                    triggerClassName={inputCls}
                   />
                 </div>
               </div>

@@ -20,6 +20,7 @@ function shapeTransaction(raw) {
     planName: raw.paymentLink?.title,
     channel: raw.channel,
     currency: raw.currency ?? "NGN",
+    reference: raw.internalReference,
     logoColor: "#1C2B8A",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
   };

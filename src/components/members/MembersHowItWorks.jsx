@@ -5,9 +5,9 @@ import HowItWorksSection from "../howItWorks/HowItWorksSection";
 import work1 from "../../assets/work/mwork1.webp";
 import work2 from "../../assets/work/mwork2.webp";
 import work3 from "../../assets/work/mwork3.webp";
-import stepIcon1 from "../../assets/icon/step1.png";
-import stepIcon2 from "../../assets/icon/step2.png";
-import stepIcon3 from "../../assets/icon/step3.png";
+import stepIcon1 from "../../assets/icon/step1.webp";
+import stepIcon2 from "../../assets/icon/step2.webp";
+import stepIcon3 from "../../assets/icon/step3.webp";
 
 const steps = [
   {

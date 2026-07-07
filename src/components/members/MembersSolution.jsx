@@ -1,9 +1,9 @@
 import { useEffect, useRef, useCallback, useState } from "react";
 import { motion } from "motion/react";
-import icon1 from "../../assets/icon/frame1.png";
-import icon2 from "../../assets/icon/frame2.png";
-import icon3 from "../../assets/icon/frame3.png";
-import icon4 from "../../assets/icon/frame4.png";
+import icon1 from "../../assets/icon/frame1.webp";
+import icon2 from "../../assets/icon/frame2.webp";
+import icon3 from "../../assets/icon/frame3.webp";
+import icon4 from "../../assets/icon/frame4.webp";
 import featurePayment from "../../assets/solution/payment.webp";
 import featureReminder from "../../assets/solution/reminder.webp";
 import featureInstant from "../../assets/solution/instant.webp";

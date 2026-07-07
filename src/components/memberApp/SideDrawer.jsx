@@ -75,7 +75,7 @@ export default function SideDrawer({ open, onClose }) {
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <div>
               <img
-                src="/Glass.png"
+                src="/Glass.webp"
                 alt="Glass"
                 style={{ width: 30, height: 30 }}
               />

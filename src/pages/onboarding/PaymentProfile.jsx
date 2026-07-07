@@ -13,11 +13,13 @@
  */
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, ChevronDown, Check } from "lucide-react";
-import GlassLogo from "../../assets/Glass.png";
-import Background from "../../assets/background.png";
+import { Bell, Check } from "lucide-react";
+import GlassLogo from "../../assets/Glass.webp";
+import Background from "../../assets/background.webp";
 import client from "../../api/client";
 import { notifyError } from "../../utils/errorHandler";
+import { useCommunityAccount } from "../../hooks/useCommunityAccount";
+import BankSelect from "../../components/common/BankSelect";
 
 const STEPS = [
   { id: "organization", label: "Organization Profile" },
@@ -65,6 +67,7 @@ export default function PaymentProfile() {
   const location  = useLocation();
 
   const { email, communityId, communitySlug, communityName } = location.state ?? {};
+  const { save: saveAccount } = useCommunityAccount(communityId);
 
   const [banks,       setBanks]       = useState([]);
   const [bankCode,    setBankCode]    = useState("");
@@ -130,15 +133,6 @@ export default function PaymentProfile() {
     return () => clearTimeout(timer);
   }, [bankCode, accNumber]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleBankChange = (e) => {
-    const selected = banks.find((b) => b.code === e.target.value);
-    setBankCode(selected?.code ?? "");
-    setBankName(selected?.name ?? "");
-    setAccName("");
-    setManualMode(false);
-    setError("");
-  };
-
   // Resolve-account can be down for reasons that have nothing to do with
   // what the admin types (backend/Paystack connectivity, bad keys, etc.),
   // and there's no skip on this step otherwise — so onboarding would be a
@@ -156,7 +150,7 @@ export default function PaymentProfile() {
     setSaving(true);
     setError("");
     try {
-      await client.post(`/communities/${communityId}/account`, {
+      await saveAccount.mutateAsync({
         settlementBank:     bankName,
         settlementBankCode: bankCode,
         accountNumber:      accNumber,
@@ -241,19 +235,19 @@ export default function PaymentProfile() {
                     placeholder="Enter Account Number"
                     className={inputCls}
                   />
-                  <div className="relative">
-                    <select
-                      value={bankCode}
-                      onChange={handleBankChange}
-                      className={inputCls + " appearance-none pr-8"}
-                    >
-                      <option value="" disabled>Choose Bank</option>
-                      {banks.map((b) => (
-                        <option key={b.code} value={b.code}>{b.name}</option>
-                      ))}
-                    </select>
-                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                  </div>
+                  <BankSelect
+                    banks={banks}
+                    value={bankCode}
+                    onChange={(bank) => {
+                      setBankCode(bank.code);
+                      setBankName(bank.name);
+                      setAccName("");
+                      setManualMode(false);
+                      setError("");
+                    }}
+                    placeholder="Choose Bank"
+                    triggerClassName={inputCls}
+                  />
                 </div>
               </div>
 

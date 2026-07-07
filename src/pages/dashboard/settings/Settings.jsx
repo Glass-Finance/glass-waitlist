@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useNavigate, useLocation, Outlet, Navigate } from "react-router-dom";
 import { usePageTitle } from "../../../hooks/usePageTitle";
 import { Search, ChevronRight } from "lucide-react";
-import Background from "../../../assets/background.png";
+import Background from "../../../assets/background.webp";
 import { useAuth } from "../../../store/AuthContext";
 
 const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";

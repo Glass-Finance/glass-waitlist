@@ -5,6 +5,11 @@ import { forgotPassword } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
 import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
+import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
+
+// Codes are valid for 15 minutes (see the same figure quoted to users in
+// SignIn.jsx and member/Join.jsx).
+const OTP_VALIDITY_SECONDS = 15 * 60;
 
 export default function ForgotPassword() {
   usePageTitle("Reset your password");
@@ -14,7 +19,11 @@ export default function ForgotPassword() {
   const [step, setStep] = useState("email"); // "email" | "otp"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [resendCount, setResendCount] = useState(0);
   const inputRefs = useRef([]);
+
+  const secondsLeft = useCountdown(OTP_VALIDITY_SECONDS, `${email}-${resendCount}`);
+  const codeExpired = step === "otp" && secondsLeft <= 0;
 
   async function handleSendEmail() {
     if (!email.trim()) {
@@ -35,12 +44,23 @@ export default function ForgotPassword() {
   }
 
   function handleOtpChange(index, value) {
-    const v = value.replace(/\D/g, "").slice(-1);
+    const digits = value.replace(/\D/g, "");
+    // Handle full autofill (e.g. mobile SMS suggestion bar) landing in one
+    // box — this arrives as a plain onChange, not a paste event.
+    if (digits.length > 1) {
+      const pasted = digits.slice(0, 6).split("");
+      const next = ["", "", "", "", "", ""];
+      pasted.forEach((ch, i) => { next[i] = ch; });
+      setOtp(next);
+      setError("");
+      inputRefs.current[Math.min(pasted.length, 5)]?.focus();
+      return;
+    }
     const next = [...otp];
-    next[index] = v;
+    next[index] = digits;
     setOtp(next);
     setError("");
-    if (v && index < 5) inputRefs.current[index + 1]?.focus();
+    if (digits && index < 5) inputRefs.current[index + 1]?.focus();
   }
 
   function handleOtpKeyDown(index, e) {
@@ -75,6 +95,7 @@ export default function ForgotPassword() {
     try {
       await forgotPassword({ email: email.trim().toLowerCase() });
       setOtp(["", "", "", "", "", ""]);
+      setResendCount((c) => c + 1);
       setTimeout(() => inputRefs.current[0]?.focus(), 50);
     } catch (err) {
       setError(notifyError(err, { context: "Resend code" }));
@@ -135,6 +156,11 @@ export default function ForgotPassword() {
                 We sent a 6-digit code to{" "}
                 <span className="font-medium text-gray-800">{email}</span>.
               </p>
+              <p className={`text-xs mt-1 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
+                {codeExpired
+                  ? "Your code has expired — request a new one below."
+                  : `Code expires in ${formatCountdown(secondsLeft)}`}
+              </p>
             </div>
 
             <div>
@@ -178,7 +204,7 @@ export default function ForgotPassword() {
               <ErrorMessage message={error} />
             </div>
 
-            <PrimaryButton onClick={handleVerify} disabled={!otpComplete || loading}>
+            <PrimaryButton onClick={handleVerify} disabled={!otpComplete || loading || codeExpired}>
               Verify Code
             </PrimaryButton>
 

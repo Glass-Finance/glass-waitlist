@@ -1,7 +1,7 @@
 // import { useState, useRef } from "react";
 // import { useNavigate } from "react-router-dom";
 // import { Bell, Upload } from "lucide-react";
-// import GlassLogo from "../../assets/Glass.png";
+// import GlassLogo from "../../assets/Glass.webp";
 
 // const CATEGORIES = [
 //   "Alumni Association",
@@ -253,8 +253,8 @@
 // import { useState, useRef } from "react";
 // import { useNavigate } from "react-router-dom";
 // import { Bell, Upload } from "lucide-react";
-// import GlassLogo from "../../assets/Glass.png";
-// import Background from "../../assets/background.png";
+// import GlassLogo from "../../assets/Glass.webp";
+// import Background from "../../assets/background.webp";
 
 // const CATEGORIES = [
 //   "Alumni Association",
@@ -515,8 +515,8 @@
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bell, Upload, Check, X as XIcon, Loader2 } from "lucide-react";
-import GlassLogo from "../../assets/Glass.png";
-import Background from "../../assets/background.png";
+import GlassLogo from "../../assets/Glass.webp";
+import Background from "../../assets/background.webp";
 import client from "../../api/client";
 import { useSlug } from "../../hooks/useSlug";
 import { useAuth } from "../../store/AuthContext";

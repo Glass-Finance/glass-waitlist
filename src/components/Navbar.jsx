@@ -75,7 +75,7 @@ export default function Navbar() {
           to="/"
           className="flex items-center gap-2.5 no-underline shrink-0"
         >
-          <img src="/Glass.png" alt="Glass" className="w-8 h-8" />
+          <img src="/Glass.webp" alt="Glass" className="w-8 h-8" />
           <span className="font-bold text-[17px] text-white tracking-tight">
             Glass
           </span>

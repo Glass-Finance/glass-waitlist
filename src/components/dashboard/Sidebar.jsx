@@ -169,7 +169,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             title="Platform Admin"
           >
             <img
-              src="/Glass.png"
+              src="/Glass.webp"
               alt="Glass"
               className="w-8 h-8 object-contain brightness-0 invert block"
               onError={(e) => {
@@ -211,9 +211,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
         {/* White panel */}
         <div
+          className="bg-white md:bg-[#EFEFF1E5]"
           style={{
             width: 220,
-            background: "#EFEFF1E5",
             borderRight: "1px solid #eef0f8",
             display: "flex",
             flexDirection: "column",
@@ -364,7 +364,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           title="Your Communities"
         >
           <img
-            src="/Glass.png"
+            src="/Glass.webp"
             alt="Glass"
             className="w-8 h-8 object-contain brightness-0 invert block"
             onError={(e) => {
@@ -493,9 +493,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
       {/* ── White nav panel ────────────────────────────────────────────────── */}
       <div
+        className="bg-white md:bg-[#EFEFF1E5]"
         style={{
           width: W,
-          background: "#EFEFF1E5",
           borderRight: "1px solid #eef0f8",
           display: "flex",
           flexDirection: "column",

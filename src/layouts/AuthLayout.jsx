@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import AuthPanel from "../assets/auth/auth-panel.webp";
-import glassLogo from "../assets/cta/ctalogo.png";
+import glassLogo from "../assets/cta/ctalogo.webp";
 
 export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
   const navigate = useNavigate();

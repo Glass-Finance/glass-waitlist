@@ -1,22 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-// import case1 from "../assets/usecase/case1.png";
-// import case2 from "../assets/usecase/case2.png";
-// import case3 from "../assets/usecase/case3.png";
-// import case4 from "../assets/usecase/case4.png";
+// import case1 from "../assets/usecase/case1.webp";
+// import case2 from "../assets/usecase/case2.webp";
+// import case3 from "../assets/usecase/case3.webp";
+// import case4 from "../assets/usecase/case4.webp";
 
 // ── Import your real icons ──────────────────────────────────────────────────
 // Place your 4 card icons in src/assets/usecase/
-import iconSchools from "../assets/usecase/icon-schools.png";
-import iconProfessional from "../assets/usecase/icon-professional.png";
-import iconClubs from "../assets/usecase/icon-clubs.png";
-import iconReligious from "../assets/usecase/icon-religious.png";
+import iconSchools from "../assets/usecase/icon-schools.webp";
+import iconProfessional from "../assets/usecase/icon-professional.webp";
+import iconClubs from "../assets/usecase/icon-clubs.webp";
+import iconReligious from "../assets/usecase/icon-religious.webp";
 
 // ── Import your corner line assets ─────────────────────────────────────────
 // Two variants: top-left corner and bottom-right corner
 // Place them in src/assets/usecase/
-import cornerTL from "../assets/usecase/corner-tl.png"; // top-left curved line
-import cornerBR from "../assets/usecase/corner-br.png"; // bottom-right curved line
+import cornerTL from "../assets/usecase/corner-tl.webp"; // top-left curved line
+import cornerBR from "../assets/usecase/corner-br.webp"; // bottom-right curved line
 
 // ─── BlurText (inline) ────────────────────────────────────────────────────────
 const buildKeyframes = (from, steps) => {

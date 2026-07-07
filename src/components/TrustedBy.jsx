@@ -6,7 +6,7 @@ import { useRef, useEffect } from "react";
 // (wrong chapter), not just a text label. Add it back once a correct
 // GDG Babcock logo file is dropped into public/logos/.
 const trustedLogos = [
-  { name: "The Babcock Torch", logo: "/logos/babcock-torch.png" },
+  { name: "The Babcock Torch", logo: "/logos/babcock-torch.webp" },
 ];
 
 export default function TrustedBy() {

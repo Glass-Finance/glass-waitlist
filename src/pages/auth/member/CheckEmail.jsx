@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import GlassLogo from "../../../assets/Glass.png";
+import GlassLogo from "../../../assets/Glass.webp";
 import QRCodeCanvas from "../../../components/dashboard/QRCode";
 import { buildMobileUrl } from "../../../utils/deviceRedirect";
 

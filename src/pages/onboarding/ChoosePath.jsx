@@ -1,9 +1,9 @@
 // import { useState } from "react";
 // import { useNavigate, useLocation } from "react-router-dom";
-// import GlassLogo from "../../assets/Glass.png";
-// import CreateCommunityIcon from "../../assets/auth/create-community.png";
-// import JoinCommunityIcon from "../../assets/auth/join-community.png";
-// import Background from "../../assets/background.png";
+// import GlassLogo from "../../assets/Glass.webp";
+// import CreateCommunityIcon from "../../assets/auth/create-community.webp";
+// import JoinCommunityIcon from "../../assets/auth/join-community.webp";
+// import Background from "../../assets/background.webp";
 
 // export default function ChoosePath() {
 //   const navigate = useNavigate();
@@ -134,10 +134,11 @@
  */
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import GlassLogo from "../../assets/Glass.png";
-import CreateCommunityIcon from "../../assets/auth/create-community.png";
-import JoinCommunityIcon from "../../assets/auth/join-community.png";
-import Background from "../../assets/background.png";
+import { Info } from "lucide-react";
+import GlassLogo from "../../assets/Glass.webp";
+import CreateCommunityIcon from "../../assets/auth/create-community.webp";
+import JoinCommunityIcon from "../../assets/auth/join-community.webp";
+import Background from "../../assets/background.webp";
 
 export default function ChoosePath() {
   const navigate = useNavigate();
@@ -213,6 +214,13 @@ export default function ChoosePath() {
               </button>
             );
           })}
+        </div>
+
+        <div className="flex items-start gap-1.5 mb-6" style={{ width: 500 }}>
+          <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-gray-500 leading-snug text-left">
+            This choice isn't final — whichever option you pick now, you can still create or join additional communities later from your dashboard.
+          </p>
         </div>
 
         <div className="flex flex-col items-center gap-4" style={{ width: 500 }}>
