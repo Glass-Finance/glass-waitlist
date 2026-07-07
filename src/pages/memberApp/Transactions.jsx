@@ -8,6 +8,11 @@ import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton
 const STATUS_OPTIONS = ["All Status", "Success", "Failed", "Pending"];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function formatNaira(n) {
   return "₦" + new Intl.NumberFormat("en-NG").format(n ?? 0);
 }
@@ -143,7 +148,7 @@ function TxRow({ tx, payerName }) {
     >
       <div style={{ minWidth: 0 }}>
         <p style={{ fontSize: 15, fontWeight: 500, color: "#111827", margin: 0 }}>
-          {tx.description}
+          {toTitleCase(tx.description)}
         </p>
         <p style={{ fontSize: 13, color: "#9ca3af", margin: "2px 0 0" }}>
           {tx.communityName}
@@ -193,7 +198,7 @@ function TxRow({ tx, payerName }) {
 export default function Transactions() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const payerName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "";
+  const payerName = toTitleCase([user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const { data: transactions = [], isLoading, error } = useTransactions();
 

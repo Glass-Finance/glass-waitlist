@@ -593,6 +593,11 @@ function formatDate(d) {
   });
 }
 
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function timeAgo(dateString) {
   if (!dateString) return "";
   const diff = Math.floor((Date.now() - new Date(dateString)) / 1000);
@@ -1631,7 +1636,7 @@ function DashboardContent({ isPaying, communityId }) {
                   />
                   <div>
                     <p className="text-[13px] font-medium text-gray-800">
-                      Your {due.name} payment
+                      Your {toTitleCase(due.name)} payment
                       {daysLeft != null
                         ? ` is due in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`
                         : " is due soon"}
@@ -1789,7 +1794,7 @@ function DashboardContent({ isPaying, communityId }) {
                         className="border-b border-gray-50"
                       >
                         <td className="py-3 px-2 text-xs font-medium text-gray-800">
-                          {row.name}
+                          {toTitleCase(row.name)}
                         </td>
                         <td className="py-3 px-2">
                           <span
@@ -1899,7 +1904,7 @@ function DashboardContent({ isPaying, communityId }) {
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="text-xs font-medium text-black truncate">
-                            {p.name}
+                            {toTitleCase(p.name)}
                           </span>
                           <span
                             className="text-[10px] font-normal px-2 py-0.5 rounded-full flex-shrink-0"
@@ -1972,9 +1977,9 @@ function DashboardContent({ isPaying, communityId }) {
                   : event.includes("MEMBER")
                     ? "member"
                     : undefined;
-                const actorName = [a.actor?.firstName, a.actor?.lastName]
+                const actorName = toTitleCase([a.actor?.firstName, a.actor?.lastName]
                   .filter(Boolean)
-                  .join(" ");
+                  .join(" "));
                 return (
                   <div
                     key={a.id ?? i}
@@ -2121,7 +2126,7 @@ function DashboardContent({ isPaying, communityId }) {
                           <div className="flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-[#d4a017]" />
                             <span className="text-xs text-black">
-                              {tx.planName ?? tx.description ?? "—"}
+                              {toTitleCase(tx.planName ?? tx.description) ?? "—"}
                             </span>
                           </div>
                         </td>

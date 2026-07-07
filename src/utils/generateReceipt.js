@@ -60,6 +60,11 @@ function formatHeaderDate(d) {
   });
 }
 
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function statusLabel(status) {
   const s = (status ?? "").toLowerCase();
   if (s === "success" || s === "successful") return "Successful";
@@ -69,11 +74,11 @@ function statusLabel(status) {
 
 function receiptRows(tx, payerName) {
   return [
-    ["Description", tx.description ?? tx.planName ?? "Payment"],
+    ["Description", toTitleCase(tx.description ?? tx.planName ?? "Payment")],
     ["Community", tx.communityName ?? "—"],
-    ["Paid by", payerName ?? "—"],
+    ["Paid by", toTitleCase(payerName) ?? "—"],
     ["Date", formatDate(tx.date)],
-    ["Payment method", tx.channel ?? "—"],
+    ["Payment method", toTitleCase(tx.channel) ?? "—"],
   ];
 }
 

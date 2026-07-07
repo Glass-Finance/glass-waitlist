@@ -104,7 +104,7 @@ export default function PaymentSummary() {
     initiatePaymentApi(obligation.paymentLink.id, {
       idempotencyKey: idempotencyKeyRef.current,
       amount: obligation.amount,
-      savePaymentMethod: !!obligation.recurringPlan,
+      savePaymentMethod: true,
       ...(obligation.id ? { obligationId: obligation.id } : {}),
     })
       .then((res) => { if (!cancelled) setPrefetch(res.data?.data ?? null); })
@@ -145,7 +145,7 @@ export default function PaymentSummary() {
         payload: {
           idempotencyKey: idempotencyKeyRef.current,
           amount: obligation.amount,
-          savePaymentMethod: isRecurring,
+          savePaymentMethod: true,
           ...(obligation.id ? { obligationId: obligation.id } : {}),
         },
       });
