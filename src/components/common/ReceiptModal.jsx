@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { X, FileText, Image as ImageIcon, Share2 } from "lucide-react";
 import html2canvas from "html2canvas";
 
-// ── Helpers (duplicated from generateReceipt.js to keep this self-contained) ─
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatNaira(amount) {
   return new Intl.NumberFormat("en-NG", {
@@ -18,6 +18,7 @@ function formatNaira(amount) {
 function formatDate(d) {
   if (!d) return "—";
   return new Date(d).toLocaleDateString("en-NG", {
+    weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -28,6 +29,18 @@ function formatDateTime(d) {
   if (!d) return "—";
   return new Date(d).toLocaleString("en-NG", {
     month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function formatHeaderDate(d) {
+  if (!d) return "—";
+  return new Date(d).toLocaleString("en-NG", {
+    weekday: "long",
+    month: "long",
     day: "numeric",
     year: "numeric",
     hour: "numeric",
@@ -49,34 +62,22 @@ function receiptRows(tx, payerName) {
     ["Paid by", payerName ?? "—"],
     ["Date", formatDate(tx?.date)],
     ["Payment method", tx?.channel ?? "—"],
-    ["Reference", tx?.reference ?? tx?.id ?? "—"],
   ];
 }
 
-// ── Receipt card — the same design rendered as real JSX ──────────────────────
+// ── ReceiptCard — rendered as real JSX for the in-app preview ────────────────
+// Rules: no border-radius on the outer card or logo, no overlapping sections.
 
 function ReceiptCard({ tx, payerName, logoB64, cardRef }) {
   const status = statusLabel(tx?.status);
   const isSuccess = status === "Successful";
   const isFailed = status === "Failed";
 
-  const iconBg = isSuccess ? "#10B981" : isFailed ? "#EF4444" : "#F59E0B";
-  const iconChar = isSuccess ? "✓" : isFailed ? "✕" : "·";
-  const badgeBg = isSuccess
-    ? "rgba(16,185,129,0.15)"
-    : isFailed
-      ? "rgba(239,68,68,0.15)"
-      : "rgba(245,158,11,0.15)";
-  const badgeBorder = isSuccess
-    ? "rgba(16,185,129,0.35)"
-    : isFailed
-      ? "rgba(239,68,68,0.35)"
-      : "rgba(245,158,11,0.35)";
-  const badgeColor = isSuccess ? "#6EE7B7" : isFailed ? "#FCA5A5" : "#FCD34D";
+  const statusColor = isSuccess ? "#0ECE7B" : isFailed ? "#EF4444" : "#F59E0B";
+
+  const refValue = tx?.reference ?? tx?.id ?? "—";
 
   const rows = receiptRows(tx, payerName);
-  const detailRows = rows.slice(0, -1);
-  const [, refValue] = rows[rows.length - 1];
 
   return (
     <div
@@ -85,58 +86,41 @@ function ReceiptCard({ tx, payerName, logoB64, cardRef }) {
         width: "100%",
         fontFamily:
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, sans-serif',
-        background: "#EEF2FF",
-        borderRadius: 20,
-        overflow: "hidden",
+        background: "#ffffff",
+        // no border-radius anywhere on the outer container
       }}
     >
-      {/* Header */}
+      {/* ── HEADER ────────────────────────────────────────────────────────── */}
       <div
         style={{
-          background:
-            "linear-gradient(145deg, #001030 0%, #001D7A 55%, #002FA7 100%)",
-          padding: "28px 28px 44px",
+          background: "linear-gradient(155deg, #001233 0%, #002FA7 65%, #0038D0 100%)",
+          padding: "28px 28px 36px",
           position: "relative",
           overflow: "hidden",
+          // no border-radius
         }}
       >
-        {/* dot texture */}
+        {/* Angular decorative bands — matching Glass's geometric visual language */}
         <div
           style={{
             position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage:
-              "radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px)",
-            backgroundSize: "20px 20px",
-            pointerEvents: "none",
-          }}
-        />
-        {/* decorative arcs */}
-        <div
-          style={{
-            position: "absolute",
-            right: -60,
+            right: -55,
             top: -60,
-            width: 220,
-            height: 220,
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.04)",
-            pointerEvents: "none",
+            width: 160,
+            height: 280,
+            background: "rgba(255,255,255,0.055)",
+            transform: "rotate(22deg)",
           }}
         />
         <div
           style={{
             position: "absolute",
-            left: -40,
-            bottom: -80,
-            width: 200,
-            height: 200,
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.03)",
-            pointerEvents: "none",
+            right: 30,
+            top: -90,
+            width: 80,
+            height: 240,
+            background: "rgba(255,255,255,0.035)",
+            transform: "rotate(22deg)",
           }}
         />
 
@@ -146,38 +130,36 @@ function ReceiptCard({ tx, payerName, logoB64, cardRef }) {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: 28,
+            marginBottom: 22,
             position: "relative",
             zIndex: 1,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             {logoB64 ? (
               <img
                 src={logoB64}
-                width={28}
-                height={28}
+                width={34}
+                height={34}
                 alt=""
-                style={{ borderRadius: 8, display: "block", flexShrink: 0 }}
+                style={{ display: "block" /* no border-radius */ }}
               />
             ) : (
               <div
                 style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 8,
+                  width: 34,
+                  height: 34,
                   background: "#1843C8",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  flexShrink: 0,
                 }}
               >
                 <span
                   style={{
                     color: "#fff",
-                    fontSize: 14,
-                    fontWeight: 800,
+                    fontSize: 16,
+                    fontWeight: 900,
                     lineHeight: 1,
                   }}
                 >
@@ -185,114 +167,131 @@ function ReceiptCard({ tx, payerName, logoB64, cardRef }) {
                 </span>
               </div>
             )}
-            <span style={{ color: "#fff", fontSize: 16, fontWeight: 700 }}>
+            <span
+              style={{
+                color: "#ffffff",
+                fontSize: 18,
+                fontWeight: 800,
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+              }}
+            >
               Glass
             </span>
           </div>
           <span
             style={{
               color: "rgba(255,255,255,0.5)",
-              fontSize: 10,
-              fontWeight: 600,
-              letterSpacing: "1.2px",
+              fontSize: 9,
+              fontWeight: 700,
+              letterSpacing: "1.8px",
               textTransform: "uppercase",
             }}
           >
-            Receipt
+            Transaction Receipt
           </span>
         </div>
 
-        {/* Status icon + amount */}
+        {/* Thin divider */}
         <div
-          style={{ textAlign: "center", position: "relative", zIndex: 1 }}
+          style={{
+            height: 1,
+            background: "rgba(255,255,255,0.12)",
+            marginBottom: 28,
+            position: "relative",
+            zIndex: 1,
+          }}
+        />
+
+        {/* Amount + status */}
+        <div
+          style={{
+            textAlign: "center",
+            position: "relative",
+            zIndex: 1,
+          }}
         >
           <div
             style={{
-              width: 70,
-              height: 70,
-              borderRadius: "50%",
-              border: "2px solid rgba(255,255,255,0.18)",
-              background: "rgba(255,255,255,0.08)",
-              margin: "0 auto 20px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: "50%",
-                background: iconBg,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <span
-                style={{
-                  color: "#fff",
-                  fontSize: 24,
-                  fontWeight: 700,
-                  lineHeight: 1,
-                }}
-              >
-                {iconChar}
-              </span>
-            </div>
-          </div>
-          <div
-            style={{
-              color: "#fff",
-              fontSize: 36,
-              fontWeight: 800,
-              letterSpacing: "-0.5px",
+              color: "#ffffff",
+              fontSize: 42,
+              fontWeight: 900,
+              letterSpacing: "-1px",
               lineHeight: 1,
-              marginBottom: 12,
+              marginBottom: 14,
             }}
           >
             {formatNaira(tx?.amount)}
           </div>
+
+          {/* Status — square bullet, no pill shape */}
           <div
             style={{
-              display: "inline-block",
-              background: badgeBg,
-              border: `1px solid ${badgeBorder}`,
-              color: badgeColor,
-              fontSize: 10,
-              fontWeight: 700,
-              letterSpacing: "1.2px",
-              padding: "5px 16px",
-              borderRadius: 100,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 7,
+              marginBottom: 12,
             }}
           >
-            PAYMENT {status.toUpperCase()}
+            <div
+              style={{
+                width: 7,
+                height: 7,
+                background: statusColor,
+                flexShrink: 0,
+              }}
+            />
+            <span
+              style={{
+                color: statusColor,
+                fontSize: 12,
+                fontWeight: 800,
+                letterSpacing: "1.8px",
+                textTransform: "uppercase",
+              }}
+            >
+              {status}
+            </span>
+          </div>
+
+          {/* Timestamp */}
+          <div
+            style={{
+              color: "rgba(255,255,255,0.45)",
+              fontSize: 11,
+              letterSpacing: "0.2px",
+            }}
+          >
+            {formatHeaderDate(tx?.date ?? tx?.createdAt)}
           </div>
         </div>
       </div>
 
-      {/* Detail card */}
-      <div
-        style={{
-          background: "#fff",
-          margin: "-4px 14px 0",
-          borderRadius: 20,
-          padding: "8px 20px 8px",
-          boxShadow: "0 4px 24px rgba(0,47,167,0.08)",
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
-        {detailRows.map(([label, value]) => (
+      {/* ── TRANSACTION DETAILS ───────────────────────────────────────────── */}
+      <div style={{ background: "#ffffff" }}>
+        {/* Section label */}
+        <div
+          style={{
+            padding: "16px 28px 0",
+            fontSize: 9,
+            fontWeight: 800,
+            color: "#94A3B8",
+            letterSpacing: "1.8px",
+            textTransform: "uppercase",
+          }}
+        >
+          Transaction Details
+        </div>
+
+        {rows.map(([label, value]) => (
           <div
             key={label}
             style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "flex-start",
-              gap: 12,
-              padding: "11px 0",
+              gap: 20,
+              padding: "13px 28px",
               borderBottom: "1px solid #F1F5F9",
             }}
           >
@@ -308,34 +307,49 @@ function ReceiptCard({ tx, payerName, logoB64, cardRef }) {
             </span>
             <span
               style={{
-                fontSize: 12.5,
+                fontSize: 13,
                 color: "#0F172A",
                 fontWeight: 600,
                 textAlign: "right",
                 wordBreak: "break-word",
-                maxWidth: 220,
+                maxWidth: "58%",
               }}
             >
               {value}
             </span>
           </div>
         ))}
-        <div style={{ padding: "12px 0 6px" }}>
-          <div style={{ fontSize: 11, color: "#94A3B8", marginBottom: 6 }}>
-            Reference
+
+        {/* Reference row — full-width, left-accent design */}
+        <div style={{ padding: "16px 28px 20px" }}>
+          <div
+            style={{
+              fontSize: 9,
+              fontWeight: 800,
+              color: "#94A3B8",
+              letterSpacing: "1.8px",
+              textTransform: "uppercase",
+              marginBottom: 8,
+            }}
+          >
+            Reference No.
           </div>
           <div
             style={{
+              borderLeft: "3px solid #002FA7",
+              paddingLeft: 12,
               background: "#F8FAFF",
-              border: "1px solid #E8EEFF",
-              borderRadius: 10,
-              padding: "10px 14px",
-              fontSize: 11,
+              padding: "11px 14px",
+              borderLeftWidth: 3,
+              borderLeftStyle: "solid",
+              borderLeftColor: "#002FA7",
+              fontSize: 11.5,
               color: "#1E3A8A",
-              fontWeight: 600,
+              fontWeight: 700,
               fontFamily: "'Courier New', Courier, monospace",
               wordBreak: "break-all",
-              lineHeight: 1.6,
+              lineHeight: 1.7,
+              letterSpacing: "0.3px",
             }}
           >
             {refValue}
@@ -343,13 +357,41 @@ function ReceiptCard({ tx, payerName, logoB64, cardRef }) {
         </div>
       </div>
 
-      {/* Footer */}
-      <div style={{ textAlign: "center", padding: "14px 16px 20px" }}>
-        <div style={{ fontSize: 10, color: "#94A3B8" }}>
-          <strong style={{ color: "#64748B" }}>glasspay.app</strong>
-          {" · "}
-          Generated {formatDateTime(new Date())}
+      {/* ── FOOTER ────────────────────────────────────────────────────────── */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "11px 28px 15px",
+          borderTop: "1px solid #F1F5F9",
+          background: "#FAFBFF",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {logoB64 && (
+            <img
+              src={logoB64}
+              width={13}
+              height={13}
+              alt=""
+              style={{ display: "block", opacity: 0.35 }}
+            />
+          )}
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 700,
+              color: "#64748B",
+              letterSpacing: "0.3px",
+            }}
+          >
+            glasspay.app
+          </span>
         </div>
+        <span style={{ fontSize: 10, color: "#94A3B8" }}>
+          Generated {formatDateTime(new Date())}
+        </span>
       </div>
     </div>
   );
@@ -362,7 +404,6 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
   const [logoB64, setLogoB64] = useState(null);
   const [saving, setSaving] = useState(null); // "image" | "pdf" | "share" | null
 
-  // Load the Glass logo as a base64 data URL so html2canvas can embed it
   useEffect(() => {
     fetch("/Glass.webp")
       .then((r) => r.blob())
@@ -379,7 +420,6 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
       .catch(() => {});
   }, []);
 
-  // Close on Escape key
   useEffect(() => {
     function onKey(e) {
       if (e.key === "Escape") onClose();
@@ -392,7 +432,7 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
     if (!cardRef.current) return null;
     return html2canvas(cardRef.current, {
       scale,
-      backgroundColor: "#EEF2FF",
+      backgroundColor: "#ffffff",
       useCORS: true,
       logging: false,
     });
@@ -444,7 +484,7 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
             title: "Payment Receipt",
           });
         } catch {
-          // user dismissed the share sheet — not an error
+          // user dismissed — not an error
         } finally {
           setSaving(null);
         }
@@ -459,21 +499,31 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
     typeof navigator.share === "function" &&
     typeof File !== "undefined";
 
-  const btnBase = {
-    flex: 1,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    padding: "13px 12px",
-    borderRadius: 14,
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: saving ? "not-allowed" : "pointer",
-    opacity: saving ? 0.65 : 1,
-    transition: "opacity 0.15s",
-    border: "none",
-  };
+  const actionBtn = (onClick, isActive, children, primary = false) => (
+    <button
+      onClick={onClick}
+      disabled={!!saving}
+      style={{
+        flex: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 6,
+        padding: "13px 10px",
+        background: primary ? "#002FA7" : "#EEF2FF",
+        color: primary ? "#ffffff" : "#1E3A8A",
+        border: "none",
+        fontSize: 13,
+        fontWeight: 600,
+        cursor: saving ? "not-allowed" : "pointer",
+        opacity: saving && !isActive ? 0.55 : 1,
+        transition: "opacity 0.15s",
+        // no border-radius — sharp buttons to match the receipt
+      }}
+    >
+      {children}
+    </button>
+  );
 
   return createPortal(
     <div
@@ -496,20 +546,23 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
       <div
         style={{
           position: "absolute",
-          inset: 0,
-          background: "rgba(0,0,0,0.55)",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0,0,0,0.6)",
           backdropFilter: "blur(4px)",
           WebkitBackdropFilter: "blur(4px)",
         }}
         onClick={onClose}
       />
 
-      {/* Bottom sheet */}
+      {/* Sheet */}
       <div
         style={{
           position: "relative",
           background: "#F0F4FF",
-          borderRadius: "24px 24px 0 0",
+          borderRadius: "20px 20px 0 0", // rounded only at the top of the sheet itself, not the receipt card
           maxHeight: "92dvh",
           display: "flex",
           flexDirection: "column",
@@ -529,7 +582,7 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
         >
           <div
             style={{
-              width: 40,
+              width: 36,
               height: 4,
               borderRadius: 2,
               background: "rgba(0,0,0,0.15)",
@@ -547,9 +600,7 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
             flexShrink: 0,
           }}
         >
-          <span
-            style={{ fontSize: 15, fontWeight: 700, color: "#0F172A" }}
-          >
+          <span style={{ fontSize: 15, fontWeight: 700, color: "#0F172A" }}>
             Payment Receipt
           </span>
           <button
@@ -572,7 +623,7 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
           </button>
         </div>
 
-        {/* Scrollable receipt preview */}
+        {/* Scrollable receipt */}
         <div
           style={{
             flex: 1,
@@ -592,52 +643,39 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
         {/* Action bar */}
         <div
           style={{
-            padding: "14px 16px",
             background: "#fff",
             borderTop: "1px solid #E2E8F0",
             display: "flex",
-            gap: 10,
+            gap: 1,
             flexShrink: 0,
           }}
         >
-          {canShare && (
-            <button
-              onClick={handleShare}
-              disabled={!!saving}
-              style={{
-                ...btnBase,
-                background: "#EEF2FF",
-                color: "#3730A3",
-              }}
-            >
-              <Share2 size={15} />
-              {saving === "share" ? "Sharing…" : "Share"}
-            </button>
+          {canShare &&
+            actionBtn(
+              handleShare,
+              saving === "share",
+              <>
+                <Share2 size={15} />
+                {saving === "share" ? "Sharing…" : "Share"}
+              </>,
+            )}
+          {actionBtn(
+            handleSaveImage,
+            saving === "image",
+            <>
+              <ImageIcon size={15} />
+              {saving === "image" ? "Saving…" : "Save Image"}
+            </>,
           )}
-          <button
-            onClick={handleSaveImage}
-            disabled={!!saving}
-            style={{
-              ...btnBase,
-              background: "#EEF2FF",
-              color: "#3730A3",
-            }}
-          >
-            <ImageIcon size={15} />
-            {saving === "image" ? "Saving…" : "Save Image"}
-          </button>
-          <button
-            onClick={handleSavePdf}
-            disabled={!!saving}
-            style={{
-              ...btnBase,
-              background: "#002FA7",
-              color: "#fff",
-            }}
-          >
-            <FileText size={15} />
-            {saving === "pdf" ? "Saving…" : "Save PDF"}
-          </button>
+          {actionBtn(
+            handleSavePdf,
+            saving === "pdf",
+            <>
+              <FileText size={15} />
+              {saving === "pdf" ? "Saving…" : "Save PDF"}
+            </>,
+            true,
+          )}
         </div>
       </div>
     </div>,
