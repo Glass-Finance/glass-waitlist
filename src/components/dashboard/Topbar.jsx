@@ -248,7 +248,7 @@ export default function Topbar({
         {/* Help — replay the first-launch dashboard tour */}
         <button
           onClick={onOpenTour}
-          className="hidden sm:block bg-transparent border-none cursor-pointer text-gray-500 hover:text-gray-700 transition-colors p-0"
+          className="flex items-center justify-center bg-transparent border-none cursor-pointer text-gray-500 hover:text-gray-700 transition-colors p-0"
           aria-label="Take the dashboard tour"
           title="Take the dashboard tour"
         >
