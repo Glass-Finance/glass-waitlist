@@ -7,6 +7,11 @@ import { useManagePayments, useInitiatePayment } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { toastSuccess } from "../../utils/toast";
 
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function fmt(n) {
   return "₦" + new Intl.NumberFormat("en-NG").format(n ?? 0);
 }
@@ -269,7 +274,7 @@ export default function PaymentSummary() {
                 <div className="flex items-center gap-2.5">
                   <MethodIcon />
                   <span className="text-[14px] font-medium text-gray-900">
-                    {savedMethod.bank ?? "Bank account"} ●●●● {savedMethod.last4}
+                    {toTitleCase(savedMethod.bank ?? "Bank Account")} ●●●● {savedMethod.last4}
                   </span>
                 </div>
               </div>
@@ -303,7 +308,7 @@ export default function PaymentSummary() {
 
           <div className="flex items-center justify-between mb-2.5 pb-3 border-b border-gray-100">
             <span className="text-[13px] text-gray-500">Plan:</span>
-            <span className="text-[14px] text-gray-900">{obligation?.paymentLink?.title ?? "—"}</span>
+            <span className="text-[14px] text-gray-900">{toTitleCase(obligation?.paymentLink?.title) ?? "—"}</span>
           </div>
 
           {prefetch?.billedAmount != null && prefetch.billedAmount !== obligation?.amount ? (

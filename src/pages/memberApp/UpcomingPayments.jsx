@@ -5,6 +5,11 @@ import { usePayments } from "../../hooks/usePayments";
 
 const FILTER_OPTIONS = ["All", "Recurring", "One-time"];
 
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function formatNaira(amount) {
   return new Intl.NumberFormat("en-NG", {
     style: "currency",
@@ -181,7 +186,7 @@ function PaymentRow({ item, onPay, paying }) {
       >
         <div>
           <p style={{ fontSize: 13, color: "#333", marginBottom: 3 }}>
-            {item.name}
+            {toTitleCase(item.name)}
           </p>
           <div
             style={{

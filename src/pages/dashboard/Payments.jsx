@@ -53,6 +53,11 @@ const BAR_COLORS = ["#d4a017", "#7c3aed", "#002FA7", "#059669"];
 const inputCls =
   "w-full px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 bg-white outline-none transition-all focus:border-[#002FA7]";
 
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function formatNaira(amount) {
   return new Intl.NumberFormat("en-NG", {
     style: "currency",
@@ -894,7 +899,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     };
   }
 
-  function getName(m)    { const r = resolveMember(m); return r.name ?? r.email ?? "Member"; }
+  function getName(m)    { const r = resolveMember(m); return toTitleCase(r.name ?? r.email ?? "Member"); }
   function getEmail(m)   { return resolveMember(m).email ?? "—"; }
   function getJoinedAt(m){ return resolveMember(m).joinedAt ?? m.member?.joinedAt ?? m.joinedAt ?? null; }
 
@@ -970,7 +975,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <div>
-            <h2 className="text-base font-semibold text-black">{plan.name} — Members</h2>
+            <h2 className="text-base font-semibold text-black">{toTitleCase(plan.name)} — Members</h2>
             <p className="text-xs text-gray-400 mt-0.5">
               {isLoading ? "Loading…" : `${paidCount} / ${totalCount} paid · ${formatNaira(totalCollected)} collected`}
             </p>
@@ -1326,7 +1331,7 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers, metrics })
 
       {/* Name */}
       <p className="text-[15px] font-semibold text-black leading-snug">
-        {plan.name}
+        {toTitleCase(plan.name)}
       </p>
 
       {/* Amount + frequency + collected */}

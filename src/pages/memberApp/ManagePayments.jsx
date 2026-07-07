@@ -13,6 +13,11 @@ function formatDate(d) {
   return new Date(d).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" });
 }
 
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function frequencyLabel(freq) {
   const f = (freq ?? "").toUpperCase();
   if (f === "MONTHLY")   return "/month";
@@ -116,7 +121,7 @@ function PlanCard({ plan, auth, onToggle }) {
 
         {/* Row 3: plan name + auto-pay toggle */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <p style={{ fontSize: 15, fontWeight: 500, color: "#111", margin: 0 }}>{plan.name}</p>
+          <p style={{ fontSize: 15, fontWeight: 500, color: "#111", margin: 0 }}>{toTitleCase(plan.name)}</p>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ fontSize: 13, color: "#888" }}>Auto-Pay</span>
             <Toggle on={isOn} onChange={() => onToggle(plan, auth)} />
