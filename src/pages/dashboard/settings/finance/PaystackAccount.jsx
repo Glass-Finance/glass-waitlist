@@ -4,8 +4,12 @@ import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityAccount } from "../../../../hooks/useCommunityAccount";
 import { useCommunity } from "../../../../hooks/useCommunity";
 import { getBanks, resolveAccount } from "../../../../api/members";
-import { getErrorMessage, notifyError } from "../../../../utils/errorHandler";
+import { notifyError } from "../../../../utils/errorHandler";
 import BankSelect from "../../../../components/common/BankSelect";
+import banksData from "nigerian-bank-icons/assets/banks.json";
+
+// code → logo URL from the nigerian-bank-icons package (nigerianbanks.xyz CDN)
+const BANK_LOGO_BY_CODE = Object.fromEntries(banksData.map((b) => [b.code, b.logo]));
 
 const inputCls =
   "w-full border border-gray-300 px-3.5 py-2.5 rounded-lg text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-1 focus:ring-[#002FA7]/20 transition-all bg-white";
@@ -35,26 +39,16 @@ function bankInitials(name = "") {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-// Only use a logo URL if it was explicitly provided by the API (bank.logo field).
-// Constructed CDN URLs for Paystack are not reliable — they 404.
-function bankLogoUrl(account) {
-  return (
-    account?.settlementBankLogo ??
-    account?.bankLogo ??
-    account?.logo ??
-    null
-  );
-}
-
-function BankAvatar({ bankName, logoUrl }) {
+function BankAvatar({ bankCode, bankName }) {
   const [imgFailed, setImgFailed] = useState(false);
+  const logoUrl = BANK_LOGO_BY_CODE[bankCode] ?? null;
   if (logoUrl && !imgFailed) {
     return (
       <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden border border-gray-100 bg-white flex items-center justify-center">
         <img
           src={logoUrl}
           alt={bankName}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-contain p-0.5"
           onError={() => setImgFailed(true)}
         />
       </div>
@@ -294,6 +288,11 @@ export default function PaystackAccount() {
     account?.bank ??
     account?.bankTitle ??
     "";
+  const bankCode =
+    account?.settlementBankCode ??
+    account?.bankCode ??
+    account?.code ??
+    "";
   const communityName = community?.name ?? "";
 
   async function handleSave(payload) {
@@ -319,7 +318,7 @@ export default function PaystackAccount() {
           {/* Account row */}
           <div className="flex items-center justify-between mb-5 pb-5 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              <BankAvatar bankName={bankName} logoUrl={bankLogoUrl(account)} />
+              <BankAvatar bankCode={bankCode} bankName={bankName} />
               <div>
                 <p className="text-sm font-semibold text-gray-900">
                   {account.accountName ?? account.name ?? "—"}

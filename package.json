@@ -19,6 +19,7 @@
     "jspdf": "^4.2.1",
     "lucide-react": "^0.562.0",
     "motion": "^12.40.0",
+    "nigerian-bank-icons": "^2.0.1",
     "ogl": "^1.0.11",
     "papaparse": "^5.5.4",
     "qrcode": "^1.5.4",
