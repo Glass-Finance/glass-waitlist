@@ -146,12 +146,12 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       <>
         {mobileOpen && (
           <div
-            className="fixed inset-0 bg-black/40 z-30 md:hidden"
+            className="fixed inset-0 bg-black/40 z-[55] md:hidden"
             onClick={onCloseMobile}
           />
         )}
         <div
-          className={`fixed md:sticky top-0 left-0 h-screen z-40 flex-shrink-0 flex transition-transform duration-300 ${
+          className={`fixed md:sticky top-0 left-0 h-screen z-[60] flex-shrink-0 flex transition-transform duration-300 ${
             mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           }`}
         >
@@ -340,12 +340,12 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
     <>
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-30 md:hidden"
+          className="fixed inset-0 bg-black/40 z-[55] md:hidden"
           onClick={onCloseMobile}
         />
       )}
       <div
-        className={`fixed md:sticky top-0 left-0 h-screen z-40 flex-shrink-0 flex transition-transform duration-300 ${
+        className={`fixed md:sticky top-0 left-0 h-screen z-[60] flex-shrink-0 flex transition-transform duration-300 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
