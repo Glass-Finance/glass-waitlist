@@ -1,24 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 
-const BANK_CODE_SLUG = {
-  "044": "access-bank", "063": "access-bank",
-  "050": "ecobank-nigeria", "011": "first-bank-of-nigeria",
-  "214": "first-city-monument-bank", "070": "fidelity-bank",
-  "058": "guaranty-trust-bank", "030": "heritage-bank",
-  "301": "jaiz-bank", "082": "keystone-bank",
-  "076": "polaris-bank", "101": "providus-bank",
-  "221": "stanbic-ibtc-bank", "068": "standard-chartered-bank",
-  "232": "sterling-bank", "032": "union-bank-of-nigeria",
-  "033": "united-bank-for-africa", "215": "unity-bank",
-  "035": "wema-bank", "057": "zenith-bank",
-  "023": "citibank-nigeria", "526": "parallex-bank",
-};
-
+// Only use logo URLs explicitly provided by the API (bank.logo field).
+// Constructed Paystack CDN URLs are not reliable.
 function getBankLogoUrl(bank) {
-  if (bank.logo) return bank.logo;
-  const slug = bank.slug ?? BANK_CODE_SLUG[bank.code];
-  return slug ? `https://paystack.com/banks/${slug}.png` : null;
+  return bank.logo ?? null;
 }
 
 function BankLogo({ bank, size = 20 }) {

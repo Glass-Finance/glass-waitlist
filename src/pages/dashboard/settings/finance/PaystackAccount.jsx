@@ -35,43 +35,15 @@ function bankInitials(name = "") {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-// Bank code → Paystack CDN slug (fallback for accounts saved before logo capture)
-const BANK_CODE_SLUG = {
-  "044": "access-bank",
-  "063": "access-bank",
-  "050": "ecobank-nigeria",
-  "011": "first-bank-of-nigeria",
-  "214": "first-city-monument-bank",
-  "070": "fidelity-bank",
-  "058": "guaranty-trust-bank",
-  "030": "heritage-bank",
-  "301": "jaiz-bank",
-  "082": "keystone-bank",
-  "076": "polaris-bank",
-  "101": "providus-bank",
-  "221": "stanbic-ibtc-bank",
-  "068": "standard-chartered-bank",
-  "232": "sterling-bank",
-  "032": "union-bank-of-nigeria",
-  "033": "united-bank-for-africa",
-  "215": "unity-bank",
-  "035": "wema-bank",
-  "057": "zenith-bank",
-  "023": "citibank-nigeria",
-  "526": "parallex-bank",
-};
-
+// Only use a logo URL if it was explicitly provided by the API (bank.logo field).
+// Constructed CDN URLs for Paystack are not reliable — they 404.
 function bankLogoUrl(account) {
-  // 1. Stored logo URL (captured at selection time)
-  const stored = account?.settlementBankLogo ?? account?.bankLogo ?? account?.logo;
-  if (stored) return stored;
-  // 2. Stored slug → Paystack CDN
-  const slug = account?.settlementBankSlug ?? account?.bankSlug ?? account?.slug;
-  if (slug) return `https://paystack.com/banks/${slug}.png`;
-  // 3. Bank code → Paystack CDN
-  const code = account?.settlementBankCode ?? account?.bankCode ?? account?.code;
-  if (code && BANK_CODE_SLUG[code]) return `https://paystack.com/banks/${BANK_CODE_SLUG[code]}.png`;
-  return null;
+  return (
+    account?.settlementBankLogo ??
+    account?.bankLogo ??
+    account?.logo ??
+    null
+  );
 }
 
 function BankAvatar({ bankName, logoUrl }) {
@@ -99,8 +71,9 @@ function BankAvatar({ bankName, logoUrl }) {
 }
 
 function formatNaira(amount) {
+  if (amount === null || amount === undefined) return "—";
   const n = Number(amount);
-  if (!amount || isNaN(n)) return "—";
+  if (isNaN(n)) return "—";
   if (n >= 1_000_000) return `₦${(n / 1_000_000).toFixed(2)}M`;
   if (n >= 1_000) return `₦${(n / 1_000).toFixed(1)}K`;
   return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", minimumFractionDigits: 0 })
