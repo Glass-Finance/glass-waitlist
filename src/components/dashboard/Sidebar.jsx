@@ -593,7 +593,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         </div>
 
         {/* Nav links */}
-        <nav style={{ flex: 1, padding: "10px 8px", overflowY: "auto" }}>
+        <nav data-tour="sidebar-nav" style={{ flex: 1, padding: "10px 8px", overflowY: "auto" }}>
           {NAV.map(({ icon: Icon, label, segment, path }) => {
             const isActive = activeSegment === segment;
             // Every nav item except "Dashboard" (which points at the
@@ -667,6 +667,23 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           <div style={{ height: 1, background: "#eef0f8", marginBottom: 8 }} />
           <button
             onClick={() => {
+              // If the admin is also a member of the community they're
+              // currently viewing, that's the "own Member View" they'd
+              // expect this button to open — not some unrelated community
+              // they happen to belong to. Only fall back to searching for
+              // any other membership (or the invites hint) when there's no
+              // such same-community membership to switch into.
+              if (activeCommunity && myMemberRecord) {
+                try {
+                  localStorage.setItem(
+                    "glass_member_community",
+                    JSON.stringify({ id: activeCommunity.id, slug: activeCommunity.slug, name: activeCommunity.name })
+                  );
+                } catch { /* ignore */ }
+                navigate("/member/home");
+                onCloseMobile?.();
+                return;
+              }
               const memberCommunity = communities.find((c) => !c.owned);
               if (memberCommunity) {
                 // Set the active member community so Home loads the right one
