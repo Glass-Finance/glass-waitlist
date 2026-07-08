@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -27,6 +27,7 @@ import {
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { useSlug } from "../../hooks/useSlug";
+import { dateInputToIso, daysInMonth } from "../../utils/date";
 import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
 import Background from "../../assets/background.webp";
@@ -83,7 +84,11 @@ function formatDate(d) {
 }
 function toDateInput(iso) {
   if (!iso) return "";
-  return new Date(iso).toISOString().split("T")[0];
+  const d = new Date(iso);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
@@ -196,6 +201,27 @@ function Step1({ value, onChange }) {
 function Step2({ planType, form, onChange, slugState }) {
   const { slug, setSlug, available, checking, suggesting, suggestFrom } =
     slugState;
+
+  // Weekly billing days are 1–7 (day of week). Monthly billing days are
+  // validated against the selected start date's actual month (e.g. 28 for
+  // February) rather than a flat 1–28/1–31 range — falls back to 31 (the
+  // most permissive value) until a start date is chosen.
+  const billingDayMax = (() => {
+    if (form.frequency === "WEEKLY") return 7;
+    if (!form.startDate) return 31;
+    const [year, month] = form.startDate.split("-").map(Number);
+    return daysInMonth(year, month);
+  })();
+
+  // If the user picked a billing day for a longer month, then switches to
+  // a shorter one (e.g. 31 → February), the stale value is now invalid —
+  // clamp it down rather than silently submitting an out-of-range day.
+  useEffect(() => {
+    if (form.billingDay && Number(form.billingDay) > billingDayMax) {
+      onChange("billingDay", String(billingDayMax));
+    }
+  }, [billingDayMax]);
+
   return (
     <div className="pr-1 space-y-3.5">
       <div>
@@ -312,10 +338,22 @@ function Step2({ planType, form, onChange, slugState }) {
               className={inputCls}
               value={form.billingDay || ""}
               min={1}
-              max={form.frequency === "WEEKLY" ? 7 : 28}
-              placeholder={form.frequency === "WEEKLY" ? "1–7" : "1–28"}
-              onChange={(e) => onChange("billingDay", e.target.value)}
+              max={billingDayMax}
+              placeholder={form.frequency === "WEEKLY" ? "1–7" : `1–${billingDayMax}`}
+              onChange={(e) => {
+                const raw = e.target.value;
+                if (raw === "") { onChange("billingDay", ""); return; }
+                const clamped = Math.min(Math.max(Number(raw), 1), billingDayMax);
+                onChange("billingDay", String(clamped));
+              }}
             />
+            {form.frequency && form.frequency !== "WEEKLY" && form.startDate && (
+              <p className="text-[11px] text-gray-400 mt-1">
+                {billingDayMax < 31
+                  ? `The selected start month only has ${billingDayMax} days.`
+                  : null}
+              </p>
+            )}
           </div>
         ) : (
           <div>
@@ -457,7 +495,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
 
   async function handleSubmit() {
     const startIso = form.startDate
-      ? new Date(form.startDate).toISOString()
+      ? dateInputToIso(form.startDate, { clampToNow: true })
       : new Date().toISOString();
     const payload = {
       title: form.name,
@@ -483,7 +521,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
           }
         : {
             ...(form.startDate ? { startAt: startIso } : {}),
-            dueAt: new Date(form.dueDate).toISOString(),
+            dueAt: dateInputToIso(form.dueDate, { clampToNow: true }),
           }),
     };
     if (import.meta.env.DEV) console.log("[CreatePlan] payload →", payload);
@@ -601,6 +639,19 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
   });
   const isRecurring = plan.type === "RECURRING";
 
+  const editBillingDayMax = (() => {
+    if (form.frequency === "WEEKLY") return 7;
+    if (!form.startDate) return 31;
+    const [year, month] = form.startDate.split("-").map(Number);
+    return daysInMonth(year, month);
+  })();
+
+  useEffect(() => {
+    if (form.billingDay && Number(form.billingDay) > editBillingDayMax) {
+      setForm((f) => ({ ...f, billingDay: String(editBillingDayMax) }));
+    }
+  }, [editBillingDayMax]);
+
   async function handleSave() {
     const payload = {
       title: form.name,
@@ -616,7 +667,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
           }
         : {}),
       ...(form.startDate
-        ? { startAt: new Date(form.startDate).toISOString() }
+        ? { startAt: dateInputToIso(form.startDate, { clampToNow: true }) }
         : {}),
     };
     await onSave(plan.id, payload);
@@ -726,11 +777,14 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
                   className={inputCls}
                   value={form.billingDay}
                   min={1}
-                  max={form.frequency === "WEEKLY" ? 7 : 28}
-                  placeholder={form.frequency === "WEEKLY" ? "1–7" : "1–28"}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, billingDay: e.target.value }))
-                  }
+                  max={editBillingDayMax}
+                  placeholder={form.frequency === "WEEKLY" ? "1–7" : `1–${editBillingDayMax}`}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    if (raw === "") { setForm((f) => ({ ...f, billingDay: "" })); return; }
+                    const clamped = Math.min(Math.max(Number(raw), 1), editBillingDayMax);
+                    setForm((f) => ({ ...f, billingDay: String(clamped) }));
+                  }}
                 />
               </div>
             )}
@@ -770,11 +824,15 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     staleTime: 1000 * 60,
   });
 
-  // Community members — for reliable name + email resolution
+  // Community members — for reliable name + email resolution. Explicitly
+  // overrides getCommunityMembers' default ACTIVE-only filter: this modal
+  // needs to show paid/unpaid status for every member ever on this plan,
+  // including ones who've since gone overdue/inactive — filtering them out
+  // here was why they silently disappeared from the paid/unpaid list.
   const { data: communityMembersData } = useQuery({
-    queryKey: ["community", communityId, "members"],
+    queryKey: ["community", communityId, "members", "all-statuses"],
     queryFn: async () => {
-      const res = await getCommunityMembers(communityId);
+      const res = await getCommunityMembers(communityId, { status: undefined });
       const data = res.data?.data;
       return Array.isArray(data) ? data : (data?.content ?? []);
     },
@@ -795,13 +853,15 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     staleTime: 1000 * 60 * 2,
   });
 
-  // Build memberId / userId → { name, email, joinedAt } lookup
-  // Also track which IDs are currently active so removed members are hidden.
+  // Build memberId / userId → { name, email, joinedAt } lookup. Also track
+  // every ID this community currently knows about (any status) so only
+  // genuinely-removed members get filtered out below — overdue/inactive
+  // members must still show up in the paid/unpaid breakdown.
   // getCommunityMembers returns a flat shape: cm.userId (not cm.user.id).
-  const { memberLookup, activeMemberIds } = useMemo(() => {
+  const { memberLookup, knownMemberIds } = useMemo(() => {
     const byMemberId = {};
     const byUserId = {};
-    const activeIds = new Set();
+    const knownIds = new Set();
     for (const m of communityMembersData ?? []) {
       const first = m.user?.firstName ?? m.firstName ?? "";
       const last  = m.user?.lastName  ?? m.lastName  ?? "";
@@ -810,23 +870,24 @@ function PlanMembersModal({ plan, communityId, onClose }) {
       const info  = { name, email, joinedAt: m.joinedAt ?? m.member?.joinedAt ?? null };
       // cm.id = community membership ID; cm.userId = user's global ID (flat field)
       const userId = m.userId ?? m.user?.id ?? null;
-      if (m.id)     { byMemberId[String(m.id)] = info; activeIds.add(String(m.id)); }
-      if (userId)   { byUserId[String(userId)]  = info; activeIds.add(String(userId)); }
+      if (m.id)     { byMemberId[String(m.id)] = info; knownIds.add(String(m.id)); }
+      if (userId)   { byUserId[String(userId)]  = info; knownIds.add(String(userId)); }
     }
-    return { memberLookup: { byMemberId, byUserId }, activeMemberIds: activeIds };
+    return { memberLookup: { byMemberId, byUserId }, knownMemberIds: knownIds };
   }, [communityMembersData]);
 
-  // Only show members who are still active in the community; removed members
-  // still appear in getPaymentLinkMembers but should be filtered out here.
+  // Show every member still known to the community — including
+  // overdue/inactive ones — and only filter out members who've actually
+  // been removed (and so no longer appear in communityMembersData at all).
   const planMembers = useMemo(() => {
     const all = planMembersData ?? [];
     if (!communityMembersData) return all; // don't filter while community list is loading
     return all.filter((m) => {
       const mid = String(m.member?.id ?? m.memberId ?? "");
       const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
-      return activeMemberIds.has(mid) || activeMemberIds.has(uid);
+      return knownMemberIds.has(mid) || knownMemberIds.has(uid);
     });
-  }, [planMembersData, communityMembersData, activeMemberIds]);
+  }, [planMembersData, communityMembersData, knownMemberIds]);
 
   // Build a lookup for obligation status keyed by every reachable ID for this plan.
   // Obligations use ob.member.userId (flat) not ob.member.user.id (nested).
@@ -1425,6 +1486,22 @@ export default function Payments() {
   // Compute per-plan: paidCount, totalCount (unique members), collected
   const planMetrics = useMemo(() => {
     const SUCCESS = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
+
+    // The backend doesn't always update obligation.status to PAID
+    // immediately after a payment is verified (same gap documented in
+    // useMembersWithPayments.js) — without cross-referencing successful
+    // transactions here too, paidCount can lag behind collected, showing
+    // e.g. "100% collected" but "0/1 members paid" for the same plan.
+    const paidObligationIds = new Set();
+    const paidLinkMemberKeys = new Set(); // `${paymentLinkId}::${memberId}`, for txs with no obligationId
+    for (const tx of transactions) {
+      if (!SUCCESS.has((tx.status ?? "").toUpperCase())) continue;
+      if (tx.obligationId) paidObligationIds.add(String(tx.obligationId));
+      const planId = tx.paymentLink?.id;
+      const mid = String(tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "");
+      if (planId && mid) paidLinkMemberKeys.add(`${planId}::${mid}`);
+    }
+
     const byPlan = {};
 
     for (const ob of obligations) {
@@ -1434,7 +1511,12 @@ export default function Payments() {
       const mid = String(ob.member?.id ?? ob.member?.user?.id ?? ob.user?.id ?? ob.id ?? "");
       if (mid) byPlan[planId].memberIds.add(mid);
       const s = (ob.status ?? "").toUpperCase();
-      if (s === "PAID" || s === "SUCCESSFUL") byPlan[planId].paidCount++;
+      const isPaid =
+        s === "PAID" ||
+        s === "SUCCESSFUL" ||
+        paidObligationIds.has(String(ob.id)) ||
+        (planId && mid && paidLinkMemberKeys.has(`${planId}::${mid}`));
+      if (isPaid) byPlan[planId].paidCount++;
     }
 
     for (const tx of transactions) {
