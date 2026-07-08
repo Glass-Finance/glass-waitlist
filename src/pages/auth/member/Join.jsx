@@ -10,6 +10,7 @@ import { toastSuccess } from "../../../utils/toast";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import { useAuth } from "../../../store/AuthContext";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
+import PasswordChecklist from "../../../components/auth/PasswordChecklist";
 import { useCountdown, formatCountdown } from "../../../hooks/useCountdown";
 
 // ── Import your actual assets ──────────────────────────────────────────────
@@ -400,11 +401,13 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
   const [showCpw, setShowCpw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [accountExists, setAccountExists] = useState(false);
 
   function set(field) {
     return (e) => {
       setForm((f) => ({ ...f, [field]: e.target.value }));
       setError("");
+      setAccountExists(false);
     };
   }
 
@@ -432,7 +435,8 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
     }
     setLoading(true);
     setError("");
-    onSubmit({ ...form, email: trimmedEmail, loading: setLoading, setError });
+    setAccountExists(false);
+    onSubmit({ ...form, email: trimmedEmail, loading: setLoading, setError, setAccountExists });
   }
 
   const isReady =
@@ -542,9 +546,7 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
             </button>
           }
         />
-        <p className="text-xs text-gray-500 mt-1.5 px-1">
-          {PASSWORD_REQUIREMENTS_TEXT}
-        </p>
+        <PasswordChecklist password={form.password} />
       </div>
 
       {/* Confirm password */}
@@ -571,6 +573,21 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
           }
         />
       </div>
+
+      {accountExists && (
+        <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+          <p className="text-xs text-gray-700 leading-relaxed">
+            You already have a Glass account with this email. Sign in and your invite will be waiting for you.
+          </p>
+          <Link
+            to="/member/app-sign-in?return=/member/invites"
+            className="inline-block mt-2 text-xs font-semibold"
+            style={{ color: "#1C2B8A" }}
+          >
+            Sign in to accept the invite
+          </Link>
+        </div>
+      )}
 
       <ErrorMessage message={error} />
 
@@ -694,6 +711,7 @@ export default function Join() {
     confirmPassword,
     loading: setLoading,
     setError,
+    setAccountExists,
   }) {
     try {
       const payload = {
@@ -711,7 +729,19 @@ export default function Join() {
       setEmail(enteredEmail);
       setStep(STEPS.OTP);
     } catch (err) {
-      setError(notifyError(err, { context: "Member register" }));
+      // The invited email already belongs to a registered account (e.g.
+      // someone who's already a member of another community) — the
+      // backend returns a 409 for this rather than a validation error.
+      // Registering them again isn't the right path; they need to sign in
+      // instead, at which point resolveDestination() in SignIn.jsx already
+      // routes anyone with a pending invite to /member/invites, so the
+      // invite still gets honored without needing this token.
+      if (err?.response?.status === 409) {
+        setAccountExists?.(true);
+        setError("");
+      } else {
+        setError(notifyError(err, { context: "Member register" }));
+      }
     } finally {
       setLoading(false);
     }
