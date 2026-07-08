@@ -514,7 +514,7 @@
  */
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, Upload, Check, X as XIcon, Loader2 } from "lucide-react";
+import { Bell, Upload, Check, X as XIcon, Loader2, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
 import Background from "../../assets/background.webp";
 import client from "../../api/client";
@@ -557,7 +557,15 @@ export default function OrganizationProfile() {
 
   const email      = location.state?.email ?? "";
   const isPaying   = location.state?.isPaying ?? true;
-  const { updateUser } = useAuth();
+  const { updateUser, isAuthenticated } = useAuth();
+
+  // Covers users who already have an account (and so already have a
+  // session) but end up here by accident — e.g. hitting back/forward or a
+  // stale bookmark mid-onboarding. They shouldn't get stuck on this form
+  // with no way out other than the browser back button.
+  const handleBack = () => {
+    navigate(isAuthenticated ? "/dashboard/home" : "/onboarding/choose-path", { state: { email } });
+  };
 
   const [dragOver,  setDragOver]  = useState(false);
   const [logoFile,  setLogoFile]  = useState(null);   // File object
@@ -692,6 +700,14 @@ export default function OrganizationProfile() {
         <main className="flex-1 overflow-y-auto py-10 px-12 flex flex-col items-center">
           <form onSubmit={handleSubmit} className="w-full max-w-4xl">
             <div className="mb-8">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer mb-4 -ml-1 p-0"
+              >
+                <ArrowLeft size={15} />
+                {isAuthenticated ? "Back to dashboard" : "Back"}
+              </button>
               <h2 className="text-xl font-bold text-gray-900 mb-1">Tell us about your community</h2>
               <p className="text-sm text-gray-500">This is how your community will appear to members on Glass.</p>
             </div>
