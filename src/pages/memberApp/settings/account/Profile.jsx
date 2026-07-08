@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
-import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
+import { ChevronLeft, Pencil } from "lucide-react";
+import { useMe, useUpdateProfile, useUpdateEmail } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { useAuth } from "../../../../store/AuthContext";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { parseUserData } from "../../../../utils/userData";
+import EmailChangeModal from "../../../../components/auth/EmailChangeModal";
 
 const inputStyle = {
   width: "100%",
@@ -32,6 +33,12 @@ export default function Profile() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
   const [photoPreview, setPhotoPreview] = useState(null);
+
+  const updateEmail = useUpdateEmail();
+  const [editingEmail, setEditingEmail] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [otpModalOpen, setOtpModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -83,6 +90,51 @@ export default function Profile() {
     } catch (err) {
       setError(getErrorMessage(err, "Failed to upload photo."));
     }
+  }
+
+  function startEditEmail() {
+    setNewEmail(user?.email ?? "");
+    setEmailError("");
+    setEditingEmail(true);
+  }
+
+  function cancelEditEmail() {
+    setEditingEmail(false);
+    setNewEmail("");
+    setEmailError("");
+  }
+
+  async function handleRequestEmailChange() {
+    const trimmed = newEmail.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setEmailError("Enter a valid email address.");
+      return;
+    }
+    if (trimmed === user?.email?.toLowerCase()) {
+      setEmailError("That's already your current email.");
+      return;
+    }
+    setEmailError("");
+    try {
+      // First call with just { email } — no OTP yet — triggers the backend
+      // to send a verification code to the new address before anything
+      // actually changes.
+      await updateEmail.mutateAsync({ email: trimmed });
+      setOtpModalOpen(true);
+    } catch (err) {
+      setEmailError(getErrorMessage(err, "Couldn't start the email change. Please try again."));
+    }
+  }
+
+  async function handleConfirmEmailOtp(otp) {
+    await updateEmail.mutateAsync({ email: newEmail.trim().toLowerCase(), emailVerificationOtp: otp });
+  }
+
+  async function handleEmailVerified() {
+    await refreshUser();
+    setOtpModalOpen(false);
+    setEditingEmail(false);
+    setNewEmail("");
   }
 
   const ud = parseUserData(user);
@@ -141,7 +193,58 @@ export default function Profile() {
           </div>
           <div>
             <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 6 }}>Email Address</label>
-            <input style={{ ...inputStyle, background: "#F5F5F5", color: "#999" }} value={user?.email ?? ""} disabled />
+            {editingEmail ? (
+              <>
+                <input
+                  style={inputStyle}
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => { setNewEmail(e.target.value); setEmailError(""); }}
+                  placeholder="Enter new email address"
+                  autoFocus
+                />
+                {emailError && <p style={{ fontSize: 12, color: "#DC2626", margin: "6px 4px 0" }}>{emailError}</p>}
+                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                  <button
+                    onClick={handleRequestEmailChange}
+                    disabled={updateEmail.isPending}
+                    style={{
+                      flex: 1, padding: "10px 0", borderRadius: 8, border: "none",
+                      background: "#002FA7", color: "#fff", fontSize: 13, fontWeight: 600,
+                      cursor: "pointer", opacity: updateEmail.isPending ? 0.7 : 1,
+                    }}
+                  >
+                    {updateEmail.isPending ? "Sending code…" : "Send Verification Code"}
+                  </button>
+                  <button
+                    onClick={cancelEditEmail}
+                    disabled={updateEmail.isPending}
+                    style={{
+                      padding: "10px 16px", borderRadius: 8, border: "1.5px solid #E0E0E0",
+                      background: "#fff", color: "#666", fontSize: 13, fontWeight: 600, cursor: "pointer",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <input style={{ ...inputStyle, background: "#F5F5F5", color: "#999" }} value={user?.email ?? ""} disabled />
+                <button
+                  onClick={startEditEmail}
+                  title="Change email"
+                  aria-label="Change email"
+                  style={{
+                    flexShrink: 0, width: 40, height: 40, borderRadius: 10, border: "1.5px solid #E0E0E0",
+                    background: "#fff", color: "#002FA7", cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  <Pencil size={15} />
+                </button>
+              </div>
+            )}
           </div>
           <div>
             <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 6 }}>Phone Number</label>
@@ -163,6 +266,16 @@ export default function Profile() {
           {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
         </button>
       </div>
+
+      {otpModalOpen && (
+        <EmailChangeModal
+          newEmail={newEmail}
+          onSubmitOtp={handleConfirmEmailOtp}
+          onVerified={handleEmailVerified}
+          onWrongEmail={() => setOtpModalOpen(false)}
+          onClose={() => setOtpModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

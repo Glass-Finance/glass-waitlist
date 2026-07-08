@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMe, updateProfile, updatePassword, getMyCommunities, getMyMemberRecord, leaveCommunity } from "../api/members";
+import { getMe, updateProfile, updatePassword, updateEmail, getMyCommunities, getMyMemberRecord, leaveCommunity } from "../api/members";
 
 function unwrapList(res) {
   const data = res.data?.data;
@@ -36,6 +36,23 @@ export function useUpdatePassword() {
   return useMutation({
     mutationFn: (payload) => updatePassword(payload),
     meta: { successMessage: "Password changed" },
+  });
+}
+
+// ─── Update email ─────────────────────────────────────────────────────────────
+// Two-step: call with just { email } to trigger the OTP send to the new
+// address, then again with { email, emailVerificationOtp } to confirm it.
+// Only invalidate ["me"] on the confirming call — invalidating after the
+// first call would be pointless since the email hasn't actually changed yet.
+export function useUpdateEmail() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload) => updateEmail(payload),
+    onSuccess: (_data, variables) => {
+      if (variables?.emailVerificationOtp) {
+        queryClient.invalidateQueries({ queryKey: ["me"] });
+      }
+    },
   });
 }
 
