@@ -102,7 +102,7 @@ function StatusBadge({ status }) {
   const { bg, fg } = styles[status] ?? { bg: "#F2F4F7", fg: "#475467" };
   return (
     <span
-      className="text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide"
+      className="text-[9.5px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide"
       style={{ background: bg, color: fg }}
     >
       {status.toLowerCase()}
@@ -420,14 +420,15 @@ export default function PaystackAccount() {
       {isLoading ? (
         <p className="text-xs text-gray-400">Loading…</p>
       ) : account ? (
-        <div className="bg-[#EF1EFF1E5] rounded-2xl p-6" style={{ border: "1px solid #FFFFFF" }}>
+        <div className="bg-[#EFEFF1E5] rounded-2xl p-6" style={{ border: "1px solid #FFFFFF" }}>
           <p className="text-sm font-bold text-gray-900 mb-0.5">Current Payout Account</p>
           <p className="text-xs text-gray-400 mb-5">
             All payments collected from members{communityName ? ` in ${communityName}` : ""} are disbursed to this account.
           </p>
 
           {/* Account row */}
-          <div className="flex items-center justify-between mb-5 pb-5 border-b border-gray-100">
+          <div>
+          <div className="flex items-center justify-between mb-5 pb-5 border-b border-gray-100 w-[70%]">
             <div className="flex items-center gap-3">
               <BankAvatar
                 bankCode={bankCode}
@@ -436,7 +437,7 @@ export default function PaystackAccount() {
               />
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-xs font-semibold text-gray-900">
                     {account.accountName ?? account.name ?? "—"}
                   </p>
                   <StatusBadge status={account.status} />
@@ -449,7 +450,7 @@ export default function PaystackAccount() {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setShowModal(true)}
-                className="text-sm font-semibold text-[#002FA7] bg-transparent border-none cursor-pointer hover:underline"
+                className="text-xs font-medium text-[#002FA7] bg-transparent border-none cursor-pointer hover:underline"
               >
                 Change Account
               </button>
@@ -471,7 +472,7 @@ export default function PaystackAccount() {
           <div className="flex gap-10">
             <div>
               <p className="text-xs text-gray-400 mb-0.5">Total Received</p>
-              <p className="text-sm font-bold text-gray-900">
+              <p className="text-xs font-bold text-gray-900">
                 {formatNaira(
                   account.totalReceivedAmount ?? account.totalReceived ?? account.totalAmount ?? account.totalSettlement
                 )}
@@ -479,22 +480,23 @@ export default function PaystackAccount() {
             </div>
             <div>
               <p className="text-xs text-gray-400 mb-0.5">Last Payout</p>
-              <p className="text-sm font-bold text-gray-900">
+              <p className="text-xs font-bold text-gray-900">
                 {formatDate(account.lastPayoutAt ?? account.lastPayout ?? account.lastSettlementAt ?? account.lastSettledAt)}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-400 mb-0.5">Account Added</p>
-              <p className="text-sm font-bold text-gray-900">
+              <p className="text-xs font-bold text-gray-900">
                 {formatDate(account.createdAt ?? account.addedAt ?? account.dateCreated)}
               </p>
             </div>
+          </div>
           </div>
         </div>
       ) : (
         // No account yet — prompt to add one
         <div
-          className="bg-white rounded-2xl p-6 text-center"
+          className="bg-[#EFEFF1E5] rounded-2xl p-6 text-center"
           style={{ border: "1px solid #E5E7EB" }}
         >
           <p className="text-sm font-bold text-gray-900 mb-1">No Payout Account Set Up</p>
@@ -503,7 +505,7 @@ export default function PaystackAccount() {
           </p>
           <button
             onClick={() => setShowModal(true)}
-            className="px-5 py-2.5 rounded-full text-sm font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all border-none cursor-pointer"
+            className="px-5 py-2.5 rounded-full text-sm text-white bg-[#002FA7] hover:opacity-90 transition-all border-none cursor-pointer"
           >
             Add Payout Account
           </button>
