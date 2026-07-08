@@ -89,3 +89,11 @@ export const setDefaultCommunityAccount = (communityId, accountId) =>
 // DELETE /api/v1/communities/{communityIdentifier}/account/{accountId}
 export const deleteCommunityAccount = (communityId, accountId) =>
   client.delete(`/communities/${communityId}/account/${accountId}`);
+
+
+// ─── Finance — obligations ────────────────────────────────────────────────────
+
+// PATCH /api/v1/communities/{communityIdentifier}/finance/obligations/{obligationId}/waive
+// payload: optional { reason }
+export const waiveObligation = (communityId, obligationId, payload = {}) =>
+  client.patch(`/communities/${communityId}/finance/obligations/${obligationId}/waive`, payload);

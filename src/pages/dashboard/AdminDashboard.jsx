@@ -621,15 +621,22 @@ function statusStyle(status = "") {
 }
 
 const FREQUENCY_STYLE = {
-  MONTHLY:   { bg: "#FFF8E7", color: "#b45309", label: "Monthly" },
-  WEEKLY:    { bg: "#E6EEFF", color: "#002FA7", label: "Weekly" },
+  MONTHLY: { bg: "#FFF8E7", color: "#b45309", label: "Monthly" },
+  WEEKLY: { bg: "#E6EEFF", color: "#002FA7", label: "Weekly" },
   QUARTERLY: { bg: "#ECFDF5", color: "#0f766e", label: "Quarterly" },
-  YEARLY:    { bg: "#ECFDF5", color: "#059669", label: "Annually" },
+  YEARLY: { bg: "#ECFDF5", color: "#059669", label: "Annually" },
 };
 
 function freqStyle(row) {
-  if (row.type !== "recurring") return { bg: "#F3EEFF", color: "#7c3aed", label: "One-Time" };
-  return FREQUENCY_STYLE[(row.frequency ?? "").toUpperCase()] ?? { bg: "#F3EEFF", color: "#7c3aed", label: "Recurring" };
+  if (row.type !== "recurring")
+    return { bg: "#F3EEFF", color: "#7c3aed", label: "One-Time" };
+  return (
+    FREQUENCY_STYLE[(row.frequency ?? "").toUpperCase()] ?? {
+      bg: "#F3EEFF",
+      color: "#7c3aed",
+      label: "Recurring",
+    }
+  );
 }
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
@@ -727,7 +734,7 @@ function AdminPaymentModal({ item, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-70 flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.5)" }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
@@ -903,9 +910,14 @@ function AdminPaymentModal({ item, onClose }) {
 }
 
 // ── Add Member modal ──────────────────────────────────────────────────────────
-const ALLOWED_ROLE_NAMES = new Set(["Community Member", "Community Admin", "Community Manager"]);
+const ALLOWED_ROLE_NAMES = new Set([
+  "Community Member",
+  "Community Admin",
+  "Community Manager",
+]);
 const FALLBACK_ROLES = [{ id: "member", name: "Community Member" }];
-const CSV_TEMPLATE = "First Name,Last Name,Email Address,Phone Number,Member ID,Role/Title\nMuhammed,Dorachinma,Muhammed@example.com,0812990293,A23434,Student";
+const CSV_TEMPLATE =
+  "First Name,Last Name,Email Address,Phone Number,Member ID,Role/Title\nMuhammed,Dorachinma,Muhammed@example.com,0812990293,A23434,Student";
 
 function AddMemberModal({ onClose, communityId }) {
   const [tab, setTab] = useState("upload");
@@ -933,15 +945,19 @@ function AddMemberModal({ onClose, communityId }) {
 
   const fileRef = useRef(null);
 
-  const inviteLink = communityId ? `${APP_ORIGIN}/member/join?community=${communityId}` : "";
+  const inviteLink = communityId
+    ? `${APP_ORIGIN}/member/join?community=${communityId}`
+    : "";
   const { inviteMember } = useCommunityMembers(communityId);
   const { data: rolesData } = useRoles();
   const roles = (rolesData ?? []).filter((r) => ALLOWED_ROLE_NAMES.has(r.name));
   const finalRoles = roles.length ? roles : FALLBACK_ROLES;
-  const defaultRole = finalRoles.find((r) => r.name === "Community Member") ?? finalRoles[0];
+  const defaultRole =
+    finalRoles.find((r) => r.name === "Community Member") ?? finalRoles[0];
   const [roleId, setRoleId] = useState(defaultRole?.id ?? "");
 
-  const inputCls = "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+  const inputCls =
+    "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
 
   function copyLink() {
     if (!inviteLink) return;
@@ -963,14 +979,22 @@ function AddMemberModal({ onClose, communityId }) {
   function parseCSV(text) {
     const lines = text.trim().split("\n");
     if (lines.length < 2) return [];
-    return lines.slice(1).map((line) => {
-      const [firstName, lastName, email, phone, memberId, role] = line.split(",").map((s) => s?.trim() ?? "");
-      return { firstName, lastName, email, phone, memberId, role };
-    }).filter((r) => r.email);
+    return lines
+      .slice(1)
+      .map((line) => {
+        const [firstName, lastName, email, phone, memberId, role] = line
+          .split(",")
+          .map((s) => s?.trim() ?? "");
+        return { firstName, lastName, email, phone, memberId, role };
+      })
+      .filter((r) => r.email);
   }
 
   function handleFile(file) {
-    if (!file || !file.name.endsWith(".csv")) { setCsvError("Please upload a .csv file."); return; }
+    if (!file || !file.name.endsWith(".csv")) {
+      setCsvError("Please upload a .csv file.");
+      return;
+    }
     setCsvError("");
     setCsvFile(file);
     const reader = new FileReader();
@@ -978,7 +1002,11 @@ function AddMemberModal({ onClose, communityId }) {
     reader.readAsText(file);
   }
 
-  function handleDrop(e) { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]); }
+  function handleDrop(e) {
+    e.preventDefault();
+    setDragOver(false);
+    handleFile(e.dataTransfer.files[0]);
+  }
 
   async function handleUrlUpload() {
     const url = fileUrl.trim();
@@ -986,7 +1014,10 @@ function AddMemberModal({ onClose, communityId }) {
     setCsvError("");
     setUrlStage("fetching");
     setUrlProgress(8);
-    const tick = setInterval(() => setUrlProgress((p) => (p < 88 ? p + Math.random() * 18 : p)), 250);
+    const tick = setInterval(
+      () => setUrlProgress((p) => (p < 88 ? p + Math.random() * 18 : p)),
+      250,
+    );
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error("Couldn't download a file from that URL.");
@@ -995,7 +1026,13 @@ function AddMemberModal({ onClose, communityId }) {
       setUrlProgress(100);
       const sizeKb = new Blob([text]).size / 1024;
       const name = url.split("/").pop() || "file.csv";
-      setUrlFileInfo({ name, sizeLabel: sizeKb > 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(sizeKb))} KB` });
+      setUrlFileInfo({
+        name,
+        sizeLabel:
+          sizeKb > 1024
+            ? `${(sizeKb / 1024).toFixed(1)} MB`
+            : `${Math.max(1, Math.round(sizeKb))} KB`,
+      });
       setUrlCsvText(text);
       setCsvRows(parseCSV(text));
       setUrlStage("complete");
@@ -1008,8 +1045,12 @@ function AddMemberModal({ onClose, communityId }) {
   }
 
   function clearUrlUpload() {
-    setUrlStage("idle"); setUrlProgress(0); setUrlFileInfo(null);
-    setUrlCsvText(null); setFileUrl(""); setCsvRows([]);
+    setUrlStage("idle");
+    setUrlProgress(0);
+    setUrlFileInfo(null);
+    setUrlCsvText(null);
+    setFileUrl("");
+    setCsvRows([]);
   }
 
   async function handleUploadCSV() {
@@ -1017,11 +1058,20 @@ function AddMemberModal({ onClose, communityId }) {
     setUploading(true);
     for (const row of csvRows) {
       if (!row.email) continue;
-      try { await inviteMember.mutateAsync({ email: row.email, roleId: finalRoles[0]?.id ?? "", billingExempt: false }); }
-      catch { /* skip failed rows */ }
+      try {
+        await inviteMember.mutateAsync({
+          email: row.email,
+          roleId: finalRoles[0]?.id ?? "",
+          billingExempt: false,
+        });
+      } catch {
+        /* skip failed rows */
+      }
     }
     setUploading(false);
-    setCsvRows([]); setCsvFile(null); clearUrlUpload();
+    setCsvRows([]);
+    setCsvFile(null);
+    clearUrlUpload();
   }
 
   function commitEmailChip() {
@@ -1030,8 +1080,11 @@ function AddMemberModal({ onClose, communityId }) {
     setEmailInput("");
   }
   function handleEmailKeyDown(e) {
-    if (e.key === "Enter" || e.key === "," || e.key === " ") { e.preventDefault(); commitEmailChip(); }
-    else if (e.key === "Backspace" && !emailInput && emails.length > 0) setEmails((arr) => arr.slice(0, -1));
+    if (e.key === "Enter" || e.key === "," || e.key === " ") {
+      e.preventDefault();
+      commitEmailChip();
+    } else if (e.key === "Backspace" && !emailInput && emails.length > 0)
+      setEmails((arr) => arr.slice(0, -1));
   }
 
   async function handleSendInvite() {
@@ -1040,13 +1093,25 @@ function AddMemberModal({ onClose, communityId }) {
     setManualLoading(true);
     try {
       const results = await Promise.allSettled(
-        emails.map((em) => inviteMember.mutateAsync({ email: em, roleId, billingExempt }))
+        emails.map((em) =>
+          inviteMember.mutateAsync({ email: em, roleId, billingExempt }),
+        ),
       );
       const succeeded = results.filter((r) => r.status === "fulfilled").length;
-      if (succeeded === 0) throw results.find((r) => r.status === "rejected")?.reason ?? new Error("Failed to send invites.");
-      setEmails([]); setPhoneNumbers(""); onClose();
+      if (succeeded === 0)
+        throw (
+          results.find((r) => r.status === "rejected")?.reason ??
+          new Error("Failed to send invites.")
+        );
+      setEmails([]);
+      setPhoneNumbers("");
+      onClose();
     } catch (err) {
-      setManualError(err?.response?.data?.description ?? err?.message ?? "Failed to send invites.");
+      setManualError(
+        err?.response?.data?.description ??
+          err?.message ??
+          "Failed to send invites.",
+      );
     } finally {
       setManualLoading(false);
     }
@@ -1054,46 +1119,75 @@ function AddMemberModal({ onClose, communityId }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between px-8 pt-7 pb-4">
           <div>
-            <h2 className="text-base font-medium text-gray-900 mb-1">Add your members</h2>
-            <p className="text-sm text-gray-500">Add your members now or invite them to join on their own. You can always add more from your dashboard later.</p>
+            <h2 className="text-base font-medium text-gray-900 mb-1">
+              Add your members
+            </h2>
+            <p className="text-sm text-gray-500">
+              Add your members now or invite them to join on their own. You can
+              always add more from your dashboard later.
+            </p>
           </div>
-          <button onClick={onClose}
-            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-100 bg-white cursor-pointer flex-shrink-0 ml-4">
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-100 bg-white cursor-pointer flex-shrink-0 ml-4"
+          >
             <X size={14} />
           </button>
         </div>
 
         <div className="px-8 pb-8 flex flex-col gap-5">
           {/* Invite link banner */}
-          <div className="flex items-center justify-between px-5 py-4 rounded-xl"
-            style={{ background: "#D7E2FF", border: "1px solid #0E628C33" }}>
+          <div
+            className="flex items-center justify-between px-5 py-4 rounded-xl"
+            style={{ background: "#D7E2FF", border: "1px solid #0E628C33" }}
+          >
             <div>
-              <p className="text-xs text-gray-900 mb-0.5">Your community is ready to grow.</p>
-              <p className="text-xs text-gray-500">Copy this link and share it with your members to get them on Glass.</p>
+              <p className="text-xs text-gray-900 mb-0.5">
+                Your community is ready to grow.
+              </p>
+              <p className="text-xs text-gray-500">
+                Copy this link and share it with your members to get them on
+                Glass.
+              </p>
             </div>
-            <button onClick={copyLink}
-              className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#002FA7] text-xs font-semibold text-[#002FA7] hover:bg-white transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent">
-              <Copy size={12} />{linkCopied ? "Copied!" : "Copy Link"}
+            <button
+              onClick={copyLink}
+              className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#002FA7] text-xs font-semibold text-[#002FA7] hover:bg-white transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent"
+            >
+              <Copy size={12} />
+              {linkCopied ? "Copied!" : "Copy Link"}
             </button>
           </div>
 
           {/* Direct add card */}
-          <div className="bg-white rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
-            <h3 className="text-base font-semibold text-gray-900 mb-4">Prefer To Add Members Directly?</h3>
+          <div
+            className="bg-white rounded-lg p-6"
+            style={{ border: "1px solid #E5E7EB" }}
+          >
+            <h3 className="text-base font-semibold text-gray-900 mb-4">
+              Prefer To Add Members Directly?
+            </h3>
 
             {/* Tabs */}
             <div className="flex gap-6 border-b border-gray-200 mb-5">
               {["upload", "manual"].map((t) => (
-                <button key={t} onClick={() => setTab(t)}
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
                   className="pb-2.5 text-sm font-medium capitalize bg-transparent border-none cursor-pointer transition-all"
-                  style={{ color: tab === t ? "#002FA7" : "#9ca3af", borderBottom: tab === t ? "2px solid #002FA7" : "2px solid transparent" }}>
+                  style={{
+                    color: tab === t ? "#002FA7" : "#9ca3af",
+                    borderBottom:
+                      tab === t ? "2px solid #002FA7" : "2px solid transparent",
+                  }}
+                >
                   {t.charAt(0).toUpperCase() + t.slice(1)}
                 </button>
               ))}
@@ -1102,28 +1196,62 @@ function AddMemberModal({ onClose, communityId }) {
             {/* Upload tab */}
             {tab === "upload" && (
               <>
-                <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
+                <p className="text-sm font-semibold text-gray-900 mb-4">
+                  Upload a CSV
+                </p>
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm text-gray-500">Upload a CSV file with following sample information</p>
-                  <button onClick={downloadTemplate}
-                    className="flex items-center gap-1.5 text-xs font-medium text-[#002FA7] hover:opacity-80 bg-transparent border-none cursor-pointer">
-                    <Download size={12} />Download Template
+                  <p className="text-sm text-gray-500">
+                    Upload a CSV file with following sample information
+                  </p>
+                  <button
+                    onClick={downloadTemplate}
+                    className="flex items-center gap-1.5 text-xs font-medium text-[#002FA7] hover:opacity-80 bg-transparent border-none cursor-pointer"
+                  >
+                    <Download size={12} />
+                    Download Template
                   </button>
                 </div>
 
-                <div className="rounded-md overflow-x-auto mb-4" style={{ border: "1px solid #E5E7EB" }}>
+                <div
+                  className="rounded-md overflow-x-auto mb-4"
+                  style={{ border: "1px solid #E5E7EB" }}
+                >
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="bg-gray-50">
-                        {["First Name", "Last Name", "Email Address", "Phone Number", "Member ID", "Role/Title"].map((h) => (
-                          <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500">{h}</th>
+                        {[
+                          "First Name",
+                          "Last Name",
+                          "Email Address",
+                          "Phone Number",
+                          "Member ID",
+                          "Role/Title",
+                        ].map((h) => (
+                          <th
+                            key={h}
+                            className="px-4 py-3 text-left text-xs font-medium text-gray-500"
+                          >
+                            {h}
+                          </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       <tr className="border-t border-gray-100">
-                        {["Muhammed", "Dorachinma", "Muha***med@**.com", "0812990293", "A23434", "Student"].map((cell, i) => (
-                          <td key={i} className={`px-4 py-3 ${i === 2 ? "text-[#002FA7] underline" : "text-gray-900"}`}>{cell}</td>
+                        {[
+                          "Muhammed",
+                          "Dorachinma",
+                          "Muha***med@**.com",
+                          "0812990293",
+                          "A23434",
+                          "Student",
+                        ].map((cell, i) => (
+                          <td
+                            key={i}
+                            className={`px-4 py-3 ${i === 2 ? "text-[#002FA7] underline" : "text-gray-900"}`}
+                          >
+                            {cell}
+                          </td>
                         ))}
                       </tr>
                     </tbody>
@@ -1132,67 +1260,153 @@ function AddMemberModal({ onClose, communityId }) {
 
                 <div
                   onClick={() => fileRef.current?.click()}
-                  onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
                   onDragLeave={() => setDragOver(false)}
                   onDrop={handleDrop}
                   className="w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-5"
-                  style={{ minHeight: 140, background: dragOver ? "#EEF2FF" : "#FAFAFA", border: dragOver ? "2px dashed #002FA7" : "2px dashed #D1D5DB" }}
+                  style={{
+                    minHeight: 140,
+                    background: dragOver ? "#EEF2FF" : "#FAFAFA",
+                    border: dragOver
+                      ? "2px dashed #002FA7"
+                      : "2px dashed #D1D5DB",
+                  }}
                 >
-                  <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={(e) => handleFile(e.target.files[0])} />
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept=".csv"
+                    className="hidden"
+                    onChange={(e) => handleFile(e.target.files[0])}
+                  />
                   <UploadCloud size={30} className="text-gray-400 mb-3" />
-                  {csvFile
-                    ? <p className="text-xs text-[#002FA7] font-medium">{csvFile.name} — {csvRows.length} rows</p>
-                    : <p className="text-xs text-gray-500">Drag and Drop CSV here or <span className="text-[#002FA7] font-medium underline">Browse</span></p>}
-                  {csvError && <p className="text-xs text-red-500 mt-2">{csvError}</p>}
+                  {csvFile ? (
+                    <p className="text-xs text-[#002FA7] font-medium">
+                      {csvFile.name} — {csvRows.length} rows
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500">
+                      Drag and Drop CSV here or{" "}
+                      <span className="text-[#002FA7] font-medium underline">
+                        Browse
+                      </span>
+                    </p>
+                  )}
+                  {csvError && (
+                    <p className="text-xs text-red-500 mt-2">{csvError}</p>
+                  )}
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-gray-700 mb-2">Or Upload from URL</p>
+                  <p className="text-xs font-medium text-gray-700 mb-2">
+                    Or Upload from URL
+                  </p>
                   <div className="flex gap-2">
-                    <input type="url" value={fileUrl}
-                      onChange={(e) => { setFileUrl(e.target.value); if (urlStage !== "idle") clearUrlUpload(); }}
-                      placeholder="Add File URL" className={inputCls}
-                      disabled={urlStage === "fetching"} />
-                    <button onClick={handleUrlUpload} disabled={!fileUrl.trim() || urlStage === "fetching" || uploading}
-                      className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-[#002FA7] hover:bg-[#002FA7]/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50">
+                    <input
+                      type="url"
+                      value={fileUrl}
+                      onChange={(e) => {
+                        setFileUrl(e.target.value);
+                        if (urlStage !== "idle") clearUrlUpload();
+                      }}
+                      placeholder="Add File URL"
+                      className={inputCls}
+                      disabled={urlStage === "fetching"}
+                    />
+                    <button
+                      onClick={handleUrlUpload}
+                      disabled={
+                        !fileUrl.trim() || urlStage === "fetching" || uploading
+                      }
+                      className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-[#002FA7] hover:bg-[#002FA7]/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50"
+                    >
                       Upload
                     </button>
                   </div>
 
                   {urlStage === "fetching" && (
-                    <div className="mt-3 rounded-lg flex flex-col items-center justify-center py-10"
-                      style={{ border: "2px dashed #002FA7", background: "#EEF2FF" }}>
+                    <div
+                      className="mt-3 rounded-lg flex flex-col items-center justify-center py-10"
+                      style={{
+                        border: "2px dashed #002FA7",
+                        background: "#EEF2FF",
+                      }}
+                    >
                       <div className="relative w-16 h-16 mb-3">
-                        <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90">
-                          <circle cx="32" cy="32" r="28" fill="none" stroke="#E0E3F0" strokeWidth="6" />
-                          <circle cx="32" cy="32" r="28" fill="none" stroke="#002FA7" strokeWidth="6"
+                        <svg
+                          viewBox="0 0 64 64"
+                          className="w-16 h-16 -rotate-90"
+                        >
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r="28"
+                            fill="none"
+                            stroke="#E0E3F0"
+                            strokeWidth="6"
+                          />
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r="28"
+                            fill="none"
+                            stroke="#002FA7"
+                            strokeWidth="6"
                             strokeDasharray={2 * Math.PI * 28}
-                            strokeDashoffset={2 * Math.PI * 28 * (1 - urlProgress / 100)}
-                            strokeLinecap="round" style={{ transition: "stroke-dashoffset 0.2s linear" }} />
+                            strokeDashoffset={
+                              2 * Math.PI * 28 * (1 - urlProgress / 100)
+                            }
+                            strokeLinecap="round"
+                            style={{
+                              transition: "stroke-dashoffset 0.2s linear",
+                            }}
+                          />
                         </svg>
                         <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-gray-900">
                           {Math.round(urlProgress)}%
                         </span>
                       </div>
-                      <p className="text-sm text-gray-700 mb-3">Uploading File...</p>
-                      <button onClick={clearUrlUpload}
-                        className="px-4 py-1.5 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-50 transition-all bg-white border border-gray-300 cursor-pointer">
+                      <p className="text-sm text-gray-700 mb-3">
+                        Uploading File...
+                      </p>
+                      <button
+                        onClick={clearUrlUpload}
+                        className="px-4 py-1.5 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-50 transition-all bg-white border border-gray-300 cursor-pointer"
+                      >
                         Cancel
                       </button>
                     </div>
                   )}
 
                   {urlStage === "complete" && urlFileInfo && (
-                    <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3" style={{ border: "1px solid #E5E7EB" }}>
-                      <FileSpreadsheet size={20} className="text-green-600 flex-shrink-0" />
+                    <div
+                      className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3"
+                      style={{ border: "1px solid #E5E7EB" }}
+                    >
+                      <FileSpreadsheet
+                        size={20}
+                        className="text-green-600 flex-shrink-0"
+                      />
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs text-gray-900 truncate">{urlFileInfo.name}</p>
+                        <p className="text-xs text-gray-900 truncate">
+                          {urlFileInfo.name}
+                        </p>
                         <p className="text-xs text-gray-500 flex items-center gap-1">
-                          {urlFileInfo.sizeLabel} • <Check size={11} className="text-green-600" /> <span className="text-green-600 font-medium">Complete</span>
+                          {urlFileInfo.sizeLabel} •{" "}
+                          <Check size={11} className="text-green-600" />{" "}
+                          <span className="text-green-600 font-medium">
+                            Complete
+                          </span>
                         </p>
                       </div>
-                      <button onClick={clearUrlUpload} aria-label="Remove file"
-                        className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0">
+                      <button
+                        onClick={clearUrlUpload}
+                        aria-label="Remove file"
+                        className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0"
+                      >
                         <X size={16} />
                       </button>
                     </div>
@@ -1200,9 +1414,14 @@ function AddMemberModal({ onClose, communityId }) {
                 </div>
 
                 {csvRows.length > 0 && (
-                  <button onClick={handleUploadCSV} disabled={uploading}
-                    className="w-full py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all mt-5 border-none cursor-pointer disabled:opacity-60">
-                    {uploading ? "Sending invites…" : `Send Invites to ${csvRows.length} Members`}
+                  <button
+                    onClick={handleUploadCSV}
+                    disabled={uploading}
+                    className="w-full py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all mt-5 border-none cursor-pointer disabled:opacity-60"
+                  >
+                    {uploading
+                      ? "Sending invites…"
+                      : `Send Invites to ${csvRows.length} Members`}
                   </button>
                 )}
               </>
@@ -1211,18 +1430,34 @@ function AddMemberModal({ onClose, communityId }) {
             {/* Manual tab */}
             {tab === "manual" && (
               <>
-                <p className="text-sm font-medium text-gray-900 mb-2">Enter Email(s):</p>
-                <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5"
-                  style={{ minHeight: 60, border: "1px solid #E5E7EB", background: "#fff" }}>
+                <p className="text-sm font-medium text-gray-900 mb-2">
+                  Enter Email(s):
+                </p>
+                <div
+                  className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5"
+                  style={{
+                    minHeight: 60,
+                    border: "1px solid #E5E7EB",
+                    background: "#fff",
+                  }}
+                >
                   {emails.map((em, i) => (
-                    <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800" style={{ background: "#F3F4F6" }}>
+                    <span
+                      key={em + i}
+                      className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800"
+                      style={{ background: "#F3F4F6" }}
+                    >
                       <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-[#002FA7] text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
                         {em.charAt(0).toUpperCase()}
                       </span>
                       {em}
-                      <button onClick={() => setEmails((arr) => arr.filter((_, idx) => idx !== i))}
+                      <button
+                        onClick={() =>
+                          setEmails((arr) => arr.filter((_, idx) => idx !== i))
+                        }
                         aria-label={`Remove ${em}`}
-                        className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex items-center justify-center">
+                        className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex items-center justify-center"
+                      >
                         <X size={12} />
                       </button>
                     </span>
@@ -1233,13 +1468,16 @@ function AddMemberModal({ onClose, communityId }) {
                     onChange={(e) => setEmailInput(e.target.value)}
                     onKeyDown={handleEmailKeyDown}
                     onBlur={commitEmailChip}
-                    placeholder={emails.length === 0 ? "Type an email and press Enter" : ""}
+                    placeholder={
+                      emails.length === 0 ? "Type an email and press Enter" : ""
+                    }
                     className="flex-1 min-w-[160px] outline-none text-sm bg-transparent border-none py-1"
                   />
                 </div>
 
                 <p className="text-sm font-medium text-gray-900 mb-2">
-                  Enter Phone Number(s) <span className="text-gray-400 font-normal">(Optional):</span>
+                  Enter Phone Number(s){" "}
+                  <span className="text-gray-400 font-normal">(Optional):</span>
                 </p>
                 <input
                   type="text"
@@ -1255,19 +1493,32 @@ function AddMemberModal({ onClose, communityId }) {
                   onChange={(e) => setRoleId(e.target.value)}
                   className={`${inputCls} mb-4`}
                 >
-                  {finalRoles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+                  {finalRoles.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
                 </select>
 
                 <label className="flex items-center gap-2 text-sm text-gray-600 mb-5 cursor-pointer">
-                  <input type="checkbox" checked={billingExempt} onChange={(e) => setBillingExempt(e.target.checked)} />
+                  <input
+                    type="checkbox"
+                    checked={billingExempt}
+                    onChange={(e) => setBillingExempt(e.target.checked)}
+                  />
                   Exempt from billing
                 </label>
 
-                {manualError && <p className="text-xs text-red-500 mb-3">{manualError}</p>}
+                {manualError && (
+                  <p className="text-xs text-red-500 mb-3">{manualError}</p>
+                )}
 
                 <div className="flex justify-end">
-                  <button onClick={handleSendInvite} disabled={emails.length === 0 || manualLoading}
-                    className="px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50">
+                  <button
+                    onClick={handleSendInvite}
+                    disabled={emails.length === 0 || manualLoading}
+                    className="px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
+                  >
                     {manualLoading ? "Sending…" : "Send Invite"}
                   </button>
                 </div>
@@ -1290,11 +1541,22 @@ function DashboardContent({ isPaying, communityId }) {
   const [payingItem, setPayingItem] = useState(null);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [gsDismissed, setGsDismissed] = useState(() => {
-    try { return localStorage.getItem(`gs_done_${communityId}`) === "1"; } catch { return false; }
+    try {
+      return localStorage.getItem(`gs_done_${communityId}`) === "1";
+    } catch {
+      return false;
+    }
   });
 
-  const { balances, members, transactions, obligations, activity, isLoading, error } =
-    useCommunityDashboard(communityId);
+  const {
+    balances,
+    members,
+    transactions,
+    obligations,
+    activity,
+    isLoading,
+    error,
+  } = useCommunityDashboard(communityId);
   const { plans, isLoading: plansLoading } = usePaymentPlans(communityId);
 
   // Paying admin's own dues, as a member of this community
@@ -1329,8 +1591,11 @@ function DashboardContent({ isPaying, communityId }) {
   function hasActiveAutoPay(item) {
     return (myAuthorisations ?? []).some((auth) =>
       auth.consents.some(
-        (c) => !c.revoked && c.paymentLinkTitle === item.name && c.communityName === item.communityName
-      )
+        (c) =>
+          !c.revoked &&
+          c.paymentLinkTitle === item.name &&
+          c.communityName === item.communityName,
+      ),
     );
   }
 
@@ -1340,15 +1605,23 @@ function DashboardContent({ isPaying, communityId }) {
   }
 
   // ── Getting started checklist ─────────────────────────────────────────────
-  const { account: payoutAccount, isLoading: payoutLoading } = useCommunityAccount(communityId);
-  const gsHasPlans         = plans.length > 0;
-  const gsHasMembers       = (members?.total ?? 0) > 0;
+  const { account: payoutAccount, isLoading: payoutLoading } =
+    useCommunityAccount(communityId);
+  const gsHasPlans = plans.length > 0;
+  const gsHasMembers = (members?.total ?? 0) > 0;
   const gsHasPayoutAccount = !!payoutAccount;
-  const showGettingStarted = !isLoading && !plansLoading && !payoutLoading && !gsDismissed && (!gsHasPlans || !gsHasMembers || !gsHasPayoutAccount);
+  const showGettingStarted =
+    !isLoading &&
+    !plansLoading &&
+    !payoutLoading &&
+    !gsDismissed &&
+    (!gsHasPlans || !gsHasMembers || !gsHasPayoutAccount);
 
   function dismissGs() {
     setGsDismissed(true);
-    try { localStorage.setItem(`gs_done_${communityId}`, "1"); } catch {}
+    try {
+      localStorage.setItem(`gs_done_${communityId}`, "1");
+    } catch {}
   }
 
   // ── Derived stats ─────────────────────────────────────────────────────────
@@ -1392,12 +1665,12 @@ function DashboardContent({ isPaying, communityId }) {
     const byUserId = {};
     for (const m of members.list ?? []) {
       const first = m.user?.firstName ?? m.firstName ?? "";
-      const last  = m.user?.lastName  ?? m.lastName  ?? "";
-      const raw   = `${first} ${last}`.trim() || m.user?.email || m.email || null;
-      const name  = raw ? raw.replace(/\b\w/g, (c) => c.toUpperCase()) : null;
+      const last = m.user?.lastName ?? m.lastName ?? "";
+      const raw = `${first} ${last}`.trim() || m.user?.email || m.email || null;
+      const name = raw ? raw.replace(/\b\w/g, (c) => c.toUpperCase()) : null;
       if (!name) continue;
-      if (m.id)        byMemberId[String(m.id)] = name;
-      if (m.user?.id)  byUserId[String(m.user.id)] = name;
+      if (m.id) byMemberId[String(m.id)] = name;
+      if (m.user?.id) byUserId[String(m.user.id)] = name;
     }
     return { byMemberId, byUserId };
   }, [members.list]);
@@ -1405,13 +1678,15 @@ function DashboardContent({ isPaying, communityId }) {
   function resolveMemberName(tx) {
     // 1. Try the members list (most reliable — has proper first/last name)
     const mid = tx.member?.id ?? tx.memberId;
-    if (mid && memberNameMap.byMemberId[String(mid)]) return memberNameMap.byMemberId[String(mid)];
+    if (mid && memberNameMap.byMemberId[String(mid)])
+      return memberNameMap.byMemberId[String(mid)];
     const uid = tx.member?.user?.id ?? tx.user?.id ?? tx.userId;
-    if (uid && memberNameMap.byUserId[String(uid)]) return memberNameMap.byUserId[String(uid)];
+    if (uid && memberNameMap.byUserId[String(uid)])
+      return memberNameMap.byUserId[String(uid)];
     // 2. Fall back to whatever name fields the transaction itself carries
     const u = tx.member?.user ?? tx.user ?? tx.payer ?? tx.member ?? {};
     const f = u.firstName ?? tx.firstName ?? "";
-    const l = u.lastName  ?? tx.lastName  ?? "";
+    const l = u.lastName ?? tx.lastName ?? "";
     const full = `${f} ${l}`.trim();
     return full ? full.replace(/\b\w/g, (c) => c.toUpperCase()) : null;
   }
@@ -1430,7 +1705,9 @@ function DashboardContent({ isPaying, communityId }) {
       if (!SUCCESS_STATUSES.has((tx.status ?? "").toUpperCase())) continue;
       if (tx.obligationId) paidObligationIds.add(String(tx.obligationId));
       const planId = tx.paymentLink?.id;
-      const mid = String(tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "");
+      const mid = String(
+        tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "",
+      );
       if (planId && mid) paidLinkMemberKeys.add(`${planId}::${mid}`);
     }
 
@@ -1443,10 +1720,16 @@ function DashboardContent({ isPaying, communityId }) {
       const planId = ob.paymentLink?.id;
       if (!planId) continue;
       if (!byPlan[planId]) {
-        byPlan[planId] = { collected: 0, seenMemberIds: new Set(), paidMemberIds: new Set() };
+        byPlan[planId] = {
+          collected: 0,
+          seenMemberIds: new Set(),
+          paidMemberIds: new Set(),
+        };
       }
 
-      const mid = String(ob.member?.id ?? ob.member?.user?.id ?? ob.user?.id ?? ob.id ?? "");
+      const mid = String(
+        ob.member?.id ?? ob.member?.user?.id ?? ob.user?.id ?? ob.id ?? "",
+      );
       byPlan[planId].seenMemberIds.add(mid);
 
       const s = (ob.status ?? "").toUpperCase();
@@ -1458,15 +1741,38 @@ function DashboardContent({ isPaying, communityId }) {
     }
 
     // Transactions tell us the real amount collected
+    // for (const tx of transactions) {
+    //   const planId = tx.paymentLink?.id;
+    //   if (!planId) continue;
+    //   if (!byPlan[planId]) {
+    //     byPlan[planId] = { collected: 0, seenMemberIds: new Set(), paidMemberIds: new Set() };
+    //   }
+    //   if (SUCCESS_STATUSES.has((tx.status ?? "").toUpperCase())) {
+    //     byPlan[planId].collected += tx.amount ?? 0;
+    //   }
+    // }
+
+    const countedPlanMemberPaymentsDashboard = new Set();
     for (const tx of transactions) {
       const planId = tx.paymentLink?.id;
       if (!planId) continue;
       if (!byPlan[planId]) {
-        byPlan[planId] = { collected: 0, seenMemberIds: new Set(), paidMemberIds: new Set() };
+        byPlan[planId] = {
+          collected: 0,
+          seenMemberIds: new Set(),
+          paidMemberIds: new Set(),
+        };
       }
-      if (SUCCESS_STATUSES.has((tx.status ?? "").toUpperCase())) {
-        byPlan[planId].collected += tx.amount ?? 0;
-      }
+      if (!SUCCESS_STATUSES.has((tx.status ?? "").toUpperCase())) continue;
+
+      const mid = String(
+        tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "",
+      );
+      const dedupeKey = mid ? `${planId}::${mid}` : `${planId}::${tx.id}`;
+      if (countedPlanMemberPaymentsDashboard.has(dedupeKey)) continue;
+      countedPlanMemberPaymentsDashboard.add(dedupeKey);
+
+      byPlan[planId].collected += tx.amount ?? 0;
     }
 
     const result = {};
@@ -1486,9 +1792,21 @@ function DashboardContent({ isPaying, communityId }) {
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter((t) => {
-        const name  = (resolveMemberName(t) ?? "").toLowerCase();
-        const plan  = (t.planName ?? t.paymentLink?.title ?? t.description ?? "").toLowerCase();
-        const email = (t.member?.user?.email ?? t.user?.email ?? t.payer?.email ?? t.member?.email ?? t.email ?? "").toLowerCase();
+        const name = (resolveMemberName(t) ?? "").toLowerCase();
+        const plan = (
+          t.planName ??
+          t.paymentLink?.title ??
+          t.description ??
+          ""
+        ).toLowerCase();
+        const email = (
+          t.member?.user?.email ??
+          t.user?.email ??
+          t.payer?.email ??
+          t.member?.email ??
+          t.email ??
+          ""
+        ).toLowerCase();
         return name.includes(q) || plan.includes(q) || email.includes(q);
       });
     }
@@ -1551,11 +1869,18 @@ function DashboardContent({ isPaying, communityId }) {
 
         {/* Getting started checklist — shown until both a plan and members exist */}
         {showGettingStarted && (
-          <div data-tour="getting-started-checklist" className="rounded-xl border border-blue-100 bg-[#EEF3FF] p-5 mb-5">
+          <div
+            data-tour="getting-started-checklist"
+            className="rounded-xl border border-blue-100 bg-[#EEF3FF] p-5 mb-5"
+          >
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
-                <p className="text-sm font-semibold text-gray-900">Get your community ready</p>
-                <p className="text-xs text-gray-500 mt-0.5">Complete these steps to start collecting dues.</p>
+                <p className="text-sm font-semibold text-gray-900">
+                  Get your community ready
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Complete these steps to start collecting dues.
+                </p>
               </div>
               <button
                 onClick={dismissGs}
@@ -1570,24 +1895,44 @@ function DashboardContent({ isPaying, communityId }) {
               {/* Step 1 — always done (they're here) */}
               <div className="flex items-center gap-3">
                 <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                  <Check size={11} className="text-emerald-600" strokeWidth={2.5} />
+                  <Check
+                    size={11}
+                    className="text-emerald-600"
+                    strokeWidth={2.5}
+                  />
                 </span>
-                <span className="text-xs text-gray-400 line-through">Create your community</span>
+                <span className="text-xs text-gray-400 line-through">
+                  Create your community
+                </span>
               </div>
 
               {/* Step 2 — create a payment plan */}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasPlans ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}>
-                    {gsHasPlans && <Check size={11} className="text-emerald-600" strokeWidth={2.5} />}
+                  <span
+                    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasPlans ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}
+                  >
+                    {gsHasPlans && (
+                      <Check
+                        size={11}
+                        className="text-emerald-600"
+                        strokeWidth={2.5}
+                      />
+                    )}
                   </span>
-                  <span className={`text-xs ${gsHasPlans ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}>
+                  <span
+                    className={`text-xs ${gsHasPlans ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}
+                  >
                     Create a payment plan
                   </span>
                 </div>
                 {!gsHasPlans && (
                   <button
-                    onClick={() => navigate(`/dashboard/payments?community=${communityId ?? ""}`)}
+                    onClick={() =>
+                      navigate(
+                        `/dashboard/payments?community=${communityId ?? ""}`,
+                      )
+                    }
                     className="text-xs font-semibold text-[#002FA7] bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
                   >
                     Create plan
@@ -1598,10 +1943,20 @@ function DashboardContent({ isPaying, communityId }) {
               {/* Step 3 — add members */}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasMembers ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}>
-                    {gsHasMembers && <Check size={11} className="text-emerald-600" strokeWidth={2.5} />}
+                  <span
+                    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasMembers ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}
+                  >
+                    {gsHasMembers && (
+                      <Check
+                        size={11}
+                        className="text-emerald-600"
+                        strokeWidth={2.5}
+                      />
+                    )}
                   </span>
-                  <span className={`text-xs ${gsHasMembers ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}>
+                  <span
+                    className={`text-xs ${gsHasMembers ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}
+                  >
                     Add your first member
                   </span>
                 </div>
@@ -1618,16 +1973,28 @@ function DashboardContent({ isPaying, communityId }) {
               {/* Step 4 — payout account */}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasPayoutAccount ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}>
-                    {gsHasPayoutAccount && <Check size={11} className="text-emerald-600" strokeWidth={2.5} />}
+                  <span
+                    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasPayoutAccount ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}
+                  >
+                    {gsHasPayoutAccount && (
+                      <Check
+                        size={11}
+                        className="text-emerald-600"
+                        strokeWidth={2.5}
+                      />
+                    )}
                   </span>
-                  <span className={`text-xs ${gsHasPayoutAccount ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}>
+                  <span
+                    className={`text-xs ${gsHasPayoutAccount ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}
+                  >
                     Set up your payout account
                   </span>
                 </div>
                 {!gsHasPayoutAccount && (
                   <button
-                    onClick={() => navigate("/dashboard/settings/finance/paystack")}
+                    onClick={() =>
+                      navigate("/dashboard/settings/finance/paystack")
+                    }
                     className="text-xs font-semibold text-[#002FA7] bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
                   >
                     Set up
@@ -1742,7 +2109,9 @@ function DashboardContent({ isPaying, communityId }) {
               </span>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setMyPaymentsSort((d) => (d === "desc" ? "asc" : "desc"))}
+                  onClick={() =>
+                    setMyPaymentsSort((d) => (d === "desc" ? "asc" : "desc"))
+                  }
                   className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-200 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
                 >
                   Sort
@@ -1791,87 +2160,90 @@ function DashboardContent({ isPaying, communityId }) {
               </p>
             ) : (
               <div className="overflow-x-auto">
-              <table className="w-full text-sm border-collapse text-left">
-                <thead>
-                  <tr className="border-b border-gray-100">
-                    {["Plan", "Frequency", "Amount", "Due Date", "Status", "Action"].map(
-                      (h) => (
+                <table className="w-full text-sm border-collapse text-left">
+                  <thead>
+                    <tr className="border-b border-gray-100">
+                      {[
+                        "Plan",
+                        "Frequency",
+                        "Amount",
+                        "Due Date",
+                        "Status",
+                        "Action",
+                      ].map((h) => (
                         <th
                           key={h}
                           className="p-2 text-left text-xs text-gray-400"
                         >
                           {h}
                         </th>
-                      ),
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {myUpcomingFiltered.map((row) => {
-                    const isPaid = row.status === "PAID" || row.status === "SUCCESSFUL";
-                    const s = statusStyle(isPaid ? "paid" : "unpaid");
-                    const f = freqStyle(row);
-                    return (
-                      <tr
-                        key={row.id}
-                        className="border-b border-gray-50"
-                      >
-                        <td className="py-3 px-2 text-xs font-medium text-gray-800">
-                          {toTitleCase(row.name)}
-                        </td>
-                        <td className="py-3 px-2">
-                          <span
-                            className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                            style={{ color: f.color, background: f.bg }}
-                          >
-                            {f.label}
-                          </span>
-                        </td>
-                        <td className="py-3 px-2 text-xs text-black">
-                          {formatNaira(row.amount)}
-                        </td>
-                        <td className="py-3 px-2 text-xs text-gray-500">
-                          {row.dueDate
-                            ? new Date(row.dueDate).toLocaleDateString(
-                                "en-NG",
-                                {
-                                  month: "short",
-                                  day: "numeric",
-                                  year: "numeric",
-                                },
-                              )
-                            : "—"}
-                        </td>
-                        <td className="py-3 px-2">
-                          <span
-                            className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                            style={{ color: s.color, background: s.bg }}
-                          >
-                            {s.label}
-                          </span>
-                        </td>
-                        <td className="py-3 px-2">
-                          {isPaid ? (
-                            <button
-                              disabled
-                              className="px-4 py-1.5 rounded text-xs font-semibold text-gray-300 border border-gray-200 bg-white cursor-not-allowed"
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {myUpcomingFiltered.map((row) => {
+                      const isPaid =
+                        row.status === "PAID" || row.status === "SUCCESSFUL";
+                      const s = statusStyle(isPaid ? "paid" : "unpaid");
+                      const f = freqStyle(row);
+                      return (
+                        <tr key={row.id} className="border-b border-gray-50">
+                          <td className="py-3 px-2 text-xs font-medium text-gray-800">
+                            {toTitleCase(row.name)}
+                          </td>
+                          <td className="py-3 px-2">
+                            <span
+                              className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                              style={{ color: f.color, background: f.bg }}
                             >
-                              Pay Now
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handlePayMine(row)}
-                              className="px-4 py-1.5 rounded text-xs font-semibold text-[#002FA7] border border-[#002FA7] bg-white hover:bg-blue-50 cursor-pointer transition-all"
+                              {f.label}
+                            </span>
+                          </td>
+                          <td className="py-3 px-2 text-xs text-black">
+                            {formatNaira(row.amount)}
+                          </td>
+                          <td className="py-3 px-2 text-xs text-gray-500">
+                            {row.dueDate
+                              ? new Date(row.dueDate).toLocaleDateString(
+                                  "en-NG",
+                                  {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  },
+                                )
+                              : "—"}
+                          </td>
+                          <td className="py-3 px-2">
+                            <span
+                              className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                              style={{ color: s.color, background: s.bg }}
                             >
-                              Pay Now
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                              {s.label}
+                            </span>
+                          </td>
+                          <td className="py-3 px-2">
+                            {isPaid ? (
+                              <button
+                                disabled
+                                className="px-4 py-1.5 rounded text-xs font-semibold text-gray-300 border border-gray-200 bg-white cursor-not-allowed"
+                              >
+                                Pay Now
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handlePayMine(row)}
+                                className="px-4 py-1.5 rounded text-xs font-semibold text-[#002FA7] border border-[#002FA7] bg-white hover:bg-blue-50 cursor-pointer transition-all"
+                              >
+                                Pay Now
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
@@ -1912,13 +2284,31 @@ function DashboardContent({ isPaying, communityId }) {
               <div className="flex flex-col gap-3">
                 {plans.map((p, idx) => {
                   const cm = planMetrics[p.id] ?? {};
-                  const paidCount  = cm.paidCount  ?? p.paidCount  ?? 0;
-                  const totalCount = cm.totalCount  > 0 ? cm.totalCount : (p.totalCount > 0 ? p.totalCount : members.total);
-                  const collected  = cm.collected   ?? p.amountCollected ?? 0;
-                  const expected   = p.amount > 0 && totalCount > 0 ? p.amount * totalCount : p.expectedAmount ?? 0;
-                  const pct        = expected > 0 ? Math.min(100, Math.round((collected / expected) * 100)) : 0;
-                  const BAR_COLORS = ["#d4a017", "#7c3aed", "#099DA8", "#059669", "#002FA7", "#e11d48"];
-                  const barColor   = BAR_COLORS[idx % BAR_COLORS.length];
+                  const paidCount = cm.paidCount ?? p.paidCount ?? 0;
+                  const totalCount =
+                    cm.totalCount > 0
+                      ? cm.totalCount
+                      : p.totalCount > 0
+                        ? p.totalCount
+                        : members.total;
+                  const collected = cm.collected ?? p.amountCollected ?? 0;
+                  const expected =
+                    p.amount > 0 && totalCount > 0
+                      ? p.amount * totalCount
+                      : (p.expectedAmount ?? 0);
+                  const pct =
+                    expected > 0
+                      ? Math.min(100, Math.round((collected / expected) * 100))
+                      : 0;
+                  const BAR_COLORS = [
+                    "#d4a017",
+                    "#7c3aed",
+                    "#099DA8",
+                    "#059669",
+                    "#002FA7",
+                    "#e11d48",
+                  ];
+                  const barColor = BAR_COLORS[idx % BAR_COLORS.length];
                   return (
                     <div
                       key={p.id}
@@ -2000,9 +2390,11 @@ function DashboardContent({ isPaying, communityId }) {
                   : event.includes("MEMBER")
                     ? "member"
                     : undefined;
-                const actorName = toTitleCase([a.actor?.firstName, a.actor?.lastName]
-                  .filter(Boolean)
-                  .join(" "));
+                const actorName = toTitleCase(
+                  [a.actor?.firstName, a.actor?.lastName]
+                    .filter(Boolean)
+                    .join(" "),
+                );
                 return (
                   <div
                     key={a.id ?? i}
@@ -2105,13 +2497,27 @@ function DashboardContent({ isPaying, communityId }) {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="border-y border-[#eef0f8] bg-gray-50">
-                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Member</th>
-                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Plan</th>
-                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Amount</th>
-                  <th className="hidden md:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Date</th>
-                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Email</th>
-                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Status</th>
-                  <th className="hidden sm:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">Actions</th>
+                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                    Member
+                  </th>
+                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                    Plan
+                  </th>
+                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                    Amount
+                  </th>
+                  <th className="hidden md:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                    Date
+                  </th>
+                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                    Email
+                  </th>
+                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                    Status
+                  </th>
+                  <th className="hidden sm:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -2143,13 +2549,18 @@ function DashboardContent({ isPaying, communityId }) {
                         className="border-b border-[#f3f4f8] hover:bg-[#fafbff] transition-colors cursor-default"
                       >
                         <td className="px-5 py-3 text-xs font-medium text-[#002FA7]">
-                          {resolveMemberName(tx) ?? (tx.member?.user?.email ?? tx.user?.email ?? tx.email ?? "—")}
+                          {resolveMemberName(tx) ??
+                            tx.member?.user?.email ??
+                            tx.user?.email ??
+                            tx.email ??
+                            "—"}
                         </td>
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-[#d4a017]" />
                             <span className="text-xs text-black">
-                              {toTitleCase(tx.planName ?? tx.description) ?? "—"}
+                              {toTitleCase(tx.planName ?? tx.description) ??
+                                "—"}
                             </span>
                           </div>
                         </td>
@@ -2160,7 +2571,12 @@ function DashboardContent({ isPaying, communityId }) {
                           {formatDate(tx.paidAt ?? tx.createdAt)}
                         </td>
                         <td className="hidden lg:table-cell px-5 py-3 text-xs text-black">
-                          {tx.member?.user?.email ?? tx.user?.email ?? tx.payer?.email ?? tx.member?.email ?? tx.email ?? "—"}
+                          {tx.member?.user?.email ??
+                            tx.user?.email ??
+                            tx.payer?.email ??
+                            tx.member?.email ??
+                            tx.email ??
+                            "—"}
                         </td>
                         <td className="px-5 py-3">
                           <span

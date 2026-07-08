@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query"; // useMutation may need adding if not already imported
 import {
   Plus,
   MoreHorizontal,
@@ -32,7 +32,12 @@ import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
 import Background from "../../assets/background.webp";
 import { getCommunityMembers } from "../../api/communities";
-import { getCommunityObligations, getCommunityTransactions } from "../../api/transactions";
+import {
+  getCommunityObligations,
+  getCommunityTransactions,
+} from "../../api/transactions";
+import { waiveObligation } from "../../api/communities";
+import { useCommunityMembers } from "../../hooks/useCommunityMembers";
 
 const PLAN_STATUS = {
   ACTIVE: { bg: "#ecfdf5", color: "#059669", label: "Active" },
@@ -339,21 +344,31 @@ function Step2({ planType, form, onChange, slugState }) {
               value={form.billingDay || ""}
               min={1}
               max={billingDayMax}
-              placeholder={form.frequency === "WEEKLY" ? "1–7" : `1–${billingDayMax}`}
+              placeholder={
+                form.frequency === "WEEKLY" ? "1–7" : `1–${billingDayMax}`
+              }
               onChange={(e) => {
                 const raw = e.target.value;
-                if (raw === "") { onChange("billingDay", ""); return; }
-                const clamped = Math.min(Math.max(Number(raw), 1), billingDayMax);
+                if (raw === "") {
+                  onChange("billingDay", "");
+                  return;
+                }
+                const clamped = Math.min(
+                  Math.max(Number(raw), 1),
+                  billingDayMax,
+                );
                 onChange("billingDay", String(clamped));
               }}
             />
-            {form.frequency && form.frequency !== "WEEKLY" && form.startDate && (
-              <p className="text-[11px] text-gray-400 mt-1">
-                {billingDayMax < 31
-                  ? `The selected start month only has ${billingDayMax} days.`
-                  : null}
-              </p>
-            )}
+            {form.frequency &&
+              form.frequency !== "WEEKLY" &&
+              form.startDate && (
+                <p className="text-[11px] text-gray-400 mt-1">
+                  {billingDayMax < 31
+                    ? `The selected start month only has ${billingDayMax} days.`
+                    : null}
+                </p>
+              )}
           </div>
         ) : (
           <div>
@@ -778,11 +793,21 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
                   value={form.billingDay}
                   min={1}
                   max={editBillingDayMax}
-                  placeholder={form.frequency === "WEEKLY" ? "1–7" : `1–${editBillingDayMax}`}
+                  placeholder={
+                    form.frequency === "WEEKLY"
+                      ? "1–7"
+                      : `1–${editBillingDayMax}`
+                  }
                   onChange={(e) => {
                     const raw = e.target.value;
-                    if (raw === "") { setForm((f) => ({ ...f, billingDay: "" })); return; }
-                    const clamped = Math.min(Math.max(Number(raw), 1), editBillingDayMax);
+                    if (raw === "") {
+                      setForm((f) => ({ ...f, billingDay: "" }));
+                      return;
+                    }
+                    const clamped = Math.min(
+                      Math.max(Number(raw), 1),
+                      editBillingDayMax,
+                    );
                     setForm((f) => ({ ...f, billingDay: String(clamped) }));
                   }}
                 />
@@ -816,7 +841,9 @@ function PlanMembersModal({ plan, communityId, onClose }) {
   const { data: planMembersData, isLoading } = useQuery({
     queryKey: ["plan-members", communityId, plan.id],
     queryFn: async () => {
-      const res = await getPaymentLinkMembers(communityId, plan.id, { pageSize: 500 });
+      const res = await getPaymentLinkMembers(communityId, plan.id, {
+        pageSize: 500,
+      });
       const raw = res.data?.data;
       return Array.isArray(raw) ? raw : (raw?.content ?? []);
     },
@@ -864,14 +891,24 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     const knownIds = new Set();
     for (const m of communityMembersData ?? []) {
       const first = m.user?.firstName ?? m.firstName ?? "";
-      const last  = m.user?.lastName  ?? m.lastName  ?? "";
-      const name  = `${first} ${last}`.trim() || null;
+      const last = m.user?.lastName ?? m.lastName ?? "";
+      const name = `${first} ${last}`.trim() || null;
       const email = m.user?.email ?? m.email ?? null;
-      const info  = { name, email, joinedAt: m.joinedAt ?? m.member?.joinedAt ?? null };
+      const info = {
+        name,
+        email,
+        joinedAt: m.joinedAt ?? m.member?.joinedAt ?? null,
+      };
       // cm.id = community membership ID; cm.userId = user's global ID (flat field)
       const userId = m.userId ?? m.user?.id ?? null;
-      if (m.id)     { byMemberId[String(m.id)] = info; knownIds.add(String(m.id)); }
-      if (userId)   { byUserId[String(userId)]  = info; knownIds.add(String(userId)); }
+      if (m.id) {
+        byMemberId[String(m.id)] = info;
+        knownIds.add(String(m.id));
+      }
+      if (userId) {
+        byUserId[String(userId)] = info;
+        knownIds.add(String(userId));
+      }
     }
     return { memberLookup: { byMemberId, byUserId }, knownMemberIds: knownIds };
   }, [communityMembersData]);
@@ -902,19 +939,30 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     }
 
     // Step 2: index obligations by userId and email
+    // const map = {};
+    // for (const ob of allObligations) {
+    //   if (String(ob.paymentLink?.id) !== String(plan.id)) continue;
+    //   const info = {
+    //     status: (ob.status ?? "PENDING").toUpperCase(),
+    //     amountPaid: ob.amountPaid ?? ob.paidAmount ?? 0,
+    //     amountDue: ob.amount ?? ob.amountDue ?? plan.amount ?? 0,
+    //   };
     const map = {};
     for (const ob of allObligations) {
       if (String(ob.paymentLink?.id) !== String(plan.id)) continue;
       const info = {
+        id: ob.id,
         status: (ob.status ?? "PENDING").toUpperCase(),
         amountPaid: ob.amountPaid ?? ob.paidAmount ?? 0,
         amountDue: ob.amount ?? ob.amountDue ?? plan.amount ?? 0,
       };
       // ob.member.userId is a flat field (not ob.member.user.id)
-      const userId = String(ob.member?.userId ?? ob.member?.user?.id ?? ob.user?.id ?? "");
-      const email  = ob.member?.email ?? ob.user?.email ?? "";
+      const userId = String(
+        ob.member?.userId ?? ob.member?.user?.id ?? ob.user?.id ?? "",
+      );
+      const email = ob.member?.email ?? ob.user?.email ?? "";
       if (userId) map[userId] = info;
-      if (email)  map[email]  = info;
+      if (email) map[email] = info;
     }
 
     // Step 3: add communityMemberId entries so plan members can match directly
@@ -926,8 +974,8 @@ function PlanMembersModal({ plan, communityId, onClose }) {
   }, [allObligations, communityMembersData, plan.id, plan.amount]);
 
   function getObligationInfo(m) {
-    const mid   = String(m.member?.id ?? m.memberId ?? "");
-    const uid   = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
+    const mid = String(m.member?.id ?? m.memberId ?? "");
+    const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
     // Use the plan member's own email (flat field) as well as the lookup email
     const email =
       m.email ??
@@ -935,8 +983,8 @@ function PlanMembersModal({ plan, communityId, onClose }) {
       memberLookup.byUserId[uid]?.email ??
       "";
     return (
-      (mid   && obligationByMemberId[mid])   ||
-      (uid   && obligationByMemberId[uid])   ||
+      (mid && obligationByMemberId[mid]) ||
+      (uid && obligationByMemberId[uid]) ||
       (email && obligationByMemberId[email]) ||
       null
     );
@@ -952,17 +1000,26 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     // Flat plan-member response: firstName/lastName/email at the top level
     const u = m.member?.user ?? m.user ?? m.member ?? {};
     const f = u.firstName ?? m.firstName ?? "";
-    const l = u.lastName  ?? m.lastName  ?? "";
+    const l = u.lastName ?? m.lastName ?? "";
     return {
-      name:     `${f} ${l}`.trim() || null,
-      email:    u.email ?? m.email ?? null,
+      name: `${f} ${l}`.trim() || null,
+      email: u.email ?? m.email ?? null,
       joinedAt: m.member?.joinedAt ?? m.joinedAt ?? null,
     };
   }
 
-  function getName(m)    { const r = resolveMember(m); return toTitleCase(r.name ?? r.email ?? "Member"); }
-  function getEmail(m)   { return resolveMember(m).email ?? "—"; }
-  function getJoinedAt(m){ return resolveMember(m).joinedAt ?? m.member?.joinedAt ?? m.joinedAt ?? null; }
+  function getName(m) {
+    const r = resolveMember(m);
+    return toTitleCase(r.name ?? r.email ?? "Member");
+  }
+  function getEmail(m) {
+    return resolveMember(m).email ?? "—";
+  }
+  function getJoinedAt(m) {
+    return (
+      resolveMember(m).joinedAt ?? m.member?.joinedAt ?? m.joinedAt ?? null
+    );
+  }
 
   function getStatus(m) {
     const ob = getObligationInfo(m);
@@ -987,37 +1044,83 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     return m.amount ?? m.amountDue ?? m.obligation?.amount ?? plan.amount ?? 0;
   }
 
+  // ── Member actions: waive + remove ───────────────────────────────────────
+  const queryClient = useQueryClient();
+  const { removeMember } = useCommunityMembers(communityId);
+
+  const waive = useMutation({
+    mutationFn: (obligationId) => waiveObligation(communityId, obligationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["community", communityId, "obligations"],
+      });
+      queryClient.invalidateQueries({ queryKey: ["obligations"] });
+    },
+  });
+
+  function handleWaive(m) {
+    const ob = getObligationInfo(m);
+    if (!ob?.id) return; // no real obligation to waive (e.g. unmatched link)
+    if (
+      window.confirm(
+        `Waive this payment for ${getName(m)}? This forgives what they owe.`,
+      )
+    ) {
+      waive.mutate(ob.id);
+    }
+  }
+
+  function handleRemove(m) {
+    const mid = m.member?.id ?? m.memberId;
+    if (!mid) return;
+    if (window.confirm(`Remove ${getName(m)} from this community?`)) {
+      removeMember.mutate(mid);
+    }
+  }
+
   function statusStyle(s) {
-    if (s === "PAID")    return { bg: "#ecfdf5", color: "#059669", label: "Paid" };
-    if (s === "OVERDUE") return { bg: "#fff1f2", color: "#e11d48", label: "Overdue" };
-    if (s === "DUE")     return { bg: "#fffbeb", color: "#b45309", label: "Due" };
-    if (s === "WAIVED")  return { bg: "#f5f6fa", color: "#6b7280", label: "Waived" };
-    if (s === "NONE")    return { bg: "#f5f6fa", color: "#9ca3af", label: "N/A" };
-    return                      { bg: "#fffbeb", color: "#b45309", label: "Pending" };
+    if (s === "PAID") return { bg: "#ecfdf5", color: "#059669", label: "Paid" };
+    if (s === "OVERDUE")
+      return { bg: "#fff1f2", color: "#e11d48", label: "Overdue" };
+    if (s === "DUE") return { bg: "#fffbeb", color: "#b45309", label: "Due" };
+    if (s === "WAIVED")
+      return { bg: "#f5f6fa", color: "#6b7280", label: "Waived" };
+    if (s === "NONE") return { bg: "#f5f6fa", color: "#9ca3af", label: "N/A" };
+    return { bg: "#fffbeb", color: "#b45309", label: "Pending" };
   }
 
   const filtered = planMembers.filter((m) => {
     const q = search.toLowerCase();
-    if (q && !getName(m).toLowerCase().includes(q) && !getEmail(m).toLowerCase().includes(q)) return false;
-    if (statusFilter === "Paid"    && getStatus(m) !== "PAID")    return false;
-    if (statusFilter === "Unpaid"  && getStatus(m) === "PAID")    return false;
+    if (
+      q &&
+      !getName(m).toLowerCase().includes(q) &&
+      !getEmail(m).toLowerCase().includes(q)
+    )
+      return false;
+    if (statusFilter === "Paid" && getStatus(m) !== "PAID") return false;
+    if (statusFilter === "Unpaid" && getStatus(m) === "PAID") return false;
     if (statusFilter === "Overdue" && getStatus(m) !== "OVERDUE") return false;
     return true;
   });
 
-  const paidCount      = planMembers.filter(m => getStatus(m) === "PAID").length;
-  const totalCount     = planMembers.length;
-  const totalCollected = planMembers.reduce((sum, m) => sum + getAmountPaid(m), 0);
+  const paidCount = planMembers.filter((m) => getStatus(m) === "PAID").length;
+  const totalCount = planMembers.length;
+  const totalCollected = planMembers.reduce(
+    (sum, m) => sum + getAmountPaid(m),
+    0,
+  );
 
   function exportCsv() {
     const rows = selected.length
       ? filtered.filter((m) => selected.includes(m.id ?? getName(m)))
       : filtered;
     const header = "Name,Email,Status,Amount Paid,Amount Due,Date Joined\n";
-    const body = rows.map((m) => {
-      const s = statusStyle(getStatus(m));
-      return `${getName(m)},${getEmail(m)},${s.label},${getAmountPaid(m)},${getAmountDue(m)},${formatDate(getJoinedAt(m))}`;
-    }).join("\n");
+    const body = rows
+      .map((m) => {
+        const s = statusStyle(getStatus(m));
+        return `${getName(m)},${getEmail(m)},${s.label},${getAmountPaid(m)},${getAmountDue(m)},${formatDate(getJoinedAt(m))}`;
+      })
+      .join("\n");
     const blob = new Blob([header + body], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -1036,9 +1139,13 @@ function PlanMembersModal({ plan, communityId, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <div>
-            <h2 className="text-base font-semibold text-black">{toTitleCase(plan.name)} — Members</h2>
+            <h2 className="text-base font-semibold text-black">
+              {toTitleCase(plan.name)} — Members
+            </h2>
             <p className="text-xs text-gray-400 mt-0.5">
-              {isLoading ? "Loading…" : `${paidCount} / ${totalCount} paid · ${formatNaira(totalCollected)} collected`}
+              {isLoading
+                ? "Loading…"
+                : `${paidCount} / ${totalCount} paid · ${formatNaira(totalCollected)} collected`}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -1074,13 +1181,20 @@ function PlanMembersModal({ plan, communityId, onClose }) {
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 bg-white cursor-pointer"
             >
               <Filter size={12} /> Filter
-              {statusFilter && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-[#002FA7] flex-shrink-0" />}
+              {statusFilter && (
+                <span className="ml-1 w-1.5 h-1.5 rounded-full bg-[#002FA7] flex-shrink-0" />
+              )}
             </button>
             {filterOpen && (
               <>
-                <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)} />
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setFilterOpen(false)}
+                />
                 <div className="absolute left-0 top-full mt-2 bg-white rounded-xl border border-gray-100 shadow-lg z-20 p-4 w-52">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Status
+                  </label>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
@@ -1093,7 +1207,10 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                   </select>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => { setStatusFilter(""); setFilterOpen(false); }}
+                      onClick={() => {
+                        setStatusFilter("");
+                        setFilterOpen(false);
+                      }}
                       className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-500 cursor-pointer bg-white"
                     >
                       Clear
@@ -1119,14 +1236,31 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                 <th className="px-5 py-2.5 w-8">
                   <input
                     type="checkbox"
-                    checked={selected.length === filtered.length && filtered.length > 0}
+                    checked={
+                      selected.length === filtered.length && filtered.length > 0
+                    }
                     onChange={(e) =>
-                      setSelected(e.target.checked ? filtered.map((m) => m.id ?? getName(m)) : [])
+                      setSelected(
+                        e.target.checked
+                          ? filtered.map((m) => m.id ?? getName(m))
+                          : [],
+                      )
                     }
                   />
                 </th>
-                {["Member", "Email", "Status", "Paid", "Total Due", "Date Joined"].map((h) => (
-                  <th key={h} className="px-4 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">
+                {[
+                  "Member",
+                  "Email",
+                  "Status",
+                  "Paid",
+                  "Total Due",
+                  "Date Joined",
+                  "Actions",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap"
+                  >
                     {h}
                   </th>
                 ))}
@@ -1135,33 +1269,52 @@ function PlanMembersModal({ plan, communityId, onClose }) {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-10 text-center text-xs text-gray-400">Loading…</td>
+                  <td
+                    colSpan={8}
+                    className="px-5 py-10 text-center text-xs text-gray-400"
+                  >
+                    Loading…
+                  </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-5 py-10 text-center text-xs text-gray-400">
-                    {planMembers.length === 0 ? "No members enrolled in this plan." : "No members match your filter."}
+                  <td
+                    colSpan={7}
+                    className="px-5 py-10 text-center text-xs text-gray-400"
+                  >
+                    {planMembers.length === 0
+                      ? "No members enrolled in this plan."
+                      : "No members match your filter."}
                   </td>
                 </tr>
               ) : (
                 filtered.map((m, i) => {
                   const key = m.id ?? i;
-                  const s   = statusStyle(getStatus(m));
+                  const s = statusStyle(getStatus(m));
                   return (
-                    <tr key={key} className="border-b border-gray-50 hover:bg-blue-50/20 transition-colors">
+                    <tr
+                      key={key}
+                      className="border-b border-gray-50 hover:bg-blue-50/20 transition-colors"
+                    >
                       <td className="px-5 py-3">
                         <input
                           type="checkbox"
                           checked={selected.includes(key)}
                           onChange={() =>
-                            setSelected((p) => p.includes(key) ? p.filter((x) => x !== key) : [...p, key])
+                            setSelected((p) =>
+                              p.includes(key)
+                                ? p.filter((x) => x !== key)
+                                : [...p, key],
+                            )
                           }
                         />
                       </td>
                       <td className="px-4 py-3 text-xs font-semibold text-[#002FA7] whitespace-nowrap">
                         {getName(m)}
                       </td>
-                      <td className="px-4 py-3 text-xs text-gray-500">{getEmail(m)}</td>
+                      <td className="px-4 py-3 text-xs text-gray-500">
+                        {getEmail(m)}
+                      </td>
                       <td className="px-4 py-3">
                         <span
                           className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap"
@@ -1178,6 +1331,14 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-500">
                         {formatDate(getJoinedAt(m))}
+                      </td>
+                      <td className="px-4 py-3">
+                        <MemberRowMenu
+                          member={m}
+                          status={getStatus(m)}
+                          onWaive={() => handleWaive(m)}
+                          onRemove={() => handleRemove(m)}
+                        />
                       </td>
                     </tr>
                   );
@@ -1220,6 +1381,48 @@ function MenuItem({ icon, label, onClick, disabled, danger }) {
       {icon && <span className="flex-shrink-0">{icon}</span>}
       {label}
     </button>
+  );
+}
+
+function MemberRowMenu({ member, status, onWaive, onRemove }) {
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+  const canWaive =
+    status !== "PAID" && status !== "NONE" && status !== "WAIVED";
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-7 h-7 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer"
+      >
+        <MoreHorizontal size={13} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={close} />
+          <div className="absolute right-0 top-full mt-1 bg-white rounded-xl border border-gray-100 shadow-xl z-20 overflow-hidden min-w-[160px] py-1">
+            <MenuItem
+              label="Waive Payment"
+              disabled={!canWaive}
+              onClick={() => {
+                onWaive();
+                close();
+              }}
+            />
+            <div className="h-px bg-gray-100 my-1" />
+            <MenuItem
+              label="Remove from Community"
+              danger
+              onClick={() => {
+                onRemove();
+                close();
+              }}
+            />
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -1344,7 +1547,14 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers }) {
 }
 
 // ── Plan card ─────────────────────────────────────────────────────────────────
-function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers, metrics }) {
+function PlanCard({
+  plan,
+  planPlans,
+  barColor,
+  onEdit,
+  onViewMembers,
+  metrics,
+}) {
   const ps = PLAN_STATUS[plan.status] ?? PLAN_STATUS.DRAFT;
 
   const freqLabel =
@@ -1356,14 +1566,16 @@ function PlanCard({ plan, planPlans, barColor, onEdit, onViewMembers, metrics })
 
   // Prefer computed metrics (from obligations/transactions) over the list
   // endpoint's metrics which are never populated server-side.
-  const cm         = metrics ?? {};
-  const paidCount  = cm.paidCount  ?? plan.paidCount  ?? 0;
-  const totalCount = cm.totalCount ?? plan.totalCount  ?? 0;
-  const collected  = cm.collected  ?? plan.amountCollected ?? 0;
-  const expected   = totalCount > 0 && plan.amount > 0
-    ? plan.amount * totalCount
-    : (plan.expectedAmount ?? 0);
-  const pct        = expected > 0 ? Math.min(100, Math.round((collected / expected) * 100)) : 0;
+  const cm = metrics ?? {};
+  const paidCount = cm.paidCount ?? plan.paidCount ?? 0;
+  const totalCount = cm.totalCount ?? plan.totalCount ?? 0;
+  const collected = cm.collected ?? plan.amountCollected ?? 0;
+  const expected =
+    totalCount > 0 && plan.amount > 0
+      ? plan.amount * totalCount
+      : (plan.expectedAmount ?? 0);
+  const pct =
+    expected > 0 ? Math.min(100, Math.round((collected / expected) * 100)) : 0;
 
   return (
     <div
@@ -1465,7 +1677,7 @@ export default function Payments() {
     },
     enabled: !!communityId,
     staleTime: 1000 * 60 * 2,
-    gcTime:    1000 * 60 * 30,
+    gcTime: 1000 * 60 * 30,
     refetchOnMount: "always",
   });
 
@@ -1479,7 +1691,7 @@ export default function Payments() {
     },
     enabled: !!communityId,
     staleTime: 1000 * 60 * 2,
-    gcTime:    1000 * 60 * 30,
+    gcTime: 1000 * 60 * 30,
     refetchOnMount: "always",
   });
 
@@ -1547,7 +1759,9 @@ export default function Payments() {
       if (!SUCCESS.has((tx.status ?? "").toUpperCase())) continue;
       if (tx.obligationId) paidObligationIds.add(String(tx.obligationId));
       const planId = tx.paymentLink?.id;
-      const mid = String(tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "");
+      const mid = String(
+        tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "",
+      );
       if (planId && mid) paidLinkMemberKeys.add(`${planId}::${mid}`);
     }
 
@@ -1561,8 +1775,15 @@ export default function Payments() {
     for (const ob of obligations) {
       const planId = ob.paymentLink?.id;
       if (!planId) continue;
-      if (!byPlan[planId]) byPlan[planId] = { collected: 0, memberIds: new Set(), paidMemberIds: new Set() };
-      const mid = String(ob.member?.id ?? ob.member?.user?.id ?? ob.user?.id ?? ob.id ?? "");
+      if (!byPlan[planId])
+        byPlan[planId] = {
+          collected: 0,
+          memberIds: new Set(),
+          paidMemberIds: new Set(),
+        };
+      const mid = String(
+        ob.member?.id ?? ob.member?.user?.id ?? ob.user?.id ?? ob.id ?? "",
+      );
       if (mid) byPlan[planId].memberIds.add(mid);
       const s = (ob.status ?? "").toUpperCase();
       const isPaid =
@@ -1573,13 +1794,37 @@ export default function Payments() {
       if (isPaid && mid) byPlan[planId].paidMemberIds.add(mid);
     }
 
+    // for (const tx of transactions) {
+    //   const planId = tx.paymentLink?.id;
+    //   if (!planId) continue;
+    //   if (!byPlan[planId]) byPlan[planId] = { collected: 0, memberIds: new Set(), paidMemberIds: new Set() };
+    //   if (SUCCESS.has((tx.status ?? "").toUpperCase())) {
+    //     byPlan[planId].collected += tx.amount ?? 0;
+    //   }
+    // }
+    // A member can end up with multiple SUCCESSFUL transaction rows for the
+    // same plan — a known bug where payment initiation doesn't always send a
+    // real obligationId, so the backend can't recognize an existing obligation
+    // and lets the member pay again on retry. Each row is a genuine charge, but
+    // for display purposes a member should only ever be counted once toward
+    // "collected" for a given plan — otherwise a single member's repeat
+    // payments can make collected exceed what's even possible for the plan.
+    const countedPlanMemberPayments = new Set(); // `${planId}::${memberId}`
     for (const tx of transactions) {
       const planId = tx.paymentLink?.id;
       if (!planId) continue;
-      if (!byPlan[planId]) byPlan[planId] = { collected: 0, memberIds: new Set(), paidMemberIds: new Set() };
-      if (SUCCESS.has((tx.status ?? "").toUpperCase())) {
-        byPlan[planId].collected += tx.amount ?? 0;
-      }
+      if (!byPlan[planId])
+        byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
+      if (!SUCCESS.has((tx.status ?? "").toUpperCase())) continue;
+
+      const mid = String(
+        tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "",
+      );
+      const dedupeKey = mid ? `${planId}::${mid}` : `${planId}::${tx.id}`;
+      if (countedPlanMemberPayments.has(dedupeKey)) continue;
+      countedPlanMemberPayments.add(dedupeKey);
+
+      byPlan[planId].collected += tx.amount ?? 0;
     }
 
     const result = {};
@@ -1590,6 +1835,32 @@ export default function Payments() {
         totalCount: m.memberIds.size,
       };
     }
+
+    // ── TEMPORARY DEBUG — remove after checking ──────────────────────────
+    if (import.meta.env.DEV) {
+      const anniversaryPlan = plans.find((p) =>
+        p.name?.toLowerCase().includes("anniversary"),
+      );
+      if (anniversaryPlan) {
+        const matching = transactions.filter(
+          (tx) => String(tx.paymentLink?.id) === String(anniversaryPlan.id),
+        );
+        console.table(
+          matching.map((tx) => ({
+            id: tx.id,
+            internalReference: tx.internalReference,
+            reference: tx.reference,
+            status: tx.status,
+            obligationId: tx.obligationId,
+            memberId: tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id,
+            createdAt: tx.createdAt,
+            paidAt: tx.paidAt,
+            amount: tx.amount,
+          })),
+        );
+      }
+    }
+    // ── END TEMPORARY DEBUG ───────────────────────────────────────────────
     return result;
   }, [obligations, transactions]);
 
@@ -1602,17 +1873,17 @@ export default function Payments() {
   const stats = useMemo(
     () => ({
       // Use computed collected from transactions (list endpoint metrics are empty)
-      collected: Object.values(planMetrics).reduce((sum, m) => sum + (m.collected ?? 0), 0),
-      active: plans.filter((p) => p.status === "ACTIVE").length,
-      yetToPay: plans.reduce(
-        (sum, p) => {
-          const cm = planMetrics[p.id] ?? {};
-          const total = cm.totalCount ?? 0;
-          const paid  = cm.paidCount  ?? 0;
-          return sum + Math.max(0, total - paid);
-        },
+      collected: Object.values(planMetrics).reduce(
+        (sum, m) => sum + (m.collected ?? 0),
         0,
       ),
+      active: plans.filter((p) => p.status === "ACTIVE").length,
+      yetToPay: plans.reduce((sum, p) => {
+        const cm = planMetrics[p.id] ?? {};
+        const total = cm.totalCount ?? 0;
+        const paid = cm.paidCount ?? 0;
+        return sum + Math.max(0, total - paid);
+      }, 0),
       failed: plans.filter((p) => p.status === "EXPIRED").length,
     }),
     [plans, planMetrics],
