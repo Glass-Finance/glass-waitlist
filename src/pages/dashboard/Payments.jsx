@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { useMutation, useQueryClient } from "@tanstack/react-query"; // useMutation may need adding if not already imported
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"; // useMutation may need adding if not already imported
 import {
   Plus,
   MoreHorizontal,
