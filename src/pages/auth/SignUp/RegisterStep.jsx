@@ -4,6 +4,7 @@ import { register } from "../../../services/authService";
 import { notifyError } from "../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
+import PasswordChecklist from "../../../components/auth/PasswordChecklist";
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
 const inputCls =
@@ -195,7 +196,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-0.5">{PASSWORD_REQUIREMENTS_TEXT}</p>
+          <PasswordChecklist password={form.password} />
         </div>
 
         <div className="flex flex-col gap-1.5">
@@ -240,7 +241,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
         <button
           onClick={onSwitch}
           className="font-semibold hover:underline bg-transparent border-none cursor-pointer"
-          style={{ color: "#1C2B8A" }}
+          style={{ color: "#002FA7" }}
         >
           Sign In
         </button>
