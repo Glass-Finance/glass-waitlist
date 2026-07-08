@@ -159,7 +159,7 @@ export default function Topbar({
       </button>
 
       {/* Search */}
-      <div className="relative flex-1 max-w-[420px] hidden md:block" ref={searchRef}>
+      <div data-tour="topbar-search" className="relative flex-1 max-w-[420px] hidden md:block" ref={searchRef}>
         <div className="flex items-center gap-2 bg-white rounded-md px-3.5 py-2.5 border border-gray-100 focus-within:ring-1 focus-within:ring-[#002FA7]">
           {searching ? (
             <Loader2 size={14} className="text-gray-400 flex-shrink-0 animate-spin" />
