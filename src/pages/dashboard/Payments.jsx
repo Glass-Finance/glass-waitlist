@@ -1484,14 +1484,63 @@ export default function Payments() {
   });
 
   // Compute per-plan: paidCount, totalCount (unique members), collected
+  // const planMetrics = useMemo(() => {
+  //   const SUCCESS = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
+
+  //   // The backend doesn't always update obligation.status to PAID
+  //   // immediately after a payment is verified (same gap documented in
+  //   // useMembersWithPayments.js) — without cross-referencing successful
+  //   // transactions here too, paidCount can lag behind collected, showing
+  //   // e.g. "100% collected" but "0/1 members paid" for the same plan.
+  //   const paidObligationIds = new Set();
+  //   const paidLinkMemberKeys = new Set(); // `${paymentLinkId}::${memberId}`, for txs with no obligationId
+  //   for (const tx of transactions) {
+  //     if (!SUCCESS.has((tx.status ?? "").toUpperCase())) continue;
+  //     if (tx.obligationId) paidObligationIds.add(String(tx.obligationId));
+  //     const planId = tx.paymentLink?.id;
+  //     const mid = String(tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "");
+  //     if (planId && mid) paidLinkMemberKeys.add(`${planId}::${mid}`);
+  //   }
+
+  //   const byPlan = {};
+
+  //   for (const ob of obligations) {
+  //     const planId = ob.paymentLink?.id;
+  //     if (!planId) continue;
+  //     if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
+  //     const mid = String(ob.member?.id ?? ob.member?.user?.id ?? ob.user?.id ?? ob.id ?? "");
+  //     if (mid) byPlan[planId].memberIds.add(mid);
+  //     const s = (ob.status ?? "").toUpperCase();
+  //     const isPaid =
+  //       s === "PAID" ||
+  //       s === "SUCCESSFUL" ||
+  //       paidObligationIds.has(String(ob.id)) ||
+  //       (planId && mid && paidLinkMemberKeys.has(`${planId}::${mid}`));
+  //     if (isPaid) byPlan[planId].paidCount++;
+  //   }
+
+  //   for (const tx of transactions) {
+  //     const planId = tx.paymentLink?.id;
+  //     if (!planId) continue;
+  //     if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
+  //     if (SUCCESS.has((tx.status ?? "").toUpperCase())) {
+  //       byPlan[planId].collected += tx.amount ?? 0;
+  //     }
+  //   }
+
+  //   const result = {};
+  //   for (const [id, m] of Object.entries(byPlan)) {
+  //     result[id] = { collected: m.collected, paidCount: m.paidCount, totalCount: m.memberIds.size };
+  //   }
+  //   return result;
+  // }, [obligations, transactions]);
+
   const planMetrics = useMemo(() => {
     const SUCCESS = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
 
     // The backend doesn't always update obligation.status to PAID
-    // immediately after a payment is verified (same gap documented in
-    // useMembersWithPayments.js) — without cross-referencing successful
-    // transactions here too, paidCount can lag behind collected, showing
-    // e.g. "100% collected" but "0/1 members paid" for the same plan.
+    // immediately after a payment is verified — cross-reference successful
+    // transactions too, so paidCount doesn't lag behind collected.
     const paidObligationIds = new Set();
     const paidLinkMemberKeys = new Set(); // `${paymentLinkId}::${memberId}`, for txs with no obligationId
     for (const tx of transactions) {
@@ -1504,10 +1553,15 @@ export default function Payments() {
 
     const byPlan = {};
 
+    // Track paid members as a unique-member set (paidMemberIds), not a
+    // running counter — a member with 2 paid obligations on the same
+    // recurring plan (e.g. 2 past cycles) is still only 1 paid member.
+    // This is what was causing "2/1 members paid": paidCount was
+    // incrementing per obligation while totalCount stayed unique-member.
     for (const ob of obligations) {
       const planId = ob.paymentLink?.id;
       if (!planId) continue;
-      if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
+      if (!byPlan[planId]) byPlan[planId] = { collected: 0, memberIds: new Set(), paidMemberIds: new Set() };
       const mid = String(ob.member?.id ?? ob.member?.user?.id ?? ob.user?.id ?? ob.id ?? "");
       if (mid) byPlan[planId].memberIds.add(mid);
       const s = (ob.status ?? "").toUpperCase();
@@ -1516,13 +1570,13 @@ export default function Payments() {
         s === "SUCCESSFUL" ||
         paidObligationIds.has(String(ob.id)) ||
         (planId && mid && paidLinkMemberKeys.has(`${planId}::${mid}`));
-      if (isPaid) byPlan[planId].paidCount++;
+      if (isPaid && mid) byPlan[planId].paidMemberIds.add(mid);
     }
 
     for (const tx of transactions) {
       const planId = tx.paymentLink?.id;
       if (!planId) continue;
-      if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
+      if (!byPlan[planId]) byPlan[planId] = { collected: 0, memberIds: new Set(), paidMemberIds: new Set() };
       if (SUCCESS.has((tx.status ?? "").toUpperCase())) {
         byPlan[planId].collected += tx.amount ?? 0;
       }
@@ -1530,7 +1584,11 @@ export default function Payments() {
 
     const result = {};
     for (const [id, m] of Object.entries(byPlan)) {
-      result[id] = { collected: m.collected, paidCount: m.paidCount, totalCount: m.memberIds.size };
+      result[id] = {
+        collected: m.collected,
+        paidCount: m.paidMemberIds.size,
+        totalCount: m.memberIds.size,
+      };
     }
     return result;
   }, [obligations, transactions]);
