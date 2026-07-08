@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query"; // useMutation may need adding if not already imported
+import { useQuery } from "@tanstack/react-query";
 import {
   Plus,
   MoreHorizontal,
@@ -36,8 +36,6 @@ import {
   getCommunityObligations,
   getCommunityTransactions,
 } from "../../api/transactions";
-import { waiveObligation } from "../../api/communities";
-import { useCommunityMembers } from "../../hooks/useCommunityMembers";
 
 const PLAN_STATUS = {
   ACTIVE: { bg: "#ecfdf5", color: "#059669", label: "Active" },
@@ -46,12 +44,43 @@ const PLAN_STATUS = {
   EXPIRED: { bg: "#fff1f2", color: "#e11d48", label: "Inactive" },
   ARCHIVED: { bg: "#fff1f2", color: "#e11d48", label: "Inactive" },
 };
+
+// NOTE: value must match the backend's RecurringPlanRequest.frequency enum
+// exactly (DAILY | WEEKLY | MONTHLY | QUARTERLY | ANNUALLY | CUSTOM).
+// Previously this used "YEARLY", which is not a valid enum value on the
+// backend — any yearly plan created before this fix would have failed
+// validation or been silently rejected server-side.
 const FREQUENCIES = [
-  { label: "Monthly", value: "MONTHLY" },
+  { label: "Daily", value: "DAILY" },
   { label: "Weekly", value: "WEEKLY" },
+  { label: "Monthly", value: "MONTHLY" },
   { label: "Quarterly", value: "QUARTERLY" },
-  { label: "Annually", value: "YEARLY" },
+  { label: "Annually", value: "ANNUALLY" },
 ];
+
+// Matches RecurringPlanRequest.retryPolicy enum.
+const RETRY_POLICIES = [
+  { label: "No retry", value: "NO_RETRY" },
+  { label: "Retry every 24 hours", value: "EVERY_24H" },
+  { label: "Retry with backoff (7 days)", value: "EXPONENTIAL_BACKOFF_7D" },
+];
+
+// Singular unit label per frequency, used to build the "repeat every N ___"
+// copy next to the interval input.
+const FREQUENCY_UNIT_LABEL = {
+  DAILY: "day",
+  WEEKLY: "week",
+  MONTHLY: "month",
+  QUARTERLY: "quarter",
+  ANNUALLY: "year",
+};
+
+function intervalUnitLabel(frequency, interval) {
+  const unit = FREQUENCY_UNIT_LABEL[frequency] ?? "cycle";
+  const n = Number(interval);
+  return n === 1 ? unit : `${unit}s`;
+}
+
 const REMINDERS = ["Every Day", "Every 3 Days", "Every Week", "Every 2 Weeks"];
 const TABS = ["All Plans", "Recurring", "One Time"];
 const BAR_COLORS = ["#d4a017", "#7c3aed", "#002FA7", "#059669"];
@@ -207,10 +236,14 @@ function Step2({ planType, form, onChange, slugState }) {
   const { slug, setSlug, available, checking, suggesting, suggestFrom } =
     slugState;
 
+  const isDaily = form.frequency === "DAILY";
+
   // Weekly billing days are 1–7 (day of week). Monthly billing days are
   // validated against the selected start date's actual month (e.g. 28 for
   // February) rather than a flat 1–28/1–31 range — falls back to 31 (the
-  // most permissive value) until a start date is chosen.
+  // most permissive value) until a start date is chosen. Daily plans don't
+  // use billingDay at all — the cycle is driven by startAt + interval — so
+  // this value is unused (and the field hidden) when frequency is DAILY.
   const billingDayMax = (() => {
     if (form.frequency === "WEEKLY") return 7;
     if (!form.startDate) return 31;
@@ -318,6 +351,38 @@ function Step2({ planType, form, onChange, slugState }) {
           </div>
         )}
       </div>
+
+      {/* Interval — multiplier on top of frequency, e.g. frequency=DAILY +
+          interval=3 means "every 3 days". Required by RecurringPlanRequest;
+          defaults to 1 (i.e. every single cycle) when left blank. */}
+      {planType === "recurring" && form.frequency && (
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Repeat Every
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min={1}
+              className={inputCls + " max-w-[100px]"}
+              value={form.interval || ""}
+              placeholder="1"
+              onChange={(e) => {
+                const raw = e.target.value;
+                if (raw === "") {
+                  onChange("interval", "");
+                  return;
+                }
+                onChange("interval", String(Math.max(1, Number(raw))));
+              }}
+            />
+            <span className="text-xs text-gray-500">
+              {intervalUnitLabel(form.frequency, form.interval || 1)}
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -331,43 +396,47 @@ function Step2({ planType, form, onChange, slugState }) {
           />
         </div>
         {planType === "recurring" ? (
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Billing Day{" "}
-              {form.frequency === "WEEKLY"
-                ? "(1=Mon, 7=Sun)"
-                : "(day of month)"}
-            </label>
-            <input
-              type="number"
-              className={inputCls}
-              value={form.billingDay || ""}
-              min={1}
-              max={billingDayMax}
-              placeholder={
-                form.frequency === "WEEKLY" ? "1–7" : `1–${billingDayMax}`
-              }
-              onChange={(e) => {
-                const raw = e.target.value;
-                if (raw === "") {
-                  onChange("billingDay", "");
-                  return;
+          !isDaily && (
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Billing Day{" "}
+                {form.frequency === "WEEKLY"
+                  ? "(1=Mon, 7=Sun)"
+                  : "(day of month)"}
+              </label>
+              <input
+                type="number"
+                className={inputCls}
+                value={form.billingDay || ""}
+                min={1}
+                max={billingDayMax}
+                placeholder={
+                  form.frequency === "WEEKLY" ? "1–7" : `1–${billingDayMax}`
                 }
-                const clamped = Math.min(
-                  Math.max(Number(raw), 1),
-                  billingDayMax,
-                );
-                onChange("billingDay", String(clamped));
-              }}
-            />
-            <p className="text-[11px] text-gray-400 mt-1">
-              {form.frequency === "WEEKLY"
-                ? "Members are billed on this weekday every week (e.g. 1 = every Monday)."
-                : billingDayMax < 31
-                ? `Members are billed on this day every month (e.g. 5 = the 5th). The selected start month only has ${billingDayMax} days.`
-                : "Members are billed on this day every month (e.g. 5 = the 5th)."}
-            </p>
-          </div>
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  if (raw === "") {
+                    onChange("billingDay", "");
+                    return;
+                  }
+                  const clamped = Math.min(
+                    Math.max(Number(raw), 1),
+                    billingDayMax,
+                  );
+                  onChange("billingDay", String(clamped));
+                }}
+              />
+              {form.frequency &&
+                form.frequency !== "WEEKLY" &&
+                form.startDate && (
+                  <p className="text-[11px] text-gray-400 mt-1">
+                    {billingDayMax < 31
+                      ? `The selected start month only has ${billingDayMax} days.`
+                      : null}
+                  </p>
+                )}
+            </div>
+          )
         ) : (
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -383,6 +452,67 @@ function Step2({ planType, form, onChange, slugState }) {
           </div>
         )}
       </div>
+
+      {/* Optional end date for recurring plans — when to stop generating
+          new obligations. Left blank = runs indefinitely. */}
+      {planType === "recurring" && (
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            End Date <span className="text-gray-400">(optional)</span>
+          </label>
+          <input
+            type="date"
+            className={inputCls}
+            value={form.endAt || ""}
+            min={form.startDate || undefined}
+            onChange={(e) => onChange("endAt", e.target.value)}
+          />
+        </div>
+      )}
+
+      {planType === "recurring" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">
+              Grace Period (days)
+            </label>
+            <input
+              type="number"
+              min={0}
+              className={inputCls}
+              value={form.graceDays || ""}
+              placeholder="0"
+              onChange={(e) => {
+                const raw = e.target.value;
+                onChange(
+                  "graceDays",
+                  raw === "" ? "" : String(Math.max(0, Number(raw))),
+                );
+              }}
+            />
+            <p className="text-[11px] text-gray-400 mt-1">
+              Days after due date before a payment is marked overdue.
+            </p>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">
+              Retry Policy
+            </label>
+            <select
+              className={inputCls}
+              value={form.retryPolicy || "NO_RETRY"}
+              onChange={(e) => onChange("retryPolicy", e.target.value)}
+            >
+              {RETRY_POLICIES.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+
       <div>
         <label className="block text-xs font-medium text-gray-700 mb-1">
           Auto Reminder
@@ -436,7 +566,27 @@ function Step3({ planType, form, slug }) {
                 form.frequency) ||
               "—",
           },
-          { label: "Billing Day", value: form.billingDay || "—" },
+          {
+            label: "Repeats Every",
+            value: `${form.interval || 1} ${intervalUnitLabel(form.frequency, form.interval || 1)}`,
+          },
+          ...(form.frequency !== "DAILY"
+            ? [{ label: "Billing Day", value: form.billingDay || "—" }]
+            : []),
+          {
+            label: "End Date",
+            value: form.endAt ? formatDate(form.endAt) : "No end date",
+          },
+          {
+            label: "Grace Period",
+            value: `${form.graceDays || 0} day(s)`,
+          },
+          {
+            label: "Retry Policy",
+            value:
+              RETRY_POLICIES.find((r) => r.value === (form.retryPolicy || "NO_RETRY"))
+                ?.label ?? "No retry",
+          },
         ]
       : [
           {
@@ -489,6 +639,10 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
     startDate: "",
     dueDate: "",
     billingDay: "",
+    interval: "",
+    endAt: "",
+    graceDays: "",
+    retryPolicy: "NO_RETRY",
     reminder: "",
     activateImmediately: true,
   });
@@ -526,10 +680,19 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
         ? {
             recurringPlan: {
               frequency: form.frequency,
+              interval: form.interval ? Number(form.interval) : 1,
               startAt: startIso,
-              billingDay: form.billingDay
-                ? Number(form.billingDay)
-                : new Date(startIso).getDate(),
+              // billingDay doesn't apply to DAILY — the cycle is driven by
+              // startAt + interval instead, so omit it in that case rather
+              // than sending a meaningless day-of-month/week value.
+              ...(form.frequency !== "DAILY" && form.billingDay
+                ? { billingDay: Number(form.billingDay) }
+                : {}),
+              ...(form.endAt
+                ? { endAt: dateInputToIso(form.endAt, { clampToNow: true }) }
+                : {}),
+              retryPolicy: form.retryPolicy || "NO_RETRY",
+              graceDays: form.graceDays ? Number(form.graceDays) : 0,
             },
           }
         : {
@@ -544,7 +707,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
@@ -643,14 +806,24 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
 
 // ── Edit plan modal ───────────────────────────────────────────────────────────
 function EditPlanModal({ plan, onClose, onSave, saving }) {
+  const initialEndAt = toDateInput(plan.endAt ?? plan.recurringPlan?.endAt);
   const [form, setForm] = useState({
     name: plan.name ?? "",
     amount: String(plan.amount ?? ""),
     frequency: plan.frequency ?? plan.recurringPlan?.frequency ?? "",
     startDate: toDateInput(plan.startAt ?? plan.recurringPlan?.startAt),
     billingDay: String(plan.recurringPlan?.billingDay ?? ""),
+    interval: String(plan.recurringPlan?.interval ?? ""),
+    endAt: initialEndAt,
+    graceDays: String(plan.recurringPlan?.graceDays ?? ""),
+    retryPolicy: plan.recurringPlan?.retryPolicy ?? "NO_RETRY",
   });
+  // Track the original endAt so we know whether the user has cleared a
+  // previously-set value — that's the only case where clearEndAt needs to
+  // be sent, since omitting endAt on a PATCH otherwise leaves it untouched.
+  const [initialEndAtValue] = useState(initialEndAt);
   const isRecurring = plan.type === "RECURRING";
+  const isDaily = form.frequency === "DAILY";
 
   const editBillingDayMax = (() => {
     if (form.frequency === "WEEKLY") return 7;
@@ -666,6 +839,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
   }, [editBillingDayMax]);
 
   async function handleSave() {
+    const clearedEndAt = !!initialEndAtValue && !form.endAt;
     const payload = {
       title: form.name,
       amount: Number(form.amount),
@@ -673,9 +847,16 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
         ? {
             recurringPlan: {
               frequency: form.frequency,
-              ...(form.billingDay
+              ...(form.interval ? { interval: Number(form.interval) } : {}),
+              ...(!isDaily && form.billingDay
                 ? { billingDay: Number(form.billingDay) }
                 : {}),
+              ...(form.endAt
+                ? { endAt: dateInputToIso(form.endAt, { clampToNow: true }) }
+                : {}),
+              ...(clearedEndAt ? { clearEndAt: true } : {}),
+              retryPolicy: form.retryPolicy || "NO_RETRY",
+              graceDays: form.graceDays ? Number(form.graceDays) : 0,
             },
           }
         : {}),
@@ -690,10 +871,10 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl p-6">
+      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-start justify-between mb-5">
           <div>
             <h2 className="text-base font-semibold text-black">
@@ -761,8 +942,35 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
             )}
           </div>
 
+          {isRecurring && (
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                Repeat Every
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min={1}
+                  className={inputCls + " max-w-[100px]"}
+                  value={form.interval}
+                  placeholder="1"
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    setForm((f) => ({
+                      ...f,
+                      interval: raw === "" ? "" : String(Math.max(1, Number(raw))),
+                    }));
+                  }}
+                />
+                <span className="text-xs text-gray-500">
+                  {intervalUnitLabel(form.frequency, form.interval || 1)}
+                </span>
+              </div>
+            </div>
+          )}
+
           <div
-            className={`grid gap-3 ${isRecurring ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}
+            className={`grid gap-3 ${isRecurring && !isDaily ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}
           >
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1.5">
@@ -777,7 +985,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
                 }
               />
             </div>
-            {isRecurring && (
+            {isRecurring && !isDaily && (
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   Billing Day{" "}
@@ -809,16 +1017,73 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
                     setForm((f) => ({ ...f, billingDay: String(clamped) }));
                   }}
                 />
-                <p className="text-[11px] text-gray-400 mt-1">
-                  {form.frequency === "WEEKLY"
-                    ? "Members are billed on this weekday every week (e.g. 1 = every Monday)."
-                    : editBillingDayMax < 31
-                    ? `Members are billed on this day every month (e.g. 5 = the 5th). The selected start month only has ${editBillingDayMax} days.`
-                    : "Members are billed on this day every month (e.g. 5 = the 5th)."}
-                </p>
               </div>
             )}
           </div>
+
+          {isRecurring && (
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                End Date <span className="text-gray-400">(optional)</span>
+              </label>
+              <input
+                type="date"
+                className={inputCls}
+                value={form.endAt}
+                min={form.startDate || undefined}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, endAt: e.target.value }))
+                }
+              />
+              {initialEndAtValue && !form.endAt && (
+                <p className="text-[11px] text-amber-600 mt-1">
+                  This will remove the existing end date.
+                </p>
+              )}
+            </div>
+          )}
+
+          {isRecurring && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Grace Period (days)
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  className={inputCls}
+                  value={form.graceDays}
+                  placeholder="0"
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    setForm((f) => ({
+                      ...f,
+                      graceDays: raw === "" ? "" : String(Math.max(0, Number(raw))),
+                    }));
+                  }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Retry Policy
+                </label>
+                <select
+                  className={inputCls}
+                  value={form.retryPolicy}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, retryPolicy: e.target.value }))
+                  }
+                >
+                  {RETRY_POLICIES.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end mt-6">
@@ -944,19 +1209,10 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     }
 
     // Step 2: index obligations by userId and email
-    // const map = {};
-    // for (const ob of allObligations) {
-    //   if (String(ob.paymentLink?.id) !== String(plan.id)) continue;
-    //   const info = {
-    //     status: (ob.status ?? "PENDING").toUpperCase(),
-    //     amountPaid: ob.amountPaid ?? ob.paidAmount ?? 0,
-    //     amountDue: ob.amount ?? ob.amountDue ?? plan.amount ?? 0,
-    //   };
     const map = {};
     for (const ob of allObligations) {
       if (String(ob.paymentLink?.id) !== String(plan.id)) continue;
       const info = {
-        id: ob.id,
         status: (ob.status ?? "PENDING").toUpperCase(),
         amountPaid: ob.amountPaid ?? ob.paidAmount ?? 0,
         amountDue: ob.amount ?? ob.amountDue ?? plan.amount ?? 0,
@@ -1049,40 +1305,6 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     return m.amount ?? m.amountDue ?? m.obligation?.amount ?? plan.amount ?? 0;
   }
 
-  // ── Member actions: waive + remove ───────────────────────────────────────
-  const queryClient = useQueryClient();
-  const { removeMember } = useCommunityMembers(communityId);
-
-  const waive = useMutation({
-    mutationFn: (obligationId) => waiveObligation(communityId, obligationId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["community", communityId, "obligations"],
-      });
-      queryClient.invalidateQueries({ queryKey: ["obligations"] });
-    },
-  });
-
-  function handleWaive(m) {
-    const ob = getObligationInfo(m);
-    if (!ob?.id) return; // no real obligation to waive (e.g. unmatched link)
-    if (
-      window.confirm(
-        `Waive this payment for ${getName(m)}? This forgives what they owe.`,
-      )
-    ) {
-      waive.mutate(ob.id);
-    }
-  }
-
-  function handleRemove(m) {
-    const mid = m.member?.id ?? m.memberId;
-    if (!mid) return;
-    if (window.confirm(`Remove ${getName(m)} from this community?`)) {
-      removeMember.mutate(mid);
-    }
-  }
-
   function statusStyle(s) {
     if (s === "PAID") return { bg: "#ecfdf5", color: "#059669", label: "Paid" };
     if (s === "OVERDUE")
@@ -1137,7 +1359,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col">
@@ -1260,7 +1482,6 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                   "Paid",
                   "Total Due",
                   "Date Joined",
-                  "Actions",
                 ].map((h) => (
                   <th
                     key={h}
@@ -1275,7 +1496,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
               {isLoading ? (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={7}
                     className="px-5 py-10 text-center text-xs text-gray-400"
                   >
                     Loading…
@@ -1337,14 +1558,6 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                       <td className="px-4 py-3 text-xs text-gray-500">
                         {formatDate(getJoinedAt(m))}
                       </td>
-                      <td className="px-4 py-3">
-                        <MemberRowMenu
-                          member={m}
-                          status={getStatus(m)}
-                          onWaive={() => handleWaive(m)}
-                          onRemove={() => handleRemove(m)}
-                        />
-                      </td>
                     </tr>
                   );
                 })
@@ -1386,48 +1599,6 @@ function MenuItem({ icon, label, onClick, disabled, danger }) {
       {icon && <span className="flex-shrink-0">{icon}</span>}
       {label}
     </button>
-  );
-}
-
-function MemberRowMenu({ member, status, onWaive, onRemove }) {
-  const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
-  const canWaive =
-    status !== "PAID" && status !== "NONE" && status !== "WAIVED";
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-7 h-7 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer"
-      >
-        <MoreHorizontal size={13} />
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={close} />
-          <div className="absolute right-0 top-full mt-1 bg-white rounded-xl border border-gray-100 shadow-xl z-20 overflow-hidden min-w-[160px] py-1">
-            <MenuItem
-              label="Waive Payment"
-              disabled={!canWaive}
-              onClick={() => {
-                onWaive();
-                close();
-              }}
-            />
-            <div className="h-px bg-gray-100 my-1" />
-            <MenuItem
-              label="Remove from Community"
-              danger
-              onClick={() => {
-                onRemove();
-                close();
-              }}
-            />
-          </div>
-        </>
-      )}
-    </div>
   );
 }
 
@@ -1700,58 +1871,6 @@ export default function Payments() {
     refetchOnMount: "always",
   });
 
-  // Compute per-plan: paidCount, totalCount (unique members), collected
-  // const planMetrics = useMemo(() => {
-  //   const SUCCESS = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
-
-  //   // The backend doesn't always update obligation.status to PAID
-  //   // immediately after a payment is verified (same gap documented in
-  //   // useMembersWithPayments.js) — without cross-referencing successful
-  //   // transactions here too, paidCount can lag behind collected, showing
-  //   // e.g. "100% collected" but "0/1 members paid" for the same plan.
-  //   const paidObligationIds = new Set();
-  //   const paidLinkMemberKeys = new Set(); // `${paymentLinkId}::${memberId}`, for txs with no obligationId
-  //   for (const tx of transactions) {
-  //     if (!SUCCESS.has((tx.status ?? "").toUpperCase())) continue;
-  //     if (tx.obligationId) paidObligationIds.add(String(tx.obligationId));
-  //     const planId = tx.paymentLink?.id;
-  //     const mid = String(tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "");
-  //     if (planId && mid) paidLinkMemberKeys.add(`${planId}::${mid}`);
-  //   }
-
-  //   const byPlan = {};
-
-  //   for (const ob of obligations) {
-  //     const planId = ob.paymentLink?.id;
-  //     if (!planId) continue;
-  //     if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
-  //     const mid = String(ob.member?.id ?? ob.member?.user?.id ?? ob.user?.id ?? ob.id ?? "");
-  //     if (mid) byPlan[planId].memberIds.add(mid);
-  //     const s = (ob.status ?? "").toUpperCase();
-  //     const isPaid =
-  //       s === "PAID" ||
-  //       s === "SUCCESSFUL" ||
-  //       paidObligationIds.has(String(ob.id)) ||
-  //       (planId && mid && paidLinkMemberKeys.has(`${planId}::${mid}`));
-  //     if (isPaid) byPlan[planId].paidCount++;
-  //   }
-
-  //   for (const tx of transactions) {
-  //     const planId = tx.paymentLink?.id;
-  //     if (!planId) continue;
-  //     if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
-  //     if (SUCCESS.has((tx.status ?? "").toUpperCase())) {
-  //       byPlan[planId].collected += tx.amount ?? 0;
-  //     }
-  //   }
-
-  //   const result = {};
-  //   for (const [id, m] of Object.entries(byPlan)) {
-  //     result[id] = { collected: m.collected, paidCount: m.paidCount, totalCount: m.memberIds.size };
-  //   }
-  //   return result;
-  // }, [obligations, transactions]);
-
   const planMetrics = useMemo(() => {
     const SUCCESS = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
 
@@ -1799,14 +1918,6 @@ export default function Payments() {
       if (isPaid && mid) byPlan[planId].paidMemberIds.add(mid);
     }
 
-    // for (const tx of transactions) {
-    //   const planId = tx.paymentLink?.id;
-    //   if (!planId) continue;
-    //   if (!byPlan[planId]) byPlan[planId] = { collected: 0, memberIds: new Set(), paidMemberIds: new Set() };
-    //   if (SUCCESS.has((tx.status ?? "").toUpperCase())) {
-    //     byPlan[planId].collected += tx.amount ?? 0;
-    //   }
-    // }
     // A member can end up with multiple SUCCESSFUL transaction rows for the
     // same plan — a known bug where payment initiation doesn't always send a
     // real obligationId, so the backend can't recognize an existing obligation
@@ -1818,13 +1929,10 @@ export default function Payments() {
     for (const tx of transactions) {
       const planId = tx.paymentLink?.id;
       if (!planId) continue;
-      if (!byPlan[planId])
-        byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
+      if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
       if (!SUCCESS.has((tx.status ?? "").toUpperCase())) continue;
 
-      const mid = String(
-        tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "",
-      );
+      const mid = String(tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "");
       const dedupeKey = mid ? `${planId}::${mid}` : `${planId}::${tx.id}`;
       if (countedPlanMemberPayments.has(dedupeKey)) continue;
       countedPlanMemberPayments.add(dedupeKey);
