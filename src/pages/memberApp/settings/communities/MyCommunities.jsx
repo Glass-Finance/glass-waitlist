@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, LogOut, Plus } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
 
@@ -67,6 +67,20 @@ export default function MyCommunities() {
           <ChevronLeft size={18} strokeWidth={2} style={{ color: "#111" }} />
         </button>
         <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>My Communities</h1>
+      </div>
+
+      <div style={{ padding: "0 16px 16px" }}>
+        <button
+          onClick={() => navigate("/onboarding/choose-path")}
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            width: "100%", padding: "12px", borderRadius: 12, background: "#1C2B8A",
+            color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer",
+          }}
+        >
+          <Plus size={16} />
+          Create a Community
+        </button>
       </div>
 
       <div style={{ padding: "0 16px" }}>
