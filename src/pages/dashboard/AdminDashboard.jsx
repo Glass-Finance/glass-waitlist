@@ -1528,7 +1528,7 @@ function DashboardContent({ isPaying, communityId }) {
 
         {/* Getting started checklist — shown until both a plan and members exist */}
         {showGettingStarted && (
-          <div className="rounded-xl border border-blue-100 bg-[#EEF3FF] p-5 mb-5">
+          <div data-tour="getting-started-checklist" className="rounded-xl border border-blue-100 bg-[#EEF3FF] p-5 mb-5">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
                 <p className="text-sm font-semibold text-gray-900">Get your community ready</p>
@@ -2134,7 +2134,7 @@ function DashboardContent({ isPaying, communityId }) {
                           {formatNaira(tx.amount)}
                         </td>
                         <td className="hidden md:table-cell px-5 py-3 text-xs text-black">
-                          {formatDate(tx.createdAt ?? tx.date)}
+                          {formatDate(tx.paidAt ?? tx.createdAt)}
                         </td>
                         <td className="hidden lg:table-cell px-5 py-3 text-xs text-black">
                           {tx.member?.user?.email ?? tx.user?.email ?? tx.payer?.email ?? tx.member?.email ?? tx.email ?? "—"}
