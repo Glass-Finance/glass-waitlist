@@ -506,8 +506,12 @@ import {
   AlertCircle,
   Grid,
   List,
+  Mail,
+  Check,
+  X as XIcon,
 } from "lucide-react";
 import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
+import { useInvites } from "../../hooks/useInvites";
 import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin } from "../../utils/communityRole";
 import Background from "../../assets/background.webp";
@@ -676,6 +680,8 @@ export default function CommunitiesHome() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data, isLoading, error } = useCommunitiesWithMetrics();
+  const { invites, isLoading: invitesLoading, accept, reject, isAccepting, isRejecting } = useInvites();
+  const [respondingId, setRespondingId] = useState(null);
   const [sort, setSort] = useState("Recently Viewed");
   const [sortOpen, setSortOpen] = useState(false);
   const [view, setView] = useState("grid");
@@ -685,6 +691,27 @@ export default function CommunitiesHome() {
   }
 
   const communities = data?.communities ?? [];
+  const pendingInvites = invites.filter(
+    (i) => (i.status ?? "PENDING").toUpperCase() === "PENDING"
+  );
+
+  async function handleAcceptInvite(inviteId) {
+    setRespondingId(inviteId);
+    try {
+      await accept(inviteId);
+    } finally {
+      setRespondingId(null);
+    }
+  }
+
+  async function handleRejectInvite(inviteId) {
+    setRespondingId(inviteId);
+    try {
+      await reject(inviteId);
+    } finally {
+      setRespondingId(null);
+    }
+  }
 
   const sorted = [...communities].sort((a, b) => {
     if (sort === "A-Z") return (a.name ?? "").localeCompare(b.name ?? "");
@@ -747,6 +774,55 @@ export default function CommunitiesHome() {
           </button>
         </div>
       </div>
+
+      {!invitesLoading && pendingInvites.length > 0 && (
+        <div className="px-4 md:px-7 pb-5">
+          <div className="bg-blue-50 border border-blue-100 rounded-lg overflow-hidden">
+            <div className="flex items-center gap-2 px-4 pt-3.5 pb-2">
+              <Mail size={14} className="text-[#002FA7]" />
+              <p className="text-xs font-semibold text-gray-900">
+                Pending Invitations ({pendingInvites.length})
+              </p>
+            </div>
+            <div className="flex flex-col divide-y divide-blue-100">
+              {pendingInvites.map((invite) => {
+                const isResponding = respondingId === invite.id && (isAccepting || isRejecting);
+                return (
+                  <div
+                    key={invite.id}
+                    className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-gray-900 truncate">
+                        {invite.community?.name ?? invite.community?.slug ?? "A community"}
+                      </p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">
+                        invited you to join{invite.roleCode ? ` as ${invite.roleCode.toLowerCase()}` : ""}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <button
+                        onClick={() => handleAcceptInvite(invite.id)}
+                        disabled={isResponding}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-[#002FA7] text-white text-xs font-medium hover:opacity-90 transition-all disabled:opacity-50"
+                      >
+                        <Check size={12} /> Accept
+                      </button>
+                      <button
+                        onClick={() => handleRejectInvite(invite.id)}
+                        disabled={isResponding}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-md border border-gray-200 bg-white text-gray-600 text-xs font-medium hover:bg-gray-50 transition-all disabled:opacity-50"
+                      >
+                        <XIcon size={12} /> Decline
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex items-center gap-3 px-4 md:px-7 pb-5">
