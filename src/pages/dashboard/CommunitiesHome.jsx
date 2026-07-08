@@ -740,7 +740,7 @@ export default function CommunitiesHome() {
 
   return (
     <div
-      className="flex flex-col h-full"
+      className="relative flex flex-col h-full"
       style={{
         backgroundImage: `url(${Background})`,
         backgroundSize: "cover",
@@ -825,7 +825,7 @@ export default function CommunitiesHome() {
       )}
 
       {/* Filters */}
-      <div className="flex items-center gap-3 px-4 md:px-7 pb-5">
+      <div className="flex items-center gap-5 px-4 md:px-7 pb-5">
         <div className="relative">
           <button
             onClick={() => setSortOpen((o) => !o)}
@@ -855,7 +855,7 @@ export default function CommunitiesHome() {
           )}
         </div>
 
-        <div className="flex gap-1 ml-auto">
+        <div className="flex gap-2">
           {[
             { id: "grid", icon: <Grid size={15} /> },
             { id: "list", icon: <List size={15} /> },

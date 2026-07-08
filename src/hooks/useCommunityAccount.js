@@ -3,6 +3,7 @@ import {
   getCommunityAccount,
   createCommunityAccount,
   updateCommunityAccount,
+  deleteCommunityAccount,
 } from "../api/communities";
 
 // The GET endpoint returns an array; defaultAccount is the flag from the API spec.
@@ -51,6 +52,13 @@ export function useCommunityAccount(communityId) {
     meta: { successMessage: "Payout account updated" },
   });
 
+  // Delete an existing payout account
+  const remove = useMutation({
+    mutationFn: (accountId) => deleteCommunityAccount(communityId, accountId),
+    onSuccess: invalidate,
+    meta: { successMessage: "Payout account removed" },
+  });
+
   return {
     // Convenience: the default/first account (for the display card)
     account: query.data?.account ?? null,
@@ -60,5 +68,6 @@ export function useCommunityAccount(communityId) {
     error: query.error,
     create,
     update,
+    remove,
   };
 }

@@ -85,3 +85,7 @@ export const updateCommunityAccount = (communityId, accountId, payload) =>
 // PATCH /api/v1/communities/{communityIdentifier}/account/{accountId}/default
 export const setDefaultCommunityAccount = (communityId, accountId) =>
   client.patch(`/communities/${communityId}/account/${accountId}/default`);
+
+// DELETE /api/v1/communities/{communityIdentifier}/account/{accountId}
+export const deleteCommunityAccount = (communityId, accountId) =>
+  client.delete(`/communities/${communityId}/account/${accountId}`);

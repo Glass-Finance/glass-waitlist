@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Check, Info, X } from "lucide-react";
+import { Check, Info, X, Trash2 } from "lucide-react";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityAccount } from "../../../../hooks/useCommunityAccount";
 import { useCommunity } from "../../../../hooks/useCommunity";
@@ -86,6 +86,66 @@ function formatNaira(amount) {
 function formatDate(d) {
   if (!d) return "—";
   return new Date(d).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" });
+}
+
+// Status pill next to the account name — PENDING accounts haven't cleared
+// verification yet, so this shouldn't look identical to a settled one.
+function StatusBadge({ status }) {
+  if (!status) return null;
+  const styles = {
+    ACTIVE:   { bg: "#ECFDF3", fg: "#027A48" },
+    VERIFIED: { bg: "#ECFDF3", fg: "#027A48" },
+    PENDING:  { bg: "#FFFAEB", fg: "#B54708" },
+    FAILED:   { bg: "#FEF3F2", fg: "#B42318" },
+    REJECTED: { bg: "#FEF3F2", fg: "#B42318" },
+  };
+  const { bg, fg } = styles[status] ?? { bg: "#F2F4F7", fg: "#475467" };
+  return (
+    <span
+      className="text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide"
+      style={{ background: bg, color: fg }}
+    >
+      {status.toLowerCase()}
+    </span>
+  );
+}
+
+// Confirm-delete modal for removing the payout account
+function RemoveAccountModal({ onClose, onConfirm, isDeleting }) {
+  return (
+    <>
+      <div onClick={onClose} className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.55)" }} />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div
+          className="w-full max-w-sm rounded-xl p-6"
+          style={{ background: "#fff" }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h2 className="text-[16px] font-bold text-gray-900 mb-1.5">Remove payout account?</h2>
+          <p className="text-sm text-gray-500 mb-6">
+            Glass won't be able to settle collected payments until you add a new payout account.
+            This can't be undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <button
+              onClick={onClose}
+              disabled={isDeleting}
+              className="px-4 py-2 rounded-full text-sm font-semibold text-gray-600 bg-transparent border-none cursor-pointer hover:bg-gray-100 transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              disabled={isDeleting}
+              className="px-4 py-2 rounded-full text-sm font-semibold text-white bg-red-600 hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
+            >
+              {isDeleting ? "Removing…" : "Remove Account"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -302,10 +362,12 @@ function AccountModal({ onClose, onSave, isSaving, saveError }) {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function PaystackAccount() {
   const communityId = useActiveCommunityId();
-  const { account, isLoading, create, update } = useCommunityAccount(communityId);
+  const { account, isLoading, create, update, remove } = useCommunityAccount(communityId);
   const { data: community } = useCommunity(communityId);
   const [showModal, setShowModal] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const [removeError, setRemoveError] = useState("");
 
   const bankName =
     account?.settlementBank ??
@@ -339,12 +401,26 @@ export default function PaystackAccount() {
     }
   }
 
+  async function handleRemove() {
+    setRemoveError("");
+    try {
+      await remove.mutateAsync(account.id);
+      setShowRemoveModal(false);
+    } catch (err) {
+      const desc =
+        err?.response?.data?.description ??
+        err?.response?.data?.message ??
+        "Couldn't remove the account. Please try again.";
+      setRemoveError(desc);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-5 max-w-3xl w-full">
       {isLoading ? (
         <p className="text-xs text-gray-400">Loading…</p>
       ) : account ? (
-        <div className="bg-white rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+        <div className="bg-[#EF1EFF1E5] rounded-2xl p-6" style={{ border: "1px solid #FFFFFF" }}>
           <p className="text-sm font-bold text-gray-900 mb-0.5">Current Payout Account</p>
           <p className="text-xs text-gray-400 mb-5">
             All payments collected from members{communityName ? ` in ${communityName}` : ""} are disbursed to this account.
@@ -359,28 +435,46 @@ export default function PaystackAccount() {
                 storedLogoUrl={account?.settlementBankLogo ?? account?.bankLogo ?? account?.logo}
               />
               <div>
-                <p className="text-sm font-semibold text-gray-900">
-                  {account.accountName ?? account.name ?? "—"}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-gray-900">
+                    {account.accountName ?? account.name ?? "—"}
+                  </p>
+                  <StatusBadge status={account.status} />
+                </div>
                 <p className="text-xs text-gray-400">
                   {account.accountNumber ?? account.number ?? account.acctNumber ?? "—"}
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => setShowModal(true)}
-              className="text-sm font-semibold text-[#002FA7] bg-transparent border-none cursor-pointer hover:underline"
-            >
-              Change Account
-            </button>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setShowModal(true)}
+                className="text-sm font-semibold text-[#002FA7] bg-transparent border-none cursor-pointer hover:underline"
+              >
+                Change Account
+              </button>
+              <button
+                onClick={() => { setRemoveError(""); setShowRemoveModal(true); }}
+                title="Remove payout account"
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+              >
+                <Trash2 size={15} />
+              </button>
+            </div>
           </div>
+
+          {removeError && (
+            <p className="text-xs text-red-600 mb-4 -mt-2">{removeError}</p>
+          )}
 
           {/* Stats */}
           <div className="flex gap-10">
             <div>
               <p className="text-xs text-gray-400 mb-0.5">Total Received</p>
               <p className="text-sm font-bold text-gray-900">
-                {formatNaira(account.totalReceived ?? account.totalAmount ?? account.totalSettlement)}
+                {formatNaira(
+                  account.totalReceivedAmount ?? account.totalReceived ?? account.totalAmount ?? account.totalSettlement
+                )}
               </p>
             </div>
             <div>
@@ -434,6 +528,14 @@ export default function PaystackAccount() {
           onSave={handleSave}
           isSaving={create.isPending || update.isPending}
           saveError={saveError}
+        />
+      )}
+
+      {showRemoveModal && (
+        <RemoveAccountModal
+          onClose={() => { setShowRemoveModal(false); setRemoveError(""); }}
+          onConfirm={handleRemove}
+          isDeleting={remove.isPending}
         />
       )}
     </div>
