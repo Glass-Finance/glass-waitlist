@@ -43,7 +43,7 @@ export default function DashboardTour({ onClose }) {
       style={{ background: "rgba(0,0,0,0.5)" }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl overflow-hidden" style={{ border: "1px solid #E5E7EB" }}>
         <div className="flex items-start justify-between px-6 pt-6">
           <div
             className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
