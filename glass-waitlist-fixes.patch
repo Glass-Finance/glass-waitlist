@@ -1,0 +1,90 @@
+diff --git a/src/pages/dashboard/Payments.jsx b/src/pages/dashboard/Payments.jsx
+index 26fda7b..3d43e6c 100644
+--- a/src/pages/dashboard/Payments.jsx
++++ b/src/pages/dashboard/Payments.jsx
+@@ -347,13 +347,13 @@ function Step2({ planType, form, onChange, slugState }) {
+                 onChange("billingDay", String(clamped));
+               }}
+             />
+-            {form.frequency && form.frequency !== "WEEKLY" && form.startDate && (
+-              <p className="text-[11px] text-gray-400 mt-1">
+-                {billingDayMax < 31
+-                  ? `The selected start month only has ${billingDayMax} days.`
+-                  : null}
+-              </p>
+-            )}
++            <p className="text-[11px] text-gray-400 mt-1">
++              {form.frequency === "WEEKLY"
++                ? "Members are billed on this weekday every week (e.g. 1 = every Monday)."
++                : billingDayMax < 31
++                ? `Members are billed on this day every month (e.g. 5 = the 5th). The selected start month only has ${billingDayMax} days.`
++                : "Members are billed on this day every month (e.g. 5 = the 5th)."}
++            </p>
+           </div>
+         ) : (
+           <div>
+@@ -786,6 +786,13 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
+                     setForm((f) => ({ ...f, billingDay: String(clamped) }));
+                   }}
+                 />
++                <p className="text-[11px] text-gray-400 mt-1">
++                  {form.frequency === "WEEKLY"
++                    ? "Members are billed on this weekday every week (e.g. 1 = every Monday)."
++                    : editBillingDayMax < 31
++                    ? `Members are billed on this day every month (e.g. 5 = the 5th). The selected start month only has ${editBillingDayMax} days.`
++                    : "Members are billed on this day every month (e.g. 5 = the 5th)."}
++                </p>
+               </div>
+             )}
+           </div>
+diff --git a/src/pages/memberApp/Invites.jsx b/src/pages/memberApp/Invites.jsx
+index 8b04b1d..5ae97b2 100644
+--- a/src/pages/memberApp/Invites.jsx
++++ b/src/pages/memberApp/Invites.jsx
+@@ -113,7 +113,7 @@ export default function Invites() {
+         }}
+       >
+         <button
+-          onClick={() => navigate(-1)}
++          onClick={() => navigate("/member/home")}
+           aria-label="Go back"
+           style={{
+             width: 36,
+diff --git a/src/pages/memberApp/PaymentSummary.jsx b/src/pages/memberApp/PaymentSummary.jsx
+index 2649aee..36e7e7e 100644
+--- a/src/pages/memberApp/PaymentSummary.jsx
++++ b/src/pages/memberApp/PaymentSummary.jsx
+@@ -94,6 +94,11 @@ export default function PaymentSummary() {
+   // the pre-fetch and the actual pay button so the backend treats them as one.
+   const idempotencyKeyRef = useRef(crypto.randomUUID());
+   const [prefetch, setPrefetch] = useState(null);
++  // Separate from initiatePayment.isPending: the mutation resolves as soon
++  // as the API responds with an authorizationUrl, but window.location.href
++  // still takes a beat to actually leave the page. Without this, the button
++  // flashes back to "Make Payment" during that gap.
++  const [redirecting, setRedirecting] = useState(false);
+ 
+   // Pre-fetch the initiate-payment response as soon as the obligation loads
+   // so we can show the real billedAmount (obligation + platform fee) before
+@@ -152,6 +157,7 @@ export default function PaymentSummary() {
+       const url = res.data?.data?.authorizationUrl;
+       const reference = res.data?.data?.reference;
+       if (url) {
++        setRedirecting(true);
+         sessionStorage.setItem("paymentReturnTo", "/member/home");
+         if (reference) sessionStorage.setItem("paymentPendingRef", reference);
+         window.location.href = url;
+@@ -339,11 +345,11 @@ export default function PaymentSummary() {
+         {/* ── Make Payment button ── */}
+         <button
+           onClick={handlePay}
+-          disabled={initiatePayment.isPending || !obligation}
++          disabled={initiatePayment.isPending || redirecting || !obligation}
+           className="w-full rounded-md py-4 text-[15px] font-semibold text-white mt-1 cursor-pointer active:scale-[0.98] transition-all disabled:opacity-80"
+           style={{ background: "#002FA7" }}
+         >
+-          {initiatePayment.isPending ? "Processing..." : "Make Payment"}
++          {initiatePayment.isPending || redirecting ? "Processing..." : "Make Payment"}
+         </button>
+       </div>
+     </div>

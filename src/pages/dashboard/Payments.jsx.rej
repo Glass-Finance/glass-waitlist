@@ -1,0 +1,36 @@
+diff a/src/pages/dashboard/Payments.jsx b/src/pages/dashboard/Payments.jsx	(rejected hunks)
+@@ -347,13 +347,13 @@ function Step2({ planType, form, onChange, slugState }) {
+                 onChange("billingDay", String(clamped));
+               }}
+             />
+-            {form.frequency && form.frequency !== "WEEKLY" && form.startDate && (
+-              <p className="text-[11px] text-gray-400 mt-1">
+-                {billingDayMax < 31
+-                  ? `The selected start month only has ${billingDayMax} days.`
+-                  : null}
+-              </p>
+-            )}
++            <p className="text-[11px] text-gray-400 mt-1">
++              {form.frequency === "WEEKLY"
++                ? "Members are billed on this weekday every week (e.g. 1 = every Monday)."
++                : billingDayMax < 31
++                ? `Members are billed on this day every month (e.g. 5 = the 5th). The selected start month only has ${billingDayMax} days.`
++                : "Members are billed on this day every month (e.g. 5 = the 5th)."}
++            </p>
+           </div>
+         ) : (
+           <div>
+@@ -786,6 +786,13 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
+                     setForm((f) => ({ ...f, billingDay: String(clamped) }));
+                   }}
+                 />
++                <p className="text-[11px] text-gray-400 mt-1">
++                  {form.frequency === "WEEKLY"
++                    ? "Members are billed on this weekday every week (e.g. 1 = every Monday)."
++                    : editBillingDayMax < 31
++                    ? `Members are billed on this day every month (e.g. 5 = the 5th). The selected start month only has ${editBillingDayMax} days.`
++                    : "Members are billed on this day every month (e.g. 5 = the 5th)."}
++                </p>
+               </div>
+             )}
+           </div>

@@ -113,7 +113,7 @@ export default function Invites() {
         }}
       >
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/member/home")}
           aria-label="Go back"
           style={{
             width: 36,

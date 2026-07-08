@@ -1,0 +1,35 @@
+diff a/src/pages/memberApp/PaymentSummary.jsx b/src/pages/memberApp/PaymentSummary.jsx	(rejected hunks)
+@@ -94,6 +94,11 @@ export default function PaymentSummary() {
+   // the pre-fetch and the actual pay button so the backend treats them as one.
+   const idempotencyKeyRef = useRef(crypto.randomUUID());
+   const [prefetch, setPrefetch] = useState(null);
++  // Separate from initiatePayment.isPending: the mutation resolves as soon
++  // as the API responds with an authorizationUrl, but window.location.href
++  // still takes a beat to actually leave the page. Without this, the button
++  // flashes back to "Make Payment" during that gap.
++  const [redirecting, setRedirecting] = useState(false);
+ 
+   // Pre-fetch the initiate-payment response as soon as the obligation loads
+   // so we can show the real billedAmount (obligation + platform fee) before
+@@ -152,6 +157,7 @@ export default function PaymentSummary() {
+       const url = res.data?.data?.authorizationUrl;
+       const reference = res.data?.data?.reference;
+       if (url) {
++        setRedirecting(true);
+         sessionStorage.setItem("paymentReturnTo", "/member/home");
+         if (reference) sessionStorage.setItem("paymentPendingRef", reference);
+         window.location.href = url;
+@@ -339,11 +345,11 @@ export default function PaymentSummary() {
+         {/* ── Make Payment button ── */}
+         <button
+           onClick={handlePay}
+-          disabled={initiatePayment.isPending || !obligation}
++          disabled={initiatePayment.isPending || redirecting || !obligation}
+           className="w-full rounded-md py-4 text-[15px] font-semibold text-white mt-1 cursor-pointer active:scale-[0.98] transition-all disabled:opacity-80"
+           style={{ background: "#002FA7" }}
+         >
+-          {initiatePayment.isPending ? "Processing..." : "Make Payment"}
++          {initiatePayment.isPending || redirecting ? "Processing..." : "Make Payment"}
+         </button>
+       </div>
+     </div>
