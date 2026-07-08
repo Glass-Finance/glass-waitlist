@@ -546,7 +546,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
@@ -692,7 +692,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl p-6">
@@ -1132,7 +1132,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col">
