@@ -32,6 +32,35 @@ function deriveStatus(obligation) {
   return "upcoming";
 }
 
+// For a recurring plan with no obligation record yet (common right after a
+// payment — the next cycle's obligation isn't generated immediately), this
+// checks whether the member already has a successful transaction for this
+// link within the *current* billing cycle, so a just-paid recurring plan
+// doesn't reappear as "upcoming" until the next cycle actually begins.
+// Approximates the cycle as the current calendar week (WEEKLY) or calendar
+// month (MONTHLY/others) — matches the plan's own billingDay semantics
+// closely enough without needing to replicate the backend's exact cycle
+// math client-side.
+function isPaidForCurrentCycle(link, transactions) {
+  const lastSuccess = transactions
+    .filter((t) => t.paymentLinkId === link.id && t.status === "successful")
+    .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  if (!lastSuccess?.date) return false;
+
+  const paidDate = new Date(lastSuccess.date);
+  const now = new Date();
+  const frequency = (link.frequency ?? "MONTHLY").toUpperCase();
+
+  if (frequency === "WEEKLY") {
+    return now - paidDate < 7 * 86400000;
+  }
+  // MONTHLY (and any other/unknown frequency) — same calendar month
+  return (
+    paidDate.getFullYear() === now.getFullYear() &&
+    paidDate.getMonth() === now.getMonth()
+  );
+}
+
 // Shape the raw obligation response into what the UI expects
 function shapeObligation(raw) {
   const plType = (raw.paymentLink?.paymentType ?? raw.paymentLink?.type ?? "").toUpperCase();
@@ -67,6 +96,8 @@ function shapePaymentLink(raw, fallbackCommunitySlug) {
     communitySlug: raw.community?.slug ?? fallbackCommunitySlug,
     dueDate: raw.dueAt ?? null,
     type: raw.paymentType === "RECURRING" || raw.recurringPlan ? "recurring" : "one-time",
+    frequency: raw.recurringPlan?.frequency ?? raw.frequency ?? raw.billingFrequency ?? null,
+    billingDay: raw.recurringPlan?.billingDay ?? raw.billingDay ?? null,
     status: "PENDING",
     linkStatus: (raw.status ?? "").toUpperCase(),
     paymentLinkId: raw.id,
@@ -270,15 +301,20 @@ export function usePayments() {
   const isActive = link.linkStatus === "ACTIVE" || !link.linkStatus;
   if (!isActive) return false;
   if (obligations.some((o) => o.paymentLinkId === link.id)) return false;
-  // No obligation record doesn't necessarily mean unpaid — a one-time link
-  // can already have a successful transaction with no obligation ever
-  // created for it. Recurring links are excluded from this check since a
-  // past successful cycle shouldn't hide the next one's due payment.
+  // No obligation record doesn't necessarily mean unpaid.
   if (link.type === "one-time") {
+    // A one-time link can already have a successful transaction with no
+    // obligation ever created for it.
     const alreadyPaid = allTransactions.some(
       (t) => t.paymentLinkId === link.id && t.status === "successful"
     );
     if (alreadyPaid) return false;
+  } else {
+    // Recurring: a past cycle's payment shouldn't hide a *future* cycle's
+    // due payment, but it should hide the *current* one — otherwise a
+    // member who just paid sees the same plan reappear as due again
+    // immediately, before the next cycle has even started.
+    if (isPaidForCurrentCycle(link, allTransactions)) return false;
   }
   return true;
 });
