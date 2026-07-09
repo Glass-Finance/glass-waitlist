@@ -281,7 +281,7 @@ export default function DiscoverCommunities() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          padding: "20px 20px 16px",
+          padding: "35px 20px 16px",
           position: "relative",
         }}
       >
@@ -309,57 +309,60 @@ export default function DiscoverCommunities() {
         </h1>
       </div>
 
-      {/* Search input row — pin the icon's own box so it can't shift off-baseline */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          background: "#fff",
-          borderRadius: 12,
-          padding: "12px 14px",
-          border: "1.5px solid #E0E0E0",
-        }}
-      >
-        <span style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+      {/* Search input */}
+      <div style={{ padding: "0 16px 16px" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            background: "#fff",
+            borderRadius: 12,
+            padding: "12px 14px",
+            border: "1.5px solid #E0E0E0",
+          }}
+        >
           {isFetching ? (
             <Loader2
               size={15}
               className="animate-spin"
-              style={{ color: "#1C2B8A" }}
+              style={{ color: "#1C2B8A", flexShrink: 0 }}
             />
           ) : (
-            <Search size={15} style={{ color: "#aaa" }} />
+            <Search size={15} style={{ color: "#aaa", flexShrink: 0 }} />
           )}
-        </span>
-        <input
-          autoFocus
-          type="search"
-          placeholder="Search communities…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          style={{
-            flex: 1,
-            border: "none",
-            outline: "none",
-            background: "transparent",
-            fontSize: 14,
-            color: "#111",
-            lineHeight: "20px", // matches icon's 15px height + a hair of breathing room, keeps text baseline steady
-          }}
-        />
-        {query && (
-          <button
-            onClick={() => setQuery("")}
-            style={
-              {
-                /* unchanged */
-              }
-            }
-          >
-            ×
-          </button>
-        )}
+          <input
+            autoFocus
+            type="search"
+            placeholder="Search communities…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            style={{
+              flex: 1,
+              border: "none",
+              outline: "none",
+              background: "transparent",
+              fontSize: 14,
+              color: "#111",
+            }}
+          />
+          {query && (
+            <button
+              onClick={() => setQuery("")}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "#aaa",
+                fontSize: 18,
+                lineHeight: 1,
+                padding: 0,
+              }}
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Results */}
