@@ -220,7 +220,7 @@ function CommunityCard({ community, onRequest }) {
           ? "Already a member"
           : alreadyPending
             ? "Request sent"
-            : "Request to Join"}
+            : "Join"}
       </button>
       {errorMsg && (
         <p
