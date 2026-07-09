@@ -584,8 +584,9 @@ function Step3({ planType, form, slug }) {
           {
             label: "Retry Policy",
             value:
-              RETRY_POLICIES.find((r) => r.value === (form.retryPolicy || "NO_RETRY"))
-                ?.label ?? "No retry",
+              RETRY_POLICIES.find(
+                (r) => r.value === (form.retryPolicy || "NO_RETRY"),
+              )?.label ?? "No retry",
           },
         ]
       : [
@@ -958,7 +959,8 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
                     const raw = e.target.value;
                     setForm((f) => ({
                       ...f,
-                      interval: raw === "" ? "" : String(Math.max(1, Number(raw))),
+                      interval:
+                        raw === "" ? "" : String(Math.max(1, Number(raw))),
                     }));
                   }}
                 />
@@ -1059,7 +1061,8 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
                     const raw = e.target.value;
                     setForm((f) => ({
                       ...f,
-                      graceDays: raw === "" ? "" : String(Math.max(0, Number(raw))),
+                      graceDays:
+                        raw === "" ? "" : String(Math.max(0, Number(raw))),
                     }));
                   }}
                 />
@@ -1929,10 +1932,17 @@ export default function Payments() {
     for (const tx of transactions) {
       const planId = tx.paymentLink?.id;
       if (!planId) continue;
-      if (!byPlan[planId]) byPlan[planId] = { collected: 0, paidCount: 0, memberIds: new Set() };
+      if (!byPlan[planId])
+        byPlan[planId] = {
+          collected: 0,
+          memberIds: new Set(),
+          paidMemberIds: new Set(),
+        };
       if (!SUCCESS.has((tx.status ?? "").toUpperCase())) continue;
 
-      const mid = String(tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "");
+      const mid = String(
+        tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "",
+      );
       const dedupeKey = mid ? `${planId}::${mid}` : `${planId}::${tx.id}`;
       if (countedPlanMemberPayments.has(dedupeKey)) continue;
       countedPlanMemberPayments.add(dedupeKey);
