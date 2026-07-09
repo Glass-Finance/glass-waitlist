@@ -236,19 +236,39 @@ function CommunityCard({ community, onRequest }) {
 function EmptyState({ query }) {
   if (!query || query.length < 2) {
     return (
-      <div style={{ textAlign: "center", paddingTop: 60, color: "#aaa" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          paddingTop: 60,
+          color: "#aaa",
+        }}
+      >
         <Search size={32} strokeWidth={1.2} style={{ marginBottom: 10 }} />
-        <p style={{ fontSize: 14 }}>Search for a community by name</p>
-        <p style={{ fontSize: 12, marginTop: 4 }}>
+        <p style={{ fontSize: 14, textAlign: "center" }}>
+          Search for a community by name
+        </p>
+        <p style={{ fontSize: 12, marginTop: 4, textAlign: "center" }}>
           e.g. "Kings College Alumni"
         </p>
       </div>
     );
   }
   return (
-    <div style={{ textAlign: "center", paddingTop: 60, color: "#aaa" }}>
-      <p style={{ fontSize: 14 }}>No communities found for "{query}"</p>
-      <p style={{ fontSize: 12, marginTop: 4 }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        paddingTop: 60,
+        color: "#aaa",
+      }}
+    >
+      <p style={{ fontSize: 14, textAlign: "center" }}>
+        No communities found for "{query}"
+      </p>
+      <p style={{ fontSize: 12, marginTop: 4, textAlign: "center" }}>
         Try a shorter or different search term
       </p>
     </div>
