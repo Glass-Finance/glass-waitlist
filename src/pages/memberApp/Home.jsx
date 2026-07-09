@@ -550,10 +550,10 @@ function NoCommunityState({ navigate }) {
       >
         Join A Community
       </button>
-        
+
       {/* Secondary link */}
       <button
-        onClick={() => navigate("/member/communities/search")}
+        onClick={() => navigate("/member/notifications")}
         style={{
           background: "none",
           border: "none",
