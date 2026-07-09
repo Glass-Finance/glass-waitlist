@@ -40,8 +40,9 @@ const CAT_COLORS = {
   sports: { bg: "#ECFDF5", color: "#059669" },
   social: { bg: "#FFF0F0", color: "#E53E3E" },
 };
-function catStyle(cat = "") {
-  return CAT_COLORS[cat.toLowerCase()] ?? { bg: "#F0F0F0", color: "#555" };
+function catStyle(cat) {
+  const key = typeof cat === "string" ? cat.toLowerCase() : "";
+  return CAT_COLORS[key] ?? { bg: "#F0F0F0", color: "#555" };
 }
 
 // ─── Single community card ────────────────────────────────────────────────────
