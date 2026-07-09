@@ -44,6 +44,7 @@ const DesktopRequired = lazy(
 const DashboardLayout = lazy(() => import("./layouts/DashboardLayout"));
 const CommunitiesHome = lazy(() => import("./pages/dashboard/CommunitiesHome"));
 const AdminDashboard = lazy(() => import("./pages/dashboard/AdminDashboard"));
+const JoinRequests = lazy(() => import("./pages/dashboard/JoinRequests"));
 const PayingAdminDashboard = lazy(() =>
   import("./pages/dashboard/AdminDashboard").then((m) => ({
     default: m.PayingAdminDashboard,
@@ -212,6 +213,7 @@ function App() {
               <Route path="members" element={<Members />} />
               <Route path="members/:memberId" element={<MemberDetail />} />
               <Route path="notifications" element={<AdminNotifications />} />
+              <Route path="join-requests" element={<JoinRequests />} />
 
               <Route element={<SuperAdminRoute />}>
                 <Route path="system-config" element={<SystemConfig />} />

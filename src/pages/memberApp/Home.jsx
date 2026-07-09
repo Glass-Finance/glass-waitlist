@@ -569,9 +569,91 @@ function NoCommunityState({ navigate }) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Pending approval state — join request submitted, awaiting admin
+// ---------------------------------------------------------------------------
+function PendingApprovalState({ navigate, community }) {
+  return (
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "60px 32px 80px",
+        textAlign: "center",
+      }}
+    >
+      <div
+        style={{
+          width: 80,
+          height: 80,
+          borderRadius: "50%",
+          background: "#FFF7E0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 28,
+        }}
+      >
+        <Clock size={36} strokeWidth={1.6} style={{ color: "#D4A017" }} />
+      </div>
+      <p
+        style={{
+          fontSize: 20,
+          fontWeight: 700,
+          color: "#111",
+          margin: "0 0 10px",
+        }}
+      >
+        Request Pending
+      </p>
+      <p
+        style={{
+          fontSize: 14,
+          color: "#888",
+          margin: "0 0 8px",
+          lineHeight: 1.6,
+          maxWidth: 260,
+        }}
+      >
+        Your request to join {community?.name ?? "this community"} is awaiting
+        admin approval.
+      </p>
+      <p style={{ fontSize: 13, color: "#aaa", margin: "0 0 36px" }}>
+        You'll get access once it's approved.
+      </p>
+      <button
+        onClick={() => navigate("/member/communities/search")}
+        style={{
+          background: "none",
+          border: "1.5px solid #002FA7",
+          borderRadius: 10,
+          padding: "12px 24px",
+          color: "#002FA7",
+          fontWeight: 600,
+          cursor: "pointer",
+        }}
+      >
+        Browse Other Communities
+      </button>
+    </div>
+  );
+}
+
 export default function Home() {
   const navigate = useNavigate();
-  const { data, isLoading, error, refresh, hasNoCommunity } = usePayments();
+  // const { data, isLoading, error, refresh, hasNoCommunity } = usePayments();
+  const {
+    data,
+    isLoading,
+    error,
+    refresh,
+    hasNoCommunity,
+    hasPendingCommunity,
+    pendingCommunity,
+  } = usePayments();
 
   const nextDue = data?.nextDue ?? null;
   const upcoming = (data?.upcoming ?? [])
@@ -765,6 +847,11 @@ export default function Home() {
           <p style={{ textAlign: "center", color: "#999", fontSize: 13 }}>
             Loading…
           </p>
+        ) : hasPendingCommunity ? (
+          <PendingApprovalState
+            navigate={navigate}
+            community={pendingCommunity}
+          />
         ) : hasNoCommunity ? (
           <NoCommunityState navigate={navigate} />
         ) : (
