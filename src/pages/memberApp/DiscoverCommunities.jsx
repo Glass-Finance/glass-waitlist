@@ -63,8 +63,10 @@ function CommunityCard({ community, onRequest }) {
     setLoading(true);
     setErrorMsg(null);
     try {
-      await onRequest(community.id ?? community.slug);
-      setStatus("pending");
+      const res = await onRequest(community.id ?? community.slug);
+      const data = res?.data?.data ?? res?.data;
+      const newStatus = (data?.status ?? "").toUpperCase();
+      setStatus(newStatus === "APPROVED" ? "member" : "pending");
     } catch (err) {
       setErrorMsg(
         err?.response?.data?.message ?? "Couldn't send request. Try again.",
@@ -73,7 +75,6 @@ function CommunityCard({ community, onRequest }) {
       setLoading(false);
     }
   }
-
   return (
     <div
       style={{
@@ -145,6 +146,11 @@ function CommunityCard({ community, onRequest }) {
                 ? community.category[0]
                 : community.category) ?? "Community"}
             </span>
+            {community.requiresMemberApproval === false && (
+              <span style={{ fontSize: 11, color: "#059669", fontWeight: 600 }}>
+                Open — join instantly
+              </span>
+            )}
             {community.memberCount != null && (
               <span
                 style={{

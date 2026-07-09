@@ -1,9 +1,11 @@
 // pages/dashboard/JoinRequests.jsx
 import { useJoinRequests } from "../../hooks/useJoinRequests";
+import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 // assumes activeCommunityId comes from wherever your dashboard already
 // tracks the currently-selected community (e.g. a context or route param)
 
-export default function JoinRequests({ communityId }) {
+export default function JoinRequests() {
+  const communityId = useActiveCommunityId();
   const { requests, isLoading, approve, reject, isMutating } =
     useJoinRequests(communityId);
 
