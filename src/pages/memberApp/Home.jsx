@@ -77,30 +77,79 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
         }}
       >
         {/* Icon bubble */}
-        <div style={{
-          width: 56, height: 56, borderRadius: "50%",
-          background: isError ? "#FEE2E2" : "rgba(255,255,255,0.15)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          marginBottom: 20,
-        }}>
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: "50%",
+            background: isError ? "#FEE2E2" : "rgba(255,255,255,0.15)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
           {isError ? (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="9" stroke="#EF4444" strokeWidth="1.8"/>
-              <path d="M12 8v4M12 16h.01" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/>
+              <circle
+                cx="12"
+                cy="12"
+                r="9"
+                stroke="#EF4444"
+                strokeWidth="1.8"
+              />
+              <path
+                d="M12 8v4M12 16h.01"
+                stroke="#EF4444"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
             </svg>
           ) : (
             /* Envelope icon */
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-              <rect x="2" y="4" width="20" height="16" rx="2" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8"/>
-              <path d="M2 7l10 7 10-7" stroke="rgba(255,255,255,0.9)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+              <rect
+                x="2"
+                y="4"
+                width="20"
+                height="16"
+                rx="2"
+                stroke="rgba(255,255,255,0.9)"
+                strokeWidth="1.8"
+              />
+              <path
+                d="M2 7l10 7 10-7"
+                stroke="rgba(255,255,255,0.9)"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           )}
         </div>
 
         {isError ? (
           <>
-            <p style={{ fontSize: 18, color: "#111", fontWeight: 700, margin: "0 0 6px" }}>Couldn't load payments</p>
-            <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0, lineHeight: 1.5 }}>Check your connection and try again.</p>
+            <p
+              style={{
+                fontSize: 18,
+                color: "#111",
+                fontWeight: 700,
+                margin: "0 0 6px",
+              }}
+            >
+              Couldn't load payments
+            </p>
+            <p
+              style={{
+                fontSize: 13,
+                color: "#9CA3AF",
+                margin: 0,
+                lineHeight: 1.5,
+              }}
+            >
+              Check your connection and try again.
+            </p>
             <button
               onClick={onRefresh}
               style={{
@@ -120,8 +169,27 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
           </>
         ) : (
           <>
-            <p style={{ fontSize: 20, color: "#fff", fontWeight: 600, margin: "0 0 8px", letterSpacing: "-0.2px" }}>No Payments Due</p>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", margin: 0, lineHeight: 1.5 }}>New dues Will Appear Here</p>
+            <p
+              style={{
+                fontSize: 20,
+                color: "#fff",
+                fontWeight: 600,
+                margin: "0 0 8px",
+                letterSpacing: "-0.2px",
+              }}
+            >
+              No Payments Due
+            </p>
+            <p
+              style={{
+                fontSize: 13,
+                color: "rgba(255,255,255,0.6)",
+                margin: 0,
+                lineHeight: 1.5,
+              }}
+            >
+              New dues Will Appear Here
+            </p>
           </>
         )}
       </div>
@@ -418,13 +486,24 @@ function NoCommunityState({ navigate }) {
       }}
     >
       {/* Icon */}
-      <div style={{
-        width: 80, height: 80, borderRadius: "50%",
-        background: "#E4E4F0",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        marginBottom: 28, flexShrink: 0,
-      }}>
-        <img src={joinCommunityIcon} alt="" style={{ width: 44, height: 44, objectFit: "contain" }} />
+      <div
+        style={{
+          width: 80,
+          height: 80,
+          borderRadius: "50%",
+          background: "#E4E4F0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 28,
+          flexShrink: 0,
+        }}
+      >
+        <img
+          src={joinCommunityIcon}
+          alt=""
+          style={{ width: 44, height: 44, objectFit: "contain" }}
+        />
       </div>
 
       <p
@@ -436,7 +515,9 @@ function NoCommunityState({ navigate }) {
           lineHeight: 1.3,
         }}
       >
-        You Are Not In Any<br />Community Yet
+        You Are Not In Any
+        <br />
+        Community Yet
       </p>
       <p
         style={{
@@ -452,7 +533,7 @@ function NoCommunityState({ navigate }) {
 
       {/* Primary CTA */}
       <button
-        onClick={() => navigate("/member/notifications")}
+        onClick={() => navigate("/member/communities/search")}
         style={{
           width: "100%",
           maxWidth: 300,
@@ -469,10 +550,10 @@ function NoCommunityState({ navigate }) {
       >
         Join A Community
       </button>
-
+        
       {/* Secondary link */}
       <button
-        onClick={() => navigate("/member/notifications")}
+        onClick={() => navigate("/member/communities/search")}
         style={{
           background: "none",
           border: "none",
@@ -508,9 +589,14 @@ export default function Home() {
     try {
       if (!localStorage.getItem("glass_member_community")) {
         const { name, slug, id } = data.community;
-        localStorage.setItem("glass_member_community", JSON.stringify({ name, slug, id }));
+        localStorage.setItem(
+          "glass_member_community",
+          JSON.stringify({ name, slug, id }),
+        );
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }, [data?.community]);
 
   function handlePay(payment) {
@@ -520,7 +606,10 @@ export default function Home() {
     // not carry community info back -- pass along what we already know here
     // as a fallback so the community name/logo don't regress on that screen.
     navigate(`/member/pay/${payment.id}${suffix}`, {
-      state: { communityName: payment.communityName, communityLogo: payment.logo },
+      state: {
+        communityName: payment.communityName,
+        communityLogo: payment.logo,
+      },
     });
   }
 
@@ -596,7 +685,16 @@ export default function Home() {
                 }}
               >
                 {communityLogo?.url ? (
-                  <img src={communityLogo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img
+                    src={communityLogo.url}
+                    alt=""
+                    decoding="async"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
                 ) : (
                   communityInitial
                 )}
@@ -672,7 +770,13 @@ export default function Home() {
         ) : (
           <>
             {/* ── Hero card ───────────────────────────────────────────────────── */}
-            <HeroCard nextDue={nextDue} onPay={handlePay} communityName={communityName} error={error} onRefresh={refresh} />
+            <HeroCard
+              nextDue={nextDue}
+              onPay={handlePay}
+              communityName={communityName}
+              error={error}
+              onRefresh={refresh}
+            />
 
             {/* ── Upcoming Payments ────────────────────────────────────────────── */}
             <div
@@ -698,16 +802,69 @@ export default function Home() {
               </div>
 
               {upcoming.length === 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "28px 16px 20px", textAlign: "center", gap: 0 }}>
-                  <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#EBEBEB", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    padding: "28px 16px 20px",
+                    textAlign: "center",
+                    gap: 0,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 52,
+                      height: 52,
+                      borderRadius: "50%",
+                      background: "#EBEBEB",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 14,
+                    }}
+                  >
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                      <rect x="2" y="5" width="20" height="14" rx="2" fill="#B0B4C0"/>
-                      <path d="M2 10h20" stroke="#fff" strokeWidth="1.5"/>
-                      <rect x="5" y="14" width="4" height="2" rx="0.5" fill="#fff"/>
+                      <rect
+                        x="2"
+                        y="5"
+                        width="20"
+                        height="14"
+                        rx="2"
+                        fill="#B0B4C0"
+                      />
+                      <path d="M2 10h20" stroke="#fff" strokeWidth="1.5" />
+                      <rect
+                        x="5"
+                        y="14"
+                        width="4"
+                        height="2"
+                        rx="0.5"
+                        fill="#fff"
+                      />
                     </svg>
                   </div>
-                  <p style={{ fontSize: 17, fontWeight: 600, color: "#111", margin: "0 0 6px" }}>No Upcoming Payments</p>
-                  <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0, lineHeight: 1.55, maxWidth: 220 }}>New Dues from community will show up here once scheduled</p>
+                  <p
+                    style={{
+                      fontSize: 17,
+                      fontWeight: 600,
+                      color: "#111",
+                      margin: "0 0 6px",
+                    }}
+                  >
+                    No Upcoming Payments
+                  </p>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: "#9CA3AF",
+                      margin: 0,
+                      lineHeight: 1.55,
+                      maxWidth: 220,
+                    }}
+                  >
+                    New Dues from community will show up here once scheduled
+                  </p>
                 </div>
               ) : (
                 upcoming.map((p) => (
@@ -772,15 +929,66 @@ export default function Home() {
               </div>
 
               {history.length === 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "28px 16px 20px", textAlign: "center", gap: 0 }}>
-                  <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#EBEBEB", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    padding: "28px 16px 20px",
+                    textAlign: "center",
+                    gap: 0,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 52,
+                      height: 52,
+                      borderRadius: "50%",
+                      background: "#EBEBEB",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 14,
+                    }}
+                  >
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                      <rect x="4" y="3" width="16" height="18" rx="2" fill="#B0B4C0"/>
-                      <path d="M8 8h8M8 12h8M8 16h5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/>
+                      <rect
+                        x="4"
+                        y="3"
+                        width="16"
+                        height="18"
+                        rx="2"
+                        fill="#B0B4C0"
+                      />
+                      <path
+                        d="M8 8h8M8 12h8M8 16h5"
+                        stroke="#fff"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   </div>
-                  <p style={{ fontSize: 17, fontWeight: 600, color: "#111", margin: "0 0 6px" }}>No Payment History</p>
-                  <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0, lineHeight: 1.55, maxWidth: 230 }}>Once you make your transaction history will appear here.</p>
+                  <p
+                    style={{
+                      fontSize: 17,
+                      fontWeight: 600,
+                      color: "#111",
+                      margin: "0 0 6px",
+                    }}
+                  >
+                    No Payment History
+                  </p>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: "#9CA3AF",
+                      margin: 0,
+                      lineHeight: 1.55,
+                      maxWidth: 230,
+                    }}
+                  >
+                    Once you make your transaction history will appear here.
+                  </p>
                 </div>
               ) : (
                 history.map((item) => <HistoryRow key={item.id} item={item} />)

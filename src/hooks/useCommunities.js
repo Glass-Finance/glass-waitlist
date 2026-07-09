@@ -2,6 +2,7 @@ import { useQuery, useQueries } from "@tanstack/react-query";
 import client from "../api/client";
 import { getCommunity, getCommunityMembers } from "../api/communities";
 import { getCommunityTransactions } from "../api/transactions";
+import { searchPublicCommunities } from "../api/communities";
 
 // GET /api/v1/communities/me
 // Returns a PAGINATED envelope: { content: [...], pageNumber, pageSize, totalElements, totalPages, last }
@@ -28,6 +29,25 @@ export function useCommunities(params = {}) {
         pageNumber: data?.pageNumber ?? 0,
       };
     },
+  });
+}
+
+
+// GET /api/v1/public/communities/search
+// Public directory search — no auth-scoped community membership required,
+// used by members with zero communities to discover ones to request
+// joining. Follows the same { search, page, size } convention as
+// getAdminCommunities / getAdminUsers elsewhere in this codebase.
+export function usePublicCommunitySearch(search, { enabled = true } = {}) {
+  return useQuery({
+    queryKey: ["public-communities-search", search],
+    queryFn: async () => {
+      const res = await searchPublicCommunities({ search, size: 30 });
+      const data = res.data?.data;
+      return Array.isArray(data) ? data : (data?.content ?? []);
+    },
+    enabled: enabled,
+    staleTime: 1000 * 30,
   });
 }
 

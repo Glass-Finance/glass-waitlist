@@ -17,8 +17,31 @@ export default function OTPStep({ email, onVerified, onBack }) {
   const [resendCount, setResendCount] = useState(0);
   const inputs = useRef([]);
 
-  const secondsLeft = useCountdown(OTP_VALIDITY_SECONDS, `${email}-${resendCount}`);
+  const secondsLeft = useCountdown(
+    OTP_VALIDITY_SECONDS,
+    `${email}-${resendCount}`,
+  );
   const codeExpired = secondsLeft <= 0;
+
+  // const handleChange = (index, value) => {
+  //   // Handle full paste/autofill (e.g. from SMS autofill or clipboard) —
+  //   // browsers deliver the whole code into whichever box received it.
+  //   if (value.length > 1) {
+  //     const pasted = value.replace(/\D/g, "").slice(0, 6).split("");
+  //     const next = ["", "", "", "", "", ""];
+  //     pasted.forEach((ch, i) => {
+  //       next[i] = ch;
+  //     });
+  //     setOtp(next);
+  //     inputs.current[Math.min(pasted.length, 5)]?.focus();
+  //     return;
+  //   }
+  //   if (!/^\d*$/.test(value)) return;
+  //   const updated = [...otp];
+  //   updated[index] = value;
+  //   setOtp(updated);
+  //   if (value && index < 5) inputs.current[index + 1]?.focus();
+  // };
 
   const handleChange = (index, value) => {
     // Handle full paste/autofill (e.g. from SMS autofill or clipboard) —
@@ -26,7 +49,9 @@ export default function OTPStep({ email, onVerified, onBack }) {
     if (value.length > 1) {
       const pasted = value.replace(/\D/g, "").slice(0, 6).split("");
       const next = ["", "", "", "", "", ""];
-      pasted.forEach((ch, i) => { next[i] = ch; });
+      pasted.forEach((ch, i) => {
+        next[i] = ch;
+      });
       setOtp(next);
       inputs.current[Math.min(pasted.length, 5)]?.focus();
       return;
@@ -105,7 +130,9 @@ export default function OTPStep({ email, onVerified, onBack }) {
         >
           Wrong email?
         </button>
-        <p className={`text-xs mt-2 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
+        <p
+          className={`text-xs mt-2 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
+        >
           {codeExpired
             ? "Your code has expired — request a new one below."
             : `Code expires in ${formatCountdown(secondsLeft)}`}
@@ -120,7 +147,8 @@ export default function OTPStep({ email, onVerified, onBack }) {
               ref={(el) => (inputs.current[i] = el)}
               type="text"
               inputMode="numeric"
-              maxLength={1}
+              maxLength={6}
+              autoComplete={i === 0 ? "one-time-code" : "off"}
               value={otp[i]}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
@@ -139,7 +167,8 @@ export default function OTPStep({ email, onVerified, onBack }) {
               ref={(el) => (inputs.current[i] = el)}
               type="text"
               inputMode="numeric"
-              maxLength={1}
+              maxLength={6}
+              autoComplete="off"
               value={otp[i]}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}

@@ -52,6 +52,14 @@ export const updateCommunityMember = (communityId, memberId, payload) =>
 export const removeCommunityMember = (communityId, memberId) =>
   client.patch(`/communities/${communityId}/members/${memberId}/remove`);
 
+// GET /api/v1/public/communities/search
+// Public directory search — no auth-scoped community membership required,
+// used by members with zero communities to discover ones to request
+// joining. Follows the same { search, page, size } convention as
+// getAdminCommunities / getAdminUsers elsewhere in this codebase.
+export const searchPublicCommunities = (params = {}) =>
+  client.get(`/public/communities/search`, { params });
+
 // ─── Join requests (admin) ────────────────────────────────────────────────────
 
 // GET /api/v1/communities/{communityIdentifier}/join-requests
