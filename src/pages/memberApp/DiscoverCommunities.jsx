@@ -40,7 +40,9 @@ const CAT_COLORS = {
   sports: { bg: "#ECFDF5", color: "#059669" },
   social: { bg: "#FFF0F0", color: "#E53E3E" },
 };
-function catStyle(cat) {
+function catStyle(category) {
+  // category is an array of strings from the API (e.g. ["education"])
+  const cat = Array.isArray(category) ? category[0] : category;
   const key = typeof cat === "string" ? cat.toLowerCase() : "";
   return CAT_COLORS[key] ?? { bg: "#F0F0F0", color: "#555" };
 }
@@ -54,6 +56,7 @@ function CommunityCard({ community, onRequest }) {
   const { bg, color } = catStyle(community.category);
   const alreadyMember = status === "member";
   const alreadyPending = status === "pending";
+  const logoUrl = community.logo?.url ?? null;
 
   async function handleRequest() {
     if (alreadyMember || alreadyPending || loading) return;
@@ -101,9 +104,9 @@ function CommunityCard({ community, onRequest }) {
             fontSize: 18,
           }}
         >
-          {community.logoUrl ? (
+          {logoUrl ? (
             <img
-              src={community.logoUrl}
+              src={logoUrl}
               alt=""
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
@@ -138,7 +141,9 @@ function CommunityCard({ community, onRequest }) {
                 color,
               }}
             >
-              {community.category ?? "Community"}
+              {(Array.isArray(community.category)
+                ? community.category[0]
+                : community.category) ?? "Community"}
             </span>
             {community.memberCount != null && (
               <span
