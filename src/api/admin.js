@@ -35,3 +35,12 @@ export const getAdminPaymentLinkMembers = (identifier, params)   => client.get(`
 export const createAdminNotification  = (payload) => client.post("/admin/notifications", payload);
 export const getAdminNotificationJobs = (params)  => client.get("/admin/notifications/jobs", { params });
 export const getAdminNotificationJob  = (jobId)   => client.get(`/admin/notifications/jobs/${jobId}`);
+
+
+// GET /api/v1/finance/resolve-account?bankCode=&accountNumber=
+// Cross-checks a stored payout account against Paystack directly, so the
+// admin verify action isn't just trusting whatever was saved in our DB —
+// confirms the account is still real and the name matches before flipping
+// status to verified.
+export const resolveBankAccount = (bankCode, accountNumber) =>
+  client.get("/finance/resolve-account", { params: { bankCode, accountNumber } });  
