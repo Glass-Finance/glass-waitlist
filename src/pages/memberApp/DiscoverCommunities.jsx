@@ -339,7 +339,7 @@ export default function DiscoverCommunities() {
           )}
           <input
             autoFocus
-            type="search"
+            type="text"
             placeholder="Search communities…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
