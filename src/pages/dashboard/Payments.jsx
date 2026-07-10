@@ -1959,31 +1959,6 @@ export default function Payments() {
       };
     }
 
-    // ── TEMPORARY DEBUG — remove after checking ──────────────────────────
-    if (import.meta.env.DEV) {
-      const anniversaryPlan = plans.find((p) =>
-        p.name?.toLowerCase().includes("anniversary"),
-      );
-      if (anniversaryPlan) {
-        const matching = transactions.filter(
-          (tx) => String(tx.paymentLink?.id) === String(anniversaryPlan.id),
-        );
-        console.table(
-          matching.map((tx) => ({
-            id: tx.id,
-            internalReference: tx.internalReference,
-            reference: tx.reference,
-            status: tx.status,
-            obligationId: tx.obligationId,
-            memberId: tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id,
-            createdAt: tx.createdAt,
-            paidAt: tx.paidAt,
-            amount: tx.amount,
-          })),
-        );
-      }
-    }
-    // ── END TEMPORARY DEBUG ───────────────────────────────────────────────
     return result;
   }, [obligations, transactions]);
 
