@@ -20,6 +20,24 @@ export function useMe() {
 }
 
 // ─── Update profile ───────────────────────────────────────────────────────────
+const PROFILE_FIELD_LABELS = {
+  firstName: "first name",
+  lastName: "last name",
+  phoneNumber: "phone number",
+  profileImageFileId: "profile photo",
+};
+
+// "Your last name was updated successfully" beats a generic "Profile
+// updated" — but it only works if callers send just the changed fields.
+function describeProfileUpdate(variables) {
+  const fields = Object.keys(variables?.userData ?? {})
+    .map((k) => PROFILE_FIELD_LABELS[k])
+    .filter(Boolean);
+  if (fields.length === 0 || fields.length > 2) return "Profile updated";
+  const list = fields.join(" and ");
+  return `Your ${list} ${fields.length > 1 ? "were" : "was"} updated successfully`;
+}
+
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -27,7 +45,7 @@ export function useUpdateProfile() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
     },
-    meta: { successMessage: "Profile updated" },
+    meta: { successMessage: describeProfileUpdate },
   });
 }
 

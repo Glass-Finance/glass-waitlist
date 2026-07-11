@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Bell, Mail, MoreVertical, CreditCard, AlertCircle, Clock } from "lucide-react";
 import { useInvites } from "../../hooks/useInvites";
 import { useNotifications } from "../../hooks/useNotifications";
+import { notificationTarget } from "../../utils/notificationRouting";
+import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 
 const TABS = ["Payments", "Community", "Invites"];
 
@@ -17,6 +19,14 @@ function dayLabel(dateStr) {
   if (target >= today) return "Today";
   if (target >= yesterday) return "Yesterday";
   return d.toLocaleDateString("en-NG", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function timeLabel(dateStr) {
+  if (!dateStr) return "";
+  return new Date(dateStr).toLocaleTimeString("en-NG", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 function groupByDay(items) {
@@ -53,18 +63,33 @@ function NotifIcon({ n }) {
 }
 
 // ── Notification row ──────────────────────────────────────────────────────────
-function NotificationRow({ n, onTap }) {
+function NotificationRow({ n, onTap, onNavigate }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const isRead = n.readFlag ?? false;
+  const target = notificationTarget(n, { memberApp: true });
+  const details = extractNotificationDetails(n);
+  const amount = formatNairaAmount(details.amount);
 
   return (
     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 16px", background: "#fff", position: "relative" }}>
       <NotifIcon n={n} />
-      <div style={{ flex: 1, minWidth: 0 }} onClick={() => !isRead && onTap(n.id)}>
+      <div
+        style={{ flex: 1, minWidth: 0, cursor: target ? "pointer" : "default" }}
+        onClick={() => {
+          if (!isRead) onTap(n.id);
+          if (target) onNavigate?.(target);
+        }}
+      >
         <p style={{ fontSize: 14, color: "#111", margin: 0, lineHeight: 1.45 }}>
           {n.title && <span style={{ fontWeight: isRead ? 500 : 700 }}>{n.title} </span>}
           {n.message && <span style={{ color: "#444" }}>{n.title ? n.message : n.message}</span>}
           {!n.title && !n.message && <span style={{ fontWeight: 500 }}>Notification</span>}
+        </p>
+        <p style={{ fontSize: 11.5, color: "#999", margin: "4px 0 0" }}>
+          {amount && (
+            <span style={{ color: "#111", fontWeight: 600 }}>{amount} · </span>
+          )}
+          {[details.communityName, timeLabel(n.createdAt)].filter(Boolean).join(" · ")}
         </p>
         {!isRead && (
           <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#002FA7", display: "inline-block", marginTop: 5 }} />
@@ -157,7 +182,7 @@ function EmptyState({ icon: Icon, label, hint, onAction, actionLabel }) {
 }
 
 // ── Grouped list ──────────────────────────────────────────────────────────────
-function GroupedNotifications({ items, onTap }) {
+function GroupedNotifications({ items, onTap, onNavigate }) {
   const groups = useMemo(() => groupByDay(items), [items]);
   return (
     <>
@@ -167,7 +192,7 @@ function GroupedNotifications({ items, onTap }) {
           <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
             {notifs.map((n, i) => (
               <div key={n.id} style={{ borderTop: i > 0 ? "1px solid #F2F2F2" : "none" }}>
-                <NotificationRow n={n} onTap={onTap} />
+                <NotificationRow n={n} onTap={onTap} onNavigate={onNavigate} />
               </div>
             ))}
           </div>
@@ -234,7 +259,7 @@ export default function Notifications() {
             ? <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>Loading…</p>
             : paymentNotifs.length === 0
               ? <EmptyState icon={Bell} label="No payment notifications." />
-              : <GroupedNotifications items={paymentNotifs} onTap={markRead} />
+              : <GroupedNotifications items={paymentNotifs} onTap={markRead} onNavigate={navigate} />
         )}
 
         {activeTab === "Community" && (
@@ -242,7 +267,7 @@ export default function Notifications() {
             ? <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>Loading…</p>
             : communityNotifs.length === 0
               ? <EmptyState icon={Bell} label="No community notifications." />
-              : <GroupedNotifications items={communityNotifs} onTap={markRead} />
+              : <GroupedNotifications items={communityNotifs} onTap={markRead} onNavigate={navigate} />
         )}
 
         {activeTab === "Invites" && (

@@ -1,8 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
+import { Bell, AlertCircle, CreditCard, Users, ChevronRight, X } from "lucide-react";
 import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
 import { useAuth } from "../../store/AuthContext";
+import { notificationAction } from "../../utils/notificationRouting";
+import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import Background from "../../assets/background.webp";
 
 const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";
@@ -61,16 +64,21 @@ function Avatar({ cat }) {
   );
 }
 
-function NotificationRow({ n, onMarkRead }) {
+function NotificationRow({ n, onMarkRead, onOpen }) {
   const isRead = n.readFlag ?? false;
   const cat = categorize(n);
   const borderColor = SECTION_CONFIG[cat].border;
   const title = n.title ?? n.subject ?? "Notification";
   const desc = n.description ?? n.message ?? "";
+  const details = extractNotificationDetails(n);
+  const amount = formatNairaAmount(details.amount);
 
   return (
     <button
-      onClick={() => !isRead && onMarkRead(n.id)}
+      onClick={() => {
+        if (!isRead) onMarkRead(n.id);
+        onOpen(n);
+      }}
       className="w-full text-left flex items-start gap-3 px-4 py-4 bg-white rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"
       style={{
         border: "1px solid #E5E7EB",
@@ -85,16 +93,153 @@ function NotificationRow({ n, onMarkRead }) {
         {desc && (
           <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{desc}</p>
         )}
-        <p className="text-[11px] text-gray-400 mt-1.5">{formatTime(n.createdAt)}</p>
+        <p className="text-[11px] text-gray-400 mt-1.5">
+          {[details.memberName, details.communityName, formatTime(n.createdAt)]
+            .filter(Boolean)
+            .join(" · ")}
+        </p>
       </div>
-      {!isRead && (
-        <span className="w-2 h-2 rounded-full bg-[#002FA7] flex-shrink-0 mt-1.5" />
-      )}
+      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+        {amount && (
+          <span className="text-xs font-semibold text-gray-900">{amount}</span>
+        )}
+        <div className="flex items-center gap-1.5">
+          {!isRead && (
+            <span className="w-2 h-2 rounded-full bg-[#002FA7]" />
+          )}
+          <ChevronRight size={14} className="text-gray-300" />
+        </div>
+      </div>
     </button>
   );
 }
 
-function SectionGroup({ sectionKey, items, onMarkRead }) {
+// ── Notification detail ───────────────────────────────────────────────────────
+// Notifications have no page of their own, so clicking a row opens this modal
+// with the full (untruncated) content plus a contextual action button that
+// deep-links to the related page when one can be inferred.
+function NotificationDetailModal({ n, onClose }) {
+  const navigate = useNavigate();
+  const cat = categorize(n);
+  const { label: catLabel, border } = SECTION_CONFIG[cat];
+  const title = n.title ?? n.subject ?? "Notification";
+  const desc = n.description ?? n.message ?? n.body ?? "";
+  const action = notificationAction(n);
+
+  // Structured facts (#21): member, community, amount, plan, reference —
+  // from real payload fields when present, best-effort text parsing otherwise.
+  const details = extractNotificationDetails(n);
+  const factRows = [
+    { label: "Member", value: details.memberName },
+    { label: "Community", value: details.communityName },
+    { label: "Amount", value: formatNairaAmount(details.amount) },
+    { label: "Payment plan", value: details.planName },
+    { label: "Reference", value: details.reference, mono: true },
+    { label: "Received", value: formatTime(details.time) },
+  ].filter((r) => r.value);
+
+  return (
+    <div
+      className="fixed inset-0 z-70 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.5)" }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="w-full bg-white rounded-2xl shadow-2xl overflow-hidden" style={{ maxWidth: 440 }}>
+        {/* Header */}
+        <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-gray-100">
+          <div className="flex items-start gap-3 min-w-0">
+            <Avatar cat={cat} />
+            <div className="min-w-0">
+              <span
+                className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5"
+                style={{ background: `${border}14`, color: border }}
+              >
+                {catLabel}
+              </span>
+              <p className="text-[15px] font-semibold text-gray-900 leading-snug">{title}</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 cursor-pointer bg-transparent border-none flex-shrink-0 transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="px-6 py-5">
+          {desc ? (
+            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap m-0">{desc}</p>
+          ) : (
+            <p className="text-sm text-gray-400 m-0">No additional details.</p>
+          )}
+
+          <div className="flex flex-col gap-2 mt-5 pt-4 border-t border-gray-100">
+            {factRows.map((r) => (
+              <div key={r.label} className="flex items-center justify-between gap-4">
+                <span className="text-xs text-gray-400 flex-shrink-0">{r.label}</span>
+                <span
+                  className={`text-xs font-medium text-gray-900 text-right break-all ${r.mono ? "font-mono" : ""}`}
+                >
+                  {r.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+          >
+            Close
+          </button>
+          {action && (
+            <button
+              onClick={() => navigate(action.to)}
+              className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-[#002FA7] hover:opacity-90 cursor-pointer border-none transition-opacity"
+            >
+              {action.label} <ChevronRight size={13} />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Shared behaviour for both list variants: modal open/close state plus the
+// ?open=<id> deep link the topbar dropdown and home overview navigate with.
+// The page list is scoped to the active community, but the topbar panel shows
+// every community's notifications — so fall back to the unscoped list (already
+// cached by the panel) when the deep-linked one isn't in the page's list.
+function useNotificationDetail(notifications, markRead) {
+  const { notifications: allNotifications } = useAllNotifications();
+  const [openNotif, setOpenNotif] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const openId = searchParams.get("open");
+
+  useEffect(() => {
+    if (!openId) return;
+    if (notifications.length === 0 && allNotifications.length === 0) return;
+    const n =
+      notifications.find((x) => String(x.id) === openId) ??
+      allNotifications.find((x) => String(x.id) === openId);
+    if (n) {
+      setOpenNotif(n);
+      if (!(n.readFlag ?? false)) markRead(n.id);
+    }
+    // Consume the param so refresh/back doesn't reopen the modal.
+    setSearchParams({}, { replace: true });
+  }, [openId, notifications, allNotifications]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return { openNotif, open: setOpenNotif, close: () => setOpenNotif(null) };
+}
+
+function SectionGroup({ sectionKey, items, onMarkRead, onOpen }) {
   if (items.length === 0) return null;
   const { label } = SECTION_CONFIG[sectionKey];
   return (
@@ -103,7 +248,7 @@ function SectionGroup({ sectionKey, items, onMarkRead }) {
         {label}
       </p>
       <div className="flex flex-col gap-2">
-        {items.map((n) => <NotificationRow key={n.id} n={n} onMarkRead={onMarkRead} />)}
+        {items.map((n) => <NotificationRow key={n.id} n={n} onMarkRead={onMarkRead} onOpen={onOpen} />)}
       </div>
     </div>
   );
@@ -122,7 +267,7 @@ function dayLabel(dateStr) {
 }
 
 // All-tab: strict newest-first with date separators only (no category grouping)
-function ChronologicalList({ items, onMarkRead }) {
+function ChronologicalList({ items, onMarkRead, onOpen }) {
   if (items.length === 0) return null;
 
   const buckets = [];
@@ -144,7 +289,7 @@ function ChronologicalList({ items, onMarkRead }) {
             {label}
           </p>
           {notifications.map((n) => (
-            <NotificationRow key={n.id} n={n} onMarkRead={onMarkRead} />
+            <NotificationRow key={n.id} n={n} onMarkRead={onMarkRead} onOpen={onOpen} />
           ))}
         </div>
       ))}
@@ -158,6 +303,7 @@ function SuperAdminNotifications() {
     notifications, isLoading, unreadCount,
     markRead, markAllRead, isMarkingAllRead,
   } = useAllNotifications();
+  const detail = useNotificationDetail(notifications, markRead);
 
   return (
     <div
@@ -196,9 +342,13 @@ function SuperAdminNotifications() {
             <p className="text-sm text-gray-400">No notifications yet.</p>
           </div>
         ) : (
-          <ChronologicalList items={notifications} onMarkRead={markRead} />
+          <ChronologicalList items={notifications} onMarkRead={markRead} onOpen={detail.open} />
         )}
       </div>
+
+      {detail.openNotif && (
+        <NotificationDetailModal n={detail.openNotif} onClose={detail.close} />
+      )}
     </div>
   );
 }
@@ -211,6 +361,7 @@ function CommunityNotifications() {
     clearAll, isClearing,
   } = useNotifications();
   const [tab, setTab] = useState("All");
+  const detail = useNotificationDetail(notifications, markRead);
 
   const byCategory = useMemo(() => ({
     urgent: notifications.filter((n) => categorize(n) === "urgent"),
@@ -315,13 +466,19 @@ function CommunityNotifications() {
             <p className="text-sm text-gray-400">No {tab.toLowerCase()} notifications.</p>
           </div>
         ) : tab === "All" ? (
-          <ChronologicalList items={notifications} onMarkRead={markRead} />
+          <ChronologicalList items={notifications} onMarkRead={markRead} onOpen={detail.open} />
         ) : (
           <div className="flex flex-col gap-2">
-            {tabItems.map((n) => <NotificationRow key={n.id} n={n} onMarkRead={markRead} />)}
+            {tabItems.map((n) => (
+              <NotificationRow key={n.id} n={n} onMarkRead={markRead} onOpen={detail.open} />
+            ))}
           </div>
         )}
       </div>
+
+      {detail.openNotif && (
+        <NotificationDetailModal n={detail.openNotif} onClose={detail.close} />
+      )}
     </div>
   );
 }

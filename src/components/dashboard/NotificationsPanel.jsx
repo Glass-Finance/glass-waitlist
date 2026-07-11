@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
+import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 
 function formatTimestamp(dateStr) {
   if (!dateStr) return "";
@@ -62,7 +63,7 @@ function NotifAvatar({ n, community }) {
   );
 }
 
-function NotifCard({ n, communityMap, onMarkRead }) {
+function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
   const isRead    = n.readFlag ?? n.isRead ?? false;
   const title     = n.title ?? n.subject ?? "Notification";
   const body      = n.description ?? n.message ?? n.body ?? null;
@@ -73,7 +74,12 @@ function NotifCard({ n, communityMap, onMarkRead }) {
 
   return (
     <button
-      onClick={() => !isRead && onMarkRead?.(n.id)}
+      onClick={() => {
+        if (!isRead) onMarkRead?.(n.id);
+        // Opens this notification's detail view on the notifications page —
+        // the ?open= param is consumed there (see useNotificationDetail).
+        onNavigate?.(`/dashboard/notifications?open=${n.id}`);
+      }}
       style={{
         display: "flex", alignItems: "flex-start", gap: 10, width: "100%",
         background: isRead ? "#F9F9F9" : "#ffffff",
@@ -111,7 +117,15 @@ function NotifCard({ n, communityMap, onMarkRead }) {
             {body}
           </p>
         )}
-        <p style={{ fontSize: 10.5, color: "#aaa", margin: "5px 0 0" }}>{time}</p>
+        <p style={{ fontSize: 10.5, color: "#aaa", margin: "5px 0 0" }}>
+          {time}
+          {(() => {
+            const amount = formatNairaAmount(extractNotificationDetails(n).amount);
+            return amount ? (
+              <span style={{ color: "#111", fontWeight: 600 }}> · {amount}</span>
+            ) : null;
+          })()}
+        </p>
       </div>
 
       {!isRead && (
@@ -203,6 +217,7 @@ export default function NotificationsPanel({
                     n={n}
                     communityMap={communityMap}
                     onMarkRead={onMarkRead}
+                    onNavigate={(to) => { onClose?.(); navigate(to); }}
                   />
                 ))}
               </div>

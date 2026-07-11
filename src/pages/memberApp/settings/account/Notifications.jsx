@@ -27,7 +27,7 @@ function Toggle({ on, onChange, disabled }) {
   );
 }
 
-function Row({ label, desc, value, onChange, disabled, last = false }) {
+function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
   return (
     <div style={{
       display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -82,6 +82,10 @@ export default function NotificationSettings() {
   const { preferences, isLoading, error, update } = useNotificationPreferences();
 
   const get = (key, defaultVal = true) => preferences[key] ?? defaultVal;
+
+  // When preferences failed to load, the values shown are just defaults —
+  // letting the user flip them would save against unknown server state.
+  const Row = (props) => <PrefRow disabled={!!error} {...props} />;
 
   return (
     <div style={{
@@ -167,6 +171,7 @@ export default function NotificationSettings() {
             <>
               <SkeletonRow />
               <SkeletonRow />
+              <SkeletonRow />
               <SkeletonRow last />
             </>
           ) : (
@@ -182,6 +187,12 @@ export default function NotificationSettings() {
                 desc="Confirmation when a payment goes through"
                 value={get("paymentReceiptEnabled")}
                 onChange={(v) => update("paymentReceiptEnabled", v)}
+              />
+              <Row
+                label="Failed payments"
+                desc="Alert when one of your payments fails or is declined"
+                value={get("paymentFailureEnabled")}
+                onChange={(v) => update("paymentFailureEnabled", v)}
               />
               <Row
                 label="Auto-Pay alerts"

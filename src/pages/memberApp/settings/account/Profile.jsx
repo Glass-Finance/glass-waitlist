@@ -60,13 +60,15 @@ export default function Profile() {
   async function handleSave() {
     setError("");
     try {
+      // Only send what changed — the success toast names the updated
+      // field(s), so sending everything would always read "Profile updated".
+      const userData = {};
+      if (form.firstName !== savedForm.firstName) userData.firstName = form.firstName;
+      if (form.lastName !== savedForm.lastName) userData.lastName = form.lastName;
+      if (form.phone !== savedForm.phone) userData.phoneNumber = form.phone;
       await updateProfile.mutateAsync({
         username: user?.username,
-        userData: {
-          firstName: form.firstName,
-          lastName: form.lastName,
-          phoneNumber: form.phone,
-        },
+        userData,
       });
       setSavedForm(form);
       setSaved(true);

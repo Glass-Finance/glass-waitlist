@@ -69,8 +69,12 @@ const queryClient = new QueryClient({
       if (mutation.options.meta?.silentError) return;
       notifyError(error, { context: mutation.options.mutationKey?.join(".") });
     },
-    onSuccess: (_data, _variables, _context, mutation) => {
-      const message = mutation.options.meta?.successMessage;
+    onSuccess: (data, variables, _context, mutation) => {
+      // successMessage can be a string, or a function of (variables, data)
+      // for messages that depend on what was actually submitted — e.g.
+      // "Your last name was updated" instead of a generic "Profile updated".
+      const raw = mutation.options.meta?.successMessage;
+      const message = typeof raw === "function" ? raw(variables, data) : raw;
       if (message) toastSuccess(message);
     },
   }),
