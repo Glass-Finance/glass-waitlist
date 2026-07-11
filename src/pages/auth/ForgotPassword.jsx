@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { Link, useNavigate } from "react-router-dom";
 import { forgotPassword } from "../../services/authService";
@@ -6,6 +6,7 @@ import { notifyError } from "../../utils/errorHandler";
 import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
+import OtpBoxes from "../../components/common/OtpBoxes";
 
 // Codes are valid for 15 minutes (see the same figure quoted to users in
 // SignIn.jsx and member/Join.jsx).
@@ -20,7 +21,6 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [resendCount, setResendCount] = useState(0);
-  const inputRefs = useRef([]);
 
   const secondsLeft = useCountdown(OTP_VALIDITY_SECONDS, `${email}-${resendCount}`);
   const codeExpired = step === "otp" && secondsLeft <= 0;
@@ -35,7 +35,6 @@ export default function ForgotPassword() {
     try {
       await forgotPassword({ email: email.trim().toLowerCase() });
       setStep("otp");
-      setTimeout(() => inputRefs.current[0]?.focus(), 50);
     } catch (err) {
       setError(notifyError(err, { context: "Forgot password" }));
     } finally {
@@ -43,47 +42,9 @@ export default function ForgotPassword() {
     }
   }
 
-  // Deferred to the next tick — synchronously moving focus to another box
-  // from inside a change handler triggered by iOS's SMS-autofill QuickType
-  // bar (rather than a direct tap) makes Safari drop focus entirely and
-  // dismiss the keyboard instead of advancing to the next box.
-  function focusOtpBox(index) {
-    setTimeout(() => inputRefs.current[index]?.focus(), 0);
-  }
-
-  function handleOtpChange(index, value) {
-    const digits = value.replace(/\D/g, "");
-    // Handle full autofill (e.g. mobile SMS suggestion bar) landing in one
-    // box — this arrives as a plain onChange, not a paste event.
-    if (digits.length > 1) {
-      const pasted = digits.slice(0, 6).split("");
-      const next = ["", "", "", "", "", ""];
-      pasted.forEach((ch, i) => { next[i] = ch; });
-      setOtp(next);
-      setError("");
-      focusOtpBox(Math.min(pasted.length, 5));
-      return;
-    }
-    const next = [...otp];
-    next[index] = digits;
+  function handleOtpChange(next) {
     setOtp(next);
     setError("");
-    if (digits && index < 5) focusOtpBox(index + 1);
-  }
-
-  function handleOtpKeyDown(index, e) {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      focusOtpBox(index - 1);
-    }
-  }
-
-  function handleOtpPaste(e) {
-    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    if (text.length === 6) {
-      setOtp(text.split(""));
-      setTimeout(() => inputRefs.current[5]?.focus(), 0);
-    }
-    e.preventDefault();
   }
 
   function handleVerify() {
@@ -103,8 +64,9 @@ export default function ForgotPassword() {
     try {
       await forgotPassword({ email: email.trim().toLowerCase() });
       setOtp(["", "", "", "", "", ""]);
+      // Also remounts OtpBoxes (keyed on resendCount below), so autoFocus
+      // re-fires and refocuses the field for the freshly-sent code.
       setResendCount((c) => c + 1);
-      setTimeout(() => inputRefs.current[0]?.focus(), 50);
     } catch (err) {
       setError(notifyError(err, { context: "Resend code" }));
     } finally {
@@ -171,44 +133,52 @@ export default function ForgotPassword() {
               </p>
             </div>
 
+            {/* Wrapping in a real <form> matches WebKit's own documented
+                pattern for autocomplete="one-time-code" and gets the
+                iOS keyboard's Return/Go key to submit for free. */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (otpComplete) handleVerify();
+              }}
+            >
             <div>
               <Label>Verification Code</Label>
-              <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
-                {otp.map((digit, i) => (
-                  <input
-                    key={i}
-                    ref={(el) => (inputRefs.current[i] = el)}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength={6}
-                    autoComplete={i === 0 ? "one-time-code" : "off"}
-                    value={digit}
-                    onChange={(e) => handleOtpChange(i, e.target.value)}
-                    onKeyDown={(e) => {
-                      handleOtpKeyDown(i, e);
-                      if (e.key === "Enter" && otpComplete) handleVerify();
-                    }}
-                    onPaste={handleOtpPaste}
-                    onFocus={(e) => (e.target.style.borderColor = "#1C2B8A")}
-                    onBlur={(e) => (e.target.style.borderColor = digit ? "#1C2B8A" : "#e5e7eb")}
-                    style={{
-                      flex: 1,
-                      height: 52,
-                      minWidth: 0,
-                      textAlign: "center",
-                      fontSize: 22,
-                      fontWeight: 700,
-                      borderRadius: 12,
-                      border: `2px solid ${digit ? "#1C2B8A" : "#e5e7eb"}`,
-                      outline: "none",
-                      background: "#fff",
-                      color: "#111827",
-                      transition: "border-color .15s",
-                      fontFamily: "Inter, sans-serif",
-                    }}
-                  />
-                ))}
+              <div style={{ marginTop: 6 }}>
+                <OtpBoxes
+                  key={resendCount}
+                  value={otp}
+                  onChange={handleOtpChange}
+                  length={6}
+                  autoFocus
+                  renderBoxes={(digits, activeIndex) => (
+                    <div style={{ display: "flex", gap: 8 }} className="pointer-events-none">
+                      {digits.map((d, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            flex: 1,
+                            height: 52,
+                            minWidth: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 22,
+                            fontWeight: 700,
+                            borderRadius: 12,
+                            border: `2px solid ${d || i === activeIndex ? "#1C2B8A" : "#e5e7eb"}`,
+                            background: "#fff",
+                            color: "#111827",
+                            transition: "border-color .15s",
+                            fontFamily: "Inter, sans-serif",
+                          }}
+                        >
+                          {d}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                />
               </div>
               <ErrorMessage message={error} />
             </div>
@@ -216,7 +186,12 @@ export default function ForgotPassword() {
             <PrimaryButton onClick={handleVerify} disabled={!otpComplete || loading || codeExpired}>
               Verify Code
             </PrimaryButton>
+            </form>
 
+            {/* Deliberately outside the <form>: a bare <button> with no
+                explicit type defaults to type="submit" inside a form, which
+                would have triggered the form's onSubmit (and double-fired
+                handleVerify) on click. */}
             <div className="flex flex-col items-center gap-1 text-sm text-gray-500 pb-2">
               <p>
                 Didn't receive it?{" "}

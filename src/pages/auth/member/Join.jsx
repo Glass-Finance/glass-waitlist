@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { useInviteToken } from "../../../hooks/useInviteToken";
@@ -12,6 +12,7 @@ import { useAuth } from "../../../store/AuthContext";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 import LoadingState from "../../../components/common/LoadingState";
 import PasswordChecklist from "../../../components/auth/PasswordChecklist";
+import OtpBoxes from "../../../components/common/OtpBoxes";
 import { useCountdown, formatCountdown } from "../../../hooks/useCountdown";
 
 // ── Import your actual assets ──────────────────────────────────────────────
@@ -106,6 +107,7 @@ function PrimaryButton({
     //   )}
     // </button>
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled || loading}
       className="w-full py-4 rounded-full bg-[#002FA7] text-white font-semibold text-[15px] transition-all hover:opacity-90 disabled:cursor-not-allowed cursor-pointer"
@@ -214,15 +216,14 @@ function StepOTP({ email, onVerified, onBack }) {
   const [error, setError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(30);
   const [resendCount, setResendCount] = useState(0);
-  const inputRefs = useRef([]);
+  // Separate from resendCount (which drives the 15-min expiry countdown
+  // below and must only change on an actual resend) — this only forces
+  // OtpBoxes to remount so autoFocus re-fires after clearing the boxes,
+  // on either a resend or a failed verify attempt.
+  const [otpAttempt, setOtpAttempt] = useState(0);
 
   const secondsLeft = useCountdown(OTP_VALIDITY_SECONDS, `${email}-${resendCount}`);
   const codeExpired = secondsLeft <= 0;
-
-  // Focus first box on mount so the keyboard opens immediately on mobile
-  useEffect(() => {
-    inputRefs.current[0]?.focus();
-  }, []);
 
   useEffect(() => {
     if (resendCooldown <= 0) return;
@@ -230,42 +231,9 @@ function StepOTP({ email, onVerified, onBack }) {
     return () => clearTimeout(id);
   }, [resendCooldown]);
 
-  // Deferred to the next tick — synchronously moving focus from inside a
-  // change handler triggered by iOS's SMS-autofill QuickType bar (rather
-  // than a direct tap) makes Safari drop focus entirely and dismiss the
-  // keyboard instead of advancing to the next box.
-  function focusDigitBox(index) {
-    setTimeout(() => inputRefs.current[index]?.focus(), 0);
-  }
-
-  function handleDigitChange(index, value) {
-    // Handle full paste (e.g. from SMS autofill or clipboard)
-    if (value.length > 1) {
-      const pasted = value.replace(/\D/g, "").slice(0, OTP_LENGTH).split("");
-      const next = Array(OTP_LENGTH).fill("");
-      pasted.forEach((ch, i) => { next[i] = ch; });
-      setDigits(next);
-      focusDigitBox(Math.min(pasted.length, OTP_LENGTH - 1));
-      return;
-    }
-    if (!/^\d?$/.test(value)) return;
-    const next = [...digits];
-    next[index] = value;
+  function handleDigitChange(next) {
     setDigits(next);
     setError("");
-    if (value && index < OTP_LENGTH - 1) focusDigitBox(index + 1);
-  }
-
-  function handleKeyDown(index, e) {
-    if (e.key === "Backspace") {
-      if (digits[index]) {
-        const next = [...digits];
-        next[index] = "";
-        setDigits(next);
-      } else if (index > 0) {
-        focusDigitBox(index - 1);
-      }
-    }
   }
 
   async function handleVerify() {
@@ -283,7 +251,7 @@ function StepOTP({ email, onVerified, onBack }) {
     } catch (err) {
       setError(notifyError(err, { context: "Verify OTP", fallback: "That code didn't work. Please try again.", silent: true }));
       setDigits(Array(OTP_LENGTH).fill(""));
-      inputRefs.current[0]?.focus();
+      setOtpAttempt((a) => a + 1);
     } finally {
       setLoading(false);
     }
@@ -296,39 +264,14 @@ function StepOTP({ email, onVerified, onBack }) {
     try {
       await resendVerification({ email });
       setResendCount((c) => c + 1);
+      setOtpAttempt((a) => a + 1);
       setDigits(Array(OTP_LENGTH).fill(""));
     } catch (err) {
       setError(notifyError(err, { context: "Resend OTP", fallback: "Could not resend. Please try again.", silent: true }));
     }
   }
 
-  const firstThree = [0, 1, 2];
-  const lastThree  = [3, 4, 5];
-  const allFilled  = digits.every(Boolean);
-
-  function OTPBox({ index }) {
-    return (
-      <input
-        ref={(el) => (inputRefs.current[index] = el)}
-        type="text"
-        inputMode="numeric"
-        pattern="\d*"
-        maxLength={6}
-        value={digits[index]}
-        onChange={(e) => handleDigitChange(index, e.target.value)}
-        onKeyDown={(e) => handleKeyDown(index, e)}
-        autoComplete={index === 0 ? "one-time-code" : "off"}
-        aria-label={`Digit ${index + 1} of ${OTP_LENGTH}`}
-        className="flex-1 h-14 rounded-xl text-center text-xl font-bold text-gray-900 outline-none transition-all duration-150 caret-transparent bg-white"
-        style={{
-          minWidth: 0,
-          maxWidth: 48,
-          border: digits[index] ? "2px solid #1C2B8A" : "1.5px solid #D0D5E8",
-          fontSize: 22,
-        }}
-      />
-    );
-  }
+  const allFilled = digits.every(Boolean);
 
   return (
     <div className="flex flex-col gap-5">
@@ -361,25 +304,71 @@ function StepOTP({ email, onVerified, onBack }) {
         </p>
       </div>
 
+      {/* Wrapping in a real <form> matches WebKit's own documented pattern
+          for autocomplete="one-time-code" and gets the iOS keyboard's
+          Return/Go key to submit for free. The "Resend" button below stays
+          outside this form — see the note above it. */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (allFilled && !codeExpired) handleVerify();
+        }}
+        className="flex flex-col gap-6"
+      >
       {/* OTP boxes — split with dash. Boxes are flex-1 (not a fixed pixel
           width) so all 6 shrink together to fit narrow screens (e.g.
           iPhone SE / 360px Android) instead of overflowing the viewport. */}
-      <div className="flex items-center justify-between gap-1.5">
-        <div className="flex gap-1.5 flex-1 min-w-0">
-          {firstThree.map((i) => <OTPBox key={i} index={i} />)}
-        </div>
-        <span className="text-gray-400 text-xl font-light flex-shrink-0">—</span>
-        <div className="flex gap-1.5 flex-1 min-w-0">
-          {lastThree.map((i) => <OTPBox key={i} index={i} />)}
-        </div>
-      </div>
+      <OtpBoxes
+        key={otpAttempt}
+        value={digits}
+        onChange={handleDigitChange}
+        length={OTP_LENGTH}
+        autoFocus
+        renderBoxes={(boxDigits, activeIndex) => (
+          <div className="flex items-center justify-between gap-1.5 pointer-events-none">
+            <div className="flex gap-1.5 flex-1 min-w-0">
+              {boxDigits.slice(0, 3).map((d, i) => (
+                <div
+                  key={i}
+                  aria-label={`Digit ${i + 1} of ${OTP_LENGTH}`}
+                  className="flex-1 h-14 rounded-xl flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150"
+                  style={{ minWidth: 0, maxWidth: 48, border: d || i === activeIndex ? "2px solid #1C2B8A" : "1.5px solid #D0D5E8", fontSize: 22 }}
+                >
+                  {d}
+                </div>
+              ))}
+            </div>
+            <span className="text-gray-400 text-xl font-light flex-shrink-0">—</span>
+            <div className="flex gap-1.5 flex-1 min-w-0">
+              {boxDigits.slice(3, 6).map((d, i) => {
+                const idx = i + 3;
+                return (
+                  <div
+                    key={idx}
+                    aria-label={`Digit ${idx + 1} of ${OTP_LENGTH}`}
+                    className="flex-1 h-14 rounded-xl flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150"
+                    style={{ minWidth: 0, maxWidth: 48, border: d || idx === activeIndex ? "2px solid #1C2B8A" : "1.5px solid #D0D5E8", fontSize: 22 }}
+                  >
+                    {d}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      />
 
       <ErrorMessage message={error} />
 
       <PrimaryButton onClick={handleVerify} loading={loading} disabled={!allFilled || codeExpired}>
         Continue
       </PrimaryButton>
+      </form>
 
+      {/* Deliberately outside the <form>: a bare <button> with no explicit
+          type defaults to type="submit" inside a form, which would have
+          triggered the form's onSubmit (and double-fired handleVerify) on
+          click. */}
       <p className="text-sm text-center text-gray-500 pb-2">
         Didn't get OTP?{" "}
         <button

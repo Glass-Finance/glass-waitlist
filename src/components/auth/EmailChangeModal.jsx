@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 import { resendVerification } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
+import OtpBoxes from "../common/OtpBoxes";
 
 // Codes are valid for 15 minutes (see the same figure quoted in SignIn.jsx).
 const OTP_VALIDITY_SECONDS = 15 * 60;
@@ -39,42 +40,9 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
   const [resending, setResending] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
   const [resendCount, setResendCount] = useState(0);
-  const inputs = useRef([]);
 
   const secondsLeft = useCountdown(OTP_VALIDITY_SECONDS, `${newEmail}-${resendCount}`);
   const codeExpired = secondsLeft <= 0;
-
-  // Deferred to the next tick — see OTPStep.jsx for why: synchronously
-  // moving focus from inside a change handler triggered by iOS's SMS-autofill
-  // QuickType bar makes Safari drop focus entirely and dismiss the keyboard
-  // instead of advancing to the next box.
-  function focusBox(index) {
-    setTimeout(() => inputs.current[index]?.focus(), 0);
-  }
-
-  function handleChange(index, value) {
-    // Handle full paste/autofill (e.g. from SMS autofill or clipboard) —
-    // browsers deliver the whole code into whichever box received it.
-    if (value.length > 1) {
-      const pasted = value.replace(/\D/g, "").slice(0, 6).split("");
-      const next = ["", "", "", "", "", ""];
-      pasted.forEach((ch, i) => { next[i] = ch; });
-      setOtp(next);
-      focusBox(Math.min(pasted.length, 5));
-      return;
-    }
-    if (!/^\d*$/.test(value)) return;
-    const updated = [...otp];
-    updated[index] = value;
-    setOtp(updated);
-    if (value && index < 5) focusBox(index + 1);
-  }
-
-  function handleKeyDown(index, e) {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      focusBox(index - 1);
-    }
-  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -138,41 +106,39 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <div className="flex items-center gap-2 justify-center">
-          {[0, 1, 2].map((i) => (
-            <input
-              key={i}
-              ref={(el) => (inputs.current[i] = el)}
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              maxLength={6}
-              autoComplete={i === 0 ? "one-time-code" : "off"}
-              value={otp[i]}
-              onChange={(e) => handleChange(i, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(i, e)}
-              className="w-11 h-12 text-center text-lg font-semibold text-gray-900 bg-white rounded-xl outline-none transition-all"
-              style={{ border: "1.5px solid #C2C2C2" }}
-            />
-          ))}
-          <span className="text-gray-400 text-lg font-medium px-1">—</span>
-          {[3, 4, 5].map((i) => (
-            <input
-              key={i}
-              ref={(el) => (inputs.current[i] = el)}
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              maxLength={6}
-              autoComplete="off"
-              value={otp[i]}
-              onChange={(e) => handleChange(i, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(i, e)}
-              className="w-11 h-12 text-center text-lg font-semibold text-gray-900 bg-white rounded-xl outline-none transition-all"
-              style={{ border: "1.5px solid #C2C2C2" }}
-            />
-          ))}
-        </div>
+        <OtpBoxes
+          key={resendCount}
+          value={otp}
+          onChange={setOtp}
+          length={6}
+          autoFocus
+          renderBoxes={(digits, activeIndex) => (
+            <div className="flex items-center gap-2 justify-center pointer-events-none">
+              {digits.slice(0, 3).map((d, i) => (
+                <div
+                  key={i}
+                  className="w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all"
+                  style={{ border: `1.5px solid ${d || i === activeIndex ? "#1C2B8A" : "#C2C2C2"}` }}
+                >
+                  {d}
+                </div>
+              ))}
+              <span className="text-gray-400 text-lg font-medium px-1">—</span>
+              {digits.slice(3, 6).map((d, i) => {
+                const idx = i + 3;
+                return (
+                  <div
+                    key={idx}
+                    className="w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all"
+                    style={{ border: `1.5px solid ${d || idx === activeIndex ? "#1C2B8A" : "#C2C2C2"}` }}
+                  >
+                    {d}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        />
 
         {error && <p className="text-sm text-red-500 text-center -mt-2">{error}</p>}
 

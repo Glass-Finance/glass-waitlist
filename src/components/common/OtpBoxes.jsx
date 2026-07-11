@@ -1,61 +1,136 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
-// Shared 6-box OTP input. Focus moves to the next/previous box on
-// type/backspace, deferred via setTimeout(...,0) -- calling .focus()
-// synchronously from within the onChange fired by iOS's SMS/QuickType
-// autofill bar makes Safari drop focus and dismiss the keyboard instead of
-// advancing (see OTPStep.jsx/ForgotPassword.jsx/EmailChangeModal.jsx/Join.jsx
-// for the same fix). autoComplete="one-time-code" + a 6-char maxLength on
-// every box lets the browser deliver a full pasted/autofilled code without
-// silently truncating it first.
-export default function OtpBoxes({ value, onChange, length = 6, disabled = false }) {
-  const inputs = useRef([]);
+// Shared OTP input. Renders as a row of visual boxes, but underneath there
+// is exactly ONE real, focusable <input> — invisible, stretched over the
+// whole row — that receives every keystroke, paste, and autofill event.
+// The boxes themselves are plain <div>s, not inputs.
+//
+// This replaces an earlier version with one real <input> PER digit, which
+// tried to fix iOS's "keyboard closes itself" bug by deferring cross-box
+// .focus() calls with setTimeout(...,0). That didn't hold up on real
+// iPhones: when the QuickType/SMS-autofill bar inserts a code, WebKit has
+// to redistribute characters across sibling inputs and shift focus between
+// them — and any focus-juggling in response to that autofill event is
+// unreliable on iOS regardless of the delay, not just at 0ms. With a single
+// real input, there is no cross-box focus-shifting to go wrong: typing,
+// backspacing, and autofill all use completely ordinary single-input
+// semantics that iOS already handles correctly.
+//
+// Making that one real input actually invisible turned out to have its own
+// footguns, both addressed below:
+//   - `opacity: 0` risks Safari's autofill-suggestion heuristic treating the
+//     field as not meaningfully visible and skipping the QuickType/SMS-code
+//     suggestion entirely. Using `opacity: 1` with transparent color/
+//     background/caret instead keeps the element "visible" to the browser's
+//     own logic while still showing nothing to the human eye.
+//   - WebKit applies its own `:-webkit-autofill` internal style (the
+//     familiar yellow-tinted background) the moment a field is autofilled,
+//     which overrides plain `color`/`background` CSS via user-agent
+//     stylesheet specificity — exactly the moment this input matters most.
+//     Left unhandled, the "invisible" input could flash visible right when
+//     autofill fires. Defeated below with the standard -webkit-text-fill-
+//     color + frozen-transition trick.
+const AUTOFILL_OVERRIDE_CSS = `
+.otp-hidden-input:-webkit-autofill,
+.otp-hidden-input:-webkit-autofill:hover,
+.otp-hidden-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: transparent !important;
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0px 1000px transparent inset !important;
+}
+`;
 
-  function focusBox(index) {
-    setTimeout(() => inputs.current[index]?.focus(), 0);
-  }
+export default function OtpBoxes({
+  value,
+  onChange,
+  length = 6,
+  disabled = false,
+  autoFocus = false,
+  onKeyDown,
+  renderBoxes,
+  className = "",
+}) {
+  const inputRef = useRef(null);
+  const code = value.join("").slice(0, length);
+  // The box the caret would logically be in — the next empty one, or the
+  // last box once the code is complete.
+  const activeIndex = Math.min(code.length, length - 1);
 
-  function handleChange(index, raw) {
-    const digits = raw.replace(/\D/g, "");
-    if (digits.length > 1) {
-      const pasted = digits.slice(0, length).split("");
-      const next = Array(length).fill("");
-      pasted.forEach((ch, i) => { next[i] = ch; });
-      onChange(next);
-      focusBox(Math.min(pasted.length, length - 1));
-      return;
-    }
-    const next = [...value];
-    next[index] = digits;
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus();
+  }, [autoFocus]);
+
+  function handleChange(e) {
+    const digits = e.target.value.replace(/\D/g, "").slice(0, length);
+    const next = Array(length).fill("");
+    digits.split("").forEach((ch, i) => { next[i] = ch; });
     onChange(next);
-    if (digits && index < length - 1) focusBox(index + 1);
   }
 
-  function handleKeyDown(index, e) {
-    if (e.key === "Backspace" && !value[index] && index > 0) {
-      focusBox(index - 1);
-    }
-  }
+  const digits = Array.from({ length }, (_, i) => code[i] ?? "");
 
   return (
-    <div className="flex items-center gap-2 justify-center">
-      {Array.from({ length }).map((_, i) => (
-        <input
-          key={i}
-          ref={(el) => (inputs.current[i] = el)}
-          type="text"
-          inputMode="numeric"
-          pattern="[0-9]*"
-          maxLength={length}
-          autoComplete={i === 0 ? "one-time-code" : "off"}
-          value={value[i] ?? ""}
-          onChange={(e) => handleChange(i, e.target.value)}
-          onKeyDown={(e) => handleKeyDown(i, e)}
-          disabled={disabled}
-          className="w-11 h-12 text-center text-lg font-semibold text-gray-900 bg-white rounded-xl outline-none transition-all disabled:opacity-50"
-          style={{ border: value[i] ? "2px solid #1C2B8A" : "1.5px solid #D0D5E8" }}
-        />
-      ))}
+    <div
+      className={`relative ${className}`}
+      onClick={() => !disabled && inputRef.current?.focus()}
+    >
+      <style>{AUTOFILL_OVERRIDE_CSS}</style>
+      <input
+        ref={inputRef}
+        name="otp"
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        maxLength={length}
+        autoComplete="one-time-code"
+        autoCorrect="off"
+        autoCapitalize="off"
+        spellCheck="false"
+        value={code}
+        onChange={handleChange}
+        onKeyDown={onKeyDown}
+        disabled={disabled}
+        aria-label="Verification code"
+        className="otp-hidden-input"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: 1,
+          margin: 0,
+          padding: 0,
+          border: "none",
+          outline: "none",
+          background: "transparent",
+          // Kept opacity: 1 deliberately — see comment above the component.
+          // Every visual trace is erased via transparent color/caret
+          // instead, so Safari's own visibility heuristics still see a
+          // real, "visible" field.
+          color: "transparent",
+          caretColor: "transparent",
+          WebkitTextFillColor: "transparent",
+          // Below 16px, iOS auto-zooms the page on focus — the input is
+          // invisible but the browser still applies that heuristic based
+          // on its computed font size.
+          fontSize: 16,
+        }}
+      />
+      {renderBoxes ? (
+        renderBoxes(digits, activeIndex)
+      ) : (
+        <div className="flex items-center gap-2 justify-center pointer-events-none">
+          {digits.map((d, i) => (
+            <div
+              key={i}
+              className="w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all"
+              style={{ border: d || i === activeIndex ? "2px solid #1C2B8A" : "1.5px solid #D0D5E8" }}
+            >
+              {d}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
