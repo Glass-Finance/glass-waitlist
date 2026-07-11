@@ -1,0 +1,201 @@
+// Exact notificationType enum + per-type rules, sourced from the backend's
+// documented Notification API schema (NotificationDto.notificationType).
+// This replaces substring/keyword guessing as the PRIMARY signal for
+// categorizing and routing notifications — callers should fall back to the
+// old text-heuristic only when a type is missing or not in this list (e.g.
+// legacy data), not use it as the first resort anymore.
+//
+// Update this file (not the guessing logic elsewhere) when the backend adds
+// a new notificationType value.
+
+export const NOTIFICATION_TYPES = [
+  "ACCOUNT_VERIFICATION",
+  "ACCOUNT_REGISTRATION",
+  "PASSWORD_RESET",
+  "COMMUNITY_INVITE_SENT",
+  "COMMUNITY_INVITE_ACCEPTED",
+  "COMMUNITY_INVITE_REVOKED",
+  "COMMUNITY_INVITE_EXPIRED",
+  "COMMUNITY_ACCOUNT_VERIFIED",
+  "JOIN_REQUEST_CREATED",
+  "JOIN_REQUEST_APPROVED",
+  "JOIN_REQUEST_REJECTED",
+  "JOIN_REQUEST_REVOKED",
+  "COMMUNITY_SETTINGS_CHANGED",
+  "PAYMENT_REQUEST_CREATED",
+  "PAYMENT_DUE",
+  "PAYMENT_OVERDUE",
+  "PAYMENT_REMINDER_DUE",
+  "PAYMENT_REMINDER_OVERDUE",
+  "PAYMENT_RECEIVED",
+  "PAYMENT_FAILED",
+  "PAYMENT_AUTHORIZATION_DISABLED",
+  "REFUND_REQUESTED",
+  "SETTLEMENT_COMPLETED",
+  "RECONCILIATION_FINDINGS",
+  "PROFILE_UPDATED",
+  "PROFILE_IMAGE_UPDATED",
+  "PASSWORD_UPDATED",
+  "EMAIL_UPDATED",
+  "ACCOUNT_DELETION_VERIFICATION",
+  "ACCOUNT_DELETION_REQUESTED",
+  "GENERAL",
+];
+
+// The full family of payment-lifecycle types — used by the member app's
+// Payments-vs-Community split (a simpler two-bucket scheme than the admin
+// dashboard's Urgent/Payments/Members tabs, so it needs its own grouping
+// rather than reusing ADMIN_CATEGORY below).
+const PAYMENT_TYPES = new Set([
+  "PAYMENT_REQUEST_CREATED",
+  "PAYMENT_DUE",
+  "PAYMENT_OVERDUE",
+  "PAYMENT_REMINDER_DUE",
+  "PAYMENT_REMINDER_OVERDUE",
+  "PAYMENT_RECEIVED",
+  "PAYMENT_FAILED",
+  "PAYMENT_AUTHORIZATION_DISABLED",
+  "REFUND_REQUESTED",
+]);
+
+export function isPaymentNotificationType(type) {
+  return PAYMENT_TYPES.has((type ?? "").toUpperCase());
+}
+
+// Admin dashboard's Urgent / Payment Activity / Community Activity tabs.
+const ADMIN_CATEGORY = {
+  // Urgent — needs admin attention: money that didn't move, or a security-
+  // sensitive account change.
+  PAYMENT_FAILED: "urgent",
+  PAYMENT_OVERDUE: "urgent",
+  PAYMENT_REMINDER_OVERDUE: "urgent",
+  PAYMENT_AUTHORIZATION_DISABLED: "urgent",
+  REFUND_REQUESTED: "urgent",
+  RECONCILIATION_FINDINGS: "urgent",
+  ACCOUNT_DELETION_REQUESTED: "urgent",
+  ACCOUNT_DELETION_VERIFICATION: "urgent",
+  PASSWORD_RESET: "urgent",
+  PASSWORD_UPDATED: "urgent",
+  EMAIL_UPDATED: "urgent",
+
+  // Payment Activity — routine money-in-motion updates.
+  PAYMENT_REQUEST_CREATED: "payment",
+  PAYMENT_DUE: "payment",
+  PAYMENT_REMINDER_DUE: "payment",
+  PAYMENT_RECEIVED: "payment",
+  SETTLEMENT_COMPLETED: "payment",
+
+  // Community Activity — membership, invites, verification, settings.
+  COMMUNITY_INVITE_SENT: "member",
+  COMMUNITY_INVITE_ACCEPTED: "member",
+  COMMUNITY_INVITE_REVOKED: "member",
+  COMMUNITY_INVITE_EXPIRED: "member",
+  COMMUNITY_ACCOUNT_VERIFIED: "member",
+  JOIN_REQUEST_CREATED: "member",
+  JOIN_REQUEST_APPROVED: "member",
+  JOIN_REQUEST_REJECTED: "member",
+  JOIN_REQUEST_REVOKED: "member",
+  COMMUNITY_SETTINGS_CHANGED: "member",
+  ACCOUNT_VERIFICATION: "member",
+  ACCOUNT_REGISTRATION: "member",
+  PROFILE_UPDATED: "member",
+  PROFILE_IMAGE_UPDATED: "member",
+  GENERAL: "member",
+};
+
+// Returns null (not a fallback category) when the type is missing/unknown,
+// so callers know to run their own text heuristic instead of guessing here.
+export function notificationCategory(type) {
+  return ADMIN_CATEGORY[(type ?? "").toUpperCase()] ?? null;
+}
+
+// ── Routing ───────────────────────────────────────────────────────────────────
+// communityRef (slug/id), when known, is appended to dashboard links that
+// open a specific community's admin view.
+function adminDash(communityRef) {
+  return communityRef ? `/dashboard/admin?community=${communityRef}` : "/dashboard/admin";
+}
+
+const ADMIN_TARGET = {
+  JOIN_REQUEST_CREATED: () => "/dashboard/join-requests",
+  JOIN_REQUEST_APPROVED: () => "/dashboard/join-requests",
+  JOIN_REQUEST_REJECTED: () => "/dashboard/join-requests",
+  JOIN_REQUEST_REVOKED: () => "/dashboard/join-requests",
+
+  COMMUNITY_INVITE_SENT: () => "/dashboard/members",
+  COMMUNITY_INVITE_ACCEPTED: () => "/dashboard/members",
+  COMMUNITY_INVITE_REVOKED: () => "/dashboard/members",
+  COMMUNITY_INVITE_EXPIRED: () => "/dashboard/members",
+
+  COMMUNITY_ACCOUNT_VERIFIED: () => "/dashboard/settings/community/profile",
+  COMMUNITY_SETTINGS_CHANGED: () => "/dashboard/settings/community/profile",
+
+  PAYMENT_REQUEST_CREATED: () => "/dashboard/payments",
+  PAYMENT_DUE: adminDash,
+  PAYMENT_OVERDUE: adminDash,
+  PAYMENT_REMINDER_DUE: adminDash,
+  PAYMENT_REMINDER_OVERDUE: adminDash,
+  PAYMENT_RECEIVED: adminDash,
+  PAYMENT_FAILED: adminDash,
+  PAYMENT_AUTHORIZATION_DISABLED: () => "/dashboard/settings/finance/auto-pay",
+  REFUND_REQUESTED: adminDash,
+  SETTLEMENT_COMPLETED: () => "/dashboard/settings/finance/paystack",
+  RECONCILIATION_FINDINGS: adminDash,
+
+  ACCOUNT_VERIFICATION: () => "/dashboard/settings/account/profile",
+  ACCOUNT_REGISTRATION: () => "/dashboard/settings/account/profile",
+  PROFILE_UPDATED: () => "/dashboard/settings/account/profile",
+  PROFILE_IMAGE_UPDATED: () => "/dashboard/settings/account/profile",
+  PASSWORD_RESET: () => "/dashboard/settings/account/security",
+  PASSWORD_UPDATED: () => "/dashboard/settings/account/security",
+  EMAIL_UPDATED: () => "/dashboard/settings/account/security",
+  ACCOUNT_DELETION_VERIFICATION: () => "/dashboard/settings/account/profile",
+  ACCOUNT_DELETION_REQUESTED: () => "/dashboard/settings/account/profile",
+};
+
+const MEMBER_TARGET = {
+  // A member has no review UI for join requests — the closest useful page
+  // is their own communities list (shows pending/active status).
+  JOIN_REQUEST_CREATED: () => "/member/communities",
+  JOIN_REQUEST_APPROVED: () => "/member/communities",
+  JOIN_REQUEST_REJECTED: () => "/member/communities",
+  JOIN_REQUEST_REVOKED: () => "/member/communities",
+
+  COMMUNITY_INVITE_SENT: () => "/member/invites",
+  COMMUNITY_INVITE_ACCEPTED: () => "/member/invites",
+  COMMUNITY_INVITE_REVOKED: () => "/member/invites",
+  COMMUNITY_INVITE_EXPIRED: () => "/member/invites",
+  COMMUNITY_ACCOUNT_VERIFIED: () => "/member/communities",
+  COMMUNITY_SETTINGS_CHANGED: () => "/member/communities",
+
+  PAYMENT_REQUEST_CREATED: () => "/member/upcoming",
+  PAYMENT_DUE: () => "/member/upcoming",
+  PAYMENT_OVERDUE: () => "/member/upcoming",
+  PAYMENT_REMINDER_DUE: () => "/member/upcoming",
+  PAYMENT_REMINDER_OVERDUE: () => "/member/upcoming",
+  PAYMENT_FAILED: () => "/member/upcoming",
+  PAYMENT_RECEIVED: () => "/member/transactions",
+  REFUND_REQUESTED: () => "/member/transactions",
+  PAYMENT_AUTHORIZATION_DISABLED: () => "/member/auto-pay",
+
+  PROFILE_UPDATED: () => "/member/profile",
+  PROFILE_IMAGE_UPDATED: () => "/member/profile",
+  ACCOUNT_VERIFICATION: () => "/member/profile",
+  ACCOUNT_REGISTRATION: () => "/member/profile",
+  PASSWORD_RESET: () => "/member/security",
+  PASSWORD_UPDATED: () => "/member/security",
+  EMAIL_UPDATED: () => "/member/security",
+  ACCOUNT_DELETION_VERIFICATION: () => "/member/profile",
+  ACCOUNT_DELETION_REQUESTED: () => "/member/profile",
+  // SETTLEMENT_COMPLETED / RECONCILIATION_FINDINGS are admin/finance-ops
+  // events — a member shouldn't receive these, so no target is defined;
+  // GENERAL has no single destination either.
+};
+
+// Returns null when the type is missing/unrecognized, or maps to no page
+// (GENERAL) — callers should fall back to their own heuristic in that case.
+export function notificationTypeTarget(type, { memberApp = false, communityRef } = {}) {
+  const table = memberApp ? MEMBER_TARGET : ADMIN_TARGET;
+  const fn = table[(type ?? "").toUpperCase()];
+  return fn ? fn(communityRef) : null;
+}

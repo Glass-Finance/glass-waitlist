@@ -1,16 +1,29 @@
-// Maps a notification to the page it's about. The backend payload carries no
-// target URL, so this infers one from notificationType, falling back to the
-// title/body text. Returns null when no page is clearly more relevant than
-// the notifications list itself — callers should treat null as "not a link".
-//
-// Order matters: more specific signals (join requests, auto-pay, receipts)
-// are checked before broad ones (payment, member).
+import { notificationTypeTarget } from "./notificationTypes";
+
+// Maps a notification to the page it's about. notificationType is a fixed
+// backend enum (see notificationTypes.js) and is checked first — exact,
+// not guessed. The keyword/text heuristic below only runs when the type is
+// missing, unrecognized, or maps to no specific page (e.g. GENERAL),
+// covering legacy or future-enum notifications gracefully. Returns null
+// when no page is clearly more relevant than the notifications list itself
+// — callers should treat null as "not a link".
 export function notificationTarget(n, { memberApp = false } = {}) {
-  const type = (n.notificationType ?? n.type ?? "").toUpperCase();
+  const type = n.notificationType ?? n.type ?? "";
+
+  // The community dashboard resolves its community from ?community= (slug or
+  // id) — carry the notification's community along so it opens the right one
+  // instead of whatever localStorage last held.
+  const communityRef =
+    n.community?.slug ?? n.communityId ?? n.community?.id ?? null;
+
+  const exact = notificationTypeTarget(type, { memberApp, communityRef });
+  if (exact) return exact;
+
   const text =
-    `${n.title ?? n.subject ?? ""} ${n.description ?? n.message ?? n.body ?? ""}`.toUpperCase();
+    `${n.title ?? n.subject ?? ""} ${n.description ?? n.message ?? n.bodyText ?? n.body ?? ""}`.toUpperCase();
+  const upperType = type.toUpperCase();
   const has = (...words) =>
-    words.some((w) => type.includes(w) || text.includes(w));
+    words.some((w) => upperType.includes(w) || text.includes(w));
 
   if (memberApp) {
     if (has("AUTO-PAY", "AUTO_PAY", "AUTOPAY", "CARD EXPIR", "SAVED CARD"))
@@ -25,11 +38,6 @@ export function notificationTarget(n, { memberApp = false } = {}) {
     return null;
   }
 
-  // The community dashboard resolves its community from ?community= (slug or
-  // id) — carry the notification's community along so it opens the right one
-  // instead of whatever localStorage last held.
-  const communityRef =
-    n.community?.slug ?? n.communityId ?? n.community?.id ?? null;
   const adminDash = communityRef
     ? `/dashboard/admin?community=${communityRef}`
     : "/dashboard/admin";
@@ -56,7 +64,10 @@ const ADMIN_ACTION_LABELS = {
   "/dashboard/admin": "Open community dashboard",
   "/dashboard/members": "View members",
   "/dashboard/settings/finance/auto-pay": "Manage Auto-Pay",
+  "/dashboard/settings/finance/paystack": "View payout account",
   "/dashboard/settings/account/profile": "Open profile settings",
+  "/dashboard/settings/account/security": "Open security settings",
+  "/dashboard/settings/community/profile": "Open community settings",
 };
 
 const MEMBER_ACTION_LABELS = {
@@ -66,6 +77,8 @@ const MEMBER_ACTION_LABELS = {
   "/member/invites": "View invitations",
   "/member/communities": "View communities",
   "/member/settings": "Open settings",
+  "/member/profile": "Open profile settings",
+  "/member/security": "Open security settings",
 };
 
 // The detail-view variant of notificationTarget: returns { to, label } for

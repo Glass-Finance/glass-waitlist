@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Bell, Mail, MoreVertical, CreditCard, AlertCircle, Clock } from "lucide-react";
 import { useInvites } from "../../hooks/useInvites";
 import { useNotifications } from "../../hooks/useNotifications";
+import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { notificationTarget } from "../../utils/notificationRouting";
+import { isPaymentNotificationType, notificationCategory } from "../../utils/notificationTypes";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import LoadingState from "../../components/common/LoadingState";
 
@@ -40,18 +42,24 @@ function groupByDay(items) {
   return groups;
 }
 
+// isPaymentNotificationType checks against the backend's exact
+// notificationType enum first; the substring fallback only covers
+// legacy/unrecognized types.
 function isPaymentNotification(n) {
-  const type = (n.notificationType ?? "").toUpperCase();
-  return type.includes("PAYMENT") || type.includes("OBLIGATION") || type.includes("AUTO_PAY");
+  const type = n.notificationType ?? "";
+  if (isPaymentNotificationType(type)) return true;
+  const upper = type.toUpperCase();
+  return upper.includes("PAYMENT") || upper.includes("OBLIGATION") || upper.includes("AUTO_PAY");
 }
 
 // ── Notification icon ─────────────────────────────────────────────────────────
 function NotifIcon({ n }) {
-  const type = (n.notificationType ?? "").toUpperCase();
+  const type = n.notificationType ?? "";
+  const cat = notificationCategory(type);
   let bg, Icon, iconColor;
-  if (type.includes("FAIL") || type.includes("ERROR") || type.includes("DECLINE")) {
+  if (cat ? cat === "urgent" : /FAIL|ERROR|DECLINE/.test(type.toUpperCase())) {
     bg = "#fce4e4"; Icon = AlertCircle; iconColor = "#dc2626";
-  } else if (type.includes("PAYMENT") || type.includes("PAID") || type.includes("OBLIGATION")) {
+  } else if (cat === "payment" || (!cat && isPaymentNotification(n))) {
     bg = "#fef9c3"; Icon = CreditCard; iconColor = "#b45309";
   } else {
     bg = "#f0f4ff"; Icon = Clock; iconColor = "#1C2B8A";
@@ -68,8 +76,10 @@ function NotificationRow({ n, onTap, onNavigate }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const isRead = n.readFlag ?? false;
   const target = notificationTarget(n, { memberApp: true });
-  const details = extractNotificationDetails(n);
+  const communityMap = useCommunityMap();
+  const details = extractNotificationDetails(n, { communityMap });
   const amount = formatNairaAmount(details.amount);
+  const messageText = n.message ?? n.description ?? n.bodyText ?? null;
 
   return (
     <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 16px", background: "#fff", position: "relative" }}>
@@ -83,8 +93,8 @@ function NotificationRow({ n, onTap, onNavigate }) {
       >
         <p style={{ fontSize: 14, color: "#111", margin: 0, lineHeight: 1.45 }}>
           {n.title && <span style={{ fontWeight: isRead ? 500 : 700 }}>{n.title} </span>}
-          {n.message && <span style={{ color: "#444" }}>{n.title ? n.message : n.message}</span>}
-          {!n.title && !n.message && <span style={{ fontWeight: 500 }}>Notification</span>}
+          {messageText && <span style={{ color: "#444" }}>{messageText}</span>}
+          {!n.title && !messageText && <span style={{ fontWeight: 500 }}>Notification</span>}
         </p>
         <p style={{ fontSize: 11.5, color: "#999", margin: "4px 0 0" }}>
           {amount && (

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
+import { notificationCategory } from "../../utils/notificationTypes";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
 
@@ -34,13 +35,25 @@ function resolveCommunity(n, communityMap) {
   return (id && communityMap) ? (communityMap.get(id) ?? null) : null;
 }
 
+const CATEGORY_META = {
+  urgent:  { color: "#EF4444", bg: "#FEF2F2", Icon: AlertCircle },
+  member:  { color: "#002FA7", bg: "#EEF2FF", Icon: Users },
+  payment: { color: "#CA8A04", bg: "#FFFBEB", Icon: CreditCard },
+};
+
+// notificationCategory() maps the backend's exact notificationType enum —
+// precise for every documented type. The keyword fallback below only runs
+// for a missing/unrecognized type.
 function notifMeta(n) {
+  const cat = notificationCategory(n.notificationType ?? n.type);
+  if (cat) return CATEGORY_META[cat];
+
   const t = (n.notificationType ?? n.type ?? "").toUpperCase();
   if (t.includes("FAIL") || t.includes("URGENT") || t.includes("ALERT") || t.includes("OVERDUE") || t.includes("DEFAULT"))
-    return { color: "#EF4444", bg: "#FEF2F2", Icon: AlertCircle };
+    return CATEGORY_META.urgent;
   if (t.includes("MEMBER") || t.includes("JOIN") || t.includes("COMMUNITY") || t.includes("INVITE"))
-    return { color: "#002FA7", bg: "#EEF2FF", Icon: Users };
-  return { color: "#CA8A04", bg: "#FFFBEB", Icon: CreditCard };
+    return CATEGORY_META.member;
+  return CATEGORY_META.payment;
 }
 
 // Shows community logo when available; falls back to a type-coloured icon circle
@@ -68,7 +81,7 @@ function NotifAvatar({ n, community }) {
 function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
   const isRead    = n.readFlag ?? n.isRead ?? false;
   const title     = n.title ?? n.subject ?? "Notification";
-  const body      = n.description ?? n.message ?? n.body ?? null;
+  const body      = n.message ?? n.description ?? n.bodyText ?? n.body ?? null;
   const time      = formatTimestamp(n.createdAt ?? n.timestamp);
   const community = resolveCommunity(n, communityMap);
   const commName  = community?.name ?? community?.communityName ?? n.communityName ?? null;

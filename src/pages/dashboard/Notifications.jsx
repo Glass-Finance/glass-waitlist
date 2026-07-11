@@ -3,8 +3,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { Bell, AlertCircle, CreditCard, Users, ChevronRight, X } from "lucide-react";
 import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
+import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { useAuth } from "../../store/AuthContext";
 import { notificationAction } from "../../utils/notificationRouting";
+import { notificationCategory } from "../../utils/notificationTypes";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
@@ -24,7 +26,11 @@ function formatTime(dateStr) {
   return `${d.toLocaleDateString("en-NG", { month: "short", day: "numeric" })} ${time}`;
 }
 
-function categorize(n) {
+// notificationCategory() maps the backend's exact notificationType enum to a
+// tab — precise for every documented type. This heuristic only runs for
+// notifications with a missing/unrecognized type (legacy data, or a type
+// added server-side before this file's enum list catches up).
+function categorizeHeuristic(n) {
   const t = (n.notificationType ?? n.type ?? "").toUpperCase();
   const title = (n.title ?? n.subject ?? "").toUpperCase();
   if (
@@ -40,6 +46,10 @@ function categorize(n) {
   ) return "member";
   // Covers PAYMENT, DUES, CONTRIBUTION, COLLECTION, etc.
   return "payment";
+}
+
+function categorize(n) {
+  return notificationCategory(n.notificationType ?? n.type) ?? categorizeHeuristic(n);
 }
 
 const SECTION_CONFIG = {
@@ -71,8 +81,9 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
   const cat = categorize(n);
   const borderColor = SECTION_CONFIG[cat].border;
   const title = n.title ?? n.subject ?? "Notification";
-  const desc = n.description ?? n.message ?? "";
-  const details = extractNotificationDetails(n);
+  const desc = n.description ?? n.message ?? n.bodyText ?? "";
+  const communityMap = useCommunityMap();
+  const details = extractNotificationDetails(n, { communityMap });
   const amount = formatNairaAmount(details.amount);
 
   return (
@@ -125,12 +136,13 @@ function NotificationDetailModal({ n, onClose }) {
   const cat = categorize(n);
   const { label: catLabel, border } = SECTION_CONFIG[cat];
   const title = n.title ?? n.subject ?? "Notification";
-  const desc = n.description ?? n.message ?? n.body ?? "";
+  const desc = n.description ?? n.message ?? n.bodyText ?? n.body ?? "";
   const action = notificationAction(n);
 
   // Structured facts (#21): member, community, amount, plan, reference —
   // from real payload fields when present, best-effort text parsing otherwise.
-  const details = extractNotificationDetails(n);
+  const communityMap = useCommunityMap();
+  const details = extractNotificationDetails(n, { communityMap });
   const factRows = [
     { label: "Member", value: details.memberName },
     { label: "Community", value: details.communityName },
