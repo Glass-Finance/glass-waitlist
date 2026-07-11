@@ -148,7 +148,7 @@ function NotificationDetailModal({ n, onClose }) {
     >
       <div className="w-full bg-white rounded-2xl shadow-2xl overflow-hidden" style={{ maxWidth: 440 }}>
         {/* Header */}
-        <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-gray-100">
+        <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-[#E5E7EB]">
           <div className="flex items-start gap-3 min-w-0">
             <Avatar cat={cat} />
             <div className="min-w-0">
@@ -177,10 +177,14 @@ function NotificationDetailModal({ n, onClose }) {
             <p className="text-sm text-gray-400 m-0">No additional details.</p>
           )}
 
-          <div className="flex flex-col gap-2 mt-5 pt-4 border-t border-gray-100">
+          {/* Facts — inner card matching the app's #EFEFF1E5/#E5E7EB standard */}
+          <div
+            className="flex flex-col gap-2.5 mt-5 rounded-xl px-4 py-3.5 bg-[#EFEFF1E5]"
+            style={{ border: "1px solid #E5E7EB" }}
+          >
             {factRows.map((r) => (
               <div key={r.label} className="flex items-center justify-between gap-4">
-                <span className="text-xs text-gray-400 flex-shrink-0">{r.label}</span>
+                <span className="text-xs text-gray-500 flex-shrink-0">{r.label}</span>
                 <span
                   className={`text-xs font-medium text-gray-900 text-right break-all ${r.mono ? "font-mono" : ""}`}
                 >
@@ -192,7 +196,10 @@ function NotificationDetailModal({ n, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50">
+        <div
+          className="flex items-center justify-end gap-3 px-6 py-4 bg-[#EFEFF1E5]"
+          style={{ borderTop: "1px solid #E5E7EB" }}
+        >
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"

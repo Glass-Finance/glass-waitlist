@@ -61,7 +61,7 @@ function RequestCard({ r, onApprove, onReject, busy }) {
 
   return (
     <div
-      className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-white rounded-xl"
+      className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-[#EFEFF1E5] rounded-xl"
       style={{ border: "1px solid #E5E7EB" }}
     >
       <div className="flex items-center gap-3.5 min-w-0">
@@ -200,7 +200,7 @@ export default function JoinRequests() {
       {isLoading ? (
         <LoadingState className="py-8" />
       ) : pending.length === 0 ? (
-        <div className="bg-white rounded-xl" style={{ border: "1px dashed #E5E7EB" }}>
+        <div className="bg-[#EFEFF1E5] rounded-xl" style={{ border: "1px dashed #E5E7EB" }}>
           <EmptyState
             icon={UserPlus}
             title="No pending join requests"

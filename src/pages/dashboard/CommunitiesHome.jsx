@@ -518,7 +518,7 @@ import { useInvites } from "../../hooks/useInvites";
 import { useGlobalOverview } from "../../hooks/usePayments";
 import { useAllNotifications } from "../../hooks/useNotifications";
 import { useAuth } from "../../store/AuthContext";
-import { resolveIsPayingAdmin } from "../../utils/communityRole";
+import { resolveIsPayingAdmin, isCommunityAdmin, roleKeyword } from "../../utils/communityRole";
 import Background from "../../assets/background.webp";
 import { usePageTitle } from "../../hooks/usePageTitle";
 
@@ -575,12 +575,13 @@ function CardSkeleton() {
 
 // ── Community card ───────────────────────────────────────────────────────────
 function CommunityCard({ community, onClick }) {
-  // memberRole comes straight from the API: e.g. "ADMIN" | "MEMBER" | "OWNER"
-  const role = community.memberRole ?? "MEMBER";
-  const isAdmin =
-    role.toUpperCase() === "ADMIN" ||
-    role.toUpperCase() === "OWNER" ||
-    community.owned;
+  // Role strings vary by endpoint ("ADMIN"/"COMMUNITY_ADMIN"/"Community
+  // Admin") — keyword matching via roleKeyword/isCommunityAdmin, never exact.
+  const isAdmin = isCommunityAdmin(community);
+  const roleKw =
+    roleKeyword(community.memberRole, community.roleCode, community.role) ??
+    (community.owned ? "OWNER" : "MEMBER");
+  const roleLabel = roleKw.charAt(0) + roleKw.slice(1).toLowerCase();
 
   const tag = getTag(community.name ?? community.slug ?? "GC");
   // The rich metrics object (totalMembers, overdueMembers, collectedAmount,
@@ -645,7 +646,7 @@ function CommunityCard({ community, onClick }) {
                 : "text-gray-900 bg-gray-50 border border-gray-200"
             }`}
           >
-            {role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}
+            {roleLabel}
           </span>
         </div>
 
@@ -968,7 +969,10 @@ export default function CommunitiesHome() {
   });
 
   async function handleCommunityClick(community) {
-    if (!community.owned) {
+    // Route by role, not ownership — a member promoted to ADMIN/MANAGER
+    // administers this community without owning it, and previously got
+    // bounced to the member app with no way into the dashboard.
+    if (!isCommunityAdmin(community)) {
       try {
         localStorage.setItem(
           "glass_member_community",

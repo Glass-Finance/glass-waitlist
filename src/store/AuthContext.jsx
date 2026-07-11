@@ -32,18 +32,19 @@ import {
 import { getMe } from "../api/members";
 import client from "../api/client";
 import { parseUserData } from "../utils/userData";
+import { isCommunityAdmin } from "../utils/communityRole";
 
 // "Admin" has no global flag on this backend — platformRole/the JWT's role
 // claim is a platform-wide value ("USER" for every account, even community
 // owners) and never reflects per-community standing. Whether someone is an
-// admin is only knowable from their communities list: owned, or a
-// memberRole of OWNER/ADMIN/MANAGER on at least one community.
+// admin is only knowable from their communities list: owned, or an
+// admin-grade memberRole on at least one community. Delegates to
+// isCommunityAdmin, which matches role strings by keyword — the backend
+// returns "COMMUNITY_ADMIN"/"Community Admin" style values, not a bare
+// "ADMIN", so exact matching here previously locked promoted admins out
+// of the dashboard entirely.
 function hasAdminCommunity(communities) {
-  return (communities ?? []).some((c) => {
-    if (c.owned) return true;
-    const role = (c.memberRole ?? "").toUpperCase();
-    return role === "OWNER" || role === "ADMIN" || role === "MANAGER";
-  });
+  return (communities ?? []).some(isCommunityAdmin);
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────

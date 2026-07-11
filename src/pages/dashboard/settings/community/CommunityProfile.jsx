@@ -56,7 +56,6 @@ export default function CommunityProfile() {
   const { logout } = useAuth();
 
   const [form, setForm] = useState({ name: "", category: "", description: "" });
-  const [toggles, setToggles] = useState({ publicVisible: true, requiresMemberApproval: false });
   const [saved, setSaved] = useState(false);
   const [logoPreview, setLogoPreview] = useState(null);
   const [error, setError] = useState("");
@@ -86,10 +85,6 @@ export default function CommunityProfile() {
       category: Array.isArray(community.category) ? community.category[0] ?? "" : community.category ?? "",
       description: community.description ?? "",
     });
-    setToggles({
-      publicVisible: community.publicVisible ?? true,
-      requiresMemberApproval: community.requiresMemberApproval ?? false,
-    });
   }, [community]);
 
   const handleChange = (e) =>
@@ -102,22 +97,11 @@ export default function CommunityProfile() {
         name: form.name,
         category: [form.category],
         description: form.description,
-        ...toggles,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       setError(getErrorMessage(err, "Failed to save changes."));
-    }
-  };
-
-  const handleToggle = async (key, value) => {
-    const next = { ...toggles, [key]: value };
-    setToggles(next);
-    try {
-      await updateCommunity.mutateAsync(next);
-    } catch {
-      setToggles(toggles); // revert on failure
     }
   };
 
@@ -224,32 +208,13 @@ export default function CommunityProfile() {
         </div>
       </div>
 
-      {/* ── Visibility & Approval ── */}
-      <div
-        className="bg-[#EFEFF1E5] rounded-lg px-5 pt-4 pb-4"
-        style={{ border: "1px solid #E5E7EB" }}
-      >
-        <p className="text-sm font-semibold text-gray-900 mb-0.5">Visibility & Approval</p>
-        <p className="text-xs text-gray-500 mb-4">Control who can find and join your community.</p>
+      {/* Joining & visibility toggles live in Settings → Community → Member
+          Access (single write path via the dedicated settings endpoint) —
+          deliberately not duplicated here. */}
 
-        <div className="flex items-center justify-between py-2.5" style={{ borderBottom: "1px solid #F3F4F6" }}>
-          <div>
-            <p className="text-sm text-gray-900">Public visibility</p>
-            <p className="text-xs text-gray-500">Show this community in public search and join pages.</p>
-          </div>
-          <Toggle on={toggles.publicVisible} onChange={(v) => handleToggle("publicVisible", v)} disabled={updateCommunity.isPending} />
-        </div>
-
-        <div className="flex items-center justify-between py-2.5">
-          <div>
-            <p className="text-sm text-gray-900">Require approval to join</p>
-            <p className="text-xs text-gray-500">New members must be approved by an admin before joining.</p>
-          </div>
-          <Toggle on={toggles.requiresMemberApproval} onChange={(v) => handleToggle("requiresMemberApproval", v)} disabled={updateCommunity.isPending} />
-        </div>
-      </div>
-
-      {/* ── Delete Community ── */}
+      {/* ── Delete Community — owners only. Promoted admins manage the
+          community but don't get its destructive controls. ── */}
+      {community?.owned && (
       <div
         className="bg-[#EFEFF1E5] rounded-lg px-5 pt-4 pb-4"
         style={{ border: "1px solid #E5E7EB" }}
@@ -273,6 +238,7 @@ export default function CommunityProfile() {
           </button>
         </div>
       </div>
+      )}
 
       {deleteModal && (
         <div

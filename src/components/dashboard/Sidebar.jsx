@@ -35,7 +35,7 @@ import { useNotifications } from "../../hooks/useNotifications";
 import { useAuth } from "../../store/AuthContext";
 import { useCommunities } from "../../hooks/useCommunities";
 import { useMyMemberRecord } from "../../hooks/useMyAccount";
-import { resolveIsPayingAdmin } from "../../utils/communityRole";
+import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
 // `path` is the route under /dashboard; "home" maps to the per-community
@@ -425,12 +425,15 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 className="w-9 h-9 rounded-xl bg-white/10 animate-pulse"
               />
             ))
-          ) : communities.filter((c) => c.owned).length === 0 ? (
+          ) : communities.filter(isCommunityAdmin).length === 0 ? (
             <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
               <span className="text-white/40 text-[10px]">—</span>
             </div>
           ) : (
-            communities.filter((c) => c.owned).map((c) => {
+            // Role-based, not ownership-based: promoted ADMIN/MANAGER
+            // members administer communities they don't own and need them
+            // reachable from this rail too.
+            communities.filter(isCommunityAdmin).map((c) => {
               const isActive = c.slug === urlSlug;
               const initials = getInitials(c.name);
               return (
@@ -539,13 +542,17 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   marginTop: 3,
                   fontSize: 9,
                   fontWeight: 700,
-                  color: activeCommunity.owned ? "#e85d04" : "#059669",
-                  background: activeCommunity.owned ? "#fff4ee" : "#ecfdf5",
+                  color: isCommunityAdmin(activeCommunity) ? "#e85d04" : "#059669",
+                  background: isCommunityAdmin(activeCommunity) ? "#fff4ee" : "#ecfdf5",
                   borderRadius: 99,
                   padding: "1px 7px",
                 }}
               >
-                {activeCommunity.owned ? "Admin" : "Member"}
+                {activeCommunity.owned
+                  ? "Owner"
+                  : isCommunityAdmin(activeCommunity)
+                    ? "Admin"
+                    : "Member"}
               </span>
             </div>
           ) : (

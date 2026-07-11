@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Copy, Check, Users } from "lucide-react";
+import { Copy, Check, Users, MoreVertical } from "lucide-react";
+import { roleKeyword } from "../../../../utils/communityRole";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityMembers, useRoles } from "../../../../hooks/useCommunityMembers";
 import { useCommunity, useUpdateCommunitySettings } from "../../../../hooks/useCommunity";
@@ -23,6 +24,48 @@ function Toggle({ on, onChange, disabled }) {
   );
 }
 
+// Per-member "⋯" actions menu — one open at a time (state lives in the page),
+// dismissed by the invisible full-screen overlay behind it.
+function MemberActionsMenu({ open, onToggle, onClose, busy, actions }) {
+  return (
+    <div className="relative flex-shrink-0">
+      <button
+        onClick={onToggle}
+        disabled={busy}
+        aria-label="Member actions"
+        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 bg-transparent border-none cursor-pointer transition-colors disabled:opacity-50"
+      >
+        <MoreVertical size={15} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={onClose} />
+          <div
+            className="absolute right-0 top-full mt-1 z-20 bg-white rounded-xl overflow-hidden min-w-[190px]"
+            style={{ border: "1px solid #E5E7EB", boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}
+          >
+            {actions.map((a) => (
+              <button
+                key={a.label}
+                disabled={a.disabled || busy}
+                onClick={() => {
+                  onClose();
+                  a.onClick();
+                }}
+                className={`block w-full text-left px-4 py-2.5 text-xs font-medium bg-white hover:bg-gray-50 border-none cursor-pointer transition-colors disabled:opacity-50 ${
+                  a.danger ? "text-red-600" : "text-gray-700"
+                }`}
+              >
+                {a.label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 const FALLBACK_MEMBER_ROLE = { id: "MEMBER", name: "Member" };
 
 // The role name field's exact casing/wording isn't guaranteed by the
@@ -43,6 +86,7 @@ export default function MemberAccess() {
   // since both the Sidebar and CommunitiesHome set ?community= to the slug.
   const communitySlug = useActiveCommunityId();
   const [copied, setCopied] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState(null);
   const { members, isLoading, removeMember, updateMember } = useCommunityMembers(communitySlug);
   const { data: rolesData, isLoading: rolesLoading } = useRoles();
   const { data: community, isLoading: communityLoading } = useCommunity(communitySlug);
@@ -67,23 +111,26 @@ export default function MemberAccess() {
     return `${first} ${last}`.trim() || m.user?.email || m.email || "Member";
   }
   const memberEmail = (m) => m.user?.email ?? m.email ?? "—";
-  // roleCode is the real field (OWNER/ADMIN/MANAGER/MEMBER) — not a `role`
-  // object/string, which doesn't exist on the member entity at all and was
-  // silently falling back to "Member" for every single member.
+  // Role strings vary by endpoint ("ADMIN"/"COMMUNITY_ADMIN"/"Community
+  // Admin") — match by keyword via roleKeyword, never exact-match. Exact
+  // matching here previously made promoted admins read as plain members,
+  // so they could be promoted again but never demoted.
+  const memberRoleKw = (m) => roleKeyword(m.roleCode, m.memberRole, m.role) ?? "MEMBER";
   function memberRoleLabel(m) {
-    const code = (m.roleCode ?? "").toUpperCase();
-    if (code === "OWNER") return "Owner";
-    if (code === "ADMIN") return "Admin";
-    if (code === "MANAGER") return "Manager";
+    const kw = memberRoleKw(m);
+    if (kw === "OWNER") return "Owner";
+    if (kw === "ADMIN") return "Admin";
+    if (kw === "MANAGER") return "Manager";
     return "Member";
   }
-  const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes((m.roleCode ?? "").toUpperCase());
+  const isOwnerRole = (m) => memberRoleKw(m) === "OWNER";
+  const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes(memberRoleKw(m));
 
   return (
     <div className="flex flex-col gap-4 max-w-3xl w-full">
 
       {/* Joining & visibility */}
-      <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#EFEFF1E5] rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Joining &amp; visibility</p>
         <p className="text-xs text-gray-500 mb-4">
           Control how new members find and join this community.
@@ -190,49 +237,46 @@ export default function MemberAccess() {
                     {memberRoleLabel(member)}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  {isAdminRole(member) ? (
-                    <button
-                      onClick={() => {
-                        if (window.confirm(`Revoke admin access for ${memberName(member)}? They'll remain a member.`)) {
-                          updateMember.mutate({ memberId: member.id, payload: { roleId: memberRoleId } });
-                        }
-                      }}
-                      disabled={removeMember.isPending || updateMember.isPending}
-                      className="text-sm font-semibold hover:opacity-70 transition-all bg-transparent border-none cursor-pointer disabled:opacity-50"
-                      style={{ color: "#EF4444" }}
-                    >
-                      Revoke
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => {
-                          if (window.confirm(`Promote ${memberName(member)} to admin?`)) {
-                            updateMember.mutate({ memberId: member.id, payload: { roleId: adminRoleId } });
+                {/* Owners can't be demoted or removed from here — no menu. */}
+                {!isOwnerRole(member) && (
+                  <MemberActionsMenu
+                    open={openMenuId === member.id}
+                    onToggle={() =>
+                      setOpenMenuId((id) => (id === member.id ? null : member.id))
+                    }
+                    onClose={() => setOpenMenuId(null)}
+                    busy={removeMember.isPending || updateMember.isPending}
+                    actions={[
+                      isAdminRole(member)
+                        ? {
+                            label: "Demote to Member",
+                            onClick: () => {
+                              if (window.confirm(`Demote ${memberName(member)} to member? They'll lose dashboard access.`)) {
+                                updateMember.mutate({ memberId: member.id, payload: { roleId: memberRoleId } });
+                              }
+                            },
                           }
-                        }}
-                        disabled={!adminRoleId || removeMember.isPending || updateMember.isPending}
-                        className="text-sm font-semibold hover:opacity-70 transition-all bg-transparent border-none cursor-pointer disabled:opacity-50"
-                        style={{ color: "#002FA7" }}
-                      >
-                        Promote
-                      </button>
-                      <button
-                        onClick={() => {
+                        : {
+                            label: "Promote to Admin",
+                            disabled: !adminRoleId,
+                            onClick: () => {
+                              if (window.confirm(`Promote ${memberName(member)} to admin? They'll get dashboard access to this community.`)) {
+                                updateMember.mutate({ memberId: member.id, payload: { roleId: adminRoleId } });
+                              }
+                            },
+                          },
+                      {
+                        label: "Remove from community",
+                        danger: true,
+                        onClick: () => {
                           if (window.confirm(`Remove ${memberName(member)} from this community?`)) {
                             removeMember.mutate(member.id);
                           }
-                        }}
-                        disabled={removeMember.isPending || updateMember.isPending}
-                        className="text-sm font-semibold hover:opacity-70 transition-all bg-transparent border-none cursor-pointer disabled:opacity-50"
-                        style={{ color: "#EF4444" }}
-                      >
-                        Remove
-                      </button>
-                    </>
-                  )}
-                </div>
+                        },
+                      },
+                    ]}
+                  />
+                )}
               </div>
             ))
           )}
