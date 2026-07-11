@@ -10,6 +10,7 @@ import { toastSuccess } from "../../../utils/toast";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import { useAuth } from "../../../store/AuthContext";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
+import LoadingState from "../../../components/common/LoadingState";
 import PasswordChecklist from "../../../components/auth/PasswordChecklist";
 import { useCountdown, formatCountdown } from "../../../hooks/useCountdown";
 
@@ -229,6 +230,14 @@ function StepOTP({ email, onVerified, onBack }) {
     return () => clearTimeout(id);
   }, [resendCooldown]);
 
+  // Deferred to the next tick — synchronously moving focus from inside a
+  // change handler triggered by iOS's SMS-autofill QuickType bar (rather
+  // than a direct tap) makes Safari drop focus entirely and dismiss the
+  // keyboard instead of advancing to the next box.
+  function focusDigitBox(index) {
+    setTimeout(() => inputRefs.current[index]?.focus(), 0);
+  }
+
   function handleDigitChange(index, value) {
     // Handle full paste (e.g. from SMS autofill or clipboard)
     if (value.length > 1) {
@@ -236,7 +245,7 @@ function StepOTP({ email, onVerified, onBack }) {
       const next = Array(OTP_LENGTH).fill("");
       pasted.forEach((ch, i) => { next[i] = ch; });
       setDigits(next);
-      inputRefs.current[Math.min(pasted.length, OTP_LENGTH - 1)]?.focus();
+      focusDigitBox(Math.min(pasted.length, OTP_LENGTH - 1));
       return;
     }
     if (!/^\d?$/.test(value)) return;
@@ -244,7 +253,7 @@ function StepOTP({ email, onVerified, onBack }) {
     next[index] = value;
     setDigits(next);
     setError("");
-    if (value && index < OTP_LENGTH - 1) inputRefs.current[index + 1]?.focus();
+    if (value && index < OTP_LENGTH - 1) focusDigitBox(index + 1);
   }
 
   function handleKeyDown(index, e) {
@@ -254,7 +263,7 @@ function StepOTP({ email, onVerified, onBack }) {
         next[index] = "";
         setDigits(next);
       } else if (index > 0) {
-        inputRefs.current[index - 1]?.focus();
+        focusDigitBox(index - 1);
       }
     }
   }
@@ -301,7 +310,7 @@ function StepOTP({ email, onVerified, onBack }) {
     return (
       <input
         ref={(el) => (inputRefs.current[index] = el)}
-        type="tel"
+        type="text"
         inputMode="numeric"
         pattern="\d*"
         maxLength={6}
@@ -310,8 +319,10 @@ function StepOTP({ email, onVerified, onBack }) {
         onKeyDown={(e) => handleKeyDown(index, e)}
         autoComplete={index === 0 ? "one-time-code" : "off"}
         aria-label={`Digit ${index + 1} of ${OTP_LENGTH}`}
-        className="w-12 h-14 rounded-xl text-center text-xl font-bold text-gray-900 outline-none transition-all duration-150 caret-transparent bg-white flex-shrink-0"
+        className="flex-1 h-14 rounded-xl text-center text-xl font-bold text-gray-900 outline-none transition-all duration-150 caret-transparent bg-white"
         style={{
+          minWidth: 0,
+          maxWidth: 48,
           border: digits[index] ? "2px solid #1C2B8A" : "1.5px solid #D0D5E8",
           fontSize: 22,
         }}
@@ -350,13 +361,15 @@ function StepOTP({ email, onVerified, onBack }) {
         </p>
       </div>
 
-      {/* OTP boxes — split with dash */}
-      <div className="flex items-center justify-between gap-2 px-1">
-        <div className="flex gap-2">
+      {/* OTP boxes — split with dash. Boxes are flex-1 (not a fixed pixel
+          width) so all 6 shrink together to fit narrow screens (e.g.
+          iPhone SE / 360px Android) instead of overflowing the viewport. */}
+      <div className="flex items-center justify-between gap-1.5">
+        <div className="flex gap-1.5 flex-1 min-w-0">
           {firstThree.map((i) => <OTPBox key={i} index={i} />)}
         </div>
         <span className="text-gray-400 text-xl font-light flex-shrink-0">—</span>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5 flex-1 min-w-0">
           {lastThree.map((i) => <OTPBox key={i} index={i} />)}
         </div>
       </div>
@@ -629,7 +642,34 @@ export default function Join() {
   const navigate = useNavigate();
   const { token, consumeToken } = useInviteToken();
   const { community, consumeCommunity } = useJoinCommunityParam();
-  const { setSession } = useAuth();
+  const { setSession, isAuthenticated, loading: authLoading } = useAuth();
+
+  // A user who already has a session (e.g. they're a member of another
+  // community, or just left themselves logged in) shouldn't be forced
+  // through the signup form just because they clicked an invite/join link —
+  // join them into the community directly instead. Mirrors InviteLanding.jsx's
+  // same already-authenticated short-circuit for the personalized-invite path.
+  useEffect(() => {
+    if (authLoading || !isAuthenticated) return;
+    if (community) {
+      consumeCommunity();
+      submitJoinRequest(community)
+        .then(() => {
+          toastSuccess("Join request sent", { description: "The community admin will review it shortly." });
+        })
+        .catch((err) => notifyError(err, { context: "Join community" }))
+        .finally(() => navigate("/member/invites", { replace: true }));
+      return;
+    }
+    // A personalized invite token only matters for account creation
+    // (sent along with register()) — an already-authenticated user's
+    // invite already exists server-side under their email, so just take
+    // them to where every pending invite/join-request shows up.
+    if (token) {
+      consumeToken();
+      navigate("/member/invites", { replace: true });
+    }
+  }, [authLoading, isAuthenticated, community, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [email, setEmail] = useState(() => {
     try {
@@ -672,6 +712,11 @@ export default function Join() {
       submitCommunityJoinAndRoute();
       return;
     }
+    // A personalized invite grants access immediately (unlike the
+    // join-request path above, which has its own confirmation toast) — say
+    // so explicitly rather than silently dropping the new member onto Home
+    // with no context for what just happened.
+    if (token) toastSuccess("You're in!", { description: "Welcome to the community." });
     navigate(token ? "/member/home" : "/member/invites", { replace: true });
   }
 
@@ -757,6 +802,17 @@ export default function Join() {
       // can log in with the account they just created.
       navigate("/member/app-sign-in", { replace: true });
     }
+  }
+
+  // Still resolving the session, or an already-authenticated user is being
+  // routed straight into the community — show a clean loading state rather
+  // than flashing the signup form first.
+  if (authLoading || (isAuthenticated && (community || token))) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#EFEFEF]">
+        <LoadingState size={18} />
+      </div>
+    );
   }
 
   return (

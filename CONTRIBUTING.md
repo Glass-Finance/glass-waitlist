@@ -15,16 +15,8 @@ The member app's **Home** and **Upcoming Payments** tabs show largely overlappin
 
 ---
 
-### Delete Community / Delete Account — held off
+### Delete Community / Delete Account — shipped
 
-Confirmation modals and API calls are fully implemented in:
-- `src/pages/dashboard/settings/community/CommunityProfile.jsx`
-- `src/pages/dashboard/settings/account/Profile.jsx`
-- `src/api/communities.js` (`deleteCommunity`)
-- `src/api/members.js` (`deleteAccount`)
-
-The buttons are disabled because the backend does not yet expose these endpoints:
-- `DELETE /api/v1/communities/{communityIdentifier}`
-- `DELETE /api/v1/user/me`
-
-To enable: remove `disabled` from the Delete buttons in both settings pages once the backend ships the endpoints.
+Both flows are now live (previously held off waiting on backend endpoints):
+- **Delete Community** — `src/pages/dashboard/settings/community/CommunityProfile.jsx`, calls `deleteCommunity` (`DELETE /api/v1/communities/{communityIdentifier}`) behind a type-the-community-name confirmation modal.
+- **Delete Account** — `src/pages/dashboard/settings/account/Profile.jsx`, a two-step flow: type `DELETE` to confirm → `POST /api/v1/user/me/deletion/request-code` emails a verification code → entering it calls `deleteAccount(token)` (`DELETE /api/v1/user/me`, which anonymizes after a grace period).

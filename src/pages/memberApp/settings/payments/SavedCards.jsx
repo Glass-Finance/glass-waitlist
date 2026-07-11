@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, CreditCard, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
+import LoadingState from "../../../../components/common/LoadingState";
 
 export default function SavedCards() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function SavedCards() {
       <div style={{ padding: "0 16px" }}>
         <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           {isLoading ? (
-            <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>Loading…</p>
+            <LoadingState className="py-6" />
           ) : error ? (
             <p style={{ textAlign: "center", color: "#DC2626", fontSize: 13, padding: "24px 0" }}>
               Couldn't load saved payment methods.

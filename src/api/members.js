@@ -18,8 +18,13 @@ export const updatePassword = (payload) => client.patch("/user/password", payloa
 // PATCH /api/v1/user/email — { email, emailVerificationOtp }
 export const updateEmail = (payload) => client.patch("/user/email", payload);
 
-// DELETE /api/v1/user/me — permanently delete the authenticated user's account
-export const deleteAccount = () => client.delete("/user/me");
+// POST /api/v1/user/me/deletion/request-code — sends a verification code
+// (by email) required to confirm account deletion below.
+export const requestAccountDeletionCode = () => client.post("/user/me/deletion/request-code");
+
+// DELETE /api/v1/user/me — delete (anonymize after grace period) the
+// authenticated user's account. Requires the code from the request above.
+export const deleteAccount = (token) => client.delete("/user/me", { data: { token } });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COMMUNITIES (member perspective)

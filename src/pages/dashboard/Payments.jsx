@@ -30,6 +30,7 @@ import { useSlug } from "../../hooks/useSlug";
 import { dateInputToIso, daysInMonth } from "../../utils/date";
 import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
+import LoadingState from "../../components/common/LoadingState";
 import Background from "../../assets/background.webp";
 import { getCommunityMembers } from "../../api/communities";
 import {
@@ -1180,6 +1181,55 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     staleTime: 1000 * 60 * 2,
   });
 
+  // Transactions — same cache key as the main page, so no extra request.
+  const { data: allTransactions = [] } = useQuery({
+    queryKey: ["community", communityId, "transactions"],
+    queryFn: async () => {
+      const res = await getCommunityTransactions(communityId);
+      const data = res.data?.data;
+      return Array.isArray(data) ? data : (data?.content ?? []);
+    },
+    enabled: !!communityId,
+    staleTime: 1000 * 60 * 2,
+  });
+
+  // The backend doesn't always flip obligation.status to PAID immediately
+  // after a payment is verified — the plan cards' planMetrics already
+  // cross-reference successful transactions for exactly this reason, and
+  // without the same cross-reference here the modal shows a just-paid member
+  // as Pending / ₦0 collected while the card outside already counts them.
+  // Same matching rules as planMetrics: by obligationId when the transaction
+  // carries one, else by plan + member identity.
+  const planTx = useMemo(() => {
+    const SUCCESS = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
+    const paidObligationIds = new Set();
+    const byKey = {};
+    const seenMembers = new Set();
+    for (const tx of allTransactions) {
+      if (!SUCCESS.has((tx.status ?? "").toUpperCase())) continue;
+      if (tx.obligationId) paidObligationIds.add(String(tx.obligationId));
+      if (String(tx.paymentLink?.id) !== String(plan.id)) continue;
+      const keys = [
+        tx.member?.id,
+        tx.member?.userId,
+        tx.member?.user?.id,
+        tx.user?.id,
+        tx.member?.email,
+        tx.user?.email,
+      ]
+        .filter(Boolean)
+        .map(String);
+      if (!keys.length) continue;
+      // A member can have multiple SUCCESSFUL rows for one plan (repeat-
+      // payment bug, see planMetrics) — count the first per member.
+      if (keys.some((k) => seenMembers.has(k))) continue;
+      keys.forEach((k) => seenMembers.add(k));
+      const info = { amount: tx.amount ?? 0 };
+      for (const k of keys) byKey[k] = info;
+    }
+    return { paidObligationIds, byKey };
+  }, [allTransactions, plan.id]);
+
   // Build memberId / userId → { name, email, joinedAt } lookup. Also track
   // every ID this community currently knows about (any status) so only
   // genuinely-removed members get filtered out below — overdue/inactive
@@ -1242,16 +1292,31 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     const map = {};
     for (const ob of allObligations) {
       if (String(ob.paymentLink?.id) !== String(plan.id)) continue;
-      const info = {
-        status: (ob.status ?? "PENDING").toUpperCase(),
-        amountPaid: ob.amountPaid ?? ob.paidAmount ?? 0,
-        amountDue: ob.amount ?? ob.amountDue ?? plan.amount ?? 0,
-      };
       // ob.member.userId is a flat field (not ob.member.user.id)
       const userId = String(
         ob.member?.userId ?? ob.member?.user?.id ?? ob.user?.id ?? "",
       );
       const email = ob.member?.email ?? ob.user?.email ?? "";
+      const status = (ob.status ?? "PENDING").toUpperCase();
+      // Upgrade to PAID when a successful transaction settles this
+      // obligation but the backend hasn't flipped its status yet.
+      const paidByTx =
+        planTx.paidObligationIds.has(String(ob.id)) ||
+        Boolean(
+          (ob.member?.id && planTx.byKey[String(ob.member.id)]) ||
+            (userId && planTx.byKey[userId]) ||
+            (email && planTx.byKey[email]),
+        );
+      const txAmount =
+        (ob.member?.id && planTx.byKey[String(ob.member.id)]?.amount) ||
+        (userId && planTx.byKey[userId]?.amount) ||
+        (email && planTx.byKey[email]?.amount) ||
+        0;
+      const info = {
+        status: paidByTx && status !== "PAID" ? "PAID" : status,
+        amountPaid: Math.max(ob.amountPaid ?? ob.paidAmount ?? 0, txAmount),
+        amountDue: ob.amount ?? ob.amountDue ?? plan.amount ?? 0,
+      };
       if (userId) map[userId] = info;
       if (email) map[email] = info;
     }
@@ -1262,7 +1327,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     }
 
     return map;
-  }, [allObligations, communityMembersData, plan.id, plan.amount]);
+  }, [allObligations, communityMembersData, plan.id, plan.amount, planTx]);
 
   function getObligationInfo(m) {
     const mid = String(m.member?.id ?? m.memberId ?? "");
@@ -1312,9 +1377,29 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     );
   }
 
+  // Successful transaction for this member on this plan, if any — covers
+  // members whose payment went through but whose obligation either hasn't
+  // been status-flipped yet or was never linked (the N/A rows).
+  function getTxInfo(m) {
+    const mid = String(m.member?.id ?? m.memberId ?? "");
+    const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
+    const email =
+      m.email ??
+      memberLookup.byMemberId[mid]?.email ??
+      memberLookup.byUserId[uid]?.email ??
+      "";
+    return (
+      (mid && planTx.byKey[mid]) ||
+      (uid && planTx.byKey[uid]) ||
+      (email && planTx.byKey[email]) ||
+      null
+    );
+  }
+
   function getStatus(m) {
     const ob = getObligationInfo(m);
     if (ob) return ob.status;
+    if (getTxInfo(m)) return "PAID";
     const raw =
       m.obligationStatus ??
       m.obligation?.status ??
@@ -1326,8 +1411,12 @@ function PlanMembersModal({ plan, communityId, onClose }) {
   }
   function getAmountPaid(m) {
     const ob = getObligationInfo(m);
-    if (ob) return ob.amountPaid;
-    return m.amountPaid ?? m.paidAmount ?? m.obligation?.amountPaid ?? 0;
+    const txAmount = getTxInfo(m)?.amount ?? 0;
+    if (ob) return Math.max(ob.amountPaid, txAmount);
+    return Math.max(
+      m.amountPaid ?? m.paidAmount ?? m.obligation?.amountPaid ?? 0,
+      txAmount,
+    );
   }
   function getAmountDue(m) {
     const ob = getObligationInfo(m);
@@ -2106,7 +2195,7 @@ export default function Payments() {
 
       {/* Plan cards */}
       {plansLoading ? (
-        <p className="text-xs text-gray-400 text-center py-10">Loading…</p>
+        <LoadingState className="py-10" />
       ) : filtered.length === 0 ? (
         <p className="text-xs text-gray-400 text-center py-10">
           No payment plans yet.

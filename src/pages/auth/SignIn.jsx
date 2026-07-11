@@ -4,10 +4,11 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { verifyMfaLogin } from "../../services/authService";
-import { getMyInvites, getMyCommunityJoinRequests } from "../../api/invites";
+import { getMyInvites, getMyCommunityJoinRequests, submitJoinRequest } from "../../api/invites";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { notifyError } from "../../utils/errorHandler";
-import { toastInfo } from "../../utils/toast";
+import { toastInfo, toastSuccess } from "../../utils/toast";
+import { JOIN_COMMUNITY_KEY } from "../../hooks/useJoinCommunityParam";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
@@ -75,6 +76,24 @@ export default function SignIn() {
     // desktop/tablet gets the QR handoff instead of a layout that was
     // never built for that viewport.
     if (!isMobileDevice()) return mobileRequiredPath("/member/app-sign-in");
+
+    // A community's generic shareable "Invite Link" (?community=, see
+    // useJoinCommunityParam) has no personal token — clicking it as a user
+    // who *already has an account but wasn't signed in* lands here via
+    // Join.jsx's "Sign in to accept the invite" link with ?return=/member/invites
+    // already set, which used to short-circuit the very next check below
+    // before the join request was ever actually submitted. Submit it here,
+    // before that shortcut, so it isn't silently dropped.
+    const pendingCommunity = sessionStorage.getItem(JOIN_COMMUNITY_KEY);
+    if (pendingCommunity) {
+      sessionStorage.removeItem(JOIN_COMMUNITY_KEY);
+      try {
+        await submitJoinRequest(pendingCommunity);
+        toastSuccess("Join request sent", { description: "The community admin will review it shortly." });
+      } catch (err) {
+        notifyError(err, { context: "Join community" });
+      }
+    }
 
     // Honor a ?return= param set by /invite landing page (or any deep link).
     // Only trust paths that start with /member/ to prevent open redirect.

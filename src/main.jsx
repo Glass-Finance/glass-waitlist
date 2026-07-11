@@ -8,6 +8,7 @@ import App from "./App.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import "./index.css";
 import { AuthProvider } from "./store/AuthContext.jsx";
+import RealtimeBridge from "./components/common/RealtimeBridge.jsx";
 import { notifyError } from "./utils/errorHandler.js";
 import { toastSuccess } from "./utils/toast.js";
 
@@ -109,6 +110,7 @@ createRoot(document.getElementById("root")).render(
           <ErrorBoundary>
           <App />
           </ErrorBoundary>
+          <RealtimeBridge />
 
           <Toaster
             position="bottom-right"

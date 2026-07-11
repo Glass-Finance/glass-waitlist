@@ -1,10 +1,9 @@
 import { useRef, useEffect } from "react";
 
-// Trimmed to just the two confirmed partners. GDG Babcock is intentionally
-// left out for now -- the only GDG asset in public/logos/ is
-// gdg-lagos.png, which has "GDG Lagos" baked directly into the image
-// (wrong chapter), not just a text label. Add it back once a correct
-// GDG Babcock logo file is dropped into public/logos/.
+// Trimmed to just the confirmed partner. GDG Babcock is intentionally
+// left out for now -- the only GDG asset we ever had was a GDG *Lagos*
+// logo (wrong chapter, name baked into the image). Add it back once a
+// correct GDG Babcock logo file is dropped into public/logos/.
 const trustedLogos = [
   { name: "The Babcock Torch", logo: "/logos/babcock-torch.webp" },
 ];

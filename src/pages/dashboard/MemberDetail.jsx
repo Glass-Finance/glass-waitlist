@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { UserMinus, Phone, MessageCircle } from "lucide-react";
+import { UserMinus, Phone, MessageCircle, CreditCard, Receipt } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers } from "../../hooks/useCommunityMembers";
 import { useCommunity } from "../../hooks/useCommunity";
 import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
+import LoadingState from "../../components/common/LoadingState";
+import EmptyState from "../../components/common/EmptyState";
 import Background from "../../assets/background.webp";
 
 const TABS = ["All Plans", "Payment History", "Contact Details"];
@@ -90,7 +92,7 @@ export default function MemberDetail() {
   }
 
   if (isLoading) {
-    return <div className="px-6 py-6 text-xs text-gray-400">Loading…</div>;
+    return <LoadingState className="px-6 py-6" />;
   }
   if (!member) {
     return <div className="px-6 py-6 text-xs text-gray-400">Member not found.</div>;
@@ -165,7 +167,11 @@ export default function MemberDetail() {
 
       {tab === "All Plans" && (
         distinctPlans.length === 0 ? (
-          <p className="text-xs text-gray-400 py-8 text-center">No plans assigned yet.</p>
+          <EmptyState
+            icon={CreditCard}
+            title="No plans assigned yet"
+            subtitle="This member isn't enrolled in any payment plans in this community yet."
+          />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {distinctPlans.map((plan) => <PlanCard key={plan.id} plan={plan} successfulLinkIds={successfulLinkIds} />)}
@@ -189,7 +195,7 @@ export default function MemberDetail() {
               </thead>
               <tbody>
                 {member.transactions.length === 0 ? (
-                  <tr><td colSpan={6} className="px-5 py-8 text-center text-xs text-gray-400">No payments yet.</td></tr>
+                  <tr><td colSpan={6}><EmptyState icon={Receipt} title="No payments yet" subtitle="This member's payment history will show up here once they make their first payment." /></td></tr>
                 ) : (
                   member.transactions.map((t) => {
                     const statusLabel = (t.status ?? "pending").charAt(0).toUpperCase() + (t.status ?? "pending").slice(1).toLowerCase();

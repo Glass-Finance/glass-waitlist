@@ -44,6 +44,25 @@ function isTooGeneric(s) {
   return !s || GENERIC_MESSAGES.has(s.toLowerCase().trim());
 }
 
+// The backend sometimes returns a message that's specific enough to pass
+// isTooGeneric (so it isn't caught by the generic-status fallback below),
+// but is internal/cryptic backend-speak rather than something a user can
+// act on — e.g. "Active Default Account Required" when someone tries to
+// create a payment plan before setting up their community's payout
+// account. Rewrite known cases (substring match, case-insensitive) into
+// actionable guidance instead of passing the raw string through verbatim.
+const BACKEND_MESSAGE_REWRITES = [
+  {
+    match: /active default account/i,
+    rewrite: "You'll need to set up your community's payout account before creating payment plans — head to Settings → Finance → Payout Account.",
+  },
+];
+
+function rewriteIfKnownCryptic(message) {
+  const hit = BACKEND_MESSAGE_REWRITES.find((r) => r.match.test(message));
+  return hit ? hit.rewrite : message;
+}
+
 // Some backends return { message }, some { error }, some a validation array
 // under { errors: [{ field, message }] } or { errors: ["msg", ...] }.
 // NestJS ValidationPipe sends message as an array of field-level strings.
@@ -94,7 +113,7 @@ export function getErrorMessage(error, fallback = "Something went wrong. Please 
   // Axios error with a response from the server
   if (error.response) {
     const serverMessage = extractServerMessage(error.response.data);
-    return serverMessage ?? fallbackForStatus(error.response.status);
+    return serverMessage ? rewriteIfKnownCryptic(serverMessage) : fallbackForStatus(error.response.status);
   }
 
   // Axios error with no response — request never reached the server

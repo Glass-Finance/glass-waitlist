@@ -23,25 +23,16 @@ export default function OTPStep({ email, onVerified, onBack }) {
   );
   const codeExpired = secondsLeft <= 0;
 
-  // const handleChange = (index, value) => {
-  //   // Handle full paste/autofill (e.g. from SMS autofill or clipboard) —
-  //   // browsers deliver the whole code into whichever box received it.
-  //   if (value.length > 1) {
-  //     const pasted = value.replace(/\D/g, "").slice(0, 6).split("");
-  //     const next = ["", "", "", "", "", ""];
-  //     pasted.forEach((ch, i) => {
-  //       next[i] = ch;
-  //     });
-  //     setOtp(next);
-  //     inputs.current[Math.min(pasted.length, 5)]?.focus();
-  //     return;
-  //   }
-  //   if (!/^\d*$/.test(value)) return;
-  //   const updated = [...otp];
-  //   updated[index] = value;
-  //   setOtp(updated);
-  //   if (value && index < 5) inputs.current[index + 1]?.focus();
-  // };
+  // Deferring every cross-box .focus() call to the next tick (rather than
+  // calling it synchronously inside the change/keydown handler) works
+  // around a WebKit quirk on iPhone: when an onChange fires from the
+  // system's SMS autofill (QuickType bar) rather than a direct tap,
+  // synchronously moving focus to another input mid-event makes iOS treat
+  // it as focus being lost entirely and dismisses the keyboard, instead of
+  // moving it to the next box.
+  function focusBox(index) {
+    setTimeout(() => inputs.current[index]?.focus(), 0);
+  }
 
   const handleChange = (index, value) => {
     // Handle full paste/autofill (e.g. from SMS autofill or clipboard) —
@@ -53,19 +44,19 @@ export default function OTPStep({ email, onVerified, onBack }) {
         next[i] = ch;
       });
       setOtp(next);
-      inputs.current[Math.min(pasted.length, 5)]?.focus();
+      focusBox(Math.min(pasted.length, 5));
       return;
     }
     if (!/^\d*$/.test(value)) return;
     const updated = [...otp];
     updated[index] = value;
     setOtp(updated);
-    if (value && index < 5) inputs.current[index + 1]?.focus();
+    if (value && index < 5) focusBox(index + 1);
   };
 
   const handleKeyDown = (index, e) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputs.current[index - 1]?.focus();
+      focusBox(index - 1);
     }
   };
 
@@ -147,6 +138,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
               ref={(el) => (inputs.current[i] = el)}
               type="text"
               inputMode="numeric"
+              pattern="[0-9]*"
               maxLength={6}
               autoComplete={i === 0 ? "one-time-code" : "off"}
               value={otp[i]}
@@ -167,6 +159,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
               ref={(el) => (inputs.current[i] = el)}
               type="text"
               inputMode="numeric"
+              pattern="[0-9]*"
               maxLength={6}
               autoComplete="off"
               value={otp[i]}

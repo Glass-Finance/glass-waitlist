@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments, useManagePayments } from "../../hooks/usePayments";
+import LoadingState from "../../components/common/LoadingState";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function formatNaira(n) {
@@ -249,7 +250,7 @@ export default function ManagePayments() {
         {/* Cards */}
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {isLoading ? (
-            <p style={{ textAlign: "center", color: "#999", fontSize: 14, marginTop: 40 }}>Loading…</p>
+            <LoadingState className="mt-10" />
           ) : filtered.length === 0 ? (
             <p style={{ textAlign: "center", color: "#999", fontSize: 14, marginTop: 40 }}>
               {recurringPlans.length === 0

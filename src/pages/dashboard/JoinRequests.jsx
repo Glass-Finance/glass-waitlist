@@ -1,6 +1,9 @@
 // pages/dashboard/JoinRequests.jsx
+import { Users } from "lucide-react";
 import { useJoinRequests } from "../../hooks/useJoinRequests";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
+import LoadingState from "../../components/common/LoadingState";
+import EmptyState from "../../components/common/EmptyState";
 // assumes activeCommunityId comes from wherever your dashboard already
 // tracks the currently-selected community (e.g. a context or route param)
 
@@ -9,8 +12,16 @@ export default function JoinRequests() {
   const { requests, isLoading, approve, reject, isMutating } =
     useJoinRequests(communityId);
 
-  if (isLoading) return <p>Loading…</p>;
-  if (!requests.length) return <p>No pending join requests.</p>;
+  if (isLoading) return <LoadingState className="py-8" />;
+  if (!requests.length) {
+    return (
+      <EmptyState
+        icon={Users}
+        title="No pending join requests"
+        subtitle="When someone asks to join this community, their request will show up here for you to approve or reject."
+      />
+    );
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>

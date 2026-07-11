@@ -1276,18 +1276,10 @@ function DashboardContent({ isPaying, communityId }) {
       if (isPaid && mid) byPlan[planId].paidMemberIds.add(mid);
     }
 
-    // Transactions tell us the real amount collected
-    // for (const tx of transactions) {
-    //   const planId = tx.paymentLink?.id;
-    //   if (!planId) continue;
-    //   if (!byPlan[planId]) {
-    //     byPlan[planId] = { collected: 0, seenMemberIds: new Set(), paidMemberIds: new Set() };
-    //   }
-    //   if (SUCCESS_STATUSES.has((tx.status ?? "").toUpperCase())) {
-    //     byPlan[planId].collected += tx.amount ?? 0;
-    //   }
-    // }
-
+    // Transactions tell us the real amount collected — dedupe by
+    // plan+member so a member's repeat successful transactions on the same
+    // plan (see Payments.jsx's PlanCard metrics for why those can occur)
+    // aren't double-counted.
     const countedPlanMemberPaymentsDashboard = new Set();
     for (const tx of transactions) {
       const planId = tx.paymentLink?.id;

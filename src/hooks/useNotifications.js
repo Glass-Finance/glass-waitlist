@@ -2,6 +2,15 @@ import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import client from "../api/client";
 import { useActiveCommunityId } from "./useActiveCommunityId";
+import { useRealtimeConnected } from "./useRealtimeStream";
+
+// While the SSE stream is live it invalidates these queries the moment a
+// notification event lands, so fast polling is redundant — keep only a slow
+// safety-net poll (the stream's event names aren't fully documented, so a
+// missed event type still surfaces within a few minutes). When the stream
+// is down, fall back to the original 30s cadence.
+const POLL_STREAM_UP = 1000 * 60 * 5;
+const POLL_STREAM_DOWN = 1000 * 30;
 
 // GET /api/v1/notifications — paginated envelope: { content, pageNumber, ... }
 async function fetchNotifications(communityId) {
@@ -32,6 +41,7 @@ function clearedAtKey(communityId) {
 export function useNotifications() {
   const communityId = useActiveCommunityId();
   const queryClient = useQueryClient();
+  const realtimeConnected = useRealtimeConnected();
 
   const listKey  = ["notifications", communityId, "list"];
 
@@ -41,7 +51,7 @@ export function useNotifications() {
     queryFn: () => fetchNotifications(communityId),
     staleTime: 1000 * 20,
     gcTime:    1000 * 60 * 5,
-    refetchInterval: 1000 * 30,
+    refetchInterval: realtimeConnected ? POLL_STREAM_UP : POLL_STREAM_DOWN,
     refetchIntervalInBackground: false,
     // Overrides the app-wide false: coming back to the tab (or the app on
     // mobile) should surface new notifications immediately, not up to 30s
@@ -148,6 +158,7 @@ export function useNotifications() {
 // user has, regardless of which community is currently active.
 export function useAllNotifications() {
   const queryClient = useQueryClient();
+  const realtimeConnected = useRealtimeConnected();
   const listKey = ["notifications", "all", "list"];
 
   const query = useQuery({
@@ -155,7 +166,7 @@ export function useAllNotifications() {
     queryFn: () => fetchNotifications(null),
     staleTime: 1000 * 20,
     gcTime:    1000 * 60 * 5,
-    refetchInterval: 1000 * 30,
+    refetchInterval: realtimeConnected ? POLL_STREAM_UP : POLL_STREAM_DOWN,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
     select: (data) =>

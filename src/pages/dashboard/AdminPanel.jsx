@@ -22,6 +22,7 @@ import {
 import SystemConfig from "./settings/admin/SystemConfig";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Background from "../../assets/background.webp";
+import { getErrorMessage } from "../../utils/errorHandler";
 import {
   getAdminCommunities,
   setCommissionOverride,
@@ -213,7 +214,7 @@ function TableShell({ isLoading, isEmpty, error, children }) {
           <p className="text-xs text-gray-400">
             {is403
               ? "Platform admin rights required to view this data."
-              : (error.message ?? "An error occurred.")}
+              : getErrorMessage(error)}
           </p>
         </div>
       ) : isEmpty ? (

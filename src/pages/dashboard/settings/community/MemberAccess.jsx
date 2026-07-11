@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, Users } from "lucide-react";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityMembers, useRoles } from "../../../../hooks/useCommunityMembers";
 import { useCommunity, useUpdateCommunitySettings } from "../../../../hooks/useCommunity";
 import QRCodeCanvas from "../../../../components/dashboard/QRCode";
 import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
+import LoadingState from "../../../../components/common/LoadingState";
+import EmptyState from "../../../../components/common/EmptyState";
 
 function Toggle({ on, onChange, disabled }) {
   return (
@@ -121,7 +123,7 @@ export default function MemberAccess() {
       </div>
 
       {/* Invite Link + QR */}
-      <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#EFEFF1E5] rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Invite Link</p>
         <p className="text-xs text-gray-500 mb-4">
           Share this link or QR code with members so they can join your community on Glass.
@@ -152,7 +154,7 @@ export default function MemberAccess() {
       </div>
 
       {/* Admin Management */}
-      <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#EFEFF1E5] rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Admin management</p>
         <p className="text-xs text-gray-500 mb-4">Promote members to admin or revoke admin access.</p>
         {!rolesLoading && !adminRoleId && (
@@ -163,9 +165,9 @@ export default function MemberAccess() {
 
         <div className="flex flex-col">
           {isLoading ? (
-            <p className="text-xs text-gray-400 py-3">Loading…</p>
+            <LoadingState className="py-3" />
           ) : members.length === 0 ? (
-            <p className="text-xs text-gray-400 py-3">No members yet.</p>
+            <EmptyState icon={Users} title="No members yet" subtitle="Share the invite link above to start bringing members into this community." />
           ) : (
             members.map((member, i) => (
               <div

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
+import LoadingState from "../common/LoadingState";
 
 function formatTimestamp(dateStr) {
   if (!dateStr) return "";
@@ -194,7 +195,7 @@ export default function NotificationsPanel({
       {/* Body */}
       <div style={{ maxHeight: 440, overflowY: "auto", paddingBottom: 6 }}>
         {isLoading ? (
-          <p style={{ textAlign: "center", fontSize: 12, color: "#999", padding: "32px 0" }}>Loading…</p>
+          <LoadingState className="py-8" />
         ) : notifications.length === 0 ? (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "40px 0" }}>
             <Bell size={22} style={{ color: "#ccc" }} />

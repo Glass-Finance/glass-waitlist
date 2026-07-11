@@ -147,6 +147,20 @@ function isPaidForCurrentCycle(link, transactions, { obligationId } = {}) {
 function isObligationSettled(o, transactions) {
   const obligationId = o.obligationId ?? o.id;
   if (!o.paymentLinkId && !obligationId) return false;
+  // Exact match first: a successful transaction carrying this obligation's
+  // own id settles it definitively, regardless of plan type or the cycle
+  // approximations below (which can miss right at a cycle boundary).
+  if (
+    obligationId &&
+    transactions.some(
+      (t) =>
+        t.status === "success" &&
+        t.obligationId &&
+        String(t.obligationId) === String(obligationId),
+    )
+  ) {
+    return true;
+  }
   if (o.type === "one-time") {
     return (
       transactions.some(
@@ -245,6 +259,7 @@ function shapeTransaction(raw) {
     currency: raw.currency ?? "NGN",
     reference: raw.internalReference,
     paymentLinkId: raw.paymentLink?.id,
+    obligationId: raw.obligationId,
   };
 }
 

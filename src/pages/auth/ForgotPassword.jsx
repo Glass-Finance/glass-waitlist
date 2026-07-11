@@ -43,6 +43,14 @@ export default function ForgotPassword() {
     }
   }
 
+  // Deferred to the next tick — synchronously moving focus to another box
+  // from inside a change handler triggered by iOS's SMS-autofill QuickType
+  // bar (rather than a direct tap) makes Safari drop focus entirely and
+  // dismiss the keyboard instead of advancing to the next box.
+  function focusOtpBox(index) {
+    setTimeout(() => inputRefs.current[index]?.focus(), 0);
+  }
+
   function handleOtpChange(index, value) {
     const digits = value.replace(/\D/g, "");
     // Handle full autofill (e.g. mobile SMS suggestion bar) landing in one
@@ -53,19 +61,19 @@ export default function ForgotPassword() {
       pasted.forEach((ch, i) => { next[i] = ch; });
       setOtp(next);
       setError("");
-      inputRefs.current[Math.min(pasted.length, 5)]?.focus();
+      focusOtpBox(Math.min(pasted.length, 5));
       return;
     }
     const next = [...otp];
     next[index] = digits;
     setOtp(next);
     setError("");
-    if (digits && index < 5) inputRefs.current[index + 1]?.focus();
+    if (digits && index < 5) focusOtpBox(index + 1);
   }
 
   function handleOtpKeyDown(index, e) {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
+      focusOtpBox(index - 1);
     }
   }
 
@@ -173,7 +181,8 @@ export default function ForgotPassword() {
                     type="text"
                     inputMode="numeric"
                     pattern="[0-9]*"
-                    maxLength={1}
+                    maxLength={6}
+                    autoComplete={i === 0 ? "one-time-code" : "off"}
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => {

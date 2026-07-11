@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
-import { updateEmail, deleteAccount } from "../../../../api/members";
+import { updateEmail, deleteAccount, requestAccountDeletionCode } from "../../../../api/members";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { useAuth } from "../../../../store/AuthContext";
 import { parseUserData } from "../../../../utils/userData";
 import EmailChangeModal from "../../../../components/auth/EmailChangeModal";
+import OtpBoxes from "../../../../components/common/OtpBoxes";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -25,15 +26,58 @@ export default function Profile() {
   const [emailSaving, setEmailSaving] = useState(false);
 
   const [deleteModal, setDeleteModal] = useState(false);
+  const [deleteStep, setDeleteStep] = useState("warn"); // "warn" | "code"
   const [deleteConfirm, setDeleteConfirm] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const [deletionCode, setDeletionCode] = useState(Array(6).fill(""));
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
 
-  async function handleDeleteAccount() {
+  function closeDeleteModal() {
+    setDeleteModal(false);
+    setDeleteStep("warn");
+    setDeleteConfirm("");
+    setDeleteError("");
+    setDeletionCode(Array(6).fill(""));
+    setResendMessage("");
+  }
+
+  // Account deletion requires a verification code (emailed by the backend)
+  // before the actual DELETE — the "type DELETE" step above is just an extra
+  // guardrail before that email even gets sent.
+  async function handleRequestDeletionCode() {
     setDeleteLoading(true);
     setDeleteError("");
     try {
-      await deleteAccount();
+      await requestAccountDeletionCode();
+      setDeleteStep("code");
+    } catch (err) {
+      setDeleteError(getErrorMessage(err, "Failed to send verification code."));
+    } finally {
+      setDeleteLoading(false);
+    }
+  }
+
+  async function handleResendDeletionCode() {
+    setResendLoading(true);
+    setResendMessage("");
+    setDeleteError("");
+    try {
+      await requestAccountDeletionCode();
+      setResendMessage("Code resent.");
+    } catch (err) {
+      setDeleteError(getErrorMessage(err, "Failed to resend code."));
+    } finally {
+      setResendLoading(false);
+    }
+  }
+
+  async function handleConfirmDeletion() {
+    setDeleteLoading(true);
+    setDeleteError("");
+    try {
+      await deleteAccount(deletionCode.join(""));
       await logout();
       navigate("/sign-in");
     } catch (err) {
@@ -244,7 +288,7 @@ export default function Profile() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: "rgba(0,0,0,0.45)" }}
         >
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+          <div className="bg-[#EFEFF1E5] rounded-2xl shadow-2xl w-full max-w-sm p-6" style={{ border: "1px solid #E5E7EB" }}>
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
               style={{ background: "#FEE2E2" }}
@@ -257,40 +301,86 @@ export default function Profile() {
               </svg>
             </div>
 
-            <h3 className="text-base font-semibold text-gray-900 mb-1">Delete Account</h3>
-            <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-              This will permanently delete your account and all associated data from Glass. This cannot be undone.
-            </p>
+            {deleteStep === "warn" ? (
+              <>
+                <h3 className="text-base font-semibold text-gray-900 mb-1">Delete Account</h3>
+                <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+                  This will permanently delete your account and all associated data from Glass. This cannot be undone.
+                </p>
 
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">
-              Type <strong>DELETE</strong> to confirm
-            </label>
-            <input
-              value={deleteConfirm}
-              onChange={(e) => setDeleteConfirm(e.target.value)}
-              placeholder="DELETE"
-              className="w-full border border-gray-300 px-3 py-2.5 rounded-lg text-xs outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 mb-4 transition-all"
-            />
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Type <strong>DELETE</strong> to confirm
+                </label>
+                <input
+                  value={deleteConfirm}
+                  onChange={(e) => setDeleteConfirm(e.target.value)}
+                  placeholder="DELETE"
+                  className="w-full border border-gray-300 px-3 py-2.5 rounded-lg text-xs outline-none focus:border-red-400 focus:ring-2 focus:ring-red-100 mb-4 transition-all bg-white"
+                />
 
-            {deleteError && <p className="text-xs text-red-500 mb-3">{deleteError}</p>}
+                {deleteError && <p className="text-xs text-red-500 mb-3">{deleteError}</p>}
 
-            <div className="flex gap-2">
-              <button
-                onClick={() => { setDeleteModal(false); setDeleteConfirm(""); setDeleteError(""); }}
-                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors"
-                style={{ background: "#F3F4F6" }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteAccount}
-                disabled={deleteConfirm !== "DELETE" || deleteLoading}
-                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50"
-                style={{ background: "#DC2626" }}
-              >
-                {deleteLoading ? "Deleting…" : "Delete Account"}
-              </button>
-            </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={closeDeleteModal}
+                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors"
+                    style={{ background: "#F3F4F6" }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleRequestDeletionCode}
+                    disabled={deleteConfirm !== "DELETE" || deleteLoading}
+                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50"
+                    style={{ background: "#DC2626" }}
+                  >
+                    {deleteLoading ? "Sending code…" : "Continue"}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 className="text-base font-semibold text-gray-900 mb-1">Enter Verification Code</h3>
+                <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+                  We've sent a code to <strong>{user?.email}</strong>. Enter it below to permanently delete your account.
+                </p>
+
+                <div className="mb-4">
+                  <OtpBoxes value={deletionCode} onChange={setDeletionCode} disabled={deleteLoading} />
+                </div>
+
+                <div className="flex items-center justify-center mb-4">
+                  <button
+                    onClick={handleResendDeletionCode}
+                    disabled={resendLoading || deleteLoading}
+                    className="text-xs font-medium cursor-pointer bg-transparent border-none transition-all disabled:opacity-50"
+                    style={{ color: "#002FA7" }}
+                  >
+                    {resendLoading ? "Resending…" : resendMessage || "Resend code"}
+                  </button>
+                </div>
+
+                {deleteError && <p className="text-xs text-red-500 mb-3 text-center">{deleteError}</p>}
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={closeDeleteModal}
+                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors"
+                    style={{ background: "#F3F4F6" }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmDeletion}
+                    disabled={deletionCode.some((d) => !d) || deleteLoading}
+                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50"
+                    style={{ background: "#DC2626" }}
+                  >
+                    {deleteLoading ? "Deleting…" : "Delete Account"}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -307,9 +397,8 @@ export default function Profile() {
             Permanently remove your account and all associated data from Glass.
           </p>
           <button
-            disabled
-            title="Account deletion coming soon"
-            className="self-start sm:self-auto flex-shrink-0 px-4 py-1.5 rounded-md text-xs font-medium text-red-300 transition-all cursor-not-allowed bg-transparent"
+            onClick={() => setDeleteModal(true)}
+            className="self-start sm:self-auto flex-shrink-0 px-4 py-1.5 rounded-md text-xs font-medium text-red-500 hover:bg-red-50 transition-all cursor-pointer bg-transparent"
             style={{ border: "1px solid #FECACA" }}
           >
             Delete

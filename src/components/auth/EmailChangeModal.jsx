@@ -19,7 +19,7 @@ function maskEmail(email) {
 function ModalShell({ children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="relative bg-white rounded-xl p-8 w-full max-w-md shadow-xl">{children}</div>
+      <div className="relative bg-[#EFEFF1E5] rounded-xl p-8 w-full max-w-md shadow-xl" style={{ border: "1px solid #E5E7EB" }}>{children}</div>
     </div>
   );
 }
@@ -44,6 +44,14 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
   const secondsLeft = useCountdown(OTP_VALIDITY_SECONDS, `${newEmail}-${resendCount}`);
   const codeExpired = secondsLeft <= 0;
 
+  // Deferred to the next tick — see OTPStep.jsx for why: synchronously
+  // moving focus from inside a change handler triggered by iOS's SMS-autofill
+  // QuickType bar makes Safari drop focus entirely and dismiss the keyboard
+  // instead of advancing to the next box.
+  function focusBox(index) {
+    setTimeout(() => inputs.current[index]?.focus(), 0);
+  }
+
   function handleChange(index, value) {
     // Handle full paste/autofill (e.g. from SMS autofill or clipboard) —
     // browsers deliver the whole code into whichever box received it.
@@ -52,19 +60,19 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
       const next = ["", "", "", "", "", ""];
       pasted.forEach((ch, i) => { next[i] = ch; });
       setOtp(next);
-      inputs.current[Math.min(pasted.length, 5)]?.focus();
+      focusBox(Math.min(pasted.length, 5));
       return;
     }
     if (!/^\d*$/.test(value)) return;
     const updated = [...otp];
     updated[index] = value;
     setOtp(updated);
-    if (value && index < 5) inputs.current[index + 1]?.focus();
+    if (value && index < 5) focusBox(index + 1);
   }
 
   function handleKeyDown(index, e) {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputs.current[index - 1]?.focus();
+      focusBox(index - 1);
     }
   }
 
@@ -137,7 +145,9 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
               ref={(el) => (inputs.current[i] = el)}
               type="text"
               inputMode="numeric"
-              maxLength={1}
+              pattern="[0-9]*"
+              maxLength={6}
+              autoComplete={i === 0 ? "one-time-code" : "off"}
               value={otp[i]}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}
@@ -152,7 +162,9 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
               ref={(el) => (inputs.current[i] = el)}
               type="text"
               inputMode="numeric"
-              maxLength={1}
+              pattern="[0-9]*"
+              maxLength={6}
+              autoComplete="off"
               value={otp[i]}
               onChange={(e) => handleChange(i, e.target.value)}
               onKeyDown={(e) => handleKeyDown(i, e)}

@@ -6,6 +6,7 @@ import { useCommunity } from "../../../../hooks/useCommunity";
 import { getBanks, resolveAccount } from "../../../../api/members";
 import { notifyError } from "../../../../utils/errorHandler";
 import BankSelect from "../../../../components/common/BankSelect";
+import LoadingState from "../../../../components/common/LoadingState";
 import banksData from "nigerian-bank-icons/assets/banks.json";
 
 // Exclude generic placeholder entries — banks without real logos use colored initials.
@@ -462,7 +463,7 @@ export default function PaystackAccount() {
   return (
     <div className="flex flex-col gap-10 max-w-2xl w-full">
       {isLoading ? (
-        <p className="text-xs text-gray-400">Loading…</p>
+        <LoadingState />
       ) : account ? (
         <div
           className="bg-[#EFEFF1E5] rounded-2xl p-6"

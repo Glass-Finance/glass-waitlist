@@ -5,6 +5,7 @@ import { useInvites } from "../../hooks/useInvites";
 import { useNotifications } from "../../hooks/useNotifications";
 import { notificationTarget } from "../../utils/notificationRouting";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
+import LoadingState from "../../components/common/LoadingState";
 
 const TABS = ["Payments", "Community", "Invites"];
 
@@ -256,7 +257,7 @@ export default function Notifications() {
       <div style={{ padding: "0 16px" }}>
         {activeTab === "Payments" && (
           notifsLoading
-            ? <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>Loading…</p>
+            ? <LoadingState className="py-6" />
             : paymentNotifs.length === 0
               ? <EmptyState icon={Bell} label="No payment notifications." />
               : <GroupedNotifications items={paymentNotifs} onTap={markRead} onNavigate={navigate} />
@@ -264,7 +265,7 @@ export default function Notifications() {
 
         {activeTab === "Community" && (
           notifsLoading
-            ? <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>Loading…</p>
+            ? <LoadingState className="py-6" />
             : communityNotifs.length === 0
               ? <EmptyState icon={Bell} label="No community notifications." />
               : <GroupedNotifications items={communityNotifs} onTap={markRead} onNavigate={navigate} />
@@ -272,7 +273,7 @@ export default function Notifications() {
 
         {activeTab === "Invites" && (
           invitesLoading
-            ? <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>Loading…</p>
+            ? <LoadingState className="py-6" />
             : invites.length === 0
               ? <EmptyState
                   icon={Mail}

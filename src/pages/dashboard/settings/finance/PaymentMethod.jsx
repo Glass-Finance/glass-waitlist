@@ -1,5 +1,6 @@
 import { Landmark, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
+import LoadingState from "../../../../components/common/LoadingState";
 
 export default function PaymentMethod() {
   const { data: authorisations, isLoading, error, toggleAutoPay, isRemoving } = useManagePayments();
@@ -23,7 +24,7 @@ export default function PaymentMethod() {
 
           <div className="flex flex-col gap-3">
             {isLoading ? (
-              <p className="text-xs text-gray-400">Loading…</p>
+              <LoadingState />
             ) : error ? (
               <p className="text-xs text-red-500">Couldn't load payment methods.</p>
             ) : authorisations.length === 0 ? (

@@ -6,6 +6,8 @@ import { useNotifications, useAllNotifications } from "../../hooks/useNotificati
 import { useAuth } from "../../store/AuthContext";
 import { notificationAction } from "../../utils/notificationRouting";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
+import LoadingState from "../../components/common/LoadingState";
+import EmptyState from "../../components/common/EmptyState";
 import Background from "../../assets/background.webp";
 
 const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";
@@ -335,12 +337,14 @@ function SuperAdminNotifications() {
 
       <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
         {isLoading ? (
-          <p className="text-xs text-gray-400 text-center py-12">Loading…</p>
+          <LoadingState className="py-12" />
         ) : notifications.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-16">
-            <Bell size={22} className="text-gray-300" />
-            <p className="text-sm text-gray-400">No notifications yet.</p>
-          </div>
+          <EmptyState
+            icon={Bell}
+            title="No notifications yet"
+            subtitle="You'll see payment updates, member activity, and other alerts here as they happen."
+            className="py-16"
+          />
         ) : (
           <ChronologicalList items={notifications} onMarkRead={markRead} onOpen={detail.open} />
         )}
@@ -454,17 +458,20 @@ function CommunityNotifications() {
       {/* Notification list — independently scrollable */}
       <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
         {isLoading ? (
-          <p className="text-xs text-gray-400 text-center py-12">Loading…</p>
+          <LoadingState className="py-12" />
         ) : notifications.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-16">
-            <Bell size={22} className="text-gray-300" />
-            <p className="text-sm text-gray-400">No notifications yet.</p>
-          </div>
+          <EmptyState
+            icon={Bell}
+            title="No notifications yet"
+            subtitle="You'll see payment updates, member activity, and other alerts here as they happen."
+            className="py-16"
+          />
         ) : tabItems.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 py-12">
-            <Bell size={18} className="text-gray-300" />
-            <p className="text-sm text-gray-400">No {tab.toLowerCase()} notifications.</p>
-          </div>
+          <EmptyState
+            icon={Bell}
+            title={`No ${tab.toLowerCase()} notifications`}
+            className="py-12"
+          />
         ) : tab === "All" ? (
           <ChronologicalList items={notifications} onMarkRead={markRead} onOpen={detail.open} />
         ) : (

@@ -7,6 +7,7 @@ import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers, useCommunityJoinRequests, useRoles } from "../../hooks/useCommunityMembers";
 import { getErrorMessage } from "../../utils/errorHandler";
+import LoadingState from "../../components/common/LoadingState";
 import Background from "../../assets/background.webp";
 
 // Only these three roles should be assignable when inviting members.
@@ -430,7 +431,7 @@ export default function Members() {
             </thead>
             <tbody>
               {isLoading ? (
-                <tr><td colSpan={8} className="px-5 py-8 text-center text-xs text-gray-400">Loading…</td></tr>
+                <tr><td colSpan={8}><LoadingState className="py-8" /></td></tr>
               ) : error ? (
                 <tr><td colSpan={8} className="px-5 py-8 text-center text-xs text-red-500">Couldn't load members.</td></tr>
               ) : filtered.length === 0 ? (

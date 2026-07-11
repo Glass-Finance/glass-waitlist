@@ -4,6 +4,7 @@ import {
   useManagePayments,
   isAuthorisationExpired,
 } from "../../../../hooks/usePayments";
+import LoadingState from "../../../../components/common/LoadingState";
 
 function Toggle({ on, onChange, disabled }) {
   return (
@@ -110,7 +111,7 @@ export default function AutoPay() {
       <div className="bg-[#f6f6f8] rounded-lg p-6" style={{ border: "1px solid #f6f6f8" }}>
         <div className="flex flex-col">
           {isLoading ? (
-            <p className="text-xs text-gray-400 py-4">Loading…</p>
+            <LoadingState className="py-4" />
           ) : allPlans.length === 0 ? (
             <p className="text-xs text-gray-400 py-4">You're not on any recurring plans yet.</p>
           ) : (

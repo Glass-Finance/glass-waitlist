@@ -186,7 +186,7 @@ export default function CommunityProfile() {
 
       {/* ── Community Information ── */}
       <div
-        className="bg-[#f6f6f8] rounded-lg px-5 pt-4 pb-5"
+        className="bg-[#EFEFF1E5] rounded-lg px-5 pt-4 pb-5"
         style={{ border: "1px solid #E5E7EB" }}
       >
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Community Information</p>
@@ -226,7 +226,7 @@ export default function CommunityProfile() {
 
       {/* ── Visibility & Approval ── */}
       <div
-        className="bg-[#f6f6f8] rounded-lg px-5 pt-4 pb-4"
+        className="bg-[#EFEFF1E5] rounded-lg px-5 pt-4 pb-4"
         style={{ border: "1px solid #E5E7EB" }}
       >
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Visibility & Approval</p>
@@ -251,7 +251,7 @@ export default function CommunityProfile() {
 
       {/* ── Delete Community ── */}
       <div
-        className="bg-[#f6f6f8] rounded-lg px-5 pt-4 pb-4"
+        className="bg-[#EFEFF1E5] rounded-lg px-5 pt-4 pb-4"
         style={{ border: "1px solid #E5E7EB" }}
       >
         <p className="text-sm text-gray-900 mb-0.5">Delete Community</p>
@@ -279,7 +279,7 @@ export default function CommunityProfile() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: "rgba(0,0,0,0.45)" }}
         >
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+          <div className="bg-[#EFEFF1E5] rounded-2xl shadow-2xl w-full max-w-sm p-6">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
               style={{ background: "#FEE2E2" }}
