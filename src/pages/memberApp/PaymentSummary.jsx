@@ -12,15 +12,7 @@ import {
 import { getErrorMessage } from "../../utils/errorHandler";
 import { toastSuccess } from "../../utils/toast";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
-
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function fmt(n) {
-  return "₦" + new Intl.NumberFormat("en-NG").format(n ?? 0);
-}
+import { toTitleCase, formatNaira as fmt } from "../../utils/format";
 
 function useObligation(obligationId) {
   return useQuery({

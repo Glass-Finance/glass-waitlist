@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { captureException } from "./monitoring";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Single source of truth for turning ANY error (axios, network, JS) into a
@@ -152,6 +153,8 @@ export function notifyError(error, { fallback, context, silent = false } = {}) {
       console.error("  ↳ response body:", error.response.data);
     }
   }
+
+  captureException(error, { context });
 
   if (!silent) {
     toast.error(message);

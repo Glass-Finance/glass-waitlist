@@ -113,7 +113,7 @@ export function settleLocalPaymentForReference(reference) {
 // month (MONTHLY/others) — matches the plan's own billingDay semantics
 // closely enough without needing to replicate the backend's exact cycle
 // math client-side.
-function isPaidForCurrentCycle(link, transactions, { obligationId } = {}) {
+export function isPaidForCurrentCycle(link, transactions, { obligationId } = {}) {
   const lastSuccess = transactions
     .filter((t) => t.paymentLinkId === link.id && t.status === "success")
     .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
@@ -144,7 +144,7 @@ function isPaidForCurrentCycle(link, transactions, { obligationId } = {}) {
 // can keep re-paying) the same due. Treat the obligation as settled when a
 // successful transaction exists for the same payment link — any time for
 // one-time plans, within the current billing cycle for recurring ones.
-function isObligationSettled(o, transactions) {
+export function isObligationSettled(o, transactions) {
   const obligationId = o.obligationId ?? o.id;
   if (!o.paymentLinkId && !obligationId) return false;
   // Exact match first: a successful transaction carrying this obligation's

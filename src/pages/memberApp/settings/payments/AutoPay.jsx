@@ -4,23 +4,8 @@ import { ChevronLeft, RefreshCw } from "lucide-react";
 import { usePayments, useManagePayments, isAuthorisationExpired } from "../../../../hooks/usePayments";
 import LoadingState from "../../../../components/common/LoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
-
-function Toggle({ on, onChange }) {
-  return (
-    <button
-      onClick={() => onChange(!on)}
-      style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}
-    >
-      <div style={{ width: 40, height: 22, borderRadius: 999, background: on ? "#002FA7" : "#D1D5DB", position: "relative", transition: "background 0.2s" }}>
-        <div style={{ width: 16, height: 16, borderRadius: "50%", background: "#fff", position: "absolute", top: 3, left: on ? 21 : 3, transition: "left 0.2s" }} />
-      </div>
-    </button>
-  );
-}
-
-function formatNaira(amount) {
-  return "₦" + new Intl.NumberFormat("en-NG").format(amount ?? 0);
-}
+import Toggle from "../../../../components/common/Toggle";
+import { formatNaira } from "../../../../utils/format";
 
 export default function AutoPay() {
   const navigate = useNavigate();

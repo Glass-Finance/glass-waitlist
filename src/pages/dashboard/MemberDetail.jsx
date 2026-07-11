@@ -9,21 +9,9 @@ import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import Background from "../../assets/background.webp";
+import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 const TABS = ["All Plans", "Payment History", "Contact Details"];
-
-function formatNaira(amount) {
-  return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", minimumFractionDigits: 0 }).format(amount ?? 0).replace("NGN", "₦");
-}
-function formatDate(d) {
-  if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" });
-}
-
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 function memberName(m) {
   if (!m) return "Member";

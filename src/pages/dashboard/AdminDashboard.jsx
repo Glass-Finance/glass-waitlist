@@ -41,6 +41,7 @@ import { exportCommunityTransactions } from "../../api/exports";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import EmptyState from "../../components/common/EmptyState";
+import { formatNaira as sharedFormatNaira, toTitleCase, formatDate } from "../../utils/format";
 import totalMembersIcon from "../../assets/dashboard/tdesign-member.webp";
 import inactiveMembersIcon from "../../assets/dashboard/inactive-members.webp";
 import totalContribIcon from "../../assets/dashboard/tcontributions.webp";
@@ -52,30 +53,10 @@ import WarnSignIcon from "../../assets/dashboard/warn-sign.webp";
 import Background from "../../assets/background.webp";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+// This page shows "—" for a null/undefined amount rather than "₦0" (several
+// stat cards read as genuinely unknown before data loads, not zero).
 function formatNaira(amount) {
-  if (amount == null) return "—";
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  })
-    .format(amount)
-    .replace("NGN", "₦");
-}
-
-function formatDate(d) {
-  if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-NG", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
+  return sharedFormatNaira(amount, { emptyDash: true });
 }
 
 function timeAgo(dateString) {

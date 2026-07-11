@@ -16,12 +16,7 @@ import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunities } from "../../hooks/useCommunities";
 import client from "../../api/client";
 import NotificationsPanel from "./NotificationsPanel";
-
-function formatNaira(amount) {
-  return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", minimumFractionDigits: 0 })
-    .format(amount ?? 0)
-    .replace("NGN", "₦");
-}
+import { formatNaira, toTitleCase } from "../../utils/format";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 // user.firstName/lastName come from AuthContext's refreshUser() (GET /user/me)
@@ -35,10 +30,6 @@ function getInitials(user) {
   return (user.email ?? "?").slice(0, 2).toUpperCase();
 }
 
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 function getDisplayName(user) {
   if (!user) return "Loading...";

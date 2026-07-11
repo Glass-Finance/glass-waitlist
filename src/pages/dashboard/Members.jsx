@@ -10,6 +10,7 @@ import { useJoinRequests, requesterOf, requestStatusOf } from "../../hooks/useJo
 import { getErrorMessage } from "../../utils/errorHandler";
 import LoadingState from "../../components/common/LoadingState";
 import Background from "../../assets/background.webp";
+import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 // Only these three roles should be assignable when inviting members.
 const ALLOWED_ROLE_NAMES = new Set(["Community Owner", "Community Admin", "Community Member"]);
@@ -21,11 +22,6 @@ const FALLBACK_ROLES = [
 ];
 
 const SORT_OPTIONS = ["Recently Paid", "Name A-Z", "Date Joined"];
-
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 function memberName(m) {
   if (m.name) return toTitleCase(m.name);
@@ -40,14 +36,6 @@ const memberRole = (m) => m.roleCode ?? m.role?.name ?? m.roleName ?? m.role ?? 
 // enum value (OWNER/ADMIN/MANAGER/MEMBER/...), not a free-text display name.
 const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes((m.roleCode ?? "").toUpperCase());
 const memberInitials = (m) => memberName(m).split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
-
-function formatNaira(amount) {
-  return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", minimumFractionDigits: 0 }).format(amount ?? 0).replace("NGN", "₦");
-}
-function formatDate(d) {
-  if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" });
-}
 
 function statusStyle(paid, total) {
   if (total === 0) return { bg: "#f5f6fa", color: "#6b7280" };

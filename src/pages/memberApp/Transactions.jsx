@@ -4,19 +4,11 @@ import { ChevronLeft, ChevronDown } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
 import { useAuth } from "../../store/AuthContext";
 import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
+import { formatNaira, toTitleCase } from "../../utils/format";
 
 const STATUS_OPTIONS = ["All Status", "Success", "Failed", "Pending"];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function formatNaira(n) {
-  return "₦" + new Intl.NumberFormat("en-NG").format(n ?? 0);
-}
-
 function monthLabel(dateStr) {
   if (!dateStr) return "Unknown";
   return new Date(dateStr).toLocaleDateString("en-NG", {

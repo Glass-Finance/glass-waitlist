@@ -33,6 +33,7 @@ import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
+import { formatNaira, toTitleCase, formatDate } from "../../utils/format";
 import Background from "../../assets/background.webp";
 import { getCommunityMembers } from "../../api/communities";
 import {
@@ -134,11 +135,6 @@ const BAR_COLORS = ["#d4a017", "#7c3aed", "#002FA7", "#059669"];
 const inputCls =
   "w-full px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 bg-white outline-none transition-all focus:border-[#002FA7]";
 
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
 // <input type="number"> silently increments/decrements its value on
 // mouse-wheel scroll while it has focus — a well-known browser footgun that
 // bites hardest inside a scrollable form like these plan modals: scroll
@@ -149,28 +145,11 @@ function blurOnWheel(e) {
   e.currentTarget.blur();
 }
 
-function formatNaira(amount) {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: 0,
-  })
-    .format(amount ?? 0)
-    .replace("NGN", "₦");
-}
 function formatCompact(amount) {
   return new Intl.NumberFormat("en-NG", {
     notation: "compact",
     maximumFractionDigits: 1,
   }).format(amount ?? 0);
-}
-function formatDate(d) {
-  if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-NG", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
 }
 function toDateInput(iso) {
   if (!iso) return "";

@@ -11,6 +11,9 @@ import { AuthProvider } from "./store/AuthContext.jsx";
 import RealtimeBridge from "./components/common/RealtimeBridge.jsx";
 import { notifyError } from "./utils/errorHandler.js";
 import { toastSuccess } from "./utils/toast.js";
+import { initMonitoring } from "./utils/monitoring.js";
+
+initMonitoring();
 
 // "Continue with Google" needs a real OAuth Client ID from Google Cloud
 // Console — see .env.example. Falls back to an empty string rather than

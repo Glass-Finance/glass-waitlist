@@ -7,25 +7,8 @@ import {
 } from "../../../../hooks/usePayments";
 import LoadingState from "../../../../components/common/LoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
-
-function Toggle({ on, onChange, disabled }) {
-  return (
-    <button
-      onClick={() => !disabled && onChange(!on)}
-      disabled={disabled}
-      className={`flex items-center gap-1.5 flex-shrink-0 bg-transparent border-none p-0 ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
-    >
-      <div className={`relative w-8 h-[20px] rounded-full transition-all duration-300 ${on ? "bg-[#002FA7]" : "bg-gray-300"}`}>
-        <div className={`absolute top-[3px] w-[14px] h-[14px] rounded-full bg-white shadow transition-all duration-300 ${on ? "left-[15px]" : "left-[3px]"}`} />
-      </div>
-      <span className={`text-xs font-medium ${on ? "text-gray-600" : "text-gray-400"}`}>{on ? "On" : "Off"}</span>
-    </button>
-  );
-}
-
-function formatNaira(amount) {
-  return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", minimumFractionDigits: 0 }).format(amount ?? 0).replace("NGN", "₦");
-}
+import Toggle from "../../../../components/common/Toggle";
+import { formatNaira } from "../../../../utils/format";
 
 export default function AutoPay() {
   const { data, isLoading: paymentsLoading } = usePayments();
@@ -151,7 +134,7 @@ export default function AutoPay() {
                       </p>
                     )}
                   </div>
-                  <Toggle on={!!auth} onChange={() => handleToggle(plan, auth)} disabled={!auth} />
+                  <Toggle on={!!auth} onChange={() => handleToggle(plan, auth)} disabled={!auth} showLabel />
                 </div>
               );
             })

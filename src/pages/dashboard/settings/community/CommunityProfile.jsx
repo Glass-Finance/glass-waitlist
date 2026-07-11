@@ -23,29 +23,6 @@ const CATEGORIES = [
 const inputCls =
   "w-full border border-gray-300 px-3 py-2.5 rounded-lg text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
 
-function Toggle({ on, onChange, disabled }) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(!on)}
-      disabled={disabled}
-      role="switch"
-      aria-checked={on}
-      className="relative inline-flex items-center cursor-pointer border-none bg-transparent disabled:opacity-50"
-      style={{ width: 40, height: 22 }}
-    >
-      <span
-        className="absolute inset-0 rounded-full transition-colors duration-200"
-        style={{ background: on ? "#002FA7" : "#D1D5DB" }}
-      />
-      <span
-        className="absolute w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
-        style={{ top: 3, transform: on ? "translateX(20px)" : "translateX(3px)" }}
-      />
-    </button>
-  );
-}
-
 export default function CommunityProfile() {
   const navigate = useNavigate();
   const communityId = useActiveCommunityId();

@@ -43,4 +43,24 @@ export const getAdminNotificationJob  = (jobId)   => client.get(`/admin/notifica
 // confirms the account is still real and the name matches before flipping
 // status to verified.
 export const resolveBankAccount = (bankCode, accountNumber) =>
-  client.get("/finance/resolve-account", { params: { bankCode, accountNumber } });  
+  client.get("/finance/resolve-account", { params: { bankCode, accountNumber } });
+
+// ─── Settlements ───────────────────────────────────────────────────────────────
+export const getAdminSettlements     = (params)        => client.get("/admin/settlements", { params });
+export const getAdminSettlement      = (settlementId)  => client.get(`/admin/settlements/${settlementId}`);
+export const syncAdminSettlements    = (payload)       => client.post("/admin/settlements/sync", payload);
+export const exportAdminSettlements  = (params, format = "CSV") =>
+  client.post("/admin/settlements/export", null, { params: { ...params, format } });
+export const getAdminSettlementSyncJobs = (params)     => client.get("/admin/settlements/sync-jobs", { params });
+export const getAdminSettlementSyncJob  = (jobId)      => client.get(`/admin/settlements/sync-jobs/${jobId}`);
+
+// ─── Reconciliation ─────────────────────────────────────────────────────────────
+export const getAdminReconciliationRuns   = (params)      => client.get("/admin/reconciliation/runs", { params });
+export const getAdminReconciliationRun    = (runId)       => client.get(`/admin/reconciliation/runs/${runId}`);
+export const triggerReconciliationRun     = ()            => client.post("/admin/reconciliation/runs");
+export const triggerFullReconciliationRun = (params)      => client.post("/admin/reconciliation/runs/full", null, { params });
+export const getReconciliationRunReport   = (runId, format = "CSV") =>
+  client.get(`/admin/reconciliation/runs/${runId}/report`, { params: { format } });
+export const getAdminReconciliationFindings  = (params)              => client.get("/admin/reconciliation/findings", { params });
+export const reviewReconciliationFinding     = (findingId, payload)  => client.post(`/admin/reconciliation/findings/${findingId}/review`, payload);
+export const resolveReconciliationFinding    = (findingId)           => client.post(`/admin/reconciliation/findings/${findingId}/resolve`);

@@ -8,21 +8,7 @@ import QRCodeCanvas from "../../../../components/dashboard/QRCode";
 import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
 import LoadingState from "../../../../components/common/LoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
-
-function Toggle({ on, onChange, disabled }) {
-  return (
-    <button
-      onClick={() => !disabled && onChange(!on)}
-      disabled={disabled}
-      className={`flex items-center gap-1.5 flex-shrink-0 bg-transparent border-none p-0 ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
-    >
-      <div className={`relative w-8 h-[20px] rounded-full transition-all duration-300 ${on ? "bg-[#002FA7]" : "bg-gray-300"}`}>
-        <div className={`absolute top-[3px] w-[14px] h-[14px] rounded-full bg-white shadow transition-all duration-300 ${on ? "left-[15px]" : "left-[3px]"}`} />
-      </div>
-      <span className={`text-xs font-medium ${on ? "text-gray-600" : "text-gray-400"}`}>{on ? "On" : "Off"}</span>
-    </button>
-  );
-}
+import Toggle from "../../../../components/common/Toggle";
 
 // Per-member "⋯" actions menu — one open at a time (state lives in the page),
 // dismissed by the invisible full-screen overlay behind it.
@@ -150,6 +136,7 @@ export default function MemberAccess() {
             on={!!community?.requiresMemberApproval}
             disabled={communityLoading || !community}
             onChange={(v) => updateSettings.mutate({ requiresMemberApproval: v })}
+            showLabel
           />
         </div>
 
@@ -165,6 +152,7 @@ export default function MemberAccess() {
             on={!!community?.publicVisible}
             disabled={communityLoading || !community}
             onChange={(v) => updateSettings.mutate({ publicVisible: v })}
+            showLabel
           />
         </div>
       </div>
