@@ -20,6 +20,12 @@ const inputStyle = {
   boxSizing: "border-box",
 };
 
+// Names save with the first letter of each word capitalised ("home" → "Home")
+// so they read properly everywhere: greetings, join requests, receipts, emails.
+function capitalizeName(s) {
+  return (s ?? "").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export default function Profile() {
   const navigate = useNavigate();
   const { data: user, isLoading } = useMe();
@@ -63,14 +69,22 @@ export default function Profile() {
       // Only send what changed — the success toast names the updated
       // field(s), so sending everything would always read "Profile updated".
       const userData = {};
-      if (form.firstName !== savedForm.firstName) userData.firstName = form.firstName;
-      if (form.lastName !== savedForm.lastName) userData.lastName = form.lastName;
+      if (form.firstName !== savedForm.firstName) userData.firstName = capitalizeName(form.firstName.trim());
+      if (form.lastName !== savedForm.lastName) userData.lastName = capitalizeName(form.lastName.trim());
       if (form.phone !== savedForm.phone) userData.phoneNumber = form.phone;
       await updateProfile.mutateAsync({
         username: user?.username,
         userData,
       });
-      setSavedForm(form);
+      // Reflect the capitalised names in the inputs immediately, matching
+      // what was actually saved.
+      const next = {
+        ...form,
+        firstName: capitalizeName(form.firstName.trim()),
+        lastName: capitalizeName(form.lastName.trim()),
+      };
+      setForm(next);
+      setSavedForm(next);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {

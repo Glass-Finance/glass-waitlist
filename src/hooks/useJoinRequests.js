@@ -28,11 +28,13 @@ export function useJoinRequests(communityId) {
   const approve = useMutation({
     mutationFn: (requestId) => approveJoinRequest(communityId, requestId),
     onSuccess: invalidate,
+    meta: { successMessage: "Request approved — they're now a member" },
   });
 
   const reject = useMutation({
     mutationFn: (requestId) => rejectJoinRequest(communityId, requestId),
     onSuccess: invalidate,
+    meta: { successMessage: "Request rejected" },
   });
 
   return {
