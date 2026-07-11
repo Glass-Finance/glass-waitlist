@@ -22,6 +22,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { goToApp } from "../../utils/deviceRedirect";
 import BlurText from "../ui/BlurText";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
@@ -341,7 +342,7 @@ export default function CTA() {
         {/* ── Button — magnetic pull on hover ── */}
         <button
           ref={btnRef}
-          onClick={() => navigate("/sign-up")}
+          onClick={() => goToApp("/sign-up", navigate)}
           style={{
             display: "inline-flex",
             alignItems: "center",

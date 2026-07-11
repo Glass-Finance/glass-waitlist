@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { goToApp } from "../utils/deviceRedirect";
 import { Check, ArrowRight } from "lucide-react";
 import BlurText from "./ui/BlurText";
 
@@ -146,7 +147,7 @@ export default function Pricing() {
               </div>
 
               <button
-                onClick={() => navigate("/sign-up")}
+                onClick={() => goToApp("/sign-up", navigate)}
                 className="w-full bg-[#0f1d6e] text-white font-semibold text-[15px] py-[15px] rounded-2xl flex items-center justify-center gap-2.5 transition-all duration-200 hover:bg-[#1C2B8A] hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(15,29,110,0.28)]"
               >
                 Create Your Community Free

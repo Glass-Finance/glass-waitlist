@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ChevronRight, Menu, X } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import { goToApp } from "../utils/deviceRedirect";
 import { motion, useScroll, useSpring } from "motion/react";
 
 const scrollTo = (id) =>
@@ -126,14 +127,14 @@ export default function Navbar() {
           {viewMode === "organizations" ? (
             <>
               <button
-                onClick={() => navigate("/sign-up")}
+                onClick={() => goToApp("/sign-up", navigate)}
                 className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20 cursor-pointer"
               >
                 Get Started Free
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
               <button
-                onClick={() => navigate("/sign-in")}
+                onClick={() => goToApp("/sign-in", navigate)}
                 className="text-[13.5px] text-white/70 hover:text-white transition-colors font-medium"
               >
                 Sign In
@@ -141,7 +142,7 @@ export default function Navbar() {
             </>
           ) : (
             <button
-              onClick={() => navigate("/sign-in")}
+              onClick={() => goToApp("/sign-in", navigate)}
               className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20 cursor-pointer"
             >
               Sign In
@@ -181,7 +182,7 @@ export default function Navbar() {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => {
-                    navigate("/sign-up");
+                    goToApp("/sign-up", navigate);
                     setMenuOpen(false);
                   }}
                   className="w-full flex items-center justify-center gap-2 bg-white text-[#0B0F2E] py-3 rounded-full text-[14px] font-bold cursor-pointer"
@@ -190,7 +191,7 @@ export default function Navbar() {
                 </button>
                 <button
                   onClick={() => {
-                    navigate("/sign-in");
+                    goToApp("/sign-in", navigate);
                     setMenuOpen(false);
                   }}
                   className="w-full flex items-center justify-center gap-2 text-white/70 py-2 text-[14px] font-medium cursor-pointer"
@@ -201,7 +202,7 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={() => {
-                  navigate("/sign-in");
+                  goToApp("/sign-in", navigate);
                   setMenuOpen(false);
                 }}
                 className="w-full flex items-center justify-center gap-2 bg-white text-[#0B0F2E] py-3 rounded-full text-[14px] font-bold cursor-pointer"

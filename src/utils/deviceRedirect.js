@@ -60,6 +60,36 @@ export function isMobileSession() {
 export const APP_ORIGIN =
   import.meta.env.VITE_APP_URL ?? window.location.origin;
 
+// ── Marketing / app domain separation ────────────────────────────────────────
+// glasspay.app + www serve the marketing site only; the application lives on
+// APP_ORIGIN (app.glasspay.app in production). Everything below no-ops in
+// local dev and on the app domain itself, where APP_ORIGIN resolves to the
+// current origin — so single-domain deployments keep working unchanged
+// until VITE_APP_URL points somewhere else.
+const MARKETING_HOSTS = new Set(["glasspay.app", "www.glasspay.app"]);
+
+function isAppOriginSeparate() {
+  try {
+    return new URL(APP_ORIGIN).origin !== window.location.origin;
+  } catch {
+    return false;
+  }
+}
+
+export function isMarketingHost() {
+  return MARKETING_HOSTS.has(window.location.hostname) && isAppOriginSeparate();
+}
+
+// Navigate to an app path: a hard hop to APP_ORIGIN from the marketing
+// domain, ordinary SPA navigation everywhere else.
+export function goToApp(path, navigate) {
+  if (isMarketingHost()) {
+    window.location.href = `${APP_ORIGIN}${path}`;
+    return;
+  }
+  navigate(path);
+}
+
 // Builds the absolute URL for a path (with its query string preserved,
 // e.g. an invite token) so a phone can open it directly after scanning.
 export function buildMobileUrl(path) {

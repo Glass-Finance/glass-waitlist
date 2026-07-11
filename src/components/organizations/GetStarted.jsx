@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { goToApp } from "../../utils/deviceRedirect";
 import HowItWorksSection from "../howItWorks/HowItWorksSection";
 
 import work1 from "../../assets/work/work1.webp";
@@ -47,5 +48,5 @@ const steps = [
 
 export default function GetStarted() {
   const navigate = useNavigate();
-  return <HowItWorksSection steps={steps} onCtaClick={() => navigate("/sign-up")} ctaLabel="Get Started Free" />;
+  return <HowItWorksSection steps={steps} onCtaClick={() => goToApp("/sign-up", navigate)} ctaLabel="Get Started Free" />;
 }

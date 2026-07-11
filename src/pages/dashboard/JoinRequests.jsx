@@ -1,41 +1,15 @@
 import { useMemo, useState } from "react";
 import { UserPlus, Check, X, Mail, Phone, Clock } from "lucide-react";
-import { useJoinRequests } from "../../hooks/useJoinRequests";
+import {
+  useJoinRequests,
+  requesterOf,
+  requestStatusOf as statusOf,
+} from "../../hooks/useJoinRequests";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { parseUserData } from "../../utils/userData";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import Background from "../../assets/background.webp";
-
-// Names are stored in whatever case the user typed ("home alone") —
-// capitalise for display.
-function capitalizeName(s) {
-  return (s ?? "").replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-// The requester lives under `requestedUser` (confirmed against the live
-// response) — the other containers are kept as fallbacks in case the shape
-// shifts, including the userData JSON blob GET /user/me style profiles use.
-function requesterOf(r) {
-  const u =
-    r.requestedUser ?? r.user ?? r.member ?? r.requester ?? r.requestedBy ?? r;
-  const ud = parseUserData(u);
-  const firstName = capitalizeName(u.firstName ?? ud.firstName ?? "");
-  const lastName = capitalizeName(u.lastName ?? ud.lastName ?? "");
-  const email = u.email ?? r.email ?? r.userEmail ?? null;
-  const phone = u.phoneNumber ?? ud.phone ?? r.phoneNumber ?? null;
-  const image =
-    ud.profileImage ?? u.profileImage?.url ?? u.avatarUrl ?? null;
-  const name = `${firstName} ${lastName}`.trim() || email || "Unknown requester";
-  const initials = (`${firstName.charAt(0)}${lastName.charAt(0)}` ||
-    (email ?? "?").slice(0, 2)).toUpperCase();
-  return { name, email, phone, image, initials };
-}
-
-function statusOf(r) {
-  return (r.status ?? "PENDING").toUpperCase();
-}
 
 function formatRequestedAt(r) {
   const raw = r.createdAt ?? r.requestedAt ?? r.submittedAt ?? null;

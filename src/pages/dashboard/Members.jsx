@@ -5,7 +5,8 @@ import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, User
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
-import { useCommunityMembers, useCommunityJoinRequests, useRoles } from "../../hooks/useCommunityMembers";
+import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
+import { useJoinRequests, requesterOf, requestStatusOf } from "../../hooks/useJoinRequests";
 import { getErrorMessage } from "../../utils/errorHandler";
 import LoadingState from "../../components/common/LoadingState";
 import Background from "../../assets/background.webp";
@@ -184,7 +185,12 @@ export default function Members() {
 
   const { members, obligations, isLoading, error } = useMembersWithPayments(communityId);
   const { inviteMember, removeMember } = useCommunityMembers(communityId);
-  const { joinRequests, isActing, approve, reject } = useCommunityJoinRequests(communityId);
+  // Summary only — approving/rejecting (with full requester detail) lives on
+  // the Join Requests page, so the review logic exists in exactly one place.
+  const { requests: allJoinRequests } = useJoinRequests(communityId);
+  const pendingJoinRequests = allJoinRequests.filter(
+    (r) => requestStatusOf(r) === "PENDING",
+  );
   const { data: rolesData } = useRoles();
   const filteredRoles = rolesData ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name)) : [];
   const usingFallbackRoles = !filteredRoles.length;
@@ -287,54 +293,35 @@ export default function Members() {
         </button>
       </div>
 
-      {/* Pending join requests */}
-      {joinRequests.length > 0 && (
-        <div className="bg-white rounded-xl border border-amber-100 mb-5 overflow-hidden" style={{ boxShadow: "0 1px 4px rgba(180,83,9,0.07)" }}>
-          <div className="flex items-center gap-2 px-5 py-3 border-b border-amber-50" style={{ background: "#FFFBEB" }}>
-            <Clock size={13} style={{ color: "#b45309" }} />
-            <span className="text-xs font-semibold" style={{ color: "#b45309" }}>
-              {joinRequests.length} Pending Join {joinRequests.length === 1 ? "Request" : "Requests"}
+      {/* Pending join requests — compact summary; the full review flow
+          (requester details, approve/reject) lives on the Join Requests page. */}
+      {pendingJoinRequests.length > 0 && (() => {
+        const names = pendingJoinRequests.slice(0, 3).map((r) => requesterOf(r).name);
+        const extra = pendingJoinRequests.length - names.length;
+        const preview =
+          names.join(", ") + (extra > 0 ? ` and ${extra} other${extra === 1 ? "" : "s"}` : "");
+        return (
+          <button
+            onClick={() => navigate("/dashboard/join-requests")}
+            className="w-full flex items-center justify-between gap-4 px-5 py-3.5 rounded-xl border border-amber-100 mb-5 text-left cursor-pointer transition-shadow hover:shadow-md"
+            style={{ background: "#FFFBEB", boxShadow: "0 1px 4px rgba(180,83,9,0.07)" }}
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <Clock size={15} style={{ color: "#b45309" }} className="flex-shrink-0" />
+              <div className="min-w-0">
+                <p className="text-xs font-semibold m-0" style={{ color: "#b45309" }}>
+                  {pendingJoinRequests.length} pending join{" "}
+                  {pendingJoinRequests.length === 1 ? "request" : "requests"}
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5 m-0 truncate">{preview}</p>
+              </div>
+            </div>
+            <span className="flex items-center gap-1 text-xs font-semibold text-[#002FA7] flex-shrink-0">
+              Review <ChevronRight size={13} />
             </span>
-          </div>
-          <div className="divide-y divide-gray-50">
-            {joinRequests.map((req) => {
-              const name = [req.user?.firstName, req.user?.lastName].filter(Boolean).join(" ") || req.user?.email || "Unknown";
-              const email = req.user?.email ?? "—";
-              const initials = name.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
-              return (
-                <div key={req.id} className="flex items-center justify-between px-5 py-3 gap-4">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0" style={{ background: "#002FA7" }}>
-                      {initials}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs font-semibold text-black truncate">{name}</p>
-                      <p className="text-xs text-gray-400 truncate">{email}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <button
-                      onClick={() => reject(req.id)}
-                      disabled={isActing}
-                      className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
-                    >
-                      Decline
-                    </button>
-                    <button
-                      onClick={() => approve(req.id)}
-                      disabled={isActing}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-white border-none cursor-pointer disabled:opacity-50 hover:opacity-90"
-                      style={{ background: "#002FA7" }}
-                    >
-                      <UserCheck size={11} /> Approve
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+          </button>
+        );
+      })()}
 
       {/* Empty state — shown instead of stats + table when community has no members yet */}
       {!isLoading && !error && members.length === 0 && (

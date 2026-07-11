@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { goToApp } from "../utils/deviceRedirect";
 import logo from "../assets/cta/ctalogo.webp";
 import BlurText from "./ui/BlurText";
 
@@ -72,7 +73,7 @@ export default function Footer() {
             Join communities already running transparent finances on Glass.
           </p>
           <button
-            onClick={() => navigate("/sign-up")}
+            onClick={() => goToApp("/sign-up", navigate)}
             className="inline-flex items-center gap-2 bg-white text-[#0f1640] text-[15px] font-semibold px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/20"
           >
             Get Started Free

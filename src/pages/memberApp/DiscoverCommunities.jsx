@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -10,6 +10,16 @@ import {
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import client from "../../api/client";
+import { getMyCommunities } from "../../api/members";
+import {
+  recordPendingJoinRequest,
+  getPendingJoinRequests,
+} from "../../hooks/useJoinApproval";
+
+function unwrapList(res) {
+  const d = res.data?.data;
+  return Array.isArray(d) ? d : (d?.content ?? []);
+}
 
 // ─── API calls ────────────────────────────────────────────────────────────────
 const searchPublicCommunities = (search) =>
@@ -48,8 +58,12 @@ function catStyle(category) {
 }
 
 // ─── Single community card ────────────────────────────────────────────────────
-function CommunityCard({ community, onRequest }) {
-  const [status, setStatus] = useState(community.userJoinStatus ?? null);
+function CommunityCard({ community, derivedStatus, onRequest }) {
+  // derivedStatus survives reloads (built from the member's own communities
+  // list + locally tracked requests); the override reflects actions taken
+  // on this render of the page.
+  const [statusOverride, setStatusOverride] = useState(null);
+  const status = statusOverride ?? derivedStatus ?? community.userJoinStatus ?? null;
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
 
@@ -66,7 +80,18 @@ function CommunityCard({ community, onRequest }) {
       const res = await onRequest(community.id ?? community.slug);
       const data = res?.data?.data ?? res?.data;
       const newStatus = (data?.status ?? "").toUpperCase();
-      setStatus(newStatus === "APPROVED" ? "member" : "pending");
+      if (newStatus === "APPROVED") {
+        setStatusOverride("member");
+      } else {
+        setStatusOverride("pending");
+        // Track it so the button stays "Request sent" across reloads and
+        // Home can show a "you're in" confirmation on approval.
+        recordPendingJoinRequest({
+          id: community.id,
+          slug: community.slug,
+          name: community.name,
+        });
+      }
     } catch (err) {
       setErrorMsg(
         err?.response?.data?.message ?? "Couldn't send request. Try again.",
@@ -291,6 +316,39 @@ export default function DiscoverCommunities() {
 
   const { data: results = [], isLoading, isFetching } = usePublicSearch(query);
 
+  // The member's own communities + locally tracked requests — so a reload
+  // doesn't reset "Request sent"/"Already a member" back to a Join button.
+  // Same query key/fn as the rest of the app: shares the cache, no extra fetch.
+  const { data: myCommunities = [] } = useQuery({
+    queryKey: ["communities"],
+    queryFn: async () => unwrapList(await getMyCommunities()),
+    staleTime: 1000 * 60 * 5,
+  });
+  const pendingLocal = useMemo(() => getPendingJoinRequests(), []);
+
+  function derivedStatusFor(community) {
+    const match = myCommunities.find(
+      (c) =>
+        (c.id ?? c.community?.id) === community.id ||
+        (community.slug && (c.slug ?? c.community?.slug) === community.slug),
+    );
+    if (match) {
+      const s = (match.memberStatus ?? "ACTIVE").toUpperCase();
+      if (s === "ACTIVE") return "member";
+      if (s === "PENDING") return "pending";
+    }
+    if (
+      pendingLocal.some(
+        (p) =>
+          (p.id && p.id === community.id) ||
+          (p.slug && community.slug && p.slug === community.slug),
+      )
+    ) {
+      return "pending";
+    }
+    return null;
+  }
+
   const joinMutation = useMutation({
     mutationFn: submitJoinRequest,
     onSuccess: () => {
@@ -424,6 +482,7 @@ export default function DiscoverCommunities() {
             <CommunityCard
               key={c.id ?? c.slug}
               community={c}
+              derivedStatus={derivedStatusFor(c)}
               onRequest={joinMutation.mutateAsync}
             />
           ))

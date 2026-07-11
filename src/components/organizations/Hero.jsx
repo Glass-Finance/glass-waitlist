@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { goToApp } from "../../utils/deviceRedirect";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "../Reveal";
 import { motion } from "motion/react";
@@ -1560,7 +1561,7 @@ export default function Hero() {
           <div className="flex items-center justify-center gap-3 flex-wrap">
             {/* ── FIXED: navigates to org onboarding entry point ── */}
             <button
-              onClick={() => navigate("/sign-up")}
+              onClick={() => goToApp("/sign-up", navigate)}
               className="inline-flex items-center gap-2 bg-white text-[#0d1022] text-[15px] px-8 py-3.5 rounded-full shadow-lg shadow-black/30 cursor-pointer"
               style={{ fontFamily: "Inter,sans-serif", fontWeight: 500, transition: "transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s ease" }}
               onMouseMove={(e) => {

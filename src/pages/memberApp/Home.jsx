@@ -5,6 +5,7 @@ import { Bell, ChevronDown, Clock } from "lucide-react";
 import joinCommunityIcon from "../../assets/auth/join-community.webp";
 import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
 import { useNotifications } from "../../hooks/useNotifications";
+import { useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
 import SideDrawer from "../../components/memberApp/SideDrawer";
 
 // ---------------------------------------------------------------------------
@@ -661,6 +662,26 @@ export default function Home() {
   // Unread count for the bell badge — without it members have no signal
   // that anything arrived unless they open the notifications page.
   const { unreadCount } = useNotifications();
+  // Approved join requests — shows the "you're in" confirmation banner the
+  // moment an admin accepts a request made from Discover.
+  const { approved: approvedJoins, dismiss: dismissJoin } = useJoinApprovalWatcher();
+
+  function openApprovedCommunity(entry) {
+    try {
+      localStorage.setItem(
+        "glass_member_community",
+        JSON.stringify({
+          id: entry.communityId,
+          slug: entry.communitySlug,
+          name: entry.name,
+        }),
+      );
+    } catch {
+      /* ignore */
+    }
+    dismissJoin(entry);
+    refresh();
+  }
 
   const nextDue = data?.nextDue ?? null;
   // nextDue is always upcoming[0], so the widget works from the rest. Never
@@ -864,6 +885,65 @@ export default function Home() {
             )}
           </button>
         </div>
+
+        {/* ── Join-request approved banners ─────────────────────────────────── */}
+        {approvedJoins.map((entry) => (
+          <div
+            key={entry.communityId ?? entry.communitySlug ?? entry.name}
+            style={{
+              margin: "0 16px 12px",
+              padding: "14px 16px",
+              borderRadius: 14,
+              background: "#ECFDF5",
+              border: "1.5px solid #A7F3D0",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 10,
+            }}
+          >
+            <span style={{ fontSize: 18, lineHeight: 1, flexShrink: 0 }}>🎉</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#065F46", margin: 0 }}>
+                You're in!
+              </p>
+              <p style={{ fontSize: 12.5, color: "#047857", margin: "3px 0 10px", lineHeight: 1.45 }}>
+                Your request to join <strong>{entry.name}</strong> was approved —
+                you're now a member.
+              </p>
+              <button
+                onClick={() => openApprovedCommunity(entry)}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  border: "none",
+                  background: "#059669",
+                  color: "#fff",
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Open Community
+              </button>
+            </div>
+            <button
+              onClick={() => dismissJoin(entry)}
+              aria-label="Dismiss"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "#047857",
+                fontSize: 18,
+                lineHeight: 1,
+                padding: 2,
+                flexShrink: 0,
+              }}
+            >
+              ×
+            </button>
+          </div>
+        ))}
 
         {/* ── Greeting ────────────────────────────────────────────────────── */}
         <div style={{ padding: "4px 20px 20px" }}>
