@@ -1,6 +1,7 @@
-import { Landmark, Trash2 } from "lucide-react";
+import { Landmark, Trash2, CreditCard } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
 import LoadingState from "../../../../components/common/LoadingState";
+import EmptyState from "../../../../components/common/EmptyState";
 
 export default function PaymentMethod() {
   const { data: authorisations, isLoading, error, toggleAutoPay, isRemoving } = useManagePayments();
@@ -28,7 +29,11 @@ export default function PaymentMethod() {
             ) : error ? (
               <p className="text-xs text-red-500">Couldn't load payment methods.</p>
             ) : authorisations.length === 0 ? (
-              <p className="text-xs text-gray-400">No saved payment methods yet — these are created automatically the first time you pay.</p>
+              <EmptyState
+                icon={CreditCard}
+                title="No saved payment methods yet"
+                subtitle="These are created automatically the first time you pay."
+              />
             ) : (
               authorisations.map((auth) => (
                 <div key={auth.id} className="flex items-center justify-between px-4 py-3">

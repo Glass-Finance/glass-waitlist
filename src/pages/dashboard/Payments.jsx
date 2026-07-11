@@ -31,6 +31,7 @@ import { dateInputToIso, daysInMonth } from "../../utils/date";
 import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
 import LoadingState from "../../components/common/LoadingState";
+import EmptyState from "../../components/common/EmptyState";
 import Background from "../../assets/background.webp";
 import { getCommunityMembers } from "../../api/communities";
 import {
@@ -1614,22 +1615,22 @@ function PlanMembersModal({ plan, communityId, onClose }) {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="px-5 py-10 text-center text-xs text-gray-400"
-                  >
-                    Loading…
+                  <td colSpan={7}>
+                    <LoadingState className="py-10" />
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="px-5 py-10 text-center text-xs text-gray-400"
-                  >
-                    {planMembers.length === 0
-                      ? "No members enrolled in this plan."
-                      : "No members match your filter."}
+                  <td colSpan={7}>
+                    <EmptyState
+                      icon={Users}
+                      title={
+                        planMembers.length === 0
+                          ? "No members enrolled in this plan"
+                          : "No members match your filter"
+                      }
+                      className="py-10"
+                    />
                   </td>
                 </tr>
               ) : (
@@ -2197,9 +2198,7 @@ export default function Payments() {
       {plansLoading ? (
         <LoadingState className="py-10" />
       ) : filtered.length === 0 ? (
-        <p className="text-xs text-gray-400 text-center py-10">
-          No payment plans yet.
-        </p>
+        <EmptyState icon={Wallet} title="No payment plans yet" className="py-10" />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {filtered.map((plan, i) => (

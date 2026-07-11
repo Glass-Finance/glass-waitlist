@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, LogOut, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, LogOut, Plus, Users } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
 import LoadingState from "../../../../components/common/LoadingState";
+import EmptyState from "../../../../components/common/EmptyState";
 
 function getInitials(name = "") {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
@@ -88,9 +89,7 @@ export default function MyCommunities() {
         {isLoading ? (
           <LoadingState className="py-6" />
         ) : communities.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>
-            You haven't joined any communities yet.
-          </p>
+          <EmptyState icon={Users} title="You haven't joined any communities yet" className="py-6" />
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {communities.map((c) => (

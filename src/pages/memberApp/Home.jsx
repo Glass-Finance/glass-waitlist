@@ -7,6 +7,7 @@ import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayme
 import { useNotifications } from "../../hooks/useNotifications";
 import { useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
 import SideDrawer from "../../components/memberApp/SideDrawer";
+import LoadingState from "../../components/common/LoadingState";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -965,9 +966,7 @@ export default function Home() {
         </div>
 
         {isLoading ? (
-          <p style={{ textAlign: "center", color: "#999", fontSize: 13 }}>
-            Loading…
-          </p>
+          <LoadingState className="py-6" />
         ) : hasPendingCommunity ? (
           <PendingApprovalState
             navigate={navigate}

@@ -1,8 +1,9 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, RefreshCw } from "lucide-react";
 import { usePayments, useManagePayments, isAuthorisationExpired } from "../../../../hooks/usePayments";
 import LoadingState from "../../../../components/common/LoadingState";
+import EmptyState from "../../../../components/common/EmptyState";
 
 function Toggle({ on, onChange }) {
   return (
@@ -118,9 +119,7 @@ export default function AutoPay() {
           {isLoading ? (
             <LoadingState className="py-5" />
           ) : allPlans.length === 0 ? (
-            <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "20px 0" }}>
-              You're not on any recurring plans yet.
-            </p>
+            <EmptyState icon={RefreshCw} title="You're not on any recurring plans yet" className="py-5" />
           ) : (
             allPlans.map((plan, i) => {
               const auth = findAuthForPlan(plan);

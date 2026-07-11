@@ -1,10 +1,12 @@
 import { useMemo } from "react";
+import { RefreshCw } from "lucide-react";
 import {
   usePayments,
   useManagePayments,
   isAuthorisationExpired,
 } from "../../../../hooks/usePayments";
 import LoadingState from "../../../../components/common/LoadingState";
+import EmptyState from "../../../../components/common/EmptyState";
 
 function Toggle({ on, onChange, disabled }) {
   return (
@@ -113,7 +115,7 @@ export default function AutoPay() {
           {isLoading ? (
             <LoadingState className="py-4" />
           ) : allPlans.length === 0 ? (
-            <p className="text-xs text-gray-400 py-4">You're not on any recurring plans yet.</p>
+            <EmptyState icon={RefreshCw} title="You're not on any recurring plans yet" className="py-4" />
           ) : (
             allPlans.map((plan) => {
               const auth = findAuthForPlan(plan);

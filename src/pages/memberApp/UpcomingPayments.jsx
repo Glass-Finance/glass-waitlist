@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Clock } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
+import LoadingState from "../../components/common/LoadingState";
 
 const FILTER_OPTIONS = ["All", "Recurring", "One-time"];
 
@@ -308,9 +309,7 @@ export default function UpcomingPayments() {
         }}
       >
         {isLoading ? (
-          <p style={{ textAlign: "center", color: "#999", fontSize: 14, padding: "20px 0" }}>
-            Loading…
-          </p>
+          <LoadingState className="py-5" />
         ) : loadError ? (
           <div style={{ textAlign: "center", padding: "20px 0" }}>
             <p style={{ color: "#DC2626", fontSize: 14, margin: "0 0 8px" }}>

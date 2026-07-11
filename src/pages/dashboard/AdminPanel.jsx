@@ -23,6 +23,7 @@ import SystemConfig from "./settings/admin/SystemConfig";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Background from "../../assets/background.webp";
 import { getErrorMessage } from "../../utils/errorHandler";
+import EmptyState from "../../components/common/EmptyState";
 import {
   getAdminCommunities,
   setCommissionOverride,
@@ -195,7 +196,7 @@ function Pager({ page, totalPages, onPage }) {
   );
 }
 
-function TableShell({ isLoading, isEmpty, error, children }) {
+function TableShell({ isLoading, isEmpty, error, emptyIcon, emptyLabel = "No results found", children }) {
   const is403 = error?.response?.status === 403;
   return (
     <div
@@ -218,9 +219,7 @@ function TableShell({ isLoading, isEmpty, error, children }) {
           </p>
         </div>
       ) : isEmpty ? (
-        <div className="flex flex-col items-center justify-center py-16 gap-2">
-          <p className="text-xs text-gray-400">No results found</p>
-        </div>
+        <EmptyState icon={emptyIcon} title={emptyLabel} className="py-16" />
       ) : (
         <div className="overflow-x-auto">{children}</div>
       )}
@@ -542,6 +541,8 @@ function CommunitiesSection() {
         isLoading={isLoading}
         isEmpty={items.length === 0}
         error={error}
+        emptyIcon={Building2}
+        emptyLabel="No communities found"
       >
         <table className="w-full border-collapse">
           <thead>
@@ -823,6 +824,8 @@ function AccountsSection() {
         isLoading={isLoading}
         isEmpty={items.length === 0}
         error={error}
+        emptyIcon={CreditCard}
+        emptyLabel="No payout accounts found"
       >
         <table className="w-full border-collapse">
           <thead>
@@ -1089,6 +1092,8 @@ function UsersSection() {
         isLoading={isLoading}
         isEmpty={items.length === 0}
         error={error}
+        emptyIcon={Users}
+        emptyLabel="No users found"
       >
         <table className="w-full border-collapse">
           <thead>
@@ -1288,6 +1293,8 @@ function PaymentLinksSection() {
         isLoading={isLoading}
         isEmpty={items.length === 0}
         error={error}
+        emptyIcon={Wallet}
+        emptyLabel="No payment links found"
       >
         <table className="w-full border-collapse">
           <thead>
@@ -1727,6 +1734,8 @@ function NotificationsSection() {
         isLoading={isLoading}
         isEmpty={items.length === 0}
         error={error}
+        emptyIcon={Bell}
+        emptyLabel="No notifications found"
       >
         <table className="w-full border-collapse">
           <thead>

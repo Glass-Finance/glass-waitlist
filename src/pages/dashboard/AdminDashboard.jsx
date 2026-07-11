@@ -17,6 +17,10 @@ import {
   UploadCloud,
   Link as LinkIcon,
   FileSpreadsheet,
+  Clock,
+  Wallet,
+  Activity,
+  Receipt,
 } from "lucide-react";
 import { useCommunityDashboard } from "../../hooks/useCommunityDashboard";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
@@ -34,6 +38,7 @@ import {
 import { useAuth } from "../../store/AuthContext";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
+import EmptyState from "../../components/common/EmptyState";
 import totalMembersIcon from "../../assets/dashboard/tdesign-member.webp";
 import inactiveMembersIcon from "../../assets/dashboard/inactive-members.webp";
 import totalContribIcon from "../../assets/dashboard/tcontributions.webp";
@@ -1691,9 +1696,7 @@ function DashboardContent({ isPaying, communityId }) {
               </div>
             </div>
             {myUpcomingFiltered.length === 0 ? (
-              <p className="text-xs text-gray-400 text-center py-4">
-                Nothing due right now.
-              </p>
+              <EmptyState icon={Clock} title="Nothing due right now" className="py-4" />
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border-collapse text-left">
@@ -1813,9 +1816,7 @@ function DashboardContent({ isPaying, communityId }) {
                 ))}
               </div>
             ) : plans.length === 0 ? (
-              <p className="text-xs text-gray-400 text-center py-6">
-                No payment plans yet.
-              </p>
+              <EmptyState icon={Wallet} title="No payment plans yet" className="py-6" />
             ) : (
               <div className="flex flex-col gap-3">
                 {plans.map((p, idx) => {
@@ -1907,9 +1908,7 @@ function DashboardContent({ isPaying, communityId }) {
                 ))}
               </div>
             ) : recentActivity.length === 0 ? (
-              <p className="text-xs text-gray-400 text-center py-6">
-                No recent activity.
-              </p>
+              <EmptyState icon={Activity} title="No recent activity" className="py-6" />
             ) : (
               recentActivity.map((a, i) => {
                 const event = a.event ?? "";
@@ -2069,11 +2068,8 @@ function DashboardContent({ isPaying, communityId }) {
                   ))
                 ) : filteredTransactions.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={7}
-                      className="px-5 py-10 text-center text-sm text-gray-400"
-                    >
-                      No transactions found.
+                    <td colSpan={7}>
+                      <EmptyState icon={Receipt} title="No transactions found" className="py-10" />
                     </td>
                   </tr>
                 ) : (

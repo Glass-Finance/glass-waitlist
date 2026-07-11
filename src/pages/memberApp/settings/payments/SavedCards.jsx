@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, CreditCard, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
 import LoadingState from "../../../../components/common/LoadingState";
+import EmptyState from "../../../../components/common/EmptyState";
 
 export default function SavedCards() {
   const navigate = useNavigate();
@@ -34,9 +35,7 @@ export default function SavedCards() {
               Couldn't load saved payment methods.
             </p>
           ) : data.length === 0 ? (
-            <p style={{ textAlign: "center", color: "#999", fontSize: 13, padding: "24px 0" }}>
-              No saved cards yet.
-            </p>
+            <EmptyState icon={CreditCard} title="No saved cards yet" className="py-6" />
           ) : (
             data.map((item, i) => (
               <div
