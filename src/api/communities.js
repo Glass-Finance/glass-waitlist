@@ -14,6 +14,15 @@ export const getCommunity = (communityId) => client.get(`/communities/${communit
 export const updateCommunity = (communityId, payload) =>
   client.patch(`/communities/${communityId}`, payload);
 
+// PATCH /api/v1/communities/{communityIdentifier}/settings
+// payload: { requiresMemberApproval?, publicVisible? }
+// requiresMemberApproval — join requests need manual admin approval (the
+// backend defaults this to false at creation, so anyone can join from the
+// Discover page instantly until the admin flips it here).
+// publicVisible — whether the community appears in Discover search.
+export const updateCommunitySettings = (communityId, payload) =>
+  client.patch(`/communities/${communityId}/settings`, payload);
+
 // DELETE /api/v1/communities/{communityIdentifier}
 export const deleteCommunity = (communityId) =>
   client.delete(`/communities/${communityId}`);

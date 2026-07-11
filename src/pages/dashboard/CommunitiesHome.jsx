@@ -509,9 +509,14 @@ import {
   Mail,
   Check,
   X as XIcon,
+  Bell,
+  CreditCard,
+  ChevronRight,
 } from "lucide-react";
 import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
 import { useInvites } from "../../hooks/useInvites";
+import { useGlobalOverview } from "../../hooks/usePayments";
+import { useAllNotifications } from "../../hooks/useNotifications";
 import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin } from "../../utils/communityRole";
 import Background from "../../assets/background.webp";
@@ -536,6 +541,13 @@ function formatNaira(amount) {
   })
     .format(amount)
     .replace("NGN", "₦");
+}
+
+// Plan titles come back from the API in whatever case the admin typed them —
+// normalise to title case ("associate amount" → "Associate Amount").
+function toTitleCase(str) {
+  if (!str) return str;
+  return str.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
@@ -671,6 +683,240 @@ function CommunityCard({ community, onClick }) {
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+// ── Global overview ──────────────────────────────────────────────────────────
+// Cross-community rollup above the community grid: the user's own upcoming
+// payments, recent transactions, and latest notifications — regardless of
+// which community they belong to.
+
+function obligationStatusChip(o) {
+  const days = o.dueDate
+    ? Math.ceil((new Date(o.dueDate) - new Date()) / 86400000)
+    : null;
+  if (days != null && days < 0)
+    return { label: "Overdue", bg: "#FEF2F2", color: "#DC2626" };
+  if (days != null && days <= 7)
+    return { label: "Due soon", bg: "#FFFBEB", color: "#B45309" };
+  return { label: "Upcoming", bg: "#EEF2FF", color: "#002FA7" };
+}
+
+function shortDate(dateStr) {
+  if (!dateStr) return "";
+  return new Date(dateStr).toLocaleDateString("en-NG", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
+  return (
+    <div
+      className="bg-white rounded-lg border border-gray-100 flex flex-col"
+      style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
+    >
+      <div className="flex items-center gap-2 px-4 pt-3.5 pb-2 border-b border-gray-50">
+        {icon}
+        <p className="text-xs font-semibold text-gray-900">{title}</p>
+        {badge != null && badge > 0 && (
+          <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center bg-[#EEF2FF] text-[#002FA7] border border-blue-100">
+            {badge}
+          </span>
+        )}
+      </div>
+      <div className="flex-1 divide-y divide-gray-50">{children}</div>
+      {footerLabel && (
+        <button
+          onClick={onFooter}
+          className="flex items-center justify-center gap-1 w-full py-2.5 text-[11px] font-semibold text-[#002FA7] bg-transparent border-t border-gray-50 cursor-pointer hover:bg-blue-50 transition-colors"
+          style={{ borderLeft: "none", borderRight: "none", borderBottom: "none" }}
+        >
+          {footerLabel} <ChevronRight size={12} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function OverviewEmpty({ text }) {
+  return <p className="text-[11px] text-gray-400 px-4 py-5 text-center">{text}</p>;
+}
+
+function GlobalOverview({ communities }) {
+  const navigate = useNavigate();
+  const { upcoming, recentActivity, isLoading } = useGlobalOverview();
+  const { notifications, unreadCount } = useAllNotifications();
+
+  const upcomingTop = upcoming.slice(0, 4);
+  const activityTop = recentActivity.slice(0, 4);
+  const notifTop = notifications.slice(0, 3);
+
+  // Nothing to roll up yet (brand-new account) — the community grid and its
+  // empty state carry the page fine on their own.
+  if (!isLoading && !upcomingTop.length && !activityTop.length && !notifTop.length) {
+    return null;
+  }
+
+  // Paying an obligation goes through the member payment flow, which reads
+  // the active community from localStorage — point it at the obligation's
+  // community first so PaymentSummary resolves the right context.
+  function handlePay(o) {
+    const community = communities.find(
+      (c) => (c.slug ?? c.community?.slug) === o.communitySlug,
+    );
+    if (community) {
+      try {
+        localStorage.setItem(
+          "glass_member_community",
+          JSON.stringify({
+            id: community.id,
+            slug: community.slug,
+            name: community.name,
+          }),
+        );
+      } catch { /* ignore */ }
+    }
+    navigate(`/member/pay/${o.id}`, {
+      state: { communityName: o.communityName, communityLogo: o.logo },
+    });
+  }
+
+  return (
+    <div className="px-4 md:px-7 pb-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Upcoming payments across all communities */}
+      <OverviewCard
+        icon={<Clock size={14} className="text-[#002FA7]" />}
+        title="Upcoming Payments"
+        badge={upcoming.length}
+        footerLabel={upcoming.length > 0 ? "View all payments" : null}
+        onFooter={() => navigate("/member/upcoming")}
+      >
+        {isLoading ? (
+          <OverviewEmpty text="Loading…" />
+        ) : upcomingTop.length === 0 ? (
+          <OverviewEmpty text="No payments due — you're all caught up." />
+        ) : (
+          upcomingTop.map((o) => {
+            const chip = obligationStatusChip(o);
+            return (
+              <button
+                key={o.id}
+                onClick={() => handlePay(o)}
+                className="w-full flex items-center justify-between gap-3 px-4 py-2.5 bg-transparent border-none text-left cursor-pointer hover:bg-gray-50 transition-colors"
+              >
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-gray-900 truncate">
+                    {toTitleCase(o.name)}
+                  </p>
+                  <p className="text-[11px] text-gray-400 mt-0.5 truncate">
+                    {[o.communityName, o.dueDate ? `Due ${shortDate(o.dueDate)}` : null]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                  <span className="text-xs font-semibold text-gray-900">
+                    {formatNaira(o.amount)}
+                  </span>
+                  <span
+                    className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                    style={{ background: chip.bg, color: chip.color }}
+                  >
+                    {chip.label}
+                  </span>
+                </div>
+              </button>
+            );
+          })
+        )}
+      </OverviewCard>
+
+      {/* Recent activity */}
+      <OverviewCard
+        icon={<CreditCard size={14} className="text-[#002FA7]" />}
+        title="Recent Activity"
+        footerLabel={activityTop.length > 0 ? "View all transactions" : null}
+        onFooter={() => navigate("/member/transactions")}
+      >
+        {isLoading ? (
+          <OverviewEmpty text="Loading…" />
+        ) : activityTop.length === 0 ? (
+          <OverviewEmpty text="No transactions yet." />
+        ) : (
+          activityTop.map((t) => (
+            <div
+              key={t.id}
+              className="flex items-center justify-between gap-3 px-4 py-2.5"
+            >
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-gray-900 truncate">
+                  {toTitleCase(t.description)}
+                </p>
+                <p className="text-[11px] text-gray-400 mt-0.5 truncate">
+                  {[t.communityName, shortDate(t.date)].filter(Boolean).join(" · ")}
+                </p>
+              </div>
+              <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+                <span className="text-xs font-semibold text-gray-900">
+                  {formatNaira(t.amount)}
+                </span>
+                <span
+                  className={`text-[10px] font-semibold ${
+                    t.status === "success"
+                      ? "text-emerald-600"
+                      : t.status === "failed"
+                        ? "text-red-500"
+                        : "text-amber-600"
+                  }`}
+                >
+                  {t.status === "success"
+                    ? "Successful"
+                    : t.status === "failed"
+                      ? "Failed"
+                      : "Pending"}
+                </span>
+              </div>
+            </div>
+          ))
+        )}
+      </OverviewCard>
+
+      {/* Notifications */}
+      <OverviewCard
+        icon={<Bell size={14} className="text-[#002FA7]" />}
+        title="Notifications"
+        badge={unreadCount}
+        footerLabel="View all notifications"
+        onFooter={() => navigate("/dashboard/notifications")}
+      >
+        {notifTop.length === 0 ? (
+          <OverviewEmpty text="No notifications yet." />
+        ) : (
+          notifTop.map((n) => (
+            <button
+              key={n.id}
+              onClick={() => navigate(`/dashboard/notifications?open=${n.id}`)}
+              className="w-full flex items-start gap-2.5 px-4 py-2.5 bg-transparent border-none text-left cursor-pointer hover:bg-gray-50 transition-colors"
+            >
+              {!(n.readFlag ?? false) && (
+                <span className="w-1.5 h-1.5 rounded-full bg-[#002FA7] flex-shrink-0 mt-1.5" />
+              )}
+              <div className="min-w-0">
+                <p
+                  className={`text-xs truncate ${(n.readFlag ?? false) ? "text-gray-500" : "text-gray-900 font-medium"}`}
+                >
+                  {n.title ?? n.subject ?? "Notification"}
+                </p>
+                <p className="text-[11px] text-gray-400 mt-0.5">
+                  {shortDate(n.createdAt)}
+                </p>
+              </div>
+            </button>
+          ))
+        )}
+      </OverviewCard>
     </div>
   );
 }
@@ -823,6 +1069,9 @@ export default function CommunitiesHome() {
           </div>
         </div>
       )}
+
+      {/* Global overview — payments, activity, notifications across all communities */}
+      <GlobalOverview communities={communities} />
 
       {/* Filters */}
       <div className="flex items-center gap-5 px-4 md:px-7 pb-5">

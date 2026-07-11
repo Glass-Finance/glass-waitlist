@@ -2,8 +2,24 @@ import { useState } from "react";
 import { Copy, Check } from "lucide-react";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityMembers, useRoles } from "../../../../hooks/useCommunityMembers";
+import { useCommunity, useUpdateCommunitySettings } from "../../../../hooks/useCommunity";
 import QRCodeCanvas from "../../../../components/dashboard/QRCode";
 import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
+
+function Toggle({ on, onChange, disabled }) {
+  return (
+    <button
+      onClick={() => !disabled && onChange(!on)}
+      disabled={disabled}
+      className={`flex items-center gap-1.5 flex-shrink-0 bg-transparent border-none p-0 ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+    >
+      <div className={`relative w-8 h-[20px] rounded-full transition-all duration-300 ${on ? "bg-[#002FA7]" : "bg-gray-300"}`}>
+        <div className={`absolute top-0.5 w-[14px] h-[14px] rounded-full bg-white shadow transition-all duration-300 ${on ? "left-[16px]" : "left-0.5"}`} />
+      </div>
+      <span className={`text-xs font-medium ${on ? "text-gray-600" : "text-gray-400"}`}>{on ? "On" : "Off"}</span>
+    </button>
+  );
+}
 
 const FALLBACK_MEMBER_ROLE = { id: "MEMBER", name: "Member" };
 
@@ -27,6 +43,8 @@ export default function MemberAccess() {
   const [copied, setCopied] = useState(false);
   const { members, isLoading, removeMember, updateMember } = useCommunityMembers(communitySlug);
   const { data: rolesData, isLoading: rolesLoading } = useRoles();
+  const { data: community, isLoading: communityLoading } = useCommunity(communitySlug);
+  const updateSettings = useUpdateCommunitySettings(communitySlug);
   const memberRoleId = findRoleId(rolesData, "MEMBER") ?? FALLBACK_MEMBER_ROLE.id;
   const adminRoleId = findRoleId(rolesData, "ADMIN");
 
@@ -61,6 +79,46 @@ export default function MemberAccess() {
 
   return (
     <div className="flex flex-col gap-4 max-w-3xl w-full">
+
+      {/* Joining & visibility */}
+      <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
+        <p className="text-sm font-semibold text-gray-900 mb-0.5">Joining &amp; visibility</p>
+        <p className="text-xs text-gray-500 mb-4">
+          Control how new members find and join this community.
+        </p>
+
+        <div className="flex items-center justify-between py-3 border-b border-gray-100">
+          <div className="min-w-0 pr-4">
+            <p className="text-xs font-medium text-gray-900 m-0">Require approval to join</p>
+            <p className="text-xs text-gray-500 mt-0.5 m-0">
+              New join requests wait in{" "}
+              <span className="font-medium text-gray-700">Join Requests</span> until
+              an admin approves them. When off, anyone can join instantly from
+              Discover or an invite link.
+            </p>
+          </div>
+          <Toggle
+            on={!!community?.requiresMemberApproval}
+            disabled={communityLoading || !community}
+            onChange={(v) => updateSettings.mutate({ requiresMemberApproval: v })}
+          />
+        </div>
+
+        <div className="flex items-center justify-between py-3">
+          <div className="min-w-0 pr-4">
+            <p className="text-xs font-medium text-gray-900 m-0">Show in Discover</p>
+            <p className="text-xs text-gray-500 mt-0.5 m-0">
+              List this community in the public Discover Communities search.
+              When off, people can only join through your invite link.
+            </p>
+          </div>
+          <Toggle
+            on={!!community?.publicVisible}
+            disabled={communityLoading || !community}
+            onChange={(v) => updateSettings.mutate({ publicVisible: v })}
+          />
+        </div>
+      </div>
 
       {/* Invite Link + QR */}
       <div className="bg-white rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>

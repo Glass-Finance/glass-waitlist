@@ -627,7 +627,10 @@ export default function OrganizationProfile() {
         category:    [form.category],
         contactEmail: form.contactEmail.trim(),
         publicVisible: true,
-        requiresMemberApproval: false,
+        // Default to approval-required: with the public Discover page, an
+        // open-join community would let absolutely anyone in unmoderated.
+        // Admins can turn this off in Settings → Community → Member Access.
+        requiresMemberApproval: true,
         ...(logoFileId ? { logoFileId } : {}),
       });
 

@@ -220,7 +220,9 @@ function CommunityCard({ community, onRequest }) {
           ? "Already a member"
           : alreadyPending
             ? "Request sent"
-            : "Join"}
+            : community.requiresMemberApproval === false
+              ? "Join"
+              : "Request to Join"}
       </button>
       {errorMsg && (
         <p
@@ -293,6 +295,9 @@ export default function DiscoverCommunities() {
     mutationFn: submitJoinRequest,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["join-requests"] });
+      // An open community approves instantly — refresh the member's
+      // communities so the new one appears on Home/My Communities right away.
+      queryClient.invalidateQueries({ queryKey: ["communities"] });
     },
   });
 
