@@ -1,13 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Bell, ChevronDown, Clock } from "lucide-react";
+import { Bell, ChevronDown, Clock, Loader2 } from "lucide-react";
 import joinCommunityIcon from "../../assets/auth/join-community.webp";
 import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
 import SideDrawer from "../../components/memberApp/SideDrawer";
-import LoadingState from "../../components/common/LoadingState";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -475,6 +474,62 @@ function HistoryRow({ item }) {
 // ---------------------------------------------------------------------------
 // Empty state — no community yet
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Loading state — mirrors NoCommunityState's layout (same icon-circle size,
+// same centering/padding) so the page doesn't visibly jump once data
+// resolves into the empty, pending, or loaded state.
+// ---------------------------------------------------------------------------
+function HomeLoadingState() {
+  return (
+    <div
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "60px 32px 80px",
+        textAlign: "center",
+      }}
+    >
+      <div
+        style={{
+          width: 80,
+          height: 80,
+          borderRadius: "50%",
+          background: "#E4E4F0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 28,
+          flexShrink: 0,
+        }}
+      >
+        <Loader2 size={32} className="animate-spin" style={{ color: "#002FA7" }} />
+      </div>
+      <p
+        style={{
+          fontSize: 15,
+          fontWeight: 600,
+          color: "#333",
+          margin: 0,
+        }}
+      >
+        Loading your community…
+      </p>
+      <p
+        style={{
+          fontSize: 13,
+          color: "#999",
+          margin: "6px 0 0",
+        }}
+      >
+        This won't take long.
+      </p>
+    </div>
+  );
+}
+
 function NoCommunityState({ navigate }) {
   return (
     <div
@@ -966,7 +1021,7 @@ export default function Home() {
         </div>
 
         {isLoading ? (
-          <LoadingState className="py-6" />
+          <HomeLoadingState />
         ) : hasPendingCommunity ? (
           <PendingApprovalState
             navigate={navigate}
