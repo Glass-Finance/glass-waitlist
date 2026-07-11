@@ -478,10 +478,13 @@ export default function PaystackAccount() {
             account.
           </p>
 
-          {/* Account row */}
-          <div className="flex flex-col ">
-            <div className="flex items-center justify-between mb-5 pb-5 border-b border-gray-100 w-[70%]">
-              <div className="flex items-center gap-3">
+          {/* Inner white card — bank row + stats */}
+          <div className="bg-white rounded-xl p-5 max-w-md">
+            <div
+              className="flex items-center justify-between gap-4 pb-4 mb-4"
+              style={{ borderBottom: "1px solid #F3F4F6" }}
+            >
+              <div className="flex items-center gap-3 min-w-0">
                 <BankAvatar
                   bankCode={bankCode}
                   bankName={bankName}
@@ -491,9 +494,9 @@ export default function PaystackAccount() {
                     account?.logo
                   }
                 />
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-xs font-semibold text-gray-900">
+                    <p className="text-sm font-semibold text-gray-900 truncate">
                       {account.accountName ?? account.name ?? "—"}
                     </p>
                     <StatusBadge status={account.status} />
@@ -506,7 +509,7 @@ export default function PaystackAccount() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1 flex-shrink-0">
                 <button
                   onClick={() => setShowModal(true)}
                   className="text-xs font-medium text-[#002FA7] bg-transparent border-none cursor-pointer hover:underline"
@@ -529,10 +532,10 @@ export default function PaystackAccount() {
               <p className="text-xs text-red-600 mb-4 -mt-2">{removeError}</p>
             )}
             {/* Stats */}
-            <div className="flex gap-30">
+            <div className="grid grid-cols-3 gap-4">
               <div>
-                <p className="text-xs text-gray-400 mb-0.5">Total Received</p>
-                <p className="text-xs font-bold text-gray-900">
+                <p className="text-xs text-gray-500 mb-1">Total Received</p>
+                <p className="text-sm font-bold text-gray-900">
                   {formatNaira(
                     account.totalReceivedAmount ??
                       account.totalReceived ??
@@ -542,8 +545,8 @@ export default function PaystackAccount() {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400 mb-0.5">Last Payout</p>
-                <p className="text-xs font-bold text-gray-900">
+                <p className="text-xs text-gray-500 mb-1">Last Payout</p>
+                <p className="text-sm font-bold text-gray-900">
                   {formatDate(
                     account.lastPayoutAt ??
                       account.lastPayout ??
@@ -553,8 +556,8 @@ export default function PaystackAccount() {
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-400 mb-0.5">Account Added</p>
-                <p className="text-xs font-bold text-gray-900">
+                <p className="text-xs text-gray-500 mb-1">Account Added</p>
+                <p className="text-sm font-bold text-gray-900">
                   {formatDate(
                     account.createdAt ?? account.addedAt ?? account.dateCreated,
                   )}

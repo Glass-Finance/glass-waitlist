@@ -17,7 +17,7 @@ function Toggle({ on, onChange, disabled }) {
       className={`flex items-center gap-1.5 flex-shrink-0 bg-transparent border-none p-0 ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
     >
       <div className={`relative w-8 h-[20px] rounded-full transition-all duration-300 ${on ? "bg-[#002FA7]" : "bg-gray-300"}`}>
-        <div className={`absolute top-0.5 w-[14px] h-[14px] rounded-full bg-white shadow transition-all duration-300 ${on ? "left-[16px]" : "left-0.5"}`} />
+        <div className={`absolute top-[3px] w-[14px] h-[14px] rounded-full bg-white shadow transition-all duration-300 ${on ? "left-[15px]" : "left-[3px]"}`} />
       </div>
       <span className={`text-xs font-medium ${on ? "text-gray-600" : "text-gray-400"}`}>{on ? "On" : "Off"}</span>
     </button>
@@ -177,7 +177,7 @@ export default function MemberAccess() {
         </p>
         <div className="flex items-center gap-4">
           {inviteLink && (
-            <div className="p-2 bg-white rounded-xl flex-shrink-0" style={{ border: "1px solid #E5E7EB" }}>
+            <div className="flex-shrink-0">
               <QRCodeCanvas value={inviteLink} size={96} />
             </div>
           )}
@@ -191,9 +191,9 @@ export default function MemberAccess() {
             <button
               onClick={handleCopy}
               disabled={!inviteLink}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all border-none cursor-pointer flex-shrink-0 disabled:opacity-50"
+              className="flex items-center gap-1 text-xs font-medium text-[#002FA7] bg-transparent hover:opacity-70 transition-all border-none cursor-pointer flex-shrink-0 disabled:opacity-50"
             >
-              {copied ? <Check size={13} /> : <Copy size={13} />}
+              {copied ? <Check size={12} /> : <Copy size={12} />}
               {copied ? "Copied!" : "Copy Link"}
             </button>
           </div>

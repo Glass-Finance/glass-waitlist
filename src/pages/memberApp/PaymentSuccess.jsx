@@ -108,41 +108,45 @@ export default function PaymentSuccess() {
   const dest = returnTo ?? "/member/home";
   const backLabel = returnTo ? "Back to Dashboard" : "Go to Home";
 
+  // Mirrors the dashboard PaymentCallback design language: soft-tinted
+  // circle + brand spinner while confirming, solid green on success.
   const content = {
     checking: {
-      icon: <Loader2 size={44} className="text-white animate-spin" strokeWidth={2.5} />,
-      bg: "#111111",
+      icon: <Loader2 size={40} className="animate-spin" style={{ color: "#002FA7" }} />,
+      bg: "#EEF2FF",
       text: "Confirming payment…",
-      sub: null,
+      sub: "Please wait while we verify your transaction.",
       action: null,
     },
     success: {
-      icon: <Check size={44} color="white" strokeWidth={2.5} />,
-      bg: "#111111",
+      icon: <Check size={40} color="white" strokeWidth={2.5} />,
+      bg: "#16A34A",
       text: "Payment Successful",
-      sub: autoRedirectIn != null ? `Redirecting in ${autoRedirectIn}s…` : null,
+      sub: autoRedirectIn != null
+        ? `Redirecting in ${autoRedirectIn}s…`
+        : "Your payment has been confirmed.",
       action: { label: backLabel, to: dest },
     },
     failed: {
-      icon: <X size={44} color="white" strokeWidth={2.5} />,
+      icon: <X size={40} color="white" strokeWidth={2.5} />,
       bg: "#DC2626",
       text: "Payment Failed",
-      sub: null,
+      sub: "Something went wrong with this payment. Please try again.",
       action: {
         label: returnTo ? "Back to Dashboard" : "Try again",
         to: returnTo ?? (paymentId ? `/member/pay/${paymentId}` : "/member/upcoming"),
       },
     },
     processing: {
-      icon: <Clock size={44} color="white" strokeWidth={2} />,
-      bg: "#1C2B8A",
+      icon: <Clock size={40} style={{ color: "#002FA7" }} />,
+      bg: "#EEF2FF",
       text: "Payment Processing",
       sub: "Your payment went through — confirmation is taking a moment. You'll get a notification when it's ready.",
       action: { label: backLabel, to: dest },
     },
     unknown: {
-      icon: <Loader2 size={44} className="text-white" strokeWidth={2.5} />,
-      bg: "#6B7280",
+      icon: <Loader2 size={40} style={{ color: "#6B7280" }} />,
+      bg: "#F3F4F6",
       text: "Still confirming…",
       sub: "Check your Transactions tab in a moment.",
       action: { label: backLabel, to: dest },
@@ -194,8 +198,8 @@ export default function PaymentSuccess() {
         {content.action && (
           <button
             onClick={() => navigate(content.action.to, { replace: true })}
-            className="text-sm font-semibold mt-2 cursor-pointer"
-            style={{ color: "#002FA7" }}
+            className="mt-3 px-8 py-3 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
+            style={{ background: "#002FA7" }}
           >
             {content.action.label}
           </button>
