@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Check, X, Loader2, Clock } from "lucide-react";
 import { verifyPayment } from "../../api/members";
+import { settleLocalPaymentForReference } from "../../hooks/usePayments";
 
 const POLL_INTERVAL_MS = 1500;
 const MAX_POLLS = 20;
@@ -61,7 +62,14 @@ export default function PaymentSuccess() {
           const s = status.toUpperCase();
           const finalState = (s === "SUCCESS" || s === "SUCCESSFUL") ? "success" : "failed";
           invalidateCaches();
-          if (finalState === "success") setAutoRedirectIn(4);
+          // Verification is complete — only now is the pending ref used up.
+          // Clearing it earlier would break the post-sign-in recovery path
+          // if this page never reached a terminal state.
+          sessionStorage.removeItem("paymentPendingRef");
+          if (finalState === "success") {
+            settleLocalPaymentForReference(reference);
+            setAutoRedirectIn(4);
+          }
           setState(finalState);
           return;
         }
@@ -74,6 +82,7 @@ export default function PaymentSuccess() {
 
       if (attemptsRef.current >= MAX_POLLS) {
         invalidateCaches();
+        sessionStorage.removeItem("paymentPendingRef");
         setState(wasQueuedRef.current ? "processing" : "unknown");
         return;
       }

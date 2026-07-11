@@ -81,6 +81,32 @@ function intervalUnitLabel(frequency, interval) {
   return n === 1 ? unit : `${unit}s`;
 }
 
+// Weekday names for WEEKLY billing — backend expects 1=Monday … 7=Sunday.
+const WEEKDAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
+function ordinal(n) {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] ?? s[v] ?? s[0]);
+}
+
+// Human-readable billing day for review rows ("Monday" / "The 5th").
+function billingDayLabel(frequency, billingDay) {
+  const day = Number(billingDay);
+  if (!day) return "—";
+  return frequency === "WEEKLY"
+    ? (WEEKDAYS[day - 1] ?? String(day))
+    : `The ${ordinal(day)}`;
+}
+
 const REMINDERS = ["Every Day", "Every 3 Days", "Every Week", "Every 2 Weeks"];
 const TABS = ["All Plans", "Recurring", "One Time"];
 const BAR_COLORS = ["#d4a017", "#7c3aed", "#002FA7", "#059669"];
@@ -228,6 +254,61 @@ function Step1({ value, onChange }) {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+// Shared billing-day picker (create wizard + edit modal). WEEKLY plans get a
+// weekday dropdown instead of a raw 1–7 input, and every frequency shows an
+// always-visible plain-English preview of when members are billed.
+function BillingDayField({ frequency, value, max, onChange }) {
+  const day = Number(value);
+  return (
+    <div>
+      <label className="block text-xs font-medium text-gray-700 mb-1">
+        Billing Day
+      </label>
+      {frequency === "WEEKLY" ? (
+        <select
+          className={inputCls}
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value)}
+        >
+          <option value="">Select day of week</option>
+          {WEEKDAYS.map((name, i) => (
+            <option key={name} value={i + 1}>
+              {name}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          type="number"
+          className={inputCls}
+          value={value || ""}
+          min={1}
+          max={max}
+          placeholder={`1–${max}`}
+          onChange={(e) => {
+            const raw = e.target.value;
+            if (raw === "") {
+              onChange("");
+              return;
+            }
+            onChange(String(Math.min(Math.max(Number(raw), 1), max)));
+          }}
+        />
+      )}
+      <p className="text-[11px] text-gray-400 mt-1">
+        {frequency === "WEEKLY"
+          ? day
+            ? `Members are billed every ${WEEKDAYS[day - 1]}.`
+            : "Pick the day of the week members are billed."
+          : day
+            ? `Members are billed on the ${ordinal(day)} of the month.` +
+              (max < 31 ? ` The selected start month only has ${max} days.` : "")
+            : `Pick the day of the month members are billed (1–${max}).`}
+      </p>
     </div>
   );
 }
@@ -397,45 +478,12 @@ function Step2({ planType, form, onChange, slugState }) {
         </div>
         {planType === "recurring" ? (
           !isDaily && (
-            <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1">
-                Billing Day{" "}
-                {form.frequency === "WEEKLY"
-                  ? "(1=Mon, 7=Sun)"
-                  : "(day of month)"}
-              </label>
-              <input
-                type="number"
-                className={inputCls}
-                value={form.billingDay || ""}
-                min={1}
-                max={billingDayMax}
-                placeholder={
-                  form.frequency === "WEEKLY" ? "1–7" : `1–${billingDayMax}`
-                }
-                onChange={(e) => {
-                  const raw = e.target.value;
-                  if (raw === "") {
-                    onChange("billingDay", "");
-                    return;
-                  }
-                  const clamped = Math.min(
-                    Math.max(Number(raw), 1),
-                    billingDayMax,
-                  );
-                  onChange("billingDay", String(clamped));
-                }}
-              />
-              {form.frequency &&
-                form.frequency !== "WEEKLY" &&
-                form.startDate && (
-                  <p className="text-[11px] text-gray-400 mt-1">
-                    {billingDayMax < 31
-                      ? `The selected start month only has ${billingDayMax} days.`
-                      : null}
-                  </p>
-                )}
-            </div>
+            <BillingDayField
+              frequency={form.frequency}
+              value={form.billingDay}
+              max={billingDayMax}
+              onChange={(v) => onChange("billingDay", v)}
+            />
           )
         ) : (
           <div>
@@ -571,7 +619,12 @@ function Step3({ planType, form, slug }) {
             value: `${form.interval || 1} ${intervalUnitLabel(form.frequency, form.interval || 1)}`,
           },
           ...(form.frequency !== "DAILY"
-            ? [{ label: "Billing Day", value: form.billingDay || "—" }]
+            ? [
+                {
+                  label: "Billing Day",
+                  value: billingDayLabel(form.frequency, form.billingDay),
+                },
+              ]
             : []),
           {
             label: "End Date",
@@ -708,7 +761,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
@@ -872,7 +925,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
@@ -988,38 +1041,12 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
               />
             </div>
             {isRecurring && !isDaily && (
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                  Billing Day{" "}
-                  {form.frequency === "WEEKLY"
-                    ? "(1=Mon, 7=Sun)"
-                    : "(day of month)"}
-                </label>
-                <input
-                  type="number"
-                  className={inputCls}
-                  value={form.billingDay}
-                  min={1}
-                  max={editBillingDayMax}
-                  placeholder={
-                    form.frequency === "WEEKLY"
-                      ? "1–7"
-                      : `1–${editBillingDayMax}`
-                  }
-                  onChange={(e) => {
-                    const raw = e.target.value;
-                    if (raw === "") {
-                      setForm((f) => ({ ...f, billingDay: "" }));
-                      return;
-                    }
-                    const clamped = Math.min(
-                      Math.max(Number(raw), 1),
-                      editBillingDayMax,
-                    );
-                    setForm((f) => ({ ...f, billingDay: String(clamped) }));
-                  }}
-                />
-              </div>
+              <BillingDayField
+                frequency={form.frequency}
+                value={form.billingDay}
+                max={editBillingDayMax}
+                onChange={(v) => setForm((f) => ({ ...f, billingDay: v }))}
+              />
             )}
           </div>
 
@@ -1362,7 +1389,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col">

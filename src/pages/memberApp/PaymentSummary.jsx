@@ -1,11 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useSearchParams, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, Landmark } from "lucide-react";
+import { ChevronLeft, Landmark, Loader2 } from "lucide-react";
 import { getObligation, getPaymentLink, initiatePayment as initiatePaymentApi } from "../../api/members";
-import { useManagePayments, useInitiatePayment } from "../../hooks/usePayments";
+import {
+  useManagePayments,
+  useInitiatePayment,
+  recordLocalPayment,
+  stashPendingPaymentCtx,
+} from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { toastSuccess } from "../../utils/toast";
+import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 
 function toTitleCase(str) {
   if (!str) return str;
@@ -134,6 +140,10 @@ export default function PaymentSummary() {
     // For direct charges (saved card, no Paystack redirect) the pre-fetched
     // reference is still valid — the charge already went through on the backend.
     if (prefetch?.reference && !prefetch?.authorizationUrl) {
+      recordLocalPayment({
+        paymentLinkId: obligation.paymentLink.id,
+        obligationId: obligation.id,
+      });
       toastSuccess("Payment sent", { reference: prefetch.reference });
       navigate(`/member/pay/${paymentId}/success?reference=${prefetch.reference}`, { replace: true });
       return;
@@ -160,10 +170,21 @@ export default function PaymentSummary() {
         setRedirecting(true);
         sessionStorage.setItem("paymentReturnTo", "/member/home");
         if (reference) sessionStorage.setItem("paymentPendingRef", reference);
+        // Lets whichever page confirms the payment afterwards write the
+        // local paid log for this exact plan/obligation.
+        stashPendingPaymentCtx({
+          reference,
+          paymentLinkId: obligation.paymentLink.id,
+          obligationId: obligation.id ?? null,
+        });
         window.location.href = url;
       } else {
         // No authorizationUrl means this charged immediately against a
         // saved method rather than redirecting to Paystack's hosted page.
+        recordLocalPayment({
+          paymentLinkId: obligation.paymentLink.id,
+          obligationId: obligation.id,
+        });
         toastSuccess("Payment sent", { reference });
         navigate(`/member/pay/${paymentId}/success?reference=${reference}`, { replace: true });
       }
@@ -174,8 +195,9 @@ export default function PaymentSummary() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen" style={{ background: "#E8E8E8" }}>
-        <p className="text-sm text-gray-400">Loading…</p>
+      <div className="flex flex-col items-center justify-center gap-3 min-h-screen" style={{ background: "#E8E8E8" }}>
+        <Loader2 size={22} className="animate-spin text-[#002FA7]" />
+        <p className="text-sm text-gray-400">Loading payment details…</p>
       </div>
     );
   }
@@ -308,9 +330,33 @@ export default function PaymentSummary() {
               className="text-[12px] font-semibold px-3 py-0.5 rounded-full"
               style={{ background: "#EEF1FB", color: "#1C2B8A" }}
             >
-              {isRecurring ? (obligation?.recurringPlan?.frequency ?? "Recurring") : "One-Time"}
+              {isRecurring
+                ? toTitleCase((obligation?.recurringPlan?.frequency ?? "Recurring").toLowerCase())
+                : "One-Time"}
             </span>
           </div>
+
+          {isRecurring && (
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[13px] text-gray-500">Renews:</span>
+              <span className="text-[13px] text-gray-900">
+                {scheduleCopy(obligation.recurringPlan)}
+              </span>
+            </div>
+          )}
+
+          {isRecurring && (() => {
+            const next = estimateNextCharge(obligation.recurringPlan, obligation?.dueDate);
+            if (!next) return null;
+            return (
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[13px] text-gray-500">Next charge (est.):</span>
+                <span className="text-[13px] text-gray-900">
+                  {next.toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" })}
+                </span>
+              </div>
+            );
+          })()}
 
           <div className="flex items-center justify-between mb-2.5 pb-3 border-b border-gray-100">
             <span className="text-[13px] text-gray-500">Plan:</span>
@@ -338,6 +384,15 @@ export default function PaymentSummary() {
               <span className="text-[15px] font-bold text-gray-900">{fmt(obligation?.amount)}</span>
             </div>
           )}
+
+          {isRecurring && (
+            <p className="text-[12px] text-gray-400 mt-3 pt-3 border-t border-gray-100 leading-relaxed">
+              Today you're paying the current cycle. After that,{" "}
+              {fmt(obligation?.amount)} renews{" "}
+              {scheduleCopy(obligation.recurringPlan).toLowerCase()} until the
+              plan ends or you turn off Auto-Pay in Settings.
+            </p>
+          )}
         </div>
 
         {error && <p className="text-sm text-red-500 px-1">{error}</p>}
@@ -346,10 +401,17 @@ export default function PaymentSummary() {
         <button
           onClick={handlePay}
           disabled={initiatePayment.isPending || redirecting || !obligation}
-          className="w-full rounded-md py-4 text-[15px] font-semibold text-white mt-1 cursor-pointer active:scale-[0.98] transition-all disabled:opacity-80"
+          className="w-full rounded-md py-4 text-[15px] font-semibold text-white mt-1 cursor-pointer active:scale-[0.98] transition-all disabled:opacity-80 flex items-center justify-center gap-2"
           style={{ background: "#002FA7" }}
         >
-          {initiatePayment.isPending || redirecting ? "Processing..." : "Make Payment"}
+          {initiatePayment.isPending || redirecting ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              {redirecting ? "Opening secure payment…" : "Processing…"}
+            </>
+          ) : (
+            "Make Payment"
+          )}
         </button>
       </div>
     </div>

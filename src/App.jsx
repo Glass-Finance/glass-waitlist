@@ -300,13 +300,12 @@ function App() {
           </Route>
 
           {/* ── Payment callback — Paystack redirects here after checkout.
-            Uses ProtectedRoute (no role) so both admin and member tokens
-            are accepted. Not behind MemberDeviceGuard: the browser that
-            completes the payment may be any browser, not just the member
-            app's device. Desktop-designed for admin pay flow. ── */}
-          <Route element={<ProtectedRoute signInPath="/member/app-sign-in" />}>
-            <Route path="/payment/callback" element={<PaymentCallback />} />
-          </Route>
+            Deliberately NOT behind ProtectedRoute: the session can expire
+            while the payer is on Paystack's page, and a guard redirect here
+            would bounce them to sign-in and lose the payment context. The
+            page handles the expired-session case itself and preserves the
+            pending reference so the payment is confirmed after re-login. ── */}
+          <Route path="/payment/callback" element={<PaymentCallback />} />
 
           {/* ── Catch-all ── */}
           <Route path="*" element={<NotFound />} />

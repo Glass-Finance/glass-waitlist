@@ -105,9 +105,13 @@ export const initiatePayment = (paymentLinkId, payload) =>
   client.post(`/payments/pay/payment-links/${paymentLinkId}`, payload);
 
 // POST /api/v1/payments/callback/verify?reference=xxx — reference is a query
-// param, not a body field.
-export const verifyPayment = (reference) =>
-  client.post("/payments/callback/verify", null, { params: { reference } });
+// param, not a body field. Extra axios config (e.g. _skipAuthRedirect for
+// the callback page, which must handle expired sessions itself) merges in.
+export const verifyPayment = (reference, config = {}) =>
+  client.post("/payments/callback/verify", null, {
+    params: { reference },
+    ...config,
+  });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COMMUNITY PAYMENT LINKS (visible to members)

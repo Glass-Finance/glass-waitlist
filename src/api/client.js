@@ -54,7 +54,14 @@ function clearSessionAndRedirect() {
   sessionStorage.setItem("glass_session_expired", "1");
 
   const path = window.location.pathname;
-  const isAdminArea = path.startsWith("/dashboard") || path.startsWith("/onboarding");
+  // The payment callback page has no role in its path — an admin who paid
+  // from the dashboard set paymentReturnTo before redirecting to Paystack,
+  // so use that to send them to the right sign-in page, not the member one.
+  const paymentReturnTo = sessionStorage.getItem("paymentReturnTo") ?? "";
+  const isAdminArea =
+    path.startsWith("/dashboard") ||
+    path.startsWith("/onboarding") ||
+    (path.startsWith("/payment") && paymentReturnTo.startsWith("/dashboard"));
   window.location.href = isAdminArea ? "/sign-in" : "/member/app-sign-in";
 }
 
@@ -77,9 +84,12 @@ client.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry && !isPreAuthRequest) {
       const refreshToken = localStorage.getItem("refreshToken");
 
-      // No refresh token available — nothing to do but log out
+      // No refresh token available — nothing to do but log out. Requests
+      // that opt out via _skipAuthRedirect (the payment callback page, which
+      // must show its own "session expired" state instead of losing the
+      // payment context to a hard navigation) just get the error back.
       if (!refreshToken) {
-        clearSessionAndRedirect();
+        if (!originalRequest._skipAuthRedirect) clearSessionAndRedirect();
         return Promise.reject(error);
       }
 
@@ -122,7 +132,7 @@ client.interceptors.response.use(
       } catch (refreshError) {
         isRefreshing = false;
         rejectQueue(refreshError);
-        clearSessionAndRedirect();
+        if (!originalRequest._skipAuthRedirect) clearSessionAndRedirect();
         return Promise.reject(refreshError);
       }
     }

@@ -3,7 +3,8 @@ import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Bell, ChevronDown, Clock } from "lucide-react";
 import joinCommunityIcon from "../../assets/auth/join-community.webp";
-import { usePayments } from "../../hooks/usePayments";
+import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
+import { useNotifications } from "../../hooks/useNotifications";
 import SideDrawer from "../../components/memberApp/SideDrawer";
 
 // ---------------------------------------------------------------------------
@@ -654,11 +655,27 @@ export default function Home() {
     hasPendingCommunity,
     pendingCommunity,
   } = usePayments();
+  // Catches payers who came back from Paystack without hitting the callback
+  // page — verifies the stored pending reference so Paid shows immediately.
+  usePendingPaymentVerification();
+  // Unread count for the bell badge — without it members have no signal
+  // that anything arrived unless they open the notifications page.
+  const { unreadCount } = useNotifications();
 
   const nextDue = data?.nextDue ?? null;
-  const upcoming = (data?.upcoming ?? [])
-    .filter((o) => o.id !== nextDue?.id)
-    .slice(0, 2);
+  // nextDue is always upcoming[0], so the widget works from the rest. Never
+  // hide a payment due the same day as the hero card behind the 2-item cap —
+  // show all of those, then fill with the next couple of later ones.
+  const rest = (data?.upcoming ?? []).slice(1);
+  const isSameDayAsNextDue = (o) =>
+    o.dueDate &&
+    nextDue?.dueDate &&
+    new Date(o.dueDate).toDateString() ===
+      new Date(nextDue.dueDate).toDateString();
+  const upcoming = [
+    ...rest.filter(isSameDayAsNextDue),
+    ...rest.filter((o) => !isSameDayAsNextDue(o)).slice(0, 2),
+  ];
   const history = (data?.history ?? []).slice(0, 3);
   const communityName = data?.community?.name ?? "Your Community";
   const communityInitial = communityName.charAt(0).toUpperCase();
@@ -807,6 +824,7 @@ export default function Home() {
             aria-label="Notifications"
             onClick={() => navigate("/member/notifications")}
             style={{
+              position: "relative",
               width: 38,
               height: 38,
               borderRadius: "50%",
@@ -821,6 +839,29 @@ export default function Home() {
             }}
           >
             <Bell size={17} strokeWidth={1.8} style={{ color: "#333" }} />
+            {unreadCount > 0 && (
+              <span
+                style={{
+                  position: "absolute",
+                  top: 4,
+                  right: 4,
+                  minWidth: 15,
+                  height: 15,
+                  padding: "0 3px",
+                  borderRadius: 999,
+                  background: "#DC2626",
+                  color: "#fff",
+                  fontSize: 9,
+                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "1.5px solid #fff",
+                }}
+              >
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
           </button>
         </div>
 

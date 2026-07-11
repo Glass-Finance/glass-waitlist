@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getMyObligations,
@@ -5,10 +6,12 @@ import {
   getMyAuthorisations,
   deleteAuthorisation,
   initiatePayment,
+  verifyPayment,
   getMe,
   getMyCommunities,
   getPaymentLinks,
 } from "../api/members";
+import { toastSuccess } from "../utils/toast";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -32,6 +35,75 @@ function deriveStatus(obligation) {
   return "upcoming";
 }
 
+// ─── Local paid log ───────────────────────────────────────────────────────────
+// Transactions are the source of truth for "already paid", but the endpoint
+// can lag behind a fresh payment or omit the paymentLink on new records — in
+// which case the paid checks below can't match and the due keeps showing as
+// unpaid. Every successful payment witnessed client-side is recorded here as
+// a safety net, so the payer's own screen reflects Paid immediately.
+const PAID_LOG_KEY = "glass_local_paid_log";
+
+function readPaidLog() {
+  try {
+    return JSON.parse(localStorage.getItem(PAID_LOG_KEY)) ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export function recordLocalPayment({ paymentLinkId, obligationId }) {
+  if (!paymentLinkId && !obligationId) return;
+  try {
+    const log = readPaidLog();
+    log.push({
+      paymentLinkId: paymentLinkId ?? null,
+      obligationId: obligationId ?? null,
+      paidAt: new Date().toISOString(),
+    });
+    localStorage.setItem(PAID_LOG_KEY, JSON.stringify(log.slice(-50)));
+  } catch {
+    /* ignore */
+  }
+}
+
+function lastLocalPaidAt({ paymentLinkId, obligationId }) {
+  const hit = readPaidLog()
+    .filter(
+      (e) =>
+        (paymentLinkId && e.paymentLinkId === paymentLinkId) ||
+        (obligationId && e.obligationId === obligationId),
+    )
+    .sort((a, b) => new Date(b.paidAt) - new Date(a.paidAt))[0];
+  return hit ? new Date(hit.paidAt) : null;
+}
+
+// The payment context is stashed before redirecting to Paystack so whichever
+// page confirms the payment afterwards (callback page, or the pending-ref
+// check on Home) can write the paid log for the right plan.
+const PENDING_CTX_KEY = "paymentPendingCtx";
+
+export function stashPendingPaymentCtx(ctx) {
+  try {
+    sessionStorage.setItem(PENDING_CTX_KEY, JSON.stringify(ctx));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function settleLocalPaymentForReference(reference) {
+  try {
+    const raw = sessionStorage.getItem(PENDING_CTX_KEY);
+    if (!raw) return;
+    const ctx = JSON.parse(raw);
+    if (!reference || !ctx.reference || ctx.reference === reference) {
+      recordLocalPayment(ctx);
+      sessionStorage.removeItem(PENDING_CTX_KEY);
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
 // For a recurring plan with no obligation record yet (common right after a
 // payment — the next cycle's obligation isn't generated immediately), this
 // checks whether the member already has a successful transaction for this
@@ -41,13 +113,17 @@ function deriveStatus(obligation) {
 // month (MONTHLY/others) — matches the plan's own billingDay semantics
 // closely enough without needing to replicate the backend's exact cycle
 // math client-side.
-function isPaidForCurrentCycle(link, transactions) {
+function isPaidForCurrentCycle(link, transactions, { obligationId } = {}) {
   const lastSuccess = transactions
     .filter((t) => t.paymentLinkId === link.id && t.status === "success")
     .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-  if (!lastSuccess?.date) return false;
+  const localPaidAt = lastLocalPaidAt({ paymentLinkId: link.id, obligationId });
+  const paidDate = [lastSuccess?.date, localPaidAt]
+    .filter(Boolean)
+    .map((d) => new Date(d))
+    .sort((a, b) => b - a)[0];
+  if (!paidDate) return false;
 
-  const paidDate = new Date(lastSuccess.date);
   const now = new Date();
   const frequency = (link.frequency ?? "MONTHLY").toUpperCase();
 
@@ -58,6 +134,30 @@ function isPaidForCurrentCycle(link, transactions) {
   return (
     paidDate.getFullYear() === now.getFullYear() &&
     paidDate.getMonth() === now.getMonth()
+  );
+}
+
+// An obligation the backend still reports unpaid can already be settled:
+// payment verification writes status back asynchronously, and a recurring
+// plan's obligation can stay PENDING until the next cycle's record is
+// generated. Without this check, a member who just paid keeps seeing (and
+// can keep re-paying) the same due. Treat the obligation as settled when a
+// successful transaction exists for the same payment link — any time for
+// one-time plans, within the current billing cycle for recurring ones.
+function isObligationSettled(o, transactions) {
+  const obligationId = o.obligationId ?? o.id;
+  if (!o.paymentLinkId && !obligationId) return false;
+  if (o.type === "one-time") {
+    return (
+      transactions.some(
+        (t) => t.paymentLinkId === o.paymentLinkId && t.status === "success",
+      ) || !!lastLocalPaidAt({ paymentLinkId: o.paymentLinkId, obligationId })
+    );
+  }
+  return isPaidForCurrentCycle(
+    { id: o.paymentLinkId, frequency: o.frequency },
+    transactions,
+    { obligationId },
   );
 }
 
@@ -134,7 +234,13 @@ function shapeTransaction(raw) {
     communityName: raw.community?.name,
     communitySlug: raw.community?.slug,
     date: raw.paidAt ?? raw.createdAt,
-    status: (raw.status ?? "").toLowerCase(), // "success" | "failed" | "pending" | "initiated"
+    // The backend's enum is SUCCESSFUL — normalise to "success" here so the
+    // paid checks in this file (and everywhere else consuming shaped
+    // transactions) match on a single value.
+    status: (() => {
+      const s = (raw.status ?? "").toLowerCase();
+      return s === "successful" ? "success" : s;
+    })(),
     channel: raw.channel,
     currency: raw.currency ?? "NGN",
     reference: raw.internalReference,
@@ -176,6 +282,72 @@ function normalizeCommunity(c) {
     name: c.name ?? c.community?.name,
     slug: c.slug ?? c.community?.slug,
     logo: c.logo ?? c.community?.logo,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Global overview — cross-community rollup for the home dashboard.
+// Unlike usePayments (which scopes to one active community), this returns the
+// user's unpaid obligations and recent transactions across ALL communities.
+// Shares the ["obligations"]/["transactions"] cache keys with usePayments so
+// neither hook triggers duplicate fetches.
+// ─────────────────────────────────────────────────────────────────────────────
+export function useGlobalOverview() {
+  const obligationsQuery = useQuery({
+    queryKey: ["obligations"],
+    queryFn: async () => {
+      try {
+        const res = await getMyObligations();
+        return unwrapList(res).map(shapeObligation);
+      } catch (err) {
+        if (err?.response?.status === 404) return [];
+        throw err;
+      }
+    },
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 30,
+    refetchOnMount: "always",
+  });
+
+  const transactionsQuery = useQuery({
+    queryKey: ["transactions"],
+    queryFn: async () => {
+      try {
+        const res = await getMyTransactions();
+        return unwrapList(res).map(shapeTransaction);
+      } catch (err) {
+        if (err?.response?.status === 404) return [];
+        throw err;
+      }
+    },
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 30,
+    refetchOnMount: "always",
+  });
+
+  const upcoming = [...(obligationsQuery.data ?? [])]
+    .filter(
+      (o) =>
+        o.status !== "PAID" &&
+        !isObligationSettled(o, transactionsQuery.data ?? []),
+    )
+    .sort((a, b) => {
+      const sa = deriveStatus(a);
+      const sb = deriveStatus(b);
+      if (sa === "overdue" && sb !== "overdue") return -1;
+      if (sb === "overdue" && sa !== "overdue") return 1;
+      return new Date(a.dueDate) - new Date(b.dueDate);
+    });
+
+  const recentActivity = [...(transactionsQuery.data ?? [])].sort(
+    (a, b) => new Date(b.date ?? 0) - new Date(a.date ?? 0),
+  );
+
+  return {
+    upcoming,
+    recentActivity,
+    isLoading: obligationsQuery.isLoading || transactionsQuery.isLoading,
+    error: obligationsQuery.error ?? null,
   };
 }
 
@@ -334,7 +506,9 @@ export function usePayments() {
     return da - db;
   });
 
-  const unpaidObligations = sorted.filter((o) => o.status !== "PAID");
+  const unpaidObligations = sorted.filter(
+    (o) => o.status !== "PAID" && !isObligationSettled(o, allTransactions),
+  );
 
   // Payment links that are ACTIVE (or have no status set) and have no
   // corresponding obligation yet (covers plans created before the member
@@ -347,9 +521,10 @@ export function usePayments() {
     if (link.type === "one-time") {
       // A one-time link can already have a successful transaction with no
       // obligation ever created for it.
-      const alreadyPaid = allTransactions.some(
-        (t) => t.paymentLinkId === link.id && t.status === "success",
-      );
+      const alreadyPaid =
+        allTransactions.some(
+          (t) => t.paymentLinkId === link.id && t.status === "success",
+        ) || !!lastLocalPaidAt({ paymentLinkId: link.id });
       if (alreadyPaid) return false;
     } else {
       // Recurring: a past cycle's payment shouldn't hide a *future* cycle's
@@ -412,6 +587,19 @@ export function usePayments() {
   };
 }
 
+// A saved card is unusable for Auto-Pay once its expiry month has passed.
+// Bank authorisations without expiry data never count as expired.
+export function isAuthorisationExpired(auth) {
+  if (!auth?.expYear || !auth?.expMonth) return false;
+  const year = Number(auth.expYear);
+  const month = Number(auth.expMonth);
+  if (!year || !month) return false;
+  const now = new Date();
+  // Cards are valid through the last day of their expiry month.
+  return year < now.getFullYear() ||
+    (year === now.getFullYear() && month < now.getMonth() + 1);
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Manage Payments hook — saved payment authorisations (bank/channel + consents)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -448,6 +636,39 @@ export function useManagePayments() {
     toggleAutoPay,
     isRemoving: disableAutoPay.isPending,
   };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Pending payment verification — covers payers who never reach the callback
+// page (back button, closed the Paystack tab). The pending reference stored
+// before the redirect is verified once on mount so a completed payment shows
+// as Paid immediately instead of waiting for the next background refetch.
+// ─────────────────────────────────────────────────────────────────────────────
+export function usePendingPaymentVerification() {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const reference = sessionStorage.getItem("paymentPendingRef");
+    if (!reference) return;
+    // Remove up front — one verification attempt per stored reference is
+    // enough; the callback page and background refetches cover the rest.
+    sessionStorage.removeItem("paymentPendingRef");
+
+    verifyPayment(reference)
+      .then((res) => {
+        const status = (res.data?.data?.status ?? "").toUpperCase();
+        queryClient.invalidateQueries({ queryKey: ["obligations"] });
+        queryClient.invalidateQueries({ queryKey: ["transactions"] });
+        queryClient.invalidateQueries({ queryKey: ["payment-links"] });
+        queryClient.invalidateQueries({ queryKey: ["authorisations"] });
+        queryClient.invalidateQueries({ queryKey: ["community"] });
+        if (status === "SUCCESS" || status === "SUCCESSFUL") {
+          settleLocalPaymentForReference(reference);
+          toastSuccess("Payment confirmed", { reference });
+        }
+      })
+      .catch(() => {});
+  }, [queryClient]);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

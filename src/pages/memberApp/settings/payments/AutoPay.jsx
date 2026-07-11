@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { usePayments, useManagePayments } from "../../../../hooks/usePayments";
+import { usePayments, useManagePayments, isAuthorisationExpired } from "../../../../hooks/usePayments";
 
 function Toggle({ on, onChange }) {
   return (
@@ -124,6 +124,8 @@ export default function AutoPay() {
             allPlans.map((plan, i) => {
               const auth = findAuthForPlan(plan);
               const isOn = !!auth;
+              const expired = auth ? isAuthorisationExpired(auth) : false;
+              const inactive = auth && (auth.status ?? "").toUpperCase() !== "ACTIVE";
               return (
                 <div
                   key={plan.paymentLinkId ?? `${plan.name}-${plan.communityName}`}
@@ -138,6 +140,19 @@ export default function AutoPay() {
                     <p style={{ fontSize: 13, color: "#999", margin: "3px 0 0" }}>
                       {[plan.communityName, plan.amount != null ? formatNaira(plan.amount) : null].filter(Boolean).join(" · ")}
                     </p>
+                    {expired && (
+                      <p style={{ fontSize: 11, color: "#DC2626", margin: "4px 0 0", lineHeight: 1.4 }}>
+                        Your saved card expired
+                        {auth.expMonth && auth.expYear ? ` ${auth.expMonth}/${auth.expYear}` : ""}.
+                        Auto-Pay charges will fail — pay once with a new card to update it.
+                      </p>
+                    )}
+                    {!expired && inactive && (
+                      <p style={{ fontSize: 11, color: "#D97706", margin: "4px 0 0", lineHeight: 1.4 }}>
+                        Your saved payment method is no longer active, so automatic
+                        charges may fail. Pay once with a new method to re-enable Auto-Pay.
+                      </p>
+                    )}
                   </div>
                   <Toggle on={isOn} onChange={() => handleToggle(plan)} />
                 </div>
@@ -151,7 +166,10 @@ export default function AutoPay() {
             <span style={{ fontSize: 9, fontWeight: 700, color: "#002FA7" }}>i</span>
           </div>
           <p style={{ fontSize: 12, color: "#333", margin: 0, lineHeight: 1.5 }}>
-            Auto-Pay charges your saved method on the due date. You'll get a reminder 3 days before each charge.
+            Auto-Pay charges your saved method on each due date, and you'll get an
+            in-app and email reminder 3 days before every charge. If a charge fails
+            (an expired card, insufficient funds, or a declined transaction), the
+            payment stays due and you'll be notified so you can pay manually.
           </p>
         </div>
       </div>

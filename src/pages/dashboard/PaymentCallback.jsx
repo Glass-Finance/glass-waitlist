@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, X, Loader2, ArrowLeft, Clock } from "lucide-react";
 import { verifyPayment } from "../../api/members";
+import { settleLocalPaymentForReference } from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
 
 // The backend's verify endpoint is async: it queues a verification job and
@@ -25,13 +26,13 @@ export default function PaymentCallback() {
   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
   const { isAdmin } = useAuth();
 
-  const [returnTo] = useState(() => {
-    const v = sessionStorage.getItem("paymentReturnTo");
-    if (v) sessionStorage.removeItem("paymentReturnTo");
-    // Clear any pending-payment recovery flag now that we're on the callback page.
-    sessionStorage.removeItem("paymentPendingRef");
-    return v ?? null;
-  });
+  // Read (but don't consume yet) the return destination. paymentReturnTo and
+  // paymentPendingRef are only cleared once verification reaches a terminal
+  // state — if the session expired mid-payment, they must survive the trip
+  // through sign-in so the dashboard can auto-confirm the payment afterwards.
+  const [returnTo] = useState(
+    () => sessionStorage.getItem("paymentReturnTo") ?? null,
+  );
 
   // Derive the effective destination once auth is resolved. Admin payments
   // always set paymentReturnTo before redirecting to Paystack, so null here
@@ -56,9 +57,17 @@ export default function PaymentCallback() {
     if (!reference) return;
     let cancelled = false;
 
+    // Terminal states own the cleanup of the pending-payment flags; anything
+    // earlier (including a session-expiry bounce) must leave them intact so
+    // the dashboard's pending-ref check can finish the job after sign-in.
+    function consumePendingFlags() {
+      sessionStorage.removeItem("paymentReturnTo");
+      sessionStorage.removeItem("paymentPendingRef");
+    }
+
     async function poll() {
       try {
-        const res = await verifyPayment(reference);
+        const res = await verifyPayment(reference, { _skipAuthRedirect: true });
         const data = res.data?.data ?? {};
         const { status, verificationQueued } = data;
 
@@ -70,12 +79,24 @@ export default function PaymentCallback() {
           const s = status.toUpperCase();
           const finalState = (s === "SUCCESS" || s === "SUCCESSFUL") ? "success" : "failed";
           invalidateCaches();
-          if (finalState === "success") setAutoRedirectIn(5);
+          consumePendingFlags();
+          if (finalState === "success") {
+            settleLocalPaymentForReference(reference);
+            setAutoRedirectIn(5);
+          }
           setState(finalState);
           return;
         }
-      } catch {
-        // Network / 4xx — count as attempt and retry
+      } catch (err) {
+        // Session died while the payer was on Paystack's page — show a
+        // sign-in prompt instead of silently retrying into a hard redirect.
+        // The pending flags stay put so the payment auto-confirms after
+        // re-login.
+        if (err?.response?.status === 401 && !cancelled) {
+          setState("signin");
+          return;
+        }
+        // Other network / 4xx — count as attempt and retry
       }
 
       attemptsRef.current += 1;
@@ -86,6 +107,7 @@ export default function PaymentCallback() {
         // went through — the status write is just slow. Invalidate so the user
         // sees fresh data when they navigate back.
         invalidateCaches();
+        consumePendingFlags();
         setState(wasQueuedRef.current ? "processing" : "unknown");
         return;
       }
@@ -145,7 +167,22 @@ export default function PaymentCallback() {
       subtitle: "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
       buttonLabel: backLabel,
     },
+    signin: {
+      icon: <Clock size={40} style={{ color: "#002FA7" }} />,
+      iconBg: "#EEF2FF",
+      title: "Sign in to see your payment",
+      subtitle:
+        "Your session expired while you were completing the payment. Sign back in — your payment will be confirmed on your dashboard automatically.",
+      buttonLabel: "Sign in to continue",
+    },
   }[state];
+
+  // The signin state's button goes to the sign-in page (admin or member,
+  // based on where the payment started) instead of the usual back-target.
+  const signInDest = returnTo?.startsWith("/dashboard")
+    ? "/sign-in"
+    : "/member/app-sign-in";
+  const buttonDest = state === "signin" ? signInDest : effectiveReturnTo;
 
   return (
     <div
@@ -155,7 +192,13 @@ export default function PaymentCallback() {
       {/* Top bar */}
       <div className="flex items-center px-4 md:px-8 pt-6 md:pt-8 pb-4">
         <button
-          onClick={() => navigate(effectiveReturnTo, { replace: true })}
+          onClick={() => {
+            // Leaving voluntarily — the return target is used up, but the
+            // pending reference stays so the destination page can still
+            // confirm the payment in the background.
+            sessionStorage.removeItem("paymentReturnTo");
+            navigate(effectiveReturnTo, { replace: true });
+          }}
           className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
         >
           <ArrowLeft size={16} />
@@ -187,7 +230,7 @@ export default function PaymentCallback() {
 
           {config.buttonLabel && (
             <button
-              onClick={() => navigate(effectiveReturnTo, { replace: true })}
+              onClick={() => navigate(buttonDest, { replace: true })}
               className="mt-4 px-8 py-3 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
               style={{ background: "#002FA7" }}
             >

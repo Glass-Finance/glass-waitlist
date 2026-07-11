@@ -27,9 +27,13 @@ import {
   usePayments,
   useInitiatePayment,
   useManagePayments,
+  usePendingPaymentVerification,
+  recordLocalPayment,
+  stashPendingPaymentCtx,
 } from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import totalMembersIcon from "../../assets/dashboard/tdesign-member.webp";
 import inactiveMembersIcon from "../../assets/dashboard/inactive-members.webp";
 import totalContribIcon from "../../assets/dashboard/tcontributions.webp";
@@ -162,6 +166,11 @@ function AdminPaymentModal({ item, onClose }) {
   const initiatePayment = useInitiatePayment();
   const { data: authorisations } = useManagePayments();
   const [error, setError] = useState("");
+  // Separate from initiatePayment.isPending: the mutation resolves as soon
+  // as the API responds with an authorizationUrl, but window.location.href
+  // still takes a beat to actually leave the page. Without this, the button
+  // flashes back to "Pay" during that gap. (Same fix as PaymentSummary.)
+  const [redirecting, setRedirecting] = useState(false);
 
   const savedMethod = (authorisations ?? []).find(
     (a) => (a.status ?? "").toUpperCase() === "ACTIVE",
@@ -189,9 +198,26 @@ function AdminPaymentModal({ item, onClose }) {
         },
       });
       const url = res.data?.data?.authorizationUrl;
+      const reference = res.data?.data?.reference;
       if (url) {
+        setRedirecting(true);
+        // Let the callback page pick up this reference for verification even
+        // if Paystack sends the admin back without one in the URL, and stash
+        // the plan context so the confirmed payment writes the local paid log.
+        if (reference) sessionStorage.setItem("paymentPendingRef", reference);
+        stashPendingPaymentCtx({
+          reference,
+          paymentLinkId: item.paymentLinkId,
+          obligationId: item.obligationId ?? null,
+        });
         window.location.href = url;
       } else {
+        // Charged immediately against a saved method — no redirect happened,
+        // so record it here for instant Paid status.
+        recordLocalPayment({
+          paymentLinkId: item.paymentLinkId,
+          obligationId: item.obligationId,
+        });
         onClose();
       }
     } catch (err) {
@@ -301,12 +327,49 @@ function AdminPaymentModal({ item, onClose }) {
                 </span>
               </div>
             )}
+            {isRecurring && (
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-500">Renews</span>
+                <span className="text-sm font-medium text-gray-900">
+                  {scheduleCopy({ frequency: item.frequency })}
+                </span>
+              </div>
+            )}
+            {isRecurring && (() => {
+              const next = estimateNextCharge(
+                { frequency: item.frequency },
+                item.dueDate,
+              );
+              if (!next) return null;
+              return (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500">
+                    Next charge (est.)
+                  </span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {next.toLocaleDateString("en-NG", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+              );
+            })()}
             <div className="flex items-center justify-between pt-3 border-t border-gray-100">
               <span className="text-sm font-semibold text-gray-700">Total</span>
               <span className="text-[17px] font-bold text-gray-900">
                 {formatNaira(item.amount)}
               </span>
             </div>
+            {isRecurring && (
+              <p className="text-xs text-gray-400 leading-relaxed m-0 pt-1">
+                Today covers the current cycle. After that,{" "}
+                {formatNaira(item.amount)} renews{" "}
+                {scheduleCopy({ frequency: item.frequency }).toLowerCase()}{" "}
+                until the plan ends or you turn off Auto-Pay in Settings.
+              </p>
+            )}
           </div>
         </div>
 
@@ -359,13 +422,14 @@ function AdminPaymentModal({ item, onClose }) {
             </button>
             <button
               onClick={handlePay}
-              disabled={initiatePayment.isPending}
+              disabled={initiatePayment.isPending || redirecting}
               className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white cursor-pointer disabled:opacity-60 border-none transition-opacity flex items-center gap-2"
               style={{ background: "#002FA7" }}
             >
-              {initiatePayment.isPending ? (
+              {initiatePayment.isPending || redirecting ? (
                 <>
-                  <Loader2 size={14} className="animate-spin" /> Processing…
+                  <Loader2 size={14} className="animate-spin" />{" "}
+                  {redirecting ? "Opening secure payment…" : "Processing…"}
                 </>
               ) : (
                 `Pay ${formatNaira(item.amount)}`
@@ -1032,6 +1096,9 @@ function DashboardContent({ isPaying, communityId }) {
   const { data: myPayments } = usePayments();
   const myUpcoming = myPayments?.upcoming ?? [];
   const { data: myAuthorisations } = useManagePayments();
+  // Catches payers who came back from Paystack without hitting the callback
+  // page — verifies the stored pending reference so Paid shows immediately.
+  usePendingPaymentVerification();
 
   // "Your Payments" table controls — small local list, so sort/filter run
   // client-side rather than round-tripping to the server.
@@ -1478,10 +1545,12 @@ function DashboardContent({ isPaying, communityId }) {
         {isPaying &&
           alertVisible &&
           (() => {
-            const due = myUpcoming.filter(
+            const dueList = myUpcoming.filter(
               (o) => (o.status ?? "").toUpperCase() !== "PAID",
-            )[0];
+            );
+            const due = dueList[0];
             if (!due) return null;
+            const othersDue = dueList.length - 1;
             const daysLeft = due.dueDate
               ? Math.ceil((new Date(due.dueDate) - new Date()) / 86400000)
               : null;
@@ -1514,6 +1583,12 @@ function DashboardContent({ isPaying, communityId }) {
                         </>
                       )}
                     </p>
+                    {othersDue > 0 && (
+                      <p className="text-xs text-[#002FA7] font-medium mt-1">
+                        + {othersDue} other payment{othersDue === 1 ? "" : "s"} due
+                        — see Your Payments below.
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 ml-4 flex-shrink-0">
