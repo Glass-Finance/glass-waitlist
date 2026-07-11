@@ -44,6 +44,14 @@ function shapePlan(raw) {
     totalCount: m.audienceSize ?? 0,
     currency: m.currency ?? "NGN",
     dueAt: raw.dueAt ?? null,
+    // Confirmed on the single-resource GET/PATCH .../payment-links/{id}
+    // response — root-level, not nested under recurringPlan. Not confirmed
+    // whether the LIST endpoint (this hook's source) echoes the same
+    // fields per item; if it doesn't, these just read as unset/off here
+    // until Reuben confirms, with no crash either way.
+    reminderFrequency: raw.reminderFrequency ?? null,
+    reminderChannels: raw.reminderChannels ?? [],
+    communityAccountId: raw.communityAccountId ?? null,
   };
 }
 
@@ -111,7 +119,8 @@ export function usePaymentPlans(communityId) {
   });
 
   const sendReminder = useMutation({
-    mutationFn: (paymentLinkId) => sendPaymentLinkReminder(communityId, paymentLinkId),
+    mutationFn: ({ paymentLinkId, payload }) =>
+      sendPaymentLinkReminder(communityId, paymentLinkId, payload),
     meta: { successMessage: "Reminder sent to unpaid members" },
   });
 

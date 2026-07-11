@@ -250,8 +250,18 @@ export default function Members() {
 
   function exportCsv() {
     const rows = (selected.length ? filtered.filter((m) => selected.includes(m.id)) : filtered);
+    // A name/email containing a comma or quote (rare but real — "Doe, Jr.")
+    // was previously written straight into the CSV unescaped, silently
+    // corrupting the column structure for that and every following row.
+    const csvField = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const header = "Name,Email,Plans,Paid,Total,Date Joined\n";
-    const body = rows.map((m) => `${memberName(m)},${memberEmail(m)},${m.planCount},${m.paidCount},${m.totalCount},${formatDate(m.joinedAt ?? m.createdAt)}`).join("\n");
+    const body = rows
+      .map((m) =>
+        [memberName(m), memberEmail(m), m.planCount, m.paidCount, m.totalCount, formatDate(m.joinedAt ?? m.createdAt)]
+          .map(csvField)
+          .join(","),
+      )
+      .join("\n");
     const blob = new Blob([header + body], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

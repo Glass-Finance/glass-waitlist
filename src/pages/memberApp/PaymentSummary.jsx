@@ -132,6 +132,11 @@ export default function PaymentSummary() {
   const communityLogo = obligation?.community?.logo ?? navState.communityLogo;
   const isRecurring = !!obligation?.recurringPlan;
   const savedMethod = authorisations?.find((a) => (a.status ?? "").toUpperCase() === "ACTIVE");
+  // Recurring plans always save the method — required for Auto-Pay. For a
+  // one-time payment with no method on file yet (a new card is about to be
+  // entered on Paystack's page), the member gets a real choice.
+  const [saveMethod, setSaveMethod] = useState(true);
+  const effectiveSaveMethod = isRecurring ? true : saveMethod;
 
   async function handlePay() {
     if (!obligation?.paymentLink?.id) return;
@@ -160,7 +165,7 @@ export default function PaymentSummary() {
         payload: {
           idempotencyKey: idempotencyKeyRef.current,
           amount: obligation.amount,
-          savePaymentMethod: true,
+          savePaymentMethod: effectiveSaveMethod,
           ...(obligation.id ? { obligationId: obligation.id } : {}),
         },
       });
@@ -307,9 +312,24 @@ export default function PaymentSummary() {
                 </div>
               </div>
             ) : (
-              <p className="text-[13px] text-gray-500 py-1">
-                You'll choose how to pay on the next screen.
-              </p>
+              <>
+                <p className="text-[13px] text-gray-500 py-1">
+                  You'll choose how to pay on the next screen.
+                </p>
+                {!isRecurring && (
+                  <label className="flex items-center gap-2 mt-1 pt-2 border-t border-gray-200 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={saveMethod}
+                      onChange={(e) => setSaveMethod(e.target.checked)}
+                      className="w-3.5 h-3.5 accent-[#002FA7] cursor-pointer"
+                    />
+                    <span className="text-[12px] text-gray-500">
+                      Save this payment method for faster checkout next time
+                    </span>
+                  </label>
+                )}
+              </>
             )}
 
             {isRecurring && (

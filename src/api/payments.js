@@ -46,9 +46,9 @@ export const archivePaymentLink   = patchAction("archive");
 export const duplicatePaymentLink = (communityId, paymentLinkId, payload) =>
   client.post(`/communities/${communityId}/payment-links/${paymentLinkId}/duplicate`, payload);
 
-// POST — sends an immediate reminder to unpaid members for this payment link
-export const sendPaymentLinkReminder = (communityId, paymentLinkId) =>
-  client.post(`/communities/${communityId}/payment-links/${paymentLinkId}/reminders`, {
-    reminderFrequency: "EVERY_3_DAYS",
-    reminderChannels: ["IN_APP"],
-  });
+// POST — sends an immediate reminder to unpaid members for this payment link.
+// payload: { reminderFrequency, reminderChannels } — chosen by the admin in
+// SendReminderModal (Payments.jsx), not hardcoded here. reminderChannels
+// values match the notification API's channel enum: IN_APP | EMAIL | WHATSAPP.
+export const sendPaymentLinkReminder = (communityId, paymentLinkId, payload) =>
+  client.post(`/communities/${communityId}/payment-links/${paymentLinkId}/reminders`, payload);

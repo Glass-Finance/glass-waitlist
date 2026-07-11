@@ -36,6 +36,8 @@ import {
   stashPendingPaymentCtx,
 } from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
+import { useExportJob } from "../../hooks/useExportJob";
+import { exportCommunityTransactions } from "../../api/exports";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import EmptyState from "../../components/common/EmptyState";
@@ -184,6 +186,11 @@ function AdminPaymentModal({ item, onClose }) {
   const communityInitials = (item.communityName ?? "C")
     .slice(0, 2)
     .toUpperCase();
+  // Recurring plans always save the method — it's required for Auto-Pay.
+  // For one-time payments (with no method on file yet, so a new card is
+  // about to be entered on Paystack's page) the admin gets a real choice.
+  const [saveMethod, setSaveMethod] = useState(true);
+  const effectiveSaveMethod = isRecurring ? true : saveMethod;
 
   async function handlePay() {
     setError("");
@@ -198,7 +205,7 @@ function AdminPaymentModal({ item, onClose }) {
         payload: {
           idempotencyKey: crypto.randomUUID(),
           amount: item.amount,
-          savePaymentMethod: isRecurring,
+          savePaymentMethod: effectiveSaveMethod,
           ...(item.obligationId ? { obligationId: item.obligationId } : {}),
         },
       });
@@ -405,6 +412,24 @@ function AdminPaymentModal({ item, onClose }) {
               <p className="text-sm text-gray-500">
                 You'll select your payment method on the next screen.
               </p>
+              {!isRecurring && (
+                <label className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={saveMethod}
+                    onChange={(e) => setSaveMethod(e.target.checked)}
+                    className="w-3.5 h-3.5 accent-[#002FA7] cursor-pointer"
+                  />
+                  <span className="text-xs text-gray-500">
+                    Save this payment method for faster checkout next time
+                  </span>
+                </label>
+              )}
+              {isRecurring && (
+                <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-200">
+                  This method will be saved for Auto-Pay after your first successful payment.
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -1073,6 +1098,7 @@ function AddMemberModal({ onClose, communityId }) {
 function DashboardContent({ isPaying, communityId }) {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { run: runExport, isExporting } = useExportJob();
   const [search, setSearch] = useState("");
   const [sortDir, setSortDir] = useState("desc");
   const [alertVisible, setAlertVisible] = useState(true);
@@ -1993,11 +2019,16 @@ function DashboardContent({ isPaying, communityId }) {
           <div className="flex items-center justify-between px-5 pt-4 pb-0">
             <span className="text-sm font-medium">Member Payments</span>
             <button
-              disabled
-              title="Export CSV — coming soon"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-200 bg-white text-xs text-gray-400 cursor-not-allowed"
+              onClick={() =>
+                runExport(() =>
+                  exportCommunityTransactions(communityId, {}, "CSV"),
+                )
+              }
+              disabled={isExporting || !communityId}
+              title="Export all transactions for this community as CSV"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-200 bg-white text-xs text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Download size={12} /> Export CSV
+              <Download size={12} /> {isExporting ? "Exporting…" : "Export CSV"}
             </button>
           </div>
 

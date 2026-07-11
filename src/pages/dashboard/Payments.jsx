@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
+import { useCommunityAccount } from "../../hooks/useCommunityAccount";
 import { useSlug } from "../../hooks/useSlug";
 import { dateInputToIso, daysInMonth } from "../../utils/date";
 import { getErrorMessage, notifyError } from "../../utils/errorHandler";
@@ -109,7 +110,24 @@ function billingDayLabel(frequency, billingDay) {
     : `The ${ordinal(day)}`;
 }
 
-const REMINDERS = ["Every Day", "Every 3 Days", "Every Week", "Every 2 Weeks"];
+// Confirmed against the backend's actual enum (com.glassfinance.backend.
+// model.enums.ReminderFrequency) via a 500 error that listed every accepted
+// value — there is no daily option; EVERY_3_DAYS is the most frequent one
+// available. DISABLED is a real member too (the "off" state is an explicit
+// value, not just an omitted field) — handled separately in the payload
+// builders below, not offered as a selectable option here.
+const REMINDER_FREQUENCIES = [
+  { label: "Every 3 Days", value: "EVERY_3_DAYS" },
+  { label: "Every Week", value: "WEEKLY" },
+  { label: "Every 2 Weeks", value: "BIWEEKLY" },
+  { label: "Every Month", value: "MONTHLY" },
+];
+// Matches the notification API's channel enum (IN_APP | EMAIL | WHATSAPP).
+const REMINDER_CHANNELS = [
+  { label: "In-app notification", value: "IN_APP" },
+  { label: "Email", value: "EMAIL" },
+  { label: "WhatsApp", value: "WHATSAPP" },
+];
 const TABS = ["All Plans", "Recurring", "One Time"];
 const BAR_COLORS = ["#d4a017", "#7c3aed", "#002FA7", "#059669"];
 
@@ -119,6 +137,16 @@ const inputCls =
 function toTitleCase(str) {
   if (!str) return str;
   return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+// <input type="number"> silently increments/decrements its value on
+// mouse-wheel scroll while it has focus — a well-known browser footgun that
+// bites hardest inside a scrollable form like these plan modals: scroll
+// past a still-focused Amount/interval field and its value quietly shifts
+// by the scroll delta with no visual feedback. Blurring on wheel makes the
+// scroll just scroll the page instead, like every other input on the page.
+function blurOnWheel(e) {
+  e.currentTarget.blur();
 }
 
 function formatNaira(amount) {
@@ -260,6 +288,44 @@ function Step1({ value, onChange }) {
   );
 }
 
+function payoutAccountLabel(account) {
+  if (!account) return "Unnamed account";
+  const bank = account.settlementBank ?? account.bank ?? "Bank";
+  const last4 = (account.accountNumber ?? "").slice(-4);
+  return last4 ? `${bank} — ••••${last4}` : bank;
+}
+
+// Shared payout-account picker (create wizard + edit modal). Only shown when
+// a community has more than one connected account — with just one, there's
+// nothing to choose and the backend already defaults to it. plan.metrics
+// gates the field: reject invalid selections silently by falling back to
+// the community's default account.
+function PayoutAccountField({ accounts, value, onChange }) {
+  if (!accounts || accounts.length <= 1) return null;
+  return (
+    <div>
+      <label className="block text-xs font-medium text-gray-700 mb-1">
+        Payout Account
+      </label>
+      <select
+        className={inputCls}
+        value={value || ""}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        {accounts.map((a) => (
+          <option key={a.id} value={a.id}>
+            {payoutAccountLabel(a)}
+            {a.defaultAccount ? " (Default)" : ""}
+          </option>
+        ))}
+      </select>
+      <p className="text-[11px] text-gray-400 mt-1">
+        Members' payments for this plan settle to this account.
+      </p>
+    </div>
+  );
+}
+
 // Shared billing-day picker (create wizard + edit modal). WEEKLY plans get a
 // weekday dropdown instead of a raw 1–7 input, and every frequency shows an
 // always-visible plain-English preview of when members are billed.
@@ -286,6 +352,7 @@ function BillingDayField({ frequency, value, max, onChange }) {
       ) : (
         <input
           type="number"
+          onWheel={blurOnWheel}
           className={inputCls}
           value={value || ""}
           min={1}
@@ -315,7 +382,7 @@ function BillingDayField({ frequency, value, max, onChange }) {
   );
 }
 
-function Step2({ planType, form, onChange, slugState }) {
+function Step2({ planType, form, onChange, slugState, accounts }) {
   const { slug, setSlug, available, checking, suggesting, suggestFrom } =
     slugState;
 
@@ -399,6 +466,11 @@ function Step2({ planType, form, onChange, slugState }) {
           onChange={(e) => onChange("description", e.target.value)}
         />
       </div>
+      <PayoutAccountField
+        accounts={accounts}
+        value={form.communityAccountId}
+        onChange={(v) => onChange("communityAccountId", v)}
+      />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -406,6 +478,7 @@ function Step2({ planType, form, onChange, slugState }) {
           </label>
           <input
             type="number"
+            onWheel={blurOnWheel}
             className={inputCls}
             value={form.amount || ""}
             placeholder="₦0.00"
@@ -446,6 +519,7 @@ function Step2({ planType, form, onChange, slugState }) {
           <div className="flex items-center gap-2">
             <input
               type="number"
+              onWheel={blurOnWheel}
               min={1}
               className={inputCls + " max-w-[100px]"}
               value={form.interval || ""}
@@ -528,6 +602,7 @@ function Step2({ planType, form, onChange, slugState }) {
             </label>
             <input
               type="number"
+              onWheel={blurOnWheel}
               min={0}
               className={inputCls}
               value={form.graceDays || ""}
@@ -563,25 +638,72 @@ function Step2({ planType, form, onChange, slugState }) {
         </div>
       )}
 
+      {/* Default reminder cadence for this plan — sent automatically to
+          unpaid members going forward. Separate from "Send Reminder" in the
+          plan's ⋯ menu, which fires an immediate one-off blast on top of
+          whatever's configured here. */}
       <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1">
-          Auto Reminder
+        <label className="flex items-center gap-2 text-xs font-medium text-gray-700 mb-2">
+          <input
+            type="checkbox"
+            checked={form.reminderEnabled ?? true}
+            onChange={(e) => onChange("reminderEnabled", e.target.checked)}
+          />
+          Send automatic reminders to unpaid members
         </label>
-        <select
-          className={inputCls}
-          value={form.reminder || ""}
-          onChange={(e) => onChange("reminder", e.target.value)}
-        >
-          <option value="" disabled>
-            Select reminder frequency
-          </option>
-          {REMINDERS.map((o) => (
-            <option key={o}>{o}</option>
-          ))}
-        </select>
-        <p className="text-xs text-gray-400 mt-1">
-          Sent via SMS and email to unpaid members.
-        </p>
+        {(form.reminderEnabled ?? true) && (
+          <div className="flex flex-col gap-2.5 pl-6">
+            <div>
+              <label className="block text-[11px] text-gray-500 mb-1">
+                Remind every
+              </label>
+              <select
+                className={inputCls}
+                value={form.reminderFrequency || "EVERY_3_DAYS"}
+                onChange={(e) => onChange("reminderFrequency", e.target.value)}
+              >
+                {REMINDER_FREQUENCIES.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[11px] text-gray-500 mb-1.5">
+                Send via
+              </label>
+              <div className="flex flex-col gap-1.5">
+                {REMINDER_CHANNELS.map((c) => {
+                  const checked = (form.reminderChannels ?? []).includes(c.value);
+                  return (
+                    <label key={c.value} className="flex items-center gap-2 text-xs text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => {
+                          const current = form.reminderChannels ?? [];
+                          onChange(
+                            "reminderChannels",
+                            checked
+                              ? current.filter((v) => v !== c.value)
+                              : [...current, c.value],
+                          );
+                        }}
+                      />
+                      {c.label}
+                    </label>
+                  );
+                })}
+              </div>
+              {(form.reminderChannels ?? []).length === 0 && (
+                <p className="text-[11px] text-red-500 mt-1">
+                  Choose at least one channel, or reminders will be created disabled.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
       <label className="flex items-center gap-2 text-xs text-gray-700">
         <input
@@ -595,7 +717,7 @@ function Step2({ planType, form, onChange, slugState }) {
   );
 }
 
-function Step3({ planType, form, slug }) {
+function Step3({ planType, form, slug, accounts }) {
   const rows = [
     { label: "Plan Name", value: form.name || "—" },
     { label: "URL slug", value: slug || "—" },
@@ -607,6 +729,16 @@ function Step3({ planType, form, slug }) {
       label: "Amount",
       value: form.amount ? formatNaira(Number(form.amount)) : "—",
     },
+    ...(accounts && accounts.length > 1
+      ? [
+          {
+            label: "Payout Account",
+            value: payoutAccountLabel(
+              accounts.find((a) => a.id === form.communityAccountId),
+            ),
+          },
+        ]
+      : []),
     ...(planType === "recurring"
       ? [
           {
@@ -661,6 +793,13 @@ function Step3({ planType, form, slug }) {
       value:
         (form.activateImmediately ?? true) ? "Immediately" : "Manually later",
     },
+    {
+      label: "Reminders",
+      value:
+        (form.reminderEnabled ?? true) && (form.reminderChannels ?? []).length
+          ? `${REMINDER_FREQUENCIES.find((f) => f.value === form.reminderFrequency)?.label ?? "Every 3 Days"} via ${(form.reminderChannels ?? []).map((c) => REMINDER_CHANNELS.find((r) => r.value === c)?.label ?? c).join(", ")}`
+          : "Off",
+    },
   ];
   return (
     <div>
@@ -683,7 +822,7 @@ function Step3({ planType, form, slug }) {
 }
 
 // ── Create plan modal ─────────────────────────────────────────────────────────
-function CreatePlanModal({ onClose, onCreate, creating, createError }) {
+function CreatePlanModal({ communityId, onClose, onCreate, creating, createError }) {
   const [step, setStep] = useState(1);
   const [planType, setPlanType] = useState("recurring");
   const [success, setSuccess] = useState(false);
@@ -699,11 +838,25 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
     endAt: "",
     graceDays: "",
     retryPolicy: "NO_RETRY",
-    reminder: "",
     activateImmediately: true,
+    reminderEnabled: true,
+    reminderFrequency: "EVERY_3_DAYS",
+    reminderChannels: ["IN_APP"],
+    communityAccountId: "",
   });
   const slugState = useSlug("PAYMENT_LINK");
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+
+  // Only relevant when a community has more than one payout account
+  // connected (PayoutAccountField hides itself otherwise) — default to
+  // whichever is flagged as the default so the field always has an
+  // explicit value the moment there's a real choice to make.
+  const { accounts } = useCommunityAccount(communityId);
+  useEffect(() => {
+    if (form.communityAccountId || accounts.length === 0) return;
+    const def = accounts.find((a) => a.defaultAccount) ?? accounts[0];
+    if (def) setForm((f) => ({ ...f, communityAccountId: def.id }));
+  }, [accounts]); // eslint-disable-line react-hooks/exhaustive-deps
   const canContinue =
     step === 1
       ? !!planType
@@ -732,6 +885,9 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
       ...(form.description?.trim()
         ? { description: form.description.trim() }
         : {}),
+      ...(form.communityAccountId
+        ? { communityAccountId: form.communityAccountId }
+        : {}),
       ...(planType === "recurring"
         ? {
             recurringPlan: {
@@ -745,7 +901,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
                 ? { billingDay: Number(form.billingDay) }
                 : {}),
               ...(form.endAt
-                ? { endAt: dateInputToIso(form.endAt, { clampToNow: true }) }
+                ? { endAt: dateInputToIso(form.endAt, { endOfDayIfToday: true, clampToNow: true }) }
                 : {}),
               retryPolicy: form.retryPolicy || "NO_RETRY",
               graceDays: form.graceDays ? Number(form.graceDays) : 0,
@@ -753,8 +909,22 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
           }
         : {
             ...(form.startDate ? { startAt: startIso } : {}),
-            dueAt: dateInputToIso(form.dueDate, { clampToNow: true }),
+            // A due date of "today" needs to mean "through the end of
+            // today" — clamping it to the exact instant Submit is clicked
+            // instead raced the backend's own clock and made today
+            // unselectable for a one-time payment's due date in practice.
+            dueAt: dateInputToIso(form.dueDate, { endOfDayIfToday: true, clampToNow: true }),
           }),
+      // Root-level, not nested under recurringPlan — applies to one-time
+      // plans too. DISABLED is a real enum member (confirmed via the
+      // backend's own validation error), so "off" is sent explicitly
+      // rather than omitting the field.
+      ...(form.reminderEnabled && form.reminderChannels?.length
+        ? {
+            reminderFrequency: form.reminderFrequency || "EVERY_3_DAYS",
+            reminderChannels: form.reminderChannels,
+          }
+        : { reminderFrequency: "DISABLED" }),
     };
     if (import.meta.env.DEV) console.log("[CreatePlan] payload →", payload);
     const ok = await onCreate(payload);
@@ -815,6 +985,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
                     form={form}
                     onChange={update}
                     slugState={slugState}
+                    accounts={accounts}
                   />
                 )}
                 {step === 3 && (
@@ -822,6 +993,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
                     planType={planType}
                     form={form}
                     slug={slugState.slug}
+                    accounts={accounts}
                   />
                 )}
               </div>
@@ -861,7 +1033,7 @@ function CreatePlanModal({ onClose, onCreate, creating, createError }) {
 }
 
 // ── Edit plan modal ───────────────────────────────────────────────────────────
-function EditPlanModal({ plan, onClose, onSave, saving }) {
+function EditPlanModal({ plan, communityId, onClose, onSave, saving }) {
   const initialEndAt = toDateInput(plan.endAt ?? plan.recurringPlan?.endAt);
   const [form, setForm] = useState({
     name: plan.name ?? "",
@@ -873,7 +1045,20 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
     endAt: initialEndAt,
     graceDays: String(plan.recurringPlan?.graceDays ?? ""),
     retryPolicy: plan.recurringPlan?.retryPolicy ?? "NO_RETRY",
+    // DISABLED is the explicit "off" value the backend sends back — fall
+    // back to the channels list only for older data that predates it.
+    reminderEnabled:
+      plan.reminderFrequency && plan.reminderFrequency !== "DISABLED"
+        ? true
+        : (plan.reminderChannels ?? []).length > 0,
+    reminderFrequency:
+      plan.reminderFrequency && plan.reminderFrequency !== "DISABLED"
+        ? plan.reminderFrequency
+        : "EVERY_3_DAYS",
+    reminderChannels: plan.reminderChannels ?? [],
+    communityAccountId: plan.communityAccountId ?? "",
   });
+  const { accounts } = useCommunityAccount(communityId);
   // Track the original endAt so we know whether the user has cleared a
   // previously-set value — that's the only case where clearEndAt needs to
   // be sent, since omitting endAt on a PATCH otherwise leaves it untouched.
@@ -908,7 +1093,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
                 ? { billingDay: Number(form.billingDay) }
                 : {}),
               ...(form.endAt
-                ? { endAt: dateInputToIso(form.endAt, { clampToNow: true }) }
+                ? { endAt: dateInputToIso(form.endAt, { endOfDayIfToday: true, clampToNow: true }) }
                 : {}),
               ...(clearedEndAt ? { clearEndAt: true } : {}),
               retryPolicy: form.retryPolicy || "NO_RETRY",
@@ -918,6 +1103,18 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
         : {}),
       ...(form.startDate
         ? { startAt: dateInputToIso(form.startDate, { clampToNow: true }) }
+        : {}),
+      // Root-level, matching the confirmed PATCH schema — same shape as
+      // create. DISABLED is sent explicitly when off (a real enum member,
+      // confirmed via the backend's own validation error).
+      ...(form.reminderEnabled && form.reminderChannels?.length
+        ? {
+            reminderFrequency: form.reminderFrequency || "EVERY_3_DAYS",
+            reminderChannels: form.reminderChannels,
+          }
+        : { reminderFrequency: "DISABLED" }),
+      ...(form.communityAccountId
+        ? { communityAccountId: form.communityAccountId }
         : {}),
     };
     await onSave(plan.id, payload);
@@ -961,6 +1158,12 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
             />
           </div>
 
+          <PayoutAccountField
+            accounts={accounts}
+            value={form.communityAccountId}
+            onChange={(v) => setForm((f) => ({ ...f, communityAccountId: v }))}
+          />
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1.5">
@@ -968,6 +1171,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
               </label>
               <input
                 type="number"
+                onWheel={blurOnWheel}
                 className={inputCls}
                 value={form.amount}
                 onChange={(e) =>
@@ -1006,6 +1210,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
               <div className="flex items-center gap-2">
                 <input
                   type="number"
+                  onWheel={blurOnWheel}
                   min={1}
                   className={inputCls + " max-w-[100px]"}
                   value={form.interval}
@@ -1082,6 +1287,7 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
                 </label>
                 <input
                   type="number"
+                  onWheel={blurOnWheel}
                   min={0}
                   className={inputCls}
                   value={form.graceDays}
@@ -1116,6 +1322,73 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
               </div>
             </div>
           )}
+
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <label className="flex items-center gap-2 text-xs font-medium text-gray-700 mb-2">
+              <input
+                type="checkbox"
+                checked={form.reminderEnabled}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, reminderEnabled: e.target.checked }))
+                }
+              />
+              Send automatic reminders to unpaid members
+            </label>
+            {form.reminderEnabled && (
+              <div className="flex flex-col gap-2.5 pl-6">
+                <div>
+                  <label className="block text-[11px] text-gray-500 mb-1">
+                    Remind every
+                  </label>
+                  <select
+                    className={inputCls}
+                    value={form.reminderFrequency || "EVERY_3_DAYS"}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, reminderFrequency: e.target.value }))
+                    }
+                  >
+                    {REMINDER_FREQUENCIES.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] text-gray-500 mb-1.5">
+                    Send via
+                  </label>
+                  <div className="flex flex-col gap-1.5">
+                    {REMINDER_CHANNELS.map((c) => {
+                      const checked = form.reminderChannels.includes(c.value);
+                      return (
+                        <label key={c.value} className="flex items-center gap-2 text-xs text-gray-700">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() =>
+                              setForm((f) => ({
+                                ...f,
+                                reminderChannels: checked
+                                  ? f.reminderChannels.filter((v) => v !== c.value)
+                                  : [...f.reminderChannels, c.value],
+                              }))
+                            }
+                          />
+                          {c.label}
+                        </label>
+                      );
+                    })}
+                  </div>
+                  {form.reminderChannels.length === 0 && (
+                    <p className="text-[11px] text-red-500 mt-1">
+                      Choose at least one channel, or reminders will be saved disabled.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-end mt-6">
@@ -1125,6 +1398,118 @@ function EditPlanModal({ plan, onClose, onSave, saving }) {
             className="px-6 py-2 rounded text-xs font-normal text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? "Saving…" : "Save Changes"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Send reminder modal ───────────────────────────────────────────────────────
+// Only reachable action for triggering payment reminders — there's no
+// "auto-scheduled" reminder configured at plan creation; admins choose
+// frequency + channels here and send on demand.
+function SendReminderModal({ plan, onClose, onSend, sending }) {
+  const [frequency, setFrequency] = useState("EVERY_3_DAYS");
+  const [channels, setChannels] = useState(new Set(["IN_APP"]));
+
+  function toggleChannel(value) {
+    setChannels((prev) => {
+      const next = new Set(prev);
+      if (next.has(value)) next.delete(value);
+      else next.add(value);
+      return next;
+    });
+  }
+
+  const canSend = channels.size > 0;
+
+  return (
+    <div
+      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E5E7EB" }}>
+        <div className="flex items-start justify-between px-6 pt-5">
+          <div>
+            <h2 className="text-base font-semibold text-black">Send Reminder</h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {toTitleCase(plan?.name)} — sent to members who haven't paid yet.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer bg-transparent border-solid"
+          >
+            <X size={14} />
+          </button>
+        </div>
+
+        <div className="px-6 py-4 flex flex-col gap-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">
+              Repeat this reminder
+            </label>
+            <select
+              className={inputCls}
+              value={frequency}
+              onChange={(e) => setFrequency(e.target.value)}
+            >
+              {REMINDER_FREQUENCIES.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-2">
+              Send via
+            </label>
+            <div className="flex flex-col gap-2">
+              {REMINDER_CHANNELS.map((c) => (
+                <label key={c.value} className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={channels.has(c.value)}
+                    onChange={() => toggleChannel(c.value)}
+                    className="w-3.5 h-3.5 accent-[#002FA7] cursor-pointer"
+                  />
+                  {c.label}
+                </label>
+              ))}
+            </div>
+            {!canSend && (
+              <p className="text-[11px] text-red-500 mt-1.5">
+                Choose at least one channel.
+              </p>
+            )}
+          </div>
+
+          <div className="px-4 py-3 rounded-xl bg-blue-50 border border-blue-100 text-xs text-gray-500">
+            Sends immediately, then repeats on this schedule until the member pays or the plan closes.
+          </div>
+        </div>
+
+        <div className="px-6 py-4 flex items-center justify-end gap-3 border-t border-gray-200">
+          <button
+            onClick={onClose}
+            className="px-5 py-2 rounded text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() =>
+              onSend({
+                reminderFrequency: frequency,
+                reminderChannels: [...channels],
+              })
+            }
+            disabled={!canSend || sending}
+            className="px-6 py-2 rounded text-xs font-normal text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {sending ? "Sending…" : "Send Reminder"}
           </button>
         </div>
       </div>
@@ -1723,7 +2108,7 @@ function MenuItem({ icon, label, onClick, disabled, danger }) {
 }
 
 // ── Plan card "..." overflow menu ─────────────────────────────────────────────
-function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers }) {
+function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendReminder }) {
   const [open, setOpen] = useState(false);
   const status = plan.status;
   const isActive = status === "ACTIVE";
@@ -1754,7 +2139,10 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers }) {
             <MenuItem
               icon={<Bell size={13} />}
               label="Send Reminder"
-              disabled
+              onClick={() => {
+                onSendReminder(plan);
+                close();
+              }}
             />
             <MenuItem
               icon={<Users size={13} />}
@@ -1849,6 +2237,7 @@ function PlanCard({
   barColor,
   onEdit,
   onViewMembers,
+  onSendReminder,
   metrics,
 }) {
   const ps = PLAN_STATUS[plan.status] ?? PLAN_STATUS.DRAFT;
@@ -1895,6 +2284,7 @@ function PlanCard({
           planPlans={planPlans}
           onEdit={onEdit}
           onViewMembers={onViewMembers}
+          onSendReminder={onSendReminder}
         />
       </div>
 
@@ -1958,6 +2348,7 @@ export default function Payments() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
   const [viewingMembersPlan, setViewingMembersPlan] = useState(null);
+  const [remindingPlan, setRemindingPlan] = useState(null);
   const [tab, setTab] = useState("All Plans");
 
   const planPlans = usePaymentPlans(communityId);
@@ -2123,6 +2514,18 @@ export default function Payments() {
     }
   }
 
+  async function handleSendReminder(payload) {
+    try {
+      await planPlans.sendReminder.mutateAsync({
+        paymentLinkId: remindingPlan.id,
+        payload,
+      });
+      setRemindingPlan(null);
+    } catch (err) {
+      notifyError(err, { context: "Send reminder" });
+    }
+  }
+
   return (
     <div
       className="px-4 md:px-6 py-6 overflow-y-auto h-full"
@@ -2209,6 +2612,7 @@ export default function Payments() {
               barColor={BAR_COLORS[i % BAR_COLORS.length]}
               onEdit={setEditingPlan}
               onViewMembers={setViewingMembersPlan}
+              onSendReminder={setRemindingPlan}
               metrics={planMetrics[plan.id]}
             />
           ))}
@@ -2218,6 +2622,7 @@ export default function Payments() {
       {/* Modals */}
       {createOpen && (
         <CreatePlanModal
+          communityId={communityId}
           onClose={() => setCreateOpen(false)}
           onCreate={handleCreate}
           creating={planPlans.create.isPending}
@@ -2231,6 +2636,7 @@ export default function Payments() {
       {editingPlan && (
         <EditPlanModal
           plan={editingPlan}
+          communityId={communityId}
           onClose={() => setEditingPlan(null)}
           onSave={handleSaveEdit}
           saving={planPlans.update.isPending}
@@ -2241,6 +2647,14 @@ export default function Payments() {
           plan={viewingMembersPlan}
           communityId={communityId}
           onClose={() => setViewingMembersPlan(null)}
+        />
+      )}
+      {remindingPlan && (
+        <SendReminderModal
+          plan={remindingPlan}
+          onClose={() => setRemindingPlan(null)}
+          onSend={handleSendReminder}
+          sending={planPlans.sendReminder.isPending}
         />
       )}
     </div>
