@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { PRE_AUTH_PATHS } from "../api/client";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Single source of truth for turning ANY error (axios, network, JS) into a
@@ -26,7 +27,18 @@ const STATUS_MESSAGES = {
   504: "That took too long to respond. Please try again in a moment.",
 };
 
-function fallbackForStatus(status) {
+// A 401 from a pre-auth endpoint (login, Google sign-in, MFA verify) means
+// "those credentials were wrong" — there's no session yet to have expired.
+// STATUS_MESSAGES[401] is written for the opposite case (an authenticated
+// call whose token lapsed), which client.js's interceptor normally
+// intercepts and hard-redirects before it ever reaches here — except for
+// these three endpoints, which it deliberately lets through (see
+// PRE_AUTH_PATHS in client.js) so the sign-in form can show its own error
+// instead of being yanked out from under the user mid-attempt.
+function fallbackForStatus(status, requestUrl) {
+  if (status === 401 && PRE_AUTH_PATHS.some((p) => requestUrl?.includes(p))) {
+    return "Incorrect email or password.";
+  }
   if (STATUS_MESSAGES[status]) return STATUS_MESSAGES[status];
   if (status >= 500) return "Something went wrong on our end. Please try again shortly.";
   return "Something went wrong. Please try again.";
@@ -113,7 +125,9 @@ export function getErrorMessage(error, fallback = "Something went wrong. Please 
   // Axios error with a response from the server
   if (error.response) {
     const serverMessage = extractServerMessage(error.response.data);
-    return serverMessage ? rewriteIfKnownCryptic(serverMessage) : fallbackForStatus(error.response.status);
+    return serverMessage
+      ? rewriteIfKnownCryptic(serverMessage)
+      : fallbackForStatus(error.response.status, error.config?.url);
   }
 
   // Axios error with no response — request never reached the server

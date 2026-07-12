@@ -71,7 +71,11 @@ function clearSessionAndRedirect() {
 // run for these hard-navigates away from the sign-in form mid-attempt
 // (clearing whatever they typed) before the caller's own catch block ever
 // gets to show an inline/toast error.
-const PRE_AUTH_PATHS = ["/auth/login", "/auth/google", "/auth/mfa/totp/verify-login"];
+// Exported so errorHandler.js can give a 401 from one of these a "wrong
+// credentials" message instead of the generic "your session expired" copy
+// written for an authenticated call whose token lapsed — same reasoning
+// as above, just needed on the message side too.
+export const PRE_AUTH_PATHS = ["/auth/login", "/auth/google", "/auth/mfa/totp/verify-login"];
 
 // ── Global response handler ───────────────────────────────────────────────────
 client.interceptors.response.use(

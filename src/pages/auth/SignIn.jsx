@@ -128,8 +128,16 @@ export default function SignIn() {
   }
 
   async function handleSignIn() {
-    if (!form.email.trim() || !form.password) {
+    if (!form.email.trim() && !form.password) {
       setError("Email and password are required.");
+      return;
+    }
+    if (!form.email.trim()) {
+      setError("Email is required.");
+      return;
+    }
+    if (!form.password) {
+      setError("Password is required.");
       return;
     }
     setLoading(true);

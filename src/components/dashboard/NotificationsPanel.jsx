@@ -28,11 +28,39 @@ function dayLabel(dateStr) {
   return d.toLocaleDateString("en-NG", { weekday: "long", month: "short", day: "numeric" });
 }
 
-// Resolve community info if the backend ever starts returning it
+// Resolve community info for display AND for the owned/member routing
+// split below — prefer the caller's own communityMap (built from
+// /communities/me, which is the only place `owned` is ever populated) over
+// a raw n.community the backend doesn't currently send but might one day;
+// an embedded object there wouldn't carry a viewer-relative `owned` flag.
 function resolveCommunity(n, communityMap) {
-  if (n.community) return n.community;
-  const id = n.communityId ?? n.community_id ?? null;
-  return (id && communityMap) ? (communityMap.get(id) ?? null) : null;
+  const id = n.communityId ?? n.community_id ?? n.community?.id ?? null;
+  const mapped = (id && communityMap) ? communityMap.get(id) : null;
+  return mapped ?? n.community ?? null;
+}
+
+// Where clicking this notification should go — scoped to the community it
+// actually came from (not whatever community happened to be active last),
+// and to the right side of the app for this user's role there:
+//   - a community this user OWNS/ADMINS  → the admin notifications page,
+//     scoped via ?community=, opening this notification's detail view.
+//   - a community this user is only a MEMBER of → the member app's
+//     notifications page. That page is hard-gated to mobile (see
+//     MemberDeviceGuard) same as the rest of the member app; on desktop the
+//     guard itself redirects to the QR hand-off screen rather than a dead
+//     end, the same fallback every other member-app deep link already
+//     relies on — nothing special-cased here.
+//   - no resolvable community (an account-level notification, or one whose
+//     community isn't in this user's list at all) → the unscoped admin
+//     notifications page, same as before.
+function notifDestination(n, community) {
+  if (community) {
+    const ref = community.slug ?? community.id;
+    return community.owned
+      ? `/dashboard/notifications?community=${ref}&open=${n.id}`
+      : `/member/notifications?community=${ref}`;
+  }
+  return `/dashboard/notifications?open=${n.id}`;
 }
 
 const CATEGORY_META = {
@@ -91,9 +119,7 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
     <button
       onClick={() => {
         if (!isRead) onMarkRead?.(n.id);
-        // Opens this notification's detail view on the notifications page —
-        // the ?open= param is consumed there (see useNotificationDetail).
-        onNavigate?.(`/dashboard/notifications?open=${n.id}`);
+        onNavigate?.(notifDestination(n, community));
       }}
       style={{
         display: "flex", alignItems: "flex-start", gap: 10, width: "100%",
