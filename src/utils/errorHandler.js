@@ -69,6 +69,15 @@ const BACKEND_MESSAGE_REWRITES = [
     match: /active default account/i,
     rewrite: "You'll need to set up your community's payout account before creating payment plans — head to Settings → Finance → Payout Account.",
   },
+  // The account exists and was selected during onboarding, but still needs
+  // manual activation on our side before it can receive payments (this is
+  // what the CEO described as "activating subaccounts from our end" — a
+  // real backend step, not a broken selection). Framed as a bounded wait
+  // rather than a dead-end error, per the same reasoning.
+  {
+    match: /community account is not active/i,
+    rewrite: "Your community's payout account is still being activated by our team — this usually takes 24–72 hours. You'll be notified once it's ready and can start creating payment plans.",
+  },
 ];
 
 function rewriteIfKnownCryptic(message) {

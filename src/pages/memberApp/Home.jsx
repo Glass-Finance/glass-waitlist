@@ -722,6 +722,12 @@ export default function Home() {
     ...rest.filter(isSameDayAsNextDue),
     ...rest.filter((o) => !isSameDayAsNextDue(o)).slice(0, 2),
   ];
+  // The real total, uncapped -- upcoming.length above is deliberately
+  // capped for card height, so it undercounts whenever there's more than
+  // fits. This is what actually tells a member "there's more than what
+  // you're looking at" before they tap into the full list.
+  const totalUpcomingCount = (data?.upcoming ?? []).length;
+  const hiddenUpcomingCount = totalUpcomingCount - upcoming.length - (nextDue ? 1 : 0);
   const history = (data?.history ?? []).slice(0, 3);
   const communityName = data?.community?.name ?? "Your Community";
   const communityInitial = communityName.charAt(0).toUpperCase();
@@ -1027,12 +1033,34 @@ export default function Home() {
                   marginBottom: 4,
                 }}
               >
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
-                  Upcoming Payments
-                </span>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
+                    Upcoming Payments
+                  </span>
+                  {/* The true total -- not upcoming.length, which is capped
+                      to keep the card short (same-day items uncapped, the
+                      rest capped at 2). Without this, someone with more
+                      payments than fit on the card has no way to tell more
+                      exist until they tap into the full list. */}
+                  {totalUpcomingCount > 0 && (
+                    <span
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: "#1C2B8A",
+                        background: "#E4E7F9",
+                        borderRadius: 999,
+                        padding: "1px 7px",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {totalUpcomingCount}
+                    </span>
+                  )}
+                </div>
               </div>
 
-              {upcoming.length === 0 ? (
+              {upcoming.length === 0 && totalUpcomingCount === 0 ? (
                 <div
                   style={{
                     display: "flex",
@@ -1118,7 +1146,9 @@ export default function Home() {
                   textAlign: "center",
                 }}
               >
-                View All
+                {hiddenUpcomingCount > 0
+                  ? `View All — ${hiddenUpcomingCount} more`
+                  : "View All"}
               </button>
             </div>
 

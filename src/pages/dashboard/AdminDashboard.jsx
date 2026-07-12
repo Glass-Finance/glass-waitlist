@@ -1157,7 +1157,18 @@ function DashboardContent({ isPaying, communityId }) {
     useCommunityAccount(communityId);
   const gsHasPlans = plans.length > 0;
   const gsHasMembers = (members?.total ?? 0) > 0;
-  const gsHasPayoutAccount = !!payoutAccount;
+  // A submitted account isn't necessarily a *usable* one -- it still needs
+  // to clear ACTIVE/VERIFIED on our side (see errorHandler.js's rewrite of
+  // "community account is not active" for the other end of this same gap).
+  // Treating any submitted account as "done" hid that pending/rejected
+  // state entirely: the checklist showed a green check and the whole card
+  // disappeared once dismissed, with nothing telling the owner their
+  // account was still being reviewed until they hit a wall trying to
+  // create a payment plan.
+  const payoutAccountStatus = payoutAccount?.status?.toUpperCase() ?? null;
+  const gsHasPayoutAccount = ["ACTIVE", "VERIFIED"].includes(payoutAccountStatus);
+  const gsPayoutAccountRejected = ["FAILED", "REJECTED"].includes(payoutAccountStatus);
+  const gsPayoutAccountPending = !!payoutAccount && !gsHasPayoutAccount && !gsPayoutAccountRejected;
   const showGettingStarted =
     !isLoading &&
     !plansLoading &&
@@ -1510,24 +1521,41 @@ function DashboardContent({ isPaying, communityId }) {
                 )}
               </div>
 
-              {/* Step 4 — payout account */}
+              {/* Step 4 — payout account. Three real states, not just
+                  done/not-done: submitting the account isn't the same as
+                  it being usable -- it still needs to clear verification
+                  on our side before payment plans can actually collect. */}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span
-                    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasPayoutAccount ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}
+                    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      gsHasPayoutAccount
+                        ? "bg-emerald-100"
+                        : gsPayoutAccountRejected
+                          ? "bg-red-100"
+                          : gsPayoutAccountPending
+                            ? "bg-amber-100"
+                            : "bg-white border-2 border-gray-200"
+                    }`}
                   >
                     {gsHasPayoutAccount && (
-                      <Check
-                        size={11}
-                        className="text-emerald-600"
-                        strokeWidth={2.5}
-                      />
+                      <Check size={11} className="text-emerald-600" strokeWidth={2.5} />
+                    )}
+                    {gsPayoutAccountRejected && (
+                      <AlertCircle size={11} className="text-red-600" strokeWidth={2.5} />
+                    )}
+                    {gsPayoutAccountPending && (
+                      <Clock size={11} className="text-amber-600" strokeWidth={2.5} />
                     )}
                   </span>
                   <span
                     className={`text-xs ${gsHasPayoutAccount ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}
                   >
-                    Set up your payout account
+                    {gsPayoutAccountRejected
+                      ? "Payout account verification rejected"
+                      : gsPayoutAccountPending
+                        ? "Payout account pending verification"
+                        : "Set up your payout account"}
                   </span>
                 </div>
                 {!gsHasPayoutAccount && (
@@ -1535,9 +1563,17 @@ function DashboardContent({ isPaying, communityId }) {
                     onClick={() =>
                       navigate("/dashboard/settings/finance/paystack")
                     }
-                    className="text-xs font-semibold text-[#002FA7] bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
+                    className={`text-xs font-semibold bg-white px-3 py-1.5 rounded-lg transition-colors cursor-pointer flex-shrink-0 border ${
+                      gsPayoutAccountRejected
+                        ? "text-red-700 border-red-100 hover:bg-red-50"
+                        : "text-[#002FA7] border-blue-100 hover:bg-blue-50"
+                    }`}
                   >
-                    Set up
+                    {gsPayoutAccountRejected
+                      ? "Review"
+                      : gsPayoutAccountPending
+                        ? "View status"
+                        : "Set up"}
                   </button>
                 )}
               </div>
