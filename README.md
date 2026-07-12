@@ -13,6 +13,8 @@ Glass is a community finance platform — communities (schools, cooperatives, as
 - **Axios** for HTTP, with an interceptor-based auth-refresh flow
 - **Framer Motion / GSAP / OGL** for animation on the public marketing pages
 - **ESLint 9** for linting
+- **Vitest** for unit tests (jsdom environment), run in CI on every push/PR
+- **Sentry** for crash/error reporting, gated behind an optional env var (disabled unless configured)
 
 ## Getting started
 
@@ -31,6 +33,7 @@ The app runs at `http://localhost:3000` by default (see `vite.config.js`).
 | `VITE_API_BASE_URL` | Yes | Origin of the backend API (e.g. `https://api.glasspay.app`). The client appends `/api/v1` itself. |
 | `VITE_GOOGLE_CLIENT_ID` | Only for Google sign-in | OAuth 2.0 Web client ID from Google Cloud Console, used by the "Continue with Google" buttons on sign-up/sign-in. Add your dev origin (e.g. `http://localhost:3000`) under "Authorized JavaScript origins" for it to work locally. |
 | `VITE_APP_URL` | No | Public origin of the app itself (e.g. `https://app.glasspay.app`), used to build cross-device links (the "open this on your phone" desktop-required flow). Falls back to `window.location.origin` if unset, so it's safe to skip in local dev. |
+| `VITE_SENTRY_DSN` | No | Enables crash/error reporting (`src/utils/monitoring.js`) via Sentry. Leave unset to run with monitoring disabled — the default for local dev. |
 
 This repo is frontend-only — it talks to a separate backend service and does not run one itself.
 
@@ -47,6 +50,8 @@ There's no separate local/mock backend to stand up — `VITE_API_BASE_URL` point
 | `npm run dev` | Start the Vite dev server |
 | `npm run build` | Type-check-free production build to `dist/` |
 | `npm run lint` | Run ESLint over the project |
+| `npm run test` | Run the Vitest suite once (also runs in CI) |
+| `npm run test:watch` | Run Vitest in watch mode |
 | `npm run preview` | Serve the production build locally |
 
 ## Project structure
@@ -83,13 +88,16 @@ The codebase uses a handful of domain terms consistently — worth knowing befor
 | **Transaction** | A record of money actually moving — a completed, failed, or pending payment attempt. |
 | **Authorisation** | A saved payment method (card) with consent to auto-charge for one or more plans — this is what powers Auto-Pay. |
 | **Settlement** | The payout of collected funds from Glass to a community's bank account. |
+| **Reconciliation** | Platform-admin process matching internal ledger records against gateway settlements to surface discrepancies ("findings") for review/resolution — see the Settlements/Reconciliation tabs in the platform admin panel. |
 
 ## Contributing
 
 There's no branch/PR process in place yet — contributors currently commit and push directly to `main`. If you're pushing changes, `git fetch` first and rebase onto any commits that landed since you last pulled, since more than one person may be working on `main` at the same time.
 
+CI (`.github/workflows/ci.yml`) runs lint, test, and build on every push to `main` — it doesn't block the push itself, but a red run means something needs a follow-up fix.
+
 ## Notes
 
 - Tailwind v4 uses its CSS-first config — theme overrides live in `@theme` blocks in `src/index.css`, not in a `tailwind.config.js`.
 - The community-admin dashboard (`src/pages/dashboard`) is the largest and most actively developed part of the app.
-- There's currently no automated test suite (no `test` script, no test files) — verify changes by running the app and exercising the affected flow manually.
+- Unit tests (`npm run test`) cover the highest-risk pure logic — payment/obligation status resolution, formatting helpers, role matching, recurring-schedule math — colocated as `*.test.js` next to the file they cover. Most UI/flow changes still need manual verification by running the app; the suite isn't (yet) a substitute for exercising the affected flow.
