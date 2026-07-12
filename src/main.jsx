@@ -5,6 +5,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "sonner";
 import { CheckCircle2, XCircle, AlertTriangle, Info, Loader2 } from "lucide-react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 import App from "./App.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import "./index.css";
@@ -116,6 +117,7 @@ createRoot(document.getElementById("root")).render(
           </ErrorBoundary>
           <RealtimeBridge />
           <SpeedInsights />
+          <Analytics />
 
           <Toaster
             position="bottom-right"
