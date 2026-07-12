@@ -239,7 +239,7 @@ function StepOTP({ email, onVerified, onBack }) {
   async function handleVerify() {
     const code = digits.join("");
     if (code.length < OTP_LENGTH) {
-      setError("Enter the full 6-digit code.");
+      setError("Please enter the full 6-digit code.");
       return;
     }
     setLoading(true);
@@ -432,7 +432,7 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
       return;
     }
     if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Passwords don't match.");
       return;
     }
     setLoading(true);

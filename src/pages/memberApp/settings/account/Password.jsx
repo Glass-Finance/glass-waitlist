@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { useUpdatePassword } from "../../../../hooks/useMyAccount";
 import { getErrorMessage } from "../../../../utils/errorHandler";
+import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
+import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
 
 const inputStyle = {
   width: "100%",
@@ -50,8 +52,12 @@ export default function Password() {
 
   async function handleSubmit() {
     setError("");
-    if (!form.currentPassword || !form.newPassword) {
-      setError("Please fill in all fields.");
+    if (!form.currentPassword) {
+      setError("Current password is required.");
+      return;
+    }
+    if (!isPasswordValid(form.newPassword)) {
+      setError(`Password must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`);
       return;
     }
     if (form.newPassword !== form.confirmPassword) {
@@ -91,13 +97,16 @@ export default function Password() {
             show={show.current}
             onToggleShow={() => setShow((s) => ({ ...s, current: !s.current }))}
           />
-          <PasswordField
-            label="New Password"
-            value={form.newPassword}
-            onChange={(e) => setForm((f) => ({ ...f, newPassword: e.target.value }))}
-            show={show.next}
-            onToggleShow={() => setShow((s) => ({ ...s, next: !s.next }))}
-          />
+          <div>
+            <PasswordField
+              label="New Password"
+              value={form.newPassword}
+              onChange={(e) => setForm((f) => ({ ...f, newPassword: e.target.value }))}
+              show={show.next}
+              onToggleShow={() => setShow((s) => ({ ...s, next: !s.next }))}
+            />
+            <PasswordChecklist password={form.newPassword} />
+          </div>
           <PasswordField
             label="Confirm New Password"
             value={form.confirmPassword}

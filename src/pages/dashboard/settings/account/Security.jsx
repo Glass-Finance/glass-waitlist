@@ -4,6 +4,8 @@ import { Eye, EyeOff, ShieldCheck, Shield, Copy, Check, Loader2, X } from "lucid
 import { useUpdatePassword, useMe } from "../../../../hooks/useMyAccount";
 import { setupMfaTotp, enableMfaTotp, disableMfaTotp } from "../../../../services/authService";
 import { getErrorMessage } from "../../../../utils/errorHandler";
+import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
+import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
 import { useQueryClient } from "@tanstack/react-query";
 
 // ─── MFA Modal ────────────────────────────────────────────────────────────────
@@ -255,7 +257,8 @@ export default function Security() {
   async function handleUpdatePassword() {
     setError("");
     setSuccess(false);
-    if (!passwords.current || !passwords.new) { setError("Please fill in all fields."); return; }
+    if (!passwords.current) { setError("Current password is required."); return; }
+    if (!isPasswordValid(passwords.new)) { setError(`Password must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`); return; }
     if (passwords.new !== passwords.confirm) { setError("New passwords don't match."); return; }
     try {
       await updatePassword.mutateAsync({ oldPassword: passwords.current, newPassword: passwords.new, confirmPassword: passwords.confirm });
@@ -305,6 +308,7 @@ export default function Security() {
                   {show.new ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
+              <PasswordChecklist password={passwords.new} />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-gray-600">Confirm New Password</label>

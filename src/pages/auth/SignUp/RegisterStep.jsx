@@ -52,6 +52,15 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    const trimmedEmail = form.email.trim().toLowerCase();
+    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    if (!form.firstName.trim() || !form.lastName.trim()) {
+      setError("First and last name are required.");
+      return;
+    }
     if (!form.phone.trim()) {
       setError("Phone number is required.");
       return;
@@ -61,7 +70,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
       return;
     }
     if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Passwords don't match.");
       return;
     }
     setLoading(true);
@@ -69,11 +78,11 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
       const result = await register({
         firstName: form.firstName,
         lastName: form.lastName,
-        email: form.email,
+        email: trimmedEmail,
         phoneNumber: form.phone.trim(),
         password: form.password,
       });
-      onNext(form.email, result);
+      onNext(trimmedEmail, result);
     } catch (err) {
       setError(notifyError(err, { context: "Register" }));
     } finally {

@@ -656,7 +656,7 @@ export default function AddMembers() {
     setError("");
     setLoading(true);
     try {
-      if (!communityId) { setError("Community ID missing."); return; }
+      if (!communityId) { setError("Community ID missing — go back and retry."); return; }
       if (!selectedRoleId) { setError("Roles are still loading — please wait a moment."); return; }
       const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
       await bulkCreateCommunityInvites(communityId, {
@@ -690,7 +690,7 @@ export default function AddMembers() {
 
       const filled = members.filter((m) => m.email);
       if (filled.length === 0) { setShowSuccess(true); return; }
-      if (!communityId) { setError("Community ID missing."); return; }
+      if (!communityId) { setError("Community ID missing — go back and retry."); return; }
 
       const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
       await bulkCreateCommunityInvites(communityId, {

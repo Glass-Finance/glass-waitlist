@@ -3,8 +3,10 @@ import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { resetPassword } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
+import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../utils/password";
 import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
+import PasswordChecklist from "../../components/auth/PasswordChecklist";
 
 // Shared by /reset-password and /member/reset-password — see SignIn.jsx
 // for why these were merged.
@@ -28,12 +30,12 @@ export default function ResetPassword() {
   }
 
   async function handleSubmit() {
-    if (form.newPassword.length < 8) {
-      setError("Password must be at least 8 characters.");
+    if (!isPasswordValid(form.newPassword)) {
+      setError(`Password must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`);
       return;
     }
     if (form.newPassword !== form.confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Passwords don't match.");
       return;
     }
     setLoading(true);
@@ -89,6 +91,7 @@ export default function ResetPassword() {
                   </button>
                 }
               />
+              <PasswordChecklist password={form.newPassword} />
             </div>
 
             <div>
