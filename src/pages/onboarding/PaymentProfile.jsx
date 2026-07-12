@@ -19,6 +19,7 @@ import Background from "../../assets/background.webp";
 import client from "../../api/client";
 import { notifyError } from "../../utils/errorHandler";
 import { useCommunityAccount } from "../../hooks/useCommunityAccount";
+import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
 import BankSelect from "../../components/common/BankSelect";
 
 const STEPS = [
@@ -66,7 +67,14 @@ export default function PaymentProfile() {
   const navigate  = useNavigate();
   const location  = useLocation();
 
-  const { email, communityId, communitySlug, communityName } = location.state ?? {};
+  // Falls back to whatever OrganizationProfile persisted right after
+  // creating this community -- location.state alone doesn't survive a
+  // reload or a forced re-login, and by this point the community already
+  // exists on the backend, so losing this link strands it with no way
+  // back short of re-doing everything from scratch.
+  const savedProgress = readOnboardingProgress();
+  const { email, communityId, communitySlug, communityName } =
+    location.state ?? savedProgress;
   const { create: saveAccount } = useCommunityAccount(communityId);
 
   const [banks,       setBanks]       = useState([]);

@@ -437,6 +437,7 @@ import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { toastProgress, toastSuccess } from "../../utils/toast";
 import { useRoles } from "../../hooks/useCommunityMembers";
 import { bulkCreateCommunityInvites } from "../../api/invites";
+import { readOnboardingProgress, clearOnboardingProgress } from "../../utils/onboardingProgress";
 
 // Confirmed against the live backend (GET /roles/community, 2026-07-12):
 // only these three roles actually exist -- COMMUNITY_OWNER, COMMUNITY_ADMIN,
@@ -542,7 +543,11 @@ export default function AddMembers() {
   const roles = rolesData ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name)) : [];
   const finalRoles = roles.length ? roles : FALLBACK_ROLES;
 
-  const { email, communityId, communitySlug, communityName } = location.state ?? {};
+  // Same fallback as PaymentProfile.jsx -- location.state doesn't survive a
+  // reload or forced re-login, and the community already exists on the
+  // backend by this point.
+  const { email, communityId, communitySlug, communityName } =
+    location.state ?? readOnboardingProgress();
 
   const [selectedRoleId, setSelectedRoleId] = useState("");
   const [billingExempt,  setBillingExempt]  = useState(false);
@@ -712,6 +717,9 @@ export default function AddMembers() {
   };
 
   const goToDashboard = () => {
+    // Onboarding is done -- nothing left to recover, and keeping this
+    // around risks bleeding into a later, unrelated community's setup.
+    clearOnboardingProgress();
     if (communitySlug || communityId) {
       // Matches the ?community= convention AdminDashboard/Sidebar read from —
       // there's no /dashboard/:slug/home route, so navigating there 404s

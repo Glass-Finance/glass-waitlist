@@ -512,7 +512,7 @@
  *      → returns { data: { id, slug, name, ... } }
  *   3. Store communityId + slug in router state, navigate to PaymentProfile
  */
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bell, Upload, Check, X as XIcon, Loader2, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
@@ -522,6 +522,7 @@ import { useSlug } from "../../hooks/useSlug";
 import { useAuth } from "../../store/AuthContext";
 import { notifyError } from "../../utils/errorHandler";
 import { resizeImageFile } from "../../utils/resizeImage";
+import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
 
 const CATEGORIES = [
   "Alumni Association", "Faith Community", "Professional Association",
@@ -555,8 +556,13 @@ export default function OrganizationProfile() {
   const location   = useLocation();
   const fileRef    = useRef(null);
 
-  const email      = location.state?.email ?? "";
-  const isPaying   = location.state?.isPaying ?? true;
+  // location.state doesn't survive a reload or a forced re-login mid-form
+  // (see errorHandler.js/client.js's session-expiry redirect) -- fall back
+  // to whatever was last persisted for this in-progress signup so a
+  // dropped session doesn't also drop everything already typed.
+  const savedProgress = readOnboardingProgress();
+  const email      = location.state?.email ?? savedProgress.email ?? "";
+  const isPaying   = location.state?.isPaying ?? savedProgress.isPaying ?? true;
   const { updateUser, isAuthenticated } = useAuth();
 
   // Covers users who already have an account (and so already have a
@@ -568,17 +574,32 @@ export default function OrganizationProfile() {
   };
 
   const [dragOver,  setDragOver]  = useState(false);
-  const [logoFile,  setLogoFile]  = useState(null);   // File object
+  const [logoFile,  setLogoFile]  = useState(null);   // File object -- not persisted, re-picking a logo is a small ask next to losing the whole form
   const [logoUrl,   setLogoUrl]   = useState(null);   // preview URL
   const [error,     setError]     = useState("");
   const [loading,   setLoading]   = useState(false);
 
   const [form, setForm] = useState({
-    communityName: "", description: "", category: "", contactEmail: email,
+    communityName: savedProgress.form?.communityName ?? "",
+    description:   savedProgress.form?.description ?? "",
+    category:      savedProgress.form?.category ?? "",
+    contactEmail:  savedProgress.form?.contactEmail ?? email,
   });
 
   const { slug, setSlug, available, checking, suggesting, suggestFrom } =
     useSlug("COMMUNITY");
+
+  // Restore a previously-entered slug once on mount (setSlug triggers the
+  // hook's own debounced availability re-check, same as a manual edit).
+  useEffect(() => {
+    if (savedProgress.slug) setSlug(savedProgress.slug);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Persist as the admin types, so a dropped session mid-form loses at
+  // most the last few keystrokes instead of the whole thing.
+  useEffect(() => {
+    saveOnboardingProgress({ form, slug, email, isPaying });
+  }, [form, slug, email, isPaying]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -643,6 +664,15 @@ export default function OrganizationProfile() {
       // straight to the member app, which then hits the device guard on
       // desktop and dead-ends at the QR handoff instead of the dashboard.
       updateUser({ isAdmin: true });
+
+      // From here on, this community exists on the backend whether or not
+      // the rest of onboarding completes -- persist the link to it so a
+      // dropped session on the next two steps can resume instead of
+      // stranding a half-configured community with no way back to it.
+      saveOnboardingProgress({
+        email, isPaying,
+        communityId: community.id, communitySlug: community.slug, communityName: community.name,
+      });
 
       navigate("/onboarding/payment-profile", {
         state: { email, isPaying, communityId: community.id, communitySlug: community.slug, communityName: community.name },
