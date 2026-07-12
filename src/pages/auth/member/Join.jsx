@@ -404,6 +404,7 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [accountExists, setAccountExists] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   function set(field) {
     return (e) => {
@@ -414,6 +415,10 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
   }
 
   function handleSubmit() {
+    if (!agreed) {
+      setError("Please agree to the Terms of Service and Privacy Policy to continue.");
+      return;
+    }
     const trimmedEmail = form.email.trim().toLowerCase();
     if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
       setError("Enter a valid email address.");
@@ -447,7 +452,8 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
     form.lastName.trim() &&
     form.phone.trim() &&
     form.password &&
-    form.confirmPassword;
+    form.confirmPassword &&
+    agreed;
 
   return (
     <div className="flex flex-col gap-5">
@@ -591,6 +597,41 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
         </div>
       )}
 
+      <label className="flex items-start gap-2.5 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => setAgreed(e.target.checked)}
+          className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer"
+          style={{ accentColor: "#1C2B8A" }}
+        />
+        <span className="text-xs text-gray-500 leading-snug">
+          I agree to the{" "}
+          <Link
+            to="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="font-medium"
+            style={{ color: "#1C2B8A" }}
+          >
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link
+            to="/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="font-medium"
+            style={{ color: "#1C2B8A" }}
+          >
+            Privacy Policy
+          </Link>
+          .
+        </span>
+      </label>
+
       <ErrorMessage message={error} />
 
       <PrimaryButton
@@ -608,31 +649,12 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
         <div className="flex-1 h-px bg-gray-300" />
       </div>
 
-      <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
-
-      <p className="text-xs text-gray-500 leading-snug text-center">
-        By creating an account, you agree to our{" "}
-        <Link
-          to="/terms"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium"
-          style={{ color: "#1C2B8A" }}
-        >
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link
-          to="/privacy"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium"
-          style={{ color: "#1C2B8A" }}
-        >
-          Privacy Policy
-        </Link>
-        .
-      </p>
+      <div
+        className={!agreed ? "opacity-50 pointer-events-none" : ""}
+        title={!agreed ? "Agree to the Terms of Service and Privacy Policy first" : undefined}
+      >
+        <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
+      </div>
 
       <p className="text-sm text-center text-gray-500 pb-2">
         Already Have An Account?{" "}
