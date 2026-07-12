@@ -145,7 +145,7 @@ export default function CookiePolicy() {
       <p>
         Glass Finance Limited<br />
         Email: <a href="mailto:privacy@glasspay.app">privacy@glasspay.app</a><br />
-        Address: 1, Onyemargwu Close, Abule Egba, Lagos
+        Address: 1, Onyemergwu Close, Abule Egba, Lagos
       </p>
       <p>
         For more on how we handle Personal Information generally, see our{" "}
