@@ -38,7 +38,8 @@ export default function TermsOfService() {
         <li><strong>"Account"</strong> means a Glass user profile, whether held by an Individual, a Community, or an Organization.</li>
         <li><strong>"Community"</strong> means a group, association, cooperative, religious organization, school, club, NGO, alumni body, student organization, or similar body that uses Glass to collect Dues or Contributions from its Members.</li>
         <li><strong>"Community Owner"</strong> means the individual or Organization that creates and holds ultimate administrative control over a Community's Glass account.</li>
-        <li><strong>"Community Administrator"</strong> means a user granted administrative permissions over a Community by a Community Owner, including Treasurers, Financial Officers, and Moderators.</li>
+        <li><strong>"Community Administrator"</strong> means a user granted administrative permissions over a Community by a Community Owner. Glass currently supports three Community roles — Community Owner, Community Administrator, and Community Member (Member) — and may introduce additional or more granular roles (such as Treasurer, Financial Officer, or Moderator) in the future.</li>
+        <li><strong>"Guest"</strong> means a person who makes a one-time payment through Glass without creating a full Account.</li>
         <li><strong>"Member"</strong> means an individual who joins a Community on Glass to make or track payments, whether or not they hold an independent Glass Account.</li>
         <li><strong>"Organization"</strong> means a legal entity (registered or unregistered) that uses Glass, including its authorized representatives.</li>
         <li><strong>"Dues"</strong> or <strong>"Contributions"</strong> means any recurring or one-time payment obligation, levy, membership fee, donation, event payment, or similar amount that a Community requests from its Members through Glass.</li>
@@ -126,10 +127,13 @@ export default function TermsOfService() {
         Platform.
       </p>
       <p>
-        5.3 Community Owners may assign role-based permissions (e.g., Treasurer, Financial
-        Officer, Moderator) to other users. Glass is not responsible for internal governance
-        disputes about who is authorized to hold or exercise a given role; the Organization
-        bears sole responsibility for its internal governance and role assignment decisions.
+        5.3 Community Owners may assign the Community Administrator role to other users. The
+        Platform currently supports three Community roles — Community Owner, Community
+        Administrator, and Member — and Glass may introduce additional or more granular roles
+        (such as Treasurer, Financial Officer, or Moderator) in the future. Glass is not
+        responsible for internal governance disputes about who is authorized to hold or
+        exercise a given role; the Organization bears sole responsibility for its internal
+        governance and role assignment decisions.
       </p>
       <p>
         5.4 Where a Community Owner is removed, replaced, or disputed internally, Glass may
