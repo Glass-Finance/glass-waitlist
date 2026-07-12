@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { register } from "../../../services/authService";
 import { notifyError } from "../../../utils/errorHandler";
@@ -244,6 +245,30 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
 
       <Divider />
       <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
+
+      <p className="text-xs text-gray-500 leading-snug text-center mt-4">
+        By creating an account, you agree to our{" "}
+        <Link
+          to="/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium hover:underline"
+          style={{ color: "#002FA7" }}
+        >
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link
+          to="/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium hover:underline"
+          style={{ color: "#002FA7" }}
+        >
+          Privacy Policy
+        </Link>
+        .
+      </p>
 
       <p className="text-center text-sm mt-5 text-gray-500">
         Already Have An Account?{" "}

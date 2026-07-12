@@ -20,6 +20,11 @@ import SuperAdminRoute from "./routes/SuperAdminRoute";
 const OrganizationsHome = lazy(() => import("./pages/OrganizationsHome"));
 const MembersHome = lazy(() => import("./pages/MembersHome"));
 const InviteLanding = lazy(() => import("./pages/InviteLanding"));
+const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/legal/TermsOfService"));
+const CookiePolicy = lazy(() => import("./pages/legal/CookiePolicy"));
+const AcceptableUsePolicy = lazy(() => import("./pages/legal/AcceptableUsePolicy"));
+const RefundPolicy = lazy(() => import("./pages/legal/RefundPolicy"));
 
 // ── Auth pages ────────────────────────────────────────────────────────────────
 const SignUp = lazy(() => import("./pages/auth/SignUp"));
@@ -141,7 +146,7 @@ const MemberNotificationSettings = lazy(
 // with its query string intact, so deep links (invites, payment callbacks)
 // keep working. No-op wherever APP_ORIGIN is the current origin (local dev,
 // single-domain deployments, and the app domain itself).
-const MARKETING_PATHS = new Set(["/", "/members"]);
+const MARKETING_PATHS = new Set(["/", "/members", "/privacy", "/terms", "/cookies", "/acceptable-use", "/refund-policy"]);
 
 function MarketingDomainRedirect() {
   const location = useLocation();
@@ -171,6 +176,14 @@ function App() {
             kept in case anything else already points at it. ── */}
           <Route path="/invites" element={<InviteLanding />} />
           <Route path="/invite" element={<InviteLanding />} />
+
+          {/* ── Legal — not device/domain-gated, so links from emails,
+            receipts, or the app subdomain all resolve regardless of host. */}
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/cookies" element={<CookiePolicy />} />
+          <Route path="/acceptable-use" element={<AcceptableUsePolicy />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
 
           {/* ── Auth ──
             /sign-up is the COMMUNITY OWNER entry point (desktop-first,

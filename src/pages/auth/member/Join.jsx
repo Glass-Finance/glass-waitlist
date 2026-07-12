@@ -610,6 +610,30 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
 
       <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
 
+      <p className="text-xs text-gray-500 leading-snug text-center">
+        By creating an account, you agree to our{" "}
+        <Link
+          to="/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium"
+          style={{ color: "#1C2B8A" }}
+        >
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link
+          to="/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium"
+          style={{ color: "#1C2B8A" }}
+        >
+          Privacy Policy
+        </Link>
+        .
+      </p>
+
       <p className="text-sm text-center text-gray-500 pb-2">
         Already Have An Account?{" "}
         <Link
