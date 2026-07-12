@@ -438,7 +438,13 @@ import { toastProgress, toastSuccess } from "../../utils/toast";
 import { useRoles } from "../../hooks/useCommunityMembers";
 import { bulkCreateCommunityInvites } from "../../api/invites";
 
-const ALLOWED_ROLE_NAMES = new Set(["Community Member", "Admin", "Treasurer"]);
+// Confirmed against the live backend (GET /roles/community, 2026-07-12):
+// only these three roles actually exist -- COMMUNITY_OWNER, COMMUNITY_ADMIN,
+// COMMUNITY_MEMBER. "Admin" and "Treasurer" never matched anything real, so
+// this dropdown silently only ever offered "Community Member" no matter how
+// many roles the backend returned. Matches the same allowlist Members.jsx
+// uses for consistency between the two places a role gets assigned.
+const ALLOWED_ROLE_NAMES = new Set(["Community Owner", "Community Admin", "Community Member"]);
 const FALLBACK_ROLES = [{ id: "", name: "Community Member" }];
 
 const STEPS = [
