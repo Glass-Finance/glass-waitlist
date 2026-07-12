@@ -562,7 +562,7 @@ export default function TermsOfService() {
         Glass Finance Limited<br />
         Email: <a href="mailto:legal@glasspay.app">legal@glasspay.app</a><br />
         Support: <a href="mailto:support@glasspay.app">support@glasspay.app</a><br />
-        Address: 1, Onyemargwu Close, Abule Egba, Lagos
+        Address: 1, Onyemergwu Close, Abule Egba, Lagos
       </p>
 
       <h2>34. Severability</h2>
