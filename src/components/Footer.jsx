@@ -26,10 +26,12 @@ const links = {
     { label: "Contact",  href: "mailto:glasspayhq@gmail.com" },
   ],
   Legal: [
-    { label: "Privacy",       href: null          },
-    { label: "Terms",         href: null          },
-    { label: "Security",      href: "/#security"  },
-    { label: "Cookie Policy", href: null          },
+    { label: "Privacy",         href: "/privacy"       },
+    { label: "Terms",           href: "/terms"         },
+    { label: "Security",        href: "/#security"     },
+    { label: "Cookie Policy",   href: "/cookies"        },
+    { label: "Acceptable Use",  href: "/acceptable-use" },
+    { label: "Refund Policy",   href: "/refund-policy"  },
   ],
 };
 
