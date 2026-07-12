@@ -11,20 +11,9 @@ import { extractNotificationDetails, formatNairaAmount } from "../../utils/notif
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import Background from "../../assets/background.webp";
+import { formatRelativeDateTime as formatTime } from "../../utils/format";
 
 const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";
-
-function formatTime(dateStr) {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  const time = d.toLocaleTimeString("en-NG", { hour: "numeric", minute: "2-digit" });
-  if (d.toDateString() === today.toDateString()) return `Today ${time}`;
-  if (d.toDateString() === yesterday.toDateString()) return `Yesterday, ${time}`;
-  return `${d.toLocaleDateString("en-NG", { month: "short", day: "numeric" })} ${time}`;
-}
 
 // notificationCategory() maps the backend's exact notificationType enum to a
 // tab — precise for every documented type. This heuristic only runs for

@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import backgroundUrl from "../assets/background.webp";
+import { formatNaira as sharedFormatNaira, toTitleCase } from "./format";
 
 async function imgToBase64(url) {
   try {
@@ -18,13 +19,7 @@ async function imgToBase64(url) {
 }
 
 function formatNaira(amount) {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: 2,
-  })
-    .format(amount ?? 0)
-    .replace("NGN", "₦");
+  return sharedFormatNaira(amount, { decimals: 2 });
 }
 
 function formatDate(d) {
@@ -58,11 +53,6 @@ function formatHeaderDate(d) {
     hour: "numeric",
     minute: "2-digit",
   });
-}
-
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function statusLabel(status) {

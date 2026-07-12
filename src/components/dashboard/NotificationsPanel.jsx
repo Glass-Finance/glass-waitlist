@@ -4,18 +4,7 @@ import { extractNotificationDetails, formatNairaAmount } from "../../utils/notif
 import { notificationCategory } from "../../utils/notificationTypes";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
-
-function formatTimestamp(dateStr) {
-  if (!dateStr) return "";
-  const d = new Date(dateStr);
-  const now = new Date();
-  const yesterday = new Date(now);
-  yesterday.setDate(now.getDate() - 1);
-  const time = d.toLocaleTimeString("en-NG", { hour: "numeric", minute: "2-digit", hour12: true });
-  if (d.toDateString() === now.toDateString()) return `Today ${time}`;
-  if (d.toDateString() === yesterday.toDateString()) return `Yesterday ${time}`;
-  return d.toLocaleDateString("en-NG", { month: "short", day: "numeric" }) + `, ${time}`;
-}
+import { formatRelativeDateTime as formatTimestamp } from "../../utils/format";
 
 function dayLabel(dateStr) {
   if (!dateStr) return "Earlier";

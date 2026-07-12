@@ -7,6 +7,7 @@ import { getBanks, resolveAccount } from "../../../../api/members";
 import { notifyError } from "../../../../utils/errorHandler";
 import BankSelect from "../../../../components/common/BankSelect";
 import LoadingState from "../../../../components/common/LoadingState";
+import { formatNairaCompact as formatNaira, formatDate } from "../../../../utils/format";
 import banksData from "nigerian-bank-icons/assets/banks.json";
 
 // Exclude generic placeholder entries — banks without real logos use colored initials.
@@ -82,29 +83,6 @@ function BankAvatar({ bankCode, bankName, storedLogoUrl }) {
   );
 }
 
-function formatNaira(amount) {
-  if (amount === null || amount === undefined) return "—";
-  const n = Number(amount);
-  if (isNaN(n)) return "—";
-  if (n >= 1_000_000) return `₦${(n / 1_000_000).toFixed(2)}M`;
-  if (n >= 1_000) return `₦${(n / 1_000).toFixed(1)}K`;
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: 0,
-  })
-    .format(n)
-    .replace("NGN", "₦");
-}
-
-function formatDate(d) {
-  if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-NG", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 // Status pill next to the account name — PENDING accounts haven't cleared
 // verification yet, so this shouldn't look identical to a settled one.

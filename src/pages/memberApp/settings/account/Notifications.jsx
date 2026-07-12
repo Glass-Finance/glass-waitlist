@@ -1,31 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, RefreshCw } from "lucide-react";
 import { useNotificationPreferences } from "../../../../hooks/useNotifications";
-
-function Toggle({ on, onChange, disabled }) {
-  return (
-    <button
-      onClick={() => !disabled && onChange(!on)}
-      style={{
-        background: "none", border: "none",
-        cursor: disabled ? "not-allowed" : "pointer",
-        padding: 0, flexShrink: 0, opacity: disabled ? 0.5 : 1,
-      }}
-    >
-      <div style={{
-        width: 40, height: 22, borderRadius: 999,
-        background: on ? "#002FA7" : "#D1D5DB",
-        position: "relative", transition: "background 0.2s",
-      }}>
-        <div style={{
-          width: 16, height: 16, borderRadius: "50%", background: "#fff",
-          position: "absolute", top: 3, left: on ? 21 : 3,
-          transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
-        }} />
-      </div>
-    </button>
-  );
-}
+import Toggle from "../../../../components/common/Toggle";
 
 function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
   return (

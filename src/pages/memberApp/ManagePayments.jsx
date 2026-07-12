@@ -3,21 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments, useManagePayments } from "../../hooks/usePayments";
 import LoadingState from "../../components/common/LoadingState";
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function formatNaira(n) {
-  return "₦" + new Intl.NumberFormat("en-NG").format(n ?? 0);
-}
-
-function formatDate(d) {
-  if (!d) return null;
-  return new Date(d).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" });
-}
-
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
-}
+import Toggle from "../../components/common/Toggle";
+import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 function frequencyLabel(freq) {
   const f = (freq ?? "").toUpperCase();
@@ -44,18 +31,6 @@ function CardIcon({ cardType }) {
 }
 
 // ── Toggle ────────────────────────────────────────────────────────────────────
-function Toggle({ on, onChange }) {
-  return (
-    <button
-      onClick={onChange}
-      style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}
-    >
-      <div style={{ width: 44, height: 24, borderRadius: 999, background: on ? "#002FA7" : "#D1D5DB", position: "relative", transition: "background 0.2s" }}>
-        <div style={{ width: 18, height: 18, borderRadius: "50%", background: "#fff", position: "absolute", top: 3, left: on ? 23 : 3, transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
-      </div>
-    </button>
-  );
-}
 
 // ── Filter dropdown ───────────────────────────────────────────────────────────
 const FILTER_OPTIONS = ["All", "Auto-Pay On", "Auto-Pay Off"];

@@ -3,32 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Clock } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
 import LoadingState from "../../components/common/LoadingState";
+import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 const FILTER_OPTIONS = ["All", "Recurring", "One-time"];
-
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function formatNaira(amount) {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: 0,
-  })
-    .format(amount ?? 0)
-    .replace("NGN", "₦");
-}
-
-function formatDate(d) {
-  if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-NG", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
 
 function FilterDropdown({ value, onChange }) {
   const [open, setOpen] = useState(false);

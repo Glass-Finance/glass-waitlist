@@ -3,17 +3,12 @@ import { createPortal } from "react-dom";
 import { X, FileText, Image as ImageIcon, Share2 } from "lucide-react";
 import html2canvas from "html2canvas";
 import backgroundUrl from "../../assets/background.webp";
+import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-
+// Receipts show 2 decimal places (kobo precision), unlike the app-wide 0-decimal default.
 function formatNaira(amount) {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: 2,
-  })
-    .format(amount ?? 0)
-    .replace("NGN", "₦");
+  return sharedFormatNaira(amount, { decimals: 2 });
 }
 
 function formatDate(d) {
@@ -47,11 +42,6 @@ function formatHeaderDate(d) {
     hour: "numeric",
     minute: "2-digit",
   });
-}
-
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function statusLabel(status) {

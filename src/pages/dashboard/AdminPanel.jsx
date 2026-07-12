@@ -18,12 +18,18 @@ import {
   Edit2,
   Wallet,
   SlidersHorizontal,
+  Landmark,
+  Scale,
+  Download,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import SystemConfig from "./settings/admin/SystemConfig";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Background from "../../assets/background.webp";
 import { getErrorMessage } from "../../utils/errorHandler";
 import EmptyState from "../../components/common/EmptyState";
+import { useExportJob } from "../../hooks/useExportJob";
 import {
   getAdminCommunities,
   setCommissionOverride,
@@ -37,6 +43,17 @@ import {
   createAdminNotification,
   getAdminNotificationJobs,
   resolveBankAccount,
+  getAdminSettlements,
+  getAdminSettlement,
+  syncAdminSettlements,
+  exportAdminSettlements,
+  getAdminReconciliationRuns,
+  triggerReconciliationRun,
+  triggerFullReconciliationRun,
+  getReconciliationRunReport,
+  getAdminReconciliationFindings,
+  reviewReconciliationFinding,
+  resolveReconciliationFinding,
 } from "../../api/admin";
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
@@ -133,6 +150,19 @@ const STATUS_COLORS = {
   // Communities status filter below — can represent every valid status.
   DELETING: { bg: "bg-amber-50", text: "text-amber-700" },
   DELETED: { bg: "bg-gray-100", text: "text-gray-500" },
+  // Settlement / reconciliation statuses — the Swagger spec's example
+  // values ("PENDING", "NEW", "CRITICAL"...) aren't an exhaustive enum
+  // list, so unlisted values still fall back to the default gray badge.
+  MATCHED: { bg: "bg-green-50", text: "text-green-700" },
+  MISMATCHED: { bg: "bg-red-50", text: "text-red-700" },
+  RUNNING: { bg: "bg-blue-50", text: "text-blue-700" },
+  NEW: { bg: "bg-amber-50", text: "text-amber-700" },
+  REVIEWED: { bg: "bg-blue-50", text: "text-blue-700" },
+  RESOLVED: { bg: "bg-green-50", text: "text-green-700" },
+  CRITICAL: { bg: "bg-red-50", text: "text-red-700" },
+  HIGH: { bg: "bg-red-50", text: "text-red-700" },
+  MEDIUM: { bg: "bg-amber-50", text: "text-amber-700" },
+  LOW: { bg: "bg-gray-100", text: "text-gray-500" },
 };
 
 function StatusBadge({ status }) {
@@ -1482,6 +1512,528 @@ function BalancesSection() {
   );
 }
 
+// ─── Settlements ─────────────────────────────────────────────────────────────
+
+function SettlementDetailModal({ settlementId, onClose }) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["admin-settlement", settlementId],
+    queryFn: () => getAdminSettlement(settlementId).then((r) => r.data?.data),
+    staleTime: 30_000,
+  });
+  const transactions = data?.transactions ?? [];
+
+  return (
+    <ModalShell title="Settlement" subtitle={data?.gatewaySettlementId} onClose={onClose}>
+      <div className="p-6 max-h-[70vh] overflow-y-auto">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-10">
+            <Loader2 size={18} className="animate-spin text-gray-300" />
+          </div>
+        ) : error ? (
+          <p className="text-xs text-red-500">{getErrorMessage(error)}</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-3 mb-5">
+              <div className="bg-white rounded-xl p-3" style={{ border: "1px solid #E5E7EB" }}>
+                <p className="text-[10px] text-gray-400 mb-0.5">Gross</p>
+                <p className="text-sm font-bold text-gray-900">{fmt(data.gross, data.currency)}</p>
+              </div>
+              <div className="bg-white rounded-xl p-3" style={{ border: "1px solid #E5E7EB" }}>
+                <p className="text-[10px] text-gray-400 mb-0.5">Net</p>
+                <p className="text-sm font-bold text-gray-900">{fmt(data.net, data.currency)}</p>
+              </div>
+              <div className="bg-white rounded-xl p-3" style={{ border: "1px solid #E5E7EB" }}>
+                <p className="text-[10px] text-gray-400 mb-0.5">Fees + Deductions</p>
+                <p className="text-sm font-bold text-gray-900">{fmt((data.fees ?? 0) + (data.deductions ?? 0), data.currency)}</p>
+              </div>
+              <div className="bg-white rounded-xl p-3" style={{ border: "1px solid #E5E7EB" }}>
+                <p className="text-[10px] text-gray-400 mb-0.5">Variance</p>
+                <p className={`text-sm font-bold ${data.variance ? "text-red-600" : "text-gray-900"}`}>
+                  {fmt(data.variance, data.currency)}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold text-gray-900">
+                Matched Transactions ({data.matchedTransactionCount ?? transactions.length})
+              </p>
+              <StatusBadge status={data.status} />
+            </div>
+
+            {data.failureReason && (
+              <p className="text-xs text-red-500 mb-3">{data.failureReason}</p>
+            )}
+
+            {transactions.length === 0 ? (
+              <p className="text-xs text-gray-400 py-4 text-center">No transactions linked to this settlement.</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {transactions.map((t) => (
+                  <div key={t.id} className="bg-white rounded-lg p-3 flex items-center justify-between gap-3" style={{ border: "1px solid #E5E7EB" }}>
+                    <div className="min-w-0">
+                      <p className="text-xs font-mono text-gray-700 truncate">{t.reference}</p>
+                      <p className="text-[10px] text-gray-400">{fmtDateTime(t.paidAt)}</p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {t.matched ? (
+                        <ShieldCheck size={13} className="text-green-600" />
+                      ) : (
+                        <ShieldAlert size={13} className="text-red-500" />
+                      )}
+                      <span className="text-xs font-semibold text-gray-900">{fmt(t.net, t.currency)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </ModalShell>
+  );
+}
+
+function SettlementsSection() {
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [status, setStatus] = useState("ALL");
+  const [page, setPage] = useState(0);
+  const [openSettlementId, setOpenSettlementId] = useState(null);
+  const csvExport = useExportJob();
+  const debouncedSet = useDebounce((v) => {
+    setDebouncedSearch(v);
+    setPage(0);
+  });
+
+  const params = {
+    ...pageParams(page),
+    ...(debouncedSearch ? { search: debouncedSearch } : {}),
+    ...(status !== "ALL" ? { status } : {}),
+  };
+
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["admin-settlements", params],
+    queryFn: () => getAdminSettlements(params).then(unwrap),
+    staleTime: 30_000,
+    placeholderData: (p) => p,
+  });
+
+  const sync = useMutation({
+    mutationFn: () => syncAdminSettlements({}),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-settlements"] }),
+    meta: { successMessage: "Settlement sync queued — new settlements will appear shortly." },
+  });
+
+  const items = data?.content ?? [];
+
+  return (
+    <div>
+      <SectionHeader
+        title="Settlements"
+        desc="Gateway settlement batches and their matched transactions."
+        count={data?.totalElements ?? 0}
+        isFetching={isFetching && !isLoading}
+        right={
+          <>
+            <SearchBar
+              value={search}
+              onChange={(v) => { setSearch(v); debouncedSet(v); }}
+              placeholder="Search settlements…"
+            />
+            <FilterSelect
+              value={status}
+              onChange={(v) => { setStatus(v); setPage(0); }}
+              options={[
+                { value: "ALL", label: "All statuses" },
+                { value: "PENDING", label: "Pending" },
+                { value: "MATCHED", label: "Matched" },
+                { value: "MISMATCHED", label: "Mismatched" },
+              ]}
+            />
+            <button
+              onClick={() => csvExport.run(() => exportAdminSettlements(params))}
+              disabled={csvExport.isExporting}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer border-none disabled:opacity-50"
+              style={{ border: "1px solid #E5E7EB" }}
+            >
+              <Download size={12} /> {csvExport.isExporting ? "Exporting…" : "Export"}
+            </button>
+            <button
+              onClick={() => sync.mutate()}
+              disabled={sync.isPending}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all cursor-pointer border-none disabled:opacity-50"
+            >
+              <RefreshCw size={12} className={sync.isPending ? "animate-spin" : ""} /> Sync Now
+            </button>
+          </>
+        }
+      />
+
+      <TableShell
+        isLoading={isLoading}
+        isEmpty={items.length === 0}
+        error={error}
+        emptyIcon={Landmark}
+        emptyLabel="No settlements found"
+      >
+        <table className="w-full border-collapse">
+          <thead>
+            <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+              {["Settlement", "Gross", "Fees", "Net", "Status", "Variance", "Settled At"].map((h) => (
+                <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((s, i) => (
+              <tr
+                key={s.id}
+                onClick={() => setOpenSettlementId(s.id)}
+                className="hover:bg-gray-50 transition-colors cursor-pointer"
+                style={{ borderBottom: i < items.length - 1 ? "1px solid #F9FAFB" : "none" }}
+              >
+                <td className="px-4 py-3">
+                  <p className="text-[12px] font-mono text-gray-700">{s.gatewaySettlementId ?? s.id}</p>
+                  <p className="text-[10px] text-gray-400">{s.matchedTransactionCount ?? 0} txns</p>
+                </td>
+                <td className="px-4 py-3 text-xs text-gray-700">{fmt(s.gross, s.currency)}</td>
+                <td className="px-4 py-3 text-xs text-gray-700">{fmt((s.fees ?? 0) + (s.deductions ?? 0), s.currency)}</td>
+                <td className="px-4 py-3 text-xs font-semibold text-gray-900">{fmt(s.net, s.currency)}</td>
+                <td className="px-4 py-3"><StatusBadge status={s.status} /></td>
+                <td className={`px-4 py-3 text-xs ${s.variance ? "text-red-600 font-semibold" : "text-gray-400"}`}>
+                  {fmt(s.variance, s.currency)}
+                </td>
+                <td className="px-4 py-3 text-[11px] text-gray-500 whitespace-nowrap">{fmtDateTime(s.settledAt)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </TableShell>
+
+      <TableFooter
+        totalElements={data?.totalElements ?? 0}
+        noun="settlement"
+        page={page}
+        totalPages={data?.totalPages ?? 1}
+        onPage={setPage}
+      />
+
+      {openSettlementId && (
+        <SettlementDetailModal settlementId={openSettlementId} onClose={() => setOpenSettlementId(null)} />
+      )}
+    </div>
+  );
+}
+
+// ─── Reconciliation ──────────────────────────────────────────────────────────
+
+function ReconciliationRunsTable() {
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState(0);
+
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["admin-reconciliation-runs", page],
+    queryFn: () => getAdminReconciliationRuns(pageParams(page)).then(unwrap),
+    staleTime: 30_000,
+    placeholderData: (p) => p,
+    refetchInterval: 10_000, // runs are async -- keep the list current without a manual refresh while one is in flight
+  });
+
+  const runPassOne = useMutation({
+    mutationFn: () => triggerReconciliationRun(),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-reconciliation-runs"] }),
+    meta: { successMessage: "Pass-1 reconciliation run started." },
+  });
+  const runFull = useMutation({
+    mutationFn: () => triggerFullReconciliationRun({}),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-reconciliation-runs"] }),
+    meta: { successMessage: "Full reconciliation run started." },
+  });
+
+  const items = data?.content ?? [];
+  const busy = runPassOne.isPending || runFull.isPending;
+
+  return (
+    <div className="mb-8">
+      <SectionHeader
+        title="Reconciliation Runs"
+        desc="Internal ledger reconciliation against gateway settlements."
+        count={data?.totalElements ?? 0}
+        isFetching={isFetching && !isLoading}
+        right={
+          <>
+            <button
+              onClick={() => runPassOne.mutate()}
+              disabled={busy}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50"
+              style={{ border: "1px solid #E5E7EB" }}
+            >
+              <RefreshCw size={12} className={runPassOne.isPending ? "animate-spin" : ""} /> Run Pass 1
+            </button>
+            <button
+              onClick={() => runFull.mutate()}
+              disabled={busy}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <RefreshCw size={12} className={runFull.isPending ? "animate-spin" : ""} /> Run Full
+            </button>
+          </>
+        }
+      />
+
+      <TableShell
+        isLoading={isLoading}
+        isEmpty={items.length === 0}
+        error={error}
+        emptyIcon={Scale}
+        emptyLabel="No reconciliation runs yet"
+      >
+        <table className="w-full border-collapse">
+          <thead>
+            <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+              {["Run", "Status", "Window", "Residual", "Reconciles", "Findings", "Reports"].map((h) => (
+                <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((r, i) => (
+              <tr key={r.id} style={{ borderBottom: i < items.length - 1 ? "1px solid #F9FAFB" : "none" }}>
+                <td className="px-4 py-3">
+                  <p className="text-[12px] font-semibold text-gray-900">{(r.runType ?? "").replace(/_/g, " ")}</p>
+                  <p className="text-[10px] text-gray-400">{fmtDateTime(r.startedAt)}</p>
+                </td>
+                <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
+                <td className="px-4 py-3 text-[11px] text-gray-500 whitespace-nowrap">
+                  {fmtDate(r.windowFrom)} – {fmtDate(r.windowTo)}
+                </td>
+                <td className={`px-4 py-3 text-xs ${r.residual ? "text-red-600 font-semibold" : "text-gray-400"}`}>
+                  {fmt(r.residual, "NGN", { minor: false, decimals: 2 })}
+                </td>
+                <td className="px-4 py-3">
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${r.reconciles ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                    {r.reconciles ? "Reconciled" : "Out of balance"}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-xs text-gray-700">
+                  {r.findingsTotal ?? 0}
+                  {r.findingsNew > 0 && (
+                    <span className="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700">
+                      {r.findingsNew} new
+                    </span>
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    {r.csvReport?.url && (
+                      <a href={r.csvReport.url} target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-[#002FA7] hover:underline">CSV</a>
+                    )}
+                    {r.pdfReport?.url && (
+                      <a href={r.pdfReport.url} target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-[#002FA7] hover:underline">PDF</a>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </TableShell>
+
+      <TableFooter totalElements={data?.totalElements ?? 0} noun="run" page={page} totalPages={data?.totalPages ?? 1} onPage={setPage} />
+    </div>
+  );
+}
+
+function FindingReviewModal({ finding, mode, onClose }) {
+  const queryClient = useQueryClient();
+  const [annotation, setAnnotation] = useState("");
+
+  const review = useMutation({
+    mutationFn: () => reviewReconciliationFinding(finding.id, { annotation }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-reconciliation-findings"] });
+      onClose();
+    },
+    meta: { successMessage: "Finding marked reviewed." },
+  });
+  const resolve = useMutation({
+    mutationFn: () => resolveReconciliationFinding(finding.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-reconciliation-findings"] });
+      onClose();
+    },
+    meta: { successMessage: "Finding resolved." },
+  });
+
+  const isResolve = mode === "resolve";
+
+  return (
+    <ModalShell title={isResolve ? "Resolve Finding" : "Review Finding"} subtitle={finding.findingKey} onClose={onClose}>
+      <div className="p-6">
+        <div className="bg-white rounded-xl p-3 mb-4" style={{ border: "1px solid #E5E7EB" }}>
+          <p className="text-xs font-semibold text-gray-900 mb-1">{(finding.findingType ?? "").replace(/_/g, " ")}</p>
+          <p className="text-xs text-gray-500 mb-2">{finding.summary}</p>
+          <div className="flex items-center gap-2">
+            <StatusBadge status={finding.severity} />
+            <StatusBadge status={finding.status} />
+          </div>
+        </div>
+
+        {!isResolve && (
+          <>
+            <label className="block text-xs font-medium text-gray-700 mb-1.5">Annotation (optional)</label>
+            <textarea
+              value={annotation}
+              onChange={(e) => setAnnotation(e.target.value)}
+              rows={3}
+              placeholder="Notes for this review…"
+              className="w-full border border-gray-300 px-3 py-2.5 rounded-lg text-xs outline-none focus:border-[#002FA7] mb-4 transition-all resize-none"
+            />
+          </>
+        )}
+
+        <div className="flex gap-2">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors"
+            style={{ background: "#F3F4F6" }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => (isResolve ? resolve.mutate() : review.mutate())}
+            disabled={review.isPending || resolve.isPending}
+            className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50"
+            style={{ background: "#002FA7" }}
+          >
+            {review.isPending || resolve.isPending ? "Saving…" : isResolve ? "Resolve" : "Mark Reviewed"}
+          </button>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
+function ReconciliationFindingsTable() {
+  const [status, setStatus] = useState("NEW");
+  const [page, setPage] = useState(0);
+  const [modal, setModal] = useState(null); // { finding, mode: "review" | "resolve" }
+
+  const params = {
+    ...pageParams(page),
+    ...(status !== "ALL" ? { status } : {}),
+  };
+
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["admin-reconciliation-findings", params],
+    queryFn: () => getAdminReconciliationFindings(params).then(unwrap),
+    staleTime: 30_000,
+    placeholderData: (p) => p,
+  });
+
+  const items = data?.content ?? [];
+
+  return (
+    <div>
+      <SectionHeader
+        title="Findings"
+        desc="Discrepancies surfaced by reconciliation runs."
+        count={data?.totalElements ?? 0}
+        isFetching={isFetching && !isLoading}
+        right={
+          <FilterSelect
+            value={status}
+            onChange={(v) => { setStatus(v); setPage(0); }}
+            options={[
+              { value: "ALL", label: "All statuses" },
+              { value: "NEW", label: "New" },
+              { value: "REVIEWED", label: "Reviewed" },
+              { value: "RESOLVED", label: "Resolved" },
+            ]}
+          />
+        }
+      />
+
+      <TableShell
+        isLoading={isLoading}
+        isEmpty={items.length === 0}
+        error={error}
+        emptyIcon={ShieldCheck}
+        emptyLabel="No findings — everything reconciles"
+      >
+        <table className="w-full border-collapse">
+          <thead>
+            <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+              {["Finding", "Severity", "Amount", "Variance", "Status", "Occurred", ""].map((h) => (
+                <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((f, i) => (
+              <tr key={f.id} className="group" style={{ borderBottom: i < items.length - 1 ? "1px solid #F9FAFB" : "none" }}>
+                <td className="px-4 py-3">
+                  <p className="text-[12px] font-semibold text-gray-900">{(f.findingType ?? "").replace(/_/g, " ")}</p>
+                  <p className="text-[10px] text-gray-400 truncate max-w-xs">{f.summary}</p>
+                </td>
+                <td className="px-4 py-3"><StatusBadge status={f.severity} /></td>
+                <td className="px-4 py-3 text-xs text-gray-700">{fmt(f.amount, f.currency)}</td>
+                <td className={`px-4 py-3 text-xs ${f.variance ? "text-red-600 font-semibold" : "text-gray-400"}`}>
+                  {fmt(f.variance, f.currency)}
+                </td>
+                <td className="px-4 py-3"><StatusBadge status={f.status} /></td>
+                <td className="px-4 py-3 text-[11px] text-gray-500 whitespace-nowrap">{fmtDateTime(f.occurredAt)}</td>
+                <td className="px-4 py-3 text-right whitespace-nowrap">
+                  {f.status !== "RESOLVED" && (
+                    <div className="opacity-0 group-hover:opacity-100 flex items-center gap-2 justify-end transition-opacity">
+                      <button
+                        onClick={() => setModal({ finding: f, mode: "review" })}
+                        className="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-gray-600 bg-white hover:bg-gray-50 cursor-pointer"
+                        style={{ border: "1px solid #E5E7EB" }}
+                      >
+                        Review
+                      </button>
+                      <button
+                        onClick={() => setModal({ finding: f, mode: "resolve" })}
+                        className="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-green-700 bg-green-50 hover:bg-green-100 cursor-pointer border-none"
+                      >
+                        Resolve
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </TableShell>
+
+      <TableFooter totalElements={data?.totalElements ?? 0} noun="finding" page={page} totalPages={data?.totalPages ?? 1} onPage={setPage} />
+
+      {modal && (
+        <FindingReviewModal finding={modal.finding} mode={modal.mode} onClose={() => setModal(null)} />
+      )}
+    </div>
+  );
+}
+
+function ReconciliationSection() {
+  return (
+    <div>
+      <ReconciliationRunsTable />
+      <ReconciliationFindingsTable />
+    </div>
+  );
+}
+
 // ─── Notifications ─────────────────────────────────────────────────────────────
 
 const NOTIF_TYPES = [
@@ -1841,6 +2393,8 @@ const TABS = [
   { id: "users", label: "Users", Icon: Users },
   { id: "payment-links", label: "Payment Links", Icon: CreditCard },
   { id: "balances", label: "Balances", Icon: BarChart2 },
+  { id: "settlements", label: "Settlements", Icon: Landmark },
+  { id: "reconciliation", label: "Reconciliation", Icon: Scale },
   { id: "notifications", label: "Notifications", Icon: Bell },
   { id: "system-config", label: "System Config", Icon: SlidersHorizontal },
 ];
@@ -1895,6 +2449,8 @@ export default function AdminPanel() {
       {activeTab === "users" && <UsersSection />}
       {activeTab === "payment-links" && <PaymentLinksSection />}
       {activeTab === "balances" && <BalancesSection />}
+      {activeTab === "settlements" && <SettlementsSection />}
+      {activeTab === "reconciliation" && <ReconciliationSection />}
       {activeTab === "notifications" && <NotificationsSection />}
       {activeTab === "system-config" && <SystemConfig />}
     </div>

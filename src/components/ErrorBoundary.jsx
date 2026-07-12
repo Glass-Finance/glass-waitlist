@@ -1,10 +1,15 @@
 import { Component } from "react";
+import { captureRenderError } from "../utils/monitoring";
 
 export default class ErrorBoundary extends Component {
   state = { error: null };
 
   static getDerivedStateFromError(error) {
     return { error };
+  }
+
+  componentDidCatch(error, info) {
+    captureRenderError(error, info?.componentStack);
   }
 
   render() {

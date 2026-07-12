@@ -513,6 +513,7 @@ import {
   CreditCard,
   ChevronRight,
 } from "lucide-react";
+import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
 import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
 import { useInvites } from "../../hooks/useInvites";
 import { useGlobalOverview } from "../../hooks/usePayments";
@@ -532,23 +533,9 @@ function getTag(name = "") {
 }
 
 function formatNaira(amount) {
-  if (amount == null) return "—";
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  })
-    .format(amount)
-    .replace("NGN", "₦");
+  return sharedFormatNaira(amount, { emptyDash: true });
 }
 
-// Plan titles come back from the API in whatever case the admin typed them —
-// normalise to title case ("associate amount" → "Associate Amount").
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 function CardSkeleton() {

@@ -7,43 +7,12 @@ import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayme
 import { useNotifications } from "../../hooks/useNotifications";
 import { useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
 import SideDrawer from "../../components/memberApp/SideDrawer";
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-function formatNaira(amount) {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  })
-    .format(amount ?? 0)
-    .replace("NGN", "₦");
-}
-
-function formatDate(dateString) {
-  if (!dateString) return "—";
-  return new Date(dateString).toLocaleDateString("en-NG", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function formatDateShort(dateString) {
-  if (!dateString) return "—";
-  return new Date(dateString).toLocaleDateString("en-NG", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function toTitleCase(str) {
-  if (!str) return str;
-  return str.replace(/\b\w/g, (c) => c.toUpperCase());
-}
+import {
+  formatNaira,
+  formatDateLong as formatDate,
+  formatDate as formatDateShort,
+  toTitleCase,
+} from "../../utils/format";
 
 function firstName(user) {
   try {
