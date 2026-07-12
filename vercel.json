@@ -4,6 +4,11 @@
   "framework": "vite",
   "outputDirectory": "dist",
   "rewrites": [
+    {
+      "source": "/robots.txt",
+      "has": [{ "type": "host", "value": "app.glasspay.app" }],
+      "destination": "/robots-app.txt"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

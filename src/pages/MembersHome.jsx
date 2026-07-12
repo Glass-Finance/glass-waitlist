@@ -1,4 +1,4 @@
-import { usePageTitle } from "../hooks/usePageTitle";
+import { useSeoMeta } from "../hooks/useSeoMeta";
 import Navbar from "../components/Navbar";
 import MembersHero from "../components/members/MembersHero";
 import MembersHowItWorks from "../components/members/MembersHowItWorks";
@@ -13,7 +13,12 @@ import MembersCTA from "../components/members/MembersCTA";
 import Footer from "../components/Footer";
 
 export default function MembersHome() {
-  usePageTitle("Glass for Members");
+  useSeoMeta({
+    title: "Glass for Members — Pay Your Dues, Effortlessly",
+    description:
+      "Join your community on Glasspay and pay dues, subscriptions, and contributions in a few taps — no more chasing payments in group chats.",
+    path: "/members",
+  });
   return (
     <div className="bg-[#F7F8FC]">
       <Navbar />
