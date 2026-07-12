@@ -140,3 +140,25 @@ export function useMembersWithPayments(communityId) {
       paymentLinksQuery.error,
   };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// The payment links that actually target one specific member — audience-aware
+// (ALL_MEMBERS, their group, or explicit selection), via the backend's
+// memberId filter on GET .../payment-links. Used on MemberDetail.jsx instead
+// of the blanket "every active community plan applies to every member"
+// fallback above, which doesn't account for group/selected-member audiences,
+// and doesn't need to wait on the obligation-generation delay noted there.
+export function useMemberPaymentLinks(communityId, memberId) {
+  const enabled = !!communityId && !!memberId;
+  const query = useQuery({
+    queryKey: ["community", communityId, "payment-links", "member", memberId],
+    queryFn: async () => unwrapList(await getCommunityPaymentLinks(communityId, { memberId })),
+    enabled,
+    staleTime: 1000 * 60 * 2,
+  });
+  return {
+    paymentLinks: query.data ?? [],
+    isLoading: query.isLoading,
+    error: query.error,
+  };
+}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { UserMinus, Phone, MessageCircle, CreditCard, Receipt } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
-import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
+import { useMembersWithPayments, useMemberPaymentLinks } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers } from "../../hooks/useCommunityMembers";
 import { useCommunity } from "../../hooks/useCommunity";
 import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
@@ -82,6 +82,11 @@ export default function MemberDetail() {
   const { removeMember } = useCommunityMembers(communityId);
   const { data: community } = useCommunity(communityId);
   const member = members.find((m) => String(m.id) === String(memberId));
+  // Audience-aware: only the payment links that actually target this member
+  // (ALL_MEMBERS, their group, or explicit selection), unlike planCount on
+  // `member` above which assumes every active community plan applies to
+  // every member.
+  const { paymentLinks: memberPaymentLinks } = useMemberPaymentLinks(communityId, member?.id);
 
   function handleRemove() {
     if (!member) return;
@@ -127,10 +132,26 @@ export default function MemberDetail() {
     successfulTxs.map((t) => t.paymentLink?.id).filter(Boolean)
   );
 
-  // Distinct plans (one card per payment link, latest obligation for that link)
-  const distinctPlans = Array.from(
-    new Map(member.obligations.map((o) => [o.paymentLink?.id, o])).values()
-  );
+  // Distinct plans (one card per payment link, latest obligation for that
+  // link). Obligations carry the per-cycle amount/due-date/paid-status, but
+  // lag behind plan creation, so any ACTIVE payment link that actually
+  // targets this member (per the audience-aware memberId-filtered fetch
+  // above) and has no obligation yet still gets a card — synthesized
+  // directly from the payment link, shown as Unpaid until an obligation or
+  // transaction says otherwise.
+  const obligationsByLinkId = new Map(member.obligations.map((o) => [o.paymentLink?.id, o]));
+  const syntheticPlans = memberPaymentLinks
+    .filter((link) => (link.status ?? "").toUpperCase() === "ACTIVE" && !obligationsByLinkId.has(link.id))
+    .map((link) => ({
+      id: link.id,
+      paymentLink: { id: link.id, title: link.title },
+      amount: link.amount,
+      status: undefined,
+      recurringPlan: link.recurringPlan,
+      cycleStart: link.startAt,
+      dueAt: link.dueAt,
+    }));
+  const distinctPlans = [...obligationsByLinkId.values(), ...syntheticPlans];
 
   return (
     <div
@@ -163,7 +184,7 @@ export default function MemberDetail() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
         <StatCard label="Total Amount Paid" value={formatNaira(totalPaid)} />
-        <StatCard label="Active Plans" value={String(member.planCount)} />
+        <StatCard label="Active Plans" value={String(distinctPlans.length)} />
         <StatCard label="Plans Yet to pay" value={String(member.totalCount - member.paidCount)} />
         <StatCard label="Failed Payments" value={String(member.failedCount)} />
       </div>

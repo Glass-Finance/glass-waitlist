@@ -5,8 +5,11 @@ import client from "./client";
 // ─────────────────────────────────────────────────────────────────────────────
 
 // GET /api/v1/communities/{communityIdentifier}/payment-links
-export const getCommunityPaymentLinks = (communityId) =>
-  client.get(`/communities/${communityId}/payment-links`);
+// params supports memberId (audience-aware: returns only links that actually
+// target that member — ALL_MEMBERS, their group, or explicit selection) plus
+// the usual search/status/paymentType/audience/includeMetrics filters.
+export const getCommunityPaymentLinks = (communityId, params = {}) =>
+  client.get(`/communities/${communityId}/payment-links`, { params });
 
 // GET /api/v1/communities/{communityIdentifier}/payment-links/{id}/members
 // Lists members resolved from the payment link's audience with their
