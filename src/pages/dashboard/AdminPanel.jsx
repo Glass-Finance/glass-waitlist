@@ -1050,6 +1050,42 @@ function SuspendModal({ user, onClose }) {
   );
 }
 
+function UnsuspendModal({ user, onClose, onConfirm, unsuspending }) {
+  return (
+    <ModalShell title="Unsuspend User" subtitle={user.email} onClose={onClose}>
+      <div className="px-6 py-5 flex flex-col gap-4">
+        <p className="text-xs text-gray-600 leading-relaxed">
+          This restores <strong>{user.email}</strong>'s access to the
+          Platform. They'll be able to sign in and use their Account again.
+        </p>
+        <div className="flex gap-3 pt-1">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={unsuspending}
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
+            style={{ background: "#15803d" }}
+          >
+            {unsuspending ? (
+              <Loader2 size={12} className="animate-spin" />
+            ) : (
+              <ShieldCheck size={12} />
+            )}
+            {unsuspending ? "Unsuspending…" : "Unsuspend"}
+          </button>
+        </div>
+      </div>
+    </ModalShell>
+  );
+}
+
 function UsersSection() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
@@ -1057,6 +1093,7 @@ function UsersSection() {
   const [enabledFilter, setEnabledFilter] = useState("ALL");
   const [page, setPage] = useState(0);
   const [suspending, setSuspending] = useState(null);
+  const [unsuspending, setUnsuspending] = useState(null);
   const debouncedSet = useDebounce((v) => {
     setDebouncedSearch(v);
     setPage(0);
@@ -1077,8 +1114,10 @@ function UsersSection() {
 
   const unsuspend = useMutation({
     mutationFn: (userId) => unsuspendUser(userId),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      setUnsuspending(null);
+    },
     meta: { successMessage: "User unsuspended" },
   });
 
@@ -1209,10 +1248,7 @@ function UsersSection() {
                     </button>
                   ) : (
                     <button
-                      onClick={() => {
-                        if (window.confirm(`Unsuspend ${u.email}?`))
-                          unsuspend.mutate(u.id);
-                      }}
+                      onClick={() => setUnsuspending(u)}
                       disabled={unsuspend.isPending}
                       className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-auto px-3 py-1.5 rounded-lg text-[11px] font-semibold text-green-700 bg-green-50 hover:bg-green-100 transition-all cursor-pointer border-none disabled:opacity-40"
                     >
@@ -1235,6 +1271,14 @@ function UsersSection() {
       />
       {suspending && (
         <SuspendModal user={suspending} onClose={() => setSuspending(null)} />
+      )}
+      {unsuspending && (
+        <UnsuspendModal
+          user={unsuspending}
+          onClose={() => setUnsuspending(null)}
+          onConfirm={() => unsuspend.mutate(unsuspending.id)}
+          unsuspending={unsuspend.isPending}
+        />
       )}
     </div>
   );
