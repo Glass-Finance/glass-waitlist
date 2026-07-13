@@ -28,6 +28,7 @@ import SystemConfig from "./settings/admin/SystemConfig";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Background from "../../assets/background.webp";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { toTitleCase } from "../../utils/format";
 import EmptyState from "../../components/common/EmptyState";
 import { useExportJob } from "../../hooks/useExportJob";
 import {
@@ -1197,7 +1198,10 @@ function UsersSection() {
               >
                 <td className="px-4 py-3">
                   <p className="text-[12px] font-semibold text-gray-900 leading-tight">
-                    {u.accountName || "—"}
+                    {[u.userData?.firstName, u.userData?.lastName]
+                      .filter(Boolean)
+                      .map((s) => toTitleCase(s.trim()))
+                      .join(" ") || "—"}
                   </p>
                   <p className="text-[11px] text-gray-400">{u.email}</p>
                 </td>
