@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, LogOut, Plus, Users } from "lucide-react";
+import { AlertTriangle, ChevronLeft, ChevronRight, LogOut, Plus, Users, X } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
 import LoadingState from "../../../../components/common/LoadingState";
@@ -21,6 +21,76 @@ function setActiveMemberCommunity(c) {
   }
 }
 
+// Real in-app disclaimer instead of the bare OS window.confirm() this used
+// to rely on -- explains what leaving actually costs (payment history
+// visibility, needing a fresh invite) rather than a one-line browser popup
+// that's easy to blow past without reading.
+function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
+  return (
+    <div
+      style={{
+        position: "fixed", inset: 0, zIndex: 60, display: "flex",
+        alignItems: "flex-end", justifyContent: "center",
+        background: "rgba(15,23,42,0.45)",
+      }}
+      onClick={onCancel}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "100%", maxWidth: 430, background: "#fff",
+          borderRadius: "20px 20px 0 0", padding: "24px 20px 28px",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <button
+            onClick={onCancel}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#9CA3AF" }}
+            aria-label="Cancel"
+          >
+            <X size={18} />
+          </button>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 10 }}>
+          <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
+            <AlertTriangle size={24} style={{ color: "#DC2626" }} />
+          </div>
+          <p style={{ fontSize: 17, fontWeight: 700, color: "#111", margin: 0 }}>
+            Leave {community?.name}?
+          </p>
+          <p style={{ fontSize: 13.5, color: "#6B7280", margin: 0, lineHeight: 1.55, maxWidth: 320 }}>
+            You'll lose access to this community's payment history and upcoming dues from your account, and you'll need a new invite to rejoin. This can't be undone from your side.
+          </p>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24 }}>
+          <button
+            onClick={onConfirm}
+            disabled={leaving}
+            style={{
+              width: "100%", padding: "14px 0", borderRadius: 12, border: "none",
+              background: "#DC2626", color: "#fff", fontSize: 14.5, fontWeight: 600,
+              cursor: leaving ? "default" : "pointer", opacity: leaving ? 0.7 : 1,
+            }}
+          >
+            {leaving ? "Leaving…" : "Yes, leave community"}
+          </button>
+          <button
+            onClick={onCancel}
+            disabled={leaving}
+            style={{
+              width: "100%", padding: "14px 0", borderRadius: 12,
+              border: "1px solid #E5E7EB", background: "#fff", color: "#374151",
+              fontSize: 14.5, fontWeight: 600, cursor: "pointer",
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function MyCommunities() {
   const navigate = useNavigate();
   const { data: raw = [], isLoading } = useMyCommunities();
@@ -33,6 +103,7 @@ export default function MyCommunities() {
   }));
   const leaveCommunity = useLeaveCommunity();
   const [navigatingId, setNavigatingId] = useState(null);
+  const [leavingCommunity, setLeavingCommunity] = useState(null);
 
   async function handleSelect(c) {
     if (c.owned) {
@@ -55,8 +126,14 @@ export default function MyCommunities() {
 
   function handleLeave(e, c) {
     e.stopPropagation();
-    if (!window.confirm(`Leave ${c.name}? You'll need a new invite to rejoin.`)) return;
-    leaveCommunity.mutate(c.slug ?? c.id);
+    setLeavingCommunity(c);
+  }
+
+  function confirmLeave() {
+    if (!leavingCommunity) return;
+    leaveCommunity.mutate(leavingCommunity.slug ?? leavingCommunity.id, {
+      onSuccess: () => setLeavingCommunity(null),
+    });
   }
 
   return (
@@ -134,6 +211,15 @@ export default function MyCommunities() {
           </div>
         )}
       </div>
+
+      {leavingCommunity && (
+        <LeaveConfirmModal
+          community={leavingCommunity}
+          leaving={leaveCommunity.isPending}
+          onCancel={() => setLeavingCommunity(null)}
+          onConfirm={confirmLeave}
+        />
+      )}
     </div>
   );
 }

@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Bell, ChevronDown, Clock, Loader2 } from "lucide-react";
+import { Bell, ChevronDown, Clock } from "lucide-react";
 import joinCommunityIcon from "../../assets/auth/join-community.webp";
+import BrandedSpinner from "../../components/common/BrandedSpinner";
 import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
@@ -168,13 +169,21 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   }
 
   const isRecurring = nextDue.type === "recurring";
+  // Same "days < 0" rule usePayments.js's deriveStatus() uses for the
+  // upcoming list, kept local here since that helper isn't exported --
+  // this is the one place the card itself (not just a list row) needs to
+  // know it, to decide the border color below.
+  const isOverdue = new Date(nextDue.dueDate) < new Date();
+  const accentColor = isOverdue ? "#DC2626" : "#002FA7";
 
   return (
     <div
       style={{
         margin: "0 16px",
         borderRadius: 16,
-        background: "#002FA7",
+        background: "#fff",
+        border: `1.5px solid ${accentColor}`,
+        boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
         padding: "20px 20px 20px",
         display: "flex",
         flexDirection: "column",
@@ -188,12 +197,24 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
           marginBottom: 14,
           padding: "5px 18px",
           borderRadius: 999,
-          border: "1px solid rgba(255,255,255,0.45)",
-          color: "rgba(255,255,255,0.9)",
+          border: "1px solid #E5E7EB",
+          color: "#374151",
           fontSize: 12,
           fontWeight: 500,
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
         }}
       >
+        <span
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: isRecurring ? "#7C3AED" : "#DC2626",
+            flexShrink: 0,
+          }}
+        />
         {isRecurring ? "Recurring" : "One-time"}
       </div>
 
@@ -201,7 +222,7 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
       <p
         style={{
           fontSize: 13,
-          color: "rgba(255,255,255,0.65)",
+          color: "#6B7280",
           marginBottom: 6,
           fontWeight: 400,
         }}
@@ -213,8 +234,8 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
       <p
         style={{
           fontSize: 42,
-          fontWeight: 400,
-          color: "#fff",
+          fontWeight: 700,
+          color: "#111827",
           letterSpacing: "-1px",
           lineHeight: 1,
           marginBottom: 14,
@@ -245,8 +266,9 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
           alignItems: "center",
           gap: 5,
           marginBottom: 18,
-          color: "rgba(255,255,255,0.55)",
+          color: isOverdue ? "#DC2626" : "#9CA3AF",
           fontSize: 12,
+          fontWeight: isOverdue ? 600 : 400,
         }}
       >
         <Clock size={12} strokeWidth={1.8} />
@@ -261,8 +283,8 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
           padding: "14px 0",
           borderRadius: 4,
           border: "none",
-          background: "#fff",
-          color: "#000000",
+          background: accentColor,
+          color: "#fff",
           fontSize: 15,
           fontWeight: 600,
           cursor: "pointer",
@@ -461,20 +483,8 @@ function HomeLoadingState() {
         textAlign: "center",
       }}
     >
-      <div
-        style={{
-          width: 80,
-          height: 80,
-          borderRadius: "50%",
-          background: "#E4E4F0",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 28,
-          flexShrink: 0,
-        }}
-      >
-        <Loader2 size={32} className="animate-spin" style={{ color: "#002FA7" }} />
+      <div style={{ marginBottom: 28 }}>
+        <BrandedSpinner size={80} />
       </div>
       <p
         style={{

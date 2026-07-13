@@ -56,6 +56,13 @@ import {
   reviewReconciliationFinding,
   resolveReconciliationFinding,
 } from "../../api/admin";
+// Community-scoped endpoints (not admin.js) -- per backend, most of these
+// accept a platform-admin token with the right permissions, the same as a
+// community's own owner/admin calling them. Reused directly rather than
+// duplicated under /admin.
+import { updateCommunitySettings, createCommunityAccount } from "../../api/communities";
+import Toggle from "../../components/common/Toggle";
+import AccountFormModal from "../../components/dashboard/AccountFormModal";
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
 
@@ -505,12 +512,92 @@ function CommissionModal({ community, onClose }) {
   );
 }
 
+// Platform-admin editor for the same two settings a community owner
+// controls from Settings -> Member Access (updateCommunitySettings accepts
+// the same payload regardless of which role's token calls it).
+function CommunitySettingsModal({ community, onClose }) {
+  const queryClient = useQueryClient();
+  const [requiresMemberApproval, setRequiresMemberApproval] = useState(
+    !!community.requiresMemberApproval,
+  );
+  const [publicVisible, setPublicVisible] = useState(!!community.publicVisible);
+
+  const mutation = useMutation({
+    mutationFn: (payload) =>
+      updateCommunitySettings(community.slug ?? community.id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-communities"] });
+      onClose();
+    },
+    meta: { successMessage: "Community settings updated" },
+  });
+
+  function submit(e) {
+    e.preventDefault();
+    mutation.mutate({ requiresMemberApproval, publicVisible });
+  }
+
+  return (
+    <ModalShell
+      title="Joining & Visibility"
+      subtitle={community.name}
+      onClose={onClose}
+    >
+      <form onSubmit={submit} className="px-6 py-5 flex flex-col gap-1">
+        <div className="flex items-center justify-between py-3 border-b border-gray-100">
+          <div className="min-w-0 pr-4">
+            <p className="text-xs font-medium text-gray-900 m-0">Require approval to join</p>
+            <p className="text-[11px] text-gray-400 mt-0.5 m-0">
+              New join requests wait for admin approval instead of joining instantly.
+            </p>
+          </div>
+          <Toggle on={requiresMemberApproval} onChange={setRequiresMemberApproval} showLabel />
+        </div>
+
+        <div className="flex items-center justify-between py-3">
+          <div className="min-w-0 pr-4">
+            <p className="text-xs font-medium text-gray-900 m-0">Show in Discover</p>
+            <p className="text-[11px] text-gray-400 mt-0.5 m-0">
+              List this community in the public Discover Communities search.
+            </p>
+          </div>
+          <Toggle on={publicVisible} onChange={setPublicVisible} showLabel />
+        </div>
+
+        <div className="flex gap-3 pt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={mutation.isPending}
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
+            style={{ background: "#002FA7" }}
+          >
+            {mutation.isPending ? (
+              <Loader2 size={12} className="animate-spin" />
+            ) : (
+              <Check size={12} />
+            )}
+            {mutation.isPending ? "Saving…" : "Save"}
+          </button>
+        </div>
+      </form>
+    </ModalShell>
+  );
+}
+
 function CommunitiesSection() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [status, setStatus] = useState("ALL");
   const [page, setPage] = useState(0);
   const [editingCommission, setEditingCommission] = useState(null);
+  const [editingSettings, setEditingSettings] = useState(null);
   const debouncedSet = useDebounce((v) => {
     setDebouncedSearch(v);
     setPage(0);
@@ -660,12 +747,20 @@ function CommunitiesSection() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button
-                    onClick={() => setEditingCommission(c)}
-                    className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-auto px-3 py-1.5 rounded-lg text-[11px] font-semibold text-[#002FA7] bg-[#e6eeff] hover:bg-[#d0dcff] transition-all cursor-pointer border-none"
-                  >
-                    <Edit2 size={11} /> Commission
-                  </button>
+                  <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                    <button
+                      onClick={() => setEditingSettings(c)}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
+                    >
+                      <SlidersHorizontal size={11} /> Settings
+                    </button>
+                    <button
+                      onClick={() => setEditingCommission(c)}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-[#002FA7] bg-[#e6eeff] hover:bg-[#d0dcff] transition-all cursor-pointer border-none"
+                    >
+                      <Edit2 size={11} /> Commission
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -686,7 +781,106 @@ function CommunitiesSection() {
           onClose={() => setEditingCommission(null)}
         />
       )}
+      {editingSettings && (
+        <CommunitySettingsModal
+          community={editingSettings}
+          onClose={() => setEditingSettings(null)}
+        />
+      )}
     </div>
+  );
+}
+
+// Two steps: pick which community this account belongs to (there's no
+// active-community context on this page, unlike the owner-side settings
+// page this form was extracted from), then the same bank-details form.
+function CreateCommunityAccountModal({ onClose }) {
+  const queryClient = useQueryClient();
+  const [selectedCommunity, setSelectedCommunity] = useState(null);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [saveError, setSaveError] = useState("");
+  const debouncedSet = useDebounce(setDebouncedSearch);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin-communities", "picker", debouncedSearch],
+    queryFn: () =>
+      getAdminCommunities({
+        pageNumber: 0,
+        pageSize: 8,
+        ...(debouncedSearch ? { search: debouncedSearch } : {}),
+      }).then(unwrap),
+    enabled: !selectedCommunity,
+    staleTime: 30_000,
+  });
+
+  const create = useMutation({
+    mutationFn: (payload) =>
+      createCommunityAccount(selectedCommunity.slug ?? selectedCommunity.id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-community-accounts"] });
+      onClose();
+    },
+    meta: { successMessage: "Payout account created" },
+    onError: (err) => setSaveError(getErrorMessage(err, "Couldn't create the account.")),
+  });
+
+  if (selectedCommunity) {
+    return (
+      <AccountFormModal
+        title="Create Payout Account"
+        subtitle={`For ${selectedCommunity.name} — the community's own owner can still manage it afterward.`}
+        onClose={onClose}
+        onSave={(payload) => create.mutate(payload)}
+        isSaving={create.isPending}
+        saveError={saveError}
+      />
+    );
+  }
+
+  const items = data?.content ?? [];
+
+  return (
+    <ModalShell title="Create Payout Account" subtitle="Choose a community" onClose={onClose}>
+      <div className="px-6 py-5">
+        <SearchBar
+          value={search}
+          onChange={(v) => {
+            setSearch(v);
+            debouncedSet(v);
+          }}
+          placeholder="Search communities…"
+          width="100%"
+        />
+        <div className="mt-3 max-h-64 overflow-y-auto flex flex-col gap-1">
+          {isLoading ? (
+            <p className="text-xs text-gray-400 py-4 text-center">Loading…</p>
+          ) : items.length === 0 ? (
+            <p className="text-xs text-gray-400 py-4 text-center">No communities found</p>
+          ) : (
+            items.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setSelectedCommunity(c)}
+                className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-left bg-transparent hover:bg-gray-50 transition-colors cursor-pointer border-none"
+              >
+                {c.logo?.url ? (
+                  <img src={c.logo.url} alt="" className="w-7 h-7 rounded-lg object-cover flex-shrink-0" />
+                ) : (
+                  <div className="w-7 h-7 rounded-lg bg-[#e6eeff] flex items-center justify-center text-[#002FA7] font-bold text-[10px] flex-shrink-0">
+                    {(c.name ?? "C")[0].toUpperCase()}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-[12px] font-semibold text-gray-900 leading-tight truncate">{c.name}</p>
+                  <p className="text-[10px] text-gray-400 font-mono">{c.slug}</p>
+                </div>
+              </button>
+            ))
+          )}
+        </div>
+      </div>
+    </ModalShell>
   );
 }
 
@@ -789,6 +983,7 @@ function AccountsSection() {
   const [status, setStatus] = useState("PENDING");
   const [page, setPage] = useState(0);
   const [verifyingAccount, setVerifyingAccount] = useState(null);
+  const [creatingAccount, setCreatingAccount] = useState(false);
   const debouncedSet = useDebounce((v) => {
     setDebouncedSearch(v);
     setPage(0);
@@ -847,6 +1042,12 @@ function AccountsSection() {
                 { value: "REJECTED", label: "Rejected" },
               ]}
             />
+            <button
+              onClick={() => setCreatingAccount(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all cursor-pointer border-none flex-shrink-0"
+            >
+              <Wallet size={12} /> Create Account
+            </button>
           </>
         }
       />
@@ -977,6 +1178,9 @@ function AccountsSection() {
             );
           }}
         />
+      )}
+      {creatingAccount && (
+        <CreateCommunityAccountModal onClose={() => setCreatingAccount(false)} />
       )}
     </div>
   );
