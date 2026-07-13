@@ -4,6 +4,11 @@
 // brand-blue background used elsewhere in the app (receipt header, community
 // background image) via sharp, which is already a project dependency (see
 // scripts/to-webp.mjs).
+//
+// The actual logo mark (brand-assets/glass-logo-master.png — the real
+// transparent export, not the tiny non-transparent public/Glass.png) is
+// composited in on the right; earlier versions of this card were text-only
+// and had no icon on them at all.
 import sharp from "sharp";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -44,7 +49,28 @@ const svg = `
 </svg>
 `;
 
+const LOGO_PATH = join(root, "brand-assets", "glass-logo-master.png");
+// Tucked into the top-right corner rather than centered on the right half --
+// at any size big enough to read, a centered mark collided with the
+// headline text, which needs that whole vertical band for itself.
+const LOGO_HEIGHT = 150;
+const LOGO_TOP = 45;
+const LOGO_RIGHT_MARGIN = 75;
+
+const trimmedLogo = await sharp(LOGO_PATH).trim().toBuffer({ resolveWithObject: true });
+const logo = await sharp(trimmedLogo.data)
+  .resize({ height: LOGO_HEIGHT })
+  .toBuffer();
+const logoMeta = await sharp(logo).metadata();
+
 await sharp(Buffer.from(svg))
+  .composite([
+    {
+      input: logo,
+      left: WIDTH - logoMeta.width - LOGO_RIGHT_MARGIN,
+      top: LOGO_TOP,
+    },
+  ])
   .png()
   .toFile(join(root, "public", "og-image.png"));
 
