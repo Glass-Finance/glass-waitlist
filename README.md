@@ -1,8 +1,23 @@
 # Glass
 
-Glass is a community finance platform — communities (schools, cooperatives, associations, etc.) collect and track dues, payment plans, and settlements, and their members pay and manage their own obligations. This repo is the frontend: a single Vite + React SPA covering the public site, member-facing app, community-admin dashboard, and platform admin panel.
+Glass is a community finance platform — communities (schools, cooperatives, associations, etc.) collect and track dues, payment plans, and settlements, and their members pay and manage their own obligations. This repo is the frontend: a Vite + React SPA covering the member-facing app, community-admin dashboard, and platform admin panel — deployed at **app.glasspay.app**.
 
 > The repo is named `glass-waitlist` for historical reasons (it started as a landing page with a signup waitlist) — it's since grown into the full application.
+
+## Two-repo setup — read this before touching landing-page components
+
+There are **two separate repos and two separate Vercel deployments**:
+
+| Repo | Deploys to | What it is |
+|---|---|---|
+| `glass-waitlist` (this repo) | `app.glasspay.app` | The actual product — auth, onboarding, dashboards, member app. |
+| [`glass-waitlist-v1`](https://github.com/Glass-Finance/glass-waitlist-v1) | `glasspay.app` | The public marketing site only — no auth, no dashboards. |
+
+This repo still contains the public landing pages (`src/pages/OrganizationsHome.jsx`, `src/pages/MembersHome.jsx`, and their component trees under `src/components/organizations/`, `src/components/members/`, `src/components/howItWorks/`, plus the shared `Navbar`/`Footer`/`Security`/`Usecases`/`TrustedBy`/`Pricing`/`WhyGlass`), because **this is the source of truth for them**. `glass-waitlist-v1` carries its own copies, ported over by hand (or by asking Claude — see that repo's README for the exact steps).
+
+**The rule:** if you change any landing-page component in this repo, `glasspay.app` will *not* pick it up automatically — someone has to re-port the change into `glass-waitlist-v1`. If you're not going to do that in the same sitting, leave a note (PR description, Slack, whatever you use) so it doesn't quietly drift out of sync the way it did before this was documented.
+
+The only code difference between a component here and its `glass-waitlist-v1` copy should be navigation: this repo's `goToApp(path, navigate)` (`src/utils/deviceRedirect.js`) does an internal SPA navigate when already on the app domain and a cross-origin hard redirect otherwise; `glass-waitlist-v1` has its own copy of the same file/function with an identical API, so most components port over unchanged. The exception is any component that calls `navigate("/member/join")` (or similar) *directly* instead of through `goToApp` — those routes don't exist on the marketing domain, so the `glass-waitlist-v1` copy needs that call rewritten to `goToApp("/member/join", navigate)`.
 
 ## Tech stack
 
