@@ -80,6 +80,23 @@ export function isMarketingHost() {
   return MARKETING_HOSTS.has(window.location.hostname) && isAppOriginSeparate();
 }
 
+// Public marketing site (glasspay.app) — a separate repo/deployment
+// (glass-waitlist-v1). Falls back to the real production domain rather than
+// window.location.origin, since this app is never itself served from the
+// marketing domain (unlike APP_ORIGIN's fallback, which covers same-origin
+// local dev).
+export const MARKETING_ORIGIN =
+  import.meta.env.VITE_MARKETING_URL ?? "https://glasspay.app";
+
+// True only on the real production app deployment — never in local dev or
+// a preview build, so the landing pages stay directly viewable there for
+// testing/porting to glass-waitlist-v1 (see that repo's README).
+const APP_HOSTS = new Set(["app.glasspay.app"]);
+
+export function isAppHost() {
+  return APP_HOSTS.has(window.location.hostname);
+}
+
 // Navigate to an app path: a hard hop to APP_ORIGIN from the marketing
 // domain, ordinary SPA navigation everywhere else.
 export function goToApp(path, navigate) {

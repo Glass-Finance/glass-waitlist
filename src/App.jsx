@@ -7,7 +7,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import LoadingScreen from "./components/LoadingScreen";
-import { isMarketingHost, APP_ORIGIN } from "./utils/deviceRedirect";
+import { isAppHost, MARKETING_ORIGIN } from "./utils/deviceRedirect";
 
 // ── Guards (eager — lightweight, needed for route resolution) ─────────────────
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -141,20 +141,21 @@ const MemberNotificationSettings = lazy(
   () => import("./pages/memberApp/settings/account/Notifications"),
 );
 
-// On the marketing domain (glasspay.app / www), only the landing pages are
-// served — every application path hops to APP_ORIGIN (app.glasspay.app)
-// with its query string intact, so deep links (invites, payment callbacks)
-// keep working. No-op wherever APP_ORIGIN is the current origin (local dev,
-// single-domain deployments, and the app domain itself).
-const MARKETING_PATHS = new Set(["/", "/members", "/privacy", "/terms", "/cookies", "/acceptable-use", "/refund-policy"]);
+// app.glasspay.app is the application only — it doesn't serve its own
+// landing pages to real visitors. Landing/legal paths hop to the marketing
+// site (glass-waitlist-v1, MARKETING_ORIGIN) with their query string intact.
+// No-op anywhere that isn't the real production app host (local dev,
+// preview builds), so these pages stay directly viewable here for testing
+// and for porting into glass-waitlist-v1 — see that repo's README.
+const LANDING_PAGE_PATHS = new Set(["/", "/members", "/privacy", "/terms", "/cookies", "/acceptable-use", "/refund-policy"]);
 
-function MarketingDomainRedirect() {
+function LandingPageRedirect() {
   const location = useLocation();
   useEffect(() => {
-    if (!isMarketingHost()) return;
-    if (MARKETING_PATHS.has(location.pathname)) return;
+    if (!isAppHost()) return;
+    if (!LANDING_PAGE_PATHS.has(location.pathname)) return;
     window.location.replace(
-      `${APP_ORIGIN}${location.pathname}${location.search}`,
+      `${MARKETING_ORIGIN}${location.pathname}${location.search}`,
     );
   }, [location]);
   return null;
@@ -163,7 +164,7 @@ function MarketingDomainRedirect() {
 function App() {
   return (
     <Router>
-      <MarketingDomainRedirect />
+      <LandingPageRedirect />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
           {/* ── Public landing ── */}
