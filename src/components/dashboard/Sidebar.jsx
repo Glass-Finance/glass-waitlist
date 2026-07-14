@@ -212,10 +212,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
         {/* White panel */}
         <div
-          className="bg-white md:bg-[#EFEFF1E5]"
+          className="bg-surface-container md:border-r md:border-surface-container-border"
           style={{
             width: 220,
-            borderRight: "1px solid #eef0f8",
             display: "flex",
             flexDirection: "column",
             fontFamily: "Inter, sans-serif",

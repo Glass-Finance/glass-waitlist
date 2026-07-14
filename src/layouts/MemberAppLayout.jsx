@@ -16,9 +16,9 @@ export default function MemberAppLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="flex justify-center items-start min-h-screen bg-[#EBEBEB]">
+    <div className="flex justify-center items-start min-h-screen bg-surface-bg">
       <div
-        className="relative bg-[#EBEBEB] w-full max-w-[390px] min-h-screen"
+        className="relative bg-surface-bg w-full max-w-[390px] min-h-screen"
         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
       >
         {/* Content — window scrolls naturally; paddingBottom clears the fixed nav */}
@@ -34,14 +34,13 @@ export default function MemberAppLayout() {
           className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-30"
           style={{
             background:
-              "linear-gradient(180deg, rgba(235,235,235,0) 0%, #EBEBEB 28%)",
+              "linear-gradient(180deg, rgba(249,249,251,0) 0%, #F9F9FB 28%)",
           }}
           aria-label="Main navigation"
         >
           <div
-            className="mx-3 mb-3 rounded-2xl"
+            className="mx-3 mb-3 rounded-2xl bg-surface-container border border-surface-container-border"
             style={{
-              background: "#ffffff",
               boxShadow: "0 2px 20px rgba(0,0,0,0.10)",
             }}
           >

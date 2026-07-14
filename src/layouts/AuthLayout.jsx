@@ -6,7 +6,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen w-screen flex flex-col md:flex-row overflow-hidden bg-[#EFEFEF] md:p-2">
+    <div className="h-screen w-screen flex flex-col md:flex-row overflow-hidden bg-surface-bg md:p-2">
       {/* ── Hero panel ───────────────────────────────────────────────────── */}
       {/* Mobile: 45vh full-bleed image with gradient + welcome text        */}
       {/* Desktop: side panel, unchanged                                     */}
@@ -21,8 +21,12 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
             decoding="async"
           />
 
-          {/* Logo */}
-          <div className="absolute top-5 left-5 md:top-8 md:left-8 z-10">
+          {/* Logo — Glass Logo Element Surface Overlay: a soft frosted backdrop
+              behind the mark so it stays legible over the photographic panel
+              background, per the design system. */}
+          <div
+            className="absolute top-5 left-5 md:top-8 md:left-8 z-10 p-2 rounded-xl bg-surface-overlay backdrop-blur-logo-overlay"
+          >
             <img
               src={glassLogo}
               alt="Glass Logo"
@@ -94,7 +98,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
       {/* Desktop: unchanged right column                                   */}
       <div
         className="flex-1 flex flex-col items-center px-6 md:px-12
-                   py-8 md:py-10 bg-[#EFEFEF] overflow-y-auto min-h-0
+                   py-8 md:py-10 bg-surface-bg overflow-y-auto min-h-0
                    md:rounded-none z-20"
         style={{
           borderRadius: "12px 12px 0 0", // overridden to none on md via className

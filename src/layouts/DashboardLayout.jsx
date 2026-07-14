@@ -27,7 +27,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden bg-[#F0F0F2]">
+    <div className="h-screen w-screen flex overflow-hidden bg-surface-bg">
       {/* ── Sidebar ── */}
       <Sidebar mobileOpen={mobileNavOpen} onCloseMobile={() => setMobileNavOpen(false)} />
 
