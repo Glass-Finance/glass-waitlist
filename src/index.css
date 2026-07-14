@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* Tailwind v4 only emits a utility if it sees the class name somewhere in
+   scanned source — an unused @theme token produces zero CSS, not just an
+   unused rule. These design-system utilities aren't applied to any
+   component yet (foundation-first, per instruction), so without this they
+   wouldn't exist in the build at all. Safelists them so they're real and
+   usable the moment a component reaches for one. */
+@source inline("text-logo text-headline text-headline-salutation text-label text-placeholder text-button text-button-tertiary text-button-secondary-sm text-body text-title-sm text-section-title bg-surface-bg bg-surface-overlay backdrop-blur-logo-overlay bg-surface-container border-surface-container-border bg-stacked-container border-outline-on-surface border-outline-on-container text-outline-on-surface text-outline-on-container");
+
 /* LOAD THE FONTS */
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&display=swap");
 
@@ -22,6 +30,82 @@
   --animate-slideInUp: slideInUp 0.8s ease-out forwards;
   --animate-scaleIn: scaleIn 0.6s ease-out forwards;
   --animate-float: float 3s ease-in-out infinite;
+
+  /* ── Glass Design System — Foundations (from UI designer, mobile pass) ──
+     Typography below is the mobile spec; desktop sizes to be added
+     separately once supplied, not replacing these. Letter-spacing values
+     come from Figma as a percentage of font size, converted to em by
+     dividing by 100 (Figma's "0.1%" == CSS "0.001em"), since raw
+     percentages aren't a valid letter-spacing unit in CSS. */
+
+  /* Typography (mobile) */
+  --text-logo: 16px;
+  --text-logo--line-height: 24px;
+  --text-logo--letter-spacing: 0.001em;
+
+  --text-headline: 18px;
+  --text-headline--line-height: normal;
+  --text-headline--letter-spacing: 0.001em;
+  --text-headline--font-weight: 500;
+
+  /* Same size/spacing as Page Headline Text, weight 400 per the salutation
+     note rather than a separate size. */
+  --text-headline-salutation: 18px;
+  --text-headline-salutation--line-height: normal;
+  --text-headline-salutation--letter-spacing: 0.001em;
+  --text-headline-salutation--font-weight: 400;
+
+  --text-label: 14px;
+  --text-label--line-height: 24px;
+  --text-label--letter-spacing: 0.001em;
+
+  --text-placeholder: 16px;
+  --text-placeholder--line-height: 24px;
+  --text-placeholder--letter-spacing: 0.005em;
+
+  --text-button: 14px;
+  --text-button--line-height: 24px;
+  --text-button--letter-spacing: 0.001em;
+
+  --text-button-tertiary: 14px;
+  --text-button-tertiary--line-height: 24px;
+  --text-button-tertiary--letter-spacing: 0.001em;
+
+  --text-button-secondary-sm: 12px;
+  --text-button-secondary-sm--line-height: normal;
+  --text-button-secondary-sm--letter-spacing: 0.001em;
+  --text-button-secondary-sm--font-weight: 500;
+
+  --text-body: 16px;
+  --text-body--line-height: 24px;
+  --text-body--letter-spacing: 0.001em;
+
+  --text-title-sm: 14px;
+  --text-title-sm--line-height: 20px;
+  --text-title-sm--letter-spacing: 0.0015em;
+
+  --text-section-title: 16px;
+  --text-section-title--line-height: normal;
+  --text-section-title--letter-spacing: 0em;
+  --text-section-title--font-weight: 500;
+
+  /* Color system (applies app-wide, not mobile-specific) */
+  --color-surface-bg: #F9F9FB;
+  /* Backdrop behind the Glass logo mark specifically (nav, loading spinner,
+     etc) — same base color as Surface Background at 95% opacity, plus a
+     120-degree background blur (backdrop-blur-logo-overlay below). */
+  --color-surface-overlay: rgb(249 249 251 / 0.95);
+  --blur-logo-overlay: 120px;
+  --color-surface-container: rgb(255 255 255 / 0.6);
+  --color-surface-container-border: #E0E0EB;
+  /* For containers nested inside a Surface Container, e.g. toggle controls
+     and horizontal selectors. */
+  --color-stacked-container: #F3F4F6;
+  /* Outline Stroke: form inputs, dividers, inactive form states. Two
+     opacity variants depending on what it sits on top of — both are flat
+     black-alpha, so they composite correctly over any base color. */
+  --color-outline-on-surface: rgb(0 0 0 / 0.15);
+  --color-outline-on-container: rgb(0 0 0 / 0.05);
 }
 
 /* Global Resets */
