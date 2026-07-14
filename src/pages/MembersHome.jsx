@@ -14,9 +14,9 @@ import Footer from "../components/Footer";
 
 export default function MembersHome() {
   useSeoMeta({
-    title: "Glass for Members — Pay Your Dues, Effortlessly",
+    title: "Pay Your Dues, Effortlessly",
     description:
-      "Join your community on Glasspay and pay dues, subscriptions, and contributions in a few taps — no more chasing payments in group chats.",
+      "Join your community on Glasspay and pay dues, subscriptions, and contributions in a few taps. No more chasing payments in group chats.",
     path: "/members",
   });
   return (

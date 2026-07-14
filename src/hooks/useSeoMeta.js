@@ -35,7 +35,7 @@ function setCanonical(href) {
 // tags for every route until this app has real per-route SSR.
 export function useSeoMeta({ title, description, path = "/" }) {
   useEffect(() => {
-    document.title = title ? `${title} — ${BASE}` : `${BASE} — Community Finance Crystal Clear`;
+    document.title = title ? `${BASE}: ${title}` : `${BASE}: Community Finance, Crystal Clear`;
     if (description) setMeta("description", description);
     setCanonical(`${SITE_URL}${path}`);
   }, [title, description, path]);
