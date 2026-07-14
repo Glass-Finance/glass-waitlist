@@ -14,6 +14,7 @@ import {
   Loader2,
   ShieldAlert,
   ShieldCheck,
+  HelpCircle,
   RefreshCw,
   Edit2,
   Wallet,
@@ -35,7 +36,7 @@ import {
   getAdminCommunities,
   setCommissionOverride,
   getAdminCommunityAccounts,
-  verifyCommunityAccount,
+  reviewCommunityAccount,
   getAdminUsers,
   suspendUser,
   unsuspendUser,
@@ -143,6 +144,12 @@ const STATUS_COLORS = {
   SUSPENDED: { bg: "bg-red-50", text: "text-red-700" },
   INACTIVE: { bg: "bg-gray-100", text: "text-gray-500" },
   VERIFIED: { bg: "bg-green-50", text: "text-green-700" },
+  // CommunityAccountResponse.status enum (accounts review flow). DISABLED
+  // isn't listed here on purpose — it falls through to the default gray
+  // badge below, which already reads correctly for a disabled state.
+  UNVERIFIED: { bg: "bg-amber-50", text: "text-amber-700" },
+  REJECTED: { bg: "bg-red-50", text: "text-red-700" },
+  NEED_MORE_INFORMATION: { bg: "bg-orange-50", text: "text-orange-700" },
   DRAFT: { bg: "bg-gray-100", text: "text-gray-500" },
   EXPIRED: { bg: "bg-gray-100", text: "text-gray-500" },
   ARCHIVED: { bg: "bg-gray-100", text: "text-gray-500" },
@@ -884,7 +891,28 @@ function CreateCommunityAccountModal({ onClose }) {
   );
 }
 
-function VerifyAccountModal({ account, onClose, onConfirm, verifying }) {
+const REVIEW_DECISIONS = [
+  {
+    value: "ACCEPT",
+    label: "Accept",
+    Icon: ShieldCheck,
+    activeStyle: { background: "#ECFDF5", borderColor: "#059669", color: "#059669" },
+  },
+  {
+    value: "REQUEST_INFO",
+    label: "Request Info",
+    Icon: HelpCircle,
+    activeStyle: { background: "#FFFBEB", borderColor: "#B45309", color: "#B45309" },
+  },
+  {
+    value: "REJECT",
+    label: "Reject",
+    Icon: ShieldAlert,
+    activeStyle: { background: "#FEF2F2", borderColor: "#e11d48", color: "#e11d48" },
+  },
+];
+
+function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
   const { data, isLoading, error } = useQuery({
     queryKey: [
       "resolve-account",
@@ -903,13 +931,27 @@ function VerifyAccountModal({ account, onClose, onConfirm, verifying }) {
     data.accountName.trim().toLowerCase() ===
       account.accountName?.trim().toLowerCase();
 
+  const [decision, setDecision] = useState(null);
+  const [comment, setComment] = useState("");
+  const commentRequired = decision === "REJECT" || decision === "REQUEST_INFO";
+
+  const f = { border: "1px solid #D0D0D0" };
+  const chosen = REVIEW_DECISIONS.find((d) => d.value === decision);
+
   return (
     <ModalShell
-      title="Verify Payout Account"
+      title="Review Payout Account"
       subtitle={account.accountNumber}
       onClose={onClose}
     >
-      <div className="px-6 py-5 flex flex-col gap-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!decision) return;
+          onSubmit({ decision, comment: comment.trim() || undefined });
+        }}
+        className="px-6 py-5 flex flex-col gap-4"
+      >
         {isLoading ? (
           <div className="flex items-center gap-2 text-xs text-gray-500">
             <Loader2 size={14} className="animate-spin" /> Checking with
@@ -918,7 +960,7 @@ function VerifyAccountModal({ account, onClose, onConfirm, verifying }) {
         ) : error ? (
           <p className="text-xs text-red-500">
             Couldn't resolve this account with Paystack. Double-check the
-            account number and bank code before verifying manually.
+            account number and bank code before deciding.
           </p>
         ) : (
           <div
@@ -938,11 +980,61 @@ function VerifyAccountModal({ account, onClose, onConfirm, verifying }) {
             {!nameMatches && (
               <p className="text-[11px] text-red-500 mt-2">
                 Names don't match — confirm this is really the same account
-                before verifying.
+                before accepting.
               </p>
             )}
           </div>
         )}
+
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+            Decision
+          </label>
+          <div className="grid grid-cols-3 gap-2">
+            {REVIEW_DECISIONS.map(({ value, label, Icon, activeStyle }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setDecision(value)}
+                className="flex flex-col items-center gap-1 py-2.5 rounded-lg text-[11px] font-semibold cursor-pointer transition-all border"
+                style={
+                  decision === value
+                    ? activeStyle
+                    : { background: "#fff", borderColor: "#E0E0EB", color: "#6b7280" }
+                }
+              >
+                <Icon size={14} />
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {decision && (
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+              Comment{commentRequired ? "" : " (optional)"}
+            </label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              rows={3}
+              required={commentRequired}
+              className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors"
+              style={f}
+              onFocus={(e) => (e.target.style.borderColor = chosen?.activeStyle.borderColor ?? "#002FA7")}
+              onBlur={(e) => Object.assign(e.target.style, f)}
+              placeholder={
+                decision === "REJECT"
+                  ? "Why is this account being rejected?"
+                  : decision === "REQUEST_INFO"
+                    ? "What information is needed from the community?"
+                    : "Optional note for this decision"
+              }
+            />
+          </div>
+        )}
+
         <div className="flex gap-3 pt-1">
           <button
             type="button"
@@ -952,24 +1044,25 @@ function VerifyAccountModal({ account, onClose, onConfirm, verifying }) {
             Cancel
           </button>
           <button
-            onClick={onConfirm}
-            disabled={verifying || isLoading}
+            type="submit"
+            disabled={
+              !decision ||
+              submitting ||
+              isLoading ||
+              (commentRequired && !comment.trim())
+            }
             className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
-            style={{ background: nameMatches ? "#059669" : "#e11d48" }}
+            style={{ background: chosen?.activeStyle.borderColor ?? "#9CA3AF" }}
           >
-            {verifying ? (
+            {submitting ? (
               <Loader2 size={12} className="animate-spin" />
-            ) : (
-              <ShieldCheck size={12} />
-            )}
-            {verifying
-              ? "Verifying…"
-              : nameMatches
-                ? "Confirm & Verify"
-                : "Verify Anyway"}
+            ) : chosen ? (
+              <chosen.Icon size={12} />
+            ) : null}
+            {submitting ? "Submitting…" : chosen ? `Confirm ${chosen.label}` : "Choose a decision"}
           </button>
         </div>
-      </div>
+      </form>
     </ModalShell>
   );
 }
@@ -980,9 +1073,12 @@ function AccountsSection() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [status, setStatus] = useState("PENDING");
+  // UNVERIFIED, not PENDING, is the queue that actually needs admin
+  // attention -- PENDING means account creation itself is still stuck in
+  // processing, which per backend rarely shows up in practice.
+  const [status, setStatus] = useState("UNVERIFIED");
   const [page, setPage] = useState(0);
-  const [verifyingAccount, setVerifyingAccount] = useState(null);
+  const [reviewingAccount, setReviewingAccount] = useState(null);
   const [creatingAccount, setCreatingAccount] = useState(false);
   const debouncedSet = useDebounce((v) => {
     setDebouncedSearch(v);
@@ -1002,12 +1098,19 @@ function AccountsSection() {
     placeholderData: (p) => p,
   });
 
-  const verify = useMutation({
-    mutationFn: ({ communityId, accountId }) =>
-      verifyCommunityAccount(communityId, accountId),
+  const review = useMutation({
+    mutationFn: ({ communityId, accountId, decision, comment }) =>
+      reviewCommunityAccount(communityId, accountId, { decision, comment }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["admin-community-accounts"] }),
-    meta: { successMessage: "Account verified" },
+    meta: {
+      successMessage: (vars) =>
+        vars.decision === "ACCEPT"
+          ? "Account accepted"
+          : vars.decision === "REJECT"
+            ? "Account rejected"
+            : "More information requested",
+    },
   });
 
   const items = data?.content ?? [];
@@ -1038,8 +1141,11 @@ function AccountsSection() {
               options={[
                 { value: "ALL", label: "All statuses" },
                 { value: "PENDING", label: "Pending" },
+                { value: "UNVERIFIED", label: "Unverified" },
+                { value: "NEED_MORE_INFORMATION", label: "Needs Info" },
                 { value: "ACTIVE", label: "Active" },
                 { value: "REJECTED", label: "Rejected" },
+                { value: "DISABLED", label: "Disabled" },
               ]}
             />
             <button
@@ -1117,36 +1223,19 @@ function AccountsSection() {
                     </span>
                   )}
                 </td>
-                {/* <td className="px-4 py-3 text-right">
-                  {a.status === "PENDING" && (
-                    <button
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            `Verify account ${a.accountNumber} — ${a.accountName}?`,
-                          )
-                        ) {
-                          verify.mutate({
-                            communityId: a.communityId,
-                            accountId: a.id,
-                          });
-                        }
-                      }}
-                      disabled={verify.isPending}
-                      className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-auto px-3 py-1.5 rounded-lg text-[11px] font-semibold text-green-700 bg-green-50 hover:bg-green-100 transition-all cursor-pointer border-none disabled:opacity-40"
-                    >
-                      <ShieldCheck size={11} /> Verify
-                    </button>
-                  )}
-                </td> */}
                 <td className="px-4 py-3 text-right">
-                  {a.status === "PENDING" && (
+                  {/* PENDING means account creation itself didn't finish
+                      processing -- there's nothing yet for a human to
+                      review. UNVERIFIED is the real "awaiting a decision"
+                      state (per backend, 2026-07-14): new account, not yet
+                      approved by an admin or verified on Paystack. */}
+                  {a.status === "UNVERIFIED" && (
                     <button
-                      onClick={() => setVerifyingAccount(a)}
-                      disabled={verify.isPending}
-                      className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-auto px-3 py-1.5 rounded-lg text-[11px] font-semibold text-green-700 bg-green-50 hover:bg-green-100 transition-all cursor-pointer border-none disabled:opacity-40"
+                      onClick={() => setReviewingAccount(a)}
+                      disabled={review.isPending}
+                      className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-auto px-3 py-1.5 rounded-lg text-[11px] font-semibold text-[#002FA7] bg-blue-50 hover:bg-blue-100 transition-all cursor-pointer border-none disabled:opacity-40"
                     >
-                      <ShieldCheck size={11} /> Verify
+                      <ShieldCheck size={11} /> Review
                     </button>
                   )}
                 </td>
@@ -1163,18 +1252,20 @@ function AccountsSection() {
         totalPages={data?.totalPages ?? 1}
         onPage={setPage}
       />
-      {verifyingAccount && (
-        <VerifyAccountModal
-          account={verifyingAccount}
-          onClose={() => setVerifyingAccount(null)}
-          verifying={verify.isPending}
-          onConfirm={() => {
-            verify.mutate(
+      {reviewingAccount && (
+        <ReviewAccountModal
+          account={reviewingAccount}
+          onClose={() => setReviewingAccount(null)}
+          submitting={review.isPending}
+          onSubmit={({ decision, comment }) => {
+            review.mutate(
               {
-                communityId: verifyingAccount.communityId,
-                accountId: verifyingAccount.id,
+                communityId: reviewingAccount.communityId,
+                accountId: reviewingAccount.id,
+                decision,
+                comment,
               },
-              { onSuccess: () => setVerifyingAccount(null) },
+              { onSuccess: () => setReviewingAccount(null) },
             );
           }}
         />

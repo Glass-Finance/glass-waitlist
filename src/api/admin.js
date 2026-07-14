@@ -9,7 +9,9 @@ export const updateSystemConfig = (id, payload)=> client.patch(`/admin/system-co
 export const getAdminCommunities       = (params)                          => client.get("/admin/communities", { params });
 export const getAdminCommunityAccounts = (params)                          => client.get("/admin/communities/accounts", { params });
 export const setCommissionOverride     = (communityIdentifier, payload)    => client.patch(`/admin/communities/${communityIdentifier}/commission`, payload);
-export const verifyCommunityAccount    = (communityIdentifier, accountId)  => client.patch(`/admin/communities/${communityIdentifier}/accounts/${accountId}/verify`);
+// decision: "ACCEPT" | "REJECT" | "REQUEST_INFO"; comment is shown to the
+// community admin as verificationComment when rejecting or requesting info.
+export const reviewCommunityAccount    = (communityIdentifier, accountId, payload) => client.patch(`/admin/communities/${communityIdentifier}/accounts/${accountId}/review`, payload);
 export const getAdminCommunityBalances = (communityIdentifier, params)     => client.get(`/admin/communities/${communityIdentifier}/balances`, { params });
 
 // ─── Users ────────────────────────────────────────────────────────────────────

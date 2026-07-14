@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Info, X, Trash2 } from "lucide-react";
+import { Info, X, Trash2, AlertTriangle } from "lucide-react";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityAccount } from "../../../../hooks/useCommunityAccount";
 import { useCommunity } from "../../../../hooks/useCommunity";
@@ -87,8 +87,11 @@ function StatusBadge({ status }) {
     ACTIVE: { bg: "#ECFDF3", fg: "#027A48" },
     VERIFIED: { bg: "#ECFDF3", fg: "#027A48" },
     PENDING: { bg: "#FFFAEB", fg: "#B54708" },
+    UNVERIFIED: { bg: "#FFFAEB", fg: "#B54708" },
     FAILED: { bg: "#FEF3F2", fg: "#B42318" },
     REJECTED: { bg: "#FEF3F2", fg: "#B42318" },
+    NEED_MORE_INFORMATION: { bg: "#FFF7ED", fg: "#C2410C" },
+    DISABLED: { bg: "#F2F4F7", fg: "#475467" },
   };
   const { bg, fg } = styles[status] ?? { bg: "#F2F4F7", fg: "#475467" };
   return (
@@ -96,7 +99,7 @@ function StatusBadge({ status }) {
       className="text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide"
       style={{ background: bg, color: fg }}
     >
-      {status.toLowerCase()}
+      {status.replace(/_/g, " ").toLowerCase()}
     </span>
   );
 }
@@ -231,6 +234,49 @@ export default function PaystackAccount() {
             {communityName ? ` in ${communityName}` : ""} are disbursed to this
             account.
           </p>
+
+          {(account.status === "REJECTED" ||
+            account.status === "NEED_MORE_INFORMATION") &&
+            account.verificationComment && (
+              <div
+                className="flex items-start gap-2.5 rounded-xl px-4 py-3.5 mb-5"
+                style={{
+                  background:
+                    account.status === "REJECTED" ? "#FEF3F2" : "#FFF7ED",
+                }}
+              >
+                <AlertTriangle
+                  size={14}
+                  className="flex-shrink-0 mt-0.5"
+                  style={{
+                    color:
+                      account.status === "REJECTED" ? "#B42318" : "#C2410C",
+                  }}
+                />
+                <div>
+                  <p
+                    className="text-xs font-semibold mb-0.5"
+                    style={{
+                      color:
+                        account.status === "REJECTED" ? "#B42318" : "#C2410C",
+                    }}
+                  >
+                    {account.status === "REJECTED"
+                      ? "This account was rejected"
+                      : "More information needed"}
+                  </p>
+                  <p
+                    className="text-xs leading-relaxed"
+                    style={{
+                      color:
+                        account.status === "REJECTED" ? "#B42318" : "#C2410C",
+                    }}
+                  >
+                    {account.verificationComment}
+                  </p>
+                </div>
+              </div>
+            )}
 
           {/* Inner white card — bank row + stats */}
           <div className="bg-white rounded-xl p-5 max-w-md">
