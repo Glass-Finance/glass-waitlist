@@ -72,7 +72,7 @@ export default function Role() {
           <div className="h-4 w-24 bg-gray-200 rounded mb-2 animate-pulse" />
           <div className="h-3 w-56 bg-gray-100 rounded animate-pulse" />
         </div>
-        <div className="bg-[#EFEFF1] rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+        <div className="bg-[#FFFFFF99] rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
           <div className="flex flex-col gap-3">
             {[0, 1].map((i) => (
               <div key={i} className="flex items-start gap-3 px-4 py-4 rounded-xl bg-gray-100 animate-pulse" style={{ border: "1.5px solid #E5E7EB" }}>
@@ -129,7 +129,7 @@ export default function Role() {
       </div>
 
       {/* Role card */}
-      <div className="bg-[#EFEFF1] rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#FFFFFF99] rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
         <div className="flex flex-col gap-3">
           {OPTIONS.map((opt) => {
             const isSelected = role === opt.id;

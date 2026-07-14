@@ -259,7 +259,7 @@ export default function NotificationsPanel({
         style={{
           display: "block", width: "100%", textAlign: "center",
           fontSize: 12, fontWeight: 600, color: "#002FA7",
-          background: "#EBEBEB", border: "none",
+          background: "#F3F4F6", border: "none",
           borderTop: "1px solid #E5E5E5", cursor: "pointer", padding: "10px 0",
         }}
       >

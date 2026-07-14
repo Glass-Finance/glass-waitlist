@@ -150,7 +150,13 @@ function ActivityIcon({ type, color }) {
 }
 
 // ── Admin payment confirmation modal ──────────────────────────────────────────
-function AdminPaymentModal({ item, onClose }) {
+// Exported so CommunitiesHome's cross-community "my dues" overview can reuse
+// it — that page isn't scoped to one community/route, so it can't rely on
+// /member/pay/:id (member-app routes are permanently mobile-gated by
+// MemberDeviceGuard, and a desktop admin viewing their own dues from their
+// own desktop dashboard shouldn't be bounced to a "scan this on your phone"
+// screen just to see a modal).
+export function AdminPaymentModal({ item, onClose }) {
   const initiatePayment = useInitiatePayment();
   const { data: authorisations } = useManagePayments();
   const [error, setError] = useState("");
@@ -666,7 +672,7 @@ function AddMemberModal({ onClose, communityId }) {
       className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#FFFFFF99] rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between px-8 pt-7 pb-4">
           <div>
@@ -1654,7 +1660,7 @@ function DashboardContent({ isPaying, communityId }) {
           {stats.map((s) => (
             <div
               key={s.label}
-              className="bg-[#EFEFF1E5] rounded-xl px-4 py-3 border border-[#eef0f8]"
+              className="bg-[#FFFFFF99] rounded-xl px-4 py-3 border border-[#eef0f8]"
               style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
             >
               <div className="flex items-center justify-between mb-3">
@@ -1931,7 +1937,7 @@ function DashboardContent({ isPaying, communityId }) {
 
           {/* Recent Activity */}
           <div
-            className="bg-[#EFEFF1E5] rounded-xl border border-[#eef0f8] p-4"
+            className="bg-[#FFFFFF99] rounded-xl border border-[#eef0f8] p-4"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <span className="text-sm font-medium text-black block mb-4">
@@ -2030,7 +2036,7 @@ function DashboardContent({ isPaying, communityId }) {
 
         {/* Member Payments table */}
         <div
-          className="bg-[#EFEFF1] rounded-xl border border-[#eef0f8]"
+          className="bg-[#FFFFFF99] rounded-xl border border-[#eef0f8]"
           style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
         >
           <div className="flex items-center justify-between px-5 pt-4 pb-0">

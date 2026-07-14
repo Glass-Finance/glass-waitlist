@@ -116,7 +116,7 @@ export default function MemberAccess() {
     <div className="flex flex-col gap-4 max-w-3xl w-full">
 
       {/* Joining & visibility */}
-      <div className="bg-[#EFEFF1E5] rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#FFFFFF99] rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Joining &amp; visibility</p>
         <p className="text-xs text-gray-500 mb-4">
           Control how new members find and join this community.
@@ -158,7 +158,7 @@ export default function MemberAccess() {
       </div>
 
       {/* Invite Link + QR */}
-      <div className="bg-[#EFEFF1E5] rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#FFFFFF99] rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Invite Link</p>
         <p className="text-xs text-gray-500 mb-4">
           Share this link or QR code with members so they can join your community on Glass.
@@ -189,7 +189,7 @@ export default function MemberAccess() {
       </div>
 
       {/* Admin Management */}
-      <div className="bg-[#EFEFF1E5] rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#FFFFFF99] rounded-2xl p-5" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Admin management</p>
         <p className="text-xs text-gray-500 mb-4">Promote members to admin or revoke admin access.</p>
         {!rolesLoading && !adminRoleId && (

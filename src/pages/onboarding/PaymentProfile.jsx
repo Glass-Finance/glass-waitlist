@@ -194,7 +194,7 @@ export default function PaymentProfile() {
     >
       {showSuccess && <SuccessModal />}
 
-      <header className="flex items-center justify-between px-8 py-4 bg-[#EFEFF1E5] border-b border-gray-200 flex-shrink-0">
+      <header className="flex items-center justify-between px-8 py-4 bg-[#FFFFFF99] border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
@@ -207,7 +207,7 @@ export default function PaymentProfile() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-[#EFEFF1E5] border-r border-gray-200 flex flex-col pt-10 px-6">
+        <aside className="w-64 flex-shrink-0 bg-[#FFFFFF99] border-r border-gray-200 flex flex-col pt-10 px-6">
           {STEPS.map((step, i) => {
             const isActive    = step.id === "payment";
             const isCompleted = step.id === "organization";

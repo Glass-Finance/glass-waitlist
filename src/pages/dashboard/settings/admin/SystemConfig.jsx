@@ -92,7 +92,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl"
+        className="bg-[#FFFFFF99] rounded-2xl w-full max-w-md shadow-2xl"
         style={{ border: "1px solid #E5E7EB" }}
       >
         {/* Header */}
@@ -333,7 +333,7 @@ export default function SystemConfig() {
 
       {/* Table */}
       <div
-        className="bg-[#EFEFF1E5] rounded-2xl overflow-hidden"
+        className="bg-[#FFFFFF99] rounded-2xl overflow-hidden"
         style={{ border: "1px solid #E5E7EB" }}
       >
         {isLoading ? (

@@ -106,7 +106,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
         background: "#fff",
         borderRadius: 14,
         padding: "14px 16px",
-        border: "1px solid #EFEFEF",
+        border: "1px solid rgba(0,0,0,0.15)",
         display: "flex",
         flexDirection: "column",
         gap: 10,

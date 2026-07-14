@@ -130,11 +130,11 @@ function SetupFlow({ onSuccess, onCancel }) {
 
         {/* QR code display */}
         {qrSrc ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: "16px", background: "#fff", borderRadius: 12, border: "1px solid #EBEBEB" }}>
+          <div style={{ display: "flex", justifyContent: "center", padding: "16px", background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.15)" }}>
             <img src={qrSrc} alt="MFA QR code" style={{ width: 180, height: 180 }} />
           </div>
         ) : qrUri ? (
-          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #EBEBEB", padding: "12px 16px" }}>
+          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.15)", padding: "12px 16px" }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: 0.4, margin: "0 0 6px" }}>
               QR URI (scan or paste into your app)
             </p>
@@ -264,7 +264,7 @@ export default function MFA() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#EBEBEB", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), #F9F9FB", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 16px 16px" }}>
         <button

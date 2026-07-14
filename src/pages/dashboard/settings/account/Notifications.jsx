@@ -15,7 +15,7 @@ function NotifRow({ label, description, value, onChange, disabled, last = false 
 
 function SectionCard({ title, subtitle, children }) {
   return (
-    <div className="bg-[#EFEFF1] rounded-2xl px-5 pt-4 pb-2" style={{ border: "1px solid #E5E7EB" }}>
+    <div className="bg-[#FFFFFF99] rounded-2xl px-5 pt-4 pb-2" style={{ border: "1px solid #E5E7EB" }}>
       <p className="text-sm font-semibold text-gray-900 mb-0.5">{title}</p>
       {subtitle && <p className="text-xs text-gray-500 mb-3">{subtitle}</p>}
       {children}

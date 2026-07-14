@@ -145,7 +145,7 @@ export default function DashboardTour({ onClose }) {
       )}
 
       <div
-        className="bg-[#EFEFF1E5] rounded-2xl shadow-2xl overflow-hidden"
+        className="bg-[#FFFFFF99] rounded-2xl shadow-2xl overflow-hidden"
         style={{ width: "100%", maxWidth: CARD_WIDTH, ...getCardStyle() }}
       >
         <div className="flex items-start justify-between px-6 pt-6">

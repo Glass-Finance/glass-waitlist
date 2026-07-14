@@ -164,7 +164,7 @@ function toDateInput(iso) {
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
     <div
-      className="bg-[#EFEFF1E5] rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between"
+      className="bg-[#FFFFFF99] rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between"
       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
     >
       <div>
@@ -915,7 +915,7 @@ function CreatePlanModal({ communityId, onClose, onCreate, creating, createError
       className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-[#FFFFFF99] rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
         <div className="flex items-start justify-between px-6 pt-5">
           <div>
             <h2 className="text-base font-semibold text-black">
@@ -1106,7 +1106,7 @@ function EditPlanModal({ plan, communityId, onClose, onSave, saving }) {
       className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#FFFFFF99] rounded-2xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-start justify-between mb-5">
           <div>
             <h2 className="text-base font-semibold text-black">
@@ -1408,7 +1408,7 @@ function SendReminderModal({ plan, onClose, onSend, sending }) {
       className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#FFFFFF99] rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E5E7EB" }}>
         <div className="flex items-start justify-between px-6 pt-5">
           <div>
             <h2 className="text-base font-semibold text-black">Send Reminder</h2>
@@ -1846,7 +1846,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
       className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-[#FFFFFF99] rounded-2xl w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <div>
@@ -2243,7 +2243,7 @@ function PlanCard({
 
   return (
     <div
-      className="bg-[#EFEFF1E5] rounded-2xl border border-gray-100 p-5 flex flex-col gap-4"
+      className="bg-[#FFFFFF99] rounded-2xl border border-gray-100 p-5 flex flex-col gap-4"
       style={{ boxShadow: "0 1px 6px rgba(0,47,167,0.07)" }}
     >
       {/* Status + overflow */}
@@ -2563,7 +2563,7 @@ export default function Payments() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-5 bg-[#EFEFF1] rounded-md p-1 w-fit">
+      <div className="flex gap-1 mb-5 bg-[#F3F4F6] rounded-md p-1 w-fit">
         {TABS.map((t) => (
           <button
             key={t}

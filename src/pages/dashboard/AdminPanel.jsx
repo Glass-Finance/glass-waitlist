@@ -245,7 +245,7 @@ function TableShell({ isLoading, isEmpty, error, emptyIcon, emptyLabel = "No res
   const is403 = error?.response?.status === 403;
   return (
     <div
-      className="bg-[#EFEFF1E5] rounded-2xl overflow-hidden"
+      className="bg-[#FFFFFF99] rounded-2xl overflow-hidden"
       style={{ border: "1px solid #E5E7EB" }}
     >
       {isLoading ? (
@@ -344,7 +344,7 @@ function ModalShell({ title, subtitle, onClose, children }) {
       }}
     >
       <div
-        className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl"
+        className="bg-[#FFFFFF99] rounded-2xl w-full max-w-md shadow-2xl"
         style={{ border: "1px solid #E5E7EB" }}
       >
         <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
@@ -1806,7 +1806,7 @@ function BalancesSection() {
               figure — rounding to whole naira could hide a real
               discrepancy that should surface as "Out of balance". */}
           <div
-            className="bg-[#EFEFF1E5] rounded-2xl p-5 mb-4 flex items-center justify-between"
+            className="bg-[#FFFFFF99] rounded-2xl p-5 mb-4 flex items-center justify-between"
             style={{ border: "1px solid #E5E7EB" }}
           >
             <div>
@@ -1827,7 +1827,7 @@ function BalancesSection() {
             {balances.map((b) => (
               <div
                 key={b.code}
-                className="bg-[#EFEFF1E5] rounded-2xl p-5"
+                className="bg-[#FFFFFF99] rounded-2xl p-5"
                 style={{ border: "1px solid #E5E7EB" }}
               >
                 <p className="text-[10px] text-gray-400 font-mono mb-1">
@@ -2764,7 +2764,7 @@ export default function AdminPanel() {
 
       <div className="overflow-x-auto mb-8">
         <div
-          className="flex gap-1 bg-[#EFEFF1] rounded-xl p-1 w-fit"
+          className="flex gap-1 bg-[#F3F4F6] rounded-xl p-1 w-fit"
           style={{ border: "1px solid #f0f0f0" }}
         >
           {TABS.map(({ id, label, Icon }) => {

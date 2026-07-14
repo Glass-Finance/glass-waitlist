@@ -44,7 +44,7 @@ function FilterDropdown({ value, onChange }) {
               background: "#fff",
               borderRadius: 10,
               boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
-              border: "1px solid #EFEFEF",
+              border: "1px solid rgba(0,0,0,0.15)",
               zIndex: 20,
               overflow: "hidden",
               minWidth: 130,
@@ -227,7 +227,7 @@ export default function UpcomingPayments() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#EBEBEB",
+        background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), #F9F9FB",
         fontFamily: "'Inter', system-ui, sans-serif",
         paddingBottom: 40,
       }}
@@ -275,7 +275,7 @@ export default function UpcomingPayments() {
       <div
         style={{
           margin: "0 16px",
-          background: "#EFEFF1E5",
+          background: "#FFFFFF99",
           borderRadius: 16,
           overflow: "hidden",
           boxShadow: "0 1px 6px rgba(0,0,0,0.06)",

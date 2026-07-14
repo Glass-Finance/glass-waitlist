@@ -223,7 +223,7 @@ export default function PaystackAccount() {
         <LoadingState />
       ) : account ? (
         <div
-          className="bg-[#EFEFF1E5] rounded-2xl p-6"
+          className="bg-[#FFFFFF99] rounded-2xl p-6"
           style={{ border: "1px solid #FFFFFF" }}
         >
           <p className="text-sm font-bold text-gray-900 mb-0.5">
@@ -369,7 +369,7 @@ export default function PaystackAccount() {
       ) : (
         // No account yet — prompt to add one
         <div
-          className="bg-[#EFEFF1E5] rounded-2xl p-6 text-center"
+          className="bg-[#FFFFFF99] rounded-2xl p-6 text-center"
           style={{ border: "1px solid #E5E7EB" }}
         >
           <p className="text-sm font-bold text-gray-900 mb-1">

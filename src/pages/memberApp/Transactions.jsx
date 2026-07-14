@@ -303,7 +303,7 @@ export default function Transactions() {
           <div
             key={label}
             style={{
-              background: "#EFEFF1E5",
+              background: "#FFFFFF99",
               borderRadius: 16,
               margin: "0 12px 12px",
               overflow: "hidden",

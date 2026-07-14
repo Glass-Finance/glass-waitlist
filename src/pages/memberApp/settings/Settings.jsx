@@ -32,7 +32,7 @@ export default function Settings() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#EBEBEB",
+        background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), #F9F9FB",
         fontFamily: "'Inter', system-ui, sans-serif",
         paddingBottom: 40,
       }}

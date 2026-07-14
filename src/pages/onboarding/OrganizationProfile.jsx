@@ -536,7 +536,7 @@ const STEPS = [
 ];
 
 const inputCls =
-  "w-full border border-gray-300 bg-[#F0F0F2] p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
+  "w-full border border-gray-300 bg-[#F3F4F6] p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
 
 function StepIcon({ id }) {
   const icons = {
@@ -691,7 +691,7 @@ export default function OrganizationProfile() {
       style={{ height: "100vh", backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
     >
       {/* Navbar */}
-      <header className="flex items-center justify-between px-8 py-4 bg-[#EFEFF1E5] border-b border-gray-200 flex-shrink-0">
+      <header className="flex items-center justify-between px-8 py-4 bg-[#FFFFFF99] border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
@@ -706,7 +706,7 @@ export default function OrganizationProfile() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-[#EFEFF1E5] border-r border-gray-200 flex flex-col pt-10 px-6">
+        <aside className="w-64 flex-shrink-0 bg-[#FFFFFF99] border-r border-gray-200 flex flex-col pt-10 px-6">
           {STEPS.map((step, i) => {
             const isActive    = step.id === "organization";
             const isCompleted = false;

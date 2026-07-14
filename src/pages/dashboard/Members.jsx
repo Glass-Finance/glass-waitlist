@@ -46,7 +46,7 @@ function statusStyle(paid, total) {
 
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
-    <div className="bg-[#EFEFF1E5] rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-[#FFFFFF99] rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <div>
         <p className="text-xs text-gray-400 mb-1">{label}</p>
         <p className="text-[13px] font-semibold text-black">{value}</p>
@@ -339,7 +339,7 @@ export default function Members() {
       </div>
       )}
 
-      {members.length > 0 && <div className="bg-[#EFEFF1E5] rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+      {members.length > 0 && <div className="bg-[#FFFFFF99] rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
         <div className="flex items-center justify-between px-5 py-4">
           <span className="text-sm font-medium text-black">Member Payments</span>
           <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#002FA7] text-xs font-semibold text-[#002FA7] hover:bg-blue-50 transition-all bg-white cursor-pointer">
@@ -498,7 +498,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm" onClick={e => e.target === e.currentTarget && onClose()}>
-      <form onSubmit={handleSubmit} className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl p-6">
+      <form onSubmit={handleSubmit} className="bg-[#FFFFFF99] rounded-2xl w-full max-w-md shadow-2xl p-6">
         <div className="flex items-start justify-between mb-5">
           <div>
             <h2 className="text-base font-semibold text-black">Invite Member</h2>

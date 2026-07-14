@@ -739,7 +739,7 @@ export default function AddMembers() {
       className="flex flex-col overflow-hidden"
       style={{ height: "100vh", backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
     >
-      <header className="flex items-center justify-between px-8 py-4 bg-[#EFEFF1E5] border-b border-gray-200 flex-shrink-0">
+      <header className="flex items-center justify-between px-8 py-4 bg-[#FFFFFF99] border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
@@ -752,7 +752,7 @@ export default function AddMembers() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-[#EFEFF1E5] border-r border-gray-200 flex flex-col pt-10 px-6">
+        <aside className="w-64 flex-shrink-0 bg-[#FFFFFF99] border-r border-gray-200 flex flex-col pt-10 px-6">
           {STEPS.map((step, i) => {
             const isActive    = step.id === "members";
             const isCompleted = ["organization", "payment"].includes(step.id);
@@ -798,7 +798,7 @@ export default function AddMembers() {
             </div>
 
             {/* Direct add card */}
-            <div className="bg-[#EFEFF1] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
+            <div className="bg-[#F3F4F6] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
               <h3 className="text-base font-semibold text-gray-900 mb-4">Prefer To Add Members Directly?</h3>
 
               {/* Tabs */}

@@ -214,7 +214,7 @@ export default function Profile() {
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Profile</p>
         <p className="text-xs text-gray-500">Manage your personal information</p>
       </div>
-      <div className="bg-[#EFEFF1E5] rounded-lg p-4" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#FFFFFF99] rounded-lg p-4" style={{ border: "1px solid #E5E7EB" }}>
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-11 h-11 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -243,7 +243,7 @@ export default function Profile() {
       </div>
 
       {/* Personal Information */}
-      <div className="bg-[#EFEFF1E5] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#FFFFFF99] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-medium text-gray-900 mb-0.5">Personal Information</p>
         <p className="text-xs text-gray-500 mb-5">This is how your information will appear across glass</p>
 
@@ -299,7 +299,7 @@ export default function Profile() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: "rgba(0,0,0,0.45)" }}
         >
-          <div className="bg-[#EFEFF1E5] rounded-2xl shadow-2xl w-full max-w-sm p-6" style={{ border: "1px solid #E5E7EB" }}>
+          <div className="bg-[#FFFFFF99] rounded-2xl shadow-2xl w-full max-w-sm p-6" style={{ border: "1px solid #E5E7EB" }}>
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
               style={{ background: "#FEE2E2" }}
@@ -397,7 +397,7 @@ export default function Profile() {
       )}
 
       {/* Delete Account */}
-      <div className="bg-[#EFEFF1E5] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#FFFFFF99] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Account</p>
         <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
         <div

@@ -109,7 +109,7 @@ export default function InvitePopup() {
         style={{
           width: "100%",
           maxWidth: 360,
-          background: "#EBEBEB",
+          background: "#F9F9FB",
           borderRadius: 20,
           padding: "36px 24px 28px",
           textAlign: "center",

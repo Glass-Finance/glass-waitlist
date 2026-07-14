@@ -91,7 +91,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
       style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-[#EFEFF1E5] rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-[#FFFFFF99] rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E5E7EB" }}>
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <h2 className="text-sm font-bold text-gray-900">

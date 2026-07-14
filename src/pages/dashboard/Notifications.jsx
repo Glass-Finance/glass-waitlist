@@ -178,9 +178,9 @@ function NotificationDetailModal({ n, onClose }) {
             <p className="text-sm text-gray-400 m-0">No additional details.</p>
           )}
 
-          {/* Facts — inner card matching the app's #EFEFF1E5/#E5E7EB standard */}
+          {/* Facts — inner card matching the app's #FFFFFF99/#E5E7EB standard */}
           <div
-            className="flex flex-col gap-2.5 mt-5 rounded-xl px-4 py-3.5 bg-[#EFEFF1E5]"
+            className="flex flex-col gap-2.5 mt-5 rounded-xl px-4 py-3.5 bg-[#FFFFFF99]"
             style={{ border: "1px solid #E5E7EB" }}
           >
             {factRows.map((r) => (
@@ -198,7 +198,7 @@ function NotificationDetailModal({ n, onClose }) {
 
         {/* Footer */}
         <div
-          className="flex items-center justify-end gap-3 px-6 py-4 bg-[#EFEFF1E5]"
+          className="flex items-center justify-end gap-3 px-6 py-4 bg-[#FFFFFF99]"
           style={{ borderTop: "1px solid #E5E7EB" }}
         >
           <button
@@ -428,7 +428,7 @@ function CommunityNotifications() {
       {/* Tabs — matches Settings' Account/Finance/Community segmented style */}
       <div className="overflow-x-auto flex-shrink-0 mb-5">
       <div
-        className="flex gap-1 bg-[#EFEFF1] rounded-md p-1 w-fit"
+        className="flex gap-1 bg-[#F3F4F6] rounded-md p-1 w-fit"
         style={{ border: "1px solid #fafafa" }}
       >
         {TABS.map((t) => {

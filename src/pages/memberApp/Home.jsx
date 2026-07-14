@@ -779,7 +779,7 @@ export default function Home() {
       <div
         style={{
           minHeight: "100vh",
-          background: "#EBEBEB",
+          background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), #F9F9FB",
           fontFamily: "'Inter', system-ui, sans-serif",
           paddingBottom: 40,
         }}
@@ -1029,7 +1029,7 @@ export default function Home() {
             <div
               style={{
                 margin: "16px 16px 0",
-                background: "#EFEFF1E5",
+                background: "#FFFFFF99",
                 borderRadius: 16,
                 padding: "16px 16px 4px",
                 boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
@@ -1166,7 +1166,7 @@ export default function Home() {
             <div
               style={{
                 margin: "16px 16px 0",
-                background: "#EFEFF1E5",
+                background: "#FFFFFF99",
                 borderRadius: 16,
                 padding: "16px 16px 4px",
                 boxShadow: "0 1px 6px rgba(0,0,0,0.06)",

@@ -135,7 +135,7 @@ function ErrorMessage({ message }) {
 // ---------------------------------------------------------------------------
 function MobileShell({ children, step }) {
   return (
-    <div className="flex justify-center items-start min-h-screen bg-[#EFEFEF]">
+    <div className="flex justify-center items-start min-h-screen bg-[#F9F9FB]">
       <div
         className="relative w-full max-w-[430px] min-h-screen overflow-hidden flex flex-col"
         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
@@ -844,7 +844,7 @@ export default function Join() {
   // than flashing the signup form first.
   if (authLoading || (isAuthenticated && (community || token))) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#EFEFEF]">
+      <div className="flex items-center justify-center min-h-screen bg-[#F9F9FB]">
         <LoadingState size={18} />
       </div>
     );

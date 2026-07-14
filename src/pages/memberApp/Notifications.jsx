@@ -153,7 +153,7 @@ function Avatar({ name, logo }) {
 
 function InviteCard({ invite, onAccept, onReject, busy }) {
   return (
-    <div style={{ background: "#fff", borderRadius: 14, padding: 16, border: "1px solid #EFEFEF" }}>
+    <div style={{ background: "#fff", borderRadius: 14, padding: 16, border: "1px solid rgba(0,0,0,0.15)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
         <Avatar name={invite.community?.name} logo={invite.community?.logo} />
         <div style={{ minWidth: 0 }}>
@@ -233,7 +233,7 @@ export default function Notifications() {
   async function handleReject(invite) { await reject(invite.id); }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#EBEBEB", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), #F9F9FB", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 20px 20px", position: "relative" }}>
         <button
@@ -254,7 +254,7 @@ export default function Notifications() {
             style={{
               flex: 1, padding: "9px 0", borderRadius: 9, border: "none", cursor: "pointer",
               fontSize: 13, fontWeight: activeTab === tab ? 700 : 400,
-              background: activeTab === tab ? "#EBEBEB" : "transparent",
+              background: activeTab === tab ? "#F3F4F6" : "transparent",
               color: activeTab === tab ? "#111" : "#888", transition: "all 0.2s",
             }}
           >

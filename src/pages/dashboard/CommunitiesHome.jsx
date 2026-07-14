@@ -522,6 +522,7 @@ import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin, isCommunityAdmin, roleKeyword } from "../../utils/communityRole";
 import Background from "../../assets/background.webp";
 import { usePageTitle } from "../../hooks/usePageTitle";
+import { AdminPaymentModal } from "./AdminDashboard";
 
 const SORT_OPTIONS = ["Recently Viewed", "A-Z", "Z-A", "Newest First"];
 
@@ -732,7 +733,7 @@ function OverviewEmpty({ text }) {
   return <p className="text-[11px] text-gray-400 px-4 py-5 text-center">{text}</p>;
 }
 
-function GlobalOverview({ communities }) {
+function GlobalOverview() {
   const navigate = useNavigate();
   const { upcoming, recentActivity, isLoading } = useGlobalOverview();
   const { notifications, unreadCount } = useAllNotifications();
@@ -747,39 +748,34 @@ function GlobalOverview({ communities }) {
     return null;
   }
 
-  // Paying an obligation goes through the member payment flow, which reads
-  // the active community from localStorage — point it at the obligation's
-  // community first so PaymentSummary resolves the right context.
+  // This page spans every community the admin belongs to, not one route's
+  // worth — so it can't lean on /member/pay/:id the way a single-community
+  // context can. Member-app routes are permanently mobile-gated by
+  // MemberDeviceGuard (never device-gated, always a QR handoff on desktop),
+  // which meant clicking "Pay Now" here from a desktop dashboard bounced to
+  // a "scan this on your phone" screen instead of paying. AdminPaymentModal
+  // (same one AdminDashboard.jsx's paying-admin view already uses) is
+  // desktop-native and takes the exact obligation shape useGlobalOverview
+  // already returns, so no data reshaping is needed.
+  const [payingItem, setPayingItem] = useState(null);
   function handlePay(o) {
-    const community = communities.find(
-      (c) => (c.slug ?? c.community?.slug) === o.communitySlug,
-    );
-    if (community) {
-      try {
-        localStorage.setItem(
-          "glass_member_community",
-          JSON.stringify({
-            id: community.id,
-            slug: community.slug,
-            name: community.name,
-          }),
-        );
-      } catch { /* ignore */ }
-    }
-    navigate(`/member/pay/${o.id}`, {
-      state: { communityName: o.communityName, communityLogo: o.logo },
-    });
+    setPayingItem(o);
   }
 
   return (
+    <>
     <div className="px-4 md:px-7 pb-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {/* Upcoming payments across all communities */}
       <OverviewCard
         icon={<Clock size={14} className="text-[#002FA7]" />}
         title="Upcoming Payments"
         badge={upcoming.length}
-        footerLabel={upcoming.length > 0 ? "View all payments" : null}
-        onFooter={() => navigate("/member/upcoming")}
+        // No desktop-native page exists yet for "my dues across every
+        // community" (only /member/upcoming, which is permanently
+        // mobile-gated) — hiding the footer link rather than pointing it at
+        // Payments.jsx, which is a single active community's admin
+        // payment-plan management view, not a personal cross-community list.
+        footerLabel={null}
       >
         {isLoading ? (
           <OverviewEmpty text="Loading…" />
@@ -825,8 +821,8 @@ function GlobalOverview({ communities }) {
       <OverviewCard
         icon={<CreditCard size={14} className="text-[#002FA7]" />}
         title="Recent Activity"
-        footerLabel={activityTop.length > 0 ? "View all transactions" : null}
-        onFooter={() => navigate("/member/transactions")}
+        // Same gap as Upcoming Payments above — no desktop page for this yet.
+        footerLabel={null}
       >
         {isLoading ? (
           <OverviewEmpty text="Loading…" />
@@ -906,6 +902,10 @@ function GlobalOverview({ communities }) {
         )}
       </OverviewCard>
     </div>
+    {payingItem && (
+      <AdminPaymentModal item={payingItem} onClose={() => setPayingItem(null)} />
+    )}
+    </>
   );
 }
 
@@ -1062,7 +1062,7 @@ export default function CommunitiesHome() {
       )}
 
       {/* Global overview — payments, activity, notifications across all communities */}
-      <GlobalOverview communities={communities} />
+      <GlobalOverview />
 
       {/* Filters */}
       <div className="flex items-center gap-5 px-4 md:px-7 pb-5">
