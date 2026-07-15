@@ -126,9 +126,9 @@ function NotificationRow({ n, onTap, onNavigate }) {
 function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
   return (
-    <div style={{ width: 40, height: 40, borderRadius: 10, background: "#1C2B8A22", border: "1px solid #1C2B8A44", color: "#1C2B8A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, flexShrink: 0, overflow: "hidden" }}>
+    <div style={{ width: 40, height: 40, borderRadius: 10, background: logo?.url ? "#fff" : "#1C2B8A22", border: logo?.url ? "1px solid #E5E7EB" : "1px solid #1C2B8A44", color: "#1C2B8A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, flexShrink: 0, overflow: "hidden" }}>
       {logo?.url
-        ? <img src={logo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        ? <img src={logo.url} alt="" decoding="async" style={{ width: 28, height: 28, objectFit: "contain" }} />
         : initials}
     </div>
   );

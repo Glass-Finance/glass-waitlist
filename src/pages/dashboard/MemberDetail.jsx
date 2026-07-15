@@ -88,7 +88,7 @@ export default function MemberDetail() {
   // fully-loaded page below -- returning early with a bare white background
   // caused a visible flash before the textured background popped in.
   const pageBgStyle = {
-    backgroundImage: `url(${Background})`,
+    backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
   };

@@ -39,7 +39,7 @@ export default function MemberAppLayout() {
           aria-label="Main navigation"
         >
           <div
-            className="mx-3 mb-3 rounded-2xl bg-surface-container border border-surface-container-border"
+            className="mx-3 mb-3 rounded-2xl bg-white border border-surface-container-border"
             style={{
               boxShadow: "0 2px 20px rgba(0,0,0,0.10)",
             }}

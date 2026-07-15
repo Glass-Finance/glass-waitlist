@@ -2750,7 +2750,7 @@ export default function AdminPanel() {
     <div
       className="px-4 py-6 md:px-8 md:py-8 min-h-full"
       style={{
-        backgroundImage: `url(${Background})`,
+        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

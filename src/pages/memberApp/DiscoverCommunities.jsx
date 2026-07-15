@@ -134,7 +134,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
             <img
               src={logoUrl}
               alt=""
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              style={{ width: 32, height: 32, objectFit: "contain" }}
             />
           ) : (
             (community.name?.charAt(0) ?? "C")

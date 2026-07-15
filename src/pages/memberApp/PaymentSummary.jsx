@@ -282,10 +282,10 @@ export default function PaymentSummary() {
           <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
             <div
               className="w-11 h-11 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 border border-gray-100"
-              style={{ background: "#f0f4ff" }}
+              style={{ background: communityLogo?.url ? "#fff" : "#f0f4ff" }}
             >
               {communityLogo?.url ? (
-                <img src={communityLogo.url} alt="" decoding="async" className="w-full h-full object-cover" />
+                <img src={communityLogo.url} alt="" decoding="async" className="object-contain" style={{ width: 32, height: 32 }} />
               ) : (
                 <span className="text-[10px] font-bold text-[#1C2B8A]">{communityInitials}</span>
               )}

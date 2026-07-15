@@ -2509,7 +2509,7 @@ export default function Payments() {
     <div
       className="px-4 md:px-6 py-6 overflow-y-auto h-full"
       style={{
-        backgroundImage: `url(${Background})`,
+        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

@@ -138,7 +138,7 @@ export default function Settings() {
     <div
       className="flex flex-col h-full px-4 py-6 md:px-8 md:py-8 overflow-y-auto"
       style={{
-        backgroundImage: `url(${Background})`,
+        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

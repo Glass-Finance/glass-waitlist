@@ -19,7 +19,7 @@
 // //   return (
 // //     <div
 // //       onClick={onClick}
-// //       className="bg-white rounded-lg border border-gray-100 overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+// //       className="bg-surface-container rounded-lg border border-[#eef0f8] overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
 // //       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
 // //     >
 // //       {/* Card top */}
@@ -229,7 +229,7 @@
 //   return (
 //     <div
 //       onClick={onClick}
-//       className="bg-white rounded-lg border border-gray-100 overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+//       className="bg-surface-container rounded-lg border border-[#eef0f8] overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
 //       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
 //     >
 //       <div className="p-5 flex-1">
@@ -592,7 +592,7 @@ function CommunityCard({ community, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="bg-white rounded-lg border border-gray-100 overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+      className="bg-surface-container rounded-lg border border-[#eef0f8] overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
     >
       <div className="p-5 flex-1">
@@ -703,10 +703,10 @@ function shortDate(dateStr) {
 function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
   return (
     <div
-      className="bg-white rounded-lg border border-gray-100 flex flex-col"
+      className="bg-surface-container rounded-lg border border-[#eef0f8] flex flex-col"
       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
     >
-      <div className="flex items-center gap-2 px-4 pt-3.5 pb-2 border-b border-gray-50">
+      <div className="flex items-center gap-2 px-4 pt-3.5 pb-2 border-b border-[#eef0f8]">
         {icon}
         <p className="text-xs font-semibold text-gray-900">{title}</p>
         {badge != null && badge > 0 && (
@@ -979,7 +979,7 @@ export default function CommunitiesHome() {
     <div
       className="relative flex flex-col min-h-full"
       style={{
-        backgroundImage: `url(${Background})`,
+        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
