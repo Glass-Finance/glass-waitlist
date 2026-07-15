@@ -47,8 +47,11 @@ const SECTION_CONFIG = {
   member:  { label: "Community Activity",border: "#002FA7" },
 };
 
-const TABS = ["All", "Urgent", "Payments", "Members"];
-const TAB_CAT = { Urgent: "urgent", Payments: "payment", Members: "member" };
+// Failed/overdue payment notifications ("urgent") are still a payment event
+// at heart — Figma's tab set folds them into "Payments" rather than giving
+// them a separate tab, so TAB_CAT accepts either a single category or a list.
+const TABS = ["All", "Payments", "Community"];
+const TAB_CAT = { Payments: ["payment", "urgent"], Community: ["member"] };
 
 const ICON_META = {
   urgent:  { bg: "#FEF2F2", color: "#EF4444", Icon: AlertCircle },
@@ -68,7 +71,6 @@ function Avatar({ cat }) {
 function NotificationRow({ n, onMarkRead, onOpen }) {
   const isRead = n.readFlag ?? false;
   const cat = categorize(n);
-  const borderColor = SECTION_CONFIG[cat].border;
   const title = n.title ?? n.subject ?? "Notification";
   const desc = n.description ?? n.message ?? n.bodyText ?? "";
   const communityMap = useCommunityMap();
@@ -81,14 +83,14 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
         if (!isRead) onMarkRead(n.id);
         onOpen(n);
       }}
-      className="w-full text-left flex items-start gap-3 px-4 py-4 bg-white rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"
-      style={{
-        border: "1px solid #E5E7EB",
-        borderLeft: `3px solid ${borderColor}`,
-      }}
+      className="relative w-full text-left flex items-start gap-3 px-4 py-4 bg-white rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"
+      style={{ border: "1px solid #E5E7EB" }}
     >
+      {!isRead && (
+        <span className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-[#002FA7]" />
+      )}
       <Avatar cat={cat} />
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 pr-4">
         <p className={`text-sm leading-snug ${isRead ? "text-gray-500" : "text-gray-900 font-semibold"}`}>
           {title}
         </p>
@@ -105,12 +107,7 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
         {amount && (
           <span className="text-xs font-semibold text-gray-900">{amount}</span>
         )}
-        <div className="flex items-center gap-1.5">
-          {!isRead && (
-            <span className="w-2 h-2 rounded-full bg-[#002FA7]" />
-          )}
-          <ChevronRight size={14} className="text-gray-300" />
-        </div>
+        <ChevronRight size={14} className="text-gray-300" />
       </div>
     </button>
   );
@@ -178,9 +175,9 @@ function NotificationDetailModal({ n, onClose }) {
             <p className="text-sm text-gray-400 m-0">No additional details.</p>
           )}
 
-          {/* Facts — inner card matching the app's #FFFFFF99/#E5E7EB standard */}
+          {/* Facts — inner card matching the app's var(--color-surface-container)/#E5E7EB standard */}
           <div
-            className="flex flex-col gap-2.5 mt-5 rounded-xl px-4 py-3.5 bg-[#FFFFFF99]"
+            className="flex flex-col gap-2.5 mt-5 rounded-xl px-4 py-3.5 bg-surface-container"
             style={{ border: "1px solid #E5E7EB" }}
           >
             {factRows.map((r) => (
@@ -198,7 +195,7 @@ function NotificationDetailModal({ n, onClose }) {
 
         {/* Footer */}
         <div
-          className="flex items-center justify-end gap-3 px-6 py-4 bg-[#FFFFFF99]"
+          className="flex items-center justify-end gap-3 px-6 py-4 bg-surface-container"
           style={{ borderTop: "1px solid #E5E7EB" }}
         >
           <button
@@ -249,22 +246,9 @@ function useNotificationDetail(notifications, markRead) {
   return { openNotif, open: setOpenNotif, close: () => setOpenNotif(null) };
 }
 
-function SectionGroup({ sectionKey, items, onMarkRead, onOpen }) {
-  if (items.length === 0) return null;
-  const { label } = SECTION_CONFIG[sectionKey];
-  return (
-    <div>
-      <p className="py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-        {label}
-      </p>
-      <div className="flex flex-col gap-2">
-        {items.map((n) => <NotificationRow key={n.id} n={n} onMarkRead={onMarkRead} onOpen={onOpen} />)}
-      </div>
-    </div>
-  );
-}
-
-// Date separator label used by the All-tab chronological view
+// Date separator label used by the chronological view — Today / Yesterday /
+// This Week (last 7 days) / a full date for anything older, matching the
+// bucket set in the redesigned Notifications mockup.
 function dayLabel(dateStr) {
   if (!dateStr) return "Earlier";
   const d = new Date(dateStr);
@@ -273,6 +257,8 @@ function dayLabel(dateStr) {
   yesterday.setDate(today.getDate() - 1);
   if (d.toDateString() === today.toDateString()) return "Today";
   if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
+  const diffDays = Math.floor((today - d) / 86400000);
+  if (diffDays >= 0 && diffDays < 7) return "This Week";
   return d.toLocaleDateString("en-NG", { weekday: "long", month: "short", day: "numeric" });
 }
 
@@ -376,14 +362,14 @@ function CommunityNotifications() {
   const detail = useNotificationDetail(notifications, markRead);
 
   const byCategory = useMemo(() => ({
-    urgent: notifications.filter((n) => categorize(n) === "urgent"),
-    payment: notifications.filter((n) => categorize(n) === "payment"),
+    payment: notifications.filter((n) => ["payment", "urgent"].includes(categorize(n))),
     member: notifications.filter((n) => categorize(n) === "member"),
   }), [notifications]);
 
   const tabItems = useMemo(() => {
     if (tab === "All") return notifications;
-    return notifications.filter((n) => categorize(n) === TAB_CAT[tab]);
+    const cats = TAB_CAT[tab];
+    return notifications.filter((n) => cats.includes(categorize(n)));
   }, [notifications, tab]);
 
   return (
@@ -428,13 +414,12 @@ function CommunityNotifications() {
       {/* Tabs — matches Settings' Account/Finance/Community segmented style */}
       <div className="overflow-x-auto flex-shrink-0 mb-5">
       <div
-        className="flex gap-1 bg-[#F3F4F6] rounded-md p-1 w-fit"
+        className="flex gap-1 bg-stacked-container rounded-md p-1 w-fit"
         style={{ border: "1px solid #fafafa" }}
       >
         {TABS.map((t) => {
           const count =
             t === "All" ? notifications.length :
-            t === "Urgent" ? byCategory.urgent.length :
             t === "Payments" ? byCategory.payment.length :
             byCategory.member.length;
           const active = tab === t;
@@ -442,8 +427,7 @@ function CommunityNotifications() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex items-center gap-1.5 px-4 py-2 text-[13px] transition-all cursor-pointer border-none font-medium
-                ${t === "Urgent" ? "rounded-none" : "rounded"}
+              className={`flex items-center gap-1.5 px-4 py-2 text-[13px] rounded transition-all cursor-pointer border-none font-medium
                 ${active ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-800"}`}
             >
               {t}
@@ -480,14 +464,8 @@ function CommunityNotifications() {
             title={`No ${tab.toLowerCase()} notifications`}
             className="py-12"
           />
-        ) : tab === "All" ? (
-          <ChronologicalList items={notifications} onMarkRead={markRead} onOpen={detail.open} />
         ) : (
-          <div className="flex flex-col gap-2">
-            {tabItems.map((n) => (
-              <NotificationRow key={n.id} n={n} onMarkRead={markRead} onOpen={detail.open} />
-            ))}
-          </div>
+          <ChronologicalList items={tabItems} onMarkRead={markRead} onOpen={detail.open} />
         )}
       </div>
 

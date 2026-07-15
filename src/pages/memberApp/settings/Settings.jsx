@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, User, Shield, Bell, CreditCard, RefreshCw, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, User, Shield, Bell, CreditCard, RefreshCw, Users, LogOut } from "lucide-react";
+import { useAuth } from "../../../store/AuthContext";
 
 const SECTIONS = [
   {
@@ -18,7 +19,7 @@ const SECTIONS = [
     ],
   },
   {
-    label: "Communities",
+    label: "Community",
     items: [
       { Icon: Users, label: "My Communities", desc: "Communities you belong to", to: "/member/communities" },
     ],
@@ -27,12 +28,18 @@ const SECTIONS = [
 
 export default function Settings() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/sign-in");
+  }
 
   return (
     <div
       style={{
         minHeight: "100vh",
-        background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), #F9F9FB",
+        background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)",
         fontFamily: "'Inter', system-ui, sans-serif",
         paddingBottom: 40,
       }}
@@ -81,6 +88,18 @@ export default function Settings() {
             </div>
           </div>
         ))}
+
+        <button
+          onClick={handleLogout}
+          style={{
+            display: "flex", alignItems: "center", gap: 10, width: "100%", textAlign: "left",
+            padding: "14px 16px", background: "#fff", border: "none", borderRadius: 14,
+            cursor: "pointer", boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
+          }}
+        >
+          <LogOut size={16} style={{ color: "#002FA7" }} />
+          <span style={{ fontSize: 14, fontWeight: 500, color: "#002FA7" }}>Log Out</span>
+        </button>
       </div>
     </div>
   );

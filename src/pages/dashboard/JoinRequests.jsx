@@ -27,8 +27,8 @@ function formatRequestedAt(r) {
 const STATUS_CHIP = {
   APPROVED: { label: "Approved", bg: "#ECFDF5", color: "#059669" },
   REJECTED: { label: "Rejected", bg: "#FEF2F2", color: "#DC2626" },
-  CANCELLED: { label: "Cancelled", bg: "#F3F4F6", color: "#6B7280" },
-  EXPIRED: { label: "Expired", bg: "#F3F4F6", color: "#6B7280" },
+  CANCELLED: { label: "Cancelled", bg: "var(--color-stacked-container)", color: "#6B7280" },
+  EXPIRED: { label: "Expired", bg: "var(--color-stacked-container)", color: "#6B7280" },
 };
 
 function Avatar({ requester }) {
@@ -61,7 +61,7 @@ function RequestCard({ r, onApprove, onReject, busy }) {
 
   return (
     <div
-      className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-[#FFFFFF99] rounded-xl"
+      className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-surface-container rounded-xl"
       style={{ border: "1px solid #E5E7EB" }}
     >
       <div className="flex items-center gap-3.5 min-w-0">
@@ -200,7 +200,7 @@ export default function JoinRequests() {
       {isLoading ? (
         <LoadingState className="py-8" />
       ) : pending.length === 0 ? (
-        <div className="bg-[#FFFFFF99] rounded-xl" style={{ border: "1px dashed #E5E7EB" }}>
+        <div className="bg-surface-container rounded-xl" style={{ border: "1px dashed #E5E7EB" }}>
           <EmptyState
             icon={UserPlus}
             title="No pending join requests"

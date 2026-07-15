@@ -20,7 +20,7 @@ function maskEmail(email) {
 function ModalShell({ children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="relative bg-[#FFFFFF99] rounded-xl p-8 w-full max-w-md shadow-xl" style={{ border: "1px solid #E5E7EB" }}>{children}</div>
+      <div className="relative bg-surface-container rounded-xl p-8 w-full max-w-md shadow-xl" style={{ border: "1px solid #E5E7EB" }}>{children}</div>
     </div>
   );
 }

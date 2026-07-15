@@ -38,7 +38,7 @@ export default class ErrorBoundary extends Component {
             <a
               href="/"
               className="px-5 py-2.5 rounded-full text-[13px] font-medium text-gray-700 no-underline cursor-pointer transition-colors"
-              style={{ background: "#FFFFFF99", border: "1px solid #E5E7EB", backdropFilter: "blur(4px)" }}
+              style={{ background: "var(--color-surface-container)", border: "1px solid #E5E7EB", backdropFilter: "blur(4px)" }}
             >
               Go home
             </a>

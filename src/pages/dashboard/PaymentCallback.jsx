@@ -162,7 +162,7 @@ export default function PaymentCallback() {
     },
     unknown: {
       icon: <Loader2 size={40} strokeWidth={2} style={{ color: "#6B7280" }} />,
-      iconBg: "#F3F4F6",
+      iconBg: "var(--color-stacked-container)",
       title: "Still confirming…",
       subtitle: "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
       buttonLabel: backLabel,

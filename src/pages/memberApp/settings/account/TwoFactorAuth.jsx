@@ -130,11 +130,11 @@ function SetupFlow({ onSuccess, onCancel }) {
 
         {/* QR code display */}
         {qrSrc ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: "16px", background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.15)" }}>
+          <div style={{ display: "flex", justifyContent: "center", padding: "16px", background: "#fff", borderRadius: 12, border: "1px solid var(--color-outline-on-surface)" }}>
             <img src={qrSrc} alt="MFA QR code" style={{ width: 180, height: 180 }} />
           </div>
         ) : qrUri ? (
-          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid rgba(0,0,0,0.15)", padding: "12px 16px" }}>
+          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid var(--color-outline-on-surface)", padding: "12px 16px" }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: 0.4, margin: "0 0 6px" }}>
               QR URI (scan or paste into your app)
             </p>
@@ -264,7 +264,7 @@ export default function MFA() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), #F9F9FB", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 16px 16px" }}>
         <button
@@ -297,7 +297,7 @@ export default function MFA() {
             }}>
               <div style={{
                 width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                background: mfaEnabled ? "#DCFCE7" : "#F3F4F6",
+                background: mfaEnabled ? "#DCFCE7" : "var(--color-stacked-container)",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
                 <ShieldCheck size={22} style={{ color: mfaEnabled ? "#16A34A" : "#9CA3AF" }} />
@@ -312,7 +312,7 @@ export default function MFA() {
               </div>
               <span style={{
                 fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 999,
-                background: mfaEnabled ? "#DCFCE7" : "#F3F4F6",
+                background: mfaEnabled ? "#DCFCE7" : "var(--color-stacked-container)",
                 color: mfaEnabled ? "#15803D" : "#9CA3AF",
               }}>
                 {mfaEnabled ? "ON" : "OFF"}

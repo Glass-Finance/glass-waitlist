@@ -17,7 +17,7 @@ export default function PaymentMethod() {
         <p className="text-sm font-medium text-gray-900 mb-0.5">Payment methods</p>
         <p className="text-xs text-gray-500 mb-5">Saved cards and bank accounts used for your personal dues payments.</p>
 
-        <div className="bg-gray-50 rounded-xl p-5 mb-4" style={{ border: "1px solid #E5E7EB" }}>
+        <div className="bg-surface-container rounded-xl p-5 mb-4" style={{ border: "1px solid var(--color-outline-on-surface)" }}>
           <p className="text-sm font-medium text-gray-900 mb-0.5">Saved methods</p>
           <p className="text-xs text-gray-500 mb-4">
             Methods used across all communities you're a paying member of.

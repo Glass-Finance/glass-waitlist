@@ -8,6 +8,7 @@ import { notificationTarget } from "../../utils/notificationRouting";
 import { isPaymentNotificationType, notificationCategory } from "../../utils/notificationTypes";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import LoadingState from "../../components/common/LoadingState";
+import { formatRelativeDateTime } from "../../utils/format";
 
 const TABS = ["Payments", "Community", "Invites"];
 
@@ -153,11 +154,18 @@ function Avatar({ name, logo }) {
 
 function InviteCard({ invite, onAccept, onReject, busy }) {
   return (
-    <div style={{ background: "#fff", borderRadius: 14, padding: 16, border: "1px solid rgba(0,0,0,0.15)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+    <div style={{ background: "#fff", borderRadius: 14, padding: 16, border: "1px solid var(--color-outline-on-surface)" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
         <Avatar name={invite.community?.name} logo={invite.community?.logo} />
-        <div style={{ minWidth: 0 }}>
-          <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{invite.community?.name ?? "Community"}</p>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
+            <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{invite.community?.name ?? "Community"}</p>
+            {invite.createdAt && (
+              <span style={{ fontSize: 11, color: "#aaa", flexShrink: 0, whiteSpace: "nowrap" }}>
+                {formatRelativeDateTime(invite.createdAt)}
+              </span>
+            )}
+          </div>
           <p style={{ fontSize: 12, color: "#888", margin: "2px 0 0" }}>Invited you to join</p>
         </div>
       </div>
@@ -233,7 +241,7 @@ export default function Notifications() {
   async function handleReject(invite) { await reject(invite.id); }
 
   return (
-    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), #F9F9FB", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 20px 20px", position: "relative" }}>
         <button
@@ -254,7 +262,7 @@ export default function Notifications() {
             style={{
               flex: 1, padding: "9px 0", borderRadius: 9, border: "none", cursor: "pointer",
               fontSize: 13, fontWeight: activeTab === tab ? 700 : 400,
-              background: activeTab === tab ? "#F3F4F6" : "transparent",
+              background: activeTab === tab ? "var(--color-stacked-container)" : "transparent",
               color: activeTab === tab ? "#111" : "#888", transition: "all 0.2s",
             }}
           >

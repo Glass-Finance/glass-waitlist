@@ -92,7 +92,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="bg-[#FFFFFF99] rounded-2xl w-full max-w-md shadow-2xl"
+        className="bg-surface-container rounded-2xl w-full max-w-md shadow-2xl"
         style={{ border: "1px solid #E5E7EB" }}
       >
         {/* Header */}
@@ -333,7 +333,7 @@ export default function SystemConfig() {
 
       {/* Table */}
       <div
-        className="bg-[#FFFFFF99] rounded-2xl overflow-hidden"
+        className="bg-surface-container rounded-2xl overflow-hidden"
         style={{ border: "1px solid #E5E7EB" }}
       >
         {isLoading ? (
@@ -354,7 +354,7 @@ export default function SystemConfig() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+                <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
                   {["Key", "Name", "Value", "Category", "Type", "Env", ""].map((h) => (
                     <th
                       key={h}

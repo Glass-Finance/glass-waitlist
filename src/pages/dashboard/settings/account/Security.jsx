@@ -91,7 +91,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
       style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-[#FFFFFF99] rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-surface-container rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E5E7EB" }}>
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <h2 className="text-sm font-bold text-gray-900">
@@ -139,7 +139,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
                   <img src={qrSrc} alt="MFA QR code" className="w-44 h-44" />
                 </div>
               ) : otpauthUri ? (
-                <div className="bg-gray-50 rounded-xl p-3 border border-gray-200">
+                <div className="bg-stacked-container rounded-xl p-3 border border-gray-200">
                   <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Copy this URI into your authenticator app</p>
                   <p className="text-xs text-gray-600 break-all leading-relaxed">{otpauthUri}</p>
                 </div>
@@ -148,7 +148,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
               {secret && (
                 <div>
                   <p className="text-xs text-gray-500 mb-1.5">Or enter this key manually:</p>
-                  <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
+                  <div className="flex items-center gap-2 bg-stacked-container rounded-lg px-3 py-2 border border-gray-200">
                     <code className="flex-1 text-xs font-bold tracking-widest text-gray-800 break-all">{secret}</code>
                     <button onClick={copySecret} className="border-none bg-transparent cursor-pointer text-[#002FA7] flex-shrink-0">
                       {copied ? <Check size={14} /> : <Copy size={14} />}
@@ -208,7 +208,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 <p className="text-xs text-green-700 leading-relaxed">Save these recovery codes somewhere safe. Each code can only be used once if you lose access to your authenticator app.</p>
               </div>
               {recoveryCodes.length > 0 && (
-                <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 grid grid-cols-2 gap-2">
+                <div className="bg-stacked-container rounded-xl p-4 border border-gray-200 grid grid-cols-2 gap-2">
                   {recoveryCodes.map((rc, i) => (
                     <code key={i} className="text-xs font-mono font-bold text-gray-800 bg-white rounded px-2 py-1 border border-gray-200 text-center">{rc}</code>
                   ))}

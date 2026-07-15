@@ -89,7 +89,13 @@
   --text-section-title--letter-spacing: 0em;
   --text-section-title--font-weight: 500;
 
-  /* Color system (applies app-wide, not mobile-specific) */
+  /* Color system (applies app-wide, not mobile-specific). Reference these
+     by name everywhere — Tailwind classes (bg-surface-bg, bg-surface-container,
+     bg-stacked-container, border-surface-container-border,
+     border-outline-on-surface, border-outline-on-container) or, in inline
+     styles, var(--color-*). Never hardcode the hex/rgba values below outside
+     this block — that's what caused the same off-palette grays to keep
+     creeping back in across the app; a value only needs to change here once. */
   --color-surface-bg: #F9F9FB;
   /* Backdrop behind the Glass logo mark specifically (nav, loading spinner,
      etc) — same base color as Surface Background at 95% opacity, plus a

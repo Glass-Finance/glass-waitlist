@@ -15,7 +15,7 @@ export default function SavedCards() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), #F9F9FB", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 16px 16px" }}>
         <button
           onClick={() => navigate(-1)}
@@ -23,10 +23,15 @@ export default function SavedCards() {
         >
           <ChevronLeft size={18} strokeWidth={2} style={{ color: "#111" }} />
         </button>
-        <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>Saved Cards</h1>
+        <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>Payment Methods</h1>
       </div>
 
       <div style={{ padding: "0 16px" }}>
+        {data.length > 0 && (
+          <p style={{ fontSize: 12, fontWeight: 600, color: "#999", margin: "0 4px 8px", textTransform: "uppercase", letterSpacing: 0.4 }}>
+            Saved Cards
+          </p>
+        )}
         <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           {isLoading ? (
             <LoadingState className="py-6" />

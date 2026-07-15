@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronDown, Clock } from "lucide-react";
+import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
 import LoadingState from "../../components/common/LoadingState";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
@@ -44,7 +44,7 @@ function FilterDropdown({ value, onChange }) {
               background: "#fff",
               borderRadius: 10,
               boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
-              border: "1px solid rgba(0,0,0,0.15)",
+              border: "1px solid var(--color-outline-on-surface)",
               zIndex: 20,
               overflow: "hidden",
               minWidth: 130,
@@ -83,121 +83,85 @@ function FilterDropdown({ value, onChange }) {
 function PaymentRow({ item, onPay, paying }) {
   const isRecurring = item.type === "recurring";
   const badge = isRecurring
-    ? { label: "Recurring", color: "#002FA7", bg: "#D7E2FF" }
-    : { label: "One-time", color: "#6B2FB5", bg: "#E4D7F4" };
+    ? { label: "Recurring", color: "#7C3AED", bg: "#F3E8FF" }
+    : { label: "One-time", color: "#DC2626", bg: "#FEE2E2" };
 
   return (
     <div
       style={{
-        padding: "14px 16px",
-        background: "#FFFFFF66",
-        borderRadius: 12,
-        border: "1px solid #EEEEEE",
+        padding: "18px 16px",
+        background: "#fff",
+        borderRadius: 14,
+        boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12,
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 8,
-        }}
-      >
+      <div style={{ minWidth: 0 }}>
         <div
           style={{
-            width: 36,
-            height: 36,
-            borderRadius: 8,
-            background: item.logoColor + "22",
-            border: `1px solid ${item.logoColor}44`,
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 13,
-            fontWeight: 700,
-            color: item.logoColor,
-            overflow: "hidden",
+            alignItems: "baseline",
+            gap: 6,
+            marginBottom: 6,
           }}
         >
-          {item.logo?.url ? (
-            <img src={item.logo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          ) : (
-            item.logoText
+          <span style={{ fontSize: 20, fontWeight: 700, color: "#111" }}>
+            {formatNaira(item.amount)}
+          </span>
+          {isRecurring && (
+            <span style={{ fontSize: 13, color: "#888" }}>/month</span>
           )}
-        </div>
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: badge.color,
-            background: badge.bg,
-            padding: "3px 12px",
-            borderRadius: 999,
-          }}
-        >
-          {badge.label}
-        </span>
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          alignItems: "baseline",
-          gap: 2,
-          marginBottom: 2,
-        }}
-      >
-        <span style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>
-          {formatNaira(item.amount)}
-        </span>
-        {isRecurring && (
-          <span style={{ fontSize: 12, color: "#888" }}>/cycle</span>
-        )}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <div>
-          <p style={{ fontSize: 13, color: "#333", marginBottom: 3 }}>
-            {toTitleCase(item.name)}
-          </p>
-          <div
+          <span
             style={{
-              display: "flex",
+              display: "inline-flex",
               alignItems: "center",
-              gap: 4,
-              color: "#999",
+              gap: 5,
+              fontSize: 12,
+              fontWeight: 600,
+              color: badge.color,
+              marginLeft: 4,
             }}
           >
-            <Clock size={11} strokeWidth={1.8} />
-            <span style={{ fontSize: 12 }}>
-              Due: {formatDate(item.dueDate)}
-            </span>
-          </div>
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: badge.color,
+                flexShrink: 0,
+              }}
+            />
+            {badge.label}
+          </span>
         </div>
-        <button
-          onClick={() => onPay(item)}
-          disabled={paying}
-          style={{
-            padding: "8px 18px",
-            borderRadius: 8,
-            border: "1.5px solid #002FA7",
-            background: "#fff",
-            color: "#002FA7",
-            fontSize: 12,
-            fontWeight: 600,
-            cursor: "pointer",
-            opacity: paying ? 0.6 : 1,
-          }}
-        >
-          {paying ? "Starting…" : "Pay Now"}
-        </button>
+        <p style={{ fontSize: 15, color: "#111", margin: "0 0 3px", fontWeight: 500 }}>
+          {toTitleCase(item.name)}
+        </p>
+        <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0 }}>
+          Due: {formatDate(item.dueDate)}
+        </p>
       </div>
+      <button
+        onClick={() => onPay(item)}
+        disabled={paying}
+        style={{
+          flexShrink: 0,
+          padding: "9px 18px",
+          borderRadius: 8,
+          border: "1.5px solid #002FA7",
+          background: "#fff",
+          color: "#002FA7",
+          fontSize: 13,
+          fontWeight: 600,
+          cursor: "pointer",
+          opacity: paying ? 0.6 : 1,
+        }}
+      >
+        {paying ? "Starting…" : "Pay Now"}
+      </button>
     </div>
   );
 }
@@ -227,7 +191,7 @@ export default function UpcomingPayments() {
     <div
       style={{
         minHeight: "100vh",
-        background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), #F9F9FB",
+        background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)",
         fontFamily: "'Inter', system-ui, sans-serif",
         paddingBottom: 40,
       }}
@@ -271,24 +235,21 @@ export default function UpcomingPayments() {
         <FilterDropdown value={filter} onChange={setFilter} />
       </div>
 
-      {/* List card */}
+      {/* List */}
       <div
         style={{
           margin: "0 16px",
-          background: "#FFFFFF99",
-          borderRadius: 16,
-          overflow: "hidden",
-          boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-          padding: "10px",
           display: "flex",
           flexDirection: "column",
-          gap: 8,
+          gap: 12,
         }}
       >
         {isLoading ? (
-          <LoadingState className="py-5" />
+          <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+            <LoadingState className="py-5" />
+          </div>
         ) : loadError ? (
-          <div style={{ textAlign: "center", padding: "20px 0" }}>
+          <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", textAlign: "center", padding: "20px 0" }}>
             <p style={{ color: "#DC2626", fontSize: 14, margin: "0 0 8px" }}>
               Couldn't load upcoming payments.
             </p>
@@ -300,7 +261,7 @@ export default function UpcomingPayments() {
             </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ padding: "48px 24px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+          <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", padding: "48px 24px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
             <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#D7E2FF", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12l5 5 9-9"/>

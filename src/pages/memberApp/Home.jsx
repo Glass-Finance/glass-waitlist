@@ -180,9 +180,9 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
     <div
       style={{
         margin: "0 16px",
+        position: "relative",
         borderRadius: 16,
         background: "#fff",
-        border: `1.5px solid ${accentColor}`,
         boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
         padding: "20px 20px 20px",
         display: "flex",
@@ -191,6 +191,21 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
         gap: 0,
       }}
     >
+      {/* Accent frame — only the top half of the card, per design */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "50%",
+          borderRadius: "16px 16px 0 0",
+          border: `1.5px solid ${accentColor}`,
+          borderBottom: "none",
+          pointerEvents: "none",
+        }}
+      />
       {/* Recurring pill */}
       <div
         style={{
@@ -779,7 +794,7 @@ export default function Home() {
       <div
         style={{
           minHeight: "100vh",
-          background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), #F9F9FB",
+          background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)",
           fontFamily: "'Inter', system-ui, sans-serif",
           paddingBottom: 40,
         }}
@@ -1029,7 +1044,7 @@ export default function Home() {
             <div
               style={{
                 margin: "16px 16px 0",
-                background: "#FFFFFF99",
+                background: "var(--color-surface-container)",
                 borderRadius: 16,
                 padding: "16px 16px 4px",
                 boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
@@ -1166,7 +1181,7 @@ export default function Home() {
             <div
               style={{
                 margin: "16px 16px 0",
-                background: "#FFFFFF99",
+                background: "var(--color-surface-container)",
                 borderRadius: 16,
                 padding: "16px 16px 4px",
                 boxShadow: "0 1px 6px rgba(0,0,0,0.06)",

@@ -223,7 +223,7 @@ export default function PaystackAccount() {
         <LoadingState />
       ) : account ? (
         <div
-          className="bg-[#FFFFFF99] rounded-2xl p-6"
+          className="bg-surface-container rounded-2xl p-6"
           style={{ border: "1px solid #FFFFFF" }}
         >
           <p className="text-sm font-bold text-gray-900 mb-0.5">
@@ -282,7 +282,7 @@ export default function PaystackAccount() {
           <div className="bg-white rounded-xl p-5 max-w-md">
             <div
               className="flex items-center justify-between gap-4 pb-4 mb-4"
-              style={{ borderBottom: "1px solid #F3F4F6" }}
+              style={{ borderBottom: "1px solid var(--color-stacked-container)" }}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <BankAvatar
@@ -369,7 +369,7 @@ export default function PaystackAccount() {
       ) : (
         // No account yet — prompt to add one
         <div
-          className="bg-[#FFFFFF99] rounded-2xl p-6 text-center"
+          className="bg-surface-container rounded-2xl p-6 text-center"
           style={{ border: "1px solid #E5E7EB" }}
         >
           <p className="text-sm font-bold text-gray-900 mb-1">

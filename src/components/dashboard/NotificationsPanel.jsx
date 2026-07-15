@@ -14,6 +14,8 @@ function dayLabel(dateStr) {
   yesterday.setDate(now.getDate() - 1);
   if (d.toDateString() === now.toDateString()) return "Today";
   if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
+  const diffDays = Math.floor((now - d) / 86400000);
+  if (diffDays >= 0 && diffDays < 7) return "This Week";
   return d.toLocaleDateString("en-NG", { weekday: "long", month: "short", day: "numeric" });
 }
 
@@ -217,7 +219,7 @@ export default function NotificationsPanel({
           onClick={onMarkAllRead}
           style={{ fontSize: 12, fontWeight: 600, color: "#002FA7", background: "none", border: "none", cursor: "pointer", padding: 0 }}
         >
-          Mark all read
+          Mark All As Read
         </button>
       </div>
 
@@ -259,7 +261,7 @@ export default function NotificationsPanel({
         style={{
           display: "block", width: "100%", textAlign: "center",
           fontSize: 12, fontWeight: 600, color: "#002FA7",
-          background: "#F3F4F6", border: "none",
+          background: "var(--color-stacked-container)", border: "none",
           borderTop: "1px solid #E5E5E5", cursor: "pointer", padding: "10px 0",
         }}
       >

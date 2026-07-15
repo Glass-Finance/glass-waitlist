@@ -497,7 +497,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       {/* ── White nav panel ────────────────────────────────────────────────── */}
       {!onCommunitiesOverview  && (
       <div
-        className="bg-white md:bg-[#FFFFFF99]"
+        className="bg-white md:bg-surface-container"
         style={{
           width: W,
           borderRight: "1px solid #eef0f8",

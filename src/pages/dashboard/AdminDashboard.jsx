@@ -378,7 +378,7 @@ export function AdminPaymentModal({ item, onClose }) {
             Payment Method
           </p>
           {savedMethod ? (
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-100 bg-gray-50">
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-stacked-container">
               <div
                 className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ background: "#EEF2FF" }}
@@ -395,7 +395,7 @@ export function AdminPaymentModal({ item, onClose }) {
               </div>
             </div>
           ) : (
-            <div className="px-4 py-3 rounded-xl border border-dashed border-gray-200 bg-gray-50">
+            <div className="px-4 py-3 rounded-xl border border-dashed border-gray-200 bg-stacked-container">
               <p className="text-sm text-gray-500">
                 You'll select your payment method on the next screen.
               </p>
@@ -422,7 +422,7 @@ export function AdminPaymentModal({ item, onClose }) {
         </div>
 
         {/* ── Footer ── */}
-        <div className="px-7 py-5 bg-gray-50 flex items-center justify-between gap-3">
+        <div className="px-7 py-5 bg-stacked-container flex items-center justify-between gap-3">
           {error ? (
             <p className="text-xs text-red-500">{error}</p>
           ) : (
@@ -672,7 +672,7 @@ function AddMemberModal({ onClose, communityId }) {
       className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-[#FFFFFF99] rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-surface-container rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between px-8 pt-7 pb-4">
           <div>
@@ -995,7 +995,7 @@ function AddMemberModal({ onClose, communityId }) {
                     <span
                       key={em + i}
                       className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800"
-                      style={{ background: "#F3F4F6" }}
+                      style={{ background: "var(--color-stacked-container)" }}
                     >
                       <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-[#002FA7] text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
                         {em.charAt(0).toUpperCase()}
@@ -1660,7 +1660,7 @@ function DashboardContent({ isPaying, communityId }) {
           {stats.map((s) => (
             <div
               key={s.label}
-              className="bg-[#FFFFFF99] rounded-xl px-4 py-3 border border-[#eef0f8]"
+              className="bg-surface-container rounded-xl px-4 py-3 border border-[#eef0f8]"
               style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
             >
               <div className="flex items-center justify-between mb-3">
@@ -1690,7 +1690,7 @@ function DashboardContent({ isPaying, communityId }) {
         {/* Your Payments — paying admin's own dues in this community */}
         {isPaying && (
           <div
-            className="bg-[#F4F5F5]/60 rounded-xl border border-[#eef0f8] p-5 mb-5"
+            className="bg-surface-container rounded-xl border border-[#eef0f8] p-5 mb-5"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -1898,7 +1898,7 @@ function DashboardContent({ isPaying, communityId }) {
                   return (
                     <div
                       key={p.id}
-                      className="bg-[#F4F5F5]/60 rounded-xl p-4 border border-blue-100/60"
+                      className="bg-surface-container rounded-xl p-4 border border-blue-100/60"
                     >
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2 min-w-0">
@@ -1937,7 +1937,7 @@ function DashboardContent({ isPaying, communityId }) {
 
           {/* Recent Activity */}
           <div
-            className="bg-[#FFFFFF99] rounded-xl border border-[#eef0f8] p-4"
+            className="bg-surface-container rounded-xl border border-[#eef0f8] p-4"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <span className="text-sm font-medium text-black block mb-4">
@@ -2036,7 +2036,7 @@ function DashboardContent({ isPaying, communityId }) {
 
         {/* Member Payments table */}
         <div
-          className="bg-[#FFFFFF99] rounded-xl border border-[#eef0f8]"
+          className="bg-surface-container rounded-xl border border-[#eef0f8]"
           style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
         >
           <div className="flex items-center justify-between px-5 pt-4 pb-0">

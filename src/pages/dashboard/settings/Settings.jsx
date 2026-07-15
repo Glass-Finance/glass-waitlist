@@ -79,7 +79,7 @@ function MenuList({ items }) {
         <button
           key={i}
           onClick={() => navigate(item.path)}
-          className="w-full flex items-center justify-between px-5 py-4 bg-[#FFFFFF99] rounded-xl text-left hover:bg-gray-50 transition-all cursor-pointer border-none"
+          className="w-full flex items-center justify-between px-5 py-4 bg-surface-container rounded-xl text-left hover:bg-gray-50 transition-all cursor-pointer border-none"
           style={{ border: "1px solid #E5E7EB" }}
         >
           <div>
@@ -202,7 +202,7 @@ export default function Settings() {
       {/* Tab bar — hidden for super-admin */}
       {!isSuperAdmin && (
         <div
-          className="flex gap-1 mb-6 bg-[#F3F4F6] rounded-md p-1 w-fit"
+          className="flex gap-1 mb-6 bg-stacked-container rounded-md p-1 w-fit"
           style={{ border: "1px solid #fafafa" }}
         >
           {TABS.map(tab => {

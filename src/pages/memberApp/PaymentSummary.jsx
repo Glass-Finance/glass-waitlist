@@ -277,7 +277,7 @@ export default function PaymentSummary() {
 
       <div className="flex flex-col gap-3 px-4 pt-2">
         {/* ── Card 1: Community + saved method ── */}
-        <div className="bg-[#FFFFFF99] rounded-2xl px-4 py-4">
+        <div className="bg-surface-container rounded-2xl px-4 py-4">
           {/* Community row */}
           <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
             <div
@@ -333,7 +333,7 @@ export default function PaymentSummary() {
         </div>
 
         {/* ── Card 2: Plan details ── */}
-        <div className="bg-[#FFFFFF99] rounded-2xl px-4 py-4">
+        <div className="bg-surface-container rounded-2xl px-4 py-4">
           <p className="text-[14px] font-normal text-gray-900 mb-4">Plan Details</p>
 
           <div className="flex items-center justify-between mb-3">

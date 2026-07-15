@@ -146,7 +146,7 @@ export default function PaymentSuccess() {
     },
     unknown: {
       icon: <Loader2 size={40} style={{ color: "#6B7280" }} />,
-      bg: "#F3F4F6",
+      bg: "var(--color-stacked-container)",
       text: "Still confirming…",
       sub: "Check your Transactions tab in a moment.",
       action: { label: backLabel, to: dest },

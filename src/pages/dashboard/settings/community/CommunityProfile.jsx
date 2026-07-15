@@ -108,8 +108,8 @@ export default function CommunityProfile() {
         <p className="text-xs text-gray-500 mb-3">Manage how your community appears across Glass</p>
 
         <div
-          className="bg-[#FFFFFF99] rounded-lg px-4 py-4 flex items-center justify-between"
-          style={{ border: "1px solid rgba(0,0,0,0.15)" }}
+          className="bg-surface-container rounded-lg px-4 py-4 flex items-center justify-between"
+          style={{ border: "1px solid var(--color-outline-on-surface)" }}
         >
           <div className="flex items-center gap-3">
             <div
@@ -147,7 +147,7 @@ export default function CommunityProfile() {
 
       {/* ── Community Information ── */}
       <div
-        className="bg-[#FFFFFF99] rounded-lg px-5 pt-4 pb-5"
+        className="bg-surface-container rounded-lg px-5 pt-4 pb-5"
         style={{ border: "1px solid #E5E7EB" }}
       >
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Community Information</p>
@@ -193,7 +193,7 @@ export default function CommunityProfile() {
           community but don't get its destructive controls. ── */}
       {community?.owned && (
       <div
-        className="bg-[#FFFFFF99] rounded-lg px-5 pt-4 pb-4"
+        className="bg-surface-container rounded-lg px-5 pt-4 pb-4"
         style={{ border: "1px solid #E5E7EB" }}
       >
         <p className="text-sm text-gray-900 mb-0.5">Delete Community</p>
@@ -222,7 +222,7 @@ export default function CommunityProfile() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: "rgba(0,0,0,0.45)" }}
         >
-          <div className="bg-[#FFFFFF99] rounded-2xl shadow-2xl w-full max-w-sm p-6">
+          <div className="bg-surface-container rounded-2xl shadow-2xl w-full max-w-sm p-6">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
               style={{ background: "#FEE2E2" }}
@@ -256,7 +256,7 @@ export default function CommunityProfile() {
               <button
                 onClick={() => { setDeleteModal(false); setDeleteConfirm(""); setDeleteError(""); }}
                 className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors"
-                style={{ background: "#F3F4F6" }}
+                style={{ background: "var(--color-stacked-container)" }}
               >
                 Cancel
               </button>

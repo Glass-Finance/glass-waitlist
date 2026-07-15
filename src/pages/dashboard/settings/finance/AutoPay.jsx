@@ -93,7 +93,7 @@ export default function AutoPay() {
           Manage automatic payments for your personal dues across all communities.
         </p>
       </div>
-      <div className="bg-[#f6f6f8] rounded-lg p-6" style={{ border: "1px solid #f6f6f8" }}>
+      <div className="bg-surface-container rounded-lg p-6" style={{ border: "1px solid var(--color-outline-on-surface)" }}>
         <div className="flex flex-col">
           {isLoading ? (
             <LoadingState className="py-4" />

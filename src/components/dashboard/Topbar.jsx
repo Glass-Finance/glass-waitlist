@@ -139,7 +139,7 @@ export default function Topbar({
     searchMembers.length || searchTransactions.length || searchPaymentLinks.length || searchSettlements.length;
 
   return (
-    <header className="h-14 bg-[#FFFFFF99] border-b border-[rgba(0,0,0,0.05)] flex items-center gap-6 px-4 md:px-8 sticky top-0 z-50 flex-shrink-0">
+    <header className="h-14 bg-surface-container border-b border-outline-on-container flex items-center gap-6 px-4 md:px-8 sticky top-0 z-50 flex-shrink-0">
       {/* Hamburger — mobile only */}
       <button
         onClick={onMenuClick}

@@ -213,7 +213,7 @@ export default function Transactions() {
     <div
       style={{
         minHeight: "100vh",
-        background: "#f3f4f6",
+        background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)",
         fontFamily: "Inter, -apple-system, sans-serif",
         maxWidth: 430,
         margin: "0 auto",
@@ -223,7 +223,7 @@ export default function Transactions() {
       {/* ── Top bar ── */}
       <div
         style={{
-          background: "#f3f4f6",
+          background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)",
           padding: "24px 20px 16px",
           display: "flex",
           alignItems: "center",
@@ -261,7 +261,7 @@ export default function Transactions() {
             marginRight: 36,
           }}
         >
-          Transactions
+          Payment History
         </h1>
       </div>
 
@@ -290,7 +290,7 @@ export default function Transactions() {
             gap: 8,
           }}
         >
-          <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#F3F4F6", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
+          <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--color-stacked-container)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
             </svg>
@@ -303,7 +303,7 @@ export default function Transactions() {
           <div
             key={label}
             style={{
-              background: "#FFFFFF99",
+              background: "var(--color-surface-container)",
               borderRadius: 16,
               margin: "0 12px 12px",
               overflow: "hidden",

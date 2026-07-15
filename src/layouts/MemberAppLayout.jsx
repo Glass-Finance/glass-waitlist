@@ -34,7 +34,7 @@ export default function MemberAppLayout() {
           className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-30"
           style={{
             background:
-              "linear-gradient(180deg, rgba(249,249,251,0) 0%, #F9F9FB 28%)",
+              "linear-gradient(180deg, rgba(249,249,251,0) 0%, var(--color-surface-bg) 28%)",
           }}
           aria-label="Main navigation"
         >

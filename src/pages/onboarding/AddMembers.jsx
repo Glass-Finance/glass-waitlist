@@ -739,7 +739,7 @@ export default function AddMembers() {
       className="flex flex-col overflow-hidden"
       style={{ height: "100vh", backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
     >
-      <header className="flex items-center justify-between px-8 py-4 bg-[#FFFFFF99] border-b border-gray-200 flex-shrink-0">
+      <header className="flex items-center justify-between px-8 py-4 bg-surface-container border-b border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
@@ -752,7 +752,7 @@ export default function AddMembers() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-[#FFFFFF99] border-r border-gray-200 flex flex-col pt-10 px-6">
+        <aside className="w-64 flex-shrink-0 bg-surface-container border-r border-gray-200 flex flex-col pt-10 px-6">
           {STEPS.map((step, i) => {
             const isActive    = step.id === "members";
             const isCompleted = ["organization", "payment"].includes(step.id);
@@ -798,7 +798,7 @@ export default function AddMembers() {
             </div>
 
             {/* Direct add card */}
-            <div className="bg-[#F3F4F6] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
+            <div className="bg-stacked-container rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
               <h3 className="text-base font-semibold text-gray-900 mb-4">Prefer To Add Members Directly?</h3>
 
               {/* Tabs */}
@@ -933,7 +933,7 @@ export default function AddMembers() {
                   <p className="text-sm font-medium text-gray-900 mb-2">Enter Email(s):</p>
                   <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5" style={{ minHeight: 60, border: "1px solid #E5E7EB", background: "#fff" }}>
                     {emails.map((em, i) => (
-                      <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800" style={{ background: "#F3F4F6" }}>
+                      <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800" style={{ background: "var(--color-stacked-container)" }}>
                         <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-[#002FA7] text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
                           {em.charAt(0).toUpperCase()}
                         </span>

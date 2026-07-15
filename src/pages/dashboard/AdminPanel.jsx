@@ -245,7 +245,7 @@ function TableShell({ isLoading, isEmpty, error, emptyIcon, emptyLabel = "No res
   const is403 = error?.response?.status === 403;
   return (
     <div
-      className="bg-[#FFFFFF99] rounded-2xl overflow-hidden"
+      className="bg-surface-container rounded-2xl overflow-hidden"
       style={{ border: "1px solid #E5E7EB" }}
     >
       {isLoading ? (
@@ -344,7 +344,7 @@ function ModalShell({ title, subtitle, onClose, children }) {
       }}
     >
       <div
-        className="bg-[#FFFFFF99] rounded-2xl w-full max-w-md shadow-2xl"
+        className="bg-surface-container rounded-2xl w-full max-w-md shadow-2xl"
         style={{ border: "1px solid #E5E7EB" }}
       >
         <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
@@ -671,7 +671,7 @@ function CommunitiesSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
               {[
                 "Community",
                 "Status",
@@ -1000,7 +1000,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
                 style={
                   decision === value
                     ? activeStyle
-                    : { background: "#fff", borderColor: "#E0E0EB", color: "#6b7280" }
+                    : { background: "#fff", borderColor: "var(--color-surface-container-border)", color: "#6b7280" }
                 }
               >
                 <Icon size={14} />
@@ -1167,7 +1167,7 @@ function AccountsSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
               {[
                 "Bank",
                 "Account Number",
@@ -1462,7 +1462,7 @@ function UsersSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
               {[
                 "User",
                 "Role",
@@ -1671,7 +1671,7 @@ function PaymentLinksSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
               {[
                 "Title",
                 "Community",
@@ -1806,7 +1806,7 @@ function BalancesSection() {
               figure — rounding to whole naira could hide a real
               discrepancy that should surface as "Out of balance". */}
           <div
-            className="bg-[#FFFFFF99] rounded-2xl p-5 mb-4 flex items-center justify-between"
+            className="bg-surface-container rounded-2xl p-5 mb-4 flex items-center justify-between"
             style={{ border: "1px solid #E5E7EB" }}
           >
             <div>
@@ -1827,7 +1827,7 @@ function BalancesSection() {
             {balances.map((b) => (
               <div
                 key={b.code}
-                className="bg-[#FFFFFF99] rounded-2xl p-5"
+                className="bg-surface-container rounded-2xl p-5"
                 style={{ border: "1px solid #E5E7EB" }}
               >
                 <p className="text-[10px] text-gray-400 font-mono mb-1">
@@ -2023,7 +2023,7 @@ function SettlementsSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
               {["Settlement", "Gross", "Fees", "Net", "Status", "Variance", "Settled At"].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                   {h}
@@ -2137,7 +2137,7 @@ function ReconciliationRunsTable() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
               {["Run", "Status", "Window", "Residual", "Reconciles", "Findings", "Reports"].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                   {h}
@@ -2245,7 +2245,7 @@ function FindingReviewModal({ finding, mode, onClose }) {
           <button
             onClick={onClose}
             className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors"
-            style={{ background: "#F3F4F6" }}
+            style={{ background: "var(--color-stacked-container)" }}
           >
             Cancel
           </button>
@@ -2312,7 +2312,7 @@ function ReconciliationFindingsTable() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
               {["Finding", "Severity", "Amount", "Variance", "Status", "Occurred", ""].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                   {h}
@@ -2634,7 +2634,7 @@ function NotificationsSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid #F3F4F6" }}>
+            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
               {[
                 "Type",
                 "Channels",
@@ -2764,7 +2764,7 @@ export default function AdminPanel() {
 
       <div className="overflow-x-auto mb-8">
         <div
-          className="flex gap-1 bg-[#F3F4F6] rounded-xl p-1 w-fit"
+          className="flex gap-1 bg-stacked-container rounded-xl p-1 w-fit"
           style={{ border: "1px solid #f0f0f0" }}
         >
           {TABS.map(({ id, label, Icon }) => {

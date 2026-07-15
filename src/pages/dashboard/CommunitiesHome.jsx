@@ -977,7 +977,7 @@ export default function CommunitiesHome() {
 
   return (
     <div
-      className="relative flex flex-col h-full"
+      className="relative flex flex-col min-h-full"
       style={{
         backgroundImage: `url(${Background})`,
         backgroundSize: "cover",
