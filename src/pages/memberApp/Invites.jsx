@@ -16,8 +16,7 @@ function Avatar({ name, logo }) {
         width: 40,
         height: 40,
         borderRadius: 10,
-        background: logo?.url ? "#fff" : "#1C2B8A",
-        border: logo?.url ? "1px solid #E5E7EB" : "none",
+        background: logo?.url ? "transparent" : "#1C2B8A",
         color: "#fff",
         display: "flex",
         alignItems: "center",
@@ -29,7 +28,7 @@ function Avatar({ name, logo }) {
       }}
     >
       {logo?.url ? (
-        <img src={logo.url} alt="" decoding="async" style={{ width: 28, height: 28, objectFit: "contain" }} />
+        <img src={logo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       ) : (
         initials
       )}

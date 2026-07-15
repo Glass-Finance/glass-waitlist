@@ -825,8 +825,7 @@ export default function Home() {
                   width: 28,
                   height: 28,
                   borderRadius: 6,
-                  background: communityLogo?.url ? "#fff" : "#1C2B8A",
-                  border: communityLogo?.url ? "1px solid #E5E7EB" : "none",
+                  background: communityLogo?.url ? "transparent" : "#1C2B8A",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -838,16 +837,14 @@ export default function Home() {
                 }}
               >
                 {communityLogo?.url ? (
-                  // Inset on white, not edge-to-edge -- a logo with its own
-                  // white background otherwise disappears against the box.
                   <img
                     src={communityLogo.url}
                     alt=""
                     decoding="async"
                     style={{
-                      width: "20px",
-                      height: "20px",
-                      objectFit: "contain",
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
                     }}
                   />
                 ) : (

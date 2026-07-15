@@ -186,16 +186,13 @@ export default function MyCommunities() {
                 <div
                   style={{
                     width: 44, height: 44, borderRadius: 12,
-                    background: c.logo?.url ? "#fff" : "#1C2B8A",
-                    border: c.logo?.url ? "1px solid #E5E7EB" : "none",
+                    background: c.logo?.url ? "transparent" : "#1C2B8A",
                     color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
                     fontWeight: 700, fontSize: 13, flexShrink: 0, overflow: "hidden",
                   }}
                 >
                   {c.logo?.url ? (
-                    // Inset on a guaranteed white backdrop, not edge-to-edge --
-                    // a logo with its own white background otherwise disappears.
-                    <img src={c.logo.url} alt="" decoding="async" style={{ width: "32px", height: "32px", objectFit: "contain" }} />
+                    <img src={c.logo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : (
                     getInitials(c.name) || "?"
                   )}

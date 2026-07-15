@@ -121,8 +121,8 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
             height: 44,
             borderRadius: 10,
             flexShrink: 0,
-            background: "#F0F0F0",
-            border: "1px solid #E0E0E0",
+            background: logoUrl ? "transparent" : "#F0F0F0",
+            border: logoUrl ? "none" : "1px solid #E0E0E0",
             overflow: "hidden",
             display: "flex",
             alignItems: "center",
@@ -134,7 +134,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
             <img
               src={logoUrl}
               alt=""
-              style={{ width: 32, height: 32, objectFit: "contain" }}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           ) : (
             (community.name?.charAt(0) ?? "C")
