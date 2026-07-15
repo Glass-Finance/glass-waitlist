@@ -102,6 +102,13 @@
      120-degree background blur (backdrop-blur-logo-overlay below). */
   --color-surface-overlay: rgb(249 249 251 / 0.95);
   --blur-logo-overlay: 120px;
+  /* Separate from --blur-logo-overlay on purpose: that token blurs a small
+     ~32px icon into an indistinct frosted backdrop, where 120px is correct
+     because total obscurity is the goal. This one blurs a much larger
+     ~330px ambient background mark where the goal is a visible soft glow,
+     not near-total dilution — reusing the icon token here was the bug that
+     made the member-app glow nearly invisible. */
+  --blur-ambient-glow: 56px;
   --color-surface-container: rgb(255 255 255 / 0.6);
   --color-surface-container-border: #E0E0EB;
   /* For containers nested inside a Surface Container, e.g. toggle controls

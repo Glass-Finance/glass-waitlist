@@ -19,8 +19,8 @@ export default function GlassLogoGlow({ className = "" }) {
           bottom: "-10%",
           width: "85%",
           maxWidth: 420,
-          filter: "blur(var(--blur-logo-overlay))",
-          opacity: 0.35,
+          filter: "blur(var(--blur-ambient-glow))",
+          opacity: 0.6,
         }}
       />
     </div>

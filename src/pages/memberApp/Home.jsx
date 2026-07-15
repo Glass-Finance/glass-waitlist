@@ -181,133 +181,144 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
     <div
       style={{
         margin: "0 16px",
-        position: "relative",
         borderRadius: 16,
+        overflow: "hidden",
         background: "#fff",
         boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
-        padding: "20px 20px 20px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 0,
       }}
     >
-      {/* Accent frame — only the top half of the card, per design */}
+      {/* Top block carries the accent border on 3 sides. Structural, not an
+          absolutely-positioned overlay sized with height:50% — that relied
+          on a percentage height resolving against this card's height, but
+          the card is auto-height (sized by its own content), and a
+          percentage height on an abs-positioned child of an auto-height
+          container is undefined by spec. Browsers disagreed on how to
+          resolve it, which is why the border intermittently rendered around
+          the whole card instead of just the top. Two stacked, normally-
+          flowing blocks can't have that ambiguity. */}
       <div
-        aria-hidden="true"
         style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: "50%",
-          borderRadius: "16px 16px 0 0",
           border: `1.5px solid ${accentColor}`,
           borderBottom: "none",
-          pointerEvents: "none",
-        }}
-      />
-      {/* Recurring pill */}
-      <div
-        style={{
-          marginBottom: 14,
-          padding: "5px 18px",
-          borderRadius: 999,
-          border: "1px solid #E5E7EB",
-          color: "#374151",
-          fontSize: 12,
-          fontWeight: 500,
+          borderRadius: "16px 16px 0 0",
+          padding: "20px 20px 0",
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
-          gap: 6,
         }}
       >
-        <span
+        {/* Recurring pill */}
+        <div
           style={{
-            width: 6,
-            height: 6,
-            borderRadius: "50%",
-            background: isRecurring ? "#7C3AED" : "#DC2626",
-            flexShrink: 0,
+            marginBottom: 14,
+            padding: "5px 18px",
+            borderRadius: 999,
+            border: "1px solid #E5E7EB",
+            color: "#374151",
+            fontSize: 12,
+            fontWeight: 500,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
           }}
-        />
-        {isRecurring ? "Recurring" : "One-time"}
+        >
+          <span
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: isRecurring ? "#7C3AED" : "#DC2626",
+              flexShrink: 0,
+            }}
+          />
+          {isRecurring ? "Recurring" : "One-time"}
+        </div>
+
+        {/* Label */}
+        <p
+          style={{
+            fontSize: 13,
+            color: "#6B7280",
+            marginBottom: 6,
+            fontWeight: 400,
+          }}
+        >
+          Next Payment Due
+        </p>
+
+        {/* Amount */}
+        <p
+          style={{
+            fontSize: 42,
+            fontWeight: 700,
+            color: "#111827",
+            letterSpacing: "-1px",
+            lineHeight: 1,
+            marginBottom: 14,
+          }}
+        >
+          {formatNaira(nextDue.amount)}
+        </p>
       </div>
 
-      {/* Label */}
-      <p
-        style={{
-          fontSize: 13,
-          color: "#6B7280",
-          marginBottom: 6,
-          fontWeight: 400,
-        }}
-      >
-        Next Payment Due
-      </p>
-
-      {/* Amount */}
-      <p
-        style={{
-          fontSize: 42,
-          fontWeight: 700,
-          color: "#111827",
-          letterSpacing: "-1px",
-          lineHeight: 1,
-          marginBottom: 14,
-        }}
-      >
-        {formatNaira(nextDue.amount)}
-      </p>
-
-      {/* Plan name badge */}
+      {/* Bottom block — no border */}
       <div
         style={{
-          padding: "6px 16px",
-          borderRadius: 8,
-          background: "#D7E2FF",
-          color: "#002FA7",
-          fontSize: 12,
-          fontWeight: 400,
-          marginBottom: 10,
-        }}
-      >
-        {nextDue.name}
-      </div>
-
-      {/* Due date */}
-      <div
-        style={{
+          padding: "0 20px 20px",
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
-          gap: 5,
-          marginBottom: 18,
-          color: isOverdue ? "#DC2626" : "#9CA3AF",
-          fontSize: 12,
-          fontWeight: isOverdue ? 600 : 400,
         }}
       >
-        <Clock size={12} strokeWidth={1.8} />
-        <span>Due {formatDate(nextDue.dueDate)}</span>
-      </div>
+        {/* Plan name badge */}
+        <div
+          style={{
+            padding: "6px 16px",
+            borderRadius: 8,
+            background: "#D7E2FF",
+            color: "#002FA7",
+            fontSize: 12,
+            fontWeight: 400,
+            marginBottom: 10,
+          }}
+        >
+          {nextDue.name}
+        </div>
 
-      {/* Pay Now button */}
-      <button
-        onClick={() => onPay(nextDue)}
-        style={{
-          width: "100%",
-          padding: "14px 0",
-          borderRadius: 4,
-          border: "none",
-          background: accentColor,
-          color: "#fff",
-          fontSize: 15,
-          fontWeight: 600,
-          cursor: "pointer",
-        }}
-      >
-        Pay Now
-      </button>
+        {/* Due date */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 5,
+            marginBottom: 18,
+            color: isOverdue ? "#DC2626" : "#9CA3AF",
+            fontSize: 12,
+            fontWeight: isOverdue ? 600 : 400,
+          }}
+        >
+          <Clock size={12} strokeWidth={1.8} />
+          <span>Due {formatDate(nextDue.dueDate)}</span>
+        </div>
+
+        {/* Pay Now button */}
+        <button
+          onClick={() => onPay(nextDue)}
+          style={{
+            width: "100%",
+            padding: "14px 0",
+            borderRadius: 4,
+            border: "none",
+            background: accentColor,
+            color: "#fff",
+            fontSize: 15,
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          Pay Now
+        </button>
+      </div>
     </div>
   );
 }
