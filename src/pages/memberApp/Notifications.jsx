@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Bell, Mail, MoreVertical, CreditCard, AlertCircle, Clock } from "lucide-react";
+import { ChevronLeft, Bell, Mail, CreditCard, AlertCircle, Clock } from "lucide-react";
 import { useInvites } from "../../hooks/useInvites";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
@@ -74,8 +74,9 @@ function NotifIcon({ n }) {
 }
 
 // ── Notification row ──────────────────────────────────────────────────────────
+// Per the design, only unread rows get a highlighted background — read rows
+// sit flush against the shared list container behind them.
 function NotificationRow({ n, onTap, onNavigate }) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const isRead = n.readFlag ?? false;
   const target = notificationTarget(n, { memberApp: true });
   const communityMap = useCommunityMap();
@@ -89,21 +90,22 @@ function NotificationRow({ n, onTap, onNavigate }) {
         display: "flex",
         alignItems: "flex-start",
         gap: 10,
-        padding: "14px 16px",
-        background: "#fff",
-        borderRadius: 14,
-        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+        padding: isRead ? "10px 4px" : "14px 16px",
+        background: isRead ? "transparent" : "var(--color-stacked-container)",
+        borderRadius: isRead ? 0 : 12,
         position: "relative",
+        cursor: target ? "pointer" : "default",
+      }}
+      onClick={() => {
+        if (!isRead) onTap(n.id);
+        if (target) onNavigate?.(target);
       }}
     >
+      {!isRead && (
+        <span style={{ position: "absolute", top: 10, right: 12, width: 7, height: 7, borderRadius: "50%", background: "#002FA7" }} />
+      )}
       <NotifIcon n={n} />
-      <div
-        style={{ flex: 1, minWidth: 0, cursor: target ? "pointer" : "default" }}
-        onClick={() => {
-          if (!isRead) onTap(n.id);
-          if (target) onNavigate?.(target);
-        }}
-      >
+      <div style={{ flex: 1, minWidth: 0, paddingRight: isRead ? 0 : 14 }}>
         <p style={{ fontSize: 14, color: "#111", margin: 0, lineHeight: 1.45 }}>
           {n.title && <span style={{ fontWeight: isRead ? 500 : 700 }}>{n.title} </span>}
           {messageText && <span style={{ color: "#444" }}>{messageText}</span>}
@@ -115,38 +117,6 @@ function NotificationRow({ n, onTap, onNavigate }) {
           )}
           {[details.communityName, timeLabel(n.createdAt)].filter(Boolean).join(" · ")}
         </p>
-        {!isRead && (
-          <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#002FA7", display: "inline-block", marginTop: 5 }} />
-        )}
-      </div>
-      <div style={{ position: "relative", flexShrink: 0 }}>
-        <button
-          onClick={() => setMenuOpen((o) => !o)}
-          style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#999", display: "flex" }}
-        >
-          <MoreVertical size={16} strokeWidth={1.8} />
-        </button>
-        {menuOpen && (
-          <>
-            <div style={{ position: "fixed", inset: 0, zIndex: 10 }} onClick={() => setMenuOpen(false)} />
-            <div style={{ position: "absolute", right: 0, top: "100%", background: "#fff", borderRadius: 10, boxShadow: "0 4px 16px rgba(0,0,0,0.12)", zIndex: 20, minWidth: 140, overflow: "hidden" }}>
-              {!isRead && (
-                <button
-                  onClick={() => { onTap(n.id); setMenuOpen(false); }}
-                  style={{ display: "block", width: "100%", textAlign: "left", padding: "11px 16px", fontSize: 13, cursor: "pointer", background: "#fff", border: "none", color: "#333" }}
-                >
-                  Mark as read
-                </button>
-              )}
-              <button
-                onClick={() => setMenuOpen(false)}
-                style={{ display: "block", width: "100%", textAlign: "left", padding: "11px 16px", fontSize: 13, cursor: "pointer", background: "#fff", border: "none", color: "#333" }}
-              >
-                Dismiss
-              </button>
-            </div>
-          </>
-        )}
       </div>
     </div>
   );
@@ -213,21 +183,33 @@ function EmptyState({ icon: Icon, label, hint, onAction, actionLabel }) {
 }
 
 // ── Grouped list ──────────────────────────────────────────────────────────────
+// A single bordered card holds every day-group, per the design — not one
+// card per day. Day labels are just section dividers inside it.
 function GroupedNotifications({ items, onTap, onNavigate }) {
   const groups = useMemo(() => groupByDay(items), [items]);
   return (
-    <>
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: 16,
+        border: "1px solid #E5E7EB",
+        padding: 16,
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+      }}
+    >
       {[...groups.entries()].map(([label, notifs]) => (
-        <div key={label} style={{ marginBottom: 16 }}>
+        <div key={label}>
           <p style={{ fontSize: 13, fontWeight: 600, color: "#555", margin: "0 0 8px" }}>{label}</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {notifs.map((n) => (
               <NotificationRow key={n.id} n={n} onTap={onTap} onNavigate={onNavigate} />
             ))}
           </div>
         </div>
       ))}
-    </>
+    </div>
   );
 }
 
