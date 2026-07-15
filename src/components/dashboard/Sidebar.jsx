@@ -436,34 +436,46 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               const isActive = c.slug === urlSlug;
               const initials = getInitials(c.name);
               return (
-                <button
-                  key={c.id}
-                  onClick={async () => {
-                    localStorage.setItem("glass_community", JSON.stringify(c));
-                    const isPaying = await resolveIsPayingAdmin(c.slug);
-                    navigate(communityPath(c.slug, "admin", isPaying));
-                    onCloseMobile?.();
-                  }}
-                  title={c.name}
-                  className={`w-9 h-9 rounded-xl border cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 ${
-                    isActive ? "border-white" : "border-white/15 hover:border-white/30"
-                  } ${
-                    c.logo?.url ? "" : isActive ? "bg-white text-[#002FA7]" : "bg-white/15 text-white hover:bg-white/30"
-                  }`}
-                >
-                  {c.logo?.url ? (
-                    <img
-                      src={c.logo.url}
-                      alt={c.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
+                <div key={c.id} className="relative flex-shrink-0">
+                  {/* Active indicator — a pill riding the rail's outer edge,
+                      not a change to the tile itself. This is what actually
+                      shows which community is selected; it shifts to sit
+                      beside whichever tile is active instead of restyling
+                      the tile (a restyled tile is what "ruins" a logo that
+                      has its own white/colored background). */}
+                  {isActive && (
+                    <span
+                      className="absolute top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-white"
+                      style={{ left: -10 }}
+                      aria-hidden="true"
                     />
-                  ) : (
-                    initials || "?"
                   )}
-                </button>
+                  <button
+                    onClick={async () => {
+                      localStorage.setItem("glass_community", JSON.stringify(c));
+                      const isPaying = await resolveIsPayingAdmin(c.slug);
+                      navigate(communityPath(c.slug, "admin", isPaying));
+                      onCloseMobile?.();
+                    }}
+                    title={c.name}
+                    className={`w-9 h-9 rounded-xl border border-white/15 hover:border-white/30 cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 ${
+                      c.logo?.url ? "" : "bg-white/15 text-white hover:bg-white/30"
+                    }`}
+                  >
+                    {c.logo?.url ? (
+                      <img
+                        src={c.logo.url}
+                        alt={c.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      initials || "?"
+                    )}
+                  </button>
+                </div>
               );
             })
           )}

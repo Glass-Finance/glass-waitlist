@@ -298,7 +298,15 @@ export default function MembersProblem() {
       className="relative bg-[#F7F8FC] overflow-hidden py-20 md:py-28"
       id="problem"
     >
-      <div className="max-w-[1140px] mx-auto px-6">
+      {/* Brand watermark — large, low-opacity, bleeding off the top-right
+          corner behind the content. Purely decorative. */}
+      <img
+        src="/Bg.png"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none select-none absolute -top-16 -right-24 w-[420px] md:w-[560px] opacity-[0.05] rotate-[8deg]"
+      />
+      <div className="max-w-[1140px] mx-auto px-6 relative">
         {/* ── Header ── */}
         <div className="text-center mb-16">
           <div className="mb-6">
