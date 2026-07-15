@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Bell, ChevronDown, Clock } from "lucide-react";
 import joinCommunityIcon from "../../assets/auth/join-community.webp";
 import BrandedSpinner from "../../components/common/BrandedSpinner";
+import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
@@ -793,12 +794,15 @@ export default function Home() {
     <>
       <div
         style={{
+          position: "relative",
+          overflow: "hidden",
           minHeight: "100vh",
-          background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)",
+          background: "var(--color-surface-bg)",
           fontFamily: "'Inter', system-ui, sans-serif",
           paddingBottom: 40,
         }}
       >
+        <GlassLogoGlow />
         <SideDrawer open={menuOpen} onClose={() => setMenuOpen(false)} />
 
         {/* ── Top bar — menu, community pill, and notifications all on one

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, Mail, Clock, Home, Info } from "lucide-react";
 import { useCommunities } from "../../hooks/useCommunities";
 import { getInvite } from "../../api/invites";
+import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { PENDING_INVITE_KEY } from "../InviteLanding";
 
 function Avatar({ name, logo }) {
@@ -97,12 +98,15 @@ export default function Invites() {
   return (
     <div
       style={{
+        position: "relative",
+        overflow: "hidden",
         minHeight: "100vh",
-        background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)",
+        background: "var(--color-surface-bg)",
         fontFamily: "'Inter', system-ui, sans-serif",
         paddingBottom: 40,
       }}
     >
+      <GlassLogoGlow />
       {/* Header */}
       <div
         style={{

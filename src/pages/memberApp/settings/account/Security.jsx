@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
 import { ChevronLeft, ChevronRight, Lock, ShieldCheck } from "lucide-react";
 
 const ITEMS = [
@@ -10,7 +11,8 @@ export default function Security() {
   const navigate = useNavigate();
 
   return (
-    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh", background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+      <GlassLogoGlow />
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 16px 16px" }}>
         <button
           onClick={() => navigate(-1)}

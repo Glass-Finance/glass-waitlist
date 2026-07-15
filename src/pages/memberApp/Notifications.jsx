@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Bell, Mail, MoreVertical, CreditCard, AlertCircle, Clock } from "lucide-react";
 import { useInvites } from "../../hooks/useInvites";
@@ -83,7 +84,18 @@ function NotificationRow({ n, onTap, onNavigate }) {
   const messageText = n.message ?? n.description ?? n.bodyText ?? null;
 
   return (
-    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 16px", background: "#fff", position: "relative" }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 10,
+        padding: "14px 16px",
+        background: "#fff",
+        borderRadius: 14,
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+        position: "relative",
+      }}
+    >
       <NotifIcon n={n} />
       <div
         style={{ flex: 1, minWidth: 0, cursor: target ? "pointer" : "default" }}
@@ -208,11 +220,9 @@ function GroupedNotifications({ items, onTap, onNavigate }) {
       {[...groups.entries()].map(([label, notifs]) => (
         <div key={label} style={{ marginBottom: 16 }}>
           <p style={{ fontSize: 13, fontWeight: 600, color: "#555", margin: "0 0 8px" }}>{label}</p>
-          <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-            {notifs.map((n, i) => (
-              <div key={n.id} style={{ borderTop: i > 0 ? "1px solid #F2F2F2" : "none" }}>
-                <NotificationRow n={n} onTap={onTap} onNavigate={onNavigate} />
-              </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {notifs.map((n) => (
+              <NotificationRow key={n.id} n={n} onTap={onTap} onNavigate={onNavigate} />
             ))}
           </div>
         </div>
@@ -241,7 +251,8 @@ export default function Notifications() {
   async function handleReject(invite) { await reject(invite.id); }
 
   return (
-    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh", background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+      <GlassLogoGlow />
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 20px 20px", position: "relative" }}>
         <button

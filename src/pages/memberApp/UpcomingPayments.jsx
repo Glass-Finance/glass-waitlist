@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
 import LoadingState from "../../components/common/LoadingState";
+import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 const FILTER_OPTIONS = ["All", "Recurring", "One-time"];
@@ -190,12 +191,15 @@ export default function UpcomingPayments() {
   return (
     <div
       style={{
+        position: "relative",
+        overflow: "hidden",
         minHeight: "100vh",
-        background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)",
+        background: "var(--color-surface-bg)",
         fontFamily: "'Inter', system-ui, sans-serif",
         paddingBottom: 40,
       }}
     >
+      <GlassLogoGlow />
       {/* Header */}
       <div
         style={{

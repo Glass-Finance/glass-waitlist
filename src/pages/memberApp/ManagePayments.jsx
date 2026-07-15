@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments, useManagePayments } from "../../hooks/usePayments";
@@ -204,7 +205,8 @@ export default function ManagePayments() {
   });
 
   return (
-    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 60 }}>
+    <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh", background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 60 }}>
+      <GlassLogoGlow />
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 20px 20px", position: "relative" }}>
         <button

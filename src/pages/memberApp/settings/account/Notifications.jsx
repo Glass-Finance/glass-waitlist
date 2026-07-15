@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, RefreshCw } from "lucide-react";
 import { useNotificationPreferences } from "../../../../hooks/useNotifications";
 import Toggle from "../../../../components/common/Toggle";
+import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
 
 function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
   return (
@@ -65,9 +66,11 @@ export default function NotificationSettings() {
 
   return (
     <div style={{
-      minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)",
+      position: "relative", overflow: "hidden",
+      minHeight: "100vh", background: "var(--color-surface-bg)",
       fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40,
     }}>
+      <GlassLogoGlow />
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 16px 16px" }}>
         <button

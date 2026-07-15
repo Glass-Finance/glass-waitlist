@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Pencil } from "lucide-react";
 import { useMe, useUpdateProfile, useUpdateEmail } from "../../../../hooks/useMyAccount";
@@ -158,7 +159,8 @@ export default function Profile() {
   const initials = `${form.firstName} ${form.lastName}`.trim().split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
 
   return (
-    <div style={{ minHeight: "100vh", background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh", background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+      <GlassLogoGlow />
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 16px 16px" }}>
         <button
           onClick={() => navigate(-1)}

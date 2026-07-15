@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
 import { useAuth } from "../../store/AuthContext";
 import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
+import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { formatNaira, toTitleCase } from "../../utils/format";
 
 const STATUS_OPTIONS = ["All Status", "Success", "Failed", "Pending"];
@@ -15,6 +16,12 @@ function monthLabel(dateStr) {
     month: "long",
     year: "numeric",
   });
+}
+
+// Short form for the month-picker button ("May 2026" -> "May") — the year
+// still disambiguates internally via the full label, just not shown here.
+function monthShort(label) {
+  return label.split(" ")[0];
 }
 
 function statusLabel(status) {
@@ -49,7 +56,7 @@ function StatusBadge({ status }) {
 }
 
 // ─── Simple dropdown ──────────────────────────────────────────────────────────
-function Dropdown({ value, options, onChange }) {
+function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -70,7 +77,7 @@ function Dropdown({ value, options, onChange }) {
           cursor: "pointer",
         }}
       >
-        {value}
+        {optionLabel(value)}
         <ChevronDown size={14} color="#6b7280" />
       </button>
 
@@ -114,7 +121,7 @@ function Dropdown({ value, options, onChange }) {
                   cursor: "pointer",
                 }}
               >
-                {opt}
+                {optionLabel(opt)}
               </button>
             ))}
           </div>
@@ -192,13 +199,40 @@ export default function Transactions() {
   const { user } = useAuth();
   const payerName = toTitleCase([user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "");
   const [statusFilter, setStatusFilter] = useState("All Status");
+  const [selectedMonth, setSelectedMonth] = useState(null);
   const { data: transactions = [], isLoading, error } = useTransactions();
+
+  // Month options come from the full (unfiltered-by-status) list, so
+  // switching the status filter never changes which months are pickable —
+  // only which of that month's rows are visible.
+  const monthOptions = useMemo(() => {
+    const seen = new Set();
+    const months = [];
+    for (const tx of transactions) {
+      const key = monthLabel(tx.date);
+      if (!seen.has(key)) {
+        seen.add(key);
+        months.push(key);
+      }
+    }
+    return months; // already newest-first, transactions are pre-sorted
+  }, [transactions]);
+
+  // Default to the most recent month once data loads; re-anchor if the
+  // current selection no longer exists (e.g. data refetched).
+  useEffect(() => {
+    if (monthOptions.length === 0) return;
+    if (!selectedMonth || !monthOptions.includes(selectedMonth)) {
+      setSelectedMonth(monthOptions[0]);
+    }
+  }, [monthOptions, selectedMonth]);
 
   const filtered = transactions.filter(
     (tx) => statusFilter === "All Status" || statusLabel(tx.status) === statusFilter
   );
 
-  // Group by month, newest month first (transactions already sorted newest-first)
+  // Group by month, then keep only the currently-selected month's group —
+  // the month picker above the list switches which one that is.
   const groups = useMemo(() => {
     const map = new Map();
     for (const tx of filtered) {
@@ -206,24 +240,28 @@ export default function Transactions() {
       if (!map.has(key)) map.set(key, []);
       map.get(key).push(tx);
     }
-    return Array.from(map.entries());
-  }, [filtered]);
+    if (!selectedMonth) return Array.from(map.entries());
+    return map.has(selectedMonth) ? [[selectedMonth, map.get(selectedMonth)]] : [];
+  }, [filtered, selectedMonth]);
 
   return (
     <div
       style={{
+        position: "relative",
+        overflow: "hidden",
         minHeight: "100vh",
-        background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)",
+        background: "var(--color-surface-bg)",
         fontFamily: "Inter, -apple-system, sans-serif",
         maxWidth: 430,
         margin: "0 auto",
         paddingBottom: 40,
       }}
     >
+      <GlassLogoGlow />
       {/* ── Top bar ── */}
       <div
         style={{
-          background: "radial-gradient(ellipse 420px 340px at 15% 88%, rgba(124,58,237,0.10), transparent 70%), var(--color-surface-bg)",
+          background: "var(--color-surface-bg)",
           padding: "24px 20px 16px",
           display: "flex",
           alignItems: "center",
@@ -265,9 +303,17 @@ export default function Transactions() {
         </h1>
       </div>
 
-      {/* ── Status filter ── */}
-      <div style={{ padding: "0 20px 14px" }}>
+      {/* ── Status + month filters ── */}
+      <div style={{ padding: "0 20px 14px", display: "flex", gap: 8 }}>
         <Dropdown value={statusFilter} options={STATUS_OPTIONS} onChange={setStatusFilter} />
+        {monthOptions.length > 0 && (
+          <Dropdown
+            value={selectedMonth}
+            options={monthOptions}
+            optionLabel={(m) => (m ? monthShort(m) : "")}
+            onChange={setSelectedMonth}
+          />
+        )}
       </div>
 
       {isLoading ? (
