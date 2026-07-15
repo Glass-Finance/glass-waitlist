@@ -518,6 +518,8 @@ import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
 import { useInvites } from "../../hooks/useInvites";
 import { useGlobalOverview } from "../../hooks/usePayments";
 import { useAllNotifications } from "../../hooks/useNotifications";
+import { useCommunityMap } from "../../hooks/useCommunityMap";
+import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin, isCommunityAdmin, roleKeyword } from "../../utils/communityRole";
 import Background from "../../assets/background.webp";
@@ -737,6 +739,7 @@ function GlobalOverview() {
   const navigate = useNavigate();
   const { upcoming, recentActivity, isLoading } = useGlobalOverview();
   const { notifications, unreadCount } = useAllNotifications();
+  const communityMap = useCommunityMap();
 
   const upcomingTop = upcoming.slice(0, 4);
   const activityTop = recentActivity.slice(0, 4);
@@ -878,27 +881,39 @@ function GlobalOverview() {
         {notifTop.length === 0 ? (
           <OverviewEmpty text="No notifications yet." />
         ) : (
-          notifTop.map((n) => (
-            <button
-              key={n.id}
-              onClick={() => navigate(`/dashboard/notifications?open=${n.id}`)}
-              className="w-full flex items-start gap-2.5 px-4 py-2.5 bg-transparent border-none text-left cursor-pointer hover:bg-gray-50 transition-colors"
-            >
-              {!(n.readFlag ?? false) && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#002FA7] flex-shrink-0 mt-1.5" />
-              )}
-              <div className="min-w-0">
-                <p
-                  className={`text-xs truncate ${(n.readFlag ?? false) ? "text-gray-500" : "text-gray-900 font-medium"}`}
-                >
-                  {n.title ?? n.subject ?? "Notification"}
-                </p>
-                <p className="text-[11px] text-gray-400 mt-0.5">
-                  {shortDate(n.createdAt)}
-                </p>
-              </div>
-            </button>
-          ))
+          notifTop.map((n) => {
+            const details = extractNotificationDetails(n, { communityMap });
+            const amount = formatNairaAmount(details.amount);
+            const messageText = n.message ?? n.description ?? n.bodyText ?? null;
+            return (
+              <button
+                key={n.id}
+                onClick={() => navigate(`/dashboard/notifications?open=${n.id}`)}
+                className="w-full flex items-start gap-2.5 px-4 py-2.5 bg-transparent border-none text-left cursor-pointer hover:bg-gray-50 transition-colors"
+              >
+                {!(n.readFlag ?? false) && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#002FA7] flex-shrink-0 mt-1.5" />
+                )}
+                <div className="min-w-0 flex-1">
+                  <p
+                    className={`text-xs truncate ${(n.readFlag ?? false) ? "text-gray-500" : "text-gray-900 font-medium"}`}
+                  >
+                    {n.title ?? n.subject ?? "Notification"}
+                  </p>
+                  {messageText && (
+                    <p className="text-[11px] text-gray-500 mt-0.5 truncate">
+                      {messageText}
+                    </p>
+                  )}
+                  <p className="text-[11px] text-gray-400 mt-0.5">
+                    {[amount, details.communityName, shortDate(n.createdAt)]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                </div>
+              </button>
+            );
+          })
         )}
       </OverviewCard>
     </div>

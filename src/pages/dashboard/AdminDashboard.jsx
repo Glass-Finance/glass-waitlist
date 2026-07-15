@@ -2085,7 +2085,7 @@ function DashboardContent({ isPaying, communityId }) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-y border-[#eef0f8] bg-gray-50">
+                <tr className="border-y border-[#eef0f8]">
                   <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
                     Member
                   </th>

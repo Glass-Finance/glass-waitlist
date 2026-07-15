@@ -254,7 +254,7 @@ export default function Notifications() {
             onClick={() => setActiveTab(tab)}
             style={{
               flex: 1, padding: "9px 0", borderRadius: 9, border: "none", cursor: "pointer",
-              fontSize: 13, fontWeight: activeTab === tab ? 700 : 400,
+              fontSize: 13, fontWeight: activeTab === tab ? 600 : 400,
               background: activeTab === tab ? "var(--color-stacked-container)" : "transparent",
               color: activeTab === tab ? "#111" : "#888", transition: "all 0.2s",
             }}
