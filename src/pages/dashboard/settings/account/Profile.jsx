@@ -299,7 +299,7 @@ export default function Profile() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: "rgba(0,0,0,0.45)" }}
         >
-          <div className="bg-surface-container rounded-2xl shadow-2xl w-full max-w-sm p-6" style={{ border: "1px solid #E5E7EB" }}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" style={{ border: "1px solid #E5E7EB" }}>
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
               style={{ background: "#FEE2E2" }}

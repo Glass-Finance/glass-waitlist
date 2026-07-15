@@ -5,6 +5,7 @@ import { ChevronLeft, Mail, Clock, Home, Info } from "lucide-react";
 import { useCommunities } from "../../hooks/useCommunities";
 import { getInvite } from "../../api/invites";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import { PENDING_INVITE_KEY } from "../InviteLanding";
 
 function Avatar({ name, logo }) {
@@ -160,9 +161,7 @@ export default function Invites() {
           </div>
         )}
         {isLoading || joinRequestsLoading ? (
-          <p style={{ fontSize: 13, color: "#888", padding: "24px 4px" }}>
-            Loading invites...
-          </p>
+          <PageLoadingState label="Loading your invites…" size={56} padding="36px 24px" />
         ) : error ? (
           <p style={{ fontSize: 13, color: "#DC2626", padding: "24px 4px" }}>
             Couldn't load invitations. Try again later.

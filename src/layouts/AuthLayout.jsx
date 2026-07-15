@@ -21,19 +21,16 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
             decoding="async"
           />
 
-          {/* Logo — Glass Logo Element Surface Overlay: a soft frosted backdrop
-              behind the mark so it stays legible over the photographic panel
-              background, per the design system. */}
-          <div
-            className="absolute top-5 left-5 md:top-8 md:left-8 z-10 p-2 rounded-xl bg-surface-overlay backdrop-blur-logo-overlay"
-          >
-            <img
-              src={glassLogo}
-              alt="Glass Logo"
-              className="h-8 md:h-10 w-auto object-contain cursor-pointer"
-              onClick={() => navigate("/")}
-            />
-          </div>
+          {/* Logo — no wrapping card per design; the backdrop-blur overlay
+              this used to sit in was also a likely cause of the slow first
+              paint reported on Brave (120px backdrop-filter is expensive to
+              composite). Still clickable back to the landing page. */}
+          <img
+            src={glassLogo}
+            alt="Glass Logo"
+            className="absolute top-5 left-5 md:top-8 md:left-8 z-10 h-8 md:h-10 w-auto object-contain cursor-pointer"
+            onClick={() => navigate("/")}
+          />
 
           {/* Welcome text — mobile only, sits at the bottom of the hero */}
           {heroTitle && (

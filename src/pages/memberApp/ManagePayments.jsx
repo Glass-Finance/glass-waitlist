@@ -3,7 +3,7 @@ import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments, useManagePayments } from "../../hooks/usePayments";
-import LoadingState from "../../components/common/LoadingState";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import Toggle from "../../components/common/Toggle";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
@@ -227,7 +227,7 @@ export default function ManagePayments() {
         {/* Cards */}
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {isLoading ? (
-            <LoadingState className="mt-10" />
+            <PageLoadingState size={56} padding="36px 24px" />
           ) : filtered.length === 0 ? (
             <p style={{ textAlign: "center", color: "#999", fontSize: 14, marginTop: 40 }}>
               {recurringPlans.length === 0

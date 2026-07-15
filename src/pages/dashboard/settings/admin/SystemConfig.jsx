@@ -92,7 +92,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="bg-surface-container rounded-2xl w-full max-w-md shadow-2xl"
+        className="bg-white rounded-2xl w-full max-w-md shadow-2xl"
         style={{ border: "1px solid #E5E7EB" }}
       >
         {/* Header */}

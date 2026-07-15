@@ -3,7 +3,7 @@ import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Bell, ChevronDown, Clock } from "lucide-react";
 import joinCommunityIcon from "../../assets/auth/join-community.webp";
-import BrandedSpinner from "../../components/common/BrandedSpinner";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
 import { useNotifications } from "../../hooks/useNotifications";
@@ -486,45 +486,6 @@ function HistoryRow({ item }) {
 // same centering/padding) so the page doesn't visibly jump once data
 // resolves into the empty, pending, or loaded state.
 // ---------------------------------------------------------------------------
-function HomeLoadingState() {
-  return (
-    <div
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "60px 32px 80px",
-        textAlign: "center",
-      }}
-    >
-      <div style={{ marginBottom: 28 }}>
-        <BrandedSpinner size={80} />
-      </div>
-      <p
-        style={{
-          fontSize: 15,
-          fontWeight: 600,
-          color: "#333",
-          margin: 0,
-        }}
-      >
-        Loading your community…
-      </p>
-      <p
-        style={{
-          fontSize: 13,
-          color: "#999",
-          margin: "6px 0 0",
-        }}
-      >
-        This won't take long.
-      </p>
-    </div>
-  );
-}
-
 function NoCommunityState({ navigate }) {
   return (
     <div
@@ -1025,7 +986,7 @@ export default function Home() {
         </div>
 
         {isLoading ? (
-          <HomeLoadingState />
+          <PageLoadingState label="Loading your community…" />
         ) : hasPendingCommunity ? (
           <PendingApprovalState
             navigate={navigate}

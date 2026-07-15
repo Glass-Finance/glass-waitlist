@@ -5,6 +5,7 @@ import { useTransactions } from "../../hooks/useTransactions";
 import { useAuth } from "../../store/AuthContext";
 import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import { formatNaira, toTitleCase } from "../../utils/format";
 
 const STATUS_OPTIONS = ["All Status", "Success", "Failed", "Pending"];
@@ -317,9 +318,7 @@ export default function Transactions() {
       </div>
 
       {isLoading ? (
-        <p style={{ textAlign: "center", color: "#9ca3af", fontSize: 14, padding: "32px 0" }}>
-          Loading transactions…
-        </p>
+        <PageLoadingState label="Loading your payment history…" size={56} padding="36px 24px" />
       ) : error ? (
         <p style={{ textAlign: "center", color: "#dc2626", fontSize: 14, padding: "32px 0" }}>
           Couldn't load transactions.

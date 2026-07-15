@@ -1,5 +1,6 @@
 import { useState } from "react";
 import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
+import PageLoadingState from "../../../../components/common/PageLoadingState";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Shield, Loader2, Copy, Check } from "lucide-react";
 import { useMe } from "../../../../hooks/useMyAccount";
@@ -282,9 +283,7 @@ export default function MFA() {
 
       <div style={{ padding: "0 16px" }}>
         {isLoading ? (
-          <div style={{ textAlign: "center", padding: "40px 0" }}>
-            <Loader2 size={22} style={{ color: "#002FA7" }} className="animate-spin" />
-          </div>
+          <PageLoadingState size={56} padding="36px 24px" />
         ) : flow === "setup" ? (
           <SetupFlow onSuccess={handleSuccess} onCancel={() => setFlow(null)} />
         ) : flow === "disable" ? (

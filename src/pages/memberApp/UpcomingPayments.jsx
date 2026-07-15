@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
-import LoadingState from "../../components/common/LoadingState";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
@@ -250,7 +250,7 @@ export default function UpcomingPayments() {
       >
         {isLoading ? (
           <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
-            <LoadingState className="py-5" />
+            <PageLoadingState label="Loading your payments…" size={56} padding="36px 24px" />
           </div>
         ) : loadError ? (
           <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", textAlign: "center", padding: "20px 0" }}>

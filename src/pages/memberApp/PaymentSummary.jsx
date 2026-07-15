@@ -10,6 +10,7 @@ import {
   stashPendingPaymentCtx,
 } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import { toastSuccess } from "../../utils/toast";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import { toTitleCase, formatNaira as fmt } from "../../utils/format";
@@ -192,9 +193,8 @@ export default function PaymentSummary() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 min-h-screen" style={{ background: "#E8E8E8" }}>
-        <Loader2 size={22} className="animate-spin text-[#002FA7]" />
-        <p className="text-sm text-gray-400">Loading payment details…</p>
+      <div className="flex flex-col min-h-screen" style={{ background: "var(--color-surface-bg)" }}>
+        <PageLoadingState label="Loading payment details…" />
       </div>
     );
   }

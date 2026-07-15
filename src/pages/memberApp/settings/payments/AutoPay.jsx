@@ -3,7 +3,7 @@ import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, RefreshCw } from "lucide-react";
 import { usePayments, useManagePayments, isAuthorisationExpired } from "../../../../hooks/usePayments";
-import LoadingState from "../../../../components/common/LoadingState";
+import PageLoadingState from "../../../../components/common/PageLoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
 import Toggle from "../../../../components/common/Toggle";
 import { formatNaira } from "../../../../utils/format";
@@ -109,7 +109,7 @@ export default function AutoPay() {
         )}
         <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           {isLoading ? (
-            <LoadingState className="py-5" />
+            <PageLoadingState size={56} padding="36px 24px" />
           ) : allPlans.length === 0 ? (
             <EmptyState icon={RefreshCw} title="You're not on any recurring plans yet" className="py-5" />
           ) : (

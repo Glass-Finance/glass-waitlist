@@ -8,7 +8,7 @@ import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { notificationTarget } from "../../utils/notificationRouting";
 import { isPaymentNotificationType, notificationCategory } from "../../utils/notificationTypes";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
-import LoadingState from "../../components/common/LoadingState";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import { formatRelativeDateTime } from "../../utils/format";
 
 const TABS = ["Payments", "Community", "Invites"];
@@ -268,7 +268,7 @@ export default function Notifications() {
       <div style={{ padding: "0 16px" }}>
         {activeTab === "Payments" && (
           notifsLoading
-            ? <LoadingState className="py-6" />
+            ? <PageLoadingState size={56} padding="36px 24px" />
             : paymentNotifs.length === 0
               ? <EmptyState icon={Bell} label="No payment notifications." />
               : <GroupedNotifications items={paymentNotifs} onTap={markRead} onNavigate={navigate} />
@@ -276,7 +276,7 @@ export default function Notifications() {
 
         {activeTab === "Community" && (
           notifsLoading
-            ? <LoadingState className="py-6" />
+            ? <PageLoadingState size={56} padding="36px 24px" />
             : communityNotifs.length === 0
               ? <EmptyState icon={Bell} label="No community notifications." />
               : <GroupedNotifications items={communityNotifs} onTap={markRead} onNavigate={navigate} />
@@ -284,7 +284,7 @@ export default function Notifications() {
 
         {activeTab === "Invites" && (
           invitesLoading
-            ? <LoadingState className="py-6" />
+            ? <PageLoadingState size={56} padding="36px 24px" />
             : invites.length === 0
               ? <EmptyState
                   icon={Mail}

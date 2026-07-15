@@ -344,7 +344,7 @@ function ModalShell({ title, subtitle, onClose, children }) {
       }}
     >
       <div
-        className="bg-surface-container rounded-2xl w-full max-w-md shadow-2xl"
+        className="bg-white rounded-2xl w-full max-w-md shadow-2xl"
         style={{ border: "1px solid #E5E7EB" }}
       >
         <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">

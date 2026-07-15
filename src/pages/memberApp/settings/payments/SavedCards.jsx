@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
 import { ChevronLeft, CreditCard, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
-import LoadingState from "../../../../components/common/LoadingState";
+import PageLoadingState from "../../../../components/common/PageLoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
 
 export default function SavedCards() {
@@ -36,7 +36,7 @@ export default function SavedCards() {
         )}
         <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           {isLoading ? (
-            <LoadingState className="py-6" />
+            <PageLoadingState size={56} padding="36px 24px" />
           ) : error ? (
             <p style={{ textAlign: "center", color: "#DC2626", fontSize: 13, padding: "24px 0" }}>
               Couldn't load saved payment methods.

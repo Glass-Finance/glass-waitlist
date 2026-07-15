@@ -445,17 +445,24 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                     onCloseMobile?.();
                   }}
                   title={c.name}
-                  className={`w-9 h-9 rounded-xl border cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 ${
-                    isActive
-                      ? "bg-white text-[#002FA7] shadow-md border-white"
-                      : "bg-white/15 text-white hover:bg-white/30 border-white/15 hover:border-white/30"
+                  className={`w-9 h-9 rounded-xl border cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none flex-shrink-0 ${
+                    c.logo?.url
+                      ? `bg-white ${isActive ? "shadow-md border-white" : "border-white/15 hover:border-white/30"}`
+                      : isActive
+                        ? "bg-white text-[#002FA7] shadow-md border-white"
+                        : "bg-white/15 text-white hover:bg-white/30 border-white/15 hover:border-white/30"
                   }`}
                 >
                   {c.logo?.url ? (
+                    // Inset, not edge-to-edge — a logo with its own white
+                    // background (very common for crests/badges) would
+                    // otherwise blend into the tile and lose all definition.
+                    // A fixed white backdrop + object-contain keeps every
+                    // logo legible regardless of its own background color.
                     <img
                       src={c.logo.url}
                       alt={c.name}
-                      className="w-full h-full object-cover"
+                      className="w-[26px] h-[26px] object-contain rounded-md"
                       onError={(e) => {
                         e.currentTarget.style.display = "none";
                       }}
