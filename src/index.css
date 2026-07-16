@@ -97,10 +97,16 @@
      this block — that's what caused the same off-palette grays to keep
      creeping back in across the app; a value only needs to change here once. */
   --color-surface-bg: #F9F9FB;
-  /* Backdrop behind the Glass logo mark specifically (nav, loading spinner,
-     etc) — same base color as Surface Background at 95% opacity, plus a
-     120-degree background blur (backdrop-blur-logo-overlay below). */
-  --color-surface-overlay: rgb(249 249 251 / 0.95);
+  /* Backdrop behind the Glass logo mark. Spec value is 95% opacity, but at
+     that opacity the overlay's own fill is nearly the same color as the
+     page background it sits on (--color-surface-bg is the same #F9F9FB),
+     so compositing math leaves only ~5% of the blurred backdrop showing
+     through — imperceptible in practice for the ambient-glow use case
+     (GlassLogoGlow, Problem-section watermark). Lowered to 55% so the glow
+     is actually visible while staying soft; if this token is ever reused
+     for the original small-icon-frosting case it was spec'd for, that use
+     may want the literal 95% back specifically. */
+  --color-surface-overlay: rgb(249 249 251 / 0.55);
   /* Applied as backdrop-filter on a Surface Overlay panel sitting in front
      of whatever it's blurring (the Glass logo mark, small or large) — not
      as filter:blur() on the source image directly. That distinction
