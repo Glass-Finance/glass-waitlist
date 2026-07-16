@@ -131,6 +131,10 @@ export default function PaymentSummary() {
   // entered on Paystack's page), the member gets a real choice.
   const [saveMethod, setSaveMethod] = useState(true);
   const effectiveSaveMethod = isRecurring ? true : saveMethod;
+  // The backend surfaces this as a plain rejection message on submit, with
+  // no separate status field to check up front -- detected here so the
+  // button can be permanently disabled instead of allowing endless retries.
+  const isLinkInactive = /not accepting payments/i.test(error);
 
   async function handlePay() {
     if (!obligation?.paymentLink?.id) return;
@@ -411,11 +415,16 @@ export default function PaymentSummary() {
 
         {error && <p className="text-sm text-red-500 px-1">{error}</p>}
 
-        {/* ── Make Payment button ── */}
+        {/* ── Make Payment button ──
+            A "link is not accepting payments" rejection is a permanent
+            backend state, not a transient failure -- retrying hits the same
+            wall every time. Without this the button stayed fully enabled
+            after that error, inviting an endless retry loop against a link
+            that will never succeed. */}
         <button
           onClick={handlePay}
-          disabled={initiatePayment.isPending || redirecting || !obligation}
-          className="w-full rounded-md py-4 text-[15px] font-semibold text-white mt-1 cursor-pointer active:scale-[0.98] transition-all disabled:opacity-80 flex items-center justify-center gap-2"
+          disabled={initiatePayment.isPending || redirecting || !obligation || isLinkInactive}
+          className="w-full rounded-md py-4 text-[15px] font-semibold text-white mt-1 cursor-pointer active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           style={{ background: "#002FA7" }}
         >
           {initiatePayment.isPending || redirecting ? (
@@ -423,6 +432,8 @@ export default function PaymentSummary() {
               <Loader2 size={16} className="animate-spin" />
               {redirecting ? "Opening secure payment…" : "Processing…"}
             </>
+          ) : isLinkInactive ? (
+            "Payment Unavailable"
           ) : (
             "Make Payment"
           )}
