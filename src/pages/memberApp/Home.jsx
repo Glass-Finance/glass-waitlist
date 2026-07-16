@@ -431,16 +431,18 @@ function UpcomingRow({ payment, onPay }) {
 // ---------------------------------------------------------------------------
 // History row
 // ---------------------------------------------------------------------------
-function HistoryRow({ item }) {
+function HistoryRow({ item, onOpen }) {
   const isSuccess = item.status === "success" || item.status === "successful";
   return (
     <div
+      onClick={() => onOpen(item)}
       style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: "13px 0",
         borderBottom: "1px solid #F0F0F0",
+        cursor: "pointer",
       }}
     >
       <div>
@@ -1247,7 +1249,13 @@ export default function Home() {
                   </p>
                 </div>
               ) : (
-                history.map((item) => <HistoryRow key={item.id} item={item} />)
+                history.map((item) => (
+                  <HistoryRow
+                    key={item.id}
+                    item={item}
+                    onOpen={(t) => navigate(`/member/transactions/${t.id}`)}
+                  />
+                ))
               )}
             </div>
           </>

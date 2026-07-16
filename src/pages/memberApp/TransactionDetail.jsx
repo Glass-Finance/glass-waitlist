@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, Check, Copy, CheckCheck } from "lucide-react";
+import { ChevronLeft, Check, Copy, CheckCheck, Share2 } from "lucide-react";
 import { useTransactionDetail } from "../../hooks/useTransactionDetail";
+import { useAuth } from "../../store/AuthContext";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import PageLoadingState from "../../components/common/PageLoadingState";
+import ReceiptModal from "../../components/common/ReceiptModal";
 import { formatNaira, toTitleCase } from "../../utils/format";
 
 function statusLabel(status) {
@@ -77,9 +79,14 @@ function Row({ label, children, last }) {
 
 export default function TransactionDetail() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { transactionId } = useParams();
   const { data: tx, isLoading, error } = useTransactionDetail(transactionId);
   const [copied, setCopied] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const payerName = toTitleCase(
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "",
+  );
 
   function copyReference() {
     if (!tx?.reference) return;
@@ -222,7 +229,29 @@ export default function TransactionDetail() {
               </Row>
             )}
           </div>
+
+          <button
+            onClick={() => setShareOpen(true)}
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              width: "100%", padding: "14px 0", borderRadius: 12,
+              background: "#fff", border: "1.5px solid #002FA7", color: "#002FA7",
+              fontSize: 14, fontWeight: 600, cursor: "pointer",
+            }}
+          >
+            <Share2 size={15} />
+            Share Receipt
+          </button>
         </div>
+      )}
+
+      {shareOpen && tx && (
+        <ReceiptModal
+          tx={tx}
+          payerName={payerName}
+          payerEmail={user?.email}
+          onClose={() => setShareOpen(false)}
+        />
       )}
     </div>
   );
