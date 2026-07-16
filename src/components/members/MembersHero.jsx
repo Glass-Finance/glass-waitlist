@@ -21,7 +21,7 @@ export default function MembersHero() {
   function handleJoin() {
     navigate(isMobileDevice() ? "/member/join" : mobileRequiredPath("/member/join"));
   }
-
+//
   useEffect(() => {
     // index.css sets `scroll-behavior: smooth` globally for anchor links —
     // that also hijacks plain scrollTo() calls, turning this reset into a
