@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { ChevronLeft, Check, X, Loader2, Clock } from "lucide-react";
+import { ChevronLeft, Check, X, Loader2, Clock, Share2 } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 import { settleLocalPaymentForReference } from "../../hooks/usePayments";
+import { useTransactionDetail } from "../../hooks/useTransactionDetail";
+import { useAuth } from "../../store/AuthContext";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
+import ReceiptModal from "../../components/common/ReceiptModal";
+import { formatNaira, toTitleCase } from "../../utils/format";
 
 const POLL_INTERVAL_MS = 1500;
 const MAX_POLLS = 20;
@@ -17,6 +21,7 @@ function isTerminal(status) {
 export default function PaymentSuccess() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const { paymentId } = useParams();
   const [searchParams] = useSearchParams();
   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
@@ -29,9 +34,18 @@ export default function PaymentSuccess() {
 
   // "checking" | "success" | "failed" | "processing" | "unknown"
   const [state, setState] = useState(reference ? "checking" : "unknown");
-  const [autoRedirectIn, setAutoRedirectIn] = useState(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const attemptsRef = useRef(0);
   const wasQueuedRef = useRef(false);
+
+  // Only fetched once verification lands on success -- feeds the "for
+  // <plan>" subtext and the Share Receipt button, both of which need real
+  // transaction data (amount/plan/community) that this page never fetched
+  // before. getTransaction() accepts either an id or a reference.
+  const { data: tx } = useTransactionDetail(state === "success" ? reference : null);
+  const payerName = toTitleCase(
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "",
+  );
 
   function invalidateCaches() {
     queryClient.invalidateQueries({ queryKey: ["obligations"] });
@@ -69,7 +83,6 @@ export default function PaymentSuccess() {
           sessionStorage.removeItem("paymentPendingRef");
           if (finalState === "success") {
             settleLocalPaymentForReference(reference);
-            setAutoRedirectIn(4);
           }
           setState(finalState);
           return;
@@ -95,17 +108,6 @@ export default function PaymentSuccess() {
     return () => { cancelled = true; };
   }, [reference]);
 
-  // Auto-redirect after confirmed success
-  useEffect(() => {
-    if (autoRedirectIn === null) return;
-    if (autoRedirectIn <= 0) {
-      navigate(returnTo ?? "/member/home", { replace: true });
-      return;
-    }
-    const t = setTimeout(() => setAutoRedirectIn((n) => n - 1), 1000);
-    return () => clearTimeout(t);
-  }, [autoRedirectIn, navigate, returnTo]);
-
   const dest = returnTo ?? "/member/home";
   const backLabel = returnTo ? "Back to Dashboard" : "Go to Home";
 
@@ -122,10 +124,15 @@ export default function PaymentSuccess() {
     success: {
       icon: <Check size={40} color="white" strokeWidth={2.5} />,
       bg: "#16A34A",
-      text: "Payment Successful",
-      sub: autoRedirectIn != null
-        ? `Redirecting in ${autoRedirectIn}s…`
-        : "Your payment has been confirmed.",
+      text: "Transaction Successful",
+      sub: tx ? (
+        <>
+          Your Payment of <strong className="text-gray-700">{formatNaira(tx.amount, { decimals: 2 })}</strong> for{" "}
+          <strong className="text-gray-700">{toTitleCase(tx.planName ?? tx.description)}</strong> was successful.
+        </>
+      ) : (
+        "Your payment has been confirmed."
+      ),
       action: { label: backLabel, to: dest },
     },
     failed: {
@@ -165,48 +172,100 @@ export default function PaymentSuccess() {
       }}
     >
       <GlassLogoGlow />
-      {/* Top bar */}
-      <div className="flex items-center px-4 pt-10 pb-4 relative">
-        <button
-          onClick={() => navigate(dest)}
-          className="w-9 h-9 rounded-full bg-[#D4D4D4] flex items-center justify-center cursor-pointer"
-        >
-          <ChevronLeft size={18} className="text-gray-700" />
-        </button>
-        <h1 className="absolute left-1/2 -translate-x-1/2 text-[15px] font-medium text-gray-800">
-          Payment Summary
-        </h1>
-      </div>
+      {/* Top bar — the success screen is a deliberate landing page (two
+          real choices below, no auto-redirect), not an in-flow step, so it
+          drops the back/title bar the other states still use. */}
+      {state !== "success" && (
+        <div className="flex items-center px-4 pt-10 pb-4 relative">
+          <button
+            onClick={() => navigate(dest)}
+            className="w-9 h-9 rounded-full bg-[#D4D4D4] flex items-center justify-center cursor-pointer"
+          >
+            <ChevronLeft size={18} className="text-gray-700" />
+          </button>
+          <h1 className="absolute left-1/2 -translate-x-1/2 text-[15px] font-medium text-gray-800">
+            Payment Summary
+          </h1>
+        </div>
+      )}
 
       {/* Status */}
-      <div className="flex-1 flex flex-col items-center mt-10 gap-4 px-8">
-        <div
-          className="w-[100px] h-[100px] rounded-full flex items-center justify-center flex-shrink-0"
-          style={{ background: content.bg }}
-        >
-          {content.icon}
-        </div>
+      <div
+        className={`flex-1 flex flex-col items-center px-8 ${
+          state === "success" ? "pt-16 gap-3" : "mt-10 gap-4"
+        }`}
+      >
+        {state === "success" ? (
+          <div className="w-[110px] h-[110px] rounded-full bg-[#DCFCE7] flex items-center justify-center flex-shrink-0">
+            <div className="w-16 h-16 rounded-full bg-[#16A34A] flex items-center justify-center">
+              <Check size={28} color="white" strokeWidth={3} />
+            </div>
+          </div>
+        ) : (
+          <div
+            className="w-[100px] h-[100px] rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: content.bg }}
+          >
+            {content.icon}
+          </div>
+        )}
 
-        <p className="text-[15px] font-medium text-gray-800 mt-1 text-center">
+        <p
+          className={
+            state === "success"
+              ? "text-xl font-semibold text-gray-900 mt-1 text-center"
+              : "text-[15px] font-medium text-gray-800 mt-1 text-center"
+          }
+        >
           {content.text}
         </p>
 
         {content.sub && (
-          <p className="text-[13px] text-gray-500 text-center leading-snug -mt-2">
+          <p className="text-[13px] text-gray-500 text-center leading-snug -mt-1 max-w-[280px]">
             {content.sub}
           </p>
         )}
 
-        {content.action && (
-          <button
-            onClick={() => navigate(content.action.to, { replace: true })}
-            className="mt-3 px-8 py-3 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
-            style={{ background: "#002FA7" }}
-          >
-            {content.action.label}
-          </button>
+        {state === "success" ? (
+          <div className="flex-1 w-full flex flex-col justify-end gap-3 pb-10 max-w-[340px]">
+            <button
+              onClick={() => navigate(dest, { replace: true })}
+              className="w-full px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
+              style={{ background: "#002FA7" }}
+            >
+              Back to Home
+            </button>
+            <button
+              onClick={() => setShareOpen(true)}
+              disabled={!tx}
+              className="w-full px-8 py-3.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ color: "#002FA7", border: "1.5px solid #002FA7" }}
+            >
+              <Share2 size={15} />
+              Share Receipt
+            </button>
+          </div>
+        ) : (
+          content.action && (
+            <button
+              onClick={() => navigate(content.action.to, { replace: true })}
+              className="mt-3 px-8 py-3 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
+              style={{ background: "#002FA7" }}
+            >
+              {content.action.label}
+            </button>
+          )
         )}
       </div>
+
+      {shareOpen && tx && (
+        <ReceiptModal
+          tx={tx}
+          payerName={payerName}
+          payerEmail={user?.email}
+          onClose={() => setShareOpen(false)}
+        />
+      )}
     </div>
   );
 }
