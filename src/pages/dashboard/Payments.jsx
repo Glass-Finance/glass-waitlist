@@ -2093,7 +2093,6 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendRemind
   const isActive = status === "ACTIVE";
   const isPaused = status === "PAUSED";
   const isDraft = status === "DRAFT";
-  const isExpired = status === "EXPIRED";
   const close = () => setOpen(false);
 
   return (
@@ -2160,9 +2159,14 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendRemind
                   label="End Plan"
                   danger
                   onClick={() => {
+                    // Confirmed against the backend: activate only accepts
+                    // draft or failed links, so once a plan is ended there's
+                    // no supported way back to Active from here -- Duplicate
+                    // (still offered below) is the only path to something
+                    // like it again.
                     if (
                       window.confirm(
-                        `End "${plan.name}"? This will mark it as expired.`,
+                        `End "${plan.name}"? This can't be undone -- it can't be reactivated afterward, only duplicated as a new plan.`,
                       )
                     ) {
                       planPlans.expire.mutate(plan.id);
@@ -2172,12 +2176,11 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendRemind
                 />
               </>
             )}
-            {(isDraft || isExpired) && (
+            {isDraft && (
               <>
                 <div className="h-px bg-gray-100 my-1" />
                 <MenuItem
-                  icon={isExpired ? <Play size={13} /> : undefined}
-                  label={isExpired ? "Reactivate Plan" : "Activate"}
+                  label="Activate"
                   onClick={() => {
                     planPlans.activate.mutate(plan.id);
                     close();
