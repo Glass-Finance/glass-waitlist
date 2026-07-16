@@ -388,7 +388,6 @@ export function usePayments() {
     },
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 30,
-    refetchOnMount: "always",
   });
 
   const transactionsQuery = useQuery({
@@ -404,7 +403,6 @@ export function usePayments() {
     },
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 30,
-    refetchOnMount: "always",
   });
 
   const userQuery = useQuery({
@@ -491,7 +489,6 @@ export function usePayments() {
     },
     enabled: !!communityIdentifier,
     staleTime: 1000 * 60 * 2,
-    refetchOnMount: "always",
   });
 
   const allObligations = obligationsQuery.data ?? [];
@@ -590,7 +587,19 @@ export function usePayments() {
     // missing transactions means the "already paid" filter is conservative,
     // and missing user data is only used for display. Neither warrants an
     // error wall that prevents members from seeing their obligations.
-    error: obligationsQuery.error || communitiesQuery.error || null,
+    //
+    // Gated on "no data at all" (not just "error is set"): on a flaky mobile
+    // connection a background refetch can fail even though we already have
+    // good cached data sitting in the query -- React Query keeps that data
+    // around through a failed refetch, it doesn't clear it. Surfacing the
+    // error in that case flashed the whole page between the real due amount,
+    // the error card, and the empty state on every refetch tick, even though
+    // nothing about the member's actual payments had changed. Only show the
+    // error wall when there's truly nothing to fall back on.
+    error:
+      (obligationsQuery.error && !obligationsQuery.data) ||
+      (communitiesQuery.error && !communitiesQuery.data) ||
+      null,
     // For a manual "Check again" affordance -- refetches everything this
     // hook depends on, not just whichever query happens to be visible.
     refresh: () => {
