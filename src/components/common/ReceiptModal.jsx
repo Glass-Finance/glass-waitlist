@@ -131,6 +131,32 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
         // no border-radius anywhere on the outer container
       }}
     >
+      {/* ── Scalloped ticket edge — plain white circles (matching the card's
+          own white body, not the modal sheet behind it) that overlap the
+          header's top corners via negative margin, biting into the
+          gradient in normal document flow. DOM circles rather than a CSS
+          mask/gradient specifically because this card is also captured by
+          html2canvas for Save Image/Share/PDF, which has weak support for
+          masks and repeating gradients but renders plain bordered/rounded
+          divs reliably. ── */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "0 12px",
+          marginBottom: -8,
+          position: "relative",
+          zIndex: 2,
+        }}
+      >
+        {Array.from({ length: 11 }).map((_, i) => (
+          <div
+            key={i}
+            style={{ width: 16, height: 16, borderRadius: "50%", background: "#ffffff", flexShrink: 0 }}
+          />
+        ))}
+      </div>
+
       {/* ── HEADER — brand gradient, matches the accent used on Sidebar/CTA
           surfaces elsewhere in the app (135deg, purple to Glass blue) ── */}
       <div

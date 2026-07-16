@@ -100,6 +100,18 @@ export async function downloadReceiptPdf(tx, { payerName, payerEmail } = {}) {
   // Full-width gradient header band — purple (#7C3AED) to Glass blue (#002FA7)
   drawGradientBand(doc, 0, 0, W, headerH, [124, 58, 237], [0, 47, 167]);
 
+  // Scalloped ticket edge -- white circles centered on the page's top edge,
+  // clipped by the page boundary so only their bottom half shows, biting
+  // into the gradient band. Matches the in-app receipt's same treatment.
+  doc.setFillColor(255, 255, 255);
+  const dotR = 8;
+  const dotCount = 14;
+  const dotMargin = 24;
+  const dotSpan = (W - dotMargin * 2) / (dotCount - 1);
+  for (let i = 0; i < dotCount; i++) {
+    doc.circle(dotMargin + dotSpan * i, 0, dotR, "F");
+  }
+
   // Glass wordmark
   doc.setFont("helvetica", "normal");
   doc.setFontSize(20);
