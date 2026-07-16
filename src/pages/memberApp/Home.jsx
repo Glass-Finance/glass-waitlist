@@ -707,25 +707,20 @@ export default function Home() {
   }
 
   const nextDue = data?.nextDue ?? null;
-  // nextDue is always upcoming[0], so the widget works from the rest. Never
-  // hide a payment due the same day as the hero card behind the 2-item cap —
-  // show all of those, then fill with the next couple of later ones.
-  const rest = (data?.upcoming ?? []).slice(1);
-  const isSameDayAsNextDue = (o) =>
-    o.dueDate &&
-    nextDue?.dueDate &&
-    new Date(o.dueDate).toDateString() ===
-      new Date(nextDue.dueDate).toDateString();
-  const upcoming = [
-    ...rest.filter(isSameDayAsNextDue),
-    ...rest.filter((o) => !isSameDayAsNextDue(o)).slice(0, 2),
-  ];
+  // Previously this excluded nextDue (upcoming[0], already shown in the
+  // hero card above) and capped the rest at 2 -- so whenever there was
+  // exactly one upcoming payment total, this list ended up empty while its
+  // own count badge still said "1", which just looked broken (a number
+  // with nothing under it). Simpler and more honest: show the top 3 of the
+  // real list, full stop -- the soonest one being visible both here and
+  // enlarged in the hero card above is a fine, common pattern, not a bug.
+  const upcoming = (data?.upcoming ?? []).slice(0, 3);
   // The real total, uncapped -- upcoming.length above is deliberately
   // capped for card height, so it undercounts whenever there's more than
   // fits. This is what actually tells a member "there's more than what
   // you're looking at" before they tap into the full list.
   const totalUpcomingCount = (data?.upcoming ?? []).length;
-  const hiddenUpcomingCount = totalUpcomingCount - upcoming.length - (nextDue ? 1 : 0);
+  const hiddenUpcomingCount = totalUpcomingCount - upcoming.length;
   const history = (data?.history ?? []).slice(0, 3);
   const communityName = data?.community?.name ?? "Your Community";
   const communityInitial = communityName.charAt(0).toUpperCase();
@@ -1039,10 +1034,9 @@ export default function Home() {
                     Upcoming Payments
                   </span>
                   {/* The true total -- not upcoming.length, which is capped
-                      to keep the card short (same-day items uncapped, the
-                      rest capped at 2). Without this, someone with more
-                      payments than fit on the card has no way to tell more
-                      exist until they tap into the full list. */}
+                      at 3 to keep the card short. Without this, someone
+                      with more payments than fit on the card has no way to
+                      tell more exist until they tap into the full list. */}
                   {totalUpcomingCount > 0 && (
                     <span
                       style={{
