@@ -2093,6 +2093,7 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendRemind
   const isActive = status === "ACTIVE";
   const isPaused = status === "PAUSED";
   const isDraft = status === "DRAFT";
+  const isExpired = status === "EXPIRED";
   const close = () => setOpen(false);
 
   return (
@@ -2171,11 +2172,12 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendRemind
                 />
               </>
             )}
-            {isDraft && (
+            {(isDraft || isExpired) && (
               <>
                 <div className="h-px bg-gray-100 my-1" />
                 <MenuItem
-                  label="Activate"
+                  icon={isExpired ? <Play size={13} /> : undefined}
+                  label={isExpired ? "Reactivate Plan" : "Activate"}
                   onClick={() => {
                     planPlans.activate.mutate(plan.id);
                     close();
