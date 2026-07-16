@@ -15,11 +15,20 @@ function getDeviceType() {
     if (isTablet) return "tablet";
     const isMobile = /Mobi|iPhone|iPod|Android.*Mobile|Windows Phone|BlackBerry/i.test(ua);
     if (isMobile) return "mobile";
-    return "desktop";
   }
 
-  // No UA available — fall back to viewport width
-  if (typeof window !== "undefined" && window.innerWidth < 768) return "mobile";
+  // UA didn't confirm mobile — either it's missing, or it's a desktop UA
+  // that a viewport-only device simulator left untouched (many don't spoof
+  // the UA string, they just resize the viewport and switch to touch
+  // emulation). A narrow AND touch-primary viewport is treated as mobile
+  // too. Pointer type is the important part, not just width: a real
+  // desktop user browsing with a mouse in a narrowed window still reports
+  // a "fine" pointer, so this doesn't false-positive on them the way a
+  // pure width check would.
+  if (typeof window !== "undefined" && window.innerWidth < 768) {
+    const coarsePointer = window.matchMedia?.("(pointer: coarse)").matches;
+    if (!ua || coarsePointer) return "mobile";
+  }
   return "desktop";
 }
 
