@@ -2086,8 +2086,93 @@ function MenuItem({ icon, label, onClick, disabled, danger }) {
   );
 }
 
+// ── Duplicate plan modal ──────────────────────────────────────────────────────
+// DuplicatePaymentLinkRequest (confirmed via Swagger) accepts title/slug/
+// description/startAt/dueAt/expireAt/recurringPlan -- none of that carries
+// over from the original automatically. Collects the two that actually
+// matter for a re-used one-time plan: a title (defaults to "<name> (Copy)"
+// so it doesn't collide with the original) and a fresh due date, since the
+// original's has typically already passed by the time anyone duplicates it.
+function DuplicatePlanModal({ plan, onClose, onDuplicate, duplicating }) {
+  const [title, setTitle] = useState(`${plan.name ?? ""} (Copy)`.trim());
+  const [dueDate, setDueDate] = useState("");
+  const isRecurring = plan.type === "RECURRING";
+  const isReady = title.trim().length > 0 && (isRecurring || dueDate);
+
+  function handleSubmit() {
+    const payload = { title: title.trim() };
+    if (dueDate) {
+      payload.dueAt = dateInputToIso(dueDate, { endOfDayIfToday: true, clampToNow: true });
+    }
+    onDuplicate(plan.id, payload);
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <h2 className="text-base font-semibold text-black">Duplicate Payment Plan</h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Creates a new plan with {plan.name}'s settings. Everything else
+              (amount, audience, community account) carries over.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer bg-transparent"
+          >
+            <X size={14} />
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1.5">
+              New Plan Name
+            </label>
+            <input
+              className={inputCls}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Plan name"
+            />
+          </div>
+          {!isRecurring && (
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Due Date <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                className={inputCls}
+                value={dueDate}
+                min={toDateInput(new Date().toISOString())}
+                onChange={(e) => setDueDate(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end mt-6">
+          <button
+            onClick={handleSubmit}
+            disabled={!isReady || duplicating}
+            className="px-6 py-2 rounded text-xs font-normal text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {duplicating ? "Duplicating…" : "Duplicate Plan"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Plan card "..." overflow menu ─────────────────────────────────────────────
-function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendReminder }) {
+function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendReminder, onDuplicate }) {
   const [open, setOpen] = useState(false);
   const status = plan.status;
   const isActive = status === "ACTIVE";
@@ -2201,7 +2286,7 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendRemind
                 <MenuItem
                   label="Duplicate"
                   onClick={() => {
-                    planPlans.duplicate.mutate(plan.id);
+                    onDuplicate(plan);
                     close();
                   }}
                 />
@@ -2222,6 +2307,7 @@ function PlanCard({
   onEdit,
   onViewMembers,
   onSendReminder,
+  onDuplicate,
   metrics,
 }) {
   const ps = PLAN_STATUS[plan.status] ?? PLAN_STATUS.DRAFT;
@@ -2269,6 +2355,7 @@ function PlanCard({
           onEdit={onEdit}
           onViewMembers={onViewMembers}
           onSendReminder={onSendReminder}
+          onDuplicate={onDuplicate}
         />
       </div>
 
@@ -2333,6 +2420,7 @@ export default function Payments() {
   const [editingPlan, setEditingPlan] = useState(null);
   const [viewingMembersPlan, setViewingMembersPlan] = useState(null);
   const [remindingPlan, setRemindingPlan] = useState(null);
+  const [duplicatingPlan, setDuplicatingPlan] = useState(null);
   const [tab, setTab] = useState("All Plans");
 
   const planPlans = usePaymentPlans(communityId);
@@ -2510,6 +2598,15 @@ export default function Payments() {
     }
   }
 
+  async function handleDuplicate(paymentLinkId, payload) {
+    try {
+      await planPlans.duplicate.mutateAsync({ paymentLinkId, payload });
+      setDuplicatingPlan(null);
+    } catch (err) {
+      notifyError(err, { context: "Duplicate payment plan" });
+    }
+  }
+
   return (
     <div
       className="px-4 md:px-6 py-6 overflow-y-auto h-full"
@@ -2597,6 +2694,7 @@ export default function Payments() {
               onEdit={setEditingPlan}
               onViewMembers={setViewingMembersPlan}
               onSendReminder={setRemindingPlan}
+              onDuplicate={setDuplicatingPlan}
               metrics={planMetrics[plan.id]}
             />
           ))}
@@ -2639,6 +2737,14 @@ export default function Payments() {
           onClose={() => setRemindingPlan(null)}
           onSend={handleSendReminder}
           sending={planPlans.sendReminder.isPending}
+        />
+      )}
+      {duplicatingPlan && (
+        <DuplicatePlanModal
+          plan={duplicatingPlan}
+          onClose={() => setDuplicatingPlan(null)}
+          onDuplicate={handleDuplicate}
+          duplicating={planPlans.duplicate.isPending}
         />
       )}
     </div>
