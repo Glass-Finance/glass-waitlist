@@ -15,6 +15,7 @@ import {
   recordPendingJoinRequest,
   getPendingJoinRequests,
 } from "../../hooks/useJoinApproval";
+import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 
 function unwrapList(res) {
   const d = res.data?.data;
@@ -362,14 +363,17 @@ export default function DiscoverCommunities() {
   return (
     <div
       style={{
+        position: "relative",
+        overflow: "hidden",
         minHeight: "100vh",
-        background: "#F0F0F0",
+        background: "var(--color-surface-bg)",
         fontFamily: "'Inter', system-ui, sans-serif",
         paddingBottom: 40,
         maxWidth: 430,
         margin: "0 auto",
       }}
     >
+      <GlassLogoGlow />
       {/* Header — before: padding: "52px 20px 16px" */}
       <div
         style={{

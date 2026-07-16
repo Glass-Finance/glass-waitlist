@@ -1,9 +1,8 @@
-import glassMark from "../../assets/brand/glass-mark-gradient.svg";
-
 // The "Glass Logo Element Surface Overlay" ambient background treatment used
-// across the member app's mobile pages: the blue-to-purple Glass logo mark,
-// blown up and heavily blurred, sitting behind page content. Replaces the
-// earlier hand-tuned radial-gradient approximation of this same effect.
+// across the member app's mobile pages: the flat-blue Glass logo mark
+// (public/Bg.png -- same asset used for the landing page's Problem-section
+// watermark, for consistency), blown up and blurred into a soft glow,
+// bottom-left, sitting behind page content.
 export default function GlassLogoGlow({ className = "" }) {
   return (
     <div
@@ -11,7 +10,7 @@ export default function GlassLogoGlow({ className = "" }) {
       aria-hidden="true"
     >
       <img
-        src={glassMark}
+        src="/Bg.png"
         alt=""
         style={{
           position: "absolute",

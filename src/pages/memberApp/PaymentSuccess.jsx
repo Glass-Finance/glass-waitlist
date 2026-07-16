@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Check, X, Loader2, Clock } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 import { settleLocalPaymentForReference } from "../../hooks/usePayments";
+import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 
 const POLL_INTERVAL_MS = 1500;
 const MAX_POLLS = 20;
@@ -155,14 +156,15 @@ export default function PaymentSuccess() {
 
   return (
     <div
-      className="flex flex-col min-h-screen"
+      className="relative flex flex-col min-h-screen overflow-hidden"
       style={{
-        background: "#E8E8E8",
+        background: "var(--color-surface-bg)",
         fontFamily: "'Inter', system-ui, sans-serif",
         maxWidth: 430,
         margin: "0 auto",
       }}
     >
+      <GlassLogoGlow />
       {/* Top bar */}
       <div className="flex items-center px-4 pt-10 pb-4 relative">
         <button

@@ -246,13 +246,14 @@ export default function ProblemSection() {
       className="relative bg-[#F7F8FC] overflow-hidden py-20 md:py-28"
       id="problem"
     >
-      {/* Brand watermark — large, low-opacity, bleeding off the top-right
-          corner behind the content. Purely decorative. */}
+      {/* Brand watermark — bottom-left, blurred into a soft ambient glow
+          rather than a sharp visible logo shape. Purely decorative. */}
       <img
         src="/Bg.png"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none select-none absolute -top-16 -right-24 w-[420px] md:w-[560px] opacity-[0.05] rotate-[8deg]"
+        className="pointer-events-none select-none absolute -left-16 -bottom-16 w-[420px] md:w-[560px] opacity-40"
+        style={{ filter: "blur(56px)" }}
       />
       <div className="max-w-[1140px] mx-auto px-6 relative">
         {/* ── Header — layout identical, text animated ── */}

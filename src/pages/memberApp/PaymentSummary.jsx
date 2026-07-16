@@ -11,6 +11,7 @@ import {
 } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
 import PageLoadingState from "../../components/common/PageLoadingState";
+import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { toastSuccess } from "../../utils/toast";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import { toTitleCase, formatNaira as fmt } from "../../utils/format";
@@ -201,7 +202,7 @@ export default function PaymentSummary() {
 
   if (loadError || !obligation) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 min-h-screen px-6 text-center" style={{ background: "#E8E8E8" }}>
+      <div className="flex flex-col items-center justify-center gap-3 min-h-screen px-6 text-center" style={{ background: "var(--color-surface-bg)" }}>
         <p className="text-sm text-gray-600">
           {getErrorMessage(loadError, "Couldn't load this payment. It may no longer be available.")}
         </p>
@@ -221,14 +222,15 @@ export default function PaymentSummary() {
 
   return (
     <div
-      className="flex flex-col min-h-screen"
+      className="relative flex flex-col min-h-screen overflow-hidden"
       style={{
-        background: "#E8E8E8",
+        background: "var(--color-surface-bg)",
         fontFamily: "'Inter', system-ui, sans-serif",
         maxWidth: 430,
         margin: "0 auto",
       }}
     >
+      <GlassLogoGlow />
       {/* ── Top bar ── */}
       <div className="flex items-center px-4 pt-5 pb-4 relative">
         <button
