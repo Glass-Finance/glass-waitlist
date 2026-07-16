@@ -178,6 +178,10 @@ export function AdminPaymentModal({ item, onClose }) {
   // about to be entered on Paystack's page) the admin gets a real choice.
   const [saveMethod, setSaveMethod] = useState(true);
   const effectiveSaveMethod = isRecurring ? true : saveMethod;
+  // Same permanent-rejection case as PaymentSummary.jsx's member-side flow --
+  // once the backend says the link isn't accepting payments, retrying hits
+  // the same wall every time, so the button should stop inviting it.
+  const isLinkInactive = /not accepting payments/i.test(error);
 
   async function handlePay() {
     setError("");
@@ -439,8 +443,8 @@ export function AdminPaymentModal({ item, onClose }) {
             </button>
             <button
               onClick={handlePay}
-              disabled={initiatePayment.isPending || redirecting}
-              className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white cursor-pointer disabled:opacity-60 border-none transition-opacity flex items-center gap-2"
+              disabled={initiatePayment.isPending || redirecting || isLinkInactive}
+              className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border-none transition-opacity flex items-center gap-2"
               style={{ background: "#002FA7" }}
             >
               {initiatePayment.isPending || redirecting ? (
@@ -448,6 +452,8 @@ export function AdminPaymentModal({ item, onClose }) {
                   <Loader2 size={14} className="animate-spin" />{" "}
                   {redirecting ? "Opening secure payment…" : "Processing…"}
                 </>
+              ) : isLinkInactive ? (
+                "Payment Unavailable"
               ) : (
                 `Pay ${formatNaira(item.amount)}`
               )}

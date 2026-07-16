@@ -78,6 +78,19 @@ const BACKEND_MESSAGE_REWRITES = [
     match: /community account is not active/i,
     rewrite: "Your community's payout account is still being activated by our team — this usually takes 24–72 hours. You'll be notified once it's ready and can start creating payment plans.",
   },
+  // A payment plan/link only accepts payments while its status is Active —
+  // an admin can Pause, Archive, or leave it as an unactivated Draft from
+  // the community's Payments page, and the backend rejects any payment
+  // attempt against it in that state. The raw message doesn't explain any
+  // of that to the member trying (and failing) to pay it.
+  {
+    match: /not accepting payments/i,
+    // Keeps the literal phrase "not accepting payments" in the rewritten
+    // text -- PaymentSummary.jsx matches on that same substring to decide
+    // whether to permanently disable the Make Payment button, so changing
+    // the wording here would silently break that check too.
+    rewrite: "This payment plan is not accepting payments right now — it's been paused, closed, or hasn't been activated yet by the community managing it. Contact your community admin to have it reopened.",
+  },
 ];
 
 function rewriteIfKnownCryptic(message) {
