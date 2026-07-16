@@ -212,7 +212,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
         {/* White panel */}
         <div
-          className="bg-surface-container md:border-r md:border-surface-container-border"
+          className="bg-white md:bg-surface-container md:border-r md:border-surface-container-border"
           style={{
             width: 220,
             display: "flex",
