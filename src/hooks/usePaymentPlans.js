@@ -112,8 +112,15 @@ export function usePaymentPlans(communityId) {
     onSuccess: invalidate,
     meta: { successMessage: "Payment plan archived" },
   });
+  // The endpoint requires a request body (DuplicatePaymentLinkRequest on the
+  // backend) -- this was previously called with none at all, which Spring
+  // rejects outright as "Required request body is missing" before it even
+  // gets to validating individual fields. Sending {} at least gets a real
+  // request through; if the backend requires specific fields (e.g. a new
+  // title or due date) inside it, the next error will name them instead of
+  // just rejecting the request wholesale.
   const duplicate = useMutation({
-    mutationFn: (paymentLinkId) => duplicatePaymentLink(communityId, paymentLinkId),
+    mutationFn: (paymentLinkId) => duplicatePaymentLink(communityId, paymentLinkId, {}),
     onSuccess: invalidate,
     meta: { successMessage: "Payment plan duplicated" },
   });
