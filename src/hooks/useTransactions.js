@@ -14,6 +14,7 @@ function shapeTransaction(raw) {
     amountPaid: raw.amountPaid,
     description: raw.description ?? raw.paymentLink?.title ?? "Payment",
     communityName: raw.community?.name,
+    communityLogo: raw.community?.logo,
     date: raw.paidAt ?? raw.createdAt,
     status: (() => { const s = (raw.status ?? "").toLowerCase(); return s === "successful" ? "success" : s; })(),
     type: raw.recurringPlan ? "recurring" : "one-time",
@@ -21,6 +22,7 @@ function shapeTransaction(raw) {
     channel: raw.channel,
     currency: raw.currency ?? "NGN",
     reference: raw.internalReference,
+    feeMinor: raw.feeMinor ?? raw.fee ?? null,
     logoColor: "#1C2B8A",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
   };

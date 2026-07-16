@@ -1,35 +1,8 @@
 import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
-import backgroundUrl from "../assets/background.webp";
 import { formatNaira as sharedFormatNaira, toTitleCase } from "./format";
-
-async function imgToBase64(url) {
-  try {
-    const res = await fetch(url);
-    const blob = await res.blob();
-    return await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = () => resolve(null);
-      reader.readAsDataURL(blob);
-    });
-  } catch {
-    return null;
-  }
-}
 
 function formatNaira(amount) {
   return sharedFormatNaira(amount, { decimals: 2 });
-}
-
-function formatDate(d) {
-  if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-NG", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
 }
 
 function formatDateTime(d) {
@@ -62,144 +35,66 @@ function statusLabel(status) {
   return "Pending";
 }
 
-function receiptRows(tx, payerName) {
-  return [
-    ["Description", toTitleCase(tx.description ?? tx.planName ?? "Payment")],
+// Cosmetic masking for the Member Details row (e.g. "am**bu@gmail.com") — the
+// PDF is only ever downloaded by the payer themselves or an admin who already
+// has this member's full record elsewhere, so this is polish, not privacy.
+function maskEmail(email) {
+  if (!email || !email.includes("@")) return null;
+  const [local, domain] = email.split("@");
+  if (!local || !domain) return null;
+  if (local.length <= 4) return `${local[0]}**@${domain}`;
+  return `${local.slice(0, 2)}**${local.slice(-2)}@${domain}`;
+}
+
+function receiptRows(tx, payerName, payerEmail) {
+  const maskedEmail = maskEmail(payerEmail);
+  const memberDetails = [toTitleCase(payerName) || "—", maskedEmail]
+    .filter(Boolean)
+    .join("   ·   ");
+
+  const rows = [
     ["Community", tx.communityName ?? "—"],
-    ["Paid by", toTitleCase(payerName) ?? "—"],
-    ["Date", formatDate(tx.date)],
-    ["Payment method", toTitleCase(tx.channel) ?? "—"],
+    ["Plan", toTitleCase(tx.planName ?? tx.description) || "—"],
+    ["Member Details", memberDetails],
+    ["Transaction Type", toTitleCase(tx.channel) || "—"],
+    ["Dues Amount", formatNaira(tx.amount)],
   ];
+  if (tx.feeMinor != null) rows.push(["Transaction Fee", formatNaira(tx.feeMinor)]);
+  return rows;
 }
 
 function receiptFilename(tx, ext) {
   return `glass-receipt-${tx.reference ?? tx.id ?? Date.now()}.${ext}`;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Image receipt — rendered off-screen and captured with html2canvas.
-// Sharp corners throughout, no floating card overlap, strong Glass identity.
-// ─────────────────────────────────────────────────────────────────────────────
-export async function downloadReceiptImage(tx, { payerName } = {}) {
-  const status = statusLabel(tx.status);
-  const isSuccess = status === "Successful";
-  const isFailed = status === "Failed";
-
-  const statusColor = isSuccess ? "#0ECE7B" : isFailed ? "#EF4444" : "#F59E0B";
-
-  const [logoB64, bgB64] = await Promise.all([
-    imgToBase64("/Glass.webp"),
-    imgToBase64(backgroundUrl),
-  ]);
-  const logoHtml = logoB64
-    ? `<img src="${logoB64}" width="34" height="34" alt="" style="display:block;" />`
-    : `<div style="width:34px;height:34px;background:#1843C8;display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-size:16px;font-weight:900;line-height:1;">G</span></div>`;
-
-  const logoSmall = logoB64
-    ? `<img src="${logoB64}" width="13" height="13" alt="" style="display:block;opacity:0.35;" />`
-    : "";
-
-  const rows = receiptRows(tx, payerName);
-  const detailRowsHtml = rows
-    .map(
-      ([label, value]) => `
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:13px 28px;border-bottom:1px solid #F1F5F9;">
-        <span style="font-size:12px;color:#94A3B8;white-space:nowrap;flex-shrink:0;">${label}</span>
-        <span style="font-size:13px;color:#0F172A;font-weight:600;text-align:right;word-break:break-word;max-width:58%;">${value}</span>
-      </div>`,
-    )
-    .join("");
-
-  const refValue = tx.reference ?? tx.id ?? "—";
-
-  const card = document.createElement("div");
-  card.style.cssText = `
-    position: fixed;
-    left: -9999px;
-    top: 0;
-    width: 420px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, sans-serif;
-    background: #ffffff;
-  `;
-
-  card.innerHTML = `
-    <div style="position:relative;overflow:hidden;">
-      <div style="position:absolute;top:0;left:0;right:0;bottom:0;${bgB64 ? `background-image:url(${bgB64});` : "background-color:#001D7A;"}background-size:cover;background-position:center top;"></div>
-      <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(to bottom,rgba(0,8,30,0.44) 0%,rgba(0,12,45,0.62) 100%);"></div>
-      <div style="position:relative;z-index:1;padding:28px 28px 36px;">
-
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          ${logoHtml}
-          <span style="color:#fff;font-size:18px;font-weight:800;letter-spacing:1px;text-transform:uppercase;">Glass</span>
-        </div>
-        <span style="color:rgba(255,255,255,0.5);font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;">Transaction Receipt</span>
-      </div>
-
-      <div style="height:1px;background:rgba(255,255,255,0.12);margin-bottom:28px;position:relative;z-index:1;"></div>
-
-      <div style="text-align:center;position:relative;z-index:1;">
-        <div style="color:#fff;font-size:44px;font-weight:900;letter-spacing:-1px;line-height:1;margin-bottom:14px;">${formatNaira(tx.amount)}</div>
-        <div style="display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;">
-          <div style="width:7px;height:7px;background:${statusColor};flex-shrink:0;"></div>
-          <span style="color:${statusColor};font-size:12px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;">${status}</span>
-        </div>
-        <div style="color:rgba(255,255,255,0.45);font-size:11px;">${formatHeaderDate(tx.date ?? tx.createdAt)}</div>
-      </div>
-      </div>
-    </div>
-
-    <div style="background:#fff;">
-      <div style="padding:16px 28px 0;font-size:9px;font-weight:800;color:#94A3B8;letter-spacing:1.8px;text-transform:uppercase;">Transaction Details</div>
-      ${detailRowsHtml}
-      <div style="padding:16px 28px 20px;">
-        <div style="font-size:9px;font-weight:800;color:#94A3B8;letter-spacing:1.8px;text-transform:uppercase;margin-bottom:8px;">Reference No.</div>
-        <div style="border-left:3px solid #002FA7;padding:11px 14px;background:#F8FAFF;font-size:11.5px;color:#1E3A8A;font-weight:700;font-family:'Courier New',Courier,monospace;word-break:break-all;line-height:1.7;letter-spacing:0.3px;">${refValue}</div>
-      </div>
-    </div>
-
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 28px 15px;border-top:1px solid #F1F5F9;background:#FAFBFF;">
-      <div style="display:flex;align-items:center;gap:6px;">
-        ${logoSmall}
-        <span style="font-size:10px;font-weight:700;color:#64748B;letter-spacing:0.3px;">glasspay.app</span>
-      </div>
-      <span style="font-size:10px;color:#94A3B8;">Generated ${formatDateTime(new Date())}</span>
-    </div>
-  `;
-
-  document.body.appendChild(card);
-  try {
-    const canvas = await html2canvas(card, {
-      scale: 3,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-      logging: false,
-    });
-    const link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
-    link.download = receiptFilename(tx, "png");
-    link.click();
-  } finally {
-    document.body.removeChild(card);
+// Approximates the app's 135deg purple-to-blue brand gradient as a left-to-
+// right band — jsPDF has no native gradient fill, so this interpolates the
+// same two brand colors used everywhere else (Sidebar CTA, receipt header)
+// across thin vertical strips.
+function drawGradientBand(doc, x, y, w, h, [r1, g1, b1], [r2, g2, b2], steps = 48) {
+  const stepW = w / steps;
+  for (let i = 0; i < steps; i++) {
+    const t = i / (steps - 1);
+    doc.setFillColor(
+      Math.round(r1 + (r2 - r1) * t),
+      Math.round(g1 + (g2 - g1) * t),
+      Math.round(b1 + (b2 - b1) * t),
+    );
+    doc.rect(x + stepW * i, y, stepW + 0.5, h, "F");
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PDF receipt — clean document layout, branded header band.
+// PDF receipt — clean document layout, branded gradient header band.
 // ─────────────────────────────────────────────────────────────────────────────
-export async function downloadReceiptPdf(tx, { payerName } = {}) {
+export async function downloadReceiptPdf(tx, { payerName, payerEmail } = {}) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
   const margin = 56;
-  const headerH = 140;
+  const headerH = 150;
 
-  // Full-width header band
-  doc.setFillColor(0, 29, 122); // #001D7A
-  doc.rect(0, 0, W, headerH, "F");
-
-  // Lighter accent strip at the bottom of the header
-  doc.setFillColor(0, 47, 167); // #002FA7
-  doc.rect(0, headerH - 28, W, 28, "F");
+  // Full-width gradient header band — purple (#7C3AED) to Glass blue (#002FA7)
+  drawGradientBand(doc, 0, 0, W, headerH, [124, 58, 237], [0, 47, 167]);
 
   // Glass wordmark
   doc.setFont("helvetica", "bold");
@@ -235,6 +130,12 @@ export async function downloadReceiptPdf(tx, { payerName } = {}) {
   doc.setTextColor(sr, sg, sb);
   doc.text(status.toUpperCase(), W - margin, 106, { align: "right" });
 
+  // Timestamp
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(190, 200, 230);
+  doc.text(formatHeaderDate(tx.date ?? tx.createdAt), margin, 126);
+
   // Section label
   let y = headerH + 44;
   doc.setFont("helvetica", "bold");
@@ -244,7 +145,7 @@ export async function downloadReceiptPdf(tx, { payerName } = {}) {
   y += 22;
 
   // Detail rows
-  const rows = receiptRows(tx, payerName);
+  const rows = receiptRows(tx, payerName, payerEmail);
   doc.setFontSize(11);
 
   for (let i = 0; i < rows.length; i++) {
@@ -275,7 +176,7 @@ export async function downloadReceiptPdf(tx, { payerName } = {}) {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
   doc.setTextColor(148, 163, 184);
-  doc.text("REFERENCE NO.", margin, y);
+  doc.text("TRANSACTION ID", margin, y);
   y += 12;
 
   // Left accent bar for reference

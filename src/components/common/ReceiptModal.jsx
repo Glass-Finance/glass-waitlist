@@ -1,24 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, FileText, Image as ImageIcon, Share2 } from "lucide-react";
+import { X, FileText, Image as ImageIcon, Share2, Check, Copy, CheckCheck } from "lucide-react";
 import html2canvas from "html2canvas";
-import backgroundUrl from "../../assets/background.webp";
 import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 // Receipts show 2 decimal places (kobo precision), unlike the app-wide 0-decimal default.
 function formatNaira(amount) {
   return sharedFormatNaira(amount, { decimals: 2 });
-}
-
-function formatDate(d) {
-  if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-NG", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
 }
 
 function formatDateTime(d) {
@@ -51,29 +40,69 @@ function statusLabel(status) {
   return "Pending";
 }
 
-function receiptRows(tx, payerName) {
-  return [
-    ["Description", toTitleCase(tx?.description ?? tx?.planName ?? "Payment")],
-    ["Community", tx?.communityName ?? "—"],
-    ["Paid by", toTitleCase(payerName) ?? "—"],
-    ["Date", formatDate(tx?.date)],
-    ["Payment method", toTitleCase(tx?.channel) ?? "—"],
-  ];
+// Cosmetic masking for the Member Details row (e.g. "am**bu@gmail.com") — the
+// viewer is always either the payer themselves or an admin who already has
+// this member's full record elsewhere, so this is polish, not real privacy.
+function maskEmail(email) {
+  if (!email || !email.includes("@")) return null;
+  const [local, domain] = email.split("@");
+  if (!local || !domain) return null;
+  if (local.length <= 4) return `${local[0]}**@${domain}`;
+  return `${local.slice(0, 2)}**${local.slice(-2)}@${domain}`;
+}
+
+function DetailRow({ label, children, last }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
+        gap: 20,
+        padding: "13px 28px",
+        borderBottom: last ? "none" : "1px solid #F1F5F9",
+      }}
+    >
+      <span
+        style={{
+          fontSize: 12,
+          color: "#94A3B8",
+          whiteSpace: "nowrap",
+          flexShrink: 0,
+          paddingTop: 2,
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          fontSize: 13,
+          color: "#0F172A",
+          fontWeight: 600,
+          textAlign: "right",
+          wordBreak: "break-word",
+          maxWidth: "62%",
+        }}
+      >
+        {children}
+      </span>
+    </div>
+  );
 }
 
 // ── ReceiptCard — rendered as real JSX for the in-app preview ────────────────
 // Rules: no border-radius on the outer card or logo, no overlapping sections.
 
-function ReceiptCard({ tx, payerName, logoB64, bgB64, cardRef }) {
+function ReceiptCard({ tx, payerName, payerEmail, logoB64, cardRef, copied, onCopyReference }) {
   const status = statusLabel(tx?.status);
   const isSuccess = status === "Successful";
   const isFailed = status === "Failed";
 
-  const statusColor = isSuccess ? "#0ECE7B" : isFailed ? "#EF4444" : "#F59E0B";
+  const statusColor = isSuccess ? "#ffffff" : isFailed ? "#FCA5A5" : "#FDE68A";
 
   const refValue = tx?.reference ?? tx?.id ?? "—";
-
-  const rows = receiptRows(tx, payerName);
+  const maskedEmail = maskEmail(payerEmail);
+  const hasFee = tx?.feeMinor != null;
 
   return (
     <div
@@ -86,37 +115,14 @@ function ReceiptCard({ tx, payerName, logoB64, bgB64, cardRef }) {
         // no border-radius anywhere on the outer container
       }}
     >
-      {/* ── HEADER ────────────────────────────────────────────────────────── */}
-      <div style={{ position: "relative", overflow: "hidden" }}>
-        {/* Glass background image */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: bgB64 ? `url(${bgB64})` : undefined,
-            backgroundColor: "#001D7A",
-            backgroundSize: "cover",
-            backgroundPosition: "center top",
-          }}
-        />
-        {/* Dark overlay — ensures white text stays readable */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background:
-              "linear-gradient(to bottom, rgba(0,8,30,0.44) 0%, rgba(0,12,45,0.62) 100%)",
-          }}
-        />
-        {/* Content wrapper */}
-        <div style={{ position: "relative", zIndex: 1, padding: "28px 28px 36px" }}>
-
+      {/* ── HEADER — brand gradient, matches the accent used on Sidebar/CTA
+          surfaces elsewhere in the app (135deg, purple to Glass blue) ── */}
+      <div
+        style={{
+          background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)",
+          padding: "28px 28px 32px",
+        }}
+      >
         {/* Logo row */}
         <div
           style={{
@@ -124,38 +130,29 @@ function ReceiptCard({ tx, payerName, logoB64, bgB64, cardRef }) {
             justifyContent: "space-between",
             alignItems: "center",
             marginBottom: 22,
-            position: "relative",
-            zIndex: 1,
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             {logoB64 ? (
               <img
                 src={logoB64}
-                width={34}
-                height={34}
+                width={30}
+                height={30}
                 alt=""
-                style={{ display: "block" /* no border-radius */ }}
+                style={{ display: "block" }}
               />
             ) : (
               <div
                 style={{
-                  width: 34,
-                  height: 34,
-                  background: "#1843C8",
+                  width: 30,
+                  height: 30,
+                  background: "rgba(255,255,255,0.18)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <span
-                  style={{
-                    color: "#fff",
-                    fontSize: 16,
-                    fontWeight: 900,
-                    lineHeight: 1,
-                  }}
-                >
+                <span style={{ color: "#fff", fontSize: 15, fontWeight: 900, lineHeight: 1 }}>
                   G
                 </span>
               </div>
@@ -174,7 +171,7 @@ function ReceiptCard({ tx, payerName, logoB64, bgB64, cardRef }) {
           </div>
           <span
             style={{
-              color: "rgba(255,255,255,0.5)",
+              color: "rgba(255,255,255,0.65)",
               fontSize: 9,
               fontWeight: 700,
               letterSpacing: "1.8px",
@@ -186,28 +183,14 @@ function ReceiptCard({ tx, payerName, logoB64, bgB64, cardRef }) {
         </div>
 
         {/* Thin divider */}
-        <div
-          style={{
-            height: 1,
-            background: "rgba(255,255,255,0.12)",
-            marginBottom: 28,
-            position: "relative",
-            zIndex: 1,
-          }}
-        />
+        <div style={{ height: 1, background: "rgba(255,255,255,0.18)", marginBottom: 26 }} />
 
         {/* Amount + status */}
-        <div
-          style={{
-            textAlign: "center",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
+        <div style={{ textAlign: "center" }}>
           <div
             style={{
               color: "#ffffff",
-              fontSize: 42,
+              fontSize: 40,
               fontWeight: 900,
               letterSpacing: "-1px",
               lineHeight: 1,
@@ -217,30 +200,38 @@ function ReceiptCard({ tx, payerName, logoB64, bgB64, cardRef }) {
             {formatNaira(tx?.amount)}
           </div>
 
-          {/* Status — square bullet, no pill shape */}
+          {/* Status pill */}
           <div
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: 7,
+              gap: 6,
+              background: "rgba(255,255,255,0.16)",
+              borderRadius: 999,
+              padding: "5px 14px 5px 6px",
               marginBottom: 12,
             }}
           >
-            <div
+            <span
               style={{
-                width: 7,
-                height: 7,
-                background: statusColor,
+                width: 16,
+                height: 16,
+                borderRadius: "50%",
+                background: isSuccess ? "#0ECE7B" : isFailed ? "#EF4444" : "#F59E0B",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 flexShrink: 0,
               }}
-            />
+            >
+              {isSuccess && <Check size={10} color="#fff" strokeWidth={3.5} />}
+            </span>
             <span
               style={{
                 color: statusColor,
                 fontSize: 12,
-                fontWeight: 800,
-                letterSpacing: "1.8px",
-                textTransform: "uppercase",
+                fontWeight: 700,
+                letterSpacing: "0.3px",
               }}
             >
               {status}
@@ -248,107 +239,64 @@ function ReceiptCard({ tx, payerName, logoB64, bgB64, cardRef }) {
           </div>
 
           {/* Timestamp */}
-          <div
-            style={{
-              color: "rgba(255,255,255,0.45)",
-              fontSize: 11,
-              letterSpacing: "0.2px",
-            }}
-          >
+          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11.5, letterSpacing: "0.2px" }}>
             {formatHeaderDate(tx?.date ?? tx?.createdAt)}
           </div>
         </div>
-        </div> {/* end content wrapper */}
       </div>
 
       {/* ── TRANSACTION DETAILS ───────────────────────────────────────────── */}
       <div style={{ background: "#ffffff" }}>
-        {/* Section label */}
-        <div
-          style={{
-            padding: "16px 28px 0",
-            fontSize: 9,
-            fontWeight: 800,
-            color: "#94A3B8",
-            letterSpacing: "1.8px",
-            textTransform: "uppercase",
-          }}
-        >
-          Transaction Details
-        </div>
+        <DetailRow label="Community">
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 7, justifyContent: "flex-end" }}>
+            {tx?.communityLogo?.url && (
+              <img
+                src={tx.communityLogo.url}
+                alt=""
+                width={18}
+                height={18}
+                style={{ borderRadius: 4, objectFit: "cover", border: "1px solid #E5E7EB", flexShrink: 0 }}
+              />
+            )}
+            {tx?.communityName ?? "—"}
+          </span>
+        </DetailRow>
 
-        {rows.map(([label, value]) => (
-          <div
-            key={label}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              gap: 20,
-              padding: "13px 28px",
-              borderBottom: "1px solid #F1F5F9",
-            }}
-          >
-            <span
-              style={{
-                fontSize: 12,
-                color: "#94A3B8",
-                whiteSpace: "nowrap",
-                flexShrink: 0,
-              }}
-            >
-              {label}
-            </span>
-            <span
-              style={{
-                fontSize: 13,
-                color: "#0F172A",
-                fontWeight: 600,
-                textAlign: "right",
-                wordBreak: "break-word",
-                maxWidth: "58%",
-              }}
-            >
-              {value}
-            </span>
-          </div>
-        ))}
+        <DetailRow label="Plan">
+          {toTitleCase(tx?.planName ?? tx?.description) ?? "—"}
+        </DetailRow>
 
-        {/* Reference row — full-width, left-accent design */}
-        <div style={{ padding: "16px 28px 20px" }}>
-          <div
-            style={{
-              fontSize: 9,
-              fontWeight: 800,
-              color: "#94A3B8",
-              letterSpacing: "1.8px",
-              textTransform: "uppercase",
-              marginBottom: 8,
-            }}
-          >
-            Reference No.
-          </div>
-          <div
-            style={{
-              borderLeft: "3px solid #002FA7",
-              paddingLeft: 12,
-              background: "#F8FAFF",
-              padding: "11px 14px",
-              borderLeftWidth: 3,
-              borderLeftStyle: "solid",
-              borderLeftColor: "#002FA7",
-              fontSize: 11.5,
-              color: "#1E3A8A",
-              fontWeight: 700,
-              fontFamily: "'Courier New', Courier, monospace",
-              wordBreak: "break-all",
-              lineHeight: 1.7,
-              letterSpacing: "0.3px",
-            }}
-          >
+        <DetailRow label="Member Details">
+          <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
+            <span>{toTitleCase(payerName) || "—"}</span>
+            {maskedEmail && (
+              <span style={{ fontSize: 11, fontWeight: 500, color: "#94A3B8" }}>
+                {maskedEmail}
+              </span>
+            )}
+          </span>
+        </DetailRow>
+
+        <DetailRow label="Transaction Type">
+          {toTitleCase(tx?.channel) || "—"}
+        </DetailRow>
+
+        <DetailRow label="Dues Amount">{formatNaira(tx?.amount)}</DetailRow>
+
+        {hasFee && <DetailRow label="Transaction Fee">{formatNaira(tx.feeMinor)}</DetailRow>}
+
+        <DetailRow label="Transaction ID" last>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             {refValue}
-          </div>
-        </div>
+            <button
+              onClick={onCopyReference}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 2, color: "#94A3B8", display: "flex" }}
+              aria-label="Copy transaction ID"
+            >
+              {copied ? <CheckCheck size={13} color="#15803d" /> : <Copy size={13} />}
+            </button>
+          </span>
+        </DetailRow>
       </div>
 
       {/* ── FOOTER ────────────────────────────────────────────────────────── */}
@@ -393,11 +341,11 @@ function ReceiptCard({ tx, payerName, logoB64, bgB64, cardRef }) {
 
 // ── Modal (bottom sheet) ──────────────────────────────────────────────────────
 
-export default function ReceiptModal({ tx, payerName, onClose }) {
+export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
   const cardRef = useRef(null);
   const [logoB64, setLogoB64] = useState(null);
-  const [bgB64, setBgB64] = useState(null);
   const [saving, setSaving] = useState(null); // "image" | "pdf" | "share" | null
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     function toB64(blob) {
@@ -409,7 +357,6 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
       });
     }
     fetch("/Glass.webp").then((r) => r.blob()).then(toB64).then(setLogoB64).catch(() => {});
-    fetch(backgroundUrl).then((r) => r.blob()).then(toB64).then(setBgB64).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -419,6 +366,15 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
+
+  function copyReference() {
+    const refValue = tx?.reference ?? tx?.id;
+    if (!refValue) return;
+    navigator.clipboard?.writeText(String(refValue)).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  }
 
   async function captureCard(scale = 3) {
     if (!cardRef.current) return null;
@@ -450,7 +406,7 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
     setSaving("pdf");
     try {
       const { downloadReceiptPdf } = await import("../../utils/generateReceipt");
-      await downloadReceiptPdf(tx, { payerName });
+      await downloadReceiptPdf(tx, { payerName, payerEmail });
     } finally {
       setSaving(null);
     }
@@ -627,9 +583,11 @@ export default function ReceiptModal({ tx, payerName, onClose }) {
           <ReceiptCard
             tx={tx}
             payerName={payerName}
+            payerEmail={payerEmail}
             logoB64={logoB64}
-            bgB64={bgB64}
             cardRef={cardRef}
+            copied={copied}
+            onCopyReference={copyReference}
           />
         </div>
 

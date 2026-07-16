@@ -104,6 +104,9 @@ const DiscoverCommunities = lazy(
   () => import("./pages/memberApp/DiscoverCommunities"),
 );
 const MemberTransactions = lazy(() => import("./pages/memberApp/Transactions"));
+const MemberTransactionDetail = lazy(
+  () => import("./pages/memberApp/TransactionDetail"),
+);
 const MemberUpcoming = lazy(() => import("./pages/memberApp/UpcomingPayments"));
 const MemberNotifications = lazy(
   () => import("./pages/memberApp/Notifications"),
@@ -306,6 +309,10 @@ function App() {
                 />
                 <Route path="home" element={<MemberHome />} />
                 <Route path="transactions" element={<MemberTransactions />} />
+                <Route
+                  path="transactions/:transactionId"
+                  element={<MemberTransactionDetail />}
+                />
                 <Route path="upcoming" element={<MemberUpcoming />} />
                 <Route path="notifications" element={<MemberNotifications />} />
                 <Route path="manage-payments" element={<ManagePayments />} />

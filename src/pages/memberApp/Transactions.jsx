@@ -133,10 +133,11 @@ function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
 }
 
 // ─── Transaction row ──────────────────────────────────────────────────────────
-function TxRow({ tx, payerName }) {
+function TxRow({ tx, payerName, payerEmail, onOpen }) {
   const isSuccessful = statusLabel(tx.status) === "Success";
   return (
     <div
+      onClick={() => onOpen(tx)}
       style={{
         display: "flex",
         alignItems: "center",
@@ -144,6 +145,7 @@ function TxRow({ tx, payerName }) {
         gap: 8,
         padding: "14px 20px",
         borderBottom: "1px solid #f3f4f6",
+        cursor: "pointer",
       }}
     >
       <div style={{ minWidth: 0 }}>
@@ -169,26 +171,29 @@ function TxRow({ tx, payerName }) {
           </p>
           <StatusBadge status={tx.status} />
         </div>
-        <ReceiptDownloadButton
-          tx={tx}
-          payerName={payerName}
-          disabled={!isSuccessful}
-          iconSize={13}
-          title={isSuccessful ? "Download receipt" : "Receipts are only available for successful payments"}
-          buttonStyle={{
-            width: 32,
-            height: 32,
-            borderRadius: 8,
-            border: "1px solid #e5e7eb",
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            cursor: isSuccessful ? "pointer" : "not-allowed",
-            color: isSuccessful ? "#374151" : "#d1d5db",
-          }}
-        />
+        <div onClick={(e) => e.stopPropagation()}>
+          <ReceiptDownloadButton
+            tx={tx}
+            payerName={payerName}
+            payerEmail={payerEmail}
+            disabled={!isSuccessful}
+            iconSize={13}
+            title={isSuccessful ? "Download receipt" : "Receipts are only available for successful payments"}
+            buttonStyle={{
+              width: 32,
+              height: 32,
+              borderRadius: 8,
+              border: "1px solid #e5e7eb",
+              background: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              cursor: isSuccessful ? "pointer" : "not-allowed",
+              color: isSuccessful ? "#374151" : "#d1d5db",
+            }}
+          />
+        </div>
       </div>
     </div>
   );
@@ -368,7 +373,13 @@ export default function Transactions() {
               </span>
             </div>
             {txs.map((tx) => (
-              <TxRow key={tx.id} tx={tx} payerName={payerName} />
+              <TxRow
+                key={tx.id}
+                tx={tx}
+                payerName={payerName}
+                payerEmail={user?.email}
+                onOpen={(t) => navigate(`/member/transactions/${t.id}`)}
+              />
             ))}
           </div>
         ))

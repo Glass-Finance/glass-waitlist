@@ -239,12 +239,15 @@ export default function MemberDetail() {
                               amount: t.amount,
                               description: t.paymentLink?.title ?? t.description,
                               communityName: community?.name,
+                              communityLogo: community?.logo,
                               date: t.paidAt ?? t.createdAt,
                               channel: t.channel,
                               reference: t.internalReference ?? t.id,
                               status: t.status,
+                              feeMinor: t.feeMinor ?? t.fee ?? null,
                             }}
                             payerName={memberName(member)}
+                            payerEmail={memberEmail(member)}
                             disabled={!isPaid}
                             iconSize={11}
                             title={isPaid ? "Download receipt" : "Receipts are only available for successful payments"}

@@ -5,6 +5,7 @@ import ReceiptModal from "./ReceiptModal";
 export default function ReceiptDownloadButton({
   tx,
   payerName,
+  payerEmail,
   disabled,
   title,
   buttonClassName = "",
@@ -30,6 +31,7 @@ export default function ReceiptDownloadButton({
         <ReceiptModal
           tx={tx}
           payerName={payerName}
+          payerEmail={payerEmail}
           onClose={() => setOpen(false)}
         />
       )}
