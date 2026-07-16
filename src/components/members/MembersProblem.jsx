@@ -302,20 +302,26 @@ export default function MembersProblem() {
           the logo mark as a plain color source, then a frosted panel
           (#F9F9FB at 95% opacity + 120px backdrop-blur) in front of it,
           blurring it from behind into a soft pastel glow rather than
-          blurring the image asset itself. Purely decorative. */}
-      <img
-        src="/Bg.png"
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none select-none absolute -left-16 -bottom-16 w-[420px] md:w-[560px]"
-      />
-      <div
-        className="pointer-events-none absolute inset-0 bg-surface-overlay"
-        style={{
-          backdropFilter: "blur(var(--blur-logo-overlay))",
-          WebkitBackdropFilter: "blur(var(--blur-logo-overlay))",
-        }}
-      />
+          blurring the image asset itself. Purely decorative.
+          zIndex: -1 on the wrapper matters -- a positioned element paints
+          above normal-flow content regardless of DOM order, and this
+          overlay is a ~95%-opaque, full-area panel, so without it this was
+          washing out the section's real text content instead of sitting
+          behind it. */}
+      <div className="absolute inset-0" style={{ zIndex: -1 }} aria-hidden="true">
+        <img
+          src="/Bg.png"
+          alt=""
+          className="pointer-events-none select-none absolute -left-16 -bottom-16 w-[420px] md:w-[560px]"
+        />
+        <div
+          className="pointer-events-none absolute inset-0 bg-surface-overlay"
+          style={{
+            backdropFilter: "blur(var(--blur-logo-overlay))",
+            WebkitBackdropFilter: "blur(var(--blur-logo-overlay))",
+          }}
+        />
+      </div>
       <div className="max-w-[1140px] mx-auto px-6 relative">
         {/* ── Header ── */}
         <div className="text-center mb-16">
