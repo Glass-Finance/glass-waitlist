@@ -6,7 +6,7 @@ import { useInvites } from "../../hooks/useInvites";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { notificationTarget } from "../../utils/notificationRouting";
-import { isPaymentNotificationType, notificationCategory } from "../../utils/notificationTypes";
+import { isPaymentNotificationType, isPaymentReceivedType, notificationCategory } from "../../utils/notificationTypes";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import PageLoadingState from "../../components/common/PageLoadingState";
 import { formatRelativeDateTime } from "../../utils/format";
@@ -55,8 +55,26 @@ function isPaymentNotification(n) {
 }
 
 // ── Notification icon ─────────────────────────────────────────────────────────
-function NotifIcon({ n }) {
+// A payment-received notification shows the paying member's photo when the
+// payload carries one; every other type (due, reminder, plan created, etc.)
+// has no single member it's "from", so those show the community logo
+// instead -- falling back to the generic type-coloured icon when neither
+// image is available. Icons were previously always shown even when a real
+// photo/logo existed, which read as generic for every notification.
+function NotifIcon({ n, details }) {
   const type = n.notificationType ?? "";
+  const img = isPaymentReceivedType(type)
+    ? (details?.memberPhoto ?? details?.communityLogo)
+    : details?.communityLogo;
+
+  if (img) {
+    return (
+      <div style={{ width: 38, height: 38, borderRadius: "50%", flexShrink: 0, overflow: "hidden" }}>
+        <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      </div>
+    );
+  }
+
   const cat = notificationCategory(type);
   let bg, Icon, iconColor;
   if (cat ? cat === "urgent" : /FAIL|ERROR|DECLINE/.test(type.toUpperCase())) {
@@ -104,7 +122,7 @@ function NotificationRow({ n, onTap, onNavigate }) {
       {!isRead && (
         <span style={{ position: "absolute", top: 10, right: 12, width: 7, height: 7, borderRadius: "50%", background: "#002FA7" }} />
       )}
-      <NotifIcon n={n} />
+      <NotifIcon n={n} details={details} />
       <div style={{ flex: 1, minWidth: 0, paddingRight: isRead ? 0 : 14 }}>
         <p style={{ fontSize: 14, color: "#111", margin: 0, lineHeight: 1.45 }}>
           {n.title && <span style={{ fontWeight: isRead ? 500 : 700 }}>{n.title} </span>}

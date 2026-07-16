@@ -80,11 +80,19 @@ function parseReference(text) {
 // slug) built from the caller's own communities list; callers that already
 // resolved a community object (e.g. the topbar panel) can pass it via
 // communityOverride instead of rebuilding the map.
-function resolveCommunityName(n, communityMap) {
+function resolveCommunity(n, communityMap) {
   const id = n.communityId ?? n.community?.id ?? null;
   if (!id || !communityMap) return null;
-  const c = communityMap.get?.(id) ?? communityMap[id];
-  return c?.name ?? null;
+  return communityMap.get?.(id) ?? communityMap[id] ?? null;
+}
+
+function resolveCommunityName(n, communityMap) {
+  return resolveCommunity(n, communityMap)?.name ?? null;
+}
+
+function resolveCommunityLogo(n, communityMap) {
+  const c = resolveCommunity(n, communityMap);
+  return c?.logo?.url ?? c?.logoUrl ?? n.community?.logo?.url ?? null;
 }
 
 export function extractNotificationDetails(n, { communityMap } = {}) {
@@ -95,9 +103,10 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
   // likely to use for "who this notification is about" — a first/last
   // pair takes priority over any single combined-name field, and a nested
   // user/member/actor/payer object is checked the same way.
+  const memberCandidates = [content, n, n.member, n.actor, n.payer, n.user, n.requestedUser];
+
   const rawMemberName = (() => {
-    const candidates = [content, n, n.member, n.actor, n.payer, n.user, n.requestedUser];
-    for (const c of candidates) {
+    for (const c of memberCandidates) {
       if (!c || typeof c !== "object") continue;
       const first = c.firstName ?? c.first_name;
       const last = c.lastName ?? c.last_name;
@@ -109,11 +118,29 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
     return parseMemberName(messageOnly(n));
   })();
 
+  // Same nested candidate objects as the name above -- profileImage is the
+  // confirmed shape elsewhere in the app (Sidebar/Topbar/Profile pages all
+  // read user.profileImage.url), so probed the same way rather than a new
+  // guess. Returns null (not rendered) when the payload doesn't carry it,
+  // same defensive rule as every other field here.
+  const memberPhoto = (() => {
+    for (const c of memberCandidates) {
+      if (!c || typeof c !== "object") continue;
+      const url = c.profileImage?.url ?? c.profileImageUrl ?? c.avatarUrl ?? c.photoUrl;
+      if (url) return url;
+    }
+    return null;
+  })();
+
   return {
     memberName: rawMemberName ? capitalizeName(rawMemberName) : null,
+    memberPhoto,
     communityName:
       content.communityName ?? n.communityName ?? n.community?.name ??
       resolveCommunityName(n, communityMap),
+    communityLogo:
+      content.communityLogo?.url ?? n.community?.logo?.url ??
+      resolveCommunityLogo(n, communityMap),
     // Confirmed against real payloads: some notifications carry `amount` in
     // major units (naira), others only `amountMinor` in minor units (kobo —
     // Paystack convention, ÷100 to get naira). Neither is universal, so both

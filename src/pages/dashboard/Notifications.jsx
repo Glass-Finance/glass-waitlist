@@ -6,7 +6,7 @@ import { useNotifications, useAllNotifications } from "../../hooks/useNotificati
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { useAuth } from "../../store/AuthContext";
 import { notificationAction } from "../../utils/notificationRouting";
-import { notificationCategory } from "../../utils/notificationTypes";
+import { notificationCategory, isPaymentReceivedType } from "../../utils/notificationTypes";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
@@ -59,7 +59,22 @@ const ICON_META = {
   member:  { bg: "#EEF2FF", color: "#002FA7", Icon: Users       },
 };
 
-function Avatar({ cat }) {
+// Payment-received notifications show the paying member's photo when the
+// payload carries one -- every other type has no single member it's
+// "from", so those show the community logo, falling back to the
+// type-coloured icon when neither is available.
+function Avatar({ cat, n, details }) {
+  const img = isPaymentReceivedType(n?.notificationType ?? n?.type)
+    ? (details?.memberPhoto ?? details?.communityLogo)
+    : details?.communityLogo;
+
+  if (img) {
+    return (
+      <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden">
+        <img src={img} alt="" className="w-full h-full object-cover" />
+      </div>
+    );
+  }
   const { bg, color, Icon } = ICON_META[cat] ?? ICON_META.payment;
   return (
     <div className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: bg }}>
@@ -89,7 +104,7 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
       {!isRead && (
         <span className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-[#002FA7]" />
       )}
-      <Avatar cat={cat} />
+      <Avatar cat={cat} n={n} details={details} />
       <div className="flex-1 min-w-0 pr-4">
         <p className={`text-sm leading-snug ${isRead ? "text-gray-500" : "text-gray-900 font-semibold"}`}>
           {title}
@@ -101,14 +116,10 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
           {[details.memberName, details.communityName, formatTime(n.createdAt)]
             .filter(Boolean)
             .join(" · ")}
+          {amount && <span className="text-gray-900 font-semibold"> · {amount}</span>}
         </p>
       </div>
-      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
-        {amount && (
-          <span className="text-xs font-semibold text-gray-900">{amount}</span>
-        )}
-        <ChevronRight size={14} className="text-gray-300" />
-      </div>
+      <ChevronRight size={14} className="text-gray-300 flex-shrink-0 self-center" />
     </button>
   );
 }
@@ -148,7 +159,7 @@ function NotificationDetailModal({ n, onClose }) {
         {/* Header */}
         <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-[#E5E7EB]">
           <div className="flex items-start gap-3 min-w-0">
-            <Avatar cat={cat} />
+            <Avatar cat={cat} n={n} details={details} />
             <div className="min-w-0">
               <span
                 className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5"

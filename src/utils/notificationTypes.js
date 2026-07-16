@@ -62,6 +62,14 @@ export function isPaymentNotificationType(type) {
   return PAYMENT_TYPES.has((type ?? "").toUpperCase());
 }
 
+// Only PAYMENT_RECEIVED is "about" a specific member who made a payment —
+// used to decide when a notification avatar should try the payer's photo
+// instead of the community logo (a due/reminder/created notification has
+// no single member it's "from").
+export function isPaymentReceivedType(type) {
+  return (type ?? "").toUpperCase() === "PAYMENT_RECEIVED";
+}
+
 // Admin dashboard's Urgent / Payment Activity / Community Activity tabs.
 const ADMIN_CATEGORY = {
   // Urgent — needs admin attention: money that didn't move, or a security-

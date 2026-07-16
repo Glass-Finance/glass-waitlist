@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
-import { notificationCategory } from "../../utils/notificationTypes";
+import { notificationCategory, isPaymentReceivedType } from "../../utils/notificationTypes";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
 import { formatRelativeDateTime as formatTimestamp } from "../../utils/format";
@@ -75,14 +75,24 @@ function notifMeta(n) {
   return CATEGORY_META.payment;
 }
 
-// Shows community logo when available; falls back to a type-coloured icon circle
+// A payment-received notification is about a specific member paying --
+// their photo (when the payload carries one) is more useful there than the
+// community's logo. Every other payment/reminder/plan-created type has no
+// single member it's "from", so those fall back to the community logo, then
+// finally the type-coloured icon when neither photo nor logo is available.
 function NotifAvatar({ n, community }) {
-  const logo = community?.logo?.url ?? community?.logoUrl ?? null;
-  const name = community?.name ?? "";
-  if (logo) {
+  const type = n.notificationType ?? n.type;
+  const memberPhoto = isPaymentReceivedType(type)
+    ? extractNotificationDetails(n).memberPhoto
+    : null;
+  const logo = memberPhoto ? null : (community?.logo?.url ?? community?.logoUrl ?? null);
+  const img = memberPhoto ?? logo;
+  const alt = memberPhoto ? extractNotificationDetails(n).memberName ?? "" : (community?.name ?? "");
+
+  if (img) {
     return (
       <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, overflow: "hidden", marginTop: 1 }}>
-        <img src={logo} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={img} alt={alt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
     );
   }
