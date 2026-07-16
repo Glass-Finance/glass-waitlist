@@ -300,7 +300,7 @@ export default function PrivacyPolicy() {
       <p>
         Data Protection Officer / Privacy Team<br />
         Glass Finance Limited<br />
-        Email: <a href="mailto:privacy@glasspay.app">privacy@glasspay.app</a><br />
+        Email: <a href="mailto:legal@glasspay.app">legal@glasspay.app</a><br />
         Address: 1, Onyemergwu Close, Abule Egba, Lagos
       </p>
       <p>For general Platform questions, see the Terms of Service, Section 33.</p>

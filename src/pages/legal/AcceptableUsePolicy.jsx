@@ -179,7 +179,7 @@ export default function AcceptableUsePolicy() {
       <h2>21. Reporting Violations</h2>
       <p>
         If you become aware of conduct that may violate this AUP, please report it to{" "}
-        <a href="mailto:trust@glasspay.app">trust@glasspay.app</a> with as much detail as
+        <a href="mailto:legal@glasspay.app">legal@glasspay.app</a> with as much detail as
         possible, including the Community or Account involved and a description of the
         suspected violation. We will investigate reports in good faith and take appropriate
         action, though we may not be able to share the outcome of an investigation due to

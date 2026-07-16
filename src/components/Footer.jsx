@@ -28,7 +28,6 @@ const links = {
   Legal: [
     { label: "Privacy",         href: "/privacy"       },
     { label: "Terms",           href: "/terms"         },
-    { label: "Security",        href: "/#security"     },
     { label: "Cookie Policy",   href: "/cookies"        },
     { label: "Acceptable Use",  href: "/acceptable-use" },
     { label: "Refund Policy",   href: "/refund-policy"  },
