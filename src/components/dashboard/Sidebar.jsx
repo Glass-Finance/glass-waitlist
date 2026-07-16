@@ -458,17 +458,15 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                       onCloseMobile?.();
                     }}
                     title={c.name}
-                    className={`w-9 h-9 cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none flex-shrink-0 ${
-                      c.logo?.url
-                        ? ""
-                        : "rounded-xl overflow-hidden border border-white/15 hover:border-white/30 bg-white/15 text-white hover:bg-white/30"
+                    className={`w-9 h-9 rounded-xl border border-white/15 hover:border-white/30 cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 ${
+                      c.logo?.url ? "" : "bg-white/15 text-white hover:bg-white/30"
                     }`}
                   >
                     {c.logo?.url ? (
                       <img
                         src={c.logo.url}
                         alt={c.name}
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-cover"
                         onError={(e) => {
                           e.currentTarget.style.display = "none";
                         }}
