@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, useSearchParams, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, Landmark, Loader2 } from "lucide-react";
+import { ChevronLeft, Landmark, Loader2, Info } from "lucide-react";
 import { getObligation, getPaymentLink, initiatePayment as initiatePaymentApi } from "../../api/members";
 import {
   useManagePayments,
@@ -12,6 +12,7 @@ import {
 import { getErrorMessage } from "../../utils/errorHandler";
 import PageLoadingState from "../../components/common/PageLoadingState";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
+import Toggle from "../../components/common/Toggle";
 import { toastSuccess } from "../../utils/toast";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import { toTitleCase, formatNaira as fmt } from "../../utils/format";
@@ -287,11 +288,11 @@ export default function PaymentSummary() {
           {/* Community row */}
           <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
             <div
-              className="w-11 h-11 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 border border-gray-100"
+              className="w-11 h-11 flex items-center justify-center flex-shrink-0"
               style={{ background: communityLogo?.url ? "transparent" : "#f0f4ff" }}
             >
               {communityLogo?.url ? (
-                <img src={communityLogo.url} alt="" decoding="async" className="object-cover w-full h-full" />
+                <img src={communityLogo.url} alt="" decoding="async" className="object-contain w-full h-full" />
               ) : (
                 <span className="text-[10px] font-bold text-[#1C2B8A]">{communityInitials}</span>
               )}
@@ -305,36 +306,47 @@ export default function PaymentSummary() {
                 <div className="flex items-center gap-2.5">
                   <MethodIcon />
                   <span className="text-[14px] font-medium text-gray-900">
-                    {toTitleCase(savedMethod.bank ?? "Bank Account")} ●●●● {savedMethod.last4}
+                    {toTitleCase(savedMethod.cardType ?? savedMethod.bank ?? "Card")} ●●●{savedMethod.last4}
+                    {savedMethod.expMonth && savedMethod.expYear
+                      ? ` | ${String(savedMethod.expMonth).padStart(2, "0")}/${String(savedMethod.expYear).slice(-2)}`
+                      : ""}
                   </span>
                 </div>
+                <button
+                  onClick={() => navigate("/member/settings/payments")}
+                  className="text-[13px] font-semibold bg-transparent border-none cursor-pointer"
+                  style={{ color: "#002FA7" }}
+                >
+                  Change
+                </button>
               </div>
             ) : (
-              <>
-                <p className="text-[13px] text-gray-500 py-1">
-                  You'll choose how to pay on the next screen.
-                </p>
-                {!isRecurring && (
-                  <label className="flex items-center gap-2 mt-1 pt-2 border-t border-gray-200 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={saveMethod}
-                      onChange={(e) => setSaveMethod(e.target.checked)}
-                      className="w-3.5 h-3.5 accent-[#002FA7] cursor-pointer"
-                    />
-                    <span className="text-[12px] text-gray-500">
-                      Save this payment method for faster checkout next time
-                    </span>
-                  </label>
-                )}
-              </>
-            )}
-
-            {isRecurring && (
-              <p className="text-[12px] text-gray-400 mt-2 pt-2 border-t border-gray-200">
-                This plan will be saved for Auto-Pay after your first successful payment.
+              <p className="text-[13px] text-gray-500 py-1">
+                You'll choose how to pay on the next screen.
               </p>
             )}
+
+            {/* Automatic Payment — for a recurring plan this is required to
+                keep charging future cycles, so it's shown locked on with an
+                explanation rather than letting it be turned off and quietly
+                breaking the plan's own renewal. One-time plans keep the
+                real choice this used to be a plain checkbox for. */}
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
+              <span className="flex items-center gap-1.5 text-[12px] text-gray-600">
+                Automatic Payment
+                <span title={isRecurring
+                  ? "Required so this plan can keep charging you automatically each cycle."
+                  : "Save this method and reuse it automatically for future payments."}
+                >
+                  <Info size={12} className="text-gray-400" />
+                </span>
+              </span>
+              <Toggle
+                on={isRecurring ? true : saveMethod}
+                onChange={setSaveMethod}
+                disabled={isRecurring}
+              />
+            </div>
           </div>
         </div>
 
@@ -343,6 +355,11 @@ export default function PaymentSummary() {
           <p className="text-[14px] font-normal text-gray-900 mb-4">Plan Details</p>
 
           <div className="flex items-center justify-between mb-3">
+            <span className="text-[13px] text-gray-500">Plan:</span>
+            <span className="text-[14px] text-gray-900">{toTitleCase(obligation?.paymentLink?.title) ?? "—"}</span>
+          </div>
+
+          <div className={`flex items-center justify-between ${isRecurring ? "mb-3" : "mb-2.5 pb-3 border-b border-gray-100"}`}>
             <span className="text-[13px] text-gray-500">Payment Schedule:</span>
             <span
               className="text-[12px] font-semibold px-3 py-0.5 rounded-full"
@@ -367,7 +384,7 @@ export default function PaymentSummary() {
             const next = estimateNextCharge(obligation.recurringPlan, obligation?.dueDate);
             if (!next) return null;
             return (
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2.5 pb-3 border-b border-gray-100">
                 <span className="text-[13px] text-gray-500">Next charge (est.):</span>
                 <span className="text-[13px] text-gray-900">
                   {next.toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" })}
@@ -376,11 +393,6 @@ export default function PaymentSummary() {
             );
           })()}
 
-          <div className="flex items-center justify-between mb-2.5 pb-3 border-b border-gray-100">
-            <span className="text-[13px] text-gray-500">Plan:</span>
-            <span className="text-[14px] text-gray-900">{toTitleCase(obligation?.paymentLink?.title) ?? "—"}</span>
-          </div>
-
           {prefetch?.billedAmount != null && prefetch.billedAmount !== obligation?.amount ? (
             <>
               <div className="flex items-center justify-between mb-2">
@@ -388,11 +400,11 @@ export default function PaymentSummary() {
                 <span className="text-[14px] text-gray-900">{fmt(obligation?.amount)}</span>
               </div>
               <div className="flex items-center justify-between mb-2.5 pb-3 border-b border-gray-100">
-                <span className="text-[13px] text-gray-500">Platform Fee:</span>
+                <span className="text-[13px] text-gray-500">Charge:</span>
                 <span className="text-[13px] text-gray-600">{fmt(prefetch.billedAmount - (obligation?.amount ?? 0))}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[13px] text-gray-500">Total Charged:</span>
+                <span className="text-[13px] text-gray-500">Total:</span>
                 <span className="text-[15px] font-bold text-gray-900">{fmt(prefetch.billedAmount)}</span>
               </div>
             </>
