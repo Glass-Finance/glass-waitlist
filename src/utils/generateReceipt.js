@@ -16,16 +16,20 @@ function formatDateTime(d) {
   });
 }
 
+// Compact "Apr 1,2025 • 12:00AM" -- matches the in-app receipt's header
+// format; built by hand since toLocaleString's "en-NG" locale defaults to a
+// 24-hour clock with no AM/PM marker.
 function formatHeaderDate(d) {
   if (!d) return "—";
-  return new Date(d).toLocaleString("en-NG", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  const date = new Date(d);
+  const month = date.toLocaleDateString("en-US", { month: "short" });
+  const day = date.getDate();
+  const year = date.getFullYear();
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+  return `${month} ${day},${year} • ${hours}:${minutes}${ampm}`;
 }
 
 function statusLabel(status) {

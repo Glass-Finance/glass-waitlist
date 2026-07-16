@@ -10,6 +10,15 @@ function formatNaira(amount) {
   return sharedFormatNaira(amount, { decimals: 2 });
 }
 
+// Splits "₦5,010.00" into the whole part and ".00" so the decimals can be
+// styled in a lighter tone, matching the Figma amount treatment.
+function splitNaira(amount) {
+  const full = formatNaira(amount);
+  const dot = full.lastIndexOf(".");
+  if (dot === -1) return { whole: full, decimals: "" };
+  return { whole: full.slice(0, dot), decimals: full.slice(dot) };
+}
+
 function formatDateTime(d) {
   if (!d) return "—";
   return new Date(d).toLocaleString("en-NG", {
@@ -21,16 +30,21 @@ function formatDateTime(d) {
   });
 }
 
+// Compact "Apr 1,2025 • 12:00AM" -- toLocaleString's "en-NG" locale defaults
+// to a 24-hour clock with no AM/PM marker, which is why the header timestamp
+// never matched the Figma format. Built by hand so the 12-hour clock and
+// AM/PM suffix are guaranteed regardless of locale/engine defaults.
 function formatHeaderDate(d) {
   if (!d) return "—";
-  return new Date(d).toLocaleString("en-NG", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  const date = new Date(d);
+  const month = date.toLocaleDateString("en-US", { month: "short" });
+  const day = date.getDate();
+  const year = date.getFullYear();
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+  return `${month} ${day},${year} • ${hours}:${minutes}${ampm}`;
 }
 
 function statusLabel(status) {
@@ -103,6 +117,7 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, cardRef, copied, onCo
   const refValue = tx?.reference ?? tx?.id ?? "—";
   const maskedEmail = maskEmail(payerEmail);
   const hasFee = tx?.feeMinor != null;
+  const amountParts = splitNaira(tx?.amount);
 
   return (
     <div
@@ -187,35 +202,28 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, cardRef, copied, onCo
 
         {/* Amount + status */}
         <div style={{ textAlign: "center" }}>
-          <div
-            style={{
-              color: "#ffffff",
-              fontSize: 40,
-              fontWeight: 900,
-              letterSpacing: "-1px",
-              lineHeight: 1,
-              marginBottom: 14,
-            }}
-          >
-            {formatNaira(tx?.amount)}
+          <div style={{ marginBottom: 14, lineHeight: 1 }}>
+            <span style={{ color: "#ffffff", fontSize: 38, fontWeight: 700, letterSpacing: "-1px" }}>
+              {amountParts.whole}
+            </span>
+            <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 38, fontWeight: 700, letterSpacing: "-1px" }}>
+              {amountParts.decimals}
+            </span>
           </div>
 
-          {/* Status pill */}
+          {/* Status — flat checkmark + label, no pill container */}
           <div
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
-              background: "rgba(255,255,255,0.16)",
-              borderRadius: 999,
-              padding: "5px 14px 5px 6px",
               marginBottom: 12,
             }}
           >
             <span
               style={{
-                width: 16,
-                height: 16,
+                width: 15,
+                height: 15,
                 borderRadius: "50%",
                 background: isSuccess ? "#0ECE7B" : isFailed ? "#EF4444" : "#F59E0B",
                 display: "flex",
@@ -229,9 +237,9 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, cardRef, copied, onCo
             <span
               style={{
                 color: statusColor,
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: "0.3px",
+                fontSize: 13,
+                fontWeight: 600,
+                letterSpacing: "0.2px",
               }}
             >
               {status}
