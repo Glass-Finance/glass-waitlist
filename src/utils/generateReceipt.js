@@ -101,23 +101,16 @@ export async function downloadReceiptPdf(tx, { payerName, payerEmail } = {}) {
   drawGradientBand(doc, 0, 0, W, headerH, [124, 58, 237], [0, 47, 167]);
 
   // Glass wordmark
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(20);
   doc.setTextColor(255, 255, 255);
-  doc.text("GLASS", margin, 52);
+  doc.text("Glass", margin, 52);
 
   // "Transaction Receipt" label top-right
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.setTextColor(160, 180, 220);
-  doc.text("TRANSACTION RECEIPT", W - margin, 52, { align: "right" });
-
-  // Thin rule under logo row
-  doc.setDrawColor(255, 255, 255);
-  doc.setGState(new doc.GState({ opacity: 0.12 }));
-  doc.setLineWidth(0.5);
-  doc.line(margin, 62, W - margin, 62);
-  doc.setGState(new doc.GState({ opacity: 1 }));
+  doc.setFontSize(11);
+  doc.setTextColor(215, 222, 245);
+  doc.text("Transaction Receipt", W - margin, 52, { align: "right" });
 
   // Amount
   doc.setFont("helvetica", "bold");

@@ -244,7 +244,16 @@ export default function MemberDetail() {
                               channel: t.channel,
                               reference: t.internalReference ?? t.id,
                               status: t.status,
-                              feeMinor: t.feeMinor ?? t.fee ?? null,
+                              // No dedicated fee field on the transaction
+                              // record -- derived the same way
+                              // PaymentSummary.jsx's confirmed "Platform
+                              // Fee" row is (billedAmount minus amount).
+                              feeMinor:
+                                t.feeMinor ??
+                                t.fee ??
+                                (t.amountPaid != null && t.amount != null && t.amountPaid > t.amount
+                                  ? t.amountPaid - t.amount
+                                  : null),
                             }}
                             payerName={memberName(member)}
                             payerEmail={memberEmail(member)}

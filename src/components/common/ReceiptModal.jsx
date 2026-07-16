@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X, FileText, Image as ImageIcon, Share2, Check, Copy, CheckCheck } from "lucide-react";
 import html2canvas from "html2canvas";
+import ctaLogoUrl from "../../assets/cta/ctalogo.webp";
 import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -107,7 +108,7 @@ function DetailRow({ label, children, last }) {
 // ── ReceiptCard — rendered as real JSX for the in-app preview ────────────────
 // Rules: no border-radius on the outer card or logo, no overlapping sections.
 
-function ReceiptCard({ tx, payerName, payerEmail, logoB64, cardRef, copied, onCopyReference }) {
+function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRef, copied, onCopyReference }) {
   const status = statusLabel(tx?.status);
   const isSuccess = status === "Successful";
   const isFailed = status === "Failed";
@@ -144,7 +145,7 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, cardRef, copied, onCo
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: 22,
+            marginBottom: 36,
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -176,9 +177,7 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, cardRef, copied, onCo
               style={{
                 color: "#ffffff",
                 fontSize: 18,
-                fontWeight: 800,
-                letterSpacing: "1px",
-                textTransform: "uppercase",
+                fontWeight: 600,
               }}
             >
               Glass
@@ -186,19 +185,14 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, cardRef, copied, onCo
           </div>
           <span
             style={{
-              color: "rgba(255,255,255,0.65)",
-              fontSize: 9,
-              fontWeight: 700,
-              letterSpacing: "1.8px",
-              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.8)",
+              fontSize: 12,
+              fontWeight: 500,
             }}
           >
             Transaction Receipt
           </span>
         </div>
-
-        {/* Thin divider */}
-        <div style={{ height: 1, background: "rgba(255,255,255,0.18)", marginBottom: 26 }} />
 
         {/* Amount + status */}
         <div style={{ textAlign: "center" }}>
@@ -319,9 +313,9 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, cardRef, copied, onCo
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          {logoB64 && (
+          {footerLogoB64 && (
             <img
-              src={logoB64}
+              src={footerLogoB64}
               width={13}
               height={13}
               alt=""
@@ -351,7 +345,11 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, cardRef, copied, onCo
 
 export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
   const cardRef = useRef(null);
+  // Two variants: the silver/grey mark reads correctly against the gradient
+  // header, but is too low-contrast at the small, faded opacity the footer
+  // uses on a near-white background -- the footer keeps the colored mark.
   const [logoB64, setLogoB64] = useState(null);
+  const [footerLogoB64, setFooterLogoB64] = useState(null);
   const [saving, setSaving] = useState(null); // "image" | "pdf" | "share" | null
   const [copied, setCopied] = useState(false);
 
@@ -364,7 +362,8 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
         reader.readAsDataURL(blob);
       });
     }
-    fetch("/Glass.webp").then((r) => r.blob()).then(toB64).then(setLogoB64).catch(() => {});
+    fetch(ctaLogoUrl).then((r) => r.blob()).then(toB64).then(setLogoB64).catch(() => {});
+    fetch("/Glass.webp").then((r) => r.blob()).then(toB64).then(setFooterLogoB64).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -593,6 +592,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
             payerName={payerName}
             payerEmail={payerEmail}
             logoB64={logoB64}
+            footerLogoB64={footerLogoB64}
             cardRef={cardRef}
             copied={copied}
             onCopyReference={copyReference}

@@ -23,7 +23,17 @@ function shapeTransaction(raw) {
     channel: raw.channel,
     currency: raw.currency ?? "NGN",
     reference: raw.internalReference,
-    feeMinor: raw.feeMinor ?? raw.fee ?? null,
+    // No dedicated fee field exists on the transaction record -- same as the
+    // initiate-payment response, whose "Platform Fee" (PaymentSummary.jsx)
+    // is derived as billedAmount - amount rather than a raw field. Mirrors
+    // that here using amountPaid (the actual charged total) vs amount (the
+    // due amount), guarded against a nonsensical negative fee.
+    feeMinor:
+      raw.feeMinor ??
+      raw.fee ??
+      (raw.amountPaid != null && raw.amount != null && raw.amountPaid > raw.amount
+        ? raw.amountPaid - raw.amount
+        : null),
     logoColor: "#1C2B8A",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
   };

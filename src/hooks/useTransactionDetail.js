@@ -14,6 +14,7 @@ function shapeDetail(raw) {
   return {
     id: raw.id,
     amount: raw.amount,
+    amountPaid: raw.amountPaid,
     description: raw.description ?? raw.paymentLink?.title ?? "Payment",
     communityName: raw.community?.name,
     communityLogo: raw.community?.logo,
@@ -22,8 +23,16 @@ function shapeDetail(raw) {
     planName: raw.paymentLink?.title,
     channel: raw.channel,
     reference: raw.internalReference,
-    // Unconfirmed against a real schema -- render-only-if-present.
-    feeMinor: raw.feeMinor ?? raw.fee ?? null,
+    // No dedicated fee field on the transaction record -- derived the same
+    // way PaymentSummary.jsx's confirmed "Platform Fee" row is (billedAmount
+    // minus amount), using amountPaid (actual charged total) vs amount (due
+    // amount) here, guarded against a nonsensical negative fee.
+    feeMinor:
+      raw.feeMinor ??
+      raw.fee ??
+      (raw.amountPaid != null && raw.amount != null && raw.amountPaid > raw.amount
+        ? raw.amountPaid - raw.amount
+        : null),
     transactionType: raw.transactionType ?? raw.paymentMethod ?? null,
     initiatedBy: raw.initiatedBy ?? (raw.recurringPlan ? "Auto-Pay" : null),
   };
