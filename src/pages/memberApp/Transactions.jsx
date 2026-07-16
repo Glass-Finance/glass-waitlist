@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
-import { useAuth } from "../../store/AuthContext";
-import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import PageLoadingState from "../../components/common/PageLoadingState";
 import { formatNaira, toTitleCase } from "../../utils/format";
@@ -133,8 +131,7 @@ function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
 }
 
 // ─── Transaction row ──────────────────────────────────────────────────────────
-function TxRow({ tx, payerName, payerEmail, onOpen }) {
-  const isSuccessful = statusLabel(tx.status) === "Success";
+function TxRow({ tx, onOpen }) {
   return (
     <div
       onClick={() => onOpen(tx)}
@@ -164,36 +161,11 @@ function TxRow({ tx, payerName, payerEmail, onOpen }) {
             : "—"}
         </p>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-        <div style={{ textAlign: "right" }}>
-          <p style={{ fontSize: 15, fontWeight: 600, color: "#111827", margin: "0 0 4px" }}>
-            {formatNaira(tx.amount)}
-          </p>
-          <StatusBadge status={tx.status} />
-        </div>
-        <div onClick={(e) => e.stopPropagation()}>
-          <ReceiptDownloadButton
-            tx={tx}
-            payerName={payerName}
-            payerEmail={payerEmail}
-            disabled={!isSuccessful}
-            iconSize={13}
-            title={isSuccessful ? "Download receipt" : "Receipts are only available for successful payments"}
-            buttonStyle={{
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              border: "1px solid #e5e7eb",
-              background: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-              cursor: isSuccessful ? "pointer" : "not-allowed",
-              color: isSuccessful ? "#374151" : "#d1d5db",
-            }}
-          />
-        </div>
+      <div style={{ textAlign: "right", flexShrink: 0 }}>
+        <p style={{ fontSize: 15, fontWeight: 600, color: "#111827", margin: "0 0 4px" }}>
+          {formatNaira(tx.amount)}
+        </p>
+        <StatusBadge status={tx.status} />
       </div>
     </div>
   );
@@ -202,8 +174,6 @@ function TxRow({ tx, payerName, payerEmail, onOpen }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function Transactions() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const payerName = toTitleCase([user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [selectedMonth, setSelectedMonth] = useState(null);
   const { data: transactions = [], isLoading, error } = useTransactions();
@@ -376,8 +346,6 @@ export default function Transactions() {
               <TxRow
                 key={tx.id}
                 tx={tx}
-                payerName={payerName}
-                payerEmail={user?.email}
                 onOpen={(t) => navigate(`/member/transactions/${t.id}`)}
               />
             ))}
