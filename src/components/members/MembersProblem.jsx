@@ -298,14 +298,23 @@ export default function MembersProblem() {
       className="relative bg-[#F7F8FC] overflow-hidden py-20 md:py-28"
       id="problem"
     >
-      {/* Brand watermark — bottom-left, blurred into a soft ambient glow
-          rather than a sharp visible logo shape. Purely decorative. */}
+      {/* Glass Logo Element Surface Overlay, per the design system spec:
+          the logo mark as a plain color source, then a frosted panel
+          (#F9F9FB at 95% opacity + 120px backdrop-blur) in front of it,
+          blurring it from behind into a soft pastel glow rather than
+          blurring the image asset itself. Purely decorative. */}
       <img
         src="/Bg.png"
         alt=""
         aria-hidden="true"
-        className="pointer-events-none select-none absolute -left-16 -bottom-16 w-[420px] md:w-[560px] opacity-40"
-        style={{ filter: "blur(56px)" }}
+        className="pointer-events-none select-none absolute -left-16 -bottom-16 w-[420px] md:w-[560px]"
+      />
+      <div
+        className="pointer-events-none absolute inset-0 bg-surface-overlay"
+        style={{
+          backdropFilter: "blur(var(--blur-logo-overlay))",
+          WebkitBackdropFilter: "blur(var(--blur-logo-overlay))",
+        }}
       />
       <div className="max-w-[1140px] mx-auto px-6 relative">
         {/* ── Header ── */}
