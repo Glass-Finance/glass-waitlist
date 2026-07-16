@@ -568,11 +568,21 @@ export function usePayments() {
       user: userQuery.data,
       community: normalizeCommunity(rawActiveCommunity),
     },
+    // paymentLinksQuery matters here: it only starts fetching once
+    // communityIdentifier is known (a beat after communitiesQuery resolves),
+    // and unmatchedLinks -- links with no obligation record yet -- can be
+    // the *only* source of nextDue for a plan the backend hasn't generated
+    // an obligation for. Without gating on it too, the page could pass
+    // isLoading=false on the very first render (the other four queries
+    // already resolved) while paymentLinksQuery was still on its first
+    // fetch, rendering "No Payments Due" for a moment before the real due
+    // amount popped in a beat later -- a real flash, not a flaky network.
     isLoading:
       obligationsQuery.isLoading ||
       transactionsQuery.isLoading ||
       userQuery.isLoading ||
-      communitiesQuery.isLoading,
+      communitiesQuery.isLoading ||
+      paymentLinksQuery.isLoading,
     hasNoCommunity:
       !communitiesQuery.isLoading && activeCommunities.length === 0,
     hasPendingCommunity:
