@@ -261,9 +261,9 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, cardRef, copied, onCo
               <img
                 src={tx.communityLogo.url}
                 alt=""
-                width={18}
-                height={18}
-                style={{ borderRadius: 4, objectFit: "cover", border: "1px solid #E5E7EB", flexShrink: 0 }}
+                width={32}
+                height={32}
+                style={{ objectFit: "cover", flexShrink: 0 }}
               />
             )}
             {tx?.communityName ?? "—"}

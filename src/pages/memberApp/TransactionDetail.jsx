@@ -174,7 +174,7 @@ export default function TransactionDetail() {
                   <img
                     src={tx.communityLogo.url}
                     alt=""
-                    style={{ width: 24, height: 24, borderRadius: 6, objectFit: "cover", border: "1px solid #E5E7EB" }}
+                    style={{ width: 32, height: 32, objectFit: "cover" }}
                   />
                 )}
                 {tx.communityName ?? "—"}
