@@ -1,12 +1,21 @@
 import { useNavigate } from "react-router-dom";
 import AuthPanel from "../assets/auth/auth-panel.webp";
 import glassLogo from "../assets/cta/ctalogo.webp";
+import AuthBackground from "../assets/auth-background.webp";
 
 export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen w-screen flex flex-col md:flex-row overflow-hidden bg-surface-bg md:p-2">
+    <div
+      className="h-screen w-screen flex flex-col md:flex-row overflow-hidden bg-surface-bg md:p-2"
+      style={{
+        backgroundImage: `url(${AuthBackground})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
       {/* ── Hero panel ───────────────────────────────────────────────────── */}
       {/* Mobile: 45vh full-bleed image with gradient + welcome text        */}
       {/* Desktop: side panel, unchanged                                     */}

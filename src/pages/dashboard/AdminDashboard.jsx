@@ -1119,8 +1119,10 @@ function DashboardContent({ isPaying, communityId }) {
   } = useCommunityDashboard(communityId);
   const { plans, isLoading: plansLoading } = usePaymentPlans(communityId);
 
-  // Paying admin's own dues, as a member of this community
-  const { data: myPayments } = usePayments();
+  // Paying admin's own dues, as a member of this community -- scoped to
+  // whichever community this dashboard is currently showing, not whatever
+  // community the admin last visited as a member (see usePayments.js).
+  const { data: myPayments } = usePayments(communityId);
   const myUpcoming = myPayments?.upcoming ?? [];
   const { data: myAuthorisations } = useManagePayments();
   // Catches payers who came back from Paystack without hitting the callback

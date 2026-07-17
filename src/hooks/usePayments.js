@@ -419,8 +419,17 @@ export function useGlobalOverview() {
 // ─────────────────────────────────────────────────────────────────────────────
 // Main hook — Home screen data
 // Returns: { nextDue, upcoming[], user, community, isLoading, error }
+//
+// preferredCommunityIdentifier (optional): pins the "active community" this
+// hook scopes to, overriding the glass_member_community localStorage guess
+// below. Needed by AdminDashboard.jsx -- an owner who belongs to more than
+// one community as a paying member has their own single "last selected"
+// member community in localStorage, which has no relationship to whichever
+// community's admin dashboard they currently have open. Without this, "Your
+// Payments" on the admin dashboard silently showed a *different* community's
+// dues (or none at all) instead of the one actually on screen.
 // ─────────────────────────────────────────────────────────────────────────────
-export function usePayments() {
+export function usePayments(preferredCommunityIdentifier) {
   const queryClient = useQueryClient();
 
   const obligationsQuery = useQuery({
@@ -505,14 +514,22 @@ export function usePayments() {
     (c) => (c.memberStatus ?? "").toUpperCase() === "PENDING",
   );
 
-  // Match stored slug/id against the fetched list so we get the full object.
-  const rawActiveCommunity = storedCommunity
-    ? (activeCommunities.find(
-        (c) =>
-          (c.slug ?? c.community?.slug) === storedCommunity.slug ||
-          (c.id ?? c.community?.id) === storedCommunity.id,
-      ) ?? activeCommunities[0])
-    : activeCommunities[0];
+  function findByIdentifier(identifier) {
+    if (!identifier) return null;
+    return activeCommunities.find(
+      (c) =>
+        (c.slug ?? c.community?.slug) === identifier ||
+        (c.id ?? c.community?.id) === identifier,
+    );
+  }
+
+  // Explicit caller override wins, then whatever the member last selected in
+  // MyCommunities, falling back to the first community returned by the API.
+  const rawActiveCommunity =
+    findByIdentifier(preferredCommunityIdentifier) ??
+    (storedCommunity
+      ? (findByIdentifier(storedCommunity.slug ?? storedCommunity.id) ?? activeCommunities[0])
+      : activeCommunities[0]);
 
   const communitySlug =
     rawActiveCommunity?.slug ?? rawActiveCommunity?.community?.slug ?? null;
