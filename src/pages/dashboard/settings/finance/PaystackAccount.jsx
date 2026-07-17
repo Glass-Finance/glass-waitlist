@@ -224,7 +224,7 @@ export default function PaystackAccount() {
       ) : account ? (
         <div
           className="bg-surface-container rounded-2xl p-6"
-          style={{ border: "1px solid #FFFFFF" }}
+          style={{ border: "1px solid #E0E0EB" }}
         >
           <p className="text-sm font-bold text-gray-900 mb-0.5">
             Current Payout Account

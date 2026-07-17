@@ -523,7 +523,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         className="bg-white md:bg-surface-container"
         style={{
           width: W,
-          borderRight: "1px solid var(--color-hairline)",
+          borderRight: "1px solid var(--color-surface-container-border)",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",

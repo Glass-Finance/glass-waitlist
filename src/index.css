@@ -32,7 +32,7 @@
      the dashboard — centralizing here so it only needs to change once. */
   --color-brand: #002FA7;
   --color-brand-tint: #e6eeff;
-  --color-hairline: #eef0f8;
+  --color-hairline: #E0E0EB;
 
   /* Success/danger pair used by payment-outcome screens (member app's
      PaymentSuccess, dashboard's PaymentCallback) — the same two hex values
