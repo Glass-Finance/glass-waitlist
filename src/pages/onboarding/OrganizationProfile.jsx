@@ -729,7 +729,16 @@ export default function OrganizationProfile() {
             return (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isActive || isCompleted ? "bg-[#002FA7] text-white" : "bg-white border border-outline-on-surface text-gray-400"}`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      isCompleted
+                        ? "bg-[#002FA7] text-white"
+                        : isActive
+                          ? "bg-white border-2 border-[#002FA7] text-[#002FA7]"
+                          : "bg-white border border-outline-on-surface text-gray-400"
+                    }`}
+                    style={isActive && !isCompleted ? { boxShadow: "0 0 0 4px rgba(0,47,167,0.15)" } : undefined}
+                  >
                     {isCompleted
                       ? <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       : <StepIcon id={step.id} />}
@@ -756,7 +765,7 @@ export default function OrganizationProfile() {
                 <ArrowLeft size={15} />
                 {isAuthenticated ? "Back to dashboard" : "Back"}
               </button>
-              <h2 className="text-xl font-bold text-gray-900 mb-1">Tell us about your community</h2>
+              <h2 className="text-xl font-medium text-gray-900 mb-1">Tell us about your community</h2>
               <p className="text-sm text-gray-500">This is how your community will appear to members on Glass.</p>
             </div>
 
@@ -824,7 +833,7 @@ export default function OrganizationProfile() {
                 style={{
                   minHeight: 200,
                   background: dragOver ? "#EEF2FF" : "#FAFAFA",
-                  border: dragOver ? "2px dashed #002FA7" : "2px dashed #C2C2C2",
+                  border: dragOver ? "1.5px dashed #002FA7" : "1.5px dashed #C2C2C2",
                 }}
               >
                 <input ref={fileRef} type="file" accept="image/png,image/jpeg" className="hidden"

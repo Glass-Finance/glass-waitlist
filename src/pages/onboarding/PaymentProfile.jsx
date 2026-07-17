@@ -240,7 +240,16 @@ export default function PaymentProfile() {
             return (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isActive || isCompleted ? "bg-[#002FA7] text-white" : "bg-white border border-outline-on-surface text-gray-400"}`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      isCompleted
+                        ? "bg-[#002FA7] text-white"
+                        : isActive
+                          ? "bg-white border-2 border-[#002FA7] text-[#002FA7]"
+                          : "bg-white border border-outline-on-surface text-gray-400"
+                    }`}
+                    style={isActive && !isCompleted ? { boxShadow: "0 0 0 4px rgba(0,47,167,0.15)" } : undefined}
+                  >
                     <StepIcon id={step.id} completed={isCompleted} />
                   </div>
                   {!isLast && <div className="w-px my-1" style={{ minHeight: 40, background: isCompleted ? "#002FA7" : "var(--color-outline-on-surface)" }} />}
@@ -268,7 +277,7 @@ export default function PaymentProfile() {
                   <ArrowLeft size={15} />
                   Back
                 </button>
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">Set up your payment Account</h2>
+                <h2 className="text-lg font-medium text-gray-900 mb-1">Set up your payment Account</h2>
                 <p className="text-sm text-gray-500">
                   This is where Glass will collect and manage dues on behalf of your community.
                 </p>

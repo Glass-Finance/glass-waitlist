@@ -763,7 +763,16 @@ export default function AddMembers() {
             return (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isActive || isCompleted ? "bg-[#002FA7] text-white" : "bg-white border border-outline-on-surface text-gray-400"}`}>
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      isCompleted
+                        ? "bg-[#002FA7] text-white"
+                        : isActive
+                          ? "bg-white border-2 border-[#002FA7] text-[#002FA7]"
+                          : "bg-white border border-outline-on-surface text-gray-400"
+                    }`}
+                    style={isActive && !isCompleted ? { boxShadow: "0 0 0 4px rgba(0,47,167,0.15)" } : undefined}
+                  >
                     {isCompleted
                       ? <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
