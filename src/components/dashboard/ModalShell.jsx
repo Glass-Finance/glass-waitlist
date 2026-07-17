@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 export default function ModalShell({ title, subtitle, onClose, children }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-70 flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -15,7 +15,7 @@ export default function ModalShell({ title, subtitle, onClose, children }) {
     >
       <div
         className="bg-white rounded-2xl w-full max-w-md shadow-2xl"
-        style={{ border: "1px solid #E5E7EB" }}
+        style={{ border: "1px solid #E0E0EB" }}
       >
         <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <div>

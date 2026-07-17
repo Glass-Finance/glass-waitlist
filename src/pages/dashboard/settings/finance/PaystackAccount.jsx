@@ -110,10 +110,10 @@ function RemoveAccountModal({ onClose, onConfirm, isDeleting }) {
     <>
       <div
         onClick={onClose}
-        className="fixed inset-0 z-40"
+        className="fixed inset-0 z-70"
         style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
       />
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-80 flex items-center justify-center p-4">
         <div
           className="w-full max-w-sm rounded-xl p-6"
           style={{ background: "#fff" }}
@@ -370,7 +370,7 @@ export default function PaystackAccount() {
         // No account yet — prompt to add one
         <div
           className="bg-surface-container rounded-2xl p-6 text-center"
-          style={{ border: "1px solid #E5E7EB" }}
+          style={{ border: "1px solid #E0E0EB" }}
         >
           <p className="text-sm font-bold text-gray-900 mb-1">
             No Payout Account Set Up

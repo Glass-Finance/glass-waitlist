@@ -88,13 +88,13 @@ function EditModal({ config, onClose, onSave, isSaving }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-70 flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
         className="bg-white rounded-2xl w-full max-w-md shadow-2xl"
-        style={{ border: "1px solid #E5E7EB" }}
+        style={{ border: "1px solid #E0E0EB" }}
       >
         {/* Header */}
         <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
@@ -335,7 +335,7 @@ export default function SystemConfig() {
       {/* Table */}
       <div
         className="bg-surface-container rounded-2xl overflow-hidden"
-        style={{ border: "1px solid #E5E7EB" }}
+        style={{ border: "1px solid #E0E0EB" }}
       >
         {isLoading ? (
           <LoadingState className="py-20" />
@@ -452,7 +452,7 @@ export default function SystemConfig() {
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
               className="w-7 h-7 flex items-center justify-center rounded-lg border-none cursor-pointer bg-white text-gray-500 hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-default"
-              style={{ border: "1px solid #E5E7EB" }}
+              style={{ border: "1px solid #E0E0EB" }}
             >
               <ChevronLeft size={13} />
             </button>
@@ -468,7 +468,7 @@ export default function SystemConfig() {
                       ? "bg-brand text-white"
                       : "bg-white text-gray-500 hover:bg-gray-100"
                   }`}
-                  style={{ border: i === page ? "none" : "1px solid #E5E7EB" }}
+                  style={{ border: i === page ? "none" : "1px solid #E0E0EB" }}
                 >
                   {i + 1}
                 </button>
@@ -478,7 +478,7 @@ export default function SystemConfig() {
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page >= totalPages - 1}
               className="w-7 h-7 flex items-center justify-center rounded-lg border-none cursor-pointer bg-white text-gray-500 hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-default"
-              style={{ border: "1px solid #E5E7EB" }}
+              style={{ border: "1px solid #E0E0EB" }}
             >
               <ChevronRight size={13} />
             </button>

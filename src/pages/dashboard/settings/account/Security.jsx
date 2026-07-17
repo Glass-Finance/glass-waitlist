@@ -88,11 +88,11 @@ function MfaModal({ mode, onClose, onSuccess }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-70 flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E0E0EB" }}>
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <h2 className="text-sm font-bold text-gray-900">
@@ -275,7 +275,7 @@ export default function Security() {
     <div className="max-w-2xl flex flex-col gap-5">
 
       {/* Password */}
-      <div className="bg-surface-container rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-surface-container rounded-2xl p-6" style={{ border: "1px solid #E0E0EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Password</p>
         <p className="text-xs text-gray-500 mb-5">Keep your account secure with a strong password.</p>
 
@@ -334,7 +334,7 @@ export default function Security() {
       </div>
 
       {/* MFA */}
-      <div className="bg-surface-container rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-surface-container rounded-2xl p-6" style={{ border: "1px solid #E0E0EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Multi-Factor Authentication (MFA)</p>
         <p className="text-xs text-gray-500 mb-5">Add an extra layer of protection to your account.</p>
 

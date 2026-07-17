@@ -195,7 +195,7 @@ export default function DashboardTour({ onClose }) {
                 style={{
                   width: i === step ? 16 : 6,
                   height: 6,
-                  background: i === step ? "#002FA7" : "#E5E7EB",
+                  background: i === step ? "#002FA7" : "#E0E0EB",
                 }}
               />
             ))}

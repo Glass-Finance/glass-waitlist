@@ -117,12 +117,12 @@ export default function AccountFormModal({
           (0.35 opacity + blur, not a heavier flat 0.55 dark overlay). */}
       <div
         onClick={onClose}
-        className="fixed inset-0 z-40"
+        className="fixed inset-0 z-70"
         style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
       />
 
       {/* Modal — centred */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-80 flex items-center justify-center p-4">
         <div
           className="w-full max-w-xl rounded-xl p-7 shadow-2xl"
           style={{ background: "#fff" }}

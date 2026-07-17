@@ -199,7 +199,7 @@ function NotificationDetailModal({ n, onClose }) {
     >
       <div className="w-full bg-white rounded-2xl shadow-2xl overflow-hidden" style={{ maxWidth: 440 }}>
         {/* Header */}
-        <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-[#E5E7EB]">
+        <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-[#E0E0EB]">
           <div className="flex items-start gap-3 min-w-0">
             <Avatar n={n} details={details} />
             <div className="min-w-0">
@@ -228,10 +228,10 @@ function NotificationDetailModal({ n, onClose }) {
             <p className="text-sm text-gray-400 m-0">No additional details.</p>
           )}
 
-          {/* Facts — inner card matching the app's var(--color-surface-container)/#E5E7EB standard */}
+          {/* Facts — inner card matching the app's var(--color-surface-container)/#E0E0EB standard */}
           <div
             className="flex flex-col gap-2.5 mt-5 rounded-xl px-4 py-3.5 bg-surface-container"
-            style={{ border: "1px solid #E5E7EB" }}
+            style={{ border: "1px solid #E0E0EB" }}
           >
             {factRows.map((r) => (
               <div key={r.label} className="flex items-center justify-between gap-4">
@@ -249,7 +249,7 @@ function NotificationDetailModal({ n, onClose }) {
         {/* Footer */}
         <div
           className="flex items-center justify-end gap-3 px-6 py-4 bg-surface-container"
-          style={{ borderTop: "1px solid #E5E7EB" }}
+          style={{ borderTop: "1px solid #E0E0EB" }}
         >
           <button
             onClick={onClose}
@@ -342,7 +342,7 @@ function ChronologicalList({ items, onMarkRead, onOpen }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 flex flex-col gap-4">
+    <div className="bg-white rounded-2xl border border-[#E0E0EB] p-4 flex flex-col gap-4">
       {buckets.map(({ label, notifications }) => (
         <div key={label}>
           <p className="mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -492,7 +492,7 @@ function CommunityNotifications() {
                   className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
                   style={active
                     ? { background: "#EEF2FF", color: "var(--color-brand)", border: "1px solid var(--color-brand)" }
-                    : { background: "#fff", color: "#6b7280", border: "1px solid #E5E7EB" }}
+                    : { background: "#fff", color: "#6b7280", border: "1px solid #E0E0EB" }}
                 >
                   {count}
                 </span>

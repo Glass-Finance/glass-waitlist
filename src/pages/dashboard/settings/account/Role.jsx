@@ -72,10 +72,10 @@ export default function Role() {
           <div className="h-4 w-24 bg-gray-200 rounded mb-2 animate-pulse" />
           <div className="h-3 w-56 bg-gray-100 rounded animate-pulse" />
         </div>
-        <div className="bg-surface-container rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+        <div className="bg-surface-container rounded-2xl p-6" style={{ border: "1px solid #E0E0EB" }}>
           <div className="flex flex-col gap-3">
             {[0, 1].map((i) => (
-              <div key={i} className="flex items-start gap-3 px-4 py-4 rounded-xl bg-gray-100 animate-pulse" style={{ border: "1.5px solid #E5E7EB" }}>
+              <div key={i} className="flex items-start gap-3 px-4 py-4 rounded-xl bg-gray-100 animate-pulse" style={{ border: "1.5px solid #E0E0EB" }}>
                 <div className="w-5 h-5 rounded-full bg-gray-200 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <div className="h-3.5 w-32 bg-gray-200 rounded mb-2" />
@@ -129,7 +129,7 @@ export default function Role() {
       </div>
 
       {/* Role card */}
-      <div className="bg-surface-container rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-surface-container rounded-2xl p-6" style={{ border: "1px solid #E0E0EB" }}>
         <div className="flex flex-col gap-3">
           {OPTIONS.map((opt) => {
             const isSelected = role === opt.id;
@@ -141,7 +141,7 @@ export default function Role() {
                 className={`flex items-start gap-3 px-4 py-4 rounded-xl text-left transition-all
                   ${isSelected ? "bg-blue-50" : "bg-gray-50 hover:bg-gray-100"}
                   ${saving ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
-                style={{ border: isSelected ? "1.5px solid var(--color-brand)" : "1.5px solid #E5E7EB" }}
+                style={{ border: isSelected ? "1.5px solid var(--color-brand)" : "1.5px solid #E0E0EB" }}
               >
                 <div
                   className={`w-5 h-5 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center
