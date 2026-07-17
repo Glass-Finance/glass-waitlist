@@ -20,6 +20,21 @@ const FREQ_UNITS = {
   ANNUALLY: "year",
 };
 
+const FREQ_ADVERB = {
+  DAILY: "daily",
+  WEEKLY: "weekly",
+  MONTHLY: "monthly",
+  QUARTERLY: "quarterly",
+  ANNUALLY: "annually",
+};
+
+// Short adverb form ("monthly") for copy like "charge you X automatically
+// for Y monthly?" -- scheduleCopy() below is a fuller sentence ("Every
+// month on the 5th") meant for a schedule summary, not this shorter slot.
+export function frequencyAdverb(frequency) {
+  return FREQ_ADVERB[(frequency ?? "").toUpperCase()] ?? "regularly";
+}
+
 export function ordinal(n) {
   const s = ["th", "st", "nd", "rd"];
   const v = n % 100;

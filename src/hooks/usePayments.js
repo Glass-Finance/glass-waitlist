@@ -704,15 +704,26 @@ export function isAuthorisationExpired(auth) {
 // ─────────────────────────────────────────────────────────────────────────────
 // Manage Payments hook — saved payment authorisations (bank/channel + consents)
 // ─────────────────────────────────────────────────────────────────────────────
-export function useManagePayments() {
+// skipAuthRedirect: PaymentSuccess.jsx checks this right on the fragile
+// post-payment landing (see its own _skipAuthRedirect usage) to decide
+// whether to offer the Auto-Pay prompt -- without opting out here too, a
+// transient 401 on just this one call would bypass that same protection
+// and hard-sign the payer out a beat after they'd already seen "Payment
+// Successful", the exact bug already fixed for the transaction-detail
+// fetch on that page. Every other caller (Auto-Pay/Manage Payments
+// settings, a normal ProtectedRoute-gated visit) leaves this off, so a
+// genuinely dead session there still signs out normally.
+export function useManagePayments({ enabled = true, skipAuthRedirect = false } = {}) {
   const queryClient = useQueryClient();
+  const config = skipAuthRedirect ? { _skipAuthRedirect: true } : {};
 
   const query = useQuery({
     queryKey: ["authorisations"],
     queryFn: async () => {
-      const res = await getMyAuthorisations();
+      const res = await getMyAuthorisations(config);
       return unwrapList(res).map(shapeAuthorisation);
     },
+    enabled,
     staleTime: 1000 * 60 * 2,
   });
 
