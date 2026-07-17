@@ -8,6 +8,8 @@ import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
 import { useJoinRequests, requesterOf, requestStatusOf } from "../../hooks/useJoinRequests";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { exportCommunityObligations } from "../../api/exports";
+import { useExportJob } from "../../hooks/useExportJob";
 import LoadingState from "../../components/common/LoadingState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
@@ -236,35 +238,17 @@ export default function Members() {
     setSelected((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
   }
 
+  // Real backend export job (see useExportJob.js) instead of a client-side
+  // CSV -- that silently capped at whatever page of members was already
+  // loaded. Obligations (every member's dues across every plan) is the
+  // closest backend export to a member-payments list; there's no
+  // dedicated "members" export endpoint. This always exports the whole
+  // community rather than just the current search/selection subset, since
+  // the export job has no way to filter by an arbitrary client-side
+  // member-id list.
+  const { run: runExport, isExporting } = useExportJob();
   function exportCsv() {
-    const rows = (selected.length ? filtered.filter((m) => selected.includes(m.id)) : filtered);
-    // A name/email containing a comma or quote (rare but real — "Doe, Jr.")
-    // was previously written straight into the CSV unescaped, silently
-    // corrupting the column structure for that and every following row.
-    const csvField = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const header = "Name,Email,Plans,Paid,Total,Date Joined\n";
-    const body = rows
-      .map((m) =>
-        [memberName(m), memberEmail(m), m.planCount, m.paidCount, m.totalCount, formatDate(m.joinedAt ?? m.createdAt)]
-          .map(csvField)
-          .join(","),
-      )
-      .join("\n");
-    const blob = new Blob([header + body], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "members.csv";
-    // Revoking the object URL synchronously right after click() is a known
-    // footgun -- some browsers (Firefox especially) haven't finished
-    // processing the download yet, so the blob gets invalidated before it's
-    // actually read, silently failing the export. Appending to the DOM
-    // before clicking (not required in Chrome, but Firefox is more
-    // reliable with it) and deferring the revoke fixes both.
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    runExport(() => exportCommunityObligations(communityId, {}, "CSV"));
   }
 
   const activeChips = [
@@ -335,8 +319,8 @@ export default function Members() {
       {members.length > 0 && <div className="bg-surface-container rounded-xl border border-[#E0E0EB]" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
         <div className="flex items-center justify-between px-5 py-4">
           <span className="text-sm font-medium text-black">Member Payments</span>
-          <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 transition-all bg-white cursor-pointer">
-            <Download size={13} /> Export Csv
+          <button onClick={exportCsv} disabled={isExporting} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 transition-all bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+            <Download size={13} /> {isExporting ? "Exporting…" : "Export Csv"}
           </button>
         </div>
 

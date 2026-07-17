@@ -31,6 +31,8 @@ import { useSlug } from "../../hooks/useSlug";
 import { dateInputToIso, daysInMonth } from "../../utils/date";
 import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
+import { exportCommunityObligations } from "../../api/exports";
+import { useExportJob } from "../../hooks/useExportJob";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
@@ -1821,24 +1823,17 @@ function PlanMembersModal({ plan, communityId, onClose }) {
     0,
   );
 
+  // Real backend export job (see useExportJob.js) instead of a client-side
+  // CSV -- that silently capped at whatever page of members was already
+  // loaded and had no escaping for commas/quotes in names. This does mean
+  // it always exports every member on this plan rather than just the
+  // current search/selection subset, since the export job has no way to
+  // filter by an arbitrary client-side member-id list.
+  const { run: runExport, isExporting } = useExportJob();
   function exportCsv() {
-    const rows = selected.length
-      ? filtered.filter((m) => selected.includes(m.id ?? getName(m)))
-      : filtered;
-    const header = "Name,Email,Status,Amount Paid,Amount Due,Date Joined\n";
-    const body = rows
-      .map((m) => {
-        const s = statusStyle(getStatus(m));
-        return `${getName(m)},${getEmail(m)},${s.label},${getAmountPaid(m)},${getAmountDue(m)},${formatDate(getJoinedAt(m))}`;
-      })
-      .join("\n");
-    const blob = new Blob([header + body], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `members-${plan.name}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    runExport(() =>
+      exportCommunityObligations(communityId, { paymentLinkId: plan.id }, "CSV"),
+    );
   }
 
   return (
@@ -1862,9 +1857,10 @@ function PlanMembersModal({ plan, communityId, onClose }) {
           <div className="flex items-center gap-3">
             <button
               onClick={exportCsv}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 bg-white cursor-pointer"
+              disabled={isExporting}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Export CSV
+              {isExporting ? "Exporting…" : "Export CSV"}
             </button>
             <button
               onClick={onClose}
