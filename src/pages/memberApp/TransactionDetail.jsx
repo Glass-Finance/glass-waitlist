@@ -205,10 +205,16 @@ export default function TransactionDetail() {
               </Row>
             )}
             <Row label="Dues Amount:">{formatNaira(tx.amount)}</Row>
-            {/* Always shown, never conditional -- Glass's fee is part of
-                being transparent about the service, not something to hide
-                when it happens to be zero. */}
-            <Row label="Transaction Fee:">{formatNaira(tx.feeMinor ?? 0, { decimals: 2 })}</Row>
+            {/* Always shown, never conditional -- transparency about the
+                fee is the point, so the row itself never disappears. The
+                value can still be "—" though: Glass's fee is set
+                per-community (there's a platform-admin override for it),
+                not a fixed rate, so there's no formula to fall back on --
+                asserting a specific ₦0.00 when we don't have the real
+                number would be a false claim, the opposite of transparent. */}
+            <Row label="Transaction Fee:">
+              {tx.feeMinor != null ? formatNaira(tx.feeMinor, { decimals: 2 }) : "—"}
+            </Row>
             <Row label="Transaction ID:" last={!tx.initiatedBy}>
               <span style={{ wordBreak: "break-all" }}>{tx.reference ?? tx.id}</span>{" "}
               <span style={{ display: "inline-flex", verticalAlign: "middle" }}>

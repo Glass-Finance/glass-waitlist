@@ -310,10 +310,16 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
 
         <DetailRow label="Dues Amount">{formatNaira(tx?.amount)}</DetailRow>
 
-        {/* Always shown, never conditional -- Glass's fee is part of being
-            transparent about the service, not something to hide when it
-            happens to be zero. */}
-        <DetailRow label="Transaction Fee">{formatNaira(tx?.feeMinor ?? 0)}</DetailRow>
+        {/* Always shown, never conditional -- transparency about the fee is
+            the point, so the row itself never disappears. The value can
+            still be "—" though: Glass's fee is set per-community (there's
+            a platform-admin override for it), not a fixed rate, so there's
+            no formula to fall back on -- and asserting a specific ₦0.00
+            when we simply don't have the real number would be a false
+            claim, the opposite of transparent. */}
+        <DetailRow label="Transaction Fee">
+          {tx?.feeMinor != null ? formatNaira(tx.feeMinor) : "—"}
+        </DetailRow>
 
         <DetailRow label="Transaction ID" last>
           <span style={{ wordBreak: "break-all" }}>{refValue}</span>{" "}

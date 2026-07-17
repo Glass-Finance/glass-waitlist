@@ -62,10 +62,12 @@ function receiptRows(tx, payerName, payerEmail) {
     ["Member Details", memberDetails],
     ["Transaction Type", toTitleCase(tx.channel) || "—"],
     ["Dues Amount", formatNaira(tx.amount)],
-    // Always shown, never conditional -- Glass's fee is part of being
-    // transparent about the service, not something to hide when it
-    // happens to be zero.
-    ["Transaction Fee", formatNaira(tx.feeMinor ?? 0)],
+    // Always shown, never conditional -- transparency about the fee is the
+    // point, so the row itself never disappears. The value can still be
+    // "—" though: Glass's fee is set per-community, not a fixed rate, so
+    // there's no formula to fall back on -- asserting a specific ₦0.00
+    // when we don't have the real number would be a false claim.
+    ["Transaction Fee", tx.feeMinor != null ? formatNaira(tx.feeMinor) : "—"],
   ];
 }
 
