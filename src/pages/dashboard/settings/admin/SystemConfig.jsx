@@ -11,6 +11,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useSystemConfigs } from "../../../../hooks/useSystemConfigs";
+import LoadingState from "../../../../components/common/LoadingState";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -337,9 +338,7 @@ export default function SystemConfig() {
         style={{ border: "1px solid #E5E7EB" }}
       >
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 size={20} className="animate-spin text-gray-300" />
-          </div>
+          <LoadingState className="py-20" />
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-20 gap-2">
             <p className="text-xs text-red-500 font-medium">Failed to load configurations</p>

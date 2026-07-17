@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import QRCode from "qrcode";
-import { Eye, EyeOff, ShieldCheck, Shield, Copy, Check, Loader2, X } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, Shield, Copy, Check, X } from "lucide-react";
 import { useUpdatePassword, useMe } from "../../../../hooks/useMyAccount";
 import { setupMfaTotp, enableMfaTotp, disableMfaTotp } from "../../../../services/authService";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
 import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
+import LoadingState from "../../../../components/common/LoadingState";
 import { useQueryClient } from "@tanstack/react-query";
 
 // ─── MFA Modal ────────────────────────────────────────────────────────────────
@@ -124,11 +125,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
           )}
 
           {/* Setup: loading */}
-          {stage === "loading" && (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 size={22} className="animate-spin text-[#002FA7]" />
-            </div>
-          )}
+          {stage === "loading" && <LoadingState className="py-8" />}
 
           {/* Setup: QR code + code entry */}
           {(stage === "qr" || (mode === "setup" && stage === "confirm")) && (

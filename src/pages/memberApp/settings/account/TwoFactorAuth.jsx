@@ -1,8 +1,9 @@
 import { useState } from "react";
 import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
 import PageLoadingState from "../../../../components/common/PageLoadingState";
+import LoadingState from "../../../../components/common/LoadingState";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ShieldCheck, Shield, Loader2, Copy, Check } from "lucide-react";
+import { ChevronLeft, ShieldCheck, Shield, Copy, Check } from "lucide-react";
 import { useMe } from "../../../../hooks/useMyAccount";
 import { useQueryClient } from "@tanstack/react-query";
 import { setupMfaTotp, enableMfaTotp, disableMfaTotp } from "../../../../services/authService";
@@ -115,12 +116,7 @@ function SetupFlow({ onSuccess, onCancel }) {
   }
 
   if (stage === "loading") {
-    return (
-      <div style={{ textAlign: "center", padding: "40px 0" }}>
-        <Loader2 size={26} style={{ color: "#002FA7" }} className="animate-spin" />
-        <p style={{ fontSize: 13, color: "#999", marginTop: 12 }}>Preparing setup…</p>
-      </div>
-    );
+    return <LoadingState label="Preparing setup…" size={22} className="py-10" />;
   }
 
   if (stage === "qr" || stage === "verifying") {

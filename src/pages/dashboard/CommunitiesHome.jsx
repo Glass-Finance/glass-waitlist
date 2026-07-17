@@ -524,6 +524,7 @@ import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin, isCommunityAdmin, roleKeyword } from "../../utils/communityRole";
 import Background from "../../assets/background.webp";
 import { usePageTitle } from "../../hooks/usePageTitle";
+import LoadingState from "../../components/common/LoadingState";
 import { AdminPaymentModal } from "./AdminDashboard";
 
 const SORT_OPTIONS = ["Recently Viewed", "A-Z", "Z-A", "Newest First"];
@@ -781,7 +782,7 @@ function GlobalOverview() {
         footerLabel={null}
       >
         {isLoading ? (
-          <OverviewEmpty text="Loading…" />
+          <LoadingState className="py-5" />
         ) : upcomingTop.length === 0 ? (
           <OverviewEmpty text="No payments due — you're all caught up." />
         ) : (
@@ -828,7 +829,7 @@ function GlobalOverview() {
         footerLabel={null}
       >
         {isLoading ? (
-          <OverviewEmpty text="Loading…" />
+          <LoadingState className="py-5" />
         ) : activityTop.length === 0 ? (
           <OverviewEmpty text="No transactions yet." />
         ) : (

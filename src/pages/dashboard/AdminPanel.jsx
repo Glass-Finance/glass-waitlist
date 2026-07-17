@@ -31,6 +31,7 @@ import Background from "../../assets/background.webp";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { toTitleCase } from "../../utils/format";
 import EmptyState from "../../components/common/EmptyState";
+import LoadingState from "../../components/common/LoadingState";
 import { useExportJob } from "../../hooks/useExportJob";
 import {
   getAdminCommunities,
@@ -249,9 +250,7 @@ function TableShell({ isLoading, isEmpty, error, emptyIcon, emptyLabel = "No res
       style={{ border: "1px solid #E5E7EB" }}
     >
       {isLoading ? (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 size={20} className="animate-spin text-gray-300" />
-        </div>
+        <LoadingState className="py-16" />
       ) : error ? (
         <div className="flex flex-col items-center justify-center py-16 gap-2">
           <p className="text-xs font-semibold text-red-500">
@@ -861,7 +860,7 @@ function CreateCommunityAccountModal({ onClose }) {
         />
         <div className="mt-3 max-h-64 overflow-y-auto flex flex-col gap-1">
           {isLoading ? (
-            <p className="text-xs text-gray-400 py-4 text-center">Loading…</p>
+            <LoadingState className="py-4" />
           ) : items.length === 0 ? (
             <p className="text-xs text-gray-400 py-4 text-center">No communities found</p>
           ) : (
@@ -1791,9 +1790,7 @@ function BalancesSection() {
       />
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 size={20} className="animate-spin text-gray-300" />
-        </div>
+        <LoadingState className="py-20" />
       ) : error ? (
         <p className="text-xs text-red-500 text-center py-10">
           {error.message}
@@ -1869,9 +1866,7 @@ function SettlementDetailModal({ settlementId, onClose }) {
     <ModalShell title="Settlement" subtitle={data?.gatewaySettlementId} onClose={onClose}>
       <div className="p-6 max-h-[70vh] overflow-y-auto">
         {isLoading ? (
-          <div className="flex items-center justify-center py-10">
-            <Loader2 size={18} className="animate-spin text-gray-300" />
-          </div>
+          <LoadingState className="py-10" />
         ) : error ? (
           <p className="text-xs text-red-500">{getErrorMessage(error)}</p>
         ) : (
