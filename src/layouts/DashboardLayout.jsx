@@ -28,28 +28,33 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div
-      className="h-screen w-screen flex overflow-hidden bg-surface-bg"
-      style={{
-        backgroundImage: `url(${Overlay})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
+    <div className="h-screen w-screen flex overflow-hidden bg-surface-bg">
       {/* ── Sidebar ── */}
       <Sidebar mobileOpen={mobileNavOpen} onCloseMobile={() => setMobileNavOpen(false)} />
 
-      {/* ── Main ── */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      {/* ── Main ──
+          Background lives on this inner wrapper (the area right of the
+          sidebar) rather than the full-width outer container -- centering
+          against the full w-screen width put the image's true center inside
+          the sidebar's own footprint, which reads as shifted left relative
+          to the actual visible content area. */}
+      <div
+        className="flex-1 flex flex-col overflow-hidden"
+        style={{
+          backgroundImage: `url(${Overlay})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
         {/* Topbar */}
         <Topbar onMenuClick={() => setMobileNavOpen(true)} onOpenTour={() => setTourOpen(true)} />
 
-        {/* Page content — background texture lives on the outer container
-            above so every dashboard page gets it uniformly, instead of each
-            page applying its own copy on a div sized to its own content
-            (h-full there only fills the content's own height, leaving a
-            plain gray gap below on shorter pages like Settings). */}
+        {/* Page content — background texture lives on the wrapper above so
+            every dashboard page gets it uniformly, instead of each page
+            applying its own copy on a div sized to its own content (h-full
+            there only fills the content's own height, leaving a plain gray
+            gap below on shorter pages like Settings). */}
         <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>

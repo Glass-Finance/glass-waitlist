@@ -43,10 +43,27 @@ const SPOTLIGHT_PADDING = 8;
 const CARD_WIDTH = 380;
 const CARD_MARGIN = 16;
 
+// A step with a non-null target only makes sense to show while its real
+// on-page element exists (e.g. the getting-started checklist disappears
+// once a community has both a plan and members) -- otherwise it renders as
+// an orphaned centered card highlighting nothing, which reads as a broken
+// or skipped step rather than an intentional intro/outro screen.
+function findValidStep(from, direction) {
+  let i = from + direction;
+  while (i >= 0 && i < STEPS.length) {
+    const t = STEPS[i].target;
+    if (!t || document.querySelector(t)) return i;
+    i += direction;
+  }
+  return null;
+}
+
 export default function DashboardTour({ onClose }) {
   const [step, setStep] = useState(0);
   const [rect, setRect] = useState(null);
-  const isLast = step === STEPS.length - 1;
+  const nextStep = findValidStep(step, 1);
+  const prevStep = findValidStep(step, -1);
+  const isLast = nextStep === null;
   const current = STEPS[step];
   const Icon = current.icon;
 
@@ -185,16 +202,16 @@ export default function DashboardTour({ onClose }) {
           </div>
 
           <div className="flex items-center gap-2">
-            {step > 0 && (
+            {prevStep !== null && (
               <button
-                onClick={() => setStep((s) => s - 1)}
+                onClick={() => setStep(prevStep)}
                 className="px-4 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
               >
                 Back
               </button>
             )}
             <button
-              onClick={() => (isLast ? onClose() : setStep((s) => s + 1))}
+              onClick={() => (isLast ? onClose() : setStep(nextStep))}
               className="px-4 py-2 rounded-lg text-xs font-semibold text-white cursor-pointer border-none hover:opacity-90 transition-opacity"
               style={{ background: "#002FA7" }}
             >
