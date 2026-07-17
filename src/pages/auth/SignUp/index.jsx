@@ -2,6 +2,7 @@ import { useState } from "react";
 import { usePageTitle } from "../../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../../../layouts/AuthLayout";
+import EmailPhoneStep from "./EmailPhoneStep";
 import RegisterStep from "./RegisterStep";
 import OTPStep from "./OTPStep";
 import { useAuth } from "../../../store/AuthContext";
@@ -13,6 +14,7 @@ export default function SignUp() {
   const { setSession } = useAuth();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
 
   // Some backends issue a session immediately on register, others only
   // after email verification — store it the moment either response
@@ -21,10 +23,16 @@ export default function SignUp() {
     if (authData?.accessToken) setSession(authData);
   };
 
+  const handleEmailPhone = ({ email: submittedEmail, phone: submittedPhone }) => {
+    setEmail(submittedEmail);
+    setPhone(submittedPhone);
+    setStep(2);
+  };
+
   const handleRegistered = (registeredEmail, authData) => {
     maybeStoreSession(authData);
     setEmail(registeredEmail);
-    setStep(2);
+    setStep(3);
   };
 
   const handleVerified = (authData) => {
@@ -44,13 +52,22 @@ export default function SignUp() {
       heroSubtitle="Finance Effortlessly"
     >
       {step === 1 && (
-        <RegisterStep
-          onNext={handleRegistered}
+        <EmailPhoneStep
+          initialEmail={email}
+          initialPhone={phone}
+          onNext={handleEmailPhone}
           onSwitch={() => navigate("/sign-in")}
           onGoogleAuth={handleGoogleAuth}
         />
       )}
       {step === 2 && (
+        <RegisterStep
+          email={email}
+          phone={phone}
+          onNext={handleRegistered}
+        />
+      )}
+      {step === 3 && (
         <OTPStep
           email={email}
           onVerified={handleVerified}

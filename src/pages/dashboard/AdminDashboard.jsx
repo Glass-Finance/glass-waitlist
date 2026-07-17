@@ -234,7 +234,7 @@ export function AdminPaymentModal({ item, onClose }) {
   return (
     <div
       className="fixed inset-0 z-70 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.5)" }}
+      style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
@@ -281,7 +281,7 @@ export function AdminPaymentModal({ item, onClose }) {
         <div
           className="px-7 py-8 text-center"
           style={{
-            background: "linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand) 100%)",
+            background: "linear-gradient(135deg, var(--color-brand) 0%, #1C2B8A 100%)",
           }}
         >
           <p className="text-[12px] text-blue-200 uppercase tracking-widest mb-2 font-medium">
