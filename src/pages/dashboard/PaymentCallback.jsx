@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, X, Loader2, ArrowLeft, Clock } from "lucide-react";
 import { verifyPayment } from "../../api/members";
+import { beginAuthGrace } from "../../api/client";
 import { settleLocalPaymentForReference } from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
 import { usePageTitle } from "../../hooks/usePageTitle";
@@ -141,10 +142,13 @@ function AdminPaymentCallback() {
     return () => { cancelled = true; };
   }, [reference]);
 
-  // Auto-redirect countdown after confirmed success
+  // Auto-redirect countdown after confirmed success. beginAuthGrace: the
+  // destination's own first data fetches can hit a stale-token 401 right
+  // after a real Paystack redirect -- same reasoning as PaymentSuccess.jsx's
+  // goTo() -- so this shouldn't read as an unexpected sign-out.
   useEffect(() => {
     if (autoRedirectIn === null) return;
-    if (autoRedirectIn <= 0) { navigate(effectiveReturnTo, { replace: true }); return; }
+    if (autoRedirectIn <= 0) { beginAuthGrace(); navigate(effectiveReturnTo, { replace: true }); return; }
     const t = setTimeout(() => setAutoRedirectIn((n) => n - 1), 1000);
     return () => clearTimeout(t);
   }, [autoRedirectIn, navigate, effectiveReturnTo]);
@@ -224,6 +228,7 @@ function AdminPaymentCallback() {
             // pending reference stays so the destination page can still
             // confirm the payment in the background.
             sessionStorage.removeItem("paymentReturnTo");
+            beginAuthGrace();
             navigate(effectiveReturnTo, { replace: true });
           }}
           className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
@@ -262,7 +267,7 @@ function AdminPaymentCallback() {
 
           {config.buttonLabel && (
             <button
-              onClick={() => navigate(buttonDest, { replace: true })}
+              onClick={() => { beginAuthGrace(); navigate(buttonDest, { replace: true }); }}
               className="mt-4 px-8 py-3 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
               style={{ background: "var(--color-brand)" }}
             >

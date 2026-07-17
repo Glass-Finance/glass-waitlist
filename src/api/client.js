@@ -32,6 +32,21 @@ function rejectQueue(err) {
   pendingQueue = [];
 }
 
+// Callers can open a short window (see beginAuthGrace below) where a 401
+// is treated as transient rather than a real sign-out, the same reasoning
+// AuthContext.restore()'s window.__glassIsRestoring already applies to its
+// own startup phase: right after landing back from a real Paystack redirect,
+// the access token can be genuinely stale for a beat even though the
+// session itself is fine, and hard-signing the payer out the moment they
+// tap "Back to Home" -- right after watching their payment succeed -- reads
+// as a broken app, not a security feature. If the session really is dead,
+// the next real API call after the window closes clears it as normal.
+let authGraceUntil = 0;
+
+export function beginAuthGrace(ms = 6000) {
+  authGraceUntil = Date.now() + ms;
+}
+
 function clearSessionAndRedirect() {
   // AuthContext.restore() sets this flag while it is running its own
   // refreshUser() call on startup. A 401 during that phase should NOT
@@ -42,6 +57,7 @@ function clearSessionAndRedirect() {
   // in PaymentCallback) will trigger clearSessionAndRedirect again without
   // the flag set and the user will be taken to sign-in at that point.
   if (window.__glassIsRestoring) return;
+  if (Date.now() < authGraceUntil) return;
 
   localStorage.removeItem("accessToken");
   localStorage.removeItem("glass_user");

@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Check, X, Loader2, Clock, Share2 } from "lucide-react";
 import { verifyPayment } from "../../api/members";
+import { beginAuthGrace } from "../../api/client";
 import { settleLocalPaymentForReference } from "../../hooks/usePayments";
 import { useTransactionDetail } from "../../hooks/useTransactionDetail";
 import { useAuth } from "../../store/AuthContext";
@@ -142,6 +143,15 @@ export default function PaymentSuccess() {
   const dest = returnTo ?? "/member/home";
   const backLabel = returnTo ? "Back to Dashboard" : "Go to Home";
 
+  // Every exit from this page lands on a real protected route (Home,
+  // Upcoming, the pay screen again) whose own first data fetches can hit a
+  // stale-token 401 right after a real Paystack redirect -- open a brief
+  // grace window so that doesn't read as an unexpected sign-out.
+  function goTo(path) {
+    beginAuthGrace();
+    navigate(path, { replace: true });
+  }
+
   // Mirrors the dashboard PaymentCallback design language: soft-tinted
   // circle + brand spinner while confirming, solid green on success.
   const content = {
@@ -216,7 +226,7 @@ export default function PaymentSuccess() {
       {state !== "success" && (
         <div className="flex items-center px-4 pt-10 pb-4 relative">
           <button
-            onClick={() => navigate(dest)}
+            onClick={() => goTo(dest)}
             className="w-9 h-9 rounded-full bg-[#D4D4D4] flex items-center justify-center cursor-pointer"
           >
             <ChevronLeft size={18} className="text-gray-700" />
@@ -267,7 +277,7 @@ export default function PaymentSuccess() {
         {state === "success" ? (
           <div className="flex-1 w-full flex flex-col justify-end gap-3 pb-10 max-w-[340px]">
             <button
-              onClick={() => navigate(dest, { replace: true })}
+              onClick={() => goTo(dest)}
               className="w-full px-8 py-3.5 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
               style={{ background: "var(--color-brand)" }}
             >
@@ -288,7 +298,7 @@ export default function PaymentSuccess() {
         ) : (
           content.action && (
             <button
-              onClick={() => navigate(content.action.to, { replace: true })}
+              onClick={() => goTo(content.action.to)}
               className="mt-3 px-8 py-3 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
               style={{ background: "var(--color-brand)" }}
             >
