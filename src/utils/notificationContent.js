@@ -74,21 +74,52 @@ function parseReference(text) {
   return m?.[1] ?? null;
 }
 
-// Best-effort resolution of a community's display name from just its id —
-// the raw notification only ever carries `communityId` (a uuid), never a
-// name or logo. `communityMap` is a Map/lookup keyed by id (and ideally
-// slug) built from the caller's own communities list; callers that already
-// resolved a community object (e.g. the topbar panel) can pass it via
-// communityOverride instead of rebuilding the map.
-function resolveCommunity(n, communityMap) {
-  // Matches NotificationsPanel.jsx's own local resolveCommunity, which
-  // additionally checks community_id -- this one didn't, so any payload
-  // carrying the id under that snake_case key resolved fine in the bell
-  // dropdown (uses its own copy) but silently failed here, which is what
-  // both the admin full notifications page and the member app page use.
+// Last-resort match: the notification's own text almost always names the
+// community in plain language ("...requested to join Rotary Club.", "...
+// paid ₦10,000 for Community Anniversary in Rotary Club") even when none
+// of the structured id fields resolve. Matches against the admin's own
+// communities list by name (case-insensitive substring), preferring the
+// longest name that actually appears so a short generic name doesn't
+// win over a more specific one contained in the same text.
+export function resolveCommunityByName(text, communityMap) {
+  if (!communityMap || typeof communityMap.values !== "function") return null;
+  const lower = text.toLowerCase();
+  const seen = new Set();
+  let best = null;
+  for (const c of communityMap.values()) {
+    const key = c?.id ?? c?.slug ?? c?.name;
+    if (!c?.name || !key || seen.has(key)) continue;
+    seen.add(key);
+    if (lower.includes(c.name.toLowerCase()) && (!best || c.name.length > best.name.length)) {
+      best = c;
+    }
+  }
+  return best;
+}
+
+// Best-effort resolution of a community's display name/logo from just its
+// id — the raw notification only ever carries `communityId` (a uuid),
+// never a name or logo. `communityMap` is a Map/lookup keyed by id (and
+// ideally slug) built from the caller's own communities list.
+//
+// Exported (not just used internally) so every caller shares one
+// implementation instead of maintaining their own copy -- NotificationsPanel
+// .jsx (the bell dropdown) used to keep a separate local version that had
+// quietly drifted from this one (missing the community_id fallback), which
+// is exactly the kind of gap that made the two surfaces behave differently
+// for the same notification.
+export function resolveCommunity(n, communityMap) {
   const id = n.communityId ?? n.community_id ?? n.community?.id ?? null;
-  if (!id || !communityMap) return null;
-  return communityMap.get?.(id) ?? communityMap[id] ?? null;
+  if (id && communityMap) {
+    const hit = communityMap.get?.(id) ?? communityMap[id];
+    if (hit) return hit;
+  }
+  // The id-based lookup alone turned out not to be enough in practice --
+  // community/logo still came back empty for real notifications even with
+  // the community_id fallback above, meaning at least some payloads don't
+  // carry the id under any of the checked keys at all. Falling back to
+  // text matching rather than continuing to guess at field names.
+  return resolveCommunityByName(textOf(n), communityMap);
 }
 
 function resolveCommunityName(n, communityMap) {

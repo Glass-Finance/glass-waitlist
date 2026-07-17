@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
-import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
+import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity } from "../../utils/notificationContent";
 import { isPaymentReceivedType } from "../../utils/notificationTypes";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
@@ -20,14 +20,13 @@ function dayLabel(dateStr) {
 }
 
 // Resolve community info for display AND for the owned/member routing
-// split below — prefer the caller's own communityMap (built from
-// /communities/me, which is the only place `owned` is ever populated) over
-// a raw n.community the backend doesn't currently send but might one day;
-// an embedded object there wouldn't carry a viewer-relative `owned` flag.
+// split below — shares notificationContent.js's resolveCommunity (id
+// lookup, falling back to matching the community's name against the
+// notification's own text) instead of keeping a separate local copy that
+// can drift out of sync with it, which is exactly what happened before:
+// this file's version had a community_id fallback the shared one lacked.
 function resolveCommunity(n, communityMap) {
-  const id = n.communityId ?? n.community_id ?? n.community?.id ?? null;
-  const mapped = (id && communityMap) ? communityMap.get(id) : null;
-  return mapped ?? n.community ?? null;
+  return resolveNotificationCommunity(n, communityMap) ?? n.community ?? null;
 }
 
 // Where clicking this notification should go — scoped to the community it
