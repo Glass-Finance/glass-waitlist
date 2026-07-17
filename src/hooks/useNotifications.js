@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import client from "../api/client";
 import { useActiveCommunityId } from "./useActiveCommunityId";
+import { useCommunities } from "./useCommunities";
 import { useRealtimeConnected } from "./useRealtimeStream";
 
 // While the SSE stream is live it invalidates these queries the moment a
@@ -39,7 +40,24 @@ function clearedAtKey(communityId) {
 }
 
 export function useNotifications() {
-  const communityId = useActiveCommunityId();
+  const activeSlugOrId = useActiveCommunityId();
+  const { data: communitiesData } = useCommunities();
+  const communities = communitiesData?.communities ?? [];
+  // Every "active community" source in the app (Sidebar's ?community= links,
+  // the glass_community localStorage snapshot) stores the community's slug,
+  // not its id -- but a notification's own communityId field is a uuid (the
+  // confirmed NotificationDto schema), and the backend's ?communityId=
+  // filter almost certainly matches against that same uuid. Sending it the
+  // slug instead meant the filter silently matched nothing and the backend
+  // fell back to returning every community's notifications, which is why
+  // scoping this page kept failing even once the URL correctly carried
+  // ?community= end to end. Falls back to the raw value if it can't be
+  // resolved yet (communities list still loading) rather than blocking the
+  // query entirely -- the queryKey below picks up the corrected id and
+  // refetches automatically once resolution catches up.
+  const communityId = activeSlugOrId
+    ? (communities.find((c) => c.slug === activeSlugOrId || c.id === activeSlugOrId)?.id ?? activeSlugOrId)
+    : null;
   const queryClient = useQueryClient();
   const realtimeConnected = useRealtimeConnected();
 
