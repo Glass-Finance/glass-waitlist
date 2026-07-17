@@ -6,6 +6,7 @@ import { verifyPayment } from "../../api/members";
 import { settleLocalPaymentForReference } from "../../hooks/usePayments";
 import { useTransactionDetail } from "../../hooks/useTransactionDetail";
 import { useAuth } from "../../store/AuthContext";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import ReceiptModal from "../../components/common/ReceiptModal";
 import { formatNaira, toTitleCase } from "../../utils/format";
 
@@ -23,6 +24,7 @@ function isTerminal(status) {
 }
 
 export default function PaymentCallback() {
+  usePageTitle("Payment Confirmation");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();

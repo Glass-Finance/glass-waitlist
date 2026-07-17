@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { UserMinus, Phone, MessageCircle, CreditCard, Receipt } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useMembersWithPayments, useMemberPaymentLinks } from "../../hooks/useMembersWithPayments";
@@ -72,6 +73,7 @@ export default function MemberDetail() {
   const { removeMember } = useCommunityMembers(communityId);
   const { data: community } = useCommunity(communityId);
   const member = members.find((m) => String(m.id) === String(memberId));
+  usePageTitle(member ? memberName(member) : "Member");
   // Audience-aware: only the payment links that actually target this member
   // (ALL_MEMBERS, their group, or explicit selection), unlike planCount on
   // `member` above which assumes every active community plan applies to

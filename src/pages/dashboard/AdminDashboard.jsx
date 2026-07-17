@@ -22,6 +22,7 @@ import {
   Activity,
   Receipt,
 } from "lucide-react";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { useCommunityDashboard } from "../../hooks/useCommunityDashboard";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
@@ -1090,6 +1091,7 @@ function AddMemberModal({ onClose, communityId }) {
 
 // ── Dashboard content ─────────────────────────────────────────────────────────
 function DashboardContent({ isPaying, communityId }) {
+  usePageTitle("Community Dashboard");
   const navigate = useNavigate();
   const { user } = useAuth();
   const { run: runExport, isExporting } = useExportJob();

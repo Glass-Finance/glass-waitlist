@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, Check, Copy, CheckCheck, Share2 } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
+import { usePageTitle } from "../../hooks/usePageTitle";
 import { useCommunityTransactionDetail } from "../../hooks/useCommunityTransactionDetail";
 import ReceiptModal from "../../components/common/ReceiptModal";
 import LoadingState from "../../components/common/LoadingState";
@@ -58,6 +59,7 @@ function Row({ label, children, last }) {
 // table, MemberDetail.jsx's Payment History table) instead of a member's
 // own history.
 export default function TransactionDetail() {
+  usePageTitle("Transaction Details");
   const navigate = useNavigate();
   const { transactionId } = useParams();
   const communityId = useActiveCommunityId();
