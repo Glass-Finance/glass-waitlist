@@ -1118,6 +1118,13 @@ function DashboardContent({ isPaying, communityId }) {
     error,
   } = useCommunityDashboard(communityId);
   const { plans, isLoading: plansLoading } = usePaymentPlans(communityId);
+  // The Payment Plans widget below is an at-a-glance preview, not the full
+  // list (that's Payments.jsx, which has its own status filters/badges) --
+  // archived/expired plans no longer need attention and would otherwise
+  // clutter it indefinitely.
+  const visiblePlans = plans.filter(
+    (p) => p.status !== "ARCHIVED" && p.status !== "EXPIRED",
+  );
 
   // Paying admin's own dues, as a member of this community -- scoped to
   // whichever community this dashboard is currently showing, not whatever
@@ -1868,11 +1875,11 @@ function DashboardContent({ isPaying, communityId }) {
                   <Skeleton key={i} className="h-20 rounded-xl" />
                 ))}
               </div>
-            ) : plans.length === 0 ? (
+            ) : visiblePlans.length === 0 ? (
               <EmptyState icon={Wallet} title="No payment plans yet" className="py-6" />
             ) : (
               <div className="flex flex-col gap-3">
-                {plans.map((p, idx) => {
+                {visiblePlans.map((p, idx) => {
                   const cm = planMetrics[p.id] ?? {};
                   const paidCount = cm.paidCount ?? p.paidCount ?? 0;
                   const totalCount =
