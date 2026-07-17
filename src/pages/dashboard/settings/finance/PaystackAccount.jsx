@@ -35,7 +35,7 @@ function bankColor(name = "") {
   if (n.includes("fidelity")) return "#005B98";
   if (n.includes("polaris")) return "#6C2382";
   if (n.includes("wema")) return "#5C068C";
-  return "#002FA7";
+  return "var(--color-brand)";
 }
 
 // Two-letter initials from the bank name
@@ -312,7 +312,7 @@ export default function PaystackAccount() {
               <div className="flex items-center gap-1 flex-shrink-0">
                 <button
                   onClick={() => setShowModal(true)}
-                  className="text-xs font-medium text-[#002FA7] bg-transparent border-none cursor-pointer hover:underline"
+                  className="text-xs font-medium text-brand bg-transparent border-none cursor-pointer hover:underline"
                 >
                   Change Account
                 </button>
@@ -381,7 +381,7 @@ export default function PaystackAccount() {
           </p>
           <button
             onClick={() => setShowModal(true)}
-            className="px-5 py-2.5 rounded-full text-sm text-white bg-[#002FA7] hover:opacity-90 transition-all border-none cursor-pointer"
+            className="px-5 py-2.5 rounded-full text-sm text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer"
           >
             Add Payout Account
           </button>
@@ -393,8 +393,8 @@ export default function PaystackAccount() {
         className="flex items-start gap-2.5 rounded-xl px-4 py-3.5"
         style={{ background: "#EEF2FF" }}
       >
-        <Info size={14} className="text-[#002FA7] flex-shrink-0 mt-0.5" />
-        <p className="text-xs text-[#002FA7] leading-relaxed">
+        <Info size={14} className="text-brand flex-shrink-0 mt-0.5" />
+        <p className="text-xs text-brand leading-relaxed">
           Payouts are processed automatically based on your payout frequency
           settings. Changing your account takes effect on the next payout cycle.
         </p>

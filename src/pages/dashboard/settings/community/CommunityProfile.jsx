@@ -21,7 +21,7 @@ const CATEGORIES = [
 ];
 
 const inputCls =
-  "w-full border border-gray-300 px-3 py-2.5 rounded-lg text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
+  "w-full border border-gray-300 px-3 py-2.5 rounded-lg text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-brand focus:ring-2 focus:ring-[var(--color-brand)]/10 transition-all";
 
 export default function CommunityProfile() {
   const navigate = useNavigate();
@@ -113,7 +113,7 @@ export default function CommunityProfile() {
         >
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-xs text-[#002FA7] flex-shrink-0 overflow-hidden"
+              className="w-10 h-10 rounded-full flex items-center justify-center text-xs text-brand flex-shrink-0 overflow-hidden"
               style={{ background: "#D7E2FF" }}
             >
               {logoPreview || community?.logo?.url || community?.logoUrl ? (
@@ -178,7 +178,7 @@ export default function CommunityProfile() {
           <button
             onClick={handleSave}
             disabled={updateCommunity.isPending}
-            className="px-2 py-2 rounded-sm text-xs text-[#002FA7] hover:bg-[#002FA7]/10 transition-all border border-[#002FA7] cursor-pointer disabled:opacity-50"
+            className="px-2 py-2 rounded-sm text-xs text-brand hover:bg-brand/10 transition-all border border-brand cursor-pointer disabled:opacity-50"
           >
             {saved ? "Saved!" : updateCommunity.isPending ? "Saving…" : "Save Changes"}
           </button>

@@ -40,7 +40,7 @@ function Avatar({ requester }) {
       {requester.image ? (
         <img src={requester.image} alt="" className="w-full h-full object-cover" />
       ) : (
-        <span className="text-xs font-bold text-[#002FA7]">{requester.initials}</span>
+        <span className="text-xs font-bold text-brand">{requester.initials}</span>
       )}
     </div>
   );
@@ -105,7 +105,7 @@ function RequestCard({ r, onApprove, onReject, busy }) {
           <button
             disabled={busy}
             onClick={onApprove}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer transition-opacity disabled:opacity-50"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-brand hover:opacity-90 border-none cursor-pointer transition-opacity disabled:opacity-50"
           >
             <Check size={13} /> Approve
           </button>
@@ -191,7 +191,7 @@ export default function JoinRequests() {
           Awaiting review
         </p>
         {pending.length > 0 && (
-          <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center bg-[#EEF2FF] text-[#002FA7] border border-blue-100">
+          <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center bg-[#EEF2FF] text-brand border border-blue-100">
             {pending.length}
           </span>
         )}

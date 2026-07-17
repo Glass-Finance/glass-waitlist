@@ -83,7 +83,7 @@ function statusStyle(status = "") {
 
 const FREQUENCY_STYLE = {
   MONTHLY: { bg: "#FFF8E7", color: "#b45309", label: "Monthly" },
-  WEEKLY: { bg: "#E6EEFF", color: "#002FA7", label: "Weekly" },
+  WEEKLY: { bg: "#E6EEFF", color: "var(--color-brand)", label: "Weekly" },
   QUARTERLY: { bg: "#ECFDF5", color: "#0f766e", label: "Quarterly" },
   YEARLY: { bg: "#ECFDF5", color: "#059669", label: "Annually" },
 };
@@ -254,7 +254,7 @@ export function AdminPaymentModal({ item, onClose }) {
                   className="w-full h-full object-cover rounded-xl"
                 />
               ) : (
-                <span className="text-[11px] font-bold text-[#002FA7]">
+                <span className="text-[11px] font-bold text-brand">
                   {communityInitials}
                 </span>
               )}
@@ -280,7 +280,7 @@ export function AdminPaymentModal({ item, onClose }) {
         <div
           className="px-7 py-8 text-center"
           style={{
-            background: "linear-gradient(135deg, #002FA7 0%, #002FA7 100%)",
+            background: "linear-gradient(135deg, var(--color-brand) 0%, var(--color-brand) 100%)",
           }}
         >
           <p className="text-[12px] text-blue-200 uppercase tracking-widest mb-2 font-medium">
@@ -313,7 +313,7 @@ export function AdminPaymentModal({ item, onClose }) {
               <span className="text-sm text-gray-500">Schedule</span>
               <span
                 className="text-[11px] font-semibold px-3 py-0.5 rounded-full"
-                style={{ background: "#EEF1FB", color: "#002FA7" }}
+                style={{ background: "#EEF1FB", color: "var(--color-brand)" }}
               >
                 {isRecurring ? "Recurring" : "One-Time"}
               </span>
@@ -387,7 +387,7 @@ export function AdminPaymentModal({ item, onClose }) {
                 className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                 style={{ background: "#EEF2FF" }}
               >
-                <Landmark size={16} className="text-[#002FA7]" />
+                <Landmark size={16} className="text-brand" />
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">
@@ -409,7 +409,7 @@ export function AdminPaymentModal({ item, onClose }) {
                     type="checkbox"
                     checked={saveMethod}
                     onChange={(e) => setSaveMethod(e.target.checked)}
-                    className="w-3.5 h-3.5 accent-[#002FA7] cursor-pointer"
+                    className="w-3.5 h-3.5 accent-brand cursor-pointer"
                   />
                   <span className="text-xs text-gray-500">
                     Save this payment method for faster checkout next time
@@ -445,7 +445,7 @@ export function AdminPaymentModal({ item, onClose }) {
               onClick={handlePay}
               disabled={initiatePayment.isPending || redirecting || isLinkInactive}
               className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border-none transition-opacity flex items-center gap-2"
-              style={{ background: "#002FA7" }}
+              style={{ background: "var(--color-brand)" }}
             >
               {initiatePayment.isPending || redirecting ? (
                 <>
@@ -513,7 +513,7 @@ function AddMemberModal({ onClose, communityId }) {
   const [roleId, setRoleId] = useState(defaultRole?.id ?? "");
 
   const inputCls =
-    "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+    "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-brand transition-all";
 
   function copyLink() {
     if (!inviteLink) return;
@@ -715,7 +715,7 @@ function AddMemberModal({ onClose, communityId }) {
             </div>
             <button
               onClick={copyLink}
-              className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#002FA7] text-xs font-semibold text-[#002FA7] hover:bg-white transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent"
+              className="flex items-center gap-2 px-4 py-2 rounded-full border border-brand text-xs font-semibold text-brand hover:bg-white transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent"
             >
               <Copy size={12} />
               {linkCopied ? "Copied!" : "Copy Link"}
@@ -739,9 +739,9 @@ function AddMemberModal({ onClose, communityId }) {
                   onClick={() => setTab(t)}
                   className="pb-2.5 text-sm font-medium capitalize bg-transparent border-none cursor-pointer transition-all"
                   style={{
-                    color: tab === t ? "#002FA7" : "#9ca3af",
+                    color: tab === t ? "var(--color-brand)" : "#9ca3af",
                     borderBottom:
-                      tab === t ? "2px solid #002FA7" : "2px solid transparent",
+                      tab === t ? "2px solid var(--color-brand)" : "2px solid transparent",
                   }}
                 >
                   {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -761,7 +761,7 @@ function AddMemberModal({ onClose, communityId }) {
                   </p>
                   <button
                     onClick={downloadTemplate}
-                    className="flex items-center gap-1.5 text-xs font-medium text-[#002FA7] hover:opacity-80 bg-transparent border-none cursor-pointer"
+                    className="flex items-center gap-1.5 text-xs font-medium text-brand hover:opacity-80 bg-transparent border-none cursor-pointer"
                   >
                     <Download size={12} />
                     Download Template
@@ -804,7 +804,7 @@ function AddMemberModal({ onClose, communityId }) {
                         ].map((cell, i) => (
                           <td
                             key={i}
-                            className={`px-4 py-3 ${i === 2 ? "text-[#002FA7] underline" : "text-gray-900"}`}
+                            className={`px-4 py-3 ${i === 2 ? "text-brand underline" : "text-gray-900"}`}
                           >
                             {cell}
                           </td>
@@ -827,7 +827,7 @@ function AddMemberModal({ onClose, communityId }) {
                     minHeight: 140,
                     background: dragOver ? "#EEF2FF" : "#FAFAFA",
                     border: dragOver
-                      ? "2px dashed #002FA7"
+                      ? "2px dashed var(--color-brand)"
                       : "2px dashed #D1D5DB",
                   }}
                 >
@@ -840,13 +840,13 @@ function AddMemberModal({ onClose, communityId }) {
                   />
                   <UploadCloud size={30} className="text-gray-400 mb-3" />
                   {csvFile ? (
-                    <p className="text-xs text-[#002FA7] font-medium">
+                    <p className="text-xs text-brand font-medium">
                       {csvFile.name} — {csvRows.length} rows
                     </p>
                   ) : (
                     <p className="text-xs text-gray-500">
                       Drag and Drop CSV here or{" "}
-                      <span className="text-[#002FA7] font-medium underline">
+                      <span className="text-brand font-medium underline">
                         Browse
                       </span>
                     </p>
@@ -877,7 +877,7 @@ function AddMemberModal({ onClose, communityId }) {
                       disabled={
                         !fileUrl.trim() || urlStage === "fetching" || uploading
                       }
-                      className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-[#002FA7] hover:bg-[#002FA7]/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50"
+                      className="px-5 py-2 rounded-sm bg-brand/20 text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50"
                     >
                       Upload
                     </button>
@@ -887,7 +887,7 @@ function AddMemberModal({ onClose, communityId }) {
                     <div
                       className="mt-3 rounded-lg flex flex-col items-center justify-center py-10"
                       style={{
-                        border: "2px dashed #002FA7",
+                        border: "2px dashed var(--color-brand)",
                         background: "#EEF2FF",
                       }}
                     >
@@ -909,7 +909,7 @@ function AddMemberModal({ onClose, communityId }) {
                             cy="32"
                             r="28"
                             fill="none"
-                            stroke="#002FA7"
+                            stroke="var(--color-brand)"
                             strokeWidth="6"
                             strokeDasharray={2 * Math.PI * 28}
                             strokeDashoffset={
@@ -973,7 +973,7 @@ function AddMemberModal({ onClose, communityId }) {
                   <button
                     onClick={handleUploadCSV}
                     disabled={uploading}
-                    className="w-full py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all mt-5 border-none cursor-pointer disabled:opacity-60"
+                    className="w-full py-3.5 rounded-full text-white font-semibold text-sm bg-brand hover:opacity-90 active:scale-[0.98] transition-all mt-5 border-none cursor-pointer disabled:opacity-60"
                   >
                     {uploading
                       ? "Sending invites…"
@@ -1003,7 +1003,7 @@ function AddMemberModal({ onClose, communityId }) {
                       className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800"
                       style={{ background: "var(--color-stacked-container)" }}
                     >
-                      <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-[#002FA7] text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
+                      <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-brand text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
                         {em.charAt(0).toUpperCase()}
                       </span>
                       {em}
@@ -1073,7 +1073,7 @@ function AddMemberModal({ onClose, communityId }) {
                   <button
                     onClick={handleSendInvite}
                     disabled={emails.length === 0 || manualLoading}
-                    className="px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
+                    className="px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-brand hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
                   >
                     {manualLoading ? "Sending…" : "Send Invite"}
                   </button>
@@ -1423,7 +1423,7 @@ function DashboardContent({ isPaying, communityId }) {
             </button>
             <button
               onClick={() => setAddMemberOpen(true)}
-              className="px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
+              className="px-4 py-2 rounded text-xs font-medium text-white bg-brand flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
             >
               <Plus size={14} /> Add Member
             </button>
@@ -1496,7 +1496,7 @@ function DashboardContent({ isPaying, communityId }) {
                         `/dashboard/payments?community=${communityId ?? ""}`,
                       )
                     }
-                    className="text-xs font-semibold text-[#002FA7] bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
+                    className="text-xs font-semibold text-brand bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
                   >
                     Create plan
                   </button>
@@ -1526,7 +1526,7 @@ function DashboardContent({ isPaying, communityId }) {
                 {!gsHasMembers && (
                   <button
                     onClick={() => setAddMemberOpen(true)}
-                    className="text-xs font-semibold text-[#002FA7] bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
+                    className="text-xs font-semibold text-brand bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
                   >
                     Add member
                   </button>
@@ -1578,7 +1578,7 @@ function DashboardContent({ isPaying, communityId }) {
                     className={`text-xs font-semibold bg-white px-3 py-1.5 rounded-lg transition-colors cursor-pointer flex-shrink-0 border ${
                       gsPayoutAccountRejected
                         ? "text-red-700 border-red-100 hover:bg-red-50"
-                        : "text-[#002FA7] border-blue-100 hover:bg-blue-50"
+                        : "text-brand border-blue-100 hover:bg-blue-50"
                     }`}
                   >
                     {gsPayoutAccountRejected
@@ -1629,14 +1629,14 @@ function DashboardContent({ isPaying, communityId }) {
                       {due.type === "recurring" && (
                         <>
                           {" · "}
-                          <span className="text-[#002FA7] font-medium">
+                          <span className="text-brand font-medium">
                             Auto-Pay is {hasActiveAutoPay(due) ? "on" : "off"}
                           </span>
                         </>
                       )}
                     </p>
                     {othersDue > 0 && (
-                      <p className="text-xs text-[#002FA7] font-medium mt-1">
+                      <p className="text-xs text-brand font-medium mt-1">
                         + {othersDue} other payment{othersDue === 1 ? "" : "s"} due
                         — see Your Payments below.
                       </p>
@@ -1646,13 +1646,13 @@ function DashboardContent({ isPaying, communityId }) {
                 <div className="flex items-center gap-2 ml-4 flex-shrink-0">
                   <button
                     onClick={() => handlePayMine(due)}
-                    className="px-4 py-2 rounded-sm text-xs font-semibold text-[#002FA7] border cursor-pointer"
+                    className="px-4 py-2 rounded-sm text-xs font-semibold text-brand border cursor-pointer"
                   >
                     Pay Now
                   </button>
                   <button
                     onClick={() => setAlertVisible(false)}
-                    className="text-[#002FA7] bg-transparent border-none cursor-pointer"
+                    className="text-brand bg-transparent border-none cursor-pointer"
                   >
                     <X size={20} />
                   </button>
@@ -1666,14 +1666,14 @@ function DashboardContent({ isPaying, communityId }) {
           {stats.map((s) => (
             <div
               key={s.label}
-              className="bg-surface-container rounded-xl px-4 py-3 border border-[#eef0f8]"
+              className="bg-surface-container rounded-xl px-4 py-3 border border-hairline"
               style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs text-gray-500 font-medium">
                   {s.label}
                 </span>
-                <Info size={13} className="text-[#002FA7]" />
+                <Info size={13} className="text-brand" />
               </div>
               <div className="flex items-center gap-2.5">
                 <img
@@ -1696,7 +1696,7 @@ function DashboardContent({ isPaying, communityId }) {
         {/* Your Payments — paying admin's own dues in this community */}
         {isPaying && (
           <div
-            className="bg-surface-container rounded-xl border border-[#eef0f8] p-5 mb-5"
+            className="bg-surface-container rounded-xl border border-hairline p-5 mb-5"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -1738,7 +1738,7 @@ function DashboardContent({ isPaying, communityId }) {
                           }}
                           className={`w-full px-3 py-2 text-left text-xs cursor-pointer border-none ${
                             myPaymentsFilter === opt.key
-                              ? "bg-blue-50 font-medium text-[#002FA7]"
+                              ? "bg-blue-50 font-medium text-brand"
                               : "bg-transparent text-gray-600 hover:bg-gray-50"
                           }`}
                         >
@@ -1827,7 +1827,7 @@ function DashboardContent({ isPaying, communityId }) {
                             ) : (
                               <button
                                 onClick={() => handlePayMine(row)}
-                                className="px-4 py-1.5 rounded text-xs font-semibold text-[#002FA7] border border-[#002FA7] bg-white hover:bg-blue-50 cursor-pointer transition-all"
+                                className="px-4 py-1.5 rounded text-xs font-semibold text-brand border border-brand bg-white hover:bg-blue-50 cursor-pointer transition-all"
                               >
                                 Pay Now
                               </button>
@@ -1847,7 +1847,7 @@ function DashboardContent({ isPaying, communityId }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-5">
           {/* Payment Plans */}
           <div
-            className="rounded-xl border border-[#eef0f8] p-4 bg-[#D7E2FF]"
+            className="rounded-xl border border-hairline p-4 bg-[#D7E2FF]"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -1858,7 +1858,7 @@ function DashboardContent({ isPaying, communityId }) {
                 onClick={() =>
                   navigate(`/dashboard/payments?community=${communityId ?? ""}`)
                 }
-                className="text-xs font-medium text-[#002FA7] bg-transparent border-none cursor-pointer hover:underline"
+                className="text-xs font-medium text-brand bg-transparent border-none cursor-pointer hover:underline"
               >
                 Manage All
               </button>
@@ -1897,7 +1897,7 @@ function DashboardContent({ isPaying, communityId }) {
                     "#7c3aed",
                     "#099DA8",
                     "#059669",
-                    "#002FA7",
+                    "var(--color-brand)",
                     "#e11d48",
                   ];
                   const barColor = BAR_COLORS[idx % BAR_COLORS.length];
@@ -1943,7 +1943,7 @@ function DashboardContent({ isPaying, communityId }) {
 
           {/* Recent Activity */}
           <div
-            className="bg-surface-container rounded-xl border border-[#eef0f8] p-4"
+            className="bg-surface-container rounded-xl border border-hairline p-4"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <span className="text-sm font-medium text-black block mb-4">
@@ -1973,8 +1973,8 @@ function DashboardContent({ isPaying, communityId }) {
                   ? "#e11d48"
                   : isPmt
                     ? "#059669"
-                    : "#002FA7";
-                const aBg = failed ? "#fff1f2" : isPmt ? "#ecfdf5" : "#e6eeff";
+                    : "var(--color-brand)";
+                const aBg = failed ? "#fff1f2" : isPmt ? "#ecfdf5" : "var(--color-brand-tint)";
                 const type = isPmt
                   ? "payment"
                   : event.includes("MEMBER")
@@ -1999,7 +1999,7 @@ function DashboardContent({ isPaying, communityId }) {
                     <div className="flex-1 min-w-0">
                       <p className="text-xs text-gray-700 leading-relaxed">
                         {actorName && !a.description?.startsWith(actorName) && (
-                          <strong className="text-[#002FA7] font-semibold">
+                          <strong className="text-brand font-semibold">
                             {actorName}{" "}
                           </strong>
                         )}
@@ -2042,7 +2042,7 @@ function DashboardContent({ isPaying, communityId }) {
 
         {/* Member Payments table */}
         <div
-          className="bg-surface-container rounded-xl border border-[#eef0f8]"
+          className="bg-surface-container rounded-xl border border-hairline"
           style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
         >
           <div className="flex items-center justify-between px-5 pt-4 pb-0">
@@ -2062,7 +2062,7 @@ function DashboardContent({ isPaying, communityId }) {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-5 py-3 gap-2">
-            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-[#eef0f8] w-full sm:flex-1 sm:min-w-0 sm:max-w-xs">
+            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-hairline w-full sm:flex-1 sm:min-w-0 sm:max-w-xs">
               <Search size={12} className="text-gray-400 flex-shrink-0" />
               <input
                 value={search}
@@ -2091,7 +2091,7 @@ function DashboardContent({ isPaying, communityId }) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-y border-[#eef0f8]">
+                <tr className="border-y border-hairline">
                   <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
                     Member
                   </th>
@@ -2140,7 +2140,7 @@ function DashboardContent({ isPaying, communityId }) {
                         key={tx.id ?? i}
                         className="border-b border-[#f3f4f8] hover:bg-[#fafbff] transition-colors cursor-default"
                       >
-                        <td className="px-5 py-3 text-xs font-medium text-[#002FA7]">
+                        <td className="px-5 py-3 text-xs font-medium text-brand">
                           {resolveMemberName(tx) ??
                             tx.member?.user?.email ??
                             tx.user?.email ??

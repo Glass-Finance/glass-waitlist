@@ -130,10 +130,10 @@ const REMINDER_CHANNELS = [
   { label: "WhatsApp", value: "WHATSAPP" },
 ];
 const TABS = ["All Plans", "Recurring", "One Time"];
-const BAR_COLORS = ["#d4a017", "#7c3aed", "#002FA7", "#059669"];
+const BAR_COLORS = ["#d4a017", "#7c3aed", "var(--color-brand)", "#059669"];
 
 const inputCls =
-  "w-full px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 bg-white outline-none transition-all focus:border-[#002FA7]";
+  "w-full px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 bg-white outline-none transition-all focus:border-brand";
 
 // <input type="number"> silently increments/decrements its value on
 // mouse-wheel scroll while it has focus — a well-known browser footgun that
@@ -201,19 +201,19 @@ function StepIndicator({ current }) {
             <div className="flex flex-col items-center gap-1 flex-shrink-0">
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center font-medium text-xs border
-                ${done ? "bg-[#002FA7] border-[#002FA7] text-white" : active ? "border-[#002FA7] text-[#002FA7] bg-white" : "border-gray-300 text-gray-400 bg-white"}`}
+                ${done ? "bg-brand border-brand text-white" : active ? "border-brand text-brand bg-white" : "border-gray-300 text-gray-400 bg-white"}`}
               >
                 {done ? <Check size={13} /> : s.n}
               </div>
               <span
-                className={`text-[11px] whitespace-nowrap ${active ? "font-semibold text-[#002FA7]" : done ? "text-gray-600" : "text-gray-400"}`}
+                className={`text-[11px] whitespace-nowrap ${active ? "font-semibold text-brand" : done ? "text-gray-600" : "text-gray-400"}`}
               >
                 {s.label}
               </span>
             </div>
             {i < steps.length - 1 && (
               <div
-                className={`flex-1 h-0.5 mx-2 mb-4 ${done ? "bg-[#002FA7]" : "bg-gray-200"}`}
+                className={`flex-1 h-0.5 mx-2 mb-4 ${done ? "bg-brand" : "bg-gray-200"}`}
               />
             )}
           </div>
@@ -249,10 +249,10 @@ function Step1({ value, onChange }) {
             <button
               key={opt.id}
               onClick={() => onChange(opt.id)}
-              className={`p-6 min-h-[180px] rounded-xl text-left border-2 transition-all relative flex flex-col ${sel ? "border-[#002FA7] bg-blue-50" : "border-gray-200 bg-gray-50"}`}
+              className={`p-6 min-h-[180px] rounded-xl text-left border-2 transition-all relative flex flex-col ${sel ? "border-brand bg-blue-50" : "border-gray-200 bg-gray-50"}`}
             >
               <div
-                className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center ${sel ? "bg-[#002FA7] border-[#002FA7]" : "border-gray-300"}`}
+                className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center ${sel ? "bg-brand border-brand" : "border-gray-300"}`}
               >
                 {sel && <Check size={10} color="white" strokeWidth={3} />}
               </div>
@@ -946,7 +946,7 @@ function CreatePlanModal({ communityId, onClose, onCreate, creating, createError
               </p>
               <button
                 onClick={onClose}
-                className="px-6 py-2 rounded bg-[#002FA7] text-white font-medium text-xs cursor-pointer border-none"
+                className="px-6 py-2 rounded bg-brand text-white font-medium text-xs cursor-pointer border-none"
               >
                 Done
               </button>
@@ -1000,7 +1000,7 @@ function CreatePlanModal({ communityId, onClose, onCreate, creating, createError
                 slugState.checking ||
                 slugState.available === false
               }
-              className={`px-6 py-2 rounded text-xs font-medium border-none cursor-pointer ${canContinue ? "bg-[#002FA7] text-white hover:opacity-90" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+              className={`px-6 py-2 rounded text-xs font-medium border-none cursor-pointer ${canContinue ? "bg-brand text-white hover:opacity-90" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
             >
               {creating ? "Creating…" : step === 3 ? "Create Plan" : "Continue"}
             </button>
@@ -1374,7 +1374,7 @@ function EditPlanModal({ plan, communityId, onClose, onSave, saving }) {
           <button
             onClick={handleSave}
             disabled={!isReady || saving}
-            className="px-6 py-2 rounded text-xs font-normal text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 rounded text-xs font-normal text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? "Saving…" : "Save Changes"}
           </button>
@@ -1453,7 +1453,7 @@ function SendReminderModal({ plan, onClose, onSend, sending }) {
                     type="checkbox"
                     checked={channels.has(c.value)}
                     onChange={() => toggleChannel(c.value)}
-                    className="w-3.5 h-3.5 accent-[#002FA7] cursor-pointer"
+                    className="w-3.5 h-3.5 accent-brand cursor-pointer"
                   />
                   {c.label}
                 </label>
@@ -1486,7 +1486,7 @@ function SendReminderModal({ plan, onClose, onSend, sending }) {
               })
             }
             disabled={!canSend || sending}
-            className="px-6 py-2 rounded text-xs font-normal text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 rounded text-xs font-normal text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {sending ? "Sending…" : "Send Reminder"}
           </button>
@@ -1862,7 +1862,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
           <div className="flex items-center gap-3">
             <button
               onClick={exportCsv}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#002FA7] text-xs font-semibold text-[#002FA7] hover:bg-blue-50 bg-white cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 bg-white cursor-pointer"
             >
               Export CSV
             </button>
@@ -1893,7 +1893,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
             >
               <Filter size={12} /> Filter
               {statusFilter && (
-                <span className="ml-1 w-1.5 h-1.5 rounded-full bg-[#002FA7] flex-shrink-0" />
+                <span className="ml-1 w-1.5 h-1.5 rounded-full bg-brand flex-shrink-0" />
               )}
             </button>
             {filterOpen && (
@@ -1928,7 +1928,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                     </button>
                     <button
                       onClick={() => setFilterOpen(false)}
-                      className="flex-1 px-3 py-2 rounded-lg bg-[#002FA7] text-white text-xs font-semibold border-none cursor-pointer"
+                      className="flex-1 px-3 py-2 rounded-lg bg-brand text-white text-xs font-semibold border-none cursor-pointer"
                     >
                       Apply
                     </button>
@@ -2019,7 +2019,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                           }
                         />
                       </td>
-                      <td className="px-4 py-3 text-xs font-semibold text-[#002FA7] whitespace-nowrap">
+                      <td className="px-4 py-3 text-xs font-semibold text-brand whitespace-nowrap">
                         {getName(m)}
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-500">
@@ -2059,7 +2059,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
             {statusFilter && (
               <button
                 onClick={() => setStatusFilter("")}
-                className="text-xs font-semibold text-[#002FA7] bg-transparent border-none cursor-pointer"
+                className="text-xs font-semibold text-brand bg-transparent border-none cursor-pointer"
               >
                 Clear filter
               </button>
@@ -2251,7 +2251,7 @@ function DuplicatePlanModal({ plan, onClose, onDuplicate, duplicating }) {
           <button
             onClick={handleSubmit}
             disabled={!isReady || duplicating}
-            className="px-6 py-2 rounded text-xs font-normal text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 rounded text-xs font-normal text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {duplicating ? "Duplicating…" : "Duplicate Plan"}
           </button>
@@ -2716,7 +2716,7 @@ export default function Payments() {
         </div>
         <button
           onClick={() => setCreateOpen(true)}
-          className="px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
+          className="px-4 py-2 rounded text-xs font-medium text-white bg-brand flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
         >
           <Plus size={13} /> Create Payment Plan
         </button>
@@ -2728,7 +2728,7 @@ export default function Payments() {
           icon={Wallet}
           label="Total Amount Collected"
           value={formatNaira(stats.collected)}
-          color="#002FA7"
+          color="var(--color-brand)"
           bg="#E6EEFF"
         />
         <StatCard

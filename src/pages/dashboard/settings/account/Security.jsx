@@ -84,7 +84,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
       .catch(() => setQrSrc(null));
   }, [otpauthUri]);
 
-  const inputCls = "w-full px-4 py-2.5 rounded-md border border-gray-300 text-gray-900 text-sm outline-none text-center tracking-widest font-mono text-lg transition-all focus:border-[#002FA7]";
+  const inputCls = "w-full px-4 py-2.5 rounded-md border border-gray-300 text-gray-900 text-sm outline-none text-center tracking-widest font-mono text-lg transition-all focus:border-brand";
 
   return (
     <div
@@ -108,7 +108,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
           {mode === "setup" && stage === "idle" && (
             <>
               <div className="bg-[#F0F4FF] rounded-xl p-4 text-center">
-                <Shield size={24} className="text-[#002FA7] mx-auto mb-2" />
+                <Shield size={24} className="text-brand mx-auto mb-2" />
                 <p className="text-xs text-gray-600 leading-relaxed">
                   Use Google Authenticator, Authy, or any TOTP-compatible app to generate time-based codes at login.
                 </p>
@@ -117,7 +117,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
               <button
                 onClick={startSetup}
                 className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer"
-                style={{ background: "#002FA7" }}
+                style={{ background: "var(--color-brand)" }}
               >
                 Begin Setup
               </button>
@@ -147,7 +147,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
                   <p className="text-xs text-gray-500 mb-1.5">Or enter this key manually:</p>
                   <div className="flex items-center gap-2 bg-stacked-container rounded-lg px-3 py-2 border border-gray-200">
                     <code className="flex-1 text-xs font-bold tracking-widest text-gray-800 break-all">{secret}</code>
-                    <button onClick={copySecret} className="border-none bg-transparent cursor-pointer text-[#002FA7] flex-shrink-0">
+                    <button onClick={copySecret} className="border-none bg-transparent cursor-pointer text-brand flex-shrink-0">
                       {copied ? <Check size={14} /> : <Copy size={14} />}
                     </button>
                   </div>
@@ -165,7 +165,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 onClick={confirmEnable}
                 disabled={code.length !== 6 || loading}
                 className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer disabled:opacity-50"
-                style={{ background: "#002FA7" }}
+                style={{ background: "var(--color-brand)" }}
               >
                 {loading ? "Activating…" : "Activate MFA"}
               </button>
@@ -214,7 +214,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
               <button
                 onClick={onSuccess}
                 className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer"
-                style={{ background: "#002FA7" }}
+                style={{ background: "var(--color-brand)" }}
               >
                 Done
               </button>
@@ -249,7 +249,7 @@ export default function Security() {
   const [success, setSuccess] = useState(false);
   const [mfaModal, setMfaModal] = useState(null); // "setup" | "disable" | null
 
-  const inputCls = "w-full px-4 py-2.5 rounded-md border border-gray-300 text-gray-900 text-xs outline-none transition-all pr-11 focus:border-[#002FA7]";
+  const inputCls = "w-full px-4 py-2.5 rounded-md border border-gray-300 text-gray-900 text-xs outline-none transition-all pr-11 focus:border-brand";
 
   async function handleUpdatePassword() {
     setError("");
@@ -326,7 +326,7 @@ export default function Security() {
 
           <div className="flex justify-end">
             <button onClick={handleUpdatePassword} disabled={updatePassword.isPending}
-              className="px-4 py-2 rounded-sm font-small text-xs text-[#002FA7] border border-[#002FA7] hover:opacity-90 transition-all disabled:opacity-50">
+              className="px-4 py-2 rounded-sm font-small text-xs text-brand border border-brand hover:opacity-90 transition-all disabled:opacity-50">
               {updatePassword.isPending ? "Updating…" : "Update Password"}
             </button>
           </div>
@@ -357,7 +357,7 @@ export default function Security() {
               className="px-3 py-1.5 rounded-lg text-xs font-semibold border cursor-pointer transition-all"
               style={mfaEnabled
                 ? { border: "1px solid #FECACA", color: "#DC2626", background: "#FFF5F5" }
-                : { border: "1px solid #002FA7", color: "#002FA7", background: "#fff" }
+                : { border: "1px solid var(--color-brand)", color: "var(--color-brand)", background: "#fff" }
               }
             >
               {mfaEnabled ? "Disable" : "Enable"}

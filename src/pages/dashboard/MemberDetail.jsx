@@ -286,7 +286,7 @@ export default function MemberDetail() {
               </thead>
               <tbody>
                 <tr>
-                  <td className="px-5 py-3 text-sm font-semibold text-[#002FA7]">{memberName(member)}</td>
+                  <td className="px-5 py-3 text-sm font-semibold text-brand">{memberName(member)}</td>
                   <td className="px-5 py-3 text-sm text-gray-600">{memberPhone(member)}</td>
                   <td className="px-5 py-3 text-sm text-gray-600">{memberEmail(member)}</td>
                   <td className="px-5 py-3 text-sm text-gray-500">{formatDate(member.joinedAt ?? member.createdAt)}</td>

@@ -39,7 +39,7 @@ export default function PaymentMethod() {
                 <div key={auth.id} className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "#EEF2FF" }}>
-                      <Landmark size={16} className="text-[#002FA7]" />
+                      <Landmark size={16} className="text-brand" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-900">{auth.bank ?? "Bank account"} ●●●● {auth.last4}</p>

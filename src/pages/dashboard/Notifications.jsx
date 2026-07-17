@@ -44,7 +44,7 @@ function categorize(n) {
 const SECTION_CONFIG = {
   urgent:  { label: "Urgent",            border: "#E53E3E" },
   payment: { label: "Payment Activity",  border: "#D69E2E" },
-  member:  { label: "Community Activity",border: "#002FA7" },
+  member:  { label: "Community Activity",border: "var(--color-brand)" },
 };
 
 // Failed/overdue payment notifications ("urgent") are still a payment event
@@ -90,7 +90,7 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
       style={{ border: "1px solid #E5E7EB" }}
     >
       {!isRead && (
-        <span className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-[#002FA7]" />
+        <span className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-brand" />
       )}
       <Avatar n={n} details={details} />
       <div className="flex-1 min-w-0 pr-4">
@@ -206,7 +206,7 @@ function NotificationDetailModal({ n, onClose }) {
           {action && (
             <button
               onClick={() => navigate(action.to)}
-              className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-[#002FA7] hover:opacity-90 cursor-pointer border-none transition-opacity"
+              className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 cursor-pointer border-none transition-opacity"
             >
               {action.label} <ChevronRight size={13} />
             </button>
@@ -320,7 +320,7 @@ function SuperAdminNotifications() {
             <button
               onClick={() => markAllRead()}
               disabled={isMarkingAllRead}
-              className="self-start flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
+              className="self-start flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
             >
               Mark All As Read
             </button>
@@ -402,7 +402,7 @@ function CommunityNotifications() {
             <button
               onClick={() => markAllRead()}
               disabled={isMarkingAllRead || unreadCount === 0}
-              className="px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
+              className="px-4 py-2 rounded text-xs font-medium text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
             >
               Mark All As Read
             </button>
@@ -434,7 +434,7 @@ function CommunityNotifications() {
                 <span
                   className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
                   style={active
-                    ? { background: "#EEF2FF", color: "#002FA7", border: "1px solid #002FA7" }
+                    ? { background: "#EEF2FF", color: "var(--color-brand)", border: "1px solid var(--color-brand)" }
                     : { background: "#fff", color: "#6b7280", border: "1px solid #E5E7EB" }}
                 >
                   {count}

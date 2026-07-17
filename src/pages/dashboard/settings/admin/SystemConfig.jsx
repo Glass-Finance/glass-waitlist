@@ -134,7 +134,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
                     onClick={() => setForm((f) => ({ ...f, value: v }))}
                     className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                       form.value === v
-                        ? "bg-[#002FA7] text-white border-[#002FA7]"
+                        ? "bg-brand text-white border-brand"
                         : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
                     }`}
                   >
@@ -149,7 +149,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
                 onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
                 className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none transition-colors"
                 style={{ border: "1px solid #D0D0D0" }}
-                onFocus={(e) => (e.target.style.borderColor = "#002FA7")}
+                onFocus={(e) => (e.target.style.borderColor = "var(--color-brand)")}
                 onBlur={(e) => (e.target.style.borderColor = "#D0D0D0")}
                 placeholder={`Enter ${(config.valueType ?? "value").toLowerCase()}…`}
               />
@@ -166,7 +166,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none transition-colors"
               style={{ border: "1px solid #D0D0D0" }}
-              onFocus={(e) => (e.target.style.borderColor = "#002FA7")}
+              onFocus={(e) => (e.target.style.borderColor = "var(--color-brand)")}
               onBlur={(e) => (e.target.style.borderColor = "#D0D0D0")}
               placeholder="Human-readable label"
             />
@@ -183,7 +183,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
               rows={3}
               className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none transition-colors resize-none"
               style={{ border: "1px solid #D0D0D0" }}
-              onFocus={(e) => (e.target.style.borderColor = "#002FA7")}
+              onFocus={(e) => (e.target.style.borderColor = "var(--color-brand)")}
               onBlur={(e) => (e.target.style.borderColor = "#D0D0D0")}
               placeholder="What does this configuration control?"
             />
@@ -202,7 +202,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
               type="submit"
               disabled={isSaving}
               className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white transition-all cursor-pointer border-none flex items-center justify-center gap-1.5 disabled:opacity-60"
-              style={{ background: "#002FA7" }}
+              style={{ background: "var(--color-brand)" }}
             >
               {isSaving ? (
                 <Loader2 size={12} className="animate-spin" />
@@ -308,7 +308,7 @@ export default function SystemConfig() {
               placeholder="Search configs…"
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-8 pr-4 py-2 rounded-lg text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-colors"
+              className="pl-8 pr-4 py-2 rounded-lg text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-brand transition-colors"
               style={{ border: "1px solid #D0D0D0", width: 200, background: "#fff" }}
             />
           </div>
@@ -323,7 +323,7 @@ export default function SystemConfig() {
             onClick={() => handleCategoryChange(cat)}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer ${
               activeCategory === cat
-                ? "bg-[#002FA7] text-white border-[#002FA7]"
+                ? "bg-brand text-white border-brand"
                 : "bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-700"
             }`}
           >
@@ -427,7 +427,7 @@ export default function SystemConfig() {
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => setEditing(cfg)}
-                        className="opacity-0 group-hover:opacity-100 flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-[#002FA7] bg-[#e6eeff] hover:bg-[#d0dcff] transition-all cursor-pointer border-none"
+                        className="opacity-0 group-hover:opacity-100 flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-brand bg-brand-tint hover:bg-[#d0dcff] transition-all cursor-pointer border-none"
                       >
                         <Edit2 size={11} />
                         Edit
@@ -465,7 +465,7 @@ export default function SystemConfig() {
                   onClick={() => setPage(i)}
                   className={`w-7 h-7 flex items-center justify-center rounded-lg text-[11px] font-semibold border-none cursor-pointer transition-all ${
                     i === page
-                      ? "bg-[#002FA7] text-white"
+                      ? "bg-brand text-white"
                       : "bg-white text-gray-500 hover:bg-gray-100"
                   }`}
                   style={{ border: i === page ? "none" : "1px solid #E5E7EB" }}

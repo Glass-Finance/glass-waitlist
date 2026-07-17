@@ -84,7 +84,7 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
           </div>
           <button
             onClick={() => { onApply({ plan, status }); onClose(); }}
-            className="px-3 py-2 rounded-lg bg-[#002FA7] text-white text-xs font-semibold border-none cursor-pointer"
+            className="px-3 py-2 rounded-lg bg-brand text-white text-xs font-semibold border-none cursor-pointer"
           >
             Apply
           </button>
@@ -106,7 +106,7 @@ function EmptyState({ onAddMember, onCreatePlan }) {
     },
     {
       icon: <Users size={15} />,
-      iconStyle: { background: "#002FA7", color: "#ffffff" },
+      iconStyle: { background: "var(--color-brand)", color: "#ffffff" },
       title: "Add Your First Members",
       subtitle: "Invite Via Link, CSV Upload, or Manually",
       done: false,
@@ -114,7 +114,7 @@ function EmptyState({ onAddMember, onCreatePlan }) {
     },
     {
       icon: <DollarSign size={15} />,
-      iconStyle: { background: "#002FA7", color: "#ffffff" },
+      iconStyle: { background: "var(--color-brand)", color: "#ffffff" },
       title: "Create A Payment Plan",
       subtitle: "Set Up Dues and Start Collecting",
       done: false,
@@ -125,7 +125,7 @@ function EmptyState({ onAddMember, onCreatePlan }) {
   return (
     <div className="flex flex-col items-center py-14 px-6">
       <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6" style={{ background: "#E6EEFF" }}>
-        <Building2 size={38} style={{ color: "#002FA7" }} />
+        <Building2 size={38} style={{ color: "var(--color-brand)" }} />
       </div>
       <h2 className="text-xl font-bold text-gray-900 text-center mb-2 max-w-sm">
         Your Community Is Set Up. Let's Get It Moving.
@@ -286,7 +286,7 @@ export default function Members() {
           <h1 className="text-xl font-bold text-black">Members</h1>
           <p className="text-sm text-gray-400 mt-0.5">A full picture of the members of your community</p>
         </div>
-        <button onClick={() => setModalOpen(true)} className="flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-white bg-[#002FA7] flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer">
+        <button onClick={() => setModalOpen(true)} className="flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-white bg-brand flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer">
           <Plus size={13} /> Add Member
         </button>
       </div>
@@ -314,7 +314,7 @@ export default function Members() {
                 <p className="text-xs text-gray-500 mt-0.5 m-0 truncate">{preview}</p>
               </div>
             </div>
-            <span className="flex items-center gap-1 text-xs font-semibold text-[#002FA7] flex-shrink-0">
+            <span className="flex items-center gap-1 text-xs font-semibold text-brand flex-shrink-0">
               Review <ChevronRight size={13} />
             </span>
           </button>
@@ -332,7 +332,7 @@ export default function Members() {
       {/* Stats — only when there are members */}
       {members.length > 0 && (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        <StatCard icon={Users} label="Total Members" value={String(stats.total)} color="#002FA7" bg="#E6EEFF" />
+        <StatCard icon={Users} label="Total Members" value={String(stats.total)} color="var(--color-brand)" bg="#E6EEFF" />
         <StatCard icon={UserX} label="Active Members" value={String(stats.active)} color="#dc2626" bg="#FFE9EC" />
         <StatCard icon={Clock} label="Inactive" value={String(stats.inactive)} color="#b45309" bg="#FFF8E7" />
         <StatCard icon={ShieldCheck} label="Admins" value={String(stats.admins)} color="#7c3aed" bg="#F3EEFF" />
@@ -342,7 +342,7 @@ export default function Members() {
       {members.length > 0 && <div className="bg-surface-container rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
         <div className="flex items-center justify-between px-5 py-4">
           <span className="text-sm font-medium text-black">Member Payments</span>
-          <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#002FA7] text-xs font-semibold text-[#002FA7] hover:bg-blue-50 transition-all bg-white cursor-pointer">
+          <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 transition-all bg-white cursor-pointer">
             <Download size={13} /> Export Csv
           </button>
         </div>
@@ -391,7 +391,7 @@ export default function Members() {
                 </button>
               </span>
             ))}
-            <button onClick={() => setFilters({ plan: "", status: "" })} className="text-xs font-semibold text-[#002FA7] bg-transparent border-none cursor-pointer">
+            <button onClick={() => setFilters({ plan: "", status: "" })} className="text-xs font-semibold text-brand bg-transparent border-none cursor-pointer">
               Clear All
             </button>
           </div>
@@ -430,7 +430,7 @@ export default function Members() {
                         <input type="checkbox" checked={selected.includes(m.id)} onChange={() => toggleSelect(m.id)} />
                       </td>
                       <td className="px-5 py-3">
-                        <button onClick={() => navigate(`/dashboard/members/${m.id}?community=${communityId}`)} className="text-xs font-semibold text-[#002FA7] hover:underline bg-transparent border-none cursor-pointer p-0">
+                        <button onClick={() => navigate(`/dashboard/members/${m.id}?community=${communityId}`)} className="text-xs font-semibold text-brand hover:underline bg-transparent border-none cursor-pointer p-0">
                           {memberName(m)}
                         </button>
                       </td>
@@ -516,7 +516,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="member@email.com"
-              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#002FA7]"
+              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-brand"
             />
           </div>
           <div>
@@ -524,7 +524,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
             <select
               value={roleId}
               onChange={(e) => setRoleId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#002FA7] bg-white"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-xs outline-none focus:border-brand bg-white"
             >
               {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>
@@ -547,11 +547,11 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
                   Share your community link so they can register and join:
                 </p>
                 <div className="flex items-center gap-2">
-                  <span className="flex-1 text-xs text-[#002FA7] truncate font-medium">{inviteLink}</span>
+                  <span className="flex-1 text-xs text-brand truncate font-medium">{inviteLink}</span>
                   <button
                     type="button"
                     onClick={copyInviteLink}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-[#002FA7] border-none cursor-pointer flex-shrink-0 hover:opacity-90"
+                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-brand border-none cursor-pointer flex-shrink-0 hover:opacity-90"
                   >
                     {linkCopied ? <Check size={11} /> : <Copy size={11} />}
                     {linkCopied ? "Copied!" : "Copy"}
@@ -565,7 +565,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
         <button
           type="submit"
           disabled={adding || !isReady}
-          className="w-full mt-4 px-4 py-2 rounded bg-[#002FA7] text-white text-xs font-medium hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
+          className="w-full mt-4 px-4 py-2 rounded bg-brand text-white text-xs font-medium hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
         >
           {adding ? "Sending…" : "Send Invite"}
         </button>

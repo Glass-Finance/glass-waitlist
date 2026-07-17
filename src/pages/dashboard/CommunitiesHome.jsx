@@ -19,14 +19,14 @@
 // //   return (
 // //     <div
 // //       onClick={onClick}
-// //       className="bg-surface-container rounded-lg border border-[#eef0f8] overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+// //       className="bg-surface-container rounded-lg border border-hairline overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
 // //       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
 // //     >
 // //       {/* Card top */}
 // //       <div className="p-5 flex-1">
 // //         <div className="flex items-start justify-between mb-4">
 // //           <div className="flex items-center gap-3">
-// //             <div className={`w-10 h-10 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${isAdmin ? "bg-gradient-to-br from-[#002FA7] to-[#4f6fe5]" : "bg-gradient-to-br from-gray-500 to-gray-400"}`}>
+// //             <div className={`w-10 h-10 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${isAdmin ? "bg-gradient-to-br from-[var(--color-brand)] to-[#4f6fe5]" : "bg-gradient-to-br from-gray-500 to-gray-400"}`}>
 // //               {c.tag}
 // //             </div>
 // //             <div>
@@ -37,7 +37,7 @@
 // //               </div>
 // //             </div>
 // //           </div>
-// //           <span className={`text-xs font-medium px-2.5 py-1 flex-shrink-0 ${isAdmin ? "text-[#002FA7] bg-blue-50 border-1 border-blue-100" : "text-gray-900 bg-gray-50 border border-gray-900"}`}>
+// //           <span className={`text-xs font-medium px-2.5 py-1 flex-shrink-0 ${isAdmin ? "text-brand bg-blue-50 border-1 border-blue-100" : "text-gray-900 bg-gray-50 border border-gray-900"}`}>
 // //             {c.role}
 // //           </span>
 // //         </div>
@@ -80,13 +80,13 @@
 // //         <div className="flex gap-2.5">
 // //           <button
 // //             onClick={() => navigate("/onboarding/choose-path")}
-// //             className="px-4 py-2 rounded-lg border border-[#002FA7] text-[#002FA7] bg-white text-xs font-medium hover:bg-blue-50 transition-all"
+// //             className="px-4 py-2 rounded-lg border border-brand text-brand bg-white text-xs font-medium hover:bg-blue-50 transition-all"
 // //           >
 // //             Join Community
 // //           </button>
 // //           <button
 // //             onClick={() => navigate("/onboarding/choose-path")}
-// //             className="px-4 py-2 rounded-lg bg-[#002FA7] text-white text-xs font-medium hover:opacity-90 transition-all"
+// //             className="px-4 py-2 rounded-lg bg-brand text-white text-xs font-medium hover:opacity-90 transition-all"
 // //           >
 // //             Create Community
 // //           </button>
@@ -124,7 +124,7 @@
 // //             <button
 // //               key={v.id}
 // //               onClick={() => setView(v.id)}
-// //               className={`w-8 h-8 rounded-sm border flex items-center justify-center transition-all ${view === v.id ? "bg-blue-50 border-blue-200 text-[#002FA7]" : "border-gray-200 bg-white text-gray-600 hover:text-gray-600"}`}
+// //               className={`w-8 h-8 rounded-sm border flex items-center justify-center transition-all ${view === v.id ? "bg-blue-50 border-blue-200 text-brand" : "border-gray-200 bg-white text-gray-600 hover:text-gray-600"}`}
 // //             >
 // //               {v.icon}
 // //             </button>
@@ -229,7 +229,7 @@
 //   return (
 //     <div
 //       onClick={onClick}
-//       className="bg-surface-container rounded-lg border border-[#eef0f8] overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+//       className="bg-surface-container rounded-lg border border-hairline overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
 //       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
 //     >
 //       <div className="p-5 flex-1">
@@ -245,7 +245,7 @@
 //               <div
 //                 className={`w-10 h-10 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
 //                   isAdmin
-//                     ? "bg-gradient-to-br from-[#002FA7] to-[#4f6fe5]"
+//                     ? "bg-gradient-to-br from-[var(--color-brand)] to-[#4f6fe5]"
 //                     : "bg-gradient-to-br from-gray-500 to-gray-400"
 //                 }`}
 //               >
@@ -267,7 +267,7 @@
 //           <span
 //             className={`text-xs font-medium px-2.5 py-1 flex-shrink-0 ${
 //               isAdmin
-//                 ? "text-[#002FA7] bg-blue-50 border border-blue-100"
+//                 ? "text-brand bg-blue-50 border border-blue-100"
 //                 : "text-gray-900 bg-gray-50 border border-gray-200"
 //             }`}
 //           >
@@ -356,13 +356,13 @@
 //         <div className="flex gap-2.5">
 //           <button
 //             onClick={() => navigate("/onboarding/choose-path")}
-//             className="px-4 py-2 rounded-lg border border-[#002FA7] text-[#002FA7] bg-white text-xs font-medium hover:bg-blue-50 transition-all"
+//             className="px-4 py-2 rounded-lg border border-brand text-brand bg-white text-xs font-medium hover:bg-blue-50 transition-all"
 //           >
 //             Join Community
 //           </button>
 //           <button
 //             onClick={() => navigate("/onboarding/choose-path")}
-//             className="px-4 py-2 rounded-lg bg-[#002FA7] text-white text-xs font-medium hover:opacity-90 transition-all"
+//             className="px-4 py-2 rounded-lg bg-brand text-white text-xs font-medium hover:opacity-90 transition-all"
 //           >
 //             Create Community
 //           </button>
@@ -443,7 +443,7 @@
 //               onClick={() => setView(v.id)}
 //               className={`w-8 h-8 rounded-sm border flex items-center justify-center transition-all ${
 //                 view === v.id
-//                   ? "bg-blue-50 border-blue-200 text-[#002FA7]"
+//                   ? "bg-blue-50 border-blue-200 text-brand"
 //                   : "border-gray-200 bg-white text-gray-600"
 //               }`}
 //             >
@@ -474,7 +474,7 @@
 //         ) : sorted.length === 0 ? (
 //           <div className="col-span-3 flex flex-col items-center justify-center py-20 gap-3">
 //             <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center">
-//               <Users size={24} className="text-[#002FA7]" />
+//               <Users size={24} className="text-brand" />
 //             </div>
 //             <p className="text-sm font-medium text-gray-700">
 //               No communities yet
@@ -595,7 +595,7 @@ function CommunityCard({ community, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="bg-surface-container rounded-lg border border-[#eef0f8] overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+      className="bg-surface-container rounded-lg border border-hairline overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
     >
       <div className="p-5 flex-1">
@@ -611,7 +611,7 @@ function CommunityCard({ community, onClick }) {
               <div
                 className={`w-10 h-10 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
                   isAdmin
-                    ? "bg-gradient-to-br from-[#002FA7] to-[#4f6fe5]"
+                    ? "bg-gradient-to-br from-[var(--color-brand)] to-[#4f6fe5]"
                     : "bg-gradient-to-br from-gray-500 to-gray-400"
                 }`}
               >
@@ -633,7 +633,7 @@ function CommunityCard({ community, onClick }) {
           <span
             className={`text-xs font-medium px-2.5 py-1 flex-shrink-0 ${
               isAdmin
-                ? "text-[#002FA7] bg-blue-50 border border-blue-100"
+                ? "text-brand bg-blue-50 border border-blue-100"
                 : "text-gray-900 bg-gray-50 border border-gray-200"
             }`}
           >
@@ -692,7 +692,7 @@ function obligationStatusChip(o) {
     return { label: "Overdue", bg: "#FEF2F2", color: "#DC2626" };
   if (days != null && days <= 7)
     return { label: "Due soon", bg: "#FFFBEB", color: "#B45309" };
-  return { label: "Upcoming", bg: "#EEF2FF", color: "#002FA7" };
+  return { label: "Upcoming", bg: "#EEF2FF", color: "var(--color-brand)" };
 }
 
 function shortDate(dateStr) {
@@ -706,14 +706,14 @@ function shortDate(dateStr) {
 function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
   return (
     <div
-      className="bg-surface-container rounded-lg border border-[#eef0f8] flex flex-col"
+      className="bg-surface-container rounded-lg border border-hairline flex flex-col"
       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
     >
-      <div className="flex items-center gap-2 px-4 pt-3.5 pb-2 border-b border-[#eef0f8]">
+      <div className="flex items-center gap-2 px-4 pt-3.5 pb-2 border-b border-hairline">
         {icon}
         <p className="text-xs font-semibold text-gray-900">{title}</p>
         {badge != null && badge > 0 && (
-          <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center bg-[#EEF2FF] text-[#002FA7] border border-blue-100">
+          <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center bg-[#EEF2FF] text-brand border border-blue-100">
             {badge}
           </span>
         )}
@@ -722,7 +722,7 @@ function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
       {footerLabel && (
         <button
           onClick={onFooter}
-          className="flex items-center justify-center gap-1 w-full py-2.5 text-[11px] font-semibold text-[#002FA7] bg-transparent border-t border-gray-50 cursor-pointer hover:bg-blue-50 transition-colors"
+          className="flex items-center justify-center gap-1 w-full py-2.5 text-[11px] font-semibold text-brand bg-transparent border-t border-gray-50 cursor-pointer hover:bg-blue-50 transition-colors"
           style={{ borderLeft: "none", borderRight: "none", borderBottom: "none" }}
         >
           {footerLabel} <ChevronRight size={12} />
@@ -771,7 +771,7 @@ function GlobalOverview() {
     <div className="px-4 md:px-7 pb-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {/* Upcoming payments across all communities */}
       <OverviewCard
-        icon={<Clock size={14} className="text-[#002FA7]" />}
+        icon={<Clock size={14} className="text-brand" />}
         title="Upcoming Payments"
         badge={upcoming.length}
         // No desktop-native page exists yet for "my dues across every
@@ -823,7 +823,7 @@ function GlobalOverview() {
 
       {/* Recent activity */}
       <OverviewCard
-        icon={<CreditCard size={14} className="text-[#002FA7]" />}
+        icon={<CreditCard size={14} className="text-brand" />}
         title="Recent Activity"
         // Same gap as Upcoming Payments above — no desktop page for this yet.
         footerLabel={null}
@@ -873,7 +873,7 @@ function GlobalOverview() {
 
       {/* Notifications */}
       <OverviewCard
-        icon={<Bell size={14} className="text-[#002FA7]" />}
+        icon={<Bell size={14} className="text-brand" />}
         title="Notifications"
         badge={unreadCount}
         footerLabel="View all notifications"
@@ -893,7 +893,7 @@ function GlobalOverview() {
                 className="w-full flex items-start gap-2.5 px-4 py-2.5 bg-transparent border-none text-left cursor-pointer hover:bg-gray-50 transition-colors"
               >
                 {!(n.readFlag ?? false) && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#002FA7] flex-shrink-0 mt-1.5" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand flex-shrink-0 mt-1.5" />
                 )}
                 <div className="min-w-0 flex-1">
                   <p
@@ -1015,13 +1015,13 @@ export default function CommunitiesHome() {
         <div className="flex gap-2.5">
           <button
             onClick={() => navigate("/onboarding/choose-path")}
-            className="px-4 py-2 rounded-lg border border-[#002FA7] text-[#002FA7] bg-white text-xs font-medium hover:bg-blue-50 transition-all"
+            className="px-4 py-2 rounded-lg border border-brand text-brand bg-white text-xs font-medium hover:bg-blue-50 transition-all"
           >
             Join Community
           </button>
           <button
             onClick={() => navigate("/onboarding/choose-path")}
-            className="px-4 py-2 rounded-lg bg-[#002FA7] text-white text-xs font-medium hover:opacity-90 transition-all"
+            className="px-4 py-2 rounded-lg bg-brand text-white text-xs font-medium hover:opacity-90 transition-all"
           >
             Create Community
           </button>
@@ -1032,7 +1032,7 @@ export default function CommunitiesHome() {
         <div className="px-4 md:px-7 pb-5">
           <div className="bg-blue-50 border border-blue-100 rounded-lg overflow-hidden">
             <div className="flex items-center gap-2 px-4 pt-3.5 pb-2">
-              <Mail size={14} className="text-[#002FA7]" />
+              <Mail size={14} className="text-brand" />
               <p className="text-xs font-semibold text-gray-900">
                 Pending Invitations ({pendingInvites.length})
               </p>
@@ -1057,7 +1057,7 @@ export default function CommunitiesHome() {
                       <button
                         onClick={() => handleAcceptInvite(invite.id)}
                         disabled={isResponding}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-[#002FA7] text-white text-xs font-medium hover:opacity-90 transition-all disabled:opacity-50"
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-brand text-white text-xs font-medium hover:opacity-90 transition-all disabled:opacity-50"
                       >
                         <Check size={12} /> Accept
                       </button>
@@ -1121,7 +1121,7 @@ export default function CommunitiesHome() {
               onClick={() => setView(v.id)}
               className={`w-8 h-8 rounded-sm border flex items-center justify-center transition-all ${
                 view === v.id
-                  ? "bg-blue-50 border-blue-200 text-[#002FA7]"
+                  ? "bg-blue-50 border-blue-200 text-brand"
                   : "border-gray-200 bg-white text-gray-600"
               }`}
             >
@@ -1152,7 +1152,7 @@ export default function CommunitiesHome() {
         ) : sorted.length === 0 ? (
           <div className="col-span-full flex flex-col items-center justify-center py-20 gap-3">
             <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center">
-              <Users size={24} className="text-[#002FA7]" />
+              <Users size={24} className="text-brand" />
             </div>
             <p className="text-sm font-medium text-gray-700">
               No communities yet

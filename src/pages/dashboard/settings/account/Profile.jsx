@@ -201,7 +201,7 @@ export default function Profile() {
   };
 
   const inputCls =
-    "w-full px-4 py-2.5 rounded-lg bg-white text-gray-900 text-xs outline-none transition-all border border-gray-300 focus:border-[#002FA7]";
+    "w-full px-4 py-2.5 rounded-lg bg-white text-gray-900 text-xs outline-none transition-all border border-gray-300 focus:border-brand";
 
   const displayName = `${form.firstName} ${form.lastName}`.trim() || user?.email || "—";
   const initials = displayName.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
@@ -221,7 +221,7 @@ export default function Profile() {
               {photoPreview || profileImageUrl ? (
                 <img src={photoPreview ?? profileImageUrl} alt="" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-sm text-[#002FA7]">{initials}</span>
+                <span className="text-sm text-brand">{initials}</span>
               )}
             </div>
             <div className="min-w-0">
@@ -275,7 +275,7 @@ export default function Profile() {
           <button
             onClick={handleSave}
             disabled={updateProfile.isPending || emailSaving || !isDirty}
-            className="p-2 rounded-sm text-[11px] text-[#002FA7] hover:bg-[#002FA7] hover:text-white transition-all cursor-pointer border border-[#002FA7] disabled:opacity-50"
+            className="p-2 rounded-sm text-[11px] text-brand hover:bg-brand hover:text-white transition-all cursor-pointer border border-brand disabled:opacity-50"
           >
             {saved ? "Saved!" : updateProfile.isPending || emailSaving ? "Saving…" : "Save Changes"}
           </button>
@@ -365,7 +365,7 @@ export default function Profile() {
                     onClick={handleResendDeletionCode}
                     disabled={resendLoading || deleteLoading}
                     className="text-xs font-medium cursor-pointer bg-transparent border-none transition-all disabled:opacity-50"
-                    style={{ color: "#002FA7" }}
+                    style={{ color: "var(--color-brand)" }}
                   >
                     {resendLoading ? "Resending…" : resendMessage || "Resend code"}
                   </button>

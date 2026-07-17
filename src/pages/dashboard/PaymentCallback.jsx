@@ -152,7 +152,7 @@ export default function PaymentCallback() {
 
   const config = {
     checking: {
-      icon: <Loader2 size={40} className="animate-spin" style={{ color: "#002FA7" }} />,
+      icon: <Loader2 size={40} className="animate-spin" style={{ color: "var(--color-brand)" }} />,
       iconBg: "#EEF2FF",
       title: "Confirming payment…",
       subtitle: "Please wait while we verify your transaction.",
@@ -175,7 +175,7 @@ export default function PaymentCallback() {
       buttonLabel: backLabel,
     },
     processing: {
-      icon: <Clock size={40} style={{ color: "#002FA7" }} />,
+      icon: <Clock size={40} style={{ color: "var(--color-brand)" }} />,
       iconBg: "#EEF2FF",
       title: "Payment Processing",
       subtitle: "Your payment went through but status confirmation is taking a moment. You'll receive a notification when it's ready — usually within a few minutes.",
@@ -189,7 +189,7 @@ export default function PaymentCallback() {
       buttonLabel: backLabel,
     },
     signin: {
-      icon: <Clock size={40} style={{ color: "#002FA7" }} />,
+      icon: <Clock size={40} style={{ color: "var(--color-brand)" }} />,
       iconBg: "#EEF2FF",
       title: "Sign in to see your payment",
       subtitle:
@@ -239,7 +239,7 @@ export default function PaymentCallback() {
           <button
             onClick={() => navigate(effectiveReturnTo, { replace: true })}
             className="w-full px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
-            style={{ background: "#002FA7" }}
+            style={{ background: "var(--color-brand)" }}
           >
             Back to Home
           </button>
@@ -247,7 +247,7 @@ export default function PaymentCallback() {
             onClick={() => setShareOpen(true)}
             disabled={!tx}
             className="w-full px-8 py-3.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ color: "#002FA7", border: "1.5px solid #002FA7" }}
+            style={{ color: "var(--color-brand)", border: "1.5px solid var(--color-brand)" }}
           >
             <Share2 size={15} />
             Share Receipt
@@ -314,7 +314,7 @@ export default function PaymentCallback() {
             <button
               onClick={() => navigate(buttonDest, { replace: true })}
               className="mt-4 px-8 py-3 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
-              style={{ background: "#002FA7" }}
+              style={{ background: "var(--color-brand)" }}
             >
               {config.buttonLabel}
             </button>

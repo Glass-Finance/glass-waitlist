@@ -143,9 +143,9 @@ export default function AutoPay() {
       </div>
 
       {/* Info banner */}
-      <div className="flex items-start gap-2.5 px-4 py-3 rounded-md" style={{ background: "#D7E2FF", border: "1px solid #002FA7" }}>
-        <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 border border-[#002FA7] mt-0.5">
-          <span className="text-[#002FA7] text-[9px] font-bold">i</span>
+      <div className="flex items-start gap-2.5 px-4 py-3 rounded-md" style={{ background: "#D7E2FF", border: "1px solid var(--color-brand)" }}>
+        <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 border border-brand mt-0.5">
+          <span className="text-brand text-[9px] font-bold">i</span>
         </div>
         <p className="text-xs text-gray-700">
           Auto-Pay charges your saved payment method on each due date, and you'll

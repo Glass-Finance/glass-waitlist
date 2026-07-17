@@ -141,11 +141,11 @@ export default function Role() {
                 className={`flex items-start gap-3 px-4 py-4 rounded-xl text-left transition-all
                   ${isSelected ? "bg-blue-50" : "bg-gray-50 hover:bg-gray-100"}
                   ${saving ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
-                style={{ border: isSelected ? "1.5px solid #002FA7" : "1.5px solid #E5E7EB" }}
+                style={{ border: isSelected ? "1.5px solid var(--color-brand)" : "1.5px solid #E5E7EB" }}
               >
                 <div
                   className={`w-5 h-5 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center
-                    ${isSelected ? "bg-[#002FA7]" : "bg-white"}`}
+                    ${isSelected ? "bg-brand" : "bg-white"}`}
                   style={{ border: isSelected ? "none" : "1px solid #D1D5DB" }}
                 >
                   {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
@@ -168,10 +168,10 @@ export default function Role() {
       {/* Info banner */}
       <div
         className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-blue-50"
-        style={{ border: "1px solid #002FA7" }}
+        style={{ border: "1px solid var(--color-brand)" }}
       >
-        <div className="w-4 h-4 rounded-full border border-[#002FA7] flex items-center justify-center flex-shrink-0">
-          <span className="text-[#002FA7] text-[9px] font-bold">i</span>
+        <div className="w-4 h-4 rounded-full border border-brand flex items-center justify-center flex-shrink-0">
+          <span className="text-brand text-[9px] font-bold">i</span>
         </div>
         <p className="text-xs text-gray-700">
           Changes take effect from the next billing cycle. Past payment records are not affected.

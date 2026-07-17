@@ -179,7 +179,7 @@ export default function MemberAccess() {
             <button
               onClick={handleCopy}
               disabled={!inviteLink}
-              className="flex items-center gap-1 text-xs font-medium text-[#002FA7] bg-transparent hover:opacity-70 transition-all border-none cursor-pointer flex-shrink-0 disabled:opacity-50"
+              className="flex items-center gap-1 text-xs font-medium text-brand bg-transparent hover:opacity-70 transition-all border-none cursor-pointer flex-shrink-0 disabled:opacity-50"
             >
               {copied ? <Check size={12} /> : <Copy size={12} />}
               {copied ? "Copied!" : "Copy Link"}
@@ -218,7 +218,7 @@ export default function MemberAccess() {
                   <span
                     className="text-xs font-semibold px-2.5 py-0.5 rounded-full"
                     style={{
-                      color:      isAdminRole(member) ? "#002FA7" : "#D97706",
+                      color:      isAdminRole(member) ? "var(--color-brand)" : "#D97706",
                       background: isAdminRole(member) ? "#EEF2FF" : "#FEF3C7",
                     }}
                   >
