@@ -50,7 +50,7 @@ export default function Topbar({
   const communityId = useActiveCommunityId();
 
   // Panel uses all-community notifications so the dropdown is universal
-  const { notifications, isLoading, unreadCount, markRead, markAllRead } =
+  const { notifications, isLoading, unreadCount, markRead, markAllRead, clearAll, isClearing } =
     useAllNotifications();
 
   // Build a communityId/slug → community lookup for the panel cards
@@ -270,6 +270,8 @@ export default function Topbar({
             communityMap={communityMap}
             onMarkRead={markRead}
             onMarkAllRead={markAllRead}
+            onClearAll={clearAll}
+            isClearing={isClearing}
             onClose={() => setPanelOpen(false)}
           />
         )}

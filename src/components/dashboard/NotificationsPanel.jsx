@@ -213,6 +213,8 @@ export default function NotificationsPanel({
   communityMap,
   onMarkRead,
   onMarkAllRead,
+  onClearAll,
+  isClearing,
   onClose,
 }) {
   const navigate = useNavigate();
@@ -239,12 +241,25 @@ export default function NotificationsPanel({
             </span>
           )}
         </p>
-        <button
-          onClick={onMarkAllRead}
-          style={{ fontSize: 12, fontWeight: 600, color: "#002FA7", background: "none", border: "none", cursor: "pointer", padding: 0 }}
-        >
-          Mark All As Read
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button
+            onClick={onClearAll}
+            disabled={isClearing || notifications.length === 0}
+            style={{
+              fontSize: 12, fontWeight: 600, color: "#E53E3E", background: "none",
+              border: "none", cursor: "pointer", padding: 0,
+              opacity: isClearing || notifications.length === 0 ? 0.4 : 1,
+            }}
+          >
+            {isClearing ? "Clearing…" : "Clear All"}
+          </button>
+          <button
+            onClick={onMarkAllRead}
+            style={{ fontSize: 12, fontWeight: 600, color: "#002FA7", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+          >
+            Mark All As Read
+          </button>
+        </div>
       </div>
 
       {/* Body */}

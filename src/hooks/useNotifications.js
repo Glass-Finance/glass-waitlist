@@ -197,10 +197,17 @@ export function useAllNotifications() {
     refetchInterval: realtimeConnected ? POLL_STREAM_UP : POLL_STREAM_DOWN,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
-    select: (data) =>
-      [...(data?.content ?? [])].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      ),
+    select: (data) => {
+      const notifications = data?.content ?? [];
+      const clearedAt = Number(localStorage.getItem(clearedAtKey(null)) ?? 0);
+      return [...notifications]
+        .filter((n) => {
+          if (!clearedAt) return true;
+          if (n.readFlag && new Date(n.createdAt).getTime() <= clearedAt) return false;
+          return true;
+        })
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    },
   });
 
   const markReadMutation = useMutation({
@@ -231,6 +238,24 @@ export function useAllNotifications() {
     onSettled: () => queryClient.invalidateQueries({ queryKey: listKey }),
   });
 
+  // Same "mark read + hide from view persistently" behaviour as
+  // useNotifications' clearAll, scoped to the unscoped "all" clearedAt key
+  // (clearedAtKey(null)) so clearing from the dropdown doesn't touch any
+  // single community's own cleared-at timestamp or vice versa.
+  const clearAllMutation = useMutation({
+    mutationFn: markAllRead,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: listKey });
+      localStorage.setItem(clearedAtKey(null), String(Date.now()));
+      queryClient.setQueryData(listKey, (old) =>
+        old ? { ...old, content: [] } : old
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: listKey });
+    },
+  });
+
   const unreadCount = useMemo(
     () => (query.data ?? []).filter((n) => !n.readFlag).length,
     [query.data]
@@ -243,6 +268,8 @@ export function useAllNotifications() {
     markRead:         (id) => markReadMutation.mutate(id),
     markAllRead:      () => markAllReadMutation.mutate(),
     isMarkingAllRead: markAllReadMutation.isPending,
+    clearAll:         () => clearAllMutation.mutate(),
+    isClearing:       clearAllMutation.isPending,
   };
 }
 
