@@ -1,4 +1,7 @@
-import { Banknote, CalendarClock, AlertTriangle, XCircle, Receipt, Undo2, ShieldOff, Landmark } from "lucide-react";
+import {
+  AlertTriangle, UserX, Clock, CheckCircle2, UserPlus, Receipt,
+  Settings, UserMinus, Bell, Landmark, Undo2,
+} from "lucide-react";
 
 // Exact notificationType enum + per-type rules, sourced from the backend's
 // documented Notification API schema (NotificationDto.notificationType).
@@ -94,29 +97,54 @@ export function isSelfAccountType(type) {
   return SELF_ACCOUNT_TYPES.has((type ?? "").toUpperCase());
 }
 
-// A payment notification isn't "about" a person the way a member-joined or
-// profile-updated event is — initials for a payer's name (or worse, the
-// community's) read as an arbitrary two letters, not as identity. A
-// purpose-built icon per stage of the payment lifecycle is more legible at a
-// glance and doesn't need a name to resolve at all. Takes priority over the
-// photo/initials treatment for every type in this map, not just
-// PAYMENT_RECEIVED — a due reminder, an overdue notice, and a failed charge
-// are each a distinct, recognizable shape, not "no photo available".
-const PAYMENT_TYPE_ICON = {
-  PAYMENT_REQUEST_CREATED: Receipt,
-  PAYMENT_DUE: CalendarClock,
-  PAYMENT_REMINDER_DUE: CalendarClock,
-  PAYMENT_OVERDUE: AlertTriangle,
-  PAYMENT_REMINDER_OVERDUE: AlertTriangle,
-  PAYMENT_RECEIVED: Banknote,
-  PAYMENT_FAILED: XCircle,
-  PAYMENT_AUTHORIZATION_DISABLED: ShieldOff,
-  REFUND_REQUESTED: Undo2,
-  SETTLEMENT_COMPLETED: Landmark,
+// Per-Figma icon + color per notification type -- most notifications
+// (payment lifecycle stages, member-joined, settings changes) aren't
+// really "about" a particular person's name the way a photo/initials
+// avatar implies; a purpose-built, category-colored icon reads faster and
+// doesn't need a name or photo to resolve at all. This takes priority over
+// the photo/initials treatment for every type listed here. Self-account
+// types (see isSelfAccountType) are deliberately absent -- those show the
+// reader's own real photo instead, since there's a genuine person to show.
+// bg/fg are a light-tint/solid-tone pair per semantic bucket: red for
+// failures/urgent, amber for due-soon, green for success, indigo for new/
+// info, gray for neutral account-level notices.
+const RED    = { bg: "#FEE2E2", fg: "#DC2626" };
+const AMBER  = { bg: "#FEF3C7", fg: "#D97706" };
+const GREEN  = { bg: "#D1FAE5", fg: "#059669" };
+const INDIGO = { bg: "#E0E7FF", fg: "#4F46E5" };
+const GRAY   = { bg: "#F3F4F6", fg: "#6B7280" };
+
+const NOTIFICATION_VISUAL = {
+  // Payment lifecycle
+  PAYMENT_REQUEST_CREATED:        { icon: Receipt,      ...INDIGO },
+  PAYMENT_DUE:                    { icon: Clock,         ...AMBER },
+  PAYMENT_REMINDER_DUE:           { icon: Clock,         ...AMBER },
+  PAYMENT_OVERDUE:                { icon: AlertTriangle, ...RED },
+  PAYMENT_REMINDER_OVERDUE:       { icon: AlertTriangle, ...RED },
+  PAYMENT_RECEIVED:               { icon: CheckCircle2,  ...GREEN },
+  PAYMENT_FAILED:                 { icon: AlertTriangle, ...RED },
+  PAYMENT_AUTHORIZATION_DISABLED: { icon: Landmark,      ...GRAY },
+  REFUND_REQUESTED:               { icon: Undo2,         ...RED },
+  SETTLEMENT_COMPLETED:           { icon: CheckCircle2,  ...GREEN },
+  RECONCILIATION_FINDINGS:        { icon: AlertTriangle, ...RED },
+
+  // Community / membership
+  JOIN_REQUEST_CREATED:           { icon: UserPlus,      ...INDIGO },
+  JOIN_REQUEST_APPROVED:          { icon: CheckCircle2,  ...GREEN },
+  JOIN_REQUEST_REJECTED:          { icon: UserX,         ...GRAY },
+  JOIN_REQUEST_REVOKED:           { icon: UserMinus,     ...GRAY },
+  COMMUNITY_INVITE_SENT:          { icon: UserPlus,      ...INDIGO },
+  COMMUNITY_INVITE_ACCEPTED:      { icon: CheckCircle2,  ...GREEN },
+  COMMUNITY_INVITE_REVOKED:       { icon: UserMinus,     ...GRAY },
+  COMMUNITY_INVITE_EXPIRED:       { icon: Clock,         ...GRAY },
+  COMMUNITY_ACCOUNT_VERIFIED:     { icon: CheckCircle2,  ...GREEN },
+  COMMUNITY_SETTINGS_CHANGED:     { icon: Settings,      ...GRAY },
+
+  GENERAL:                        { icon: Bell,          ...GRAY },
 };
 
-export function paymentNotificationIcon(type) {
-  return PAYMENT_TYPE_ICON[(type ?? "").toUpperCase()] ?? null;
+export function notificationVisual(type) {
+  return NOTIFICATION_VISUAL[(type ?? "").toUpperCase()] ?? null;
 }
 
 // Admin dashboard's Urgent / Payment Activity / Community Activity tabs.

@@ -1,14 +1,14 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { Bell, ChevronRight, X, User, Building2 } from "lucide-react";
+import { Bell, ChevronRight, X, User } from "lucide-react";
 import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { useAuth } from "../../store/AuthContext";
 import { notificationAction } from "../../utils/notificationRouting";
-import { notificationCategory, isPaymentReceivedType, isPaymentNotificationType, isSelfAccountType, paymentNotificationIcon } from "../../utils/notificationTypes";
-import { extractNotificationDetails, formatNairaAmount, initials } from "../../utils/notificationContent";
+import { notificationCategory, isSelfAccountType, notificationVisual } from "../../utils/notificationTypes";
+import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import { formatRelativeDateTime as formatTime } from "../../utils/format";
@@ -53,67 +53,39 @@ const SECTION_CONFIG = {
 const TABS = ["All", "Payments", "Community"];
 const TAB_CAT = { Payments: ["payment", "urgent"], Community: ["member"] };
 
-// Payment-received notifications show the paying member's photo. A
-// profile/account event is about the reader's own account, not a member
-// or community, so it shows the current admin's own photo instead. Every
-// other type (due, reminder, plan created, settings changed) has no
-// single member it's "from" (a plan belongs to the community, not
-// personally to whichever admin happened to create it), so those show the
-// community logo. When no image is available at all: a payment-family
-// notification isn't really "about" a person's name, so it gets a
-// purpose-built icon for that stage of the payment lifecycle instead of
-// initials; every other type still falls back to initials, and only
-// resorts to a generic icon when there's truly no name to initial either.
-function Avatar({ n, details }) {
+// Per Figma: notifications use a category icon, not a photo/initials
+// avatar — even a clearly-named event ("X joined Y") shows a status icon
+// rather than that person's photo. A self-account event is the one
+// exception, since it's genuinely about the reader's own account and
+// there's a real photo to show. Every other type gets a purpose-built
+// icon + semantic color for its category (see notificationVisual) — red
+// for failures/urgent, amber for due-soon, green for success, indigo for
+// new/info, gray for neutral account notices.
+function Avatar({ n }) {
   const { user } = useAuth();
   const type = n?.notificationType ?? n?.type;
-  const isReceived = isPaymentReceivedType(type);
-  const isPayment = isPaymentNotificationType(type);
   const isSelf = isSelfAccountType(type);
   const selfName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email;
 
-  const img = isSelf
-    ? user?.profileImage?.url
-    : isReceived
-      ? details?.memberPhoto
-      : details?.communityLogo;
-  const name = isSelf
-    ? selfName
-    : isReceived
-      ? (details?.memberName ?? details?.communityName)
-      : (details?.communityName ?? details?.memberName);
-
-  if (img) {
+  if (isSelf && user?.profileImage?.url) {
     return (
       <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden">
-        <img src={img} alt={name ?? ""} className="w-full h-full object-cover" />
+        <img src={user.profileImage.url} alt={selfName ?? ""} className="w-full h-full object-cover" />
       </div>
     );
   }
 
-  const PaymentIcon = paymentNotificationIcon(type);
-  if (isPayment && PaymentIcon) {
-    return (
-      <div
-        className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-white"
-        style={{ background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)" }}
-      >
-        <PaymentIcon size={18} strokeWidth={2} />
-      </div>
-    );
-  }
+  const visual = notificationVisual(type);
+  const Icon = visual?.icon ?? (isSelf ? User : Bell);
+  const bg = visual?.bg ?? "#F3F4F6";
+  const fg = visual?.fg ?? "#6B7280";
 
-  // A bare "?" reads as broken, not intentional -- when there's truly no
-  // name to initial (community couldn't be resolved at all, even by text
-  // match), a plain icon on the same brand gradient looks like a
-  // deliberate generic-avatar state instead.
-  const GenericIcon = isSelf ? User : Building2;
   return (
     <div
-      className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white"
-      style={{ background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)" }}
+      className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center"
+      style={{ background: bg }}
     >
-      {name ? initials(name) : <GenericIcon size={16} strokeWidth={2} />}
+      <Icon size={18} strokeWidth={2} color={fg} />
     </div>
   );
 }
@@ -147,7 +119,7 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
       {!isRead && (
         <span className="absolute rounded-full bg-brand" style={{ top: 10, right: 12, width: 7, height: 7 }} />
       )}
-      <Avatar n={n} details={details} />
+      <Avatar n={n} />
       <div className="flex-1 min-w-0" style={{ paddingRight: isRead ? 0 : 14 }}>
         <p className={`text-sm leading-snug ${isRead ? "text-gray-500" : "text-gray-900 font-semibold"}`}>
           {title}
@@ -201,7 +173,7 @@ function NotificationDetailModal({ n, onClose }) {
         {/* Header */}
         <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-[#E0E0EB]">
           <div className="flex items-start gap-3 min-w-0">
-            <Avatar n={n} details={details} />
+            <Avatar n={n} />
             <div className="min-w-0">
               <span
                 className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5"
