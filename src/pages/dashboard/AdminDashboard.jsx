@@ -41,6 +41,7 @@ import { exportCommunityTransactions } from "../../api/exports";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import EmptyState from "../../components/common/EmptyState";
+import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
 import { formatNaira as sharedFormatNaira, toTitleCase, formatDate } from "../../utils/format";
 import totalMembersIcon from "../../assets/dashboard/tdesign-member.webp";
 import inactiveMembersIcon from "../../assets/dashboard/inactive-members.webp";
@@ -1111,6 +1112,7 @@ function DashboardContent({ isPaying, communityId }) {
     transactions,
     obligations,
     activity,
+    community,
     isLoading,
     error,
   } = useCommunityDashboard(communityId);
@@ -2135,10 +2137,17 @@ function DashboardContent({ isPaying, communityId }) {
                 ) : (
                   filteredTransactions.map((tx, i) => {
                     const s = statusStyle(tx.status ?? "pending");
+                    const isPaid = ["success", "successful", "paid"].includes(
+                      (tx.status ?? "").toLowerCase(),
+                    );
                     return (
                       <tr
                         key={tx.id ?? i}
-                        className="border-b border-[#f3f4f8] hover:bg-[#fafbff] transition-colors cursor-default"
+                        onClick={() =>
+                          tx.id &&
+                          navigate(`/dashboard/transactions/${tx.id}?community=${communityId ?? ""}`)
+                        }
+                        className={`border-b border-[#f3f4f8] hover:bg-[#fafbff] transition-colors ${tx.id ? "cursor-pointer" : "cursor-default"}`}
                       >
                         <td className="px-5 py-3 text-xs font-medium text-brand">
                           {resolveMemberName(tx) ??
@@ -2178,8 +2187,32 @@ function DashboardContent({ isPaying, communityId }) {
                             {s.label}
                           </span>
                         </td>
-                        <td className="hidden sm:table-cell px-5 py-3">
+                        <td className="hidden sm:table-cell px-5 py-3" onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center gap-2">
+                            <ReceiptDownloadButton
+                              tx={{
+                                amount: tx.amount,
+                                description: tx.planName ?? tx.description,
+                                communityName: community?.name,
+                                communityLogo: community?.logo,
+                                date: tx.paidAt ?? tx.createdAt,
+                                channel: tx.channel,
+                                reference: tx.internalReference ?? tx.id,
+                                status: tx.status,
+                                feeMinor:
+                                  tx.feeMinor ??
+                                  tx.fee ??
+                                  (tx.amountPaid != null && tx.amount != null && tx.amountPaid > tx.amount
+                                    ? tx.amountPaid - tx.amount
+                                    : null),
+                              }}
+                              payerName={resolveMemberName(tx)}
+                              payerEmail={tx.member?.user?.email ?? tx.user?.email ?? tx.email}
+                              disabled={!isPaid}
+                              iconSize={11}
+                              title={isPaid ? "Download receipt" : "Receipts are only available for successful payments"}
+                              buttonClassName={`w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center ${isPaid ? "text-gray-500 hover:bg-gray-50 cursor-pointer" : "text-gray-300 cursor-not-allowed opacity-40"}`}
+                            />
                             <button
                               disabled
                               title="Send reminder — coming soon"

@@ -223,7 +223,11 @@ export default function MemberDetail() {
                     const statusLabel = (t.status ?? "pending").charAt(0).toUpperCase() + (t.status ?? "pending").slice(1).toLowerCase();
                     const isPaid = ["success", "successful", "paid"].includes(statusLabel.toLowerCase());
                     return (
-                      <tr key={t.id} className="border-b border-gray-50">
+                      <tr
+                        key={t.id}
+                        onClick={() => navigate(`/dashboard/transactions/${t.id}?community=${communityId}`)}
+                        className="border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors"
+                      >
                         <td className="px-5 py-3 text-sm font-medium text-black">{t.paymentLink?.title ?? t.description ?? "—"}</td>
                         <td className="px-5 py-3 text-sm font-semibold text-gray-900">{formatNaira(t.amount)}</td>
                         <td className="px-5 py-3">
@@ -233,7 +237,7 @@ export default function MemberDetail() {
                         </td>
                         <td className="px-5 py-3 text-sm text-gray-500">{t.channel ?? "—"}</td>
                         <td className="px-5 py-3 text-sm text-gray-500">{formatDate(t.paidAt ?? t.createdAt)}</td>
-                        <td className="px-5 py-3">
+                        <td className="px-5 py-3" onClick={(e) => e.stopPropagation()}>
                           <ReceiptDownloadButton
                             tx={{
                               amount: t.amount,

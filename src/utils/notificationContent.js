@@ -81,7 +81,12 @@ function parseReference(text) {
 // resolved a community object (e.g. the topbar panel) can pass it via
 // communityOverride instead of rebuilding the map.
 function resolveCommunity(n, communityMap) {
-  const id = n.communityId ?? n.community?.id ?? null;
+  // Matches NotificationsPanel.jsx's own local resolveCommunity, which
+  // additionally checks community_id -- this one didn't, so any payload
+  // carrying the id under that snake_case key resolved fine in the bell
+  // dropdown (uses its own copy) but silently failed here, which is what
+  // both the admin full notifications page and the member app page use.
+  const id = n.communityId ?? n.community_id ?? n.community?.id ?? null;
   if (!id || !communityMap) return null;
   return communityMap.get?.(id) ?? communityMap[id] ?? null;
 }

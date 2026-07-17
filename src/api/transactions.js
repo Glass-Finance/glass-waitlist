@@ -32,3 +32,7 @@ export const extendObligationDueDate = (communityId, obligationId, dueAt) =>
 // GET /api/v1/communities/{communityIdentifier}/finance/transactions
 export const getCommunityTransactions = (communityId) =>
   client.get(`/communities/${communityId}/finance/transactions`, { params: { pageSize: 1000 } });
+
+// GET /api/v1/communities/{communityIdentifier}/finance/transactions/{transactionId}
+export const getCommunityTransaction = (communityId, transactionId) =>
+  client.get(`/communities/${communityId}/finance/transactions/${transactionId}`);
