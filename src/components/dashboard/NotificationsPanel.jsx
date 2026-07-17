@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Bell, User, Building2 } from "lucide-react";
-import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity, initials } from "../../utils/notificationContent";
-import { isPaymentReceivedType, isPaymentNotificationType, isSelfAccountType, paymentNotificationIcon } from "../../utils/notificationTypes";
+import { Bell, User } from "lucide-react";
+import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity } from "../../utils/notificationContent";
+import { isSelfAccountType, notificationVisual } from "../../utils/notificationTypes";
 import { useAuth } from "../../store/AuthContext";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
@@ -54,70 +54,41 @@ function notifDestination(n, community) {
   return `/dashboard/notifications?open=${n.id}`;
 }
 
-// A payment-received notification is about a specific member paying --
-// their photo (when the payload carries one) is more useful there than the
-// community's logo. A profile/account event is about the reader's own
-// account, not a member or community, so it shows the current admin's own
-// photo instead. Every other type (reminder, plan created, settings
-// changed) has no single member it's "from" (a plan is the community's,
-// not personally the admin who happened to create it), so those show the
-// community logo. When no image is available at all: a payment-family
-// notification (due, overdue, failed, received, etc.) gets a purpose-built
-// icon for that stage rather than initials, since it isn't really "about" a
-// person's name; every other type still falls back to initials, and only
-// resorts to a generic icon when there's truly no name to initial either.
-function NotifAvatar({ n, community }) {
+// Per Figma: notifications use a category icon, not a photo/initials
+// avatar — even a clearly-named event ("X joined Y") shows a status icon
+// rather than that person's photo. A self-account event is the one
+// exception, since it's genuinely about the reader's own account and
+// there's a real photo to show (from auth state directly). Every other
+// type gets a purpose-built icon + semantic color for its category (see
+// notificationVisual) — red for failures/urgent, amber for due-soon, green
+// for success, indigo for new/info, gray for neutral account notices.
+function NotifAvatar({ n }) {
   const type = n.notificationType ?? n.type;
   const { user } = useAuth();
-  const isReceived = isPaymentReceivedType(type);
-  const isPayment = isPaymentNotificationType(type);
   const isSelf = isSelfAccountType(type);
-  const details = extractNotificationDetails(n);
   const selfName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email;
 
-  const img = isSelf
-    ? user?.profileImage?.url
-    : isReceived
-      ? details.memberPhoto
-      : (community?.logo?.url ?? community?.logoUrl ?? null);
-  const name = isSelf
-    ? selfName
-    : isReceived
-      ? (details.memberName ?? community?.name)
-      : (community?.name ?? details.memberName);
-
-  const circleStyle = {
-    width: 36, height: 36, borderRadius: "50%", flexShrink: 0, marginTop: 1,
-    background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)", color: "#fff",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    fontSize: 12, fontWeight: 700,
-  };
-
-  if (img) {
+  if (isSelf && user?.profileImage?.url) {
     return (
       <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, overflow: "hidden", marginTop: 1 }}>
-        <img src={img} alt={name ?? ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={user.profileImage.url} alt={selfName ?? ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
     );
   }
 
-  const PaymentIcon = paymentNotificationIcon(type);
-  if (isPayment && PaymentIcon) {
-    return (
-      <div style={circleStyle}>
-        <PaymentIcon size={17} strokeWidth={2} />
-      </div>
-    );
-  }
+  const visual = notificationVisual(type);
+  const Icon = visual?.icon ?? (isSelf ? User : Bell);
+  const bg = visual?.bg ?? "#F3F4F6";
+  const fg = visual?.fg ?? "#6B7280";
 
-  // A bare "?" reads as broken, not intentional -- when there's truly no
-  // name to initial (community couldn't be resolved at all, even by text
-  // match), a plain icon on the same brand gradient looks like a deliberate
-  // generic-avatar state instead.
-  const GenericIcon = isSelf ? User : Building2;
   return (
-    <div style={circleStyle}>
-      {name ? initials(name) : <GenericIcon size={15} strokeWidth={2} />}
+    <div
+      style={{
+        width: 36, height: 36, borderRadius: "50%", flexShrink: 0, marginTop: 1,
+        background: bg, display: "flex", alignItems: "center", justifyContent: "center",
+      }}
+    >
+      <Icon size={17} strokeWidth={2} color={fg} />
     </div>
   );
 }
@@ -145,7 +116,7 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
         transition: "background 0.15s", outline: "none",
       }}
     >
-      <NotifAvatar n={n} community={community} />
+      <NotifAvatar n={n} />
 
       <div style={{ flex: 1, minWidth: 0 }}>
         {commName && (
