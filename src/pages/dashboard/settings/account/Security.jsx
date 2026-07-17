@@ -275,7 +275,7 @@ export default function Security() {
     <div className="max-w-2xl flex flex-col gap-5">
 
       {/* Password */}
-      <div className="bg-[#f6f6f6] rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-surface-container rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Password</p>
         <p className="text-xs text-gray-500 mb-5">Keep your account secure with a strong password.</p>
 
@@ -334,7 +334,7 @@ export default function Security() {
       </div>
 
       {/* MFA */}
-      <div className="bg-[#f6f6f6] rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
+      <div className="bg-surface-container rounded-2xl p-6" style={{ border: "1px solid #E5E7EB" }}>
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Multi-Factor Authentication (MFA)</p>
         <p className="text-xs text-gray-500 mb-5">Add an extra layer of protection to your account.</p>
 
