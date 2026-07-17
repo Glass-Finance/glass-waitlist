@@ -9,6 +9,7 @@ import { useAuth } from "../../store/AuthContext";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingScreen from "../../components/LoadingScreen";
 import MemberPaymentConfirm from "../memberApp/PaymentSuccess";
+import AdminBackground from "../../assets/admin-background.webp";
 
 // The backend's verify endpoint is async: it queues a verification job and
 // returns the current DB status (often still "INITIATED"). The job updates the
@@ -218,7 +219,13 @@ function AdminPaymentCallback() {
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif" }}
+      style={{
+        fontFamily: "'Inter', system-ui, sans-serif",
+        backgroundImage: `url(${AdminBackground})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       {/* Top bar */}
       <div className="flex items-center px-4 md:px-8 pt-6 md:pt-8 pb-4">
@@ -242,7 +249,7 @@ function AdminPaymentCallback() {
       <div className="flex-1 flex items-center justify-center px-4 pb-16">
         <div
           className="w-full bg-surface-container border border-surface-container-border rounded-2xl shadow-sm flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center"
-          style={{ maxWidth: 480 }}
+          style={{ maxWidth: 560 }}
         >
           <div
             className="w-[110px] h-[110px] rounded-full flex items-center justify-center mb-6 flex-shrink-0"
