@@ -14,8 +14,10 @@ import { getMyCommunities } from "../../api/members";
 import {
   recordPendingJoinRequest,
   getPendingJoinRequests,
+  useJoinApprovalWatcher,
 } from "../../hooks/useJoinApproval";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
+import LoadingState from "../../components/common/LoadingState";
 
 function unwrapList(res) {
   const d = res.data?.data;
@@ -327,6 +329,30 @@ export default function DiscoverCommunities() {
   });
   const pendingLocal = useMemo(() => getPendingJoinRequests(), []);
 
+  // Only surfaced here -- this page is where a member is actively waiting
+  // on a request, so it's the only place an approval landing mid-session
+  // should interrupt with a popup. One at a time; dismissing (or opening
+  // the community) reveals the next if more than one came through.
+  const { approved: approvedJoins, dismiss: dismissJoin } = useJoinApprovalWatcher();
+  const activeApproval = approvedJoins[0] ?? null;
+
+  function openApprovedCommunity(entry) {
+    try {
+      localStorage.setItem(
+        "glass_member_community",
+        JSON.stringify({
+          id: entry.communityId,
+          slug: entry.communitySlug,
+          name: entry.name,
+        }),
+      );
+    } catch {
+      /* ignore */
+    }
+    dismissJoin(entry);
+    navigate("/member/home");
+  }
+
   function derivedStatusFor(community) {
     const match = myCommunities.find(
       (c) =>
@@ -474,13 +500,7 @@ export default function DiscoverCommunities() {
         }}
       >
         {isLoading && query.length > 1 ? (
-          <div style={{ textAlign: "center", paddingTop: 48 }}>
-            <Loader2
-              size={24}
-              className="animate-spin"
-              style={{ color: "#1C2B8A" }}
-            />
-          </div>
+          <LoadingState label="Searching…" className="pt-12" />
         ) : results.length > 0 ? (
           results.map((c) => (
             <CommunityCard
@@ -494,6 +514,59 @@ export default function DiscoverCommunities() {
           <EmptyState query={query} />
         )}
       </div>
+
+      {/* Join-request approved popup -- only shown here, while the member is
+          actively waiting on this page. If the approval lands after they've
+          already navigated away, this simply doesn't show; it's not
+          persisted/resurfaced elsewhere. */}
+      {activeApproval && (
+        <div
+          style={{
+            position: "fixed", inset: 0, zIndex: 100,
+            background: "rgba(0,0,0,0.4)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 20,
+          }}
+          onClick={(e) => e.target === e.currentTarget && dismissJoin(activeApproval)}
+        >
+          <div
+            style={{
+              width: "100%", maxWidth: 340,
+              background: "#fff", borderRadius: 20,
+              padding: "28px 24px", textAlign: "center",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+            }}
+          >
+            <span style={{ fontSize: 40, lineHeight: 1, display: "block", marginBottom: 12 }}>🎉</span>
+            <p style={{ fontSize: 17, fontWeight: 700, color: "#065F46", margin: "0 0 6px" }}>
+              You're in!
+            </p>
+            <p style={{ fontSize: 13.5, color: "#374151", margin: "0 0 22px", lineHeight: 1.5 }}>
+              Your request to join <strong>{activeApproval.name}</strong> was approved — you're now a member.
+            </p>
+            <button
+              onClick={() => openApprovedCommunity(activeApproval)}
+              style={{
+                width: "100%", padding: "13px 0", borderRadius: 10,
+                border: "none", background: "#059669", color: "#fff",
+                fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 10,
+              }}
+            >
+              Open Community
+            </button>
+            <button
+              onClick={() => dismissJoin(activeApproval)}
+              style={{
+                width: "100%", padding: "10px 0", borderRadius: 10,
+                border: "none", background: "none", color: "#6B7280",
+                fontSize: 13, fontWeight: 500, cursor: "pointer",
+              }}
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
