@@ -1,21 +1,26 @@
-// Extracts the structured facts (#21: member, community, amount, plan, time,
-// transaction details) out of a notification. Three layers, most confident
-// first:
+// Extracts the structured facts (member, community, amount, plan, time,
+// transaction reference) out of a notification.
 //
-//   1. `content` — a free-form object the backend can attach per
-//      NotificationDto.content (documented as "additional properties: any").
-//      Probed under the field names the backend is likely to use.
-//   2. `communityId` resolved against the caller's own communities list
-//      (NotificationDto only carries the raw id, never a name/logo).
-//   3. Fall back to parsing the human-readable text, where the same facts
-//      are usually embedded ("Jane Doe paid ₦5,000 for Monthly Dues. Ref:
-//      TXN-…").
-//
-// Every extractor returns null when it can't find a confident value; callers
-// should render only the rows that resolved.
+// Confirmed against the real NotificationDto schema (backend Swagger):
+// id, userId, communityId, title, message, bodyText, notificationType,
+// channel, status, device, content (free-form, "additional properties:
+// any"), relatedEntityType, relatedEntityId, readFlag, readAt, createdAt.
+// That's it -- there is no nested member/actor/payer/user/requestedUser
+// object, no `community` object (only the bare `communityId` uuid), no
+// `transaction` object, no `paymentLink`/`planName` field. Everything
+// this file used to probe on those never-existing shapes was a guess that
+// could never have matched real data. Only two sources are real:
+//   1. `content` — whatever the backend author chose to attach, entirely
+//      optional and unconfirmed per-field.
+//   2. `title` / `message` / `bodyText` — the human-readable text, which
+//      in practice reliably spells out the same facts ("Jane Doe paid
+//      ₦5,000 for Monthly Dues. Ref: TXN-…") since content isn't always
+//      populated.
+// Every extractor returns null when it can't find a confident value;
+// callers should render only the rows that resolved.
 
 function textOf(n) {
-  return `${n.title ?? n.subject ?? ""} ${n.message ?? n.description ?? n.bodyText ?? n.body ?? ""}`;
+  return `${n.title ?? ""} ${n.message ?? n.bodyText ?? ""}`;
 }
 
 // Message body only, no title — parseMemberName's word-sequence match has
@@ -24,7 +29,7 @@ function textOf(n) {
 // "Payment received" as part of the "name" right up to the verb, since
 // nothing stops the greedy match at the title/message boundary.
 function messageOnly(n) {
-  return n.message ?? n.description ?? n.bodyText ?? n.body ?? "";
+  return n.message ?? n.bodyText ?? "";
 }
 
 // Names can arrive in any case depending on the source (a structured field
@@ -76,11 +81,14 @@ function parseReference(text) {
 
 // Last-resort match: the notification's own text almost always names the
 // community in plain language ("...requested to join Rotary Club.", "...
-// paid ₦10,000 for Community Anniversary in Rotary Club") even when none
-// of the structured id fields resolve. Matches against the admin's own
-// communities list by name (case-insensitive substring), preferring the
-// longest name that actually appears so a short generic name doesn't
-// win over a more specific one contained in the same text.
+// paid ₦10,000 for Community Anniversary in Rotary Club") even when
+// communityId doesn't resolve against the caller's own communities list
+// (e.g. it's a community they administer but the list used to build the
+// map doesn't happen to include, or the id is missing on this particular
+// event). Matches against the admin's own communities list by name
+// (case-insensitive substring), preferring the longest name that actually
+// appears so a short generic name doesn't win over a more specific one
+// contained in the same text.
 export function resolveCommunityByName(text, communityMap) {
   if (!communityMap || typeof communityMap.values !== "function") return null;
   const lower = text.toLowerCase();
@@ -97,28 +105,19 @@ export function resolveCommunityByName(text, communityMap) {
   return best;
 }
 
-// Best-effort resolution of a community's display name/logo from just its
-// id — the raw notification only ever carries `communityId` (a uuid),
-// never a name or logo. `communityMap` is a Map/lookup keyed by id (and
-// ideally slug) built from the caller's own communities list.
-//
-// Exported (not just used internally) so every caller shares one
-// implementation instead of maintaining their own copy -- NotificationsPanel
-// .jsx (the bell dropdown) used to keep a separate local version that had
-// quietly drifted from this one (missing the community_id fallback), which
-// is exactly the kind of gap that made the two surfaces behave differently
-// for the same notification.
+// Resolves a community's display name/logo from communityId (the only
+// community-related field the real schema has) against the caller's own
+// communities list, falling back to text matching when the id doesn't
+// resolve. Exported so every caller shares one implementation instead of
+// maintaining a separate copy — NotificationsPanel.jsx (the bell dropdown)
+// used to keep its own local version that had quietly drifted from this
+// one, which is exactly the kind of gap that made the two surfaces behave
+// differently for the same notification.
 export function resolveCommunity(n, communityMap) {
-  const id = n.communityId ?? n.community_id ?? n.community?.id ?? null;
-  if (id && communityMap) {
-    const hit = communityMap.get?.(id) ?? communityMap[id];
+  if (n.communityId && communityMap) {
+    const hit = communityMap.get?.(n.communityId) ?? communityMap[n.communityId];
     if (hit) return hit;
   }
-  // The id-based lookup alone turned out not to be enough in practice --
-  // community/logo still came back empty for real notifications even with
-  // the community_id fallback above, meaning at least some payloads don't
-  // carry the id under any of the checked keys at all. Falling back to
-  // text matching rather than continuing to guess at field names.
   return resolveCommunityByName(textOf(n), communityMap);
 }
 
@@ -127,65 +126,43 @@ function resolveCommunityName(n, communityMap) {
 }
 
 function resolveCommunityLogo(n, communityMap) {
-  const c = resolveCommunity(n, communityMap);
-  return c?.logo?.url ?? c?.logoUrl ?? n.community?.logo?.url ?? null;
+  return resolveCommunity(n, communityMap)?.logo?.url ?? null;
 }
 
 export function extractNotificationDetails(n, { communityMap } = {}) {
   const text = textOf(n);
   const content = n.content && typeof n.content === "object" ? n.content : {};
 
-  // Broad, best-effort probe across the field names the backend is most
-  // likely to use for "who this notification is about" — a first/last
-  // pair takes priority over any single combined-name field, and a nested
-  // user/member/actor/payer object is checked the same way.
-  const memberCandidates = [content, n, n.member, n.actor, n.payer, n.user, n.requestedUser];
-
-  // A structured firstName-only field (no lastName on the payload) used to
-  // win outright and cut a real two-word name down to one letter of
-  // initials ("home alone" → just "H") even though the message text spells
-  // the full name out right there. Now takes whichever candidate actually
-  // has more words, rather than stopping at the first structured field
-  // that resolves at all.
+  // A structured firstName-only field in `content` (no lastName attached)
+  // used to win outright over the message text's fuller name, cutting a
+  // real two-word name like "home alone" down to one letter of initials
+  // ("H") even though the text spells the whole name out right there.
+  // Compares word counts and takes whichever is actually more complete.
   const rawMemberName = (() => {
-    let structured = null;
-    for (const c of memberCandidates) {
-      if (!c || typeof c !== "object") continue;
-      const first = c.firstName ?? c.first_name;
-      const last = c.lastName ?? c.last_name;
-      if (first || last) { structured = `${first ?? ""} ${last ?? ""}`.trim(); break; }
-      const combined =
-        c.memberName ?? c.actorName ?? c.userName ?? c.payerName ?? c.fullName ?? c.name;
-      if (combined) { structured = combined; break; }
-    }
+    const first = content.firstName ?? content.first_name;
+    const last = content.lastName ?? content.last_name;
+    const structured =
+      (first || last)
+        ? `${first ?? ""} ${last ?? ""}`.trim()
+        : (content.memberName ?? content.actorName ?? content.payerName ?? content.fullName ?? content.name ?? null);
     const parsed = parseMemberName(messageOnly(n));
     const wordCount = (s) => (s ?? "").trim().split(/\s+/).filter(Boolean).length;
     return wordCount(parsed) > wordCount(structured) ? parsed : (structured ?? parsed);
   })();
 
-  // Same nested candidate objects as the name above -- profileImage is the
-  // confirmed shape elsewhere in the app (Sidebar/Topbar/Profile pages all
-  // read user.profileImage.url), so probed the same way rather than a new
-  // guess. Returns null (not rendered) when the payload doesn't carry it,
-  // same defensive rule as every other field here.
-  const memberPhoto = (() => {
-    for (const c of memberCandidates) {
-      if (!c || typeof c !== "object") continue;
-      const url = c.profileImage?.url ?? c.profileImageUrl ?? c.avatarUrl ?? c.photoUrl;
-      if (url) return url;
-    }
-    return null;
-  })();
+  // content is genuinely the only place a photo URL could live -- there's
+  // no member/actor/user sub-object on the real schema to probe. Real
+  // notification payloads are unlikely to carry this at all (it's a
+  // lightweight event record, not a full user snapshot), so this resolves
+  // to null far more often than not -- the initials fallback in the avatar
+  // components is the realistic common case, not this.
+  const memberPhoto = content.profileImage?.url ?? content.profileImageUrl ?? content.avatarUrl ?? content.photoUrl ?? null;
 
   return {
     memberName: rawMemberName ? capitalizeName(rawMemberName) : null,
     memberPhoto,
-    communityName:
-      content.communityName ?? n.communityName ?? n.community?.name ??
-      resolveCommunityName(n, communityMap),
-    communityLogo:
-      content.communityLogo?.url ?? n.community?.logo?.url ??
-      resolveCommunityLogo(n, communityMap),
+    communityName: content.communityName ?? resolveCommunityName(n, communityMap),
+    communityLogo: content.communityLogo?.url ?? resolveCommunityLogo(n, communityMap),
     // Confirmed against real payloads: some notifications carry `amount` in
     // major units (naira), others only `amountMinor` in minor units (kobo —
     // Paystack convention, ÷100 to get naira). Neither is universal, so both
@@ -193,27 +170,22 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
     amount:
       content.amount ?? content.paymentAmount ??
       (content.amountMinor != null ? content.amountMinor / 100 : null) ??
-      n.amount ?? n.paymentAmount ?? n.transaction?.amount ??
       parseAmount(text),
     // paymentLinkTitle is the confirmed field name — planTitle/planName
     // were guesses that never matched anything.
     planName:
       content.paymentLinkTitle ?? content.planTitle ?? content.paymentPlanTitle ?? content.planName ??
-      n.paymentLink?.title ?? n.planName ?? n.paymentPlan?.title ??
       parsePlanName(text),
     // A human-readable `reference` string only shows up on some
-    // transactions; when it's missing, the internal transactionId (which
-    // matches the notification's own relatedEntityId for Transaction-typed
-    // notifications) is still a genuine, traceable reference — better than
-    // showing nothing.
+    // transactions; when it's missing, relatedEntityId (a real field —
+    // matches the notification's own relatedEntityType) is still a
+    // genuine, traceable reference for Transaction-typed notifications —
+    // better than showing nothing.
     reference:
-      content.reference ?? content.transactionReference ??
-      n.reference ?? n.transactionReference ?? n.transaction?.internalReference ??
-      n.transaction?.reference ??
-      content.transactionId ??
+      content.reference ?? content.transactionReference ?? content.transactionId ??
       (n.relatedEntityType === "Transaction" ? n.relatedEntityId : null) ??
       parseReference(text),
-    time: n.createdAt ?? n.timestamp ?? null,
+    time: n.createdAt ?? null,
   };
 }
 
