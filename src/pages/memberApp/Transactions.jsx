@@ -226,7 +226,7 @@ export default function Transactions() {
         position: "relative",
         overflow: "hidden",
         minHeight: "100vh",
-        background: "var(--color-surface-bg)",
+         
         fontFamily: "Inter, -apple-system, sans-serif",
         maxWidth: 430,
         margin: "0 auto",
@@ -237,7 +237,7 @@ export default function Transactions() {
       {/* ── Top bar ── */}
       <div
         style={{
-          background: "var(--color-surface-bg)",
+           
           padding: "24px 20px 16px",
           display: "flex",
           alignItems: "center",

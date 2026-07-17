@@ -80,7 +80,7 @@ function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
             disabled={leaving}
             style={{
               width: "100%", padding: "14px 0", borderRadius: 12,
-              border: "1px solid #E5E7EB", background: "#fff", color: "#374151",
+              border: "1px solid #E0E0EB", background: "#fff", color: "#374151",
               fontSize: 14.5, fontWeight: 600, cursor: "pointer",
             }}
           >
@@ -138,7 +138,7 @@ export default function MyCommunities() {
   }
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh", background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh",  fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
       <GlassLogoGlow />
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 16px 16px" }}>
         <button

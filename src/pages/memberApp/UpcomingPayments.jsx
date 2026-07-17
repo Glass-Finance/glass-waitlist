@@ -194,7 +194,7 @@ export default function UpcomingPayments() {
         position: "relative",
         overflow: "hidden",
         minHeight: "100vh",
-        background: "var(--color-surface-bg)",
+         
         fontFamily: "'Inter', system-ui, sans-serif",
         paddingBottom: 40,
       }}

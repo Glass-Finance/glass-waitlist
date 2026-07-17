@@ -90,7 +90,7 @@ export default function AutoPay() {
   const isLoading = paymentsLoading || authsLoading;
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh", background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh",  fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40 }}>
       <GlassLogoGlow />
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "20px 16px 16px" }}>
         <button
@@ -108,7 +108,7 @@ export default function AutoPay() {
             Active Plans
           </p>
         )}
-        <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+        <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", border: "1px solid #E0E0EB" }}>
           {isLoading ? (
             <PageLoadingState size={56} padding="36px 24px" />
           ) : allPlans.length === 0 ? (

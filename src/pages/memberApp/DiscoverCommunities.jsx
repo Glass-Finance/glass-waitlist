@@ -392,7 +392,7 @@ export default function DiscoverCommunities() {
         position: "relative",
         overflow: "hidden",
         minHeight: "100vh",
-        background: "var(--color-surface-bg)",
+         
         fontFamily: "'Inter', system-ui, sans-serif",
         paddingBottom: 40,
         maxWidth: 430,
@@ -535,6 +535,7 @@ export default function DiscoverCommunities() {
               background: "#fff", borderRadius: 20,
               padding: "28px 24px", textAlign: "center",
               boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+              border: "1px solid #E0E0EB",
             }}
           >
             <span style={{ fontSize: 40, lineHeight: 1, display: "block", marginBottom: 12 }}>🎉</span>

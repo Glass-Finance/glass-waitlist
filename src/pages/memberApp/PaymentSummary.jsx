@@ -210,7 +210,7 @@ export default function PaymentSummary() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col min-h-screen" style={{ background: "var(--color-surface-bg)" }}>
+      <div className="flex flex-col min-h-screen">
         <PageLoadingState label="Loading payment details…" />
       </div>
     );
@@ -218,7 +218,7 @@ export default function PaymentSummary() {
 
   if (loadError || !obligation) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 min-h-screen px-6 text-center" style={{ background: "var(--color-surface-bg)" }}>
+      <div className="flex flex-col items-center justify-center gap-3 min-h-screen px-6 text-center">
         <p className="text-sm text-gray-600">
           {getErrorMessage(loadError, "Couldn't load this payment. It may no longer be available.")}
         </p>
@@ -240,7 +240,7 @@ export default function PaymentSummary() {
     <div
       className="relative flex flex-col min-h-screen overflow-hidden"
       style={{
-        background: "var(--color-surface-bg)",
+         
         fontFamily: "'Inter', system-ui, sans-serif",
         maxWidth: 430,
         margin: "0 auto",

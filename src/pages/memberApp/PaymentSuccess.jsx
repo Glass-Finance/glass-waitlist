@@ -213,7 +213,7 @@ export default function PaymentSuccess() {
     <div
       className="relative flex flex-col min-h-screen overflow-hidden"
       style={{
-        background: "var(--color-surface-bg)",
+         
         fontFamily: "'Inter', system-ui, sans-serif",
         maxWidth: 430,
         margin: "0 auto",

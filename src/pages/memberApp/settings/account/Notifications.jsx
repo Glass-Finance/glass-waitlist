@@ -32,6 +32,7 @@ function Section({ title, children }) {
       <div style={{
         background: "#fff", borderRadius: 14,
         boxShadow: "0 1px 6px rgba(0,0,0,0.05)", overflow: "hidden",
+        border: "1px solid #E0E0EB",
       }}>
         {children}
       </div>
@@ -67,7 +68,7 @@ export default function NotificationSettings() {
   return (
     <div style={{
       position: "relative", overflow: "hidden",
-      minHeight: "100vh", background: "var(--color-surface-bg)",
+      minHeight: "100vh",  
       fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40,
     }}>
       <GlassLogoGlow />

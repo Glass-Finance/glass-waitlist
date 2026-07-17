@@ -76,7 +76,7 @@ function PlanCard({ plan, auth, onToggle }) {
     : null;
 
   return (
-    <div style={{ background: "#fff", borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.07)" }}>
+    <div style={{ background: "#fff", borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", border: "1px solid #E0E0EB" }}>
       {/* Main body */}
       <div style={{ padding: "16px 16px 14px" }}>
         {/* Row 1: logo + Recurring badge */}
@@ -206,7 +206,7 @@ export default function ManagePayments() {
   });
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh", background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 60 }}>
+    <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh",  fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 60 }}>
       <GlassLogoGlow />
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 20px 20px", position: "relative" }}>
