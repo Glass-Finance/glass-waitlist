@@ -35,7 +35,6 @@ import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import { formatNaira, toTitleCase, formatDate } from "../../utils/format";
-import Background from "../../assets/background.webp";
 import { getCommunityMembers } from "../../api/communities";
 import {
   getCommunityObligations,
@@ -2704,14 +2703,7 @@ export default function Payments() {
   }
 
   return (
-    <div
-      className="px-4 md:px-6 py-6 overflow-y-auto h-full"
-      style={{
-        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <div className="px-4 md:px-6 py-6 overflow-y-auto h-full">
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
         <div>

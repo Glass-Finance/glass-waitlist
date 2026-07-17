@@ -522,7 +522,6 @@ import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin, isCommunityAdmin, roleKeyword } from "../../utils/communityRole";
-import Background from "../../assets/background.webp";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingState from "../../components/common/LoadingState";
 import { AdminPaymentModal } from "./AdminDashboard";
@@ -992,14 +991,7 @@ export default function CommunitiesHome() {
   }
 
   return (
-    <div
-      className="relative flex flex-col min-h-full"
-      style={{
-        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <div className="relative flex flex-col min-h-full">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-7 pt-7 pb-5">
         <div>

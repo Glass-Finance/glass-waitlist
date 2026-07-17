@@ -46,7 +46,7 @@ function StepIcon({ id, completed }) {
 function SuccessModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(20,20,30,0.45)" }}>
-      <div className="bg-[#EAEAEC] rounded-2xl px-12 py-16 flex flex-col items-center" style={{ minWidth: 480 }}>
+      <div className="bg-white rounded-2xl px-12 py-16 flex flex-col items-center shadow-2xl" style={{ minWidth: 480 }}>
         <div className="relative flex items-center justify-center mb-8" style={{ width: 110, height: 110 }}>
           <div className="absolute inset-0 rounded-full border border-gray-300" />
           <div className="absolute rounded-full border border-gray-300" style={{ inset: 10 }} />

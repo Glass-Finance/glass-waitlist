@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 import DashboardTour, { DASHBOARD_TOUR_SEEN_KEY } from "../components/dashboard/DashboardTour";
+import Background from "../assets/background.webp";
 
 export default function DashboardLayout() {
   // Sidebar is an off-canvas drawer below the md breakpoint (see
@@ -27,7 +28,14 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden bg-surface-bg">
+    <div
+      className="h-screen w-screen flex overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       {/* ── Sidebar ── */}
       <Sidebar mobileOpen={mobileNavOpen} onCloseMobile={() => setMobileNavOpen(false)} />
 
@@ -36,7 +44,11 @@ export default function DashboardLayout() {
         {/* Topbar */}
         <Topbar onMenuClick={() => setMobileNavOpen(true)} onOpenTour={() => setTourOpen(true)} />
 
-        {/* Page content */}
+        {/* Page content — background texture lives on the outer container
+            above so every dashboard page gets it uniformly, instead of each
+            page applying its own copy on a div sized to its own content
+            (h-full there only fills the content's own height, leaving a
+            plain gray gap below on shorter pages like Settings). */}
         <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>

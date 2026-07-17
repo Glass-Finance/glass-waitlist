@@ -9,7 +9,6 @@ import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
-import Background from "../../assets/background.webp";
 
 function formatRequestedAt(r) {
   const raw = r.createdAt ?? r.requestedAt ?? r.submittedAt ?? null;
@@ -164,12 +163,7 @@ export default function JoinRequests() {
   return (
     <div
       className="flex flex-col h-full px-4 md:px-6 py-6 overflow-y-auto"
-      style={{
-        minHeight: 0,
-        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      style={{ minHeight: 0 }}
     >
       {/* Header */}
       <div className="mb-5 flex-shrink-0">

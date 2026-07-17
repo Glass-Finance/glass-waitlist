@@ -6,7 +6,6 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import { useCommunityTransactionDetail } from "../../hooks/useCommunityTransactionDetail";
 import ReceiptModal from "../../components/common/ReceiptModal";
 import LoadingState from "../../components/common/LoadingState";
-import Background from "../../assets/background.webp";
 import { formatNaira, toTitleCase } from "../../utils/format";
 
 function statusLabel(status) {
@@ -75,14 +74,8 @@ export default function TransactionDetail() {
     });
   }
 
-  const pageBgStyle = {
-    backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  };
-
   return (
-    <div className="px-4 md:px-6 py-6 overflow-y-auto h-full" style={pageBgStyle}>
+    <div className="px-4 md:px-6 py-6 overflow-y-auto h-full">
       <div className="mb-5">
         <h1 className="text-lg font-bold text-black">
           <button

@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { useNavigate, useLocation, Outlet, Navigate } from "react-router-dom";
 import { usePageTitle } from "../../../hooks/usePageTitle";
 import { Search, ChevronRight } from "lucide-react";
-import Background from "../../../assets/background.webp";
 import { useAuth } from "../../../store/AuthContext";
 
 const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";
@@ -135,14 +134,7 @@ export default function Settings() {
   }
 
   return (
-    <div
-      className="flex flex-col h-full px-4 py-6 md:px-8 md:py-8 overflow-y-auto"
-      style={{
-        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <div className="flex flex-col h-full px-4 py-6 md:px-8 md:py-8 overflow-y-auto">
 
       {/* Heading + Search */}
       <div className="flex items-start justify-between gap-3 mb-5 flex-wrap">

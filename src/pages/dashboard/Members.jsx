@@ -10,7 +10,6 @@ import { useJoinRequests, requesterOf, requestStatusOf } from "../../hooks/useJo
 import { getErrorMessage } from "../../utils/errorHandler";
 import LoadingState from "../../components/common/LoadingState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
-import Background from "../../assets/background.webp";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 // Only these three roles should be assignable when inviting members.
@@ -274,14 +273,7 @@ export default function Members() {
   ].filter(Boolean);
 
   return (
-    <div
-      className="px-4 md:px-6 py-6 overflow-y-auto h-full"
-      style={{
-        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <div className="px-4 md:px-6 py-6 overflow-y-auto h-full">
       <div className="flex items-start justify-between gap-3 mb-5">
         <div>
           <h1 className="text-xl font-bold text-black">Members</h1>

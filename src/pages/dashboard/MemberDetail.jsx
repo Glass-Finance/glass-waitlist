@@ -10,7 +10,6 @@ import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
-import Background from "../../assets/background.webp";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 const TABS = ["All Plans", "Payment History", "Contact Details"];
@@ -91,25 +90,16 @@ export default function MemberDetail() {
     });
   }
 
-  // Loading/not-found states share the same page background as the
-  // fully-loaded page below -- returning early with a bare white background
-  // caused a visible flash before the textured background popped in.
-  const pageBgStyle = {
-    backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-  };
-
   if (isLoading) {
     return (
-      <div className="px-4 md:px-6 py-6 h-full" style={pageBgStyle}>
+      <div className="px-4 md:px-6 py-6 h-full">
         <LoadingState className="py-6" />
       </div>
     );
   }
   if (!member) {
     return (
-      <div className="px-4 md:px-6 py-6 h-full" style={pageBgStyle}>
+      <div className="px-4 md:px-6 py-6 h-full">
         <p className="text-xs text-gray-400">Member not found.</p>
       </div>
     );
@@ -149,10 +139,7 @@ export default function MemberDetail() {
   const distinctPlans = [...obligationsByLinkId.values(), ...syntheticPlans];
 
   return (
-    <div
-      className="px-4 md:px-6 py-6 overflow-y-auto h-full"
-      style={pageBgStyle}
-    >
+    <div className="px-4 md:px-6 py-6 overflow-y-auto h-full">
       <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
         <div>
           <h1 className="text-lg font-bold text-black">

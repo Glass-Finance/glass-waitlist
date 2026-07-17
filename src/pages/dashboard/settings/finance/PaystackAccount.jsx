@@ -218,7 +218,7 @@ export default function PaystackAccount() {
   }
 
   return (
-    <div className="flex flex-col gap-10 max-w-2xl w-full">
+    <div className="flex flex-col gap-10 max-w-3xl w-full">
       {isLoading ? (
         <LoadingState />
       ) : account ? (

@@ -26,7 +26,6 @@ import {
 } from "lucide-react";
 import SystemConfig from "./settings/admin/SystemConfig";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import Background from "../../assets/background.webp";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { toTitleCase } from "../../utils/format";
 import EmptyState from "../../components/common/EmptyState";
@@ -2709,14 +2708,7 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("communities");
 
   return (
-    <div
-      className="px-4 py-6 md:px-8 md:py-8 min-h-full"
-      style={{
-        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
+    <div className="px-4 py-6 md:px-8 md:py-8 min-h-full">
       <div className="mb-6">
         <h1 className="text-lg font-bold text-gray-900 mb-1">Platform Admin</h1>
         <p className="text-xs text-gray-400">

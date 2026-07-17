@@ -52,7 +52,6 @@ import TimerIcon from "../../assets/dashboard/timer.webp";
 import RecurringPayment from "../../assets/dashboard/recurring-payment.webp";
 import OneTimePayment from "../../assets/dashboard/one-time-payment.webp";
 import WarnSignIcon from "../../assets/dashboard/warn-sign.webp";
-import Background from "../../assets/background.webp";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 // This page shows "—" for a null/undefined amount rather than "₦0" (several
@@ -1400,14 +1399,7 @@ function DashboardContent({ isPaying, communityId }) {
 
   return (
     <>
-      <main
-        className="flex-1 px-4 md:px-6 py-5 overflow-y-auto"
-        style={{
-          backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
+      <main className="flex-1 px-4 md:px-6 py-5 overflow-y-auto">
         {/* Page header */}
         <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
           <div>

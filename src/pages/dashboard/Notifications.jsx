@@ -10,7 +10,6 @@ import { notificationCategory, isPaymentReceivedType, isPaymentNotificationType,
 import { extractNotificationDetails, formatNairaAmount, initials } from "../../utils/notificationContent";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
-import Background from "../../assets/background.webp";
 import { formatRelativeDateTime as formatTime } from "../../utils/format";
 
 const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";
@@ -363,12 +362,7 @@ function SuperAdminNotifications() {
   return (
     <div
       className="flex flex-col h-full px-4 md:px-6 py-6"
-      style={{
-        minHeight: 0,
-        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      style={{ minHeight: 0 }}
     >
       <div className="mb-5 flex-shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
@@ -434,12 +428,7 @@ function CommunityNotifications() {
   return (
     <div
       className="flex flex-col h-full px-4 md:px-6 py-6"
-      style={{
-        minHeight: 0,
-        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      style={{ minHeight: 0 }}
     >
       {/* Header */}
       <div className="mb-5 flex-shrink-0">
