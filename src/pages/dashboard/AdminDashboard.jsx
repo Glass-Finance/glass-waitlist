@@ -239,7 +239,7 @@ export function AdminPaymentModal({ item, onClose }) {
     >
       <div
         className="w-full bg-white rounded-2xl overflow-hidden shadow-2xl"
-        style={{ maxWidth: 560, maxHeight: "90vh", overflowY: "auto" }}
+        style={{ maxWidth: 560, maxHeight: "90vh", overflowY: "auto", border: "1px solid #E0E0EB" }}
       >
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
@@ -438,14 +438,14 @@ export function AdminPaymentModal({ item, onClose }) {
           <div className="flex items-center gap-3 flex-shrink-0">
             <button
               onClick={onClose}
-              className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+              className="px-5 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 cursor-pointer transition-colors border-none"
             >
               Cancel
             </button>
             <button
               onClick={handlePay}
               disabled={initiatePayment.isPending || redirecting || isLinkInactive}
-              className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border-none transition-opacity flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl text-xs font-semibold text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border-none transition-opacity flex items-center gap-2"
               style={{ background: "var(--color-brand)" }}
             >
               {initiatePayment.isPending || redirecting ? (
