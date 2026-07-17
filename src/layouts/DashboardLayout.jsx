@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 import DashboardTour, { DASHBOARD_TOUR_SEEN_KEY } from "../components/dashboard/DashboardTour";
-import Overlay from "../assets/overlay.webp";
+import AdminBackground from "../assets/admin-background.webp";
 
 export default function DashboardLayout() {
   // Sidebar is an off-canvas drawer below the md breakpoint (see
@@ -41,7 +41,7 @@ export default function DashboardLayout() {
       <div
         className="flex-1 flex flex-col overflow-hidden"
         style={{
-          backgroundImage: `url(${Overlay})`,
+          backgroundImage: `url(${AdminBackground})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
