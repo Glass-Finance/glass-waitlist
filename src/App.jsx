@@ -15,6 +15,7 @@ import MemberProtectedRoute from "./routes/MemberProtectedRoute";
 import MemberDeviceGuard from "./routes/MemberDeviceGuard";
 import DesktopDeviceGuard from "./routes/DesktopDeviceGuard";
 import SuperAdminRoute from "./routes/SuperAdminRoute";
+import CommunityAdminGuard from "./routes/CommunityAdminGuard";
 
 // ── Landing pages ─────────────────────────────────────────────────────────────
 const OrganizationsHome = lazy(() => import("./pages/OrganizationsHome"));
@@ -249,14 +250,20 @@ function App() {
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<Navigate to="home" replace />} />
               <Route path="home" element={<CommunitiesHome />} />
-              <Route path="admin" element={<AdminDashboard />} />
-              <Route path="admin/paying" element={<PayingAdminDashboard />} />
-              <Route path="payments" element={<Payments />} />
-              <Route path="members" element={<Members />} />
-              <Route path="members/:memberId" element={<MemberDetail />} />
-              <Route path="transactions/:transactionId" element={<AdminTransactionDetail />} />
               <Route path="notifications" element={<AdminNotifications />} />
-              <Route path="join-requests" element={<JoinRequests />} />
+
+              {/* These all act on whichever community ?community= resolves
+                  to (see CommunityAdminGuard) — requiredRole="admin" above
+                  only proves admin of *some* community, not this one. */}
+              <Route element={<CommunityAdminGuard />}>
+                <Route path="admin" element={<AdminDashboard />} />
+                <Route path="admin/paying" element={<PayingAdminDashboard />} />
+                <Route path="payments" element={<Payments />} />
+                <Route path="members" element={<Members />} />
+                <Route path="members/:memberId" element={<MemberDetail />} />
+                <Route path="transactions/:transactionId" element={<AdminTransactionDetail />} />
+                <Route path="join-requests" element={<JoinRequests />} />
+              </Route>
 
               <Route element={<SuperAdminRoute />}>
                 <Route path="system-config" element={<SystemConfig />} />
@@ -283,18 +290,24 @@ function App() {
                   element={<PaymentMethod />}
                 />
                 <Route path="finance/auto-pay" element={<AutoPay />} />
-                <Route path="finance/paystack" element={<PaystackAccount />} />
 
                 {/* Community — bare path renders the menu list inside Settings.jsx */}
                 <Route path="community" element={null} />
-                <Route
-                  path="community/profile"
-                  element={<CommunityProfile />}
-                />
-                <Route
-                  path="community/member-access"
-                  element={<MemberAccess />}
-                />
+
+                {/* These act on the active community's payout account and
+                    membership — same cross-community risk CommunityAdminGuard
+                    exists for above. */}
+                <Route element={<CommunityAdminGuard />}>
+                  <Route path="finance/paystack" element={<PaystackAccount />} />
+                  <Route
+                    path="community/profile"
+                    element={<CommunityProfile />}
+                  />
+                  <Route
+                    path="community/member-access"
+                    element={<MemberAccess />}
+                  />
+                </Route>
               </Route>
             </Route>
           </Route>

@@ -263,7 +263,7 @@ export default function MembersHero() {
           >
             {/* loading="lazy" here (and on the mobile copy below) is
                 deliberate, not an oversight: this and the mobile-only
-                <img> further down both render the same 444KB iphone.png,
+                <img> further down both render the same iphone.webp,
                 one hidden via `hidden sm:flex` and the other via
                 `sm:hidden`. display:none doesn't stop an eager <img> from
                 fetching, so without this every visitor downloaded BOTH

@@ -4,7 +4,7 @@
  * CTA.jsx  →  src/components/organizations/CTA.jsx
  *            src/components/members/membersCTA.jsx
  *
- * Icons from src/assets/cta/icon1.png → icon6.png
+ * Icons from src/assets/cta/icon1.webp → icon6.webp
  *
  * Left column (image 2, top→bottom):
  *   icon1 = soccer ball      (top-left,    further from text)
