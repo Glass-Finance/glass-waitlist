@@ -429,7 +429,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Papa from "papaparse";
-import { Bell, Download, CloudUpload, Copy, Check, X, FileSpreadsheet } from "lucide-react";
+import { Bell, Download, CloudUpload, Copy, Check, X, FileSpreadsheet, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
 import Background from "../../assets/background.webp";
 import { notifyError } from "../../utils/errorHandler";
@@ -546,8 +546,14 @@ export default function AddMembers() {
   // Same fallback as PaymentProfile.jsx -- location.state doesn't survive a
   // reload or forced re-login, and the community already exists on the
   // backend by this point.
-  const { email, communityId, communitySlug, communityName } =
+  const { email, isPaying, communityId, communitySlug, communityName } =
     location.state ?? readOnboardingProgress();
+
+  const handleBack = () => {
+    navigate("/onboarding/payment-profile", {
+      state: { email, isPaying, communityId, communitySlug, communityName },
+    });
+  };
 
   const [selectedRoleId, setSelectedRoleId] = useState("");
   const [billingExempt,  setBillingExempt]  = useState(false);
@@ -780,6 +786,14 @@ export default function AddMembers() {
         <main className="flex-1 overflow-y-auto py-10 px-12">
           <div className="w-full max-w-4xl">
             <div className="mb-6">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer mb-4 -ml-1 p-0"
+              >
+                <ArrowLeft size={15} />
+                Back
+              </button>
               <h2 className="text-base font-medium text-gray-900 mb-1">Add your members</h2>
               <p className="text-sm text-gray-500">Add members now or invite them to join. You can always add more from your dashboard later.</p>
             </div>

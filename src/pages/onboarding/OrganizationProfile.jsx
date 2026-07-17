@@ -518,6 +518,7 @@ import { Bell, Upload, Check, X as XIcon, Loader2, ArrowLeft } from "lucide-reac
 import GlassLogo from "../../assets/Glass.webp";
 import Background from "../../assets/background.webp";
 import client from "../../api/client";
+import { updateCommunity } from "../../api/communities";
 import { useSlug } from "../../hooks/useSlug";
 import { useAuth } from "../../store/AuthContext";
 import { notifyError } from "../../utils/errorHandler";
@@ -563,6 +564,12 @@ export default function OrganizationProfile() {
   const savedProgress = readOnboardingProgress();
   const email      = location.state?.email ?? savedProgress.email ?? "";
   const isPaying   = location.state?.isPaying ?? savedProgress.isPaying ?? true;
+  // Set once the community's actually been created (see handleSubmit) — if
+  // present, this is a revisit (e.g. via PaymentProfile's Back button), and
+  // submitting again must update that same community instead of creating a
+  // second one.
+  const existingCommunityId   = location.state?.communityId ?? savedProgress.communityId ?? null;
+  const existingCommunitySlug = location.state?.communitySlug ?? savedProgress.communitySlug ?? null;
   const { updateUser, isAuthenticated } = useAuth();
 
   // Covers users who already have an account (and so already have a
@@ -621,9 +628,14 @@ export default function OrganizationProfile() {
 
     if (!form.communityName.trim()) { setError("Community name is required."); return; }
     if (!form.category)             { setError("Please select a category.");   return; }
-    if (!form.contactEmail.trim())  { setError("A contact email is required."); return; }
+    if (!form.contactEmail.trim())  { setError("A contact email is required." ); return; }
     if (!slug.trim())               { setError("Please choose a community URL slug."); return; }
-    if (available === false)        { setError("That URL slug is already taken — pick another."); return; }
+    // An unchanged slug on a revisit is taken -- by this same community --
+    // so the live availability check would otherwise wrongly block re-saving.
+    if (available === false && slug.trim() !== existingCommunitySlug) {
+      setError("That URL slug is already taken — pick another.");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -640,8 +652,7 @@ export default function OrganizationProfile() {
         logoFileId = uploadRes.data?.data?.id;
       }
 
-      // 2. Create community
-      const createRes = await client.post("/communities", {
+      const payload = {
         name:        form.communityName.trim(),
         slug:        slug.trim(),
         description: form.description.trim(),
@@ -653,9 +664,16 @@ export default function OrganizationProfile() {
         // Admins can turn this off in Settings → Community → Member Access.
         requiresMemberApproval: true,
         ...(logoFileId ? { logoFileId } : {}),
-      });
+      };
 
-      const community = createRes.data?.data;
+      // 2. Create the community, or update it if this is a revisit (e.g. via
+      // PaymentProfile's Back button) -- posting again would create a second,
+      // duplicate community rather than editing the one already made.
+      const res = existingCommunityId
+        ? await updateCommunity(existingCommunityId, payload)
+        : await client.post("/communities", payload);
+
+      const community = res.data?.data;
       if (!community?.id) throw new Error("Community creation failed.");
 
       // AuthContext's isAdmin reflects the communities list as of the last
@@ -679,7 +697,7 @@ export default function OrganizationProfile() {
       });
 
     } catch (err) {
-      setError(notifyError(err, { context: "Create community" }));
+      setError(notifyError(err, { context: existingCommunityId ? "Update community" : "Create community" }));
     } finally {
       setLoading(false);
     }

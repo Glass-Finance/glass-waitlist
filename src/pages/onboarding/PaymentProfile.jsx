@@ -13,7 +13,7 @@
  */
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, Check } from "lucide-react";
+import { Bell, Check, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
 import Background from "../../assets/background.webp";
 import client from "../../api/client";
@@ -73,9 +73,10 @@ export default function PaymentProfile() {
   // exists on the backend, so losing this link strands it with no way
   // back short of re-doing everything from scratch.
   const savedProgress = readOnboardingProgress();
-  const { email, communityId, communitySlug, communityName } =
+  const { email, isPaying, communityId, communitySlug, communityName } =
     location.state ?? savedProgress;
-  const { create: saveAccount } = useCommunityAccount(communityId);
+  const { create: saveAccount, update: updateAccount, account: existingAccount } =
+    useCommunityAccount(communityId);
 
   const [banks,       setBanks]       = useState([]);
   const [bankCode,    setBankCode]    = useState("");
@@ -106,6 +107,20 @@ export default function PaymentProfile() {
       })
       .catch((err) => notifyError(err, { context: "Load banks", fallback: "Couldn't load the bank list. Please refresh." }));
   }, []);
+
+  // Prefill from an already-saved payout account -- e.g. the admin came back
+  // here via AddMembers' Back button after already completing this step.
+  // Runs once the account loads; manualMode is set too so the resolve-account
+  // effect below doesn't immediately overwrite the restored account name.
+  useEffect(() => {
+    if (!existingAccount) return;
+    setBankCode(existingAccount.settlementBankCode ?? "");
+    setBankName(existingAccount.settlementBank ?? "");
+    setBankSlug(existingAccount.settlementBankSlug ?? "");
+    setAccNumber(existingAccount.accountNumber ?? "");
+    setAccName(existingAccount.accountName ?? "");
+    setManualMode(true);
+  }, [existingAccount]);
 
   // Auto-resolve when both bank + 10-digit account are set
   useEffect(() => {
@@ -161,19 +176,32 @@ export default function PaymentProfile() {
     });
   };
 
+  const handleBack = () => {
+    navigate("/onboarding/organization-profile", {
+      state: { email, isPaying, communityId, communitySlug, communityName },
+    });
+  };
+
   const handleSave = async () => {
     if (!accName.trim()) { setError("Account name is required."); return; }
     if (!communityId) { setError("Community ID missing — go back and retry."); return; }
     setSaving(true);
     setError("");
     try {
-      await saveAccount.mutateAsync({
+      const payload = {
         settlementBank:     bankName,
         settlementBankCode: bankCode,
         settlementBankSlug: bankSlug,
         accountNumber:      accNumber,
         accountName:        accName.trim(),
-      });
+      };
+      // Update the account already saved for this community (e.g. a revisit
+      // via AddMembers' Back button) instead of creating a second one.
+      if (existingAccount) {
+        await updateAccount.mutateAsync({ accountId: existingAccount.id, payload });
+      } else {
+        await saveAccount.mutateAsync(payload);
+      }
       setShowSuccess(true);
       setTimeout(() => {
         navigate("/onboarding/members", {
@@ -235,6 +263,14 @@ export default function PaymentProfile() {
           <div className="w-full max-w-3xl">
             <div className="bg-white rounded-lg px-8 py-7" style={{ border: "1px solid #E5E7EB" }}>
               <div className="mb-6 pb-5" style={{ borderBottom: "1px solid #E5E7EB" }}>
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer mb-4 -ml-1 p-0"
+                >
+                  <ArrowLeft size={15} />
+                  Back
+                </button>
                 <h2 className="text-lg font-semibold text-gray-900 mb-1">Set up your payment Account</h2>
                 <p className="text-sm text-gray-500">
                   This is where Glass will collect and manage dues on behalf of your community.
