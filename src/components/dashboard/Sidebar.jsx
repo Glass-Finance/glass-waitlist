@@ -61,14 +61,24 @@ function getInitials(name = "") {
 }
 
 // Matches the ?community= query-param convention already used by
-// AdminDashboard.jsx / CommunitiesHome.jsx — "settings" doesn't need it.
+// AdminDashboard.jsx / CommunitiesHome.jsx — "settings" is genuinely
+// account-level (profile/security), so it doesn't need it. Notifications
+// used to be exempted here too on the assumption it was also global, but
+// it isn't -- each community's Notifications page is meant to show only
+// that community's own notifications (the cross-community view lives
+// solely in the topbar bell dropdown). Dropping ?community= here made the
+// sidebar's own already-resolved active community silently invisible to
+// the page it linked to, which fell back to a localStorage snapshot that
+// isn't guaranteed to match whatever community is actually on screen —
+// reliably reproducing "notifications page shows every community" even
+// after Notifications.jsx itself was fixed to respect an active community
+// when one is passed to it.
 // "admin" has two variants (AdminDashboard.jsx's two exports) depending on
 // whether this admin pays dues as a member of their own community — isPaying
 // has to be resolved by the caller (see resolveIsPayingAdmin) since it's
 // per-community, not derivable from the slug alone.
 function communityPath(slug, path, isPaying = false) {
-  // Global pages — no community scoping needed
-  if (path === "settings" || path === "notifications") return `/dashboard/${path}`;
+  if (path === "settings") return `/dashboard/${path}`;
   const resolvedPath = path === "admin" && isPaying ? "admin/paying" : path;
   return `/dashboard/${resolvedPath}?community=${slug}`;
 }

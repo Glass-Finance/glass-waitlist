@@ -292,8 +292,15 @@ function useNotificationDetail(notifications, markRead) {
       setOpenNotif(n);
       if (!(n.readFlag ?? false)) markRead(n.id);
     }
-    // Consume the param so refresh/back doesn't reopen the modal.
-    setSearchParams({}, { replace: true });
+    // Consume just the "open" param so refresh/back doesn't reopen the modal
+    // -- replacing with {} used to wipe every other param too, including
+    // ?community=, silently kicking the page back to the unscoped
+    // all-communities view the moment a deep-linked notification opened.
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete("open");
+      return next;
+    }, { replace: true });
   }, [openId, notifications, allNotifications]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { openNotif, open: setOpenNotif, close: () => setOpenNotif(null) };
