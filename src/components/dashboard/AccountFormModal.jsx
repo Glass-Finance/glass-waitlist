@@ -113,11 +113,12 @@ export default function AccountFormModal({
 
   return (
     <>
-      {/* Backdrop */}
+      {/* Backdrop — matches ModalShell's treatment used everywhere else
+          (0.35 opacity + blur, not a heavier flat 0.55 dark overlay). */}
       <div
         onClick={onClose}
         className="fixed inset-0 z-40"
-        style={{ background: "rgba(0,0,0,0.55)" }}
+        style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
       />
 
       {/* Modal — centred */}

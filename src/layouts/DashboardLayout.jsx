@@ -29,11 +29,12 @@ export default function DashboardLayout() {
 
   return (
     <div
-      className="h-screen w-screen flex overflow-hidden"
+      className="h-screen w-screen flex overflow-hidden bg-surface-bg"
       style={{
-        backgroundImage: `linear-gradient(rgba(249,249,251,0.72), rgba(249,249,251,0.72)), url(${Background})`,
-        backgroundSize: "cover",
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "contain",
         backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       {/* ── Sidebar ── */}
