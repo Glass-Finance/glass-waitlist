@@ -1,14 +1,16 @@
+import { useState } from "react";
 import { Landmark, Trash2, CreditCard } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
 import LoadingState from "../../../../components/common/LoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
+import ConfirmDialog from "../../../../components/dashboard/ConfirmDialog";
 
 export default function PaymentMethod() {
   const { data: authorisations, isLoading, error, toggleAutoPay, isRemoving } = useManagePayments();
+  const [removingAuth, setRemovingAuth] = useState(null);
 
-  function handleRemove(id) {
-    if (!window.confirm("Remove this payment method? Any auto-pay tied to it will stop.")) return;
-    toggleAutoPay(id, false);
+  function handleRemove(auth) {
+    setRemovingAuth(auth);
   }
 
   return (
@@ -47,7 +49,7 @@ export default function PaymentMethod() {
                     </div>
                   </div>
                   <button
-                    onClick={() => handleRemove(auth.id)}
+                    onClick={() => handleRemove(auth)}
                     disabled={isRemoving}
                     className="text-red-400 hover:text-red-600 transition-colors bg-transparent border-none cursor-pointer disabled:opacity-50"
                   >
@@ -63,6 +65,20 @@ export default function PaymentMethod() {
           </p>
         </div>
       </div>
+
+      {removingAuth && (
+        <ConfirmDialog
+          title="Remove Payment Method"
+          description={`Remove ${removingAuth.bank ?? "this bank account"} ●●●● ${removingAuth.last4}? Any auto-pay tied to it will stop, and it won't be usable for future payments.`}
+          confirmLabel="Remove"
+          confirmingLabel="Removing…"
+          confirming={isRemoving}
+          onClose={() => setRemovingAuth(null)}
+          onConfirm={() =>
+            toggleAutoPay(removingAuth.id, false, { onSuccess: () => setRemovingAuth(null) })
+          }
+        />
+      )}
     </div>
   );
 }

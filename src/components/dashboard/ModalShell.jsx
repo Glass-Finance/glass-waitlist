@@ -1,0 +1,38 @@
+import { X } from "lucide-react";
+
+// Shared dashboard modal chrome — extracted out of AdminPanel.jsx so other
+// dashboard pages (Members, MemberDetail, MemberAccess, Payments, finance
+// settings) can build confirm dialogs on the same visual language instead
+// of falling back to window.confirm().
+export default function ModalShell({ title, subtitle, onClose, children }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="bg-white rounded-2xl w-full max-w-md shadow-2xl"
+        style={{ border: "1px solid #E5E7EB" }}
+      >
+        <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+          <div>
+            <h2 className="text-sm font-bold text-gray-900">{title}</h2>
+            {subtitle && (
+              <p className="text-[11px] text-gray-400 mt-0.5">{subtitle}</p>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+          >
+            <X size={15} />
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import {
   usePayments,
@@ -8,11 +8,13 @@ import {
 import LoadingState from "../../../../components/common/LoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
 import Toggle from "../../../../components/common/Toggle";
+import ConfirmDialog from "../../../../components/dashboard/ConfirmDialog";
 import { formatNaira } from "../../../../utils/format";
 
 export default function AutoPay() {
   const { data, isLoading: paymentsLoading } = usePayments();
-  const { data: authorisations, isLoading: authsLoading, toggleAutoPay } = useManagePayments();
+  const { data: authorisations, isLoading: authsLoading, toggleAutoPay, isRemoving } = useManagePayments();
+  const [turningOff, setTurningOff] = useState(null); // { plan, auth }
 
   // Recurring upcoming obligations, deduped by plan (obligations recur per cycle)
   const recurringPlans = useMemo(() => {
@@ -77,10 +79,7 @@ export default function AutoPay() {
 
   function handleToggle(plan, auth) {
     if (!auth) return; // nothing to turn on without going through a real payment first
-    if (!window.confirm(
-      "Turning this off removes the saved payment method for this plan — auto-pay will stop for every plan tied to it."
-    )) return;
-    toggleAutoPay(auth.id, false);
+    setTurningOff({ plan, auth });
   }
 
   const isLoading = paymentsLoading || authsLoading;
@@ -154,6 +153,20 @@ export default function AutoPay() {
           the payment stays due and you'll be notified so you can pay manually.
         </p>
       </div>
+
+      {turningOff && (
+        <ConfirmDialog
+          title="Turn Off Auto-Pay"
+          description={`Turning off Auto-Pay for ${turningOff.plan.name} removes the saved payment method (${turningOff.auth.bank ?? "Card"} ●●●● ${turningOff.auth.last4}) entirely — Auto-Pay will stop for every plan tied to that same method, not just this one.`}
+          confirmLabel="Turn Off"
+          confirmingLabel="Turning off…"
+          confirming={isRemoving}
+          onClose={() => setTurningOff(null)}
+          onConfirm={() =>
+            toggleAutoPay(turningOff.auth.id, false, { onSuccess: () => setTurningOff(null) })
+          }
+        />
+      )}
     </div>
   );
 }

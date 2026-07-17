@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments, useManagePayments } from "../../hooks/usePayments";
 import PageLoadingState from "../../components/common/PageLoadingState";
 import Toggle from "../../components/common/Toggle";
+import ConfirmSheet from "../../components/common/ConfirmSheet";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 function frequencyLabel(freq) {
@@ -142,7 +143,8 @@ export default function ManagePayments() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("All");
   const { data, isLoading: paymentsLoading } = usePayments();
-  const { data: authorisations, isLoading: authsLoading, toggleAutoPay } = useManagePayments();
+  const { data: authorisations, isLoading: authsLoading, toggleAutoPay, isRemoving } = useManagePayments();
+  const [turningOff, setTurningOff] = useState(null); // { plan, auth }
 
   const isLoading = paymentsLoading || authsLoading;
 
@@ -190,8 +192,7 @@ export default function ManagePayments() {
 
   function handleToggle(plan, auth) {
     if (auth) {
-      if (!window.confirm("Turning off Auto-Pay will remove the saved payment method for this plan.")) return;
-      toggleAutoPay(auth.id, false);
+      setTurningOff({ plan, auth });
     }
     // Turning ON requires initiating a payment with a new card — navigate to payment flow
     // (enabling is done automatically when a payment is completed with a reusable card)
@@ -246,6 +247,20 @@ export default function ManagePayments() {
           )}
         </div>
       </div>
+
+      {turningOff && (
+        <ConfirmSheet
+          title="Turn Off Auto-Pay?"
+          description={`This removes the saved payment method for ${turningOff.plan.name} entirely — Auto-Pay will stop for every plan tied to that same method, not just this one.`}
+          confirmLabel="Yes, turn off"
+          confirmingLabel="Turning off…"
+          confirming={isRemoving}
+          onCancel={() => setTurningOff(null)}
+          onConfirm={() =>
+            toggleAutoPay(turningOff.auth.id, false, { onSuccess: () => setTurningOff(null) })
+          }
+        />
+      )}
     </div>
   );
 }

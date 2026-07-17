@@ -9,6 +9,7 @@ import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
 import LoadingState from "../../../../components/common/LoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
 import Toggle from "../../../../components/common/Toggle";
+import ConfirmDialog from "../../../../components/dashboard/ConfirmDialog";
 
 // Per-member "⋯" actions menu — one open at a time (state lives in the page),
 // dismissed by the invisible full-screen overlay behind it.
@@ -73,6 +74,7 @@ export default function MemberAccess() {
   const communitySlug = useActiveCommunityId();
   const [copied, setCopied] = useState(false);
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [pendingAction, setPendingAction] = useState(null); // { member, type: "demote"|"promote"|"remove" }
   const { members, isLoading, removeMember, updateMember } = useCommunityMembers(communitySlug);
   const { data: rolesData, isLoading: rolesLoading } = useRoles();
   const { data: community, isLoading: communityLoading } = useCommunity(communitySlug);
@@ -238,29 +240,17 @@ export default function MemberAccess() {
                       isAdminRole(member)
                         ? {
                             label: "Demote to Member",
-                            onClick: () => {
-                              if (window.confirm(`Demote ${memberName(member)} to member? They'll lose dashboard access.`)) {
-                                updateMember.mutate({ memberId: member.id, payload: { roleId: memberRoleId } });
-                              }
-                            },
+                            onClick: () => setPendingAction({ member, type: "demote" }),
                           }
                         : {
                             label: "Promote to Admin",
                             disabled: !adminRoleId,
-                            onClick: () => {
-                              if (window.confirm(`Promote ${memberName(member)} to admin? They'll get dashboard access to this community.`)) {
-                                updateMember.mutate({ memberId: member.id, payload: { roleId: adminRoleId } });
-                              }
-                            },
+                            onClick: () => setPendingAction({ member, type: "promote" }),
                           },
                       {
                         label: "Remove from community",
                         danger: true,
-                        onClick: () => {
-                          if (window.confirm(`Remove ${memberName(member)} from this community?`)) {
-                            removeMember.mutate(member.id);
-                          }
-                        },
+                        onClick: () => setPendingAction({ member, type: "remove" }),
                       },
                     ]}
                   />
@@ -270,6 +260,48 @@ export default function MemberAccess() {
           )}
         </div>
       </div>
+
+      {pendingAction && (
+        <ConfirmDialog
+          title={
+            pendingAction.type === "demote"
+              ? "Demote to Member"
+              : pendingAction.type === "promote"
+                ? "Promote to Admin"
+                : "Remove Member"
+          }
+          subtitle={memberEmail(pendingAction.member)}
+          description={
+            pendingAction.type === "demote"
+              ? `${memberName(pendingAction.member)} will lose dashboard access to this community and become a regular member.`
+              : pendingAction.type === "promote"
+                ? `${memberName(pendingAction.member)} will get dashboard access to manage this community.`
+                : `This removes ${memberName(pendingAction.member)} from this community. They'll lose access to community payment plans and dashboard data tied to this community; this can't be undone.`
+          }
+          confirmLabel={
+            pendingAction.type === "demote" ? "Demote" : pendingAction.type === "promote" ? "Promote" : "Remove"
+          }
+          danger={pendingAction.type !== "promote"}
+          confirming={updateMember.isPending || removeMember.isPending}
+          onClose={() => setPendingAction(null)}
+          onConfirm={() => {
+            const { member, type } = pendingAction;
+            if (type === "demote") {
+              updateMember.mutate(
+                { memberId: member.id, payload: { roleId: memberRoleId } },
+                { onSuccess: () => setPendingAction(null) },
+              );
+            } else if (type === "promote") {
+              updateMember.mutate(
+                { memberId: member.id, payload: { roleId: adminRoleId } },
+                { onSuccess: () => setPendingAction(null) },
+              );
+            } else {
+              removeMember.mutate(member.id, { onSuccess: () => setPendingAction(null) });
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

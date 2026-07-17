@@ -1,18 +1,19 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
 import { ChevronLeft, CreditCard, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
 import PageLoadingState from "../../../../components/common/PageLoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
+import ConfirmSheet from "../../../../components/common/ConfirmSheet";
 
 export default function SavedCards() {
   const navigate = useNavigate();
   const { data, isLoading, error, toggleAutoPay, isRemoving } = useManagePayments();
+  const [removingItem, setRemovingItem] = useState(null);
 
   function handleDelete(item) {
-    const label = item.bank ? `${item.bank} ***${item.last4}` : `***${item.last4}`;
-    if (!window.confirm(`Remove ${label}? Any auto-pay tied to it will stop.`)) return;
-    toggleAutoPay(item.id, false);
+    setRemovingItem(item);
   }
 
   return (
@@ -76,6 +77,21 @@ export default function SavedCards() {
           )}
         </div>
       </div>
+
+      {removingItem && (
+        <ConfirmSheet
+          icon={Trash2}
+          title={`Remove ${removingItem.bank ? `${removingItem.bank} ***${removingItem.last4}` : `***${removingItem.last4}`}?`}
+          description="Any auto-pay tied to this method will stop, and it won't be usable for future payments."
+          confirmLabel="Yes, remove"
+          confirmingLabel="Removing…"
+          confirming={isRemoving}
+          onCancel={() => setRemovingItem(null)}
+          onConfirm={() =>
+            toggleAutoPay(removingItem.id, false, { onSuccess: () => setRemovingItem(null) })
+          }
+        />
+      )}
     </div>
   );
 }

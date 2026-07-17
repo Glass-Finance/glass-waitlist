@@ -82,5 +82,6 @@ export function useTransactions() {
     data,
     isLoading: transactionsQuery.isLoading,
     error: transactionsQuery.error,
+    refetch: transactionsQuery.refetch,
   };
 }

@@ -8,6 +8,7 @@ import { submitJoinRequest } from "../../../api/invites";
 import { notifyError } from "../../../utils/errorHandler";
 import { toastSuccess } from "../../../utils/toast";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
+import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../utils/phone";
 import { useAuth } from "../../../store/AuthContext";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 import LoadingState from "../../../components/common/LoadingState";
@@ -430,6 +431,10 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
     }
     if (!form.phone.trim()) {
       setError("Phone number is required.");
+      return;
+    }
+    if (!isPhoneValid(form.phone)) {
+      setError(PHONE_FORMAT_HINT);
       return;
     }
     if (!isPasswordValid(form.password)) {

@@ -176,7 +176,7 @@ export default function Transactions() {
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [selectedMonth, setSelectedMonth] = useState(null);
-  const { data: transactions = [], isLoading, error } = useTransactions();
+  const { data: transactions = [], isLoading, error, refetch } = useTransactions();
 
   // Month options come from the full (unfiltered-by-status) list, so
   // switching the status filter never changes which months are pickable —
@@ -295,9 +295,26 @@ export default function Transactions() {
       {isLoading ? (
         <PageLoadingState label="Loading your payment history…" size={56} padding="36px 24px" />
       ) : error ? (
-        <p style={{ textAlign: "center", color: "#dc2626", fontSize: 14, padding: "32px 0" }}>
-          Couldn't load transactions.
-        </p>
+        <div style={{ textAlign: "center", padding: "32px 0" }}>
+          <p style={{ color: "#dc2626", fontSize: 14, marginBottom: 12 }}>
+            Couldn't load transactions.
+          </p>
+          <button
+            onClick={() => refetch()}
+            style={{
+              background: "none",
+              border: "1px solid #FCA5A5",
+              borderRadius: 20,
+              color: "#EF4444",
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: "pointer",
+              padding: "6px 18px",
+            }}
+          >
+            Try again
+          </button>
+        </div>
       ) : groups.length === 0 ? (
         <div
           style={{

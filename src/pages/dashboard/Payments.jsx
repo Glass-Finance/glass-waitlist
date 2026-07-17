@@ -33,6 +33,7 @@ import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import { getPaymentLinkMembers } from "../../api/payments";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
+import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import { formatNaira, toTitleCase, formatDate } from "../../utils/format";
 import Background from "../../assets/background.webp";
 import { getCommunityMembers } from "../../api/communities";
@@ -2264,6 +2265,7 @@ function DuplicatePlanModal({ plan, onClose, onDuplicate, duplicating }) {
 // ── Plan card "..." overflow menu ─────────────────────────────────────────────
 function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendReminder, onDuplicate }) {
   const [open, setOpen] = useState(false);
+  const [confirmingEnd, setConfirmingEnd] = useState(false);
   const status = plan.status;
   const isActive = status === "ACTIVE";
   const isPaused = status === "PAUSED";
@@ -2334,19 +2336,8 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendRemind
                   label="End Plan"
                   danger
                   onClick={() => {
-                    // Confirmed against the backend: activate only accepts
-                    // draft or failed links, so once a plan is ended there's
-                    // no supported way back to Active from here -- Duplicate
-                    // (still offered below) is the only path to something
-                    // like it again.
-                    if (
-                      window.confirm(
-                        `End "${plan.name}"? This can't be undone -- it can't be reactivated afterward, only duplicated as a new plan.`,
-                      )
-                    ) {
-                      planPlans.expire.mutate(plan.id);
-                      close();
-                    }
+                    setConfirmingEnd(true);
+                    close();
                   }}
                 />
               </>
@@ -2384,6 +2375,21 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendRemind
             )}
           </div>
         </>
+      )}
+
+      {confirmingEnd && (
+        <ConfirmDialog
+          title="End Plan"
+          subtitle={plan.name}
+          description={`This can't be undone -- it can't be reactivated afterward, only duplicated as a new plan.`}
+          confirmLabel="End Plan"
+          confirmingLabel="Ending…"
+          confirming={planPlans.expire.isPending}
+          onClose={() => setConfirmingEnd(false)}
+          onConfirm={() =>
+            planPlans.expire.mutate(plan.id, { onSuccess: () => setConfirmingEnd(false) })
+          }
+        />
       )}
     </div>
   );

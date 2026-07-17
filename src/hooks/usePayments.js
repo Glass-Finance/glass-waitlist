@@ -659,8 +659,8 @@ export function useManagePayments() {
 
   // Re-enabling isn't supported by the API — auto-pay is re-established only
   // by completing a new payment with a fresh authorisation.
-  function toggleAutoPay(id, enabled) {
-    if (!enabled) disableAutoPay.mutate(id);
+  function toggleAutoPay(id, enabled, options) {
+    if (!enabled) disableAutoPay.mutate(id, options);
   }
 
   return {

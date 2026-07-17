@@ -8,6 +8,7 @@ import { useCommunity } from "../../hooks/useCommunity";
 import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
+import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import Background from "../../assets/background.webp";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
@@ -65,6 +66,7 @@ export default function MemberDetail() {
   const { memberId } = useParams();
   const communityId = useActiveCommunityId();
   const [tab, setTab] = useState("All Plans");
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
 
   const { members, isLoading } = useMembersWithPayments(communityId);
   const { removeMember } = useCommunityMembers(communityId);
@@ -78,7 +80,10 @@ export default function MemberDetail() {
 
   function handleRemove() {
     if (!member) return;
-    if (!window.confirm(`Remove ${memberName(member)} from this community?`)) return;
+    setConfirmingRemove(true);
+  }
+
+  function confirmRemove() {
     removeMember.mutate(member.id, {
       onSuccess: () => navigate(`/dashboard/members?community=${communityId}`),
     });
@@ -296,8 +301,8 @@ export default function MemberDetail() {
                   <td className="px-5 py-3 text-sm text-gray-500">{formatDate(member.joinedAt ?? member.createdAt)}</td>
                   <td className="px-5 py-3">
                     <div className="flex gap-1.5">
-                      <a href={`tel:${memberPhone(member)}`} title="Call" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"><Phone size={11} /></a>
-                      <a href={`mailto:${memberEmail(member)}`} title="Message" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"><MessageCircle size={11} /></a>
+                      <a href={`tel:${memberPhone(member)}`} title="Call" aria-label="Call" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"><Phone size={11} /></a>
+                      <a href={`mailto:${memberEmail(member)}`} title="Message" aria-label="Message" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"><MessageCircle size={11} /></a>
                     </div>
                   </td>
                 </tr>
@@ -305,6 +310,19 @@ export default function MemberDetail() {
             </table>
           </div>
         </div>
+      )}
+
+      {confirmingRemove && (
+        <ConfirmDialog
+          title="Remove Member"
+          subtitle={memberEmail(member)}
+          description={`This removes ${memberName(member)} from this community. They'll lose access to community payment plans and dashboard data tied to this community; this can't be undone.`}
+          confirmLabel="Remove"
+          confirmingLabel="Removing…"
+          confirming={removeMember.isPending}
+          onClose={() => setConfirmingRemove(false)}
+          onConfirm={confirmRemove}
+        />
       )}
     </div>
   );

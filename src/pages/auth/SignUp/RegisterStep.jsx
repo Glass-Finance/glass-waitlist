@@ -4,6 +4,7 @@ import { Eye, EyeOff, Info } from "lucide-react";
 import { register } from "../../../services/authService";
 import { notifyError } from "../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
+import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../utils/phone";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 import PasswordChecklist from "../../../components/auth/PasswordChecklist";
 
@@ -69,6 +70,10 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
     }
     if (!form.phone.trim()) {
       setError("Phone number is required.");
+      return;
+    }
+    if (!isPhoneValid(form.phone)) {
+      setError(PHONE_FORMAT_HINT);
       return;
     }
     if (!isPasswordValid(form.password)) {

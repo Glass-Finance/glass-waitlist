@@ -9,6 +9,7 @@ import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
 import { useJoinRequests, requesterOf, requestStatusOf } from "../../hooks/useJoinRequests";
 import { getErrorMessage } from "../../utils/errorHandler";
 import LoadingState from "../../components/common/LoadingState";
+import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import Background from "../../assets/background.webp";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
@@ -170,6 +171,7 @@ export default function Members() {
   const [sort, setSort] = useState("Recently Paid");
   const [sortOpen, setSortOpen] = useState(false);
   const [selected, setSelected] = useState([]);
+  const [removingMember, setRemovingMember] = useState(null);
 
   const { members, obligations, isLoading, error } = useMembersWithPayments(communityId);
   const { inviteMember, removeMember } = useCommunityMembers(communityId);
@@ -228,8 +230,7 @@ export default function Members() {
   }
 
   function handleRemove(member) {
-    if (!window.confirm(`Remove ${memberName(member)} from this community?`)) return;
-    removeMember.mutate(member.id);
+    setRemovingMember(member);
   }
 
   function toggleSelect(id) {
@@ -445,8 +446,8 @@ export default function Members() {
                       <td className="hidden lg:table-cell px-5 py-3 text-xs text-gray-500">{formatDate(m.joinedAt ?? m.createdAt)}</td>
                       <td className="hidden sm:table-cell px-5 py-3">
                         <div className="flex gap-1.5">
-                          <button disabled title="Resend reminder — coming soon" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-300 cursor-not-allowed"><RotateCcw size={11} /></button>
-                          <button onClick={() => handleRemove(m)} title="Remove member" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"><UserMinus size={11} /></button>
+                          <button disabled title="Resend reminder — coming soon" aria-label="Resend reminder — coming soon" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-300 cursor-not-allowed"><RotateCcw size={11} /></button>
+                          <button onClick={() => handleRemove(m)} title="Remove member" aria-label="Remove member" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"><UserMinus size={11} /></button>
                         </div>
                       </td>
                     </tr>
@@ -467,6 +468,23 @@ export default function Members() {
           roles={roles}
           rolesUnavailable={usingFallbackRoles}
           inviteLink={communityId ? `${APP_ORIGIN}/member/join?community=${communityId}` : null}
+        />
+      )}
+
+      {removingMember && (
+        <ConfirmDialog
+          title="Remove Member"
+          subtitle={memberEmail(removingMember)}
+          description={`This removes ${memberName(removingMember)} from this community. They'll lose access to community payment plans and dashboard data tied to this community; this can't be undone.`}
+          confirmLabel="Remove"
+          confirmingLabel="Removing…"
+          confirming={removeMember.isPending}
+          onClose={() => setRemovingMember(null)}
+          onConfirm={() =>
+            removeMember.mutate(removingMember.id, {
+              onSuccess: () => setRemovingMember(null),
+            })
+          }
         />
       )}
     </div>

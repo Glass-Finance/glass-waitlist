@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, RefreshCw } from "lucide-react";
@@ -6,12 +6,14 @@ import { usePayments, useManagePayments, isAuthorisationExpired } from "../../..
 import PageLoadingState from "../../../../components/common/PageLoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
 import Toggle from "../../../../components/common/Toggle";
+import ConfirmSheet from "../../../../components/common/ConfirmSheet";
 import { formatNaira } from "../../../../utils/format";
 
 export default function AutoPay() {
   const navigate = useNavigate();
   const { data, isLoading: paymentsLoading } = usePayments();
-  const { data: authorisations, isLoading: authsLoading, toggleAutoPay } = useManagePayments();
+  const { data: authorisations, isLoading: authsLoading, toggleAutoPay, isRemoving } = useManagePayments();
+  const [turningOff, setTurningOff] = useState(null); // { plan, auth }
 
   // Build a flat list of plans: all recurring upcoming obligations, deduped by plan ID
   const recurringPlans = useMemo(() => {
@@ -82,8 +84,7 @@ export default function AutoPay() {
   function handleToggle(plan) {
     const auth = findAuthForPlan(plan);
     if (!auth) return; // can't disable what isn't enabled
-    if (!window.confirm("Turning this off removes the saved payment method for this plan — auto-pay will stop for every plan tied to it.")) return;
-    toggleAutoPay(auth.id, false);
+    setTurningOff({ plan, auth });
   }
 
   const isLoading = paymentsLoading || authsLoading;
@@ -165,6 +166,20 @@ export default function AutoPay() {
           </p>
         </div>
       </div>
+
+      {turningOff && (
+        <ConfirmSheet
+          title="Turn Off Auto-Pay?"
+          description={`This removes the saved payment method for ${turningOff.plan.name} entirely — Auto-Pay will stop for every plan tied to that same method, not just this one.`}
+          confirmLabel="Yes, turn off"
+          confirmingLabel="Turning off…"
+          confirming={isRemoving}
+          onCancel={() => setTurningOff(null)}
+          onConfirm={() =>
+            toggleAutoPay(turningOff.auth.id, false, { onSuccess: () => setTurningOff(null) })
+          }
+        />
+      )}
     </div>
   );
 }
