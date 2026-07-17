@@ -4,6 +4,7 @@ import client from "../api/client";
 import { useActiveCommunityId } from "./useActiveCommunityId";
 import { useCommunities } from "./useCommunities";
 import { useRealtimeConnected } from "./useRealtimeStream";
+import { resolveCommunity, buildCommunityMap } from "../utils/notificationContent";
 
 // While the SSE stream is live it invalidates these queries the moment a
 // notification event lands, so fast polling is redundant — keep only a slow
@@ -58,6 +59,15 @@ export function useNotifications() {
   const communityId = activeSlugOrId
     ? (communities.find((c) => c.slug === activeSlugOrId || c.id === activeSlugOrId)?.id ?? activeSlugOrId)
     : null;
+  // For the client-side filter below -- a plain n.communityId equality
+  // check turned out too strict against real data (not every notification
+  // reliably carries a populated communityId, even though the schema types
+  // it as present), which flipped the earlier "shows every community" bug
+  // into an equally wrong "shows nothing" once enforced strictly. Reuses
+  // the same id-then-name resolution already proven correct for display
+  // (the community badge/logo shown per row) as the filter criterion too,
+  // instead of inventing a second, stricter notion of "belongs to".
+  const communityMap = useMemo(() => buildCommunityMap(communities), [communities]);
   const queryClient = useQueryClient();
   const realtimeConnected = useRealtimeConnected();
 
@@ -80,16 +90,26 @@ export function useNotifications() {
       const clearedAt = Number(localStorage.getItem(clearedAtKey(communityId)) ?? 0);
       return [...notifications]
         .filter((n) => {
-          // Confirmed twice against real data: the backend's ?communityId=
+          // Confirmed against real data: the backend's ?communityId=
           // request param (see fetchNotifications above) does not actually
           // filter server-side -- every community's notifications still
-          // came back regardless of the value sent, even once that value
-          // was the correct real id. Enforce it client-side instead of
-          // trusting the backend to have already done it; every
-          // notification carries its own real communityId field (confirmed
-          // uuid, NotificationDto schema), so this is a plain equality
-          // check, not a guess.
-          if (communityId && n.communityId !== communityId) return false;
+          // came back regardless of the value sent. Enforce it client-side
+          // instead of trusting the backend to have already done it.
+          //
+          // Fails OPEN, not closed: only drop a notification when
+          // resolveCommunity can positively identify it as belonging to a
+          // DIFFERENT community. A first pass that excluded anything it
+          // couldn't positively match TO this community turned out too
+          // strict against real payment notifications (not every one
+          // reliably carries a populated communityId, on this field or
+          // inside content) and reproduced the exact opposite bug --
+          // scoping to a community that genuinely has notifications showed
+          // none at all. Hiding a real notification is a worse failure
+          // than occasionally keeping an unresolvable one visible.
+          if (communityId) {
+            const resolved = resolveCommunity(n, communityMap);
+            if (resolved && resolved.id !== communityId) return false;
+          }
           if (!clearedAt) return true;
           if (n.readFlag && new Date(n.createdAt).getTime() <= clearedAt) return false;
           return true;

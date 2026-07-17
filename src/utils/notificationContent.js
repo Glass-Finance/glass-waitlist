@@ -105,18 +105,38 @@ export function resolveCommunityByName(text, communityMap) {
   return best;
 }
 
-// Resolves a community's display name/logo from communityId (the only
-// community-related field the real schema has) against the caller's own
-// communities list, falling back to text matching when the id doesn't
-// resolve. Exported so every caller shares one implementation instead of
-// maintaining a separate copy — NotificationsPanel.jsx (the bell dropdown)
-// used to keep its own local version that had quietly drifted from this
-// one, which is exactly the kind of gap that made the two surfaces behave
-// differently for the same notification.
+// Resolves a community's display name/logo against the caller's own
+// communities list. Tries every real signal a notification might carry, in
+// order of confidence: the top-level communityId (confirmed uuid on the
+// schema, but not reliably populated on every real payload -- some
+// notification types, payment ones especially, have shown up with it
+// blank), then the same field if the backend happened to attach it inside
+// the free-form `content` object instead, then an exact community-name
+// match if content carries one, then last-resort substring text matching
+// against the notification's own title/message. Exported so every caller
+// shares one implementation instead of maintaining a separate copy —
+// NotificationsPanel.jsx (the bell dropdown) used to keep its own local
+// version that had quietly drifted from this one, which is exactly the
+// kind of gap that made the two surfaces behave differently for the same
+// notification.
 export function resolveCommunity(n, communityMap) {
-  if (n.communityId && communityMap) {
-    const hit = communityMap.get?.(n.communityId) ?? communityMap[n.communityId];
+  if (!communityMap) return null;
+  const content = n.content && typeof n.content === "object" ? n.content : {};
+  const idCandidates = [n.communityId, content.communityId, content.community?.id];
+  for (const id of idCandidates) {
+    if (!id) continue;
+    const hit = communityMap.get?.(id) ?? communityMap[id];
     if (hit) return hit;
+  }
+  const nameCandidates = [content.communityName, content.community?.name];
+  for (const name of nameCandidates) {
+    if (!name) continue;
+    const hit = communityMap.get?.(name) ?? communityMap[name];
+    if (hit) return hit;
+    // communityMap isn't keyed by name, so match it the same way the
+    // text-matching fallback below does -- longest matching name wins.
+    const byName = resolveCommunityByName(name, communityMap);
+    if (byName) return byName;
   }
   return resolveCommunityByName(textOf(n), communityMap);
 }
