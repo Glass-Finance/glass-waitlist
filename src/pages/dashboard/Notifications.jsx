@@ -72,6 +72,11 @@ function Avatar({ n, details }) {
   return <div className="w-9 h-9 rounded-full flex-shrink-0 bg-[#D9D9D9]" />;
 }
 
+// Matches the member app's row treatment exactly (src/pages/memberApp/
+// Notifications.jsx): no per-row card/border/chevron -- rows sit flush
+// inside one shared list container, and only unread ones get a
+// highlighted background. Previously each row was its own bordered white
+// card with a trailing chevron, which is why the two didn't match.
 function NotificationRow({ n, onMarkRead, onOpen }) {
   const isRead = n.readFlag ?? false;
   const title = n.title ?? n.subject ?? "Notification";
@@ -86,14 +91,18 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
         if (!isRead) onMarkRead(n.id);
         onOpen(n);
       }}
-      className="relative w-full text-left flex items-start gap-3 px-4 py-4 bg-white rounded-xl cursor-pointer hover:bg-gray-50 transition-colors"
-      style={{ border: "1px solid #E5E7EB" }}
+      className="relative w-full text-left flex items-start gap-3 cursor-pointer border-none bg-transparent"
+      style={{
+        padding: isRead ? "10px 4px" : "14px 16px",
+        background: isRead ? "transparent" : "var(--color-stacked-container)",
+        borderRadius: isRead ? 0 : 12,
+      }}
     >
       {!isRead && (
-        <span className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-brand" />
+        <span className="absolute rounded-full bg-brand" style={{ top: 10, right: 12, width: 7, height: 7 }} />
       )}
       <Avatar n={n} details={details} />
-      <div className="flex-1 min-w-0 pr-4">
+      <div className="flex-1 min-w-0" style={{ paddingRight: isRead ? 0 : 14 }}>
         <p className={`text-sm leading-snug ${isRead ? "text-gray-500" : "text-gray-900 font-semibold"}`}>
           {title}
         </p>
@@ -107,7 +116,6 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
           {amount && <span className="text-gray-900 font-semibold"> · {amount}</span>}
         </p>
       </div>
-      <ChevronRight size={14} className="text-gray-300 flex-shrink-0 self-center" />
     </button>
   );
 }
@@ -261,7 +269,11 @@ function dayLabel(dateStr) {
   return d.toLocaleDateString("en-NG", { weekday: "long", month: "short", day: "numeric" });
 }
 
-// All-tab: strict newest-first with date separators only (no category grouping)
+// All-tab: strict newest-first with date separators only (no category
+// grouping). Wrapped in one shared bordered card -- matching the member
+// app's GroupedNotifications, which holds every day-bucket in a single
+// card rather than one card per row -- instead of rendering buckets
+// directly into the page's scroll container.
 function ChronologicalList({ items, onMarkRead, onOpen }) {
   if (items.length === 0) return null;
 
@@ -277,18 +289,20 @@ function ChronologicalList({ items, onMarkRead, onOpen }) {
   }
 
   return (
-    <>
+    <div className="bg-white rounded-2xl border border-[#E5E7EB] p-4 flex flex-col gap-4">
       {buckets.map(({ label, notifications }) => (
-        <div key={label} className="flex flex-col gap-2">
-          <p className="pt-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        <div key={label}>
+          <p className="mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
             {label}
           </p>
-          {notifications.map((n) => (
-            <NotificationRow key={n.id} n={n} onMarkRead={onMarkRead} onOpen={onOpen} />
-          ))}
+          <div className="flex flex-col gap-0.5">
+            {notifications.map((n) => (
+              <NotificationRow key={n.id} n={n} onMarkRead={onMarkRead} onOpen={onOpen} />
+            ))}
+          </div>
         </div>
       ))}
-    </>
+    </div>
   );
 }
 
