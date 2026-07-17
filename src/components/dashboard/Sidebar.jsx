@@ -158,7 +158,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         >
         {/* Blue rail */}
         <div
-          className="flex-shrink-0 bg-[#002FA7] flex flex-col items-center pt-3.5 pb-5"
+          className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5"
           style={{ width: 56 }}
         >
           <button
@@ -223,14 +223,14 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           <div
             style={{
               padding: "14px 12px 13px",
-              borderBottom: "1px solid #eef0f8",
+              borderBottom: "1px solid var(--color-hairline)",
               minHeight: 56,
               display: "flex",
               alignItems: "center",
             }}
           >
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#002FA7", lineHeight: 1.3 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", lineHeight: 1.3 }}>
                 Platform Admin
               </div>
               <span
@@ -274,8 +274,8 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                     borderRadius: 8,
                     border: "none",
                     cursor: "pointer",
-                    background: isActive ? "#e6eeff" : "transparent",
-                    color: isActive ? "#002FA7" : "#6b7280",
+                    background: isActive ? "var(--color-brand-tint)" : "transparent",
+                    color: isActive ? "var(--color-brand)" : "#6b7280",
                     fontWeight: isActive ? 700 : 500,
                     fontSize: 12,
                     fontFamily: "Inter, sans-serif",
@@ -307,7 +307,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           <div
             style={{
               padding: "10px 12px",
-              borderTop: "1px solid #eef0f8",
+              borderTop: "1px solid var(--color-hairline)",
               display: "flex",
               alignItems: "center",
               gap: 8,
@@ -316,7 +316,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             <div
               style={{
                 width: 28, height: 28, borderRadius: "50%",
-                background: "linear-gradient(135deg,#7c3aed,#002FA7)",
+                background: "linear-gradient(135deg,#7c3aed,var(--color-brand))",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 color: "#fff", fontSize: 10, fontWeight: 700,
                 flexShrink: 0,
@@ -351,7 +351,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       >
       {/* ── Blue rail ─────────────────────────────────────────────────────── */}
       <div
-        className="flex-shrink-0 bg-[#002FA7] flex flex-col items-center pt-3.5 pb-5"
+        className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5"
         style={{ width: 56 }}
       >
         {/* Logo — goes to communities overview */}
@@ -390,7 +390,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           title="Your Communities"
           className={`w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center mb-3 transition-all ${
             onCommunitiesOverview
-              ? "bg-white text-[#002FA7]"
+              ? "bg-white text-brand"
               : "bg-white/15 text-white hover:bg-white/25"
           }`}
         >
@@ -512,7 +512,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         className="bg-white md:bg-surface-container"
         style={{
           width: W,
-          borderRight: "1px solid #eef0f8",
+          borderRight: "1px solid var(--color-hairline)",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
@@ -524,7 +524,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         <div
           style={{
             padding: "14px 12px 13px",
-            borderBottom: "1px solid #eef0f8",
+            borderBottom: "1px solid var(--color-hairline)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -646,8 +646,8 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   borderRadius: 8,
                   border: "none",
                   cursor: isDisabled ? "not-allowed" : "pointer",
-                  background: isActive ? "#e6eeff" : "transparent",
-                  color: isActive ? "#002FA7" : isDisabled ? "#9ca3af" : "#6b7280",
+                  background: isActive ? "var(--color-brand-tint)" : "transparent",
+                  color: isActive ? "var(--color-brand)" : isDisabled ? "#9ca3af" : "#6b7280",
                   fontWeight: isActive ? 700 : 500,
                   fontSize: 12,
                   marginBottom: 2,
@@ -683,7 +683,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
         {/* Member View switch */}
         <div style={{ padding: "0 8px 8px", position: "relative" }}>
-          <div style={{ height: 1, background: "#eef0f8", marginBottom: 8 }} />
+          <div style={{ height: 1, background: "var(--color-hairline)", marginBottom: 8 }} />
           <button
             onClick={() => {
               // If the admin is also a member of the community they're
@@ -743,7 +743,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               fontFamily: "Inter, sans-serif",
               whiteSpace: "nowrap",
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.color = "#002FA7"; }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.color = "var(--color-brand)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#6b7280"; }}
           >
             <Smartphone size={14} style={{ flexShrink: 0 }} />
@@ -786,7 +786,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           <div
             style={{
               padding: "10px 12px",
-              borderTop: "1px solid #eef0f8",
+              borderTop: "1px solid var(--color-hairline)",
               display: "flex",
               alignItems: "center",
               gap: 8,
@@ -797,7 +797,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 width: 28,
                 height: 28,
                 borderRadius: "50%",
-                background: "linear-gradient(135deg,#002FA7,#4f46e5)",
+                background: "linear-gradient(135deg,var(--color-brand),#4f46e5)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

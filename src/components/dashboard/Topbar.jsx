@@ -139,7 +139,7 @@ export default function Topbar({
     searchMembers.length || searchTransactions.length || searchPaymentLinks.length || searchSettlements.length;
 
   return (
-    <header className="h-14 bg-surface-container border-b border-[#eef0f8] flex items-center gap-6 px-4 md:px-8 sticky top-0 z-50 flex-shrink-0">
+    <header className="h-14 bg-surface-container border-b border-hairline flex items-center gap-6 px-4 md:px-8 sticky top-0 z-50 flex-shrink-0">
       {/* Hamburger — mobile only */}
       <button
         onClick={onMenuClick}
@@ -151,7 +151,7 @@ export default function Topbar({
 
       {/* Search */}
       <div data-tour="topbar-search" className="relative flex-1 max-w-[420px] hidden md:block" ref={searchRef}>
-        <div className="flex items-center gap-2 bg-white rounded-md px-3.5 py-2.5 border border-gray-100 focus-within:ring-1 focus-within:ring-[#002FA7]">
+        <div className="flex items-center gap-2 bg-white rounded-md px-3.5 py-2.5 border border-gray-100 focus-within:ring-1 focus-within:ring-[var(--color-brand)]">
           {searching ? (
             <Loader2 size={14} className="text-gray-400 flex-shrink-0 animate-spin" />
           ) : (
@@ -275,14 +275,14 @@ export default function Topbar({
         )}
 
         {/* Divider */}
-        <div className="w-px h-6 bg-[#eef0f8]" />
+        <div className="w-px h-6 bg-[var(--color-hairline)]" />
 
         {/* User */}
         <button
           onClick={() => navigate("/dashboard/settings")}
           className="flex items-center gap-2 bg-transparent border-none cursor-pointer hover:opacity-80 transition-opacity p-0"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#002FA7] to-[#4f46e5] flex items-center justify-center text-white font-bold text-xs flex-shrink-0 select-none overflow-hidden">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--color-brand)] to-[#4f46e5] flex items-center justify-center text-white font-bold text-xs flex-shrink-0 select-none overflow-hidden">
             {user?.profileImage?.url ? (
               <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
             ) : (

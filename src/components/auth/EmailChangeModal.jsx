@@ -93,7 +93,7 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
       <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600" aria-label="Close">
         ✕
       </button>
-      <h1 className="text-xl font-bold text-gray-900 mb-3">Enter Confirmation Code</h1>
+      <h1 className="text-headline text-gray-900 mb-3">Enter Confirmation Code</h1>
       <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code that was sent to</p>
       <p className="text-sm font-semibold text-gray-900 mb-2">{maskEmail(newEmail)}</p>
       <button onClick={onWrongEmail} className="text-sm font-medium hover:underline" style={{ color: "#1B2FE8" }}>

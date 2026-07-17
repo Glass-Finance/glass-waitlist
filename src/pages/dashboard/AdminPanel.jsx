@@ -224,7 +224,7 @@ function Pager({ page, totalPages, onPage }) {
           onClick={() => onPage(i)}
           className={`w-7 h-7 flex items-center justify-center rounded-lg text-[11px] font-semibold border-none cursor-pointer transition-all ${
             i === page
-              ? "bg-[#002FA7] text-white"
+              ? "bg-brand text-white"
               : "bg-white text-gray-500 hover:bg-gray-100"
           }`}
           style={{ border: i === page ? "none" : "1px solid #E5E7EB" }}
@@ -309,7 +309,7 @@ function SearchBar({ value, onChange, placeholder = "Search…", width = 200 }) 
         onChange={(e) => onChange(e.target.value)}
         className="pl-8 pr-4 py-2 rounded-lg text-xs text-gray-700 placeholder-gray-400 outline-none"
         style={{ border: "1px solid #D0D0D0", width, background: "#fff" }}
-        onFocus={(e) => (e.target.style.borderColor = "#002FA7")}
+        onFocus={(e) => (e.target.style.borderColor = "var(--color-brand)")}
         onBlur={(e) => (e.target.style.borderColor = "#D0D0D0")}
       />
     </div>
@@ -421,7 +421,7 @@ function CommissionModal({ community, onClose }) {
   }
 
   const f = { border: "1px solid #D0D0D0" };
-  const ff = { borderColor: "#002FA7" };
+  const ff = { borderColor: "var(--color-brand)" };
 
   return (
     <ModalShell
@@ -435,7 +435,7 @@ function CommissionModal({ community, onClose }) {
             type="checkbox"
             checked={useDefault}
             onChange={(e) => setUseDefault(e.target.checked)}
-            className="w-4 h-4 accent-[#002FA7]"
+            className="w-4 h-4 accent-brand"
           />
           <span className="text-xs font-semibold text-gray-700">
             Use platform default rate
@@ -503,7 +503,7 @@ function CommissionModal({ community, onClose }) {
             type="submit"
             disabled={mutation.isPending}
             className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
-            style={{ background: "#002FA7" }}
+            style={{ background: "var(--color-brand)" }}
           >
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -582,7 +582,7 @@ function CommunitySettingsModal({ community, onClose }) {
             type="submit"
             disabled={mutation.isPending}
             className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
-            style={{ background: "#002FA7" }}
+            style={{ background: "var(--color-brand)" }}
           >
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -707,7 +707,7 @@ function CommunitiesSection() {
                         className="w-7 h-7 rounded-lg object-cover flex-shrink-0"
                       />
                     ) : (
-                      <div className="w-7 h-7 rounded-lg bg-[#e6eeff] flex items-center justify-center text-[#002FA7] font-bold text-[10px] flex-shrink-0">
+                      <div className="w-7 h-7 rounded-lg bg-brand-tint flex items-center justify-center text-brand font-bold text-[10px] flex-shrink-0">
                         {(c.name ?? "C")[0].toUpperCase()}
                       </div>
                     )}
@@ -762,7 +762,7 @@ function CommunitiesSection() {
                     </button>
                     <button
                       onClick={() => setEditingCommission(c)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-[#002FA7] bg-[#e6eeff] hover:bg-[#d0dcff] transition-all cursor-pointer border-none"
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-brand bg-brand-tint hover:bg-[#d0dcff] transition-all cursor-pointer border-none"
                     >
                       <Edit2 size={11} /> Commission
                     </button>
@@ -873,7 +873,7 @@ function CreateCommunityAccountModal({ onClose }) {
                 {c.logo?.url ? (
                   <img src={c.logo.url} alt="" className="w-7 h-7 rounded-lg object-cover flex-shrink-0" />
                 ) : (
-                  <div className="w-7 h-7 rounded-lg bg-[#e6eeff] flex items-center justify-center text-[#002FA7] font-bold text-[10px] flex-shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-brand-tint flex items-center justify-center text-brand font-bold text-[10px] flex-shrink-0">
                     {(c.name ?? "C")[0].toUpperCase()}
                   </div>
                 )}
@@ -1021,7 +1021,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
               required={commentRequired}
               className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors"
               style={f}
-              onFocus={(e) => (e.target.style.borderColor = chosen?.activeStyle.borderColor ?? "#002FA7")}
+              onFocus={(e) => (e.target.style.borderColor = chosen?.activeStyle.borderColor ?? "var(--color-brand)")}
               onBlur={(e) => Object.assign(e.target.style, f)}
               placeholder={
                 decision === "REJECT"
@@ -1149,7 +1149,7 @@ function AccountsSection() {
             />
             <button
               onClick={() => setCreatingAccount(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all cursor-pointer border-none flex-shrink-0"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 transition-all cursor-pointer border-none flex-shrink-0"
             >
               <Wallet size={12} /> Create Account
             </button>
@@ -1232,7 +1232,7 @@ function AccountsSection() {
                     <button
                       onClick={() => setReviewingAccount(a)}
                       disabled={review.isPending}
-                      className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-auto px-3 py-1.5 rounded-lg text-[11px] font-semibold text-[#002FA7] bg-blue-50 hover:bg-blue-100 transition-all cursor-pointer border-none disabled:opacity-40"
+                      className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-auto px-3 py-1.5 rounded-lg text-[11px] font-semibold text-brand bg-blue-50 hover:bg-blue-100 transition-all cursor-pointer border-none disabled:opacity-40"
                     >
                       <ShieldCheck size={11} /> Review
                     </button>
@@ -1501,7 +1501,7 @@ function UsersSection() {
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   {u.isPlatformAdmin ? (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#e6eeff] text-[#002FA7]">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-tint text-brand">
                       Platform Admin
                     </span>
                   ) : u.platformRole ? (
@@ -2001,7 +2001,7 @@ function SettlementsSection() {
             <button
               onClick={() => sync.mutate()}
               disabled={sync.isPending}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all cursor-pointer border-none disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 transition-all cursor-pointer border-none disabled:opacity-50"
             >
               <RefreshCw size={12} className={sync.isPending ? "animate-spin" : ""} /> Sync Now
             </button>
@@ -2115,7 +2115,7 @@ function ReconciliationRunsTable() {
             <button
               onClick={() => runFull.mutate()}
               disabled={busy}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw size={12} className={runFull.isPending ? "animate-spin" : ""} /> Run Full
             </button>
@@ -2170,10 +2170,10 @@ function ReconciliationRunsTable() {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     {r.csvReport?.url && (
-                      <a href={r.csvReport.url} target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-[#002FA7] hover:underline">CSV</a>
+                      <a href={r.csvReport.url} target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-brand hover:underline">CSV</a>
                     )}
                     {r.pdfReport?.url && (
-                      <a href={r.pdfReport.url} target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-[#002FA7] hover:underline">PDF</a>
+                      <a href={r.pdfReport.url} target="_blank" rel="noreferrer" className="text-[11px] font-semibold text-brand hover:underline">PDF</a>
                     )}
                   </div>
                 </td>
@@ -2231,7 +2231,7 @@ function FindingReviewModal({ finding, mode, onClose }) {
               onChange={(e) => setAnnotation(e.target.value)}
               rows={3}
               placeholder="Notes for this review…"
-              className="w-full border border-gray-300 px-3 py-2.5 rounded-lg text-xs outline-none focus:border-[#002FA7] mb-4 transition-all resize-none"
+              className="w-full border border-gray-300 px-3 py-2.5 rounded-lg text-xs outline-none focus:border-brand mb-4 transition-all resize-none"
             />
           </>
         )}
@@ -2248,7 +2248,7 @@ function FindingReviewModal({ finding, mode, onClose }) {
             onClick={() => (isResolve ? resolve.mutate() : review.mutate())}
             disabled={review.isPending || resolve.isPending}
             className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50"
-            style={{ background: "#002FA7" }}
+            style={{ background: "var(--color-brand)" }}
           >
             {review.isPending || resolve.isPending ? "Saving…" : isResolve ? "Resolve" : "Mark Reviewed"}
           </button>
@@ -2427,7 +2427,7 @@ function SendNotificationModal({ onClose }) {
   }
 
   const f = { border: "1px solid #D0D0D0" };
-  const ff = { borderColor: "#002FA7" };
+  const ff = { borderColor: "var(--color-brand)" };
 
   return (
     <ModalShell title="Send Notification" onClose={onClose}>
@@ -2451,7 +2451,7 @@ function SendNotificationModal({ onClose }) {
                 onClick={() => setTargetMode(val)}
                 className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
                   targetMode === val
-                    ? "bg-[#002FA7] text-white border-[#002FA7]"
+                    ? "bg-brand text-white border-brand"
                     : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
                 }`}
               >
@@ -2508,7 +2508,7 @@ function SendNotificationModal({ onClose }) {
                 onClick={() => toggleChannel(ch)}
                 className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold border transition-all cursor-pointer ${
                   channels.includes(ch)
-                    ? "bg-[#002FA7] text-white border-[#002FA7]"
+                    ? "bg-brand text-white border-brand"
                     : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
                 }`}
               >
@@ -2565,7 +2565,7 @@ function SendNotificationModal({ onClose }) {
             type="submit"
             disabled={mutation.isPending || channels.length === 0}
             className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
-            style={{ background: "#002FA7" }}
+            style={{ background: "var(--color-brand)" }}
           >
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -2613,7 +2613,7 @@ function NotificationsSection() {
           <button
             onClick={() => setShowCreate(true)}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white cursor-pointer border-none"
-            style={{ background: "#002FA7" }}
+            style={{ background: "var(--color-brand)" }}
           >
             <Bell size={12} /> Send Notification
           </button>

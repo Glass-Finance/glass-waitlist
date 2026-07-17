@@ -34,7 +34,7 @@ function Label({ htmlFor, children }) {
   return (
     <label
       htmlFor={htmlFor}
-      className="block text-sm font-medium mb-1.5"
+      className="block text-label font-medium mb-1.5"
       style={{ color: "#111" }}
     >
       {children}
@@ -67,7 +67,7 @@ function TextInput({
         disabled={disabled}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        className="w-full rounded-md px-4 py-3.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 bg-white focus:bg-white disabled:opacity-50 autofill:text-gray-900"
+        className="w-full rounded-md px-4 py-3.5 text-placeholder text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 bg-white focus:bg-white disabled:opacity-50 autofill:text-gray-900"
         style={{
           backgroundColor: "#FFFFFF",
           border: focused ? "1.5px solid #797D86" : "1.5px solid #E0E0E6",
@@ -110,7 +110,7 @@ function PrimaryButton({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className="w-full py-4 rounded-full bg-[#002FA7] text-white font-semibold text-[15px] transition-all hover:opacity-90 disabled:cursor-not-allowed cursor-pointer"
+      className="w-full py-4 rounded-full bg-[#002FA7] text-white font-semibold text-button transition-all hover:opacity-90 disabled:cursor-not-allowed cursor-pointer"
     >
       {loading ? "Loading..." : children}
     </button>
@@ -276,7 +276,7 @@ function StepOTP({ email, onVerified, onBack }) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-xl font-bold text-gray-900 my-5">
+        <h1 className="text-headline text-gray-900 my-5">
           Verification Code Sent
         </h1>
         <p className="text-sm text-gray-500 mb-1">
@@ -458,7 +458,7 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-lg font-bold text-gray-900 mt-5">
+        <h1 className="text-headline text-gray-900 mt-5">
           {hasToken ? "You've Been Invited" : "Create Your Account"}
         </h1>
         {hasToken && (

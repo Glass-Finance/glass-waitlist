@@ -9,7 +9,7 @@ import PasswordChecklist from "../../../components/auth/PasswordChecklist";
 
 // ── Shared styles ─────────────────────────────────────────────────────────────
 const inputCls =
-  "w-full px-4 py-3 rounded-xl bg-white text-gray-900 placeholder-gray-400 text-sm outline-none transition-all";
+  "w-full px-4 py-3 rounded-xl bg-white text-gray-900 placeholder-gray-400 text-placeholder outline-none transition-all";
 const inputStyle = { border: "1.5px solid #C2C2C2" };
 const onFocus = (e) => (e.target.style.borderColor = "#2535c3");
 const onBlur = (e) => (e.target.style.borderColor = "#C2C2C2");
@@ -18,7 +18,7 @@ const PrimaryBtn = ({ loading, disabled, children, ...props }) => (
   <button
     {...props}
     disabled={loading || disabled}
-    className="mt-2 w-full py-3.5 rounded-3xl text-white font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+    className="mt-2 w-full py-3.5 rounded-3xl text-white font-semibold text-button transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
     style={{ background: "#2535c3" }}
   >
     {children}
@@ -99,7 +99,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
   return (
     <div className="w-full max-w-sm flex flex-col">
       <div className="mb-3">
-        <h1 className="text-xl font-bold text-gray-900 mb-1.5">
+        <h1 className="text-headline text-gray-900 mb-1.5">
           Create Your Account
         </h1>
       </div>
@@ -107,7 +107,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-label font-medium text-gray-700">
               First Name
             </label>
             <input
@@ -124,7 +124,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-label font-medium text-gray-700">
               Last Name
             </label>
             <input
@@ -143,7 +143,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-label font-medium text-gray-700">
             Email Address
           </label>
           <input
@@ -161,7 +161,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-label font-medium text-gray-700">
             Phone Number
           </label>
           <input
@@ -185,7 +185,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-label font-medium text-gray-700">
             Create Password
           </label>
           <div className="relative">
@@ -215,7 +215,7 @@ export default function RegisterStep({ onNext, onSwitch, onGoogleAuth }) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-gray-700">
+          <label className="text-label font-medium text-gray-700">
             Confirm Password
           </label>
           <div className="relative">

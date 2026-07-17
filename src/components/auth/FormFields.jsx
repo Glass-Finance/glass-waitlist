@@ -7,7 +7,7 @@ import { useState } from "react";
 
 export function Label({ htmlFor, children }) {
   return (
-    <label htmlFor={htmlFor} className="block text-sm font-medium mb-1.5" style={{ color: "#111" }}>
+    <label htmlFor={htmlFor} className="block text-label font-medium mb-1.5" style={{ color: "#111" }}>
       {children}
     </label>
   );
@@ -38,7 +38,7 @@ export function TextInput({
         disabled={disabled}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        className="w-full rounded-xl px-4 py-3.5 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 bg-white disabled:opacity-50"
+        className="w-full rounded-xl px-4 py-3.5 text-placeholder text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 bg-white disabled:opacity-50"
         style={{ border: focused ? "1.5px solid #1C2B8A" : "1.5px solid #E0E0E6" }}
       />
       {rightElement && <div className="absolute right-3 top-1/2 -translate-y-1/2">{rightElement}</div>}
@@ -52,7 +52,7 @@ export function PrimaryButton({ children, onClick, disabled, loading }) {
       type="button"
       onClick={onClick}
       disabled={disabled || loading}
-      className="w-full rounded-full py-4 text-sm font-semibold text-white transition-all duration-150 disabled:opacity-50 active:scale-[0.98]"
+      className="w-full rounded-full py-4 text-button font-semibold text-white transition-all duration-150 disabled:opacity-50 active:scale-[0.98]"
       style={{ background: disabled || loading ? "#B0B8D8" : "#1C2B8A" }}
     >
       {children}

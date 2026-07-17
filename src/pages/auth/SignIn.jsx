@@ -197,7 +197,7 @@ export default function SignIn() {
               <ShieldCheck size={22} style={{ color: "#002FA7" }} />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900 mb-1">Enter MFA Code</h1>
+              <h1 className="text-headline text-gray-900 mb-1">Enter MFA Code</h1>
               <p className="text-sm text-gray-500">Open your authenticator app and enter the 6-digit code.</p>
             </div>
           </div>
@@ -263,7 +263,7 @@ export default function SignIn() {
           </div>
         )}
         <div>
-          <h1 className="text-xl font-bold text-gray-900 mb-1">Sign in To Your Account</h1>
+          <h1 className="text-headline text-gray-900 mb-1">Sign in To Your Account</h1>
           <p className="text-sm text-gray-500">Enter your credentials to continue.</p>
         </div>
 

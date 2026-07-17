@@ -23,7 +23,17 @@
   --color-gray-text: #808080;
   --color-gray-bg: #F5F5F6;
   --color-dark-bg: #0A1F2E;
-  
+
+  /* Desktop dashboard/admin brand colors — the actual blue used throughout
+     the community-owner and platform-admin UI (distinct from --color-primary
+     above, which is a legacy landing-page value, and from the mobile member
+     app's own #1C2B8A). Was hardcoded as arbitrary-value Tailwind classes
+     (bg-[#002FA7], text-[#002FA7]) or inline styles in 190+ places across
+     the dashboard — centralizing here so it only needs to change once. */
+  --color-brand: #002FA7;
+  --color-brand-tint: #e6eeff;
+  --color-hairline: #eef0f8;
+
   --animate-fadeIn: fadeIn 0.8s ease-out forwards;
   --animate-slideInLeft: slideInLeft 0.8s ease-out forwards;
   --animate-slideInRight: slideInRight 0.8s ease-out forwards;

@@ -68,7 +68,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
     <div className="w-full max-w-sm flex flex-col">
       <div className="mb-7">
         <h1
-          className="text-2xl font-bold text-gray-900 mb-3"
+          className="text-headline text-gray-900 mb-3"
           style={{ fontFamily: "var(--font-sans)" }}
         >
           Verification Code Sent
@@ -134,7 +134,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
         <button
           type="submit"
           disabled={loading || codeExpired || otp.some((d) => !d)}
-          className="w-full py-3.5 rounded-3xl text-white font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+          className="w-full py-3.5 rounded-3xl text-white font-semibold text-button transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
           style={{ background: "#2535c3" }}
         >
           {loading ? "Verifying..." : "Continue"}
