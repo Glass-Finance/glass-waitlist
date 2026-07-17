@@ -7,6 +7,7 @@ import {
   useManagePayments,
   useInitiatePayment,
   recordLocalPayment,
+  recordLocalFee,
   stashPendingPaymentCtx,
 } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
@@ -170,6 +171,14 @@ export default function PaymentSummary() {
       });
       const url = res.data?.data?.authorizationUrl;
       const reference = res.data?.data?.reference;
+      // The completed transaction record fetched later often comes back
+      // with no fee field populated at all, losing the number the payer
+      // already saw here as "Platform Fee" -- billedAmount is confirmed
+      // present on this same initiatePayment response (it's what feeds the
+      // prefetch display above), so cache the fee now while it's known
+      // rather than let the receipt fall back to a bare "—".
+      const billedAmount = res.data?.data?.billedAmount ?? prefetch?.billedAmount;
+      const feeMinor = billedAmount != null ? billedAmount - (obligation?.amount ?? 0) : null;
       if (url) {
         setRedirecting(true);
         sessionStorage.setItem("paymentReturnTo", "/member/home");
@@ -180,6 +189,7 @@ export default function PaymentSummary() {
           reference,
           paymentLinkId: obligation.paymentLink.id,
           obligationId: obligation.id ?? null,
+          feeMinor,
         });
         window.location.href = url;
       } else {
@@ -189,6 +199,7 @@ export default function PaymentSummary() {
           paymentLinkId: obligation.paymentLink.id,
           obligationId: obligation.id,
         });
+        if (reference) recordLocalFee(reference, feeMinor);
         toastSuccess("Payment sent", { reference });
         navigate(`/member/pay/${paymentId}/success?reference=${reference}`, { replace: true });
       }

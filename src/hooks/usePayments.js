@@ -90,13 +90,63 @@ export function stashPendingPaymentCtx(ctx) {
   }
 }
 
-export function settleLocalPaymentForReference(reference) {
+// ─── Local fee cache ────────────────────────────────────────────────────────
+// The transaction fee is known and already shown to the payer at checkout
+// (PaymentSummary.jsx's "Platform Fee" = billedAmount - amount), but the
+// completed transaction record fetched afterwards (getTransaction/
+// getCommunityTransaction) often comes back with no fee field populated at
+// all -- the receipt then has no way to show a real number, only "—". Since
+// the fee is deterministic and already known the moment payment is
+// initiated, it's cached here under every identifier the transaction could
+// later be looked up by (Paystack's own reference, and the real internal
+// transactionId once verifyPayment's response reveals it) so
+// useTransactionDetail can fall back to it instead of losing the number
+// entirely.
+const FEE_LOG_KEY = "glass_local_fee_log";
+
+function readFeeLog() {
+  try {
+    return JSON.parse(localStorage.getItem(FEE_LOG_KEY)) ?? {};
+  } catch {
+    return {};
+  }
+}
+
+export function recordLocalFee(key, feeMinor) {
+  if (!key || feeMinor == null) return;
+  try {
+    const log = readFeeLog();
+    log[key] = feeMinor;
+    const keys = Object.keys(log);
+    if (keys.length > 100) {
+      for (const k of keys.slice(0, keys.length - 100)) delete log[k];
+    }
+    localStorage.setItem(FEE_LOG_KEY, JSON.stringify(log));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function lookupLocalFee(key) {
+  if (!key) return null;
+  const value = readFeeLog()[key];
+  return value ?? null;
+}
+
+// transactionId is optional -- known once verifyPayment's response reveals
+// it (a beat after settlement), so the fee gets cached under whichever
+// identifiers are available at the time this runs.
+export function settleLocalPaymentForReference(reference, transactionId) {
   try {
     const raw = sessionStorage.getItem(PENDING_CTX_KEY);
     if (!raw) return;
     const ctx = JSON.parse(raw);
     if (!reference || !ctx.reference || ctx.reference === reference) {
       recordLocalPayment(ctx);
+      if (ctx.feeMinor != null) {
+        recordLocalFee(ctx.reference, ctx.feeMinor);
+        if (transactionId) recordLocalFee(transactionId, ctx.feeMinor);
+      }
       sessionStorage.removeItem(PENDING_CTX_KEY);
     }
   } catch {

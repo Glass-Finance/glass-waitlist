@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getTransaction, getMyCommunities } from "../api/members";
+import { lookupLocalFee } from "./usePayments";
 
 function unwrapList(res) {
   const data = res.data?.data;
@@ -68,7 +69,16 @@ export function useTransactionDetail(transactionId, { skipAuthRedirect = false }
     queryKey: ["transaction", transactionId],
     queryFn: async () => {
       const res = await getTransaction(transactionId, config);
-      return shapeDetail(res.data?.data ?? res.data);
+      const shaped = shapeDetail(res.data?.data ?? res.data);
+      // The completed transaction record often has no fee field populated
+      // at all -- fall back to the fee cached client-side at checkout
+      // (see recordLocalFee/lookupLocalFee in usePayments.js) rather than
+      // showing "—" for a fee the payer already saw and paid.
+      if (shaped.feeMinor == null) {
+        const localFee = lookupLocalFee(transactionId);
+        if (localFee != null) shaped.feeMinor = localFee;
+      }
+      return shaped;
     },
     enabled: !!transactionId,
     staleTime: 1000 * 60 * 2,

@@ -104,7 +104,7 @@ export default function PaymentSuccess() {
           invalidateCaches();
           consumePendingFlags();
           if (finalState === "success") {
-            settleLocalPaymentForReference(reference);
+            settleLocalPaymentForReference(reference, transactionId);
             if (transactionId) setTxId(transactionId);
           }
           setState(finalState);
