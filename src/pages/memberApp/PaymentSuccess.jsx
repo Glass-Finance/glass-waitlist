@@ -26,11 +26,13 @@ export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
 
-  const [returnTo] = useState(() => {
-    const v = sessionStorage.getItem("paymentReturnTo");
-    if (v) sessionStorage.removeItem("paymentReturnTo");
-    return v ?? null;
-  });
+  // Read but don't consume yet -- paymentReturnTo/paymentPendingRef are only
+  // cleared once verification reaches a terminal state. This page is now
+  // also the landing target for the real Paystack-hosted redirect (see
+  // App.jsx's /payment/callback), where the session can die mid-payment
+  // while the payer was away on Paystack's page; clearing early would lose
+  // the recovery trail through re-login (see the "signin" state below).
+  const [returnTo] = useState(() => sessionStorage.getItem("paymentReturnTo") ?? null);
 
   // "checking" | "success" | "failed" | "processing" | "unknown"
   const [state, setState] = useState(reference ? "checking" : "unknown");
@@ -63,9 +65,18 @@ export default function PaymentSuccess() {
     if (!reference) return;
     let cancelled = false;
 
+    function consumePendingFlags() {
+      sessionStorage.removeItem("paymentReturnTo");
+      sessionStorage.removeItem("paymentPendingRef");
+    }
+
     async function poll() {
       try {
-        const res = await verifyPayment(reference);
+        // _skipAuthRedirect: this page is reachable unauthenticated (the
+        // real Paystack callback URL, see App.jsx) -- a dead session should
+        // surface as the "signin" state below, not client.js's global hard
+        // redirect, which would wipe the pending payment context.
+        const res = await verifyPayment(reference, { _skipAuthRedirect: true });
         const data = res.data?.data ?? {};
         const { status, verificationQueued } = data;
 
@@ -77,18 +88,23 @@ export default function PaymentSuccess() {
           const s = status.toUpperCase();
           const finalState = (s === "SUCCESS" || s === "SUCCESSFUL") ? "success" : "failed";
           invalidateCaches();
-          // Verification is complete — only now is the pending ref used up.
-          // Clearing it earlier would break the post-sign-in recovery path
-          // if this page never reached a terminal state.
-          sessionStorage.removeItem("paymentPendingRef");
+          consumePendingFlags();
           if (finalState === "success") {
             settleLocalPaymentForReference(reference);
           }
           setState(finalState);
           return;
         }
-      } catch {
-        // fall through to retry
+      } catch (err) {
+        // Session died while the payer was on Paystack's page -- show a
+        // sign-in prompt instead of retrying into a hard redirect. The
+        // pending flags stay put so the payment auto-confirms after
+        // re-login (see SignIn.jsx's resolveDestination).
+        if (err?.response?.status === 401 && !cancelled) {
+          setState("signin");
+          return;
+        }
+        // Other network / 4xx — count as attempt and retry
       }
 
       attemptsRef.current += 1;
@@ -96,7 +112,7 @@ export default function PaymentSuccess() {
 
       if (attemptsRef.current >= MAX_POLLS) {
         invalidateCaches();
-        sessionStorage.removeItem("paymentPendingRef");
+        consumePendingFlags();
         setState(wasQueuedRef.current ? "processing" : "unknown");
         return;
       }
@@ -158,6 +174,13 @@ export default function PaymentSuccess() {
       text: "Still confirming…",
       sub: "Check your Transactions tab in a moment.",
       action: { label: backLabel, to: dest },
+    },
+    signin: {
+      icon: <Clock size={40} style={{ color: "var(--color-brand)" }} />,
+      bg: "var(--color-brand-tint)",
+      text: "Sign in to see your payment",
+      sub: "Your session expired while you were completing the payment. Sign back in — your payment will be confirmed automatically.",
+      action: { label: "Sign in to continue", to: "/member/app-sign-in" },
     },
   }[state];
 

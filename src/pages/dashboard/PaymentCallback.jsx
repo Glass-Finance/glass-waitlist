@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, X, Loader2, ArrowLeft, Clock, Share2 } from "lucide-react";
+import { Check, X, Loader2, ArrowLeft, Clock } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 import { settleLocalPaymentForReference } from "../../hooks/usePayments";
-import { useTransactionDetail } from "../../hooks/useTransactionDetail";
 import { useAuth } from "../../store/AuthContext";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import ReceiptModal from "../../components/common/ReceiptModal";
-import { formatNaira, toTitleCase } from "../../utils/format";
+import MemberPaymentConfirm from "../memberApp/PaymentSuccess";
 
 // The backend's verify endpoint is async: it queues a verification job and
 // returns the current DB status (often still "INITIATED"). The job updates the
@@ -23,13 +21,25 @@ function isTerminal(status) {
   return s === "SUCCESS" || s === "SUCCESSFUL" || s === "FAILED";
 }
 
+// Paystack's own callback_url points here for every payment, admin and
+// member alike — this used to be a single component that awkwardly tried to
+// serve both with a desktop-first card and a bolted-on mobile branch for
+// just the success state. The member app already has a proper, full mobile
+// design covering every state (PaymentSuccess.jsx, reused at
+// /member/pay/:id/success for the direct-charge case) — delegate to it here
+// too instead of maintaining a second, worse copy. This component now only
+// owns the admin/desktop presentation.
 export default function PaymentCallback() {
   usePageTitle("Payment Confirmation");
+  const { isAdmin } = useAuth();
+  return isAdmin ? <AdminPaymentCallback /> : <MemberPaymentConfirm />;
+}
+
+function AdminPaymentCallback() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
-  const { isAdmin, user } = useAuth();
 
   // Read (but don't consume yet) the return destination. paymentReturnTo and
   // paymentPendingRef are only cleared once verification reaches a terminal
@@ -38,31 +48,13 @@ export default function PaymentCallback() {
   const [returnTo] = useState(
     () => sessionStorage.getItem("paymentReturnTo") ?? null,
   );
+  const effectiveReturnTo = returnTo ?? "/dashboard/admin";
 
-  // Derive the effective destination once auth is resolved. Admin payments
-  // always set paymentReturnTo before redirecting to Paystack, so null here
-  // means the payment came from the member app.
-  const effectiveReturnTo = returnTo ?? (isAdmin ? "/dashboard/admin" : "/member/home");
-
-  // "checking" | "success" | "failed" | "processing" | "unknown"
+  // "checking" | "success" | "failed" | "processing" | "unknown" | "signin"
   const [state, setState] = useState(reference ? "checking" : "unknown");
   const [autoRedirectIn, setAutoRedirectIn] = useState(null);
-  const [shareOpen, setShareOpen] = useState(false);
   const attemptsRef = useRef(0);
   const wasQueuedRef = useRef(false);
-  // One-time check at mount -- this page isn't resized mid-session in
-  // practice (it's a landing screen right after a Paystack redirect), so a
-  // resize listener would be unused complexity. Desktop keeps the existing
-  // centered-card design and auto-redirect exactly as before; only the
-  // mobile success screen gets the new full-bleed layout below.
-  const [isMobile] = useState(() => window.innerWidth < 768);
-
-  // Only fetched once verification lands on success, and only matters for
-  // the mobile success layout's amount/plan subtext and Share Receipt.
-  const { data: tx } = useTransactionDetail(state === "success" ? reference : null);
-  const payerName = toTitleCase(
-    [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "",
-  );
 
   function invalidateCaches() {
     queryClient.invalidateQueries({ queryKey: ["obligations"] });
@@ -101,11 +93,7 @@ export default function PaymentCallback() {
           consumePendingFlags();
           if (finalState === "success") {
             settleLocalPaymentForReference(reference);
-            // Desktop keeps the auto-redirect exactly as before. Mobile's
-            // new layout gives two deliberate actions (Home / Share
-            // Receipt) instead -- auto-navigating away would yank the user
-            // off the screen before they could tap either.
-            if (!isMobile) setAutoRedirectIn(5);
+            setAutoRedirectIn(5);
           }
           setState(finalState);
           return;
@@ -150,14 +138,12 @@ export default function PaymentCallback() {
     return () => clearTimeout(t);
   }, [autoRedirectIn, navigate, effectiveReturnTo]);
 
-  const backLabel = isAdmin ? "Back to Dashboard" : "Go to Home";
+  const backLabel = "Back to Dashboard";
 
-  // Two-layer soft-tint-outer / solid-inner circle, matching the
-  // already-established success treatment on the mobile success screens
-  // (PaymentSuccess.jsx, this file's own isMobile branch below) — the
-  // desktop card previously used a single flat circle (solid-color for
-  // success/failed, light-tint for the rest), which is why it read as
-  // visually inconsistent with the rest of Glass's payment-outcome UI.
+  // Two-layer soft-tint-outer / solid-inner circle, matching the mobile
+  // success treatment in PaymentSuccess.jsx — a single flat circle
+  // (solid-color for success/failed, light-tint for the rest) used to read
+  // as visually inconsistent with the rest of Glass's payment-outcome UI.
   const config = {
     checking: {
       icon: <Loader2 size={28} className="animate-spin" color="#fff" />,
@@ -212,73 +198,7 @@ export default function PaymentCallback() {
     },
   }[state];
 
-  // The signin state's button goes to the sign-in page (admin or member,
-  // based on where the payment started) instead of the usual back-target.
-  const signInDest = returnTo?.startsWith("/dashboard")
-    ? "/sign-in"
-    : "/member/app-sign-in";
-  const buttonDest = state === "signin" ? signInDest : effectiveReturnTo;
-
-  // Mobile's success screen only, per the design -- checking/failed/
-  // processing/unknown/signin, and every state on desktop, keep the
-  // existing centered-card layout below unchanged.
-  if (isMobile && state === "success") {
-    return (
-      <div
-        className="min-h-screen flex flex-col items-center px-8 pt-16"
-        style={{ background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif" }}
-      >
-        <div className="w-[110px] h-[110px] rounded-full bg-[var(--color-success-tint)] flex items-center justify-center flex-shrink-0">
-          <div className="w-16 h-16 rounded-full bg-[var(--color-success)] flex items-center justify-center">
-            <Check size={28} color="white" strokeWidth={3} />
-          </div>
-        </div>
-
-        <p className="text-headline text-gray-900 mt-3 text-center">
-          Transaction Successful
-        </p>
-
-        <p className="text-title-sm text-gray-500 text-center mt-1 max-w-[280px]">
-          {tx ? (
-            <>
-              Your Payment of <strong className="text-gray-700">{formatNaira(tx.amount, { decimals: 2 })}</strong> for{" "}
-              <strong className="text-gray-700">{toTitleCase(tx.planName ?? tx.description)}</strong> was successful.
-            </>
-          ) : (
-            "Your payment has been confirmed."
-          )}
-        </p>
-
-        <div className="flex-1 w-full flex flex-col justify-end gap-3 pb-10 max-w-[340px]">
-          <button
-            onClick={() => navigate(effectiveReturnTo, { replace: true })}
-            className="w-full px-8 py-3.5 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
-            style={{ background: "var(--color-brand)" }}
-          >
-            Back to Home
-          </button>
-          <button
-            onClick={() => setShareOpen(true)}
-            disabled={!tx}
-            className="w-full px-8 py-3.5 rounded-full text-button font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ color: "var(--color-brand)", border: "1.5px solid var(--color-brand)" }}
-          >
-            <Share2 size={15} />
-            Share Receipt
-          </button>
-        </div>
-
-        {shareOpen && tx && (
-          <ReceiptModal
-            tx={tx}
-            payerName={payerName}
-            payerEmail={user?.email}
-            onClose={() => setShareOpen(false)}
-          />
-        )}
-      </div>
-    );
-  }
+  const buttonDest = state === "signin" ? "/sign-in" : effectiveReturnTo;
 
   return (
     <div
