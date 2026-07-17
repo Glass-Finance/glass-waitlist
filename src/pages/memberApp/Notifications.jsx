@@ -6,7 +6,7 @@ import { useInvites } from "../../hooks/useInvites";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { notificationTarget } from "../../utils/notificationRouting";
-import { isPaymentNotificationType, isPaymentReceivedType, isSelfAccountType } from "../../utils/notificationTypes";
+import { isPaymentNotificationType, isPaymentReceivedType, isSelfAccountType, paymentNotificationIcon } from "../../utils/notificationTypes";
 import { extractNotificationDetails, formatNairaAmount, initials } from "../../utils/notificationContent";
 import { useAuth } from "../../store/AuthContext";
 import PageLoadingState from "../../components/common/PageLoadingState";
@@ -60,26 +60,37 @@ function isPaymentNotification(n) {
 // profile/account event is about the reader's own account, not a member or
 // community, so it shows the current member's own photo instead. Every
 // other type (due, reminder, plan created, settings changed) has no single
-// member it's "from", so those show the community logo -- falling back to
-// initials when no image is available at all, never a flat placeholder
-// with nothing in it.
+// member it's "from", so those show the community logo. When no image is
+// available at all: a payment-family notification isn't really "about" a
+// person's name, so it gets a purpose-built icon for that stage of the
+// payment lifecycle instead of initials; every other type still falls back
+// to initials, and only resorts to a generic icon when there's truly no
+// name to initial either.
 function NotifIcon({ n, details }) {
   const { user } = useAuth();
   const type = n.notificationType ?? "";
-  const isPayment = isPaymentReceivedType(type);
+  const isReceived = isPaymentReceivedType(type);
+  const isPayment = isPaymentNotificationType(type);
   const isSelf = isSelfAccountType(type);
   const selfName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email;
 
   const img = isSelf
     ? user?.profileImage?.url
-    : isPayment
+    : isReceived
       ? (details?.memberPhoto ?? details?.communityLogo)
       : details?.communityLogo;
   const name = isSelf
     ? selfName
-    : isPayment
+    : isReceived
       ? (details?.memberName ?? details?.communityName)
       : (details?.communityName ?? details?.memberName);
+
+  const circleStyle = {
+    width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
+    background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)",
+    color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+    fontSize: 13, fontWeight: 700,
+  };
 
   if (img) {
     return (
@@ -89,20 +100,22 @@ function NotifIcon({ n, details }) {
     );
   }
 
+  const PaymentIcon = paymentNotificationIcon(type);
+  if (isPayment && PaymentIcon) {
+    return (
+      <div style={circleStyle}>
+        <PaymentIcon size={18} strokeWidth={2} />
+      </div>
+    );
+  }
+
   // A bare "?" reads as broken, not intentional -- when there's truly no
   // name to initial (community couldn't be resolved at all, even by text
   // match), a plain icon on the same brand gradient looks like a
   // deliberate generic-avatar state instead.
-  const GenericIcon = isSelf || isPayment ? User : Building2;
+  const GenericIcon = isSelf ? User : Building2;
   return (
-    <div
-      style={{
-        width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
-        background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)",
-        color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 13, fontWeight: 700,
-      }}
-    >
+    <div style={circleStyle}>
       {name ? initials(name) : <GenericIcon size={16} strokeWidth={2} />}
     </div>
   );

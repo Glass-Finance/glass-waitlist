@@ -1,3 +1,5 @@
+import { Banknote, CalendarClock, AlertTriangle, XCircle, Receipt, Undo2, ShieldOff, Landmark } from "lucide-react";
+
 // Exact notificationType enum + per-type rules, sourced from the backend's
 // documented Notification API schema (NotificationDto.notificationType).
 // This replaces substring/keyword guessing as the PRIMARY signal for
@@ -90,6 +92,31 @@ const SELF_ACCOUNT_TYPES = new Set([
 
 export function isSelfAccountType(type) {
   return SELF_ACCOUNT_TYPES.has((type ?? "").toUpperCase());
+}
+
+// A payment notification isn't "about" a person the way a member-joined or
+// profile-updated event is — initials for a payer's name (or worse, the
+// community's) read as an arbitrary two letters, not as identity. A
+// purpose-built icon per stage of the payment lifecycle is more legible at a
+// glance and doesn't need a name to resolve at all. Takes priority over the
+// photo/initials treatment for every type in this map, not just
+// PAYMENT_RECEIVED — a due reminder, an overdue notice, and a failed charge
+// are each a distinct, recognizable shape, not "no photo available".
+const PAYMENT_TYPE_ICON = {
+  PAYMENT_REQUEST_CREATED: Receipt,
+  PAYMENT_DUE: CalendarClock,
+  PAYMENT_REMINDER_DUE: CalendarClock,
+  PAYMENT_OVERDUE: AlertTriangle,
+  PAYMENT_REMINDER_OVERDUE: AlertTriangle,
+  PAYMENT_RECEIVED: Banknote,
+  PAYMENT_FAILED: XCircle,
+  PAYMENT_AUTHORIZATION_DISABLED: ShieldOff,
+  REFUND_REQUESTED: Undo2,
+  SETTLEMENT_COMPLETED: Landmark,
+};
+
+export function paymentNotificationIcon(type) {
+  return PAYMENT_TYPE_ICON[(type ?? "").toUpperCase()] ?? null;
 }
 
 // Admin dashboard's Urgent / Payment Activity / Community Activity tabs.
