@@ -1,5 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTransaction } from "../api/members";
+import { getTransaction, getMyCommunities } from "../api/members";
+
+function unwrapList(res) {
+  const data = res.data?.data;
+  if (Array.isArray(data)) return data;
+  return data?.content ?? [];
+}
 
 // Full-detail shape for a single transaction, used by the Transaction
 // Details page. Deliberately keeps every field optional/defensive beyond
@@ -17,6 +23,7 @@ function shapeDetail(raw) {
     amountPaid: raw.amountPaid,
     description: raw.description ?? raw.paymentLink?.title ?? "Payment",
     communityName: raw.community?.name,
+    communitySlug: raw.community?.slug,
     communityLogo: raw.community?.logo,
     date: raw.paidAt ?? raw.createdAt,
     status: (() => { const s = (raw.status ?? "").toLowerCase(); return s === "successful" ? "success" : s; })(),
@@ -38,8 +45,13 @@ function shapeDetail(raw) {
   };
 }
 
+// Same gap useTransactions.js already works around: the transactions
+// endpoint doesn't reliably nest the community's logo (only name/slug),
+// so it's enriched from /communities/me here too -- otherwise the receipt
+// opened from Transaction Details/Payment Success (both use this hook)
+// shows no logo even for communities that do have one.
 export function useTransactionDetail(transactionId) {
-  return useQuery({
+  const detailQuery = useQuery({
     queryKey: ["transaction", transactionId],
     queryFn: async () => {
       const res = await getTransaction(transactionId);
@@ -48,4 +60,32 @@ export function useTransactionDetail(transactionId) {
     enabled: !!transactionId,
     staleTime: 1000 * 60 * 2,
   });
+
+  const communitiesQuery = useQuery({
+    queryKey: ["communities"],
+    queryFn: async () => {
+      const res = await getMyCommunities();
+      return unwrapList(res);
+    },
+    staleTime: 1000 * 60 * 5,
+    enabled: !!transactionId,
+  });
+
+  const tx = detailQuery.data;
+  const data =
+    tx && !tx.communityLogo?.url && tx.communitySlug
+      ? {
+          ...tx,
+          communityLogo:
+            (communitiesQuery.data ?? []).find(
+              (c) => (c.slug ?? c.community?.slug) === tx.communitySlug,
+            )?.logo ?? tx.communityLogo,
+        }
+      : tx;
+
+  return {
+    data,
+    isLoading: detailQuery.isLoading,
+    error: detailQuery.error,
+  };
 }
