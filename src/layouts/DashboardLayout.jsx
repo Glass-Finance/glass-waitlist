@@ -31,7 +31,12 @@ export default function DashboardLayout() {
     <div
       className="h-screen w-screen flex overflow-hidden bg-surface-bg"
       style={{
-        backgroundImage: `url(${Background})`,
+        // The raw image's own base tone is a flat light gray, not white (see
+        // background.webp itself) -- a white wash on top keeps the page
+        // reading bright/white like the design reference while still
+        // letting the blob accent show through, lighter than the original
+        // 0.72 opacity that hid it completely.
+        backgroundImage: `linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.55)), url(${Background})`,
         backgroundSize: "cover",
         backgroundPosition: "left center",
         backgroundRepeat: "no-repeat",
