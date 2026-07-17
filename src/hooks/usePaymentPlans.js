@@ -75,16 +75,20 @@ export function usePaymentPlans(communityId) {
     queryClient.invalidateQueries({ queryKey: ["community", communityId, "payment-links"] });
   }
 
+  // silentError: true on create/update/duplicate/sendReminder -- Payments.jsx
+  // (the only caller of these) already shows its own notifyError with a more
+  // specific context per action; without this the global mutationCache
+  // onError in main.jsx toasts the same failure a second time.
   const create = useMutation({
     mutationFn: (payload) => createPaymentLink(communityId, payload),
     onSuccess: invalidate,
-    meta: { successMessage: "Payment plan created" },
+    meta: { successMessage: "Payment plan created", silentError: true },
   });
 
   const update = useMutation({
     mutationFn: ({ paymentLinkId, payload }) => updatePaymentLink(communityId, paymentLinkId, payload),
     onSuccess: invalidate,
-    meta: { successMessage: "Payment plan updated" },
+    meta: { successMessage: "Payment plan updated", silentError: true },
   });
 
   const activate = useMutation({
@@ -120,13 +124,13 @@ export function usePaymentPlans(communityId) {
     mutationFn: ({ paymentLinkId, payload }) =>
       duplicatePaymentLink(communityId, paymentLinkId, payload),
     onSuccess: invalidate,
-    meta: { successMessage: "Payment plan duplicated" },
+    meta: { successMessage: "Payment plan duplicated", silentError: true },
   });
 
   const sendReminder = useMutation({
     mutationFn: ({ paymentLinkId, payload }) =>
       sendPaymentLinkReminder(communityId, paymentLinkId, payload),
-    meta: { successMessage: "Reminder sent to unpaid members" },
+    meta: { successMessage: "Reminder sent to unpaid members", silentError: true },
   });
 
   return {

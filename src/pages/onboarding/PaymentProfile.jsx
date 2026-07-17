@@ -17,7 +17,7 @@ import { Bell, Check, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
 import Background from "../../assets/background.webp";
 import client from "../../api/client";
-import { notifyError } from "../../utils/errorHandler";
+import { notifyError, getErrorMessage } from "../../utils/errorHandler";
 import { useCommunityAccount } from "../../hooks/useCommunityAccount";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
 import BankSelect from "../../components/common/BankSelect";
@@ -206,7 +206,11 @@ export default function PaymentProfile() {
         });
       }, 1600);
     } catch (err) {
-      setError(notifyError(err, { context: "Save payment account" }));
+      // Not notifyError here -- the global mutationCache onError (main.jsx)
+      // already toasts this since these mutations are shared with
+      // PaystackAccount.jsx, which relies on that toast being the only one.
+      // Toasting again here would double it up for this caller.
+      setError(getErrorMessage(err, "Couldn't save your payment account. Please try again."));
     } finally {
       setSaving(false);
     }
