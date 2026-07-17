@@ -263,7 +263,14 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           <nav style={{ flex: 1, padding: "10px 8px" }}>
             {[
               { icon: ShieldCheck, label: "Admin Panel",  path: "/dashboard/admin-panel",               match: "/dashboard/admin-panel" },
-              { icon: Bell,        label: "Notifications", path: "/dashboard/notifications",              match: "/dashboard/notifications" },
+              // Carries the currently active community (same urlSlug this
+              // component already resolves for the regular sidebar below) so
+              // a super admin who is also a regular admin of real communities
+              // sees that community's own notifications while inside it,
+              // same as communityPath() now does for every other account —
+              // this stripped nav is a separate render branch that used to
+              // always hardcode the plain, unscoped URL regardless of context.
+              { icon: Bell,        label: "Notifications", path: urlSlug ? `/dashboard/notifications?community=${urlSlug}` : "/dashboard/notifications", match: "/dashboard/notifications" },
               { icon: Settings,    label: "Settings",      path: "/dashboard/settings/account/security", match: "/dashboard/settings" },
             ].map(({ icon: Icon, label, path, match }) => {
               const isActive = location.pathname.startsWith(match);
