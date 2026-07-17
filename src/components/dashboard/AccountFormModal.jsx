@@ -120,11 +120,11 @@ export default function AccountFormModal({
         style={{ background: "rgba(0,0,0,0.55)" }}
       />
 
-      {/* Modal — centred, matches settings page grey tone */}
+      {/* Modal — centred */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-xl rounded-xl p-7"
-          style={{ background: "#E8E8E8" }}
+          className="w-full max-w-xl rounded-xl p-7 shadow-2xl"
+          style={{ background: "#fff" }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
