@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, X, Loader2, ArrowLeft, Clock } from "lucide-react";
+import { Check, X, Loader2, ArrowLeft, Clock, Share2 } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 import { settleLocalPaymentForReference } from "../../hooks/usePayments";
+import { useTransactionDetail } from "../../hooks/useTransactionDetail";
 import { useAuth } from "../../store/AuthContext";
+import ReceiptModal from "../../components/common/ReceiptModal";
+import { formatNaira, toTitleCase } from "../../utils/format";
 
 // The backend's verify endpoint is async: it queues a verification job and
 // returns the current DB status (often still "INITIATED"). The job updates the
@@ -24,7 +27,7 @@ export default function PaymentCallback() {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const reference = searchParams.get("reference") ?? searchParams.get("trxref");
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
 
   // Read (but don't consume yet) the return destination. paymentReturnTo and
   // paymentPendingRef are only cleared once verification reaches a terminal
@@ -42,8 +45,22 @@ export default function PaymentCallback() {
   // "checking" | "success" | "failed" | "processing" | "unknown"
   const [state, setState] = useState(reference ? "checking" : "unknown");
   const [autoRedirectIn, setAutoRedirectIn] = useState(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const attemptsRef = useRef(0);
   const wasQueuedRef = useRef(false);
+  // One-time check at mount -- this page isn't resized mid-session in
+  // practice (it's a landing screen right after a Paystack redirect), so a
+  // resize listener would be unused complexity. Desktop keeps the existing
+  // centered-card design and auto-redirect exactly as before; only the
+  // mobile success screen gets the new full-bleed layout below.
+  const [isMobile] = useState(() => window.innerWidth < 768);
+
+  // Only fetched once verification lands on success, and only matters for
+  // the mobile success layout's amount/plan subtext and Share Receipt.
+  const { data: tx } = useTransactionDetail(state === "success" ? reference : null);
+  const payerName = toTitleCase(
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "",
+  );
 
   function invalidateCaches() {
     queryClient.invalidateQueries({ queryKey: ["obligations"] });
@@ -82,7 +99,11 @@ export default function PaymentCallback() {
           consumePendingFlags();
           if (finalState === "success") {
             settleLocalPaymentForReference(reference);
-            setAutoRedirectIn(5);
+            // Desktop keeps the auto-redirect exactly as before. Mobile's
+            // new layout gives two deliberate actions (Home / Share
+            // Receipt) instead -- auto-navigating away would yank the user
+            // off the screen before they could tap either.
+            if (!isMobile) setAutoRedirectIn(5);
           }
           setState(finalState);
           return;
@@ -183,6 +204,67 @@ export default function PaymentCallback() {
     ? "/sign-in"
     : "/member/app-sign-in";
   const buttonDest = state === "signin" ? signInDest : effectiveReturnTo;
+
+  // Mobile's success screen only, per the design -- checking/failed/
+  // processing/unknown/signin, and every state on desktop, keep the
+  // existing centered-card layout below unchanged.
+  if (isMobile && state === "success") {
+    return (
+      <div
+        className="min-h-screen flex flex-col items-center px-8 pt-16"
+        style={{ background: "#F4F6FA", fontFamily: "'Inter', system-ui, sans-serif" }}
+      >
+        <div className="w-[110px] h-[110px] rounded-full bg-[#DCFCE7] flex items-center justify-center flex-shrink-0">
+          <div className="w-16 h-16 rounded-full bg-[#16A34A] flex items-center justify-center">
+            <Check size={28} color="white" strokeWidth={3} />
+          </div>
+        </div>
+
+        <p className="text-xl font-semibold text-gray-900 mt-3 text-center">
+          Transaction Successful
+        </p>
+
+        <p className="text-[13px] text-gray-500 text-center leading-snug mt-1 max-w-[280px]">
+          {tx ? (
+            <>
+              Your Payment of <strong className="text-gray-700">{formatNaira(tx.amount, { decimals: 2 })}</strong> for{" "}
+              <strong className="text-gray-700">{toTitleCase(tx.planName ?? tx.description)}</strong> was successful.
+            </>
+          ) : (
+            "Your payment has been confirmed."
+          )}
+        </p>
+
+        <div className="flex-1 w-full flex flex-col justify-end gap-3 pb-10 max-w-[340px]">
+          <button
+            onClick={() => navigate(effectiveReturnTo, { replace: true })}
+            className="w-full px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
+            style={{ background: "#002FA7" }}
+          >
+            Back to Home
+          </button>
+          <button
+            onClick={() => setShareOpen(true)}
+            disabled={!tx}
+            className="w-full px-8 py-3.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ color: "#002FA7", border: "1.5px solid #002FA7" }}
+          >
+            <Share2 size={15} />
+            Share Receipt
+          </button>
+        </div>
+
+        {shareOpen && tx && (
+          <ReceiptModal
+            tx={tx}
+            payerName={payerName}
+            payerEmail={user?.email}
+            onClose={() => setShareOpen(false)}
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div
