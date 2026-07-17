@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 import DashboardTour, { DASHBOARD_TOUR_SEEN_KEY } from "../components/dashboard/DashboardTour";
-import Background from "../assets/background.webp";
+import Overlay from "../assets/overlay.webp";
 
 export default function DashboardLayout() {
   // Sidebar is an off-canvas drawer below the md breakpoint (see
@@ -31,14 +31,9 @@ export default function DashboardLayout() {
     <div
       className="h-screen w-screen flex overflow-hidden bg-surface-bg"
       style={{
-        // The raw image's own base tone is a flat light gray, not white (see
-        // background.webp itself) -- a white wash on top keeps the page
-        // reading bright/white like the design reference while still
-        // letting the blob accent show through, lighter than the original
-        // 0.72 opacity that hid it completely.
-        backgroundImage: `linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.55)), url(${Background})`,
+        backgroundImage: `url(${Overlay})`,
         backgroundSize: "cover",
-        backgroundPosition: "left center",
+        backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
     >
