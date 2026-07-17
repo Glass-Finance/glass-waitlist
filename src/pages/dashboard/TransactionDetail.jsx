@@ -90,7 +90,7 @@ export default function TransactionDetail() {
       </div>
 
       {isLoading ? (
-        <div className="bg-surface-container rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+        <div className="bg-surface-container rounded-xl border border-[#E0E0EB]" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
           <LoadingState className="py-16" />
         </div>
       ) : error || !tx ? (
@@ -99,7 +99,7 @@ export default function TransactionDetail() {
         <div className="max-w-xl flex flex-col gap-4">
           {/* Amount card */}
           <div
-            className="bg-surface-container rounded-xl border border-gray-100 px-8 py-9 flex flex-col items-center gap-3"
+            className="bg-surface-container rounded-xl border border-[#E0E0EB] px-8 py-9 flex flex-col items-center gap-3"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <p className="text-4xl font-bold text-gray-900" style={{ letterSpacing: "-0.5px" }}>
@@ -117,7 +117,7 @@ export default function TransactionDetail() {
 
           {/* Details card */}
           <div
-            className="bg-surface-container rounded-xl border border-gray-100 px-6 py-4"
+            className="bg-surface-container rounded-xl border border-[#E0E0EB] px-6 py-4"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <p className="text-sm font-semibold text-black mb-1">Transaction Details</p>

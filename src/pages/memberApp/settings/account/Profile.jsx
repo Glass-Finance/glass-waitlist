@@ -200,7 +200,7 @@ export default function Profile() {
           <p style={{ fontSize: 13, color: "#999", margin: 0 }}>{isLoading ? "Loading…" : user?.email}</p>
         </div>
 
-        <div style={{ background: "#fff", borderRadius: 14, padding: 16, display: "flex", flexDirection: "column", gap: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+        <div style={{ background: "#fff", borderRadius: 14, padding: 16, display: "flex", flexDirection: "column", gap: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.05)", border: "1px solid #E0E0EB" }}>
           <div>
             <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 6 }}>First Name</label>
             <input style={inputStyle} value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />

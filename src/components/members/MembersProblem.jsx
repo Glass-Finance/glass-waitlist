@@ -309,7 +309,7 @@ export default function MembersProblem() {
           zIndex: -1,
           backgroundImage: `url(${ProblemGlow})`,
           backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundPosition: "left center",
           backgroundRepeat: "no-repeat",
         }}
         aria-hidden="true"

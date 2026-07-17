@@ -46,7 +46,7 @@ function statusStyle(paid, total) {
 
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
-    <div className="bg-surface-container rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-surface-container rounded-xl border border-[#E0E0EB] px-4 py-3 flex items-center justify-between" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <div>
         <p className="text-xs text-gray-400 mb-1">{label}</p>
         <p className="text-[13px] font-semibold text-black">{value}</p>
@@ -64,7 +64,7 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
   return (
     <>
       <div className="fixed inset-0 z-10" onClick={onClose} />
-      <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 bg-white rounded-xl border border-gray-100 shadow-lg z-20 p-4 w-64">
+      <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 bg-white rounded-xl border border-[#E0E0EB] shadow-lg z-20 p-4 w-64">
         <div className="flex flex-col gap-3">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Plan</label>
@@ -139,7 +139,7 @@ function EmptyState({ onAddMember, onCreatePlan }) {
             key={i}
             onClick={step.action ?? undefined}
             disabled={!step.action}
-            className={`w-full bg-white rounded-xl border border-gray-100 px-5 py-4 flex items-center gap-4 text-left transition-colors
+            className={`w-full bg-white rounded-xl border border-[#E0E0EB] px-5 py-4 flex items-center gap-4 text-left transition-colors
               ${step.action ? "cursor-pointer hover:bg-blue-50/30" : "cursor-default"}`}
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
@@ -332,7 +332,7 @@ export default function Members() {
       </div>
       )}
 
-      {members.length > 0 && <div className="bg-surface-container rounded-xl border border-gray-100" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+      {members.length > 0 && <div className="bg-surface-container rounded-xl border border-[#E0E0EB]" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
         <div className="flex items-center justify-between px-5 py-4">
           <span className="text-sm font-medium text-black">Member Payments</span>
           <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 transition-all bg-white cursor-pointer">
@@ -341,7 +341,7 @@ export default function Members() {
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-5 pb-3 gap-2">
-          <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-100 w-full sm:flex-1 sm:min-w-0 sm:max-w-xs">
+          <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-[#E0E0EB] w-full sm:flex-1 sm:min-w-0 sm:max-w-xs">
             <Search size={12} className="text-gray-400" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search members…" className="flex-1 bg-transparent border-none outline-none text-xs text-gray-600 placeholder-gray-400" />
           </div>
@@ -361,7 +361,7 @@ export default function Members() {
               {sortOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setSortOpen(false)} />
-                  <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-gray-100 shadow-lg z-20 overflow-hidden min-w-[150px]">
+                  <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-[#E0E0EB] shadow-lg z-20 overflow-hidden min-w-[150px]">
                     {SORT_OPTIONS.map((o) => (
                       <button key={o} onClick={() => { setSort(o); setSortOpen(false); }} className="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 bg-transparent border-none cursor-pointer">
                         {o}
@@ -508,7 +508,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
 
   return (
     <div className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm" onClick={e => e.target === e.currentTarget && onClose()}>
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
+      <form onSubmit={handleSubmit} className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6" style={{ border: "1px solid #E0E0EB" }}>
         <div className="flex items-start justify-between mb-5">
           <div>
             <h2 className="text-base font-semibold text-black">Invite Member</h2>

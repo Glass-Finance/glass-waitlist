@@ -151,7 +151,7 @@ export default function Topbar({
 
       {/* Search */}
       <div data-tour="topbar-search" className="relative flex-1 max-w-[420px] hidden md:block" ref={searchRef}>
-        <div className="flex items-center gap-2 bg-white rounded-md px-3.5 py-2.5 border border-gray-100 focus-within:ring-1 focus-within:ring-[var(--color-brand)]">
+        <div className="flex items-center gap-2 bg-white rounded-md px-3.5 py-2.5 border border-[#E0E0EB] focus-within:ring-1 focus-within:ring-[var(--color-brand)]">
           {searching ? (
             <Loader2 size={14} className="text-gray-400 flex-shrink-0 animate-spin" />
           ) : (
@@ -167,7 +167,7 @@ export default function Topbar({
         </div>
 
         {searchOpen && query.trim().length >= 2 && (
-          <div className="absolute left-0 top-full mt-1.5 w-full bg-white rounded-xl border border-gray-100 shadow-lg z-50 max-h-[420px] overflow-y-auto">
+          <div className="absolute left-0 top-full mt-1.5 w-full bg-white rounded-xl border border-[#E0E0EB] shadow-lg z-50 max-h-[420px] overflow-y-auto">
             {!hasSearchResults ? (
               <p className="text-xs text-gray-400 px-4 py-4">No results for "{query.trim()}"</p>
             ) : (

@@ -184,6 +184,7 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
         overflow: "hidden",
         background: "#fff",
         boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
+        border: "1px solid #E0E0EB",
       }}
     >
       {/* Top block carries the accent border on 3 sides. Structural, not an
@@ -212,7 +213,7 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
             marginBottom: 14,
             padding: "5px 18px",
             borderRadius: 999,
-            border: "1px solid #E5E7EB",
+            border: "1px solid #E0E0EB",
             color: "#374151",
             fontSize: 12,
             fontWeight: 500,

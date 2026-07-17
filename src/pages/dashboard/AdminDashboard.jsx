@@ -245,7 +245,7 @@ export function AdminPaymentModal({ item, onClose }) {
         <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border border-gray-100"
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border border-[#E0E0EB]"
               style={{ background: "#f0f4ff" }}
             >
               {item.logo?.url ? (
@@ -1664,7 +1664,7 @@ function DashboardContent({ isPaying, communityId }) {
           {stats.map((s) => (
             <div
               key={s.label}
-              className="bg-surface-container rounded-xl px-4 py-3 border border-hairline"
+              className="bg-surface-container rounded-xl px-4 py-3 border border-[#E0E0EB]"
               style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
             >
               <div className="flex items-center justify-between mb-3">
@@ -1694,7 +1694,7 @@ function DashboardContent({ isPaying, communityId }) {
         {/* Your Payments — paying admin's own dues in this community */}
         {isPaying && (
           <div
-            className="bg-surface-container rounded-xl border border-hairline p-5 mb-5"
+            className="bg-surface-container rounded-xl border border-[#E0E0EB] p-5 mb-5"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -1722,7 +1722,7 @@ function DashboardContent({ isPaying, communityId }) {
                     Filter <ChevronDown size={11} />
                   </button>
                   {myPaymentsFilterOpen && (
-                    <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-gray-100 shadow-lg z-20 min-w-[110px] overflow-hidden">
+                    <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-[#E0E0EB] shadow-lg z-20 min-w-[110px] overflow-hidden">
                       {[
                         { key: null, label: "All" },
                         { key: "unpaid", label: "Unpaid" },
@@ -1845,7 +1845,7 @@ function DashboardContent({ isPaying, communityId }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-5">
           {/* Payment Plans */}
           <div
-            className="rounded-xl border border-hairline p-4 bg-[#D7E2FF]"
+            className="rounded-xl border border-[#E0E0EB] p-4 bg-[#D7E2FF]"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -1941,7 +1941,7 @@ function DashboardContent({ isPaying, communityId }) {
 
           {/* Recent Activity */}
           <div
-            className="bg-surface-container rounded-xl border border-hairline p-4"
+            className="bg-surface-container rounded-xl border border-[#E0E0EB] p-4"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <span className="text-sm font-medium text-black block mb-4">
@@ -2040,7 +2040,7 @@ function DashboardContent({ isPaying, communityId }) {
 
         {/* Member Payments table */}
         <div
-          className="bg-surface-container rounded-xl border border-hairline"
+          className="bg-surface-container rounded-xl border border-[#E0E0EB]"
           style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
         >
           <div className="flex items-center justify-between px-5 pt-4 pb-0">
@@ -2060,7 +2060,7 @@ function DashboardContent({ isPaying, communityId }) {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-5 py-3 gap-2">
-            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-hairline w-full sm:flex-1 sm:min-w-0 sm:max-w-xs">
+            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-[#E0E0EB] w-full sm:flex-1 sm:min-w-0 sm:max-w-xs">
               <Search size={12} className="text-gray-400 flex-shrink-0" />
               <input
                 value={search}

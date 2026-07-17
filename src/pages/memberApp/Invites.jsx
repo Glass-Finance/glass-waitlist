@@ -244,6 +244,7 @@ export default function Invites() {
                   borderRadius: 14,
                   padding: 14,
                   marginBottom: 12,
+                  border: "1px solid #E0E0EB",
                   boxShadow:
                     invite.id === highlightId
                       ? "0 0 0 2px #002FA7, 0 1px 6px rgba(0,0,0,0.06)"
@@ -288,7 +289,7 @@ export default function Invites() {
                       flex: 1,
                       padding: "10px 0",
                       borderRadius: 8,
-                      border: "1.5px solid #E5E7EB",
+                      border: "1.5px solid #E0E0EB",
                       background: "#fff",
                       color: "#555",
                       fontSize: 13,
@@ -330,6 +331,7 @@ export default function Invites() {
                   borderRadius: 14,
                   padding: 14,
                   marginBottom: 12,
+                  border: "1px solid #E0E0EB",
                   boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
                   display: "flex",
                   alignItems: "center",

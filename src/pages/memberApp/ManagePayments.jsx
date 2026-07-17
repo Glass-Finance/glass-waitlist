@@ -76,7 +76,7 @@ function PlanCard({ plan, auth, onToggle }) {
     : null;
 
   return (
-    <div style={{ background: "#fff", borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.07)" }}>
+    <div style={{ background: "#fff", borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.07)", border: "1px solid #E0E0EB" }}>
       {/* Main body */}
       <div style={{ padding: "16px 16px 14px" }}>
         {/* Row 1: logo + Recurring badge */}

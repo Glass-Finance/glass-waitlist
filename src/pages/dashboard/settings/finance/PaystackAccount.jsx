@@ -58,7 +58,7 @@ function BankAvatar({ bankCode, bankName, storedLogoUrl }) {
     null;
   if (logoUrl && !imgFailed) {
     return (
-      <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden border border-gray-100 bg-white flex items-center justify-center">
+      <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden border border-[#E0E0EB] bg-white flex items-center justify-center">
         <img
           src={logoUrl}
           alt={bankName}
