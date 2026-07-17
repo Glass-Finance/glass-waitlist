@@ -251,6 +251,13 @@ function shapeObligation(raw) {
       return s === "SUCCESSFUL" ? "PAID" : s;
     })(),
     paymentLinkId: raw.paymentLink?.id,
+    // Whether the plan this obligation belongs to is still ACTIVE -- an
+    // obligation generated before a plan was paused/archived/expired can
+    // outlive that change (the backend doesn't retroactively cancel it),
+    // so without this a duplicated-then-deactivated plan's stale unpaid
+    // obligation keeps showing as due indefinitely even though the plan
+    // itself no longer accepts payments.
+    linkStatus: (raw.paymentLink?.status ?? "").toUpperCase(),
     obligationId: raw.id,
     logoColor: "#1C2B8A",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
@@ -585,9 +592,10 @@ export function usePayments(preferredCommunityIdentifier) {
     return da - db;
   });
 
-  const unpaidObligations = sorted.filter(
-    (o) => o.status !== "PAID" && !isObligationSettled(o, allTransactions),
-  );
+  const unpaidObligations = sorted.filter((o) => {
+    const linkIsActive = o.linkStatus === "ACTIVE" || !o.linkStatus;
+    return linkIsActive && o.status !== "PAID" && !isObligationSettled(o, allTransactions);
+  });
 
   // Payment links that are ACTIVE (or have no status set) and have no
   // corresponding obligation yet (covers plans created before the member
