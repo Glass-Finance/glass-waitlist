@@ -139,6 +139,7 @@ import GlassLogo from "../../assets/Glass.webp";
 import CreateCommunityIcon from "../../assets/auth/create-community.webp";
 import JoinCommunityIcon from "../../assets/auth/join-community.webp";
 import Background from "../../assets/background.webp";
+import StepIndicator from "../../components/onboarding/StepIndicator";
 
 export default function ChoosePath() {
   const navigate = useNavigate();
@@ -176,6 +177,7 @@ export default function ChoosePath() {
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center px-8 pb-10">
+        <StepIndicator stepId="choose-path" />
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">What would you like to do?</h1>
           <p className="text-sm text-gray-500">Are you setting up a community, or joining one you've been invited to?</p>

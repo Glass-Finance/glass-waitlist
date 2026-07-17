@@ -524,17 +524,14 @@ import { useAuth } from "../../store/AuthContext";
 import { notifyError } from "../../utils/errorHandler";
 import { resizeImageFile } from "../../utils/resizeImage";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
+import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 
 const CATEGORIES = [
   "Alumni Association", "Faith Community", "Professional Association",
   "Student Club", "University Club", "NGO / Non-profit", "Sports Club", "Other",
 ];
 
-const STEPS = [
-  { id: "organization", label: "Organization Profile" },
-  { id: "payment",      label: "Payment Account"      },
-  { id: "members",      label: "Members"              },
-];
+const COMPLETED_STEP_IDS = ["choose-path", "paying-member"];
 
 const inputCls =
   "w-full border border-gray-300 bg-stacked-container p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
@@ -725,10 +722,10 @@ export default function OrganizationProfile() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside className="w-64 flex-shrink-0 bg-surface-container border-r border-gray-200 flex flex-col pt-10 px-6">
-          {STEPS.map((step, i) => {
+          {ONBOARDING_STEPS.map((step, i) => {
             const isActive    = step.id === "organization";
-            const isCompleted = false;
-            const isLast      = i === STEPS.length - 1;
+            const isCompleted = COMPLETED_STEP_IDS.includes(step.id);
+            const isLast      = i === ONBOARDING_STEPS.length - 1;
             return (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex flex-col items-center">

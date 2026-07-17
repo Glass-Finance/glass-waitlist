@@ -438,6 +438,7 @@ import { toastProgress, toastSuccess } from "../../utils/toast";
 import { useRoles } from "../../hooks/useCommunityMembers";
 import { bulkCreateCommunityInvites } from "../../api/invites";
 import { readOnboardingProgress, clearOnboardingProgress } from "../../utils/onboardingProgress";
+import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 
 // Confirmed against the live backend (GET /roles/community, 2026-07-12):
 // only these three roles actually exist -- COMMUNITY_OWNER, COMMUNITY_ADMIN,
@@ -448,11 +449,7 @@ import { readOnboardingProgress, clearOnboardingProgress } from "../../utils/onb
 const ALLOWED_ROLE_NAMES = new Set(["Community Owner", "Community Admin", "Community Member"]);
 const FALLBACK_ROLES = [{ id: "", name: "Community Member" }];
 
-const STEPS = [
-  { id: "organization", label: "Organization Profile" },
-  { id: "payment",      label: "Payment Account"      },
-  { id: "members",      label: "Members"              },
-];
+const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization", "payment"];
 
 const HEADERS = ["First Name", "Last Name", "Email Address", "Phone Number", "Member ID", "Role/Title"];
 const SAMPLE_ROW = ["Muhammed", "Dorachinma", "Muha***med@**.com", "0812990293", "A23434", "Student"];
@@ -759,10 +756,10 @@ export default function AddMembers() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside className="w-64 flex-shrink-0 bg-surface-container border-r border-gray-200 flex flex-col pt-10 px-6">
-          {STEPS.map((step, i) => {
+          {ONBOARDING_STEPS.map((step, i) => {
             const isActive    = step.id === "members";
-            const isCompleted = ["organization", "payment"].includes(step.id);
-            const isLast      = i === STEPS.length - 1;
+            const isCompleted = COMPLETED_STEP_IDS.includes(step.id);
+            const isLast      = i === ONBOARDING_STEPS.length - 1;
             return (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex flex-col items-center">

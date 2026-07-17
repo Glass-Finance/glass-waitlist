@@ -21,12 +21,9 @@ import { notifyError } from "../../utils/errorHandler";
 import { useCommunityAccount } from "../../hooks/useCommunityAccount";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
 import BankSelect from "../../components/common/BankSelect";
+import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 
-const STEPS = [
-  { id: "organization", label: "Organization Profile" },
-  { id: "payment",      label: "Payment Account"      },
-  { id: "members",      label: "Members"              },
-];
+const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization"];
 
 const inputCls =
   "w-full border-1 border-gray-200 bg-white p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
@@ -236,10 +233,10 @@ export default function PaymentProfile() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <aside className="w-64 flex-shrink-0 bg-surface-container border-r border-gray-200 flex flex-col pt-10 px-6">
-          {STEPS.map((step, i) => {
+          {ONBOARDING_STEPS.map((step, i) => {
             const isActive    = step.id === "payment";
-            const isCompleted = step.id === "organization";
-            const isLast      = i === STEPS.length - 1;
+            const isCompleted = COMPLETED_STEP_IDS.includes(step.id);
+            const isLast      = i === ONBOARDING_STEPS.length - 1;
             return (
               <div key={step.id} className="flex items-start gap-4">
                 <div className="flex flex-col items-center">

@@ -126,6 +126,7 @@ import GlassLogo from "../../assets/Glass.webp";
 import PayingMemberIcon from "../../assets/auth/paying-dues.webp";
 import ExemptPaymentIcon from "../../assets/auth/exempt-payments.webp";
 import Background from "../../assets/background.webp";
+import StepIndicator from "../../components/onboarding/StepIndicator";
 
 export default function PayingMember() {
   const navigate = useNavigate();
@@ -154,6 +155,7 @@ export default function PayingMember() {
       </div>
 
       <div className="w-full max-w-lg flex flex-col items-center">
+        <StepIndicator stepId="paying-member" />
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Are you a paying member of this community?
