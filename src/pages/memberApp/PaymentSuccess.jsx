@@ -39,13 +39,24 @@ export default function PaymentSuccess() {
   const [shareOpen, setShareOpen] = useState(false);
   const attemptsRef = useRef(0);
   const wasQueuedRef = useRef(false);
+  // GET /finance/transactions/me/{transactionIdentifier} means the
+  // internal transaction id, not Paystack's own gateway reference -- every
+  // other real usage of this endpoint (Transaction Details, opened from a
+  // list row) passes that internal id. This page only ever had the
+  // Paystack reference from the redirect URL, which isn't the same value
+  // and left the lookup permanently unresolved (Share Receipt stuck
+  // disabled forever, not just slow). initiatePayment's confirmed response
+  // shape already includes transactionId alongside reference, so
+  // verifyPayment's should too -- capture it off the terminal response and
+  // prefer it, falling back to reference if it's ever actually absent.
+  const [txId, setTxId] = useState(null);
 
   // Only fetched once verification lands on success -- feeds the "for
   // <plan>" subtext and the Share Receipt button, both of which need real
   // transaction data (amount/plan/community) that this page never fetched
-  // before. getTransaction() accepts either an id or a reference.
-  const { data: tx } = useTransactionDetail(
-    state === "success" ? reference : null,
+  // before.
+  const { data: tx, isLoading: txLoading } = useTransactionDetail(
+    state === "success" ? (txId ?? reference) : null,
     { skipAuthRedirect: true },
   );
   const payerName = toTitleCase(
@@ -81,7 +92,7 @@ export default function PaymentSuccess() {
         // redirect, which would wipe the pending payment context.
         const res = await verifyPayment(reference, { _skipAuthRedirect: true });
         const data = res.data?.data ?? {};
-        const { status, verificationQueued } = data;
+        const { status, verificationQueued, transactionId } = data;
 
         if (verificationQueued) wasQueuedRef.current = true;
 
@@ -94,6 +105,7 @@ export default function PaymentSuccess() {
           consumePendingFlags();
           if (finalState === "success") {
             settleLocalPaymentForReference(reference);
+            if (transactionId) setTxId(transactionId);
           }
           setState(finalState);
           return;
@@ -267,8 +279,10 @@ export default function PaymentSuccess() {
               className="w-full px-8 py-3.5 rounded-full text-button font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ color: "var(--color-brand)", border: "1.5px solid var(--color-brand)" }}
             >
-              <Share2 size={15} />
-              Share Receipt
+              {txLoading
+                ? <Loader2 size={15} className="animate-spin" />
+                : <Share2 size={15} />}
+              {txLoading ? "Preparing receipt…" : "Share Receipt"}
             </button>
           </div>
         ) : (
