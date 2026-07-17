@@ -116,14 +116,14 @@ export default function PaymentSuccess() {
   const content = {
     checking: {
       icon: <Loader2 size={40} className="animate-spin" style={{ color: "var(--color-brand)" }} />,
-      bg: "#EEF2FF",
+      bg: "var(--color-brand-tint)",
       text: "Confirming payment…",
       sub: "Please wait while we verify your transaction.",
       action: null,
     },
     success: {
       icon: <Check size={40} color="white" strokeWidth={2.5} />,
-      bg: "#16A34A",
+      bg: "var(--color-success)",
       text: "Transaction Successful",
       sub: tx ? (
         <>
@@ -137,7 +137,7 @@ export default function PaymentSuccess() {
     },
     failed: {
       icon: <X size={40} color="white" strokeWidth={2.5} />,
-      bg: "#DC2626",
+      bg: "var(--color-danger)",
       text: "Payment Failed",
       sub: "Something went wrong with this payment. Please try again.",
       action: {
@@ -147,7 +147,7 @@ export default function PaymentSuccess() {
     },
     processing: {
       icon: <Clock size={40} style={{ color: "var(--color-brand)" }} />,
-      bg: "#EEF2FF",
+      bg: "var(--color-brand-tint)",
       text: "Payment Processing",
       sub: "Your payment went through — confirmation is taking a moment. You'll get a notification when it's ready.",
       action: { label: backLabel, to: dest },
@@ -196,8 +196,8 @@ export default function PaymentSuccess() {
         }`}
       >
         {state === "success" ? (
-          <div className="w-[110px] h-[110px] rounded-full bg-[#DCFCE7] flex items-center justify-center flex-shrink-0">
-            <div className="w-16 h-16 rounded-full bg-[#16A34A] flex items-center justify-center">
+          <div className="w-[110px] h-[110px] rounded-full bg-[var(--color-success-tint)] flex items-center justify-center flex-shrink-0">
+            <div className="w-16 h-16 rounded-full bg-[var(--color-success)] flex items-center justify-center">
               <Check size={28} color="white" strokeWidth={3} />
             </div>
           </div>

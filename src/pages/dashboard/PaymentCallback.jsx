@@ -150,17 +150,25 @@ export default function PaymentCallback() {
 
   const backLabel = isAdmin ? "Back to Dashboard" : "Go to Home";
 
+  // Two-layer soft-tint-outer / solid-inner circle, matching the
+  // already-established success treatment on the mobile success screens
+  // (PaymentSuccess.jsx, this file's own isMobile branch below) — the
+  // desktop card previously used a single flat circle (solid-color for
+  // success/failed, light-tint for the rest), which is why it read as
+  // visually inconsistent with the rest of Glass's payment-outcome UI.
   const config = {
     checking: {
-      icon: <Loader2 size={40} className="animate-spin" style={{ color: "var(--color-brand)" }} />,
-      iconBg: "#EEF2FF",
+      icon: <Loader2 size={28} className="animate-spin" color="#fff" />,
+      iconOuterBg: "var(--color-brand-tint)",
+      iconInnerBg: "var(--color-brand)",
       title: "Confirming payment…",
       subtitle: "Please wait while we verify your transaction.",
       buttonLabel: null,
     },
     success: {
-      icon: <Check size={40} strokeWidth={2.5} color="#fff" />,
-      iconBg: "#16A34A",
+      icon: <Check size={28} strokeWidth={3} color="#fff" />,
+      iconOuterBg: "var(--color-success-tint)",
+      iconInnerBg: "var(--color-success)",
       title: "Payment Successful",
       subtitle: autoRedirectIn != null
         ? `Redirecting you in ${autoRedirectIn}s…`
@@ -168,29 +176,33 @@ export default function PaymentCallback() {
       buttonLabel: backLabel,
     },
     failed: {
-      icon: <X size={40} strokeWidth={2.5} color="#fff" />,
-      iconBg: "#DC2626",
+      icon: <X size={28} strokeWidth={3} color="#fff" />,
+      iconOuterBg: "var(--color-danger-tint)",
+      iconInnerBg: "var(--color-danger)",
       title: "Payment Failed",
       subtitle: "Something went wrong with this payment. Please try again.",
       buttonLabel: backLabel,
     },
     processing: {
-      icon: <Clock size={40} style={{ color: "var(--color-brand)" }} />,
-      iconBg: "#EEF2FF",
+      icon: <Clock size={28} color="#fff" />,
+      iconOuterBg: "var(--color-brand-tint)",
+      iconInnerBg: "var(--color-brand)",
       title: "Payment Processing",
       subtitle: "Your payment went through but status confirmation is taking a moment. You'll receive a notification when it's ready — usually within a few minutes.",
       buttonLabel: backLabel,
     },
     unknown: {
-      icon: <Loader2 size={40} strokeWidth={2} style={{ color: "#6B7280" }} />,
-      iconBg: "var(--color-stacked-container)",
+      icon: <Loader2 size={28} strokeWidth={2} color="#fff" />,
+      iconOuterBg: "var(--color-stacked-container)",
+      iconInnerBg: "#9CA3AF",
       title: "Still confirming…",
       subtitle: "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
       buttonLabel: backLabel,
     },
     signin: {
-      icon: <Clock size={40} style={{ color: "var(--color-brand)" }} />,
-      iconBg: "#EEF2FF",
+      icon: <Clock size={28} color="#fff" />,
+      iconOuterBg: "var(--color-brand-tint)",
+      iconInnerBg: "var(--color-brand)",
       title: "Sign in to see your payment",
       subtitle:
         "Your session expired while you were completing the payment. Sign back in — your payment will be confirmed on your dashboard automatically.",
@@ -214,8 +226,8 @@ export default function PaymentCallback() {
         className="min-h-screen flex flex-col items-center px-8 pt-16"
         style={{ background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif" }}
       >
-        <div className="w-[110px] h-[110px] rounded-full bg-[#DCFCE7] flex items-center justify-center flex-shrink-0">
-          <div className="w-16 h-16 rounded-full bg-[#16A34A] flex items-center justify-center">
+        <div className="w-[110px] h-[110px] rounded-full bg-[var(--color-success-tint)] flex items-center justify-center flex-shrink-0">
+          <div className="w-16 h-16 rounded-full bg-[var(--color-success)] flex items-center justify-center">
             <Check size={28} color="white" strokeWidth={3} />
           </div>
         </div>
@@ -291,18 +303,23 @@ export default function PaymentCallback() {
       {/* Centered card */}
       <div className="flex-1 flex items-center justify-center px-4 pb-16">
         <div
-          className="w-full bg-white rounded-2xl shadow-sm flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center"
+          className="w-full bg-surface-container border border-surface-container-border rounded-2xl shadow-sm flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center"
           style={{ maxWidth: 480 }}
         >
           <div
-            className="w-20 h-20 rounded-full flex items-center justify-center mb-6 flex-shrink-0"
-            style={{ background: config.iconBg }}
+            className="w-[110px] h-[110px] rounded-full flex items-center justify-center mb-6 flex-shrink-0"
+            style={{ background: config.iconOuterBg }}
           >
-            {config.icon}
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{ background: config.iconInnerBg }}
+            >
+              {config.icon}
+            </div>
           </div>
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">{config.title}</h1>
-          <p className="text-sm text-gray-500 leading-relaxed mb-2">{config.subtitle}</p>
+          <h1 className="text-headline text-gray-900 mb-2">{config.title}</h1>
+          <p className="text-title-sm text-gray-500 leading-relaxed mb-2">{config.subtitle}</p>
 
           {reference && state !== "checking" && (
             <p className="text-xs text-gray-400 mt-1 mb-6 font-mono break-all">
@@ -313,7 +330,7 @@ export default function PaymentCallback() {
           {config.buttonLabel && (
             <button
               onClick={() => navigate(buttonDest, { replace: true })}
-              className="mt-4 px-8 py-3 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
+              className="mt-4 px-8 py-3 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
               style={{ background: "var(--color-brand)" }}
             >
               {config.buttonLabel}

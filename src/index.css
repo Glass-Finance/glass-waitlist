@@ -34,6 +34,14 @@
   --color-brand-tint: #e6eeff;
   --color-hairline: #eef0f8;
 
+  /* Success/danger pair used by payment-outcome screens (member app's
+     PaymentSuccess, dashboard's PaymentCallback) — the same two hex values
+     were hardcoded identically in both files. */
+  --color-success: #16A34A;
+  --color-success-tint: #DCFCE7;
+  --color-danger: #DC2626;
+  --color-danger-tint: #FEE2E2;
+
   --animate-fadeIn: fadeIn 0.8s ease-out forwards;
   --animate-slideInLeft: slideInLeft 0.8s ease-out forwards;
   --animate-slideInRight: slideInRight 0.8s ease-out forwards;
