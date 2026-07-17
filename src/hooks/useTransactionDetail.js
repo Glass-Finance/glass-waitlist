@@ -50,11 +50,24 @@ function shapeDetail(raw) {
 // so it's enriched from /communities/me here too -- otherwise the receipt
 // opened from Transaction Details/Payment Success (both use this hook)
 // shows no logo even for communities that do have one.
-export function useTransactionDetail(transactionId) {
+// skipAuthRedirect: the payment-success screens (PaymentCallback.jsx,
+// PaymentSuccess.jsx) fetch this the instant verification lands on
+// "success" -- right when the app may still be mid-token-refresh after a
+// real Paystack redirect (see client.js's window.__glassIsRestoring and
+// verifyPayment's own _skipAuthRedirect). Without opting out here too, a
+// transient 401 on *this* particular call bypassed that protection and hard-
+// redirected straight to sign-in a beat after the user already saw "Payment
+// Successful" -- confirmed as the same "bounced to sign-in right after
+// success" regression reported a second time. The plain Transaction Details
+// page (a real ProtectedRoute-gated route where a truly-dead session should
+// still bounce normally) leaves this off.
+export function useTransactionDetail(transactionId, { skipAuthRedirect = false } = {}) {
+  const config = skipAuthRedirect ? { _skipAuthRedirect: true } : {};
+
   const detailQuery = useQuery({
     queryKey: ["transaction", transactionId],
     queryFn: async () => {
-      const res = await getTransaction(transactionId);
+      const res = await getTransaction(transactionId, config);
       return shapeDetail(res.data?.data ?? res.data);
     },
     enabled: !!transactionId,
@@ -64,7 +77,7 @@ export function useTransactionDetail(transactionId) {
   const communitiesQuery = useQuery({
     queryKey: ["communities"],
     queryFn: async () => {
-      const res = await getMyCommunities();
+      const res = await getMyCommunities(config);
       return unwrapList(res);
     },
     staleTime: 1000 * 60 * 5,

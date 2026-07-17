@@ -6,6 +6,7 @@ import { verifyPayment } from "../../api/members";
 import { settleLocalPaymentForReference } from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
 import { usePageTitle } from "../../hooks/usePageTitle";
+import LoadingScreen from "../../components/LoadingScreen";
 import MemberPaymentConfirm from "../memberApp/PaymentSuccess";
 
 // The backend's verify endpoint is async: it queues a verification job and
@@ -31,7 +32,17 @@ function isTerminal(status) {
 // owns the admin/desktop presentation.
 export default function PaymentCallback() {
   usePageTitle("Payment Confirmation");
-  const { isAdmin } = useAuth();
+  const { isAdmin, loading } = useAuth();
+
+  // isAdmin defaults to false until AuthContext finishes restoring the
+  // session from localStorage (see AuthContext.jsx's `loading`) -- branching
+  // before that resolved would mount the member confirmation screen for an
+  // admin's payment on every fresh page load (this route is always a fresh
+  // load: Paystack's redirect back is a real browser navigation, not SPA
+  // routing), then tear it down and remount the admin one a moment later
+  // once isAdmin catches up, restarting verification mid-flight right at the
+  // most fragile moment of the whole flow.
+  if (loading) return <LoadingScreen />;
   return isAdmin ? <AdminPaymentCallback /> : <MemberPaymentConfirm />;
 }
 

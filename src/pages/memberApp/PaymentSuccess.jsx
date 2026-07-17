@@ -44,7 +44,10 @@ export default function PaymentSuccess() {
   // <plan>" subtext and the Share Receipt button, both of which need real
   // transaction data (amount/plan/community) that this page never fetched
   // before. getTransaction() accepts either an id or a reference.
-  const { data: tx } = useTransactionDetail(state === "success" ? reference : null);
+  const { data: tx } = useTransactionDetail(
+    state === "success" ? reference : null,
+    { skipAuthRedirect: true },
+  );
   const payerName = toTitleCase(
     [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "",
   );

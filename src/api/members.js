@@ -31,8 +31,9 @@ export const deleteAccount = (token) => client.delete("/user/me", { data: { toke
 // ─────────────────────────────────────────────────────────────────────────────
 
 // GET /api/v1/communities/me — all communities the user belongs to
-export const getMyCommunities = () =>
-  client.get("/communities/me");
+// Extra axios config (e.g. _skipAuthRedirect) merges in — see verifyPayment.
+export const getMyCommunities = (config = {}) =>
+  client.get("/communities/me", config);
 
 // GET /api/v1/communities/{communityIdentifier} — single community
 export const getCommunity = (communityId) =>
@@ -72,8 +73,9 @@ export const getMyTransactions = () =>
   client.get("/finance/transactions/me", { params: { pageSize: 200 } });
 
 // GET /api/v1/finance/transactions/me/{transactionIdentifier}
-export const getTransaction = (transactionId) =>
-  client.get(`/finance/transactions/me/${transactionId}`);
+// Extra axios config (e.g. _skipAuthRedirect) merges in — see verifyPayment.
+export const getTransaction = (transactionId, config = {}) =>
+  client.get(`/finance/transactions/me/${transactionId}`, config);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FINANCE — payment authorisations (auto-pay / saved cards)
