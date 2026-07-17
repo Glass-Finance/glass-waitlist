@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { Bell, AlertCircle, CreditCard, Users, ChevronRight, X } from "lucide-react";
+import { Bell, ChevronRight, X } from "lucide-react";
 import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { useAuth } from "../../store/AuthContext";
@@ -53,17 +53,11 @@ const SECTION_CONFIG = {
 const TABS = ["All", "Payments", "Community"];
 const TAB_CAT = { Payments: ["payment", "urgent"], Community: ["member"] };
 
-const ICON_META = {
-  urgent:  { bg: "#FEF2F2", color: "#EF4444", Icon: AlertCircle },
-  payment: { bg: "#FFFBEB", color: "#CA8A04", Icon: CreditCard  },
-  member:  { bg: "#EEF2FF", color: "#002FA7", Icon: Users       },
-};
-
 // Payment-received notifications show the paying member's photo when the
 // payload carries one -- every other type has no single member it's
-// "from", so those show the community logo, falling back to the
-// type-coloured icon when neither is available.
-function Avatar({ cat, n, details }) {
+// "from", so those show the community logo, falling back to a plain
+// neutral circle when neither is available -- no category color-coding.
+function Avatar({ n, details }) {
   const img = isPaymentReceivedType(n?.notificationType ?? n?.type)
     ? (details?.memberPhoto ?? details?.communityLogo)
     : details?.communityLogo;
@@ -75,17 +69,11 @@ function Avatar({ cat, n, details }) {
       </div>
     );
   }
-  const { bg, color, Icon } = ICON_META[cat] ?? ICON_META.payment;
-  return (
-    <div className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: bg }}>
-      <Icon size={16} color={color} strokeWidth={2} />
-    </div>
-  );
+  return <div className="w-9 h-9 rounded-full flex-shrink-0 bg-[#D9D9D9]" />;
 }
 
 function NotificationRow({ n, onMarkRead, onOpen }) {
   const isRead = n.readFlag ?? false;
-  const cat = categorize(n);
   const title = n.title ?? n.subject ?? "Notification";
   const desc = n.description ?? n.message ?? n.bodyText ?? "";
   const communityMap = useCommunityMap();
@@ -104,7 +92,7 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
       {!isRead && (
         <span className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-[#002FA7]" />
       )}
-      <Avatar cat={cat} n={n} details={details} />
+      <Avatar n={n} details={details} />
       <div className="flex-1 min-w-0 pr-4">
         <p className={`text-sm leading-snug ${isRead ? "text-gray-500" : "text-gray-900 font-semibold"}`}>
           {title}
@@ -159,7 +147,7 @@ function NotificationDetailModal({ n, onClose }) {
         {/* Header */}
         <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-[#E5E7EB]">
           <div className="flex items-start gap-3 min-w-0">
-            <Avatar cat={cat} n={n} details={details} />
+            <Avatar n={n} details={details} />
             <div className="min-w-0">
               <span
                 className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5"

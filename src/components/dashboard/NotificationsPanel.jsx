@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { Bell, AlertCircle, CreditCard, Users } from "lucide-react";
+import { Bell } from "lucide-react";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
-import { notificationCategory, isPaymentReceivedType } from "../../utils/notificationTypes";
+import { isPaymentReceivedType } from "../../utils/notificationTypes";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
 import { formatRelativeDateTime as formatTimestamp } from "../../utils/format";
@@ -54,32 +54,13 @@ function notifDestination(n, community) {
   return `/dashboard/notifications?open=${n.id}`;
 }
 
-const CATEGORY_META = {
-  urgent:  { color: "#EF4444", bg: "#FEF2F2", Icon: AlertCircle },
-  member:  { color: "#002FA7", bg: "#EEF2FF", Icon: Users },
-  payment: { color: "#CA8A04", bg: "#FFFBEB", Icon: CreditCard },
-};
-
-// notificationCategory() maps the backend's exact notificationType enum —
-// precise for every documented type. The keyword fallback below only runs
-// for a missing/unrecognized type.
-function notifMeta(n) {
-  const cat = notificationCategory(n.notificationType ?? n.type);
-  if (cat) return CATEGORY_META[cat];
-
-  const t = (n.notificationType ?? n.type ?? "").toUpperCase();
-  if (t.includes("FAIL") || t.includes("URGENT") || t.includes("ALERT") || t.includes("OVERDUE") || t.includes("DEFAULT"))
-    return CATEGORY_META.urgent;
-  if (t.includes("MEMBER") || t.includes("JOIN") || t.includes("COMMUNITY") || t.includes("INVITE"))
-    return CATEGORY_META.member;
-  return CATEGORY_META.payment;
-}
-
 // A payment-received notification is about a specific member paying --
 // their photo (when the payload carries one) is more useful there than the
 // community's logo. Every other payment/reminder/plan-created type has no
 // single member it's "from", so those fall back to the community logo, then
-// finally the type-coloured icon when neither photo nor logo is available.
+// finally a plain neutral circle when neither image is available -- no
+// category color-coding, matching the design (which doesn't tint or
+// border notifications by type at all).
 function NotifAvatar({ n, community }) {
   const type = n.notificationType ?? n.type;
   const memberPhoto = isPaymentReceivedType(type)
@@ -96,14 +77,8 @@ function NotifAvatar({ n, community }) {
       </div>
     );
   }
-  const { color, bg, Icon } = notifMeta(n);
   return (
-    <div style={{
-      width: 36, height: 36, borderRadius: "50%", flexShrink: 0, marginTop: 1,
-      background: bg, display: "flex", alignItems: "center", justifyContent: "center",
-    }}>
-      <Icon size={16} color={color} strokeWidth={2} />
-    </div>
+    <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, marginTop: 1, background: "#D9D9D9" }} />
   );
 }
 
@@ -114,7 +89,6 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
   const time      = formatTimestamp(n.createdAt ?? n.timestamp);
   const community = resolveCommunity(n, communityMap);
   const commName  = community?.name ?? community?.communityName ?? n.communityName ?? null;
-  const { color: borderColor } = notifMeta(n);
 
   return (
     <button
@@ -126,7 +100,7 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
         display: "flex", alignItems: "flex-start", gap: 10, width: "100%",
         background: isRead ? "#F9F9F9" : "#ffffff",
         borderRadius: 10, padding: "11px 13px",
-        border: "none", borderLeft: `3px solid ${borderColor}`,
+        border: "none",
         cursor: "pointer", textAlign: "left",
         transition: "background 0.15s", outline: "none",
       }}

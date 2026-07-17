@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Bell, Mail, CreditCard, AlertCircle, Clock } from "lucide-react";
+import { ChevronLeft, Bell, Mail } from "lucide-react";
 import { useInvites } from "../../hooks/useInvites";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { notificationTarget } from "../../utils/notificationRouting";
-import { isPaymentNotificationType, isPaymentReceivedType, notificationCategory } from "../../utils/notificationTypes";
+import { isPaymentNotificationType, isPaymentReceivedType } from "../../utils/notificationTypes";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import PageLoadingState from "../../components/common/PageLoadingState";
 import { formatRelativeDateTime } from "../../utils/format";
@@ -58,9 +58,9 @@ function isPaymentNotification(n) {
 // A payment-received notification shows the paying member's photo when the
 // payload carries one; every other type (due, reminder, plan created, etc.)
 // has no single member it's "from", so those show the community logo
-// instead -- falling back to the generic type-coloured icon when neither
-// image is available. Icons were previously always shown even when a real
-// photo/logo existed, which read as generic for every notification.
+// instead -- falling back to a plain neutral circle when neither image is
+// available. No category color-coding (previously a red/yellow/blue icon
+// per type), matching the design.
 function NotifIcon({ n, details }) {
   const type = n.notificationType ?? "";
   const img = isPaymentReceivedType(type)
@@ -75,19 +75,8 @@ function NotifIcon({ n, details }) {
     );
   }
 
-  const cat = notificationCategory(type);
-  let bg, Icon, iconColor;
-  if (cat ? cat === "urgent" : /FAIL|ERROR|DECLINE/.test(type.toUpperCase())) {
-    bg = "#fce4e4"; Icon = AlertCircle; iconColor = "#dc2626";
-  } else if (cat === "payment" || (!cat && isPaymentNotification(n))) {
-    bg = "#fef9c3"; Icon = CreditCard; iconColor = "#b45309";
-  } else {
-    bg = "#f0f4ff"; Icon = Clock; iconColor = "#1C2B8A";
-  }
   return (
-    <div style={{ width: 38, height: 38, borderRadius: "50%", background: bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-      <Icon size={16} strokeWidth={1.8} style={{ color: iconColor }} />
-    </div>
+    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#D9D9D9", flexShrink: 0 }} />
   );
 }
 
