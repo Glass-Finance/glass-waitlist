@@ -141,17 +141,26 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
   // user/member/actor/payer object is checked the same way.
   const memberCandidates = [content, n, n.member, n.actor, n.payer, n.user, n.requestedUser];
 
+  // A structured firstName-only field (no lastName on the payload) used to
+  // win outright and cut a real two-word name down to one letter of
+  // initials ("home alone" → just "H") even though the message text spells
+  // the full name out right there. Now takes whichever candidate actually
+  // has more words, rather than stopping at the first structured field
+  // that resolves at all.
   const rawMemberName = (() => {
+    let structured = null;
     for (const c of memberCandidates) {
       if (!c || typeof c !== "object") continue;
       const first = c.firstName ?? c.first_name;
       const last = c.lastName ?? c.last_name;
-      if (first || last) return `${first ?? ""} ${last ?? ""}`.trim();
+      if (first || last) { structured = `${first ?? ""} ${last ?? ""}`.trim(); break; }
       const combined =
         c.memberName ?? c.actorName ?? c.userName ?? c.payerName ?? c.fullName ?? c.name;
-      if (combined) return combined;
+      if (combined) { structured = combined; break; }
     }
-    return parseMemberName(messageOnly(n));
+    const parsed = parseMemberName(messageOnly(n));
+    const wordCount = (s) => (s ?? "").trim().split(/\s+/).filter(Boolean).length;
+    return wordCount(parsed) > wordCount(structured) ? parsed : (structured ?? parsed);
   })();
 
   // Same nested candidate objects as the name above -- profileImage is the

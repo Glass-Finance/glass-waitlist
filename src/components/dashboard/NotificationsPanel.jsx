@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Bell } from "lucide-react";
+import { Bell, User, Building2 } from "lucide-react";
 import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity, initials } from "../../utils/notificationContent";
 import { isPaymentReceivedType, isSelfAccountType } from "../../utils/notificationTypes";
 import { useAuth } from "../../store/AuthContext";
@@ -89,6 +89,11 @@ function NotifAvatar({ n, community }) {
       </div>
     );
   }
+  // A bare "?" reads as broken, not intentional -- when there's truly no
+  // name to initial (community couldn't be resolved at all, even by text
+  // match), a plain icon on the same brand gradient looks like a deliberate
+  // generic-avatar state instead.
+  const GenericIcon = isSelf || isPayment ? User : Building2;
   return (
     <div
       style={{
@@ -98,7 +103,7 @@ function NotifAvatar({ n, community }) {
         fontSize: 12, fontWeight: 700,
       }}
     >
-      {initials(name)}
+      {name ? initials(name) : <GenericIcon size={15} strokeWidth={2} />}
     </div>
   );
 }

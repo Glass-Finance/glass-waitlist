@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { Bell, ChevronRight, X } from "lucide-react";
+import { Bell, ChevronRight, X, User, Building2 } from "lucide-react";
 import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { useAuth } from "../../store/AuthContext";
@@ -86,12 +86,17 @@ function Avatar({ n, details }) {
       </div>
     );
   }
+  // A bare "?" reads as broken, not intentional -- when there's truly no
+  // name to initial (community couldn't be resolved at all, even by text
+  // match), a plain icon on the same brand gradient looks like a
+  // deliberate generic-avatar state instead.
+  const GenericIcon = isSelf || isPayment ? User : Building2;
   return (
     <div
       className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white"
       style={{ background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)" }}
     >
-      {initials(name)}
+      {name ? initials(name) : <GenericIcon size={16} strokeWidth={2} />}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Bell, Mail } from "lucide-react";
+import { ChevronLeft, Bell, Mail, User, Building2 } from "lucide-react";
 import { useInvites } from "../../hooks/useInvites";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
@@ -89,6 +89,11 @@ function NotifIcon({ n, details }) {
     );
   }
 
+  // A bare "?" reads as broken, not intentional -- when there's truly no
+  // name to initial (community couldn't be resolved at all, even by text
+  // match), a plain icon on the same brand gradient looks like a
+  // deliberate generic-avatar state instead.
+  const GenericIcon = isSelf || isPayment ? User : Building2;
   return (
     <div
       style={{
@@ -98,7 +103,7 @@ function NotifIcon({ n, details }) {
         fontSize: 13, fontWeight: 700,
       }}
     >
-      {initials(name)}
+      {name ? initials(name) : <GenericIcon size={16} strokeWidth={2} />}
     </div>
   );
 }
