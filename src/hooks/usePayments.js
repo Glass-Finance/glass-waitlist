@@ -398,11 +398,10 @@ export function useGlobalOverview() {
   });
 
   const upcoming = [...(obligationsQuery.data ?? [])]
-    .filter(
-      (o) =>
-        o.status !== "PAID" &&
-        !isObligationSettled(o, transactionsQuery.data ?? []),
-    )
+    .filter((o) => {
+      const linkIsActive = o.linkStatus === "ACTIVE" || !o.linkStatus;
+      return linkIsActive && o.status !== "PAID" && !isObligationSettled(o, transactionsQuery.data ?? []);
+    })
     .sort((a, b) => {
       const sa = deriveStatus(a);
       const sb = deriveStatus(b);
