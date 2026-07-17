@@ -80,6 +80,16 @@ export function useNotifications() {
       const clearedAt = Number(localStorage.getItem(clearedAtKey(communityId)) ?? 0);
       return [...notifications]
         .filter((n) => {
+          // Confirmed twice against real data: the backend's ?communityId=
+          // request param (see fetchNotifications above) does not actually
+          // filter server-side -- every community's notifications still
+          // came back regardless of the value sent, even once that value
+          // was the correct real id. Enforce it client-side instead of
+          // trusting the backend to have already done it; every
+          // notification carries its own real communityId field (confirmed
+          // uuid, NotificationDto schema), so this is a plain equality
+          // check, not a guess.
+          if (communityId && n.communityId !== communityId) return false;
           if (!clearedAt) return true;
           if (n.readFlag && new Date(n.createdAt).getTime() <= clearedAt) return false;
           return true;
