@@ -91,7 +91,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
 
         <div className="flex flex-col gap-1.5">
           <label className="text-label font-medium text-gray-700">
-            Phone Number
+            WhatsApp Number
           </label>
           <input
             type="tel"
@@ -107,7 +107,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
           <div className="flex items-start gap-1.5 mt-0.5 px-0.5">
             <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
             <p className="text-xs text-gray-500 leading-snug">
-              This number should be linked to an active WhatsApp account — we'll use it to send you updates.
+              We'll send updates to your WhatsApp.
             </p>
           </div>
         </div>
