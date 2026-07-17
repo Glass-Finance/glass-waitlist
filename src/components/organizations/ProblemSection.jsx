@@ -242,7 +242,7 @@ export default function ProblemSection() {
 
   return (
     <section
-      className="relative bg-[#F7F8FC] overflow-hidden py-20 md:py-28"
+      className="relative z-0 bg-[#F7F8FC] overflow-hidden py-20 md:py-28"
       id="problem"
     >
       {/* Soft background glow, purely decorative. zIndex: -1 matters -- a
