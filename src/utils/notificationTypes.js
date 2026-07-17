@@ -70,6 +70,28 @@ export function isPaymentReceivedType(type) {
   return (type ?? "").toUpperCase() === "PAYMENT_RECEIVED";
 }
 
+// Account-level events that are about the reader's own account, not a
+// member or a community -- there's no "actor" to extract from the payload
+// at all, since the actor is whoever is reading the notification. The
+// avatar for these should show the current user's own photo/initials
+// (from auth state directly) rather than trying to resolve a community
+// logo that doesn't apply here.
+const SELF_ACCOUNT_TYPES = new Set([
+  "PROFILE_UPDATED",
+  "PROFILE_IMAGE_UPDATED",
+  "PASSWORD_UPDATED",
+  "EMAIL_UPDATED",
+  "ACCOUNT_VERIFICATION",
+  "ACCOUNT_REGISTRATION",
+  "PASSWORD_RESET",
+  "ACCOUNT_DELETION_VERIFICATION",
+  "ACCOUNT_DELETION_REQUESTED",
+]);
+
+export function isSelfAccountType(type) {
+  return SELF_ACCOUNT_TYPES.has((type ?? "").toUpperCase());
+}
+
 // Admin dashboard's Urgent / Payment Activity / Community Activity tabs.
 const ADMIN_CATEGORY = {
   // Urgent — needs admin attention: money that didn't move, or a security-

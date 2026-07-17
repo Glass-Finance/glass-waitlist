@@ -6,8 +6,9 @@ import { useInvites } from "../../hooks/useInvites";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { notificationTarget } from "../../utils/notificationRouting";
-import { isPaymentNotificationType, isPaymentReceivedType } from "../../utils/notificationTypes";
-import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
+import { isPaymentNotificationType, isPaymentReceivedType, isSelfAccountType } from "../../utils/notificationTypes";
+import { extractNotificationDetails, formatNairaAmount, initials } from "../../utils/notificationContent";
+import { useAuth } from "../../store/AuthContext";
 import PageLoadingState from "../../components/common/PageLoadingState";
 import { formatRelativeDateTime } from "../../utils/format";
 
@@ -55,28 +56,50 @@ function isPaymentNotification(n) {
 }
 
 // ── Notification icon ─────────────────────────────────────────────────────────
-// A payment-received notification shows the paying member's photo when the
-// payload carries one; every other type (due, reminder, plan created, etc.)
-// has no single member it's "from", so those show the community logo
-// instead -- falling back to a plain neutral circle when neither image is
-// available. No category color-coding (previously a red/yellow/blue icon
-// per type), matching the design.
+// A payment-received notification shows the paying member's photo. A
+// profile/account event is about the reader's own account, not a member or
+// community, so it shows the current member's own photo instead. Every
+// other type (due, reminder, plan created, settings changed) has no single
+// member it's "from", so those show the community logo -- falling back to
+// initials when no image is available at all, never a flat placeholder
+// with nothing in it.
 function NotifIcon({ n, details }) {
+  const { user } = useAuth();
   const type = n.notificationType ?? "";
-  const img = isPaymentReceivedType(type)
-    ? (details?.memberPhoto ?? details?.communityLogo)
-    : details?.communityLogo;
+  const isPayment = isPaymentReceivedType(type);
+  const isSelf = isSelfAccountType(type);
+  const selfName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email;
+
+  const img = isSelf
+    ? user?.profileImage?.url
+    : isPayment
+      ? (details?.memberPhoto ?? details?.communityLogo)
+      : details?.communityLogo;
+  const name = isSelf
+    ? selfName
+    : isPayment
+      ? (details?.memberName ?? details?.communityName)
+      : (details?.communityName ?? details?.memberName);
 
   if (img) {
     return (
       <div style={{ width: 38, height: 38, borderRadius: "50%", flexShrink: 0, overflow: "hidden" }}>
-        <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={img} alt={name ?? ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
     );
   }
 
   return (
-    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "#D9D9D9", flexShrink: 0 }} />
+    <div
+      style={{
+        width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
+        background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)",
+        color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 13, fontWeight: 700,
+      }}
+    >
+      {initials(name)}
+    </div>
   );
 }
 

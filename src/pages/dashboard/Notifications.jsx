@@ -6,8 +6,8 @@ import { useNotifications, useAllNotifications } from "../../hooks/useNotificati
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { useAuth } from "../../store/AuthContext";
 import { notificationAction } from "../../utils/notificationRouting";
-import { notificationCategory, isPaymentReceivedType } from "../../utils/notificationTypes";
-import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
+import { notificationCategory, isPaymentReceivedType, isSelfAccountType } from "../../utils/notificationTypes";
+import { extractNotificationDetails, formatNairaAmount, initials } from "../../utils/notificationContent";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import Background from "../../assets/background.webp";
@@ -53,23 +53,47 @@ const SECTION_CONFIG = {
 const TABS = ["All", "Payments", "Community"];
 const TAB_CAT = { Payments: ["payment", "urgent"], Community: ["member"] };
 
-// Payment-received notifications show the paying member's photo when the
-// payload carries one -- every other type has no single member it's
-// "from", so those show the community logo, falling back to a plain
-// neutral circle when neither is available -- no category color-coding.
+// Payment-received notifications show the paying member's photo. A
+// profile/account event is about the reader's own account, not a member
+// or community, so it shows the current admin's own photo instead. Every
+// other type (due, reminder, plan created, settings changed) has no
+// single member it's "from" (a plan belongs to the community, not
+// personally to whichever admin happened to create it), so those show the
+// community logo. When no image is available at all, the circle shows
+// initials -- never a flat placeholder with nothing in it.
 function Avatar({ n, details }) {
-  const img = isPaymentReceivedType(n?.notificationType ?? n?.type)
-    ? (details?.memberPhoto ?? details?.communityLogo)
-    : details?.communityLogo;
+  const { user } = useAuth();
+  const type = n?.notificationType ?? n?.type;
+  const isPayment = isPaymentReceivedType(type);
+  const isSelf = isSelfAccountType(type);
+  const selfName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email;
+
+  const img = isSelf
+    ? user?.profileImage?.url
+    : isPayment
+      ? details?.memberPhoto
+      : details?.communityLogo;
+  const name = isSelf
+    ? selfName
+    : isPayment
+      ? (details?.memberName ?? details?.communityName)
+      : (details?.communityName ?? details?.memberName);
 
   if (img) {
     return (
       <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden">
-        <img src={img} alt="" className="w-full h-full object-cover" />
+        <img src={img} alt={name ?? ""} className="w-full h-full object-cover" />
       </div>
     );
   }
-  return <div className="w-9 h-9 rounded-full flex-shrink-0 bg-[#D9D9D9]" />;
+  return (
+    <div
+      className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white"
+      style={{ background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)" }}
+    >
+      {initials(name)}
+    </div>
+  );
 }
 
 // Matches the member app's row treatment exactly (src/pages/memberApp/

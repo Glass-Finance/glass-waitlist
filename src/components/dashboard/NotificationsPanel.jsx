@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Bell } from "lucide-react";
-import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity } from "../../utils/notificationContent";
-import { isPaymentReceivedType } from "../../utils/notificationTypes";
+import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity, initials } from "../../utils/notificationContent";
+import { isPaymentReceivedType, isSelfAccountType } from "../../utils/notificationTypes";
+import { useAuth } from "../../store/AuthContext";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
 import { formatRelativeDateTime as formatTimestamp } from "../../utils/format";
@@ -55,29 +56,50 @@ function notifDestination(n, community) {
 
 // A payment-received notification is about a specific member paying --
 // their photo (when the payload carries one) is more useful there than the
-// community's logo. Every other payment/reminder/plan-created type has no
-// single member it's "from", so those fall back to the community logo, then
-// finally a plain neutral circle when neither image is available -- no
-// category color-coding, matching the design (which doesn't tint or
-// border notifications by type at all).
+// community's logo. A profile/account event is about the reader's own
+// account, not a member or community, so it shows the current admin's own
+// photo instead. Every other type (reminder, plan created, settings
+// changed) has no single member it's "from" (a plan is the community's,
+// not personally the admin who happened to create it), so those show the
+// community logo. When no image is available at all, the circle shows
+// initials -- never a flat placeholder with nothing in it.
 function NotifAvatar({ n, community }) {
   const type = n.notificationType ?? n.type;
-  const memberPhoto = isPaymentReceivedType(type)
-    ? extractNotificationDetails(n).memberPhoto
-    : null;
-  const logo = memberPhoto ? null : (community?.logo?.url ?? community?.logoUrl ?? null);
-  const img = memberPhoto ?? logo;
-  const alt = memberPhoto ? extractNotificationDetails(n).memberName ?? "" : (community?.name ?? "");
+  const { user } = useAuth();
+  const isPayment = isPaymentReceivedType(type);
+  const isSelf = isSelfAccountType(type);
+  const details = extractNotificationDetails(n);
+  const selfName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email;
+
+  const img = isSelf
+    ? user?.profileImage?.url
+    : isPayment
+      ? details.memberPhoto
+      : (community?.logo?.url ?? community?.logoUrl ?? null);
+  const name = isSelf
+    ? selfName
+    : isPayment
+      ? (details.memberName ?? community?.name)
+      : (community?.name ?? details.memberName);
 
   if (img) {
     return (
       <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, overflow: "hidden", marginTop: 1 }}>
-        <img src={img} alt={alt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={img} alt={name ?? ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
     );
   }
   return (
-    <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, marginTop: 1, background: "#D9D9D9" }} />
+    <div
+      style={{
+        width: 36, height: 36, borderRadius: "50%", flexShrink: 0, marginTop: 1,
+        background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)", color: "#fff",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 12, fontWeight: 700,
+      }}
+    >
+      {initials(name)}
+    </div>
   );
 }
 

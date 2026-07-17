@@ -213,6 +213,18 @@ export function formatNairaAmount(amount) {
   return "₦" + new Intl.NumberFormat("en-NG").format(amount);
 }
 
+// Shared avatar-fallback initials -- a photo/logo is preferred, but a
+// notification avatar should never render as a flat empty circle. Up to
+// two initials, from the first two space-separated words (so "Home Alone"
+// → "HA", "Rotary Club" → "RC"), used identically by the bell dropdown,
+// admin notifications page, and member app notifications page instead of
+// each inventing its own.
+export function initials(name) {
+  const words = (name ?? "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return "?";
+  return words.slice(0, 2).map((w) => w[0].toUpperCase()).join("");
+}
+
 // Builds a Map(id → community) from a flat communities list (the shape
 // useMyCommunities()/getMyCommunities() return), for extractNotificationDetails'
 // communityMap option.
