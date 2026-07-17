@@ -271,6 +271,24 @@ export default function Notifications() {
         <h1 style={{ fontSize: 18, fontWeight: 500, color: "#111", margin: 0 }}>Notifications</h1>
       </div>
 
+      {/* Tab bar */}
+      <div style={{ margin: "0 16px 12px", background: "#fff", borderRadius: 12, padding: 4, display: "flex", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+        {TABS.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            style={{
+              flex: 1, padding: "9px 0", borderRadius: 9, border: "none", cursor: "pointer",
+              fontSize: 13, fontWeight: activeTab === tab ? 600 : 400,
+              background: activeTab === tab ? "var(--color-stacked-container)" : "transparent",
+              color: activeTab === tab ? "#111" : "#888", transition: "all 0.2s",
+            }}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
       {/* Clear All / Mark All As Read — same actions as the bell dropdown
           and admin notifications page, missing here before. Applies to the
           whole list regardless of which tab is active, matching how those
@@ -293,24 +311,6 @@ export default function Notifications() {
           </button>
         </div>
       )}
-
-      {/* Tab bar */}
-      <div style={{ margin: "0 16px 20px", background: "#fff", borderRadius: 12, padding: 4, display: "flex", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
-        {TABS.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{
-              flex: 1, padding: "9px 0", borderRadius: 9, border: "none", cursor: "pointer",
-              fontSize: 13, fontWeight: activeTab === tab ? 600 : 400,
-              background: activeTab === tab ? "var(--color-stacked-container)" : "transparent",
-              color: activeTab === tab ? "#111" : "#888", transition: "all 0.2s",
-            }}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
 
       {/* Content */}
       <div style={{ padding: "0 16px" }}>
