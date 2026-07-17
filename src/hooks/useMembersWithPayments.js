@@ -133,11 +133,18 @@ export function useMembersWithPayments(communityId) {
       obligationsQuery.isLoading ||
       transactionsQuery.isLoading ||
       paymentLinksQuery.isLoading,
+    // Gated on "no data at all", not just "error is set" -- same fix as
+    // usePayments.js's Home/Upcoming flicker: React Query keeps a query's
+    // last-good data around through a failed background refetch, it
+    // doesn't clear it. Surfacing the error unconditionally meant a single
+    // transient failure (even after the automatic retry) could blank out
+    // an already-successfully-loaded members table.
     error:
-      membersQuery.error ||
-      obligationsQuery.error ||
-      transactionsQuery.error ||
-      paymentLinksQuery.error,
+      (membersQuery.error && !membersQuery.data) ||
+      (obligationsQuery.error && !obligationsQuery.data) ||
+      (transactionsQuery.error && !transactionsQuery.data) ||
+      (paymentLinksQuery.error && !paymentLinksQuery.data) ||
+      null,
   };
 }
 
