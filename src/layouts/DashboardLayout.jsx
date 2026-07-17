@@ -32,8 +32,8 @@ export default function DashboardLayout() {
       className="h-screen w-screen flex overflow-hidden bg-surface-bg"
       style={{
         backgroundImage: `url(${Background})`,
-        backgroundSize: "contain",
-        backgroundPosition: "center",
+        backgroundSize: "cover",
+        backgroundPosition: "left center",
         backgroundRepeat: "no-repeat",
       }}
     >
