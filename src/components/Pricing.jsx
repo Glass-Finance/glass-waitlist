@@ -121,13 +121,7 @@ export default function Pricing() {
           >
             {/* Dark header strip */}
             <div className="bg-[#0f1d6e] px-8 py-6">
-              <div className="flex items-start justify-between mb-1">
-                <p className="text-white/60 text-[13px] font-medium">Beta Access</p>
-                <span className="bg-white/10 border border-white/20 text-white text-[11px] font-semibold px-3 py-1 rounded-full">
-                  Limited spots
-                </span>
-              </div>
-              <p className="text-white text-[42px] font-bold leading-none mt-2">
+              <p className="text-white text-[42px] font-bold leading-none">
                 ₦0
                 <span className="text-white/45 text-[17px] font-normal ml-1.5">/ month</span>
               </p>
