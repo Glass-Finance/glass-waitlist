@@ -117,7 +117,6 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
 
   const refValue = tx?.reference ?? tx?.id ?? "—";
   const maskedEmail = maskEmail(payerEmail);
-  const hasFee = tx?.feeMinor != null;
   const amountParts = splitNaira(tx?.amount);
 
   return (
@@ -311,19 +310,20 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
 
         <DetailRow label="Dues Amount">{formatNaira(tx?.amount)}</DetailRow>
 
-        {hasFee && <DetailRow label="Transaction Fee">{formatNaira(tx.feeMinor)}</DetailRow>}
+        {/* Always shown, never conditional -- Glass's fee is part of being
+            transparent about the service, not something to hide when it
+            happens to be zero. */}
+        <DetailRow label="Transaction Fee">{formatNaira(tx?.feeMinor ?? 0)}</DetailRow>
 
         <DetailRow label="Transaction ID" last>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-            {refValue}
-            <button
-              onClick={onCopyReference}
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 2, color: "#94A3B8", display: "flex" }}
-              aria-label="Copy transaction ID"
-            >
-              {copied ? <CheckCheck size={13} color="#15803d" /> : <Copy size={13} />}
-            </button>
-          </span>
+          <span style={{ wordBreak: "break-all" }}>{refValue}</span>{" "}
+          <button
+            onClick={onCopyReference}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 2, color: "#94A3B8", display: "inline-flex", verticalAlign: "middle" }}
+            aria-label="Copy transaction ID"
+          >
+            {copied ? <CheckCheck size={13} color="#15803d" /> : <Copy size={13} />}
+          </button>
         </DetailRow>
       </div>
 

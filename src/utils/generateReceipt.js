@@ -56,15 +56,17 @@ function receiptRows(tx, payerName, payerEmail) {
     .filter(Boolean)
     .join("   ·   ");
 
-  const rows = [
+  return [
     ["Community", tx.communityName ?? "—"],
     ["Plan", toTitleCase(tx.planName ?? tx.description) || "—"],
     ["Member Details", memberDetails],
     ["Transaction Type", toTitleCase(tx.channel) || "—"],
     ["Dues Amount", formatNaira(tx.amount)],
+    // Always shown, never conditional -- Glass's fee is part of being
+    // transparent about the service, not something to hide when it
+    // happens to be zero.
+    ["Transaction Fee", formatNaira(tx.feeMinor ?? 0)],
   ];
-  if (tx.feeMinor != null) rows.push(["Transaction Fee", formatNaira(tx.feeMinor)]);
-  return rows;
 }
 
 function receiptFilename(tx, ext) {

@@ -62,15 +62,24 @@ function Row({ label, children, last }) {
     <div
       style={{
         display: "flex",
-        alignItems: "center",
+        alignItems: "flex-start",
         justifyContent: "space-between",
         gap: 16,
         padding: "14px 0",
         borderBottom: last ? "none" : "1px solid #F3F4F6",
       }}
     >
-      <span style={{ fontSize: 14, color: "#6B7280" }}>{label}</span>
-      <span style={{ fontSize: 14, fontWeight: 600, color: "#111827", textAlign: "right" }}>
+      <span style={{ fontSize: 14, color: "#6B7280", flexShrink: 0, paddingTop: 1 }}>{label}</span>
+      <span
+        style={{
+          fontSize: 14,
+          fontWeight: 600,
+          color: "#111827",
+          textAlign: "right",
+          wordBreak: "break-word",
+          maxWidth: "62%",
+        }}
+      >
         {children}
       </span>
     </div>
@@ -196,12 +205,13 @@ export default function TransactionDetail() {
               </Row>
             )}
             <Row label="Dues Amount:">{formatNaira(tx.amount)}</Row>
-            {tx.feeMinor != null && (
-              <Row label="Transaction Fee:">{formatNaira(tx.feeMinor, { decimals: 2 })}</Row>
-            )}
+            {/* Always shown, never conditional -- Glass's fee is part of
+                being transparent about the service, not something to hide
+                when it happens to be zero. */}
+            <Row label="Transaction Fee:">{formatNaira(tx.feeMinor ?? 0, { decimals: 2 })}</Row>
             <Row label="Transaction ID:" last={!tx.initiatedBy}>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                {tx.reference ?? tx.id}
+              <span style={{ wordBreak: "break-all" }}>{tx.reference ?? tx.id}</span>{" "}
+              <span style={{ display: "inline-flex", verticalAlign: "middle" }}>
                 <button
                   onClick={copyReference}
                   style={{ background: "none", border: "none", cursor: "pointer", padding: 2, color: "#9CA3AF", display: "flex" }}
