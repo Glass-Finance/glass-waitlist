@@ -44,7 +44,7 @@ import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRol
 // /dashboard/home communities-overview page.
 const NAV = [
   { icon: LayoutDashboard, label: "Dashboard",     segment: "home",          path: "admin" },
-  { icon: CreditCard,      label: "Payment Plans", segment: "payments",      path: "payments" },
+  { icon: CreditCard,      label: "Payments",      segment: "payments",      path: "payments" },
   { icon: Users,           label: "Members",       segment: "members",       path: "members" },
   { icon: Bell,            label: "Notifications", segment: "notifications", path: "notifications" },
   { icon: Settings,        label: "Settings",      segment: "settings",      path: "settings" },
@@ -287,7 +287,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                     background: isActive ? "var(--color-brand-tint)" : "transparent",
                     color: isActive ? "var(--color-brand)" : "#6b7280",
                     fontWeight: isActive ? 700 : 500,
-                    letterSpacing: isActive ? "normal" : "0.2px",
+                    letterSpacing: "normal",
                     fontSize: 12,
                     fontFamily: "Inter, sans-serif",
                     whiteSpace: "nowrap",
@@ -660,7 +660,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   background: isActive ? "var(--color-brand-tint)" : "transparent",
                   color: isActive ? "var(--color-brand)" : isDisabled ? "#9ca3af" : "#6b7280",
                   fontWeight: isActive ? 700 : 500,
-                  letterSpacing: isActive ? "normal" : "0.2px",
+                  letterSpacing: "normal",
                   fontSize: 12,
                   marginBottom: 6,
                   transition: "all .15s",
