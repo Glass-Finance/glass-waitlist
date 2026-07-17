@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { Bell, ChevronRight, X, User, Building2 } from "lucide-react";
 import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
+import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { useAuth } from "../../store/AuthContext";
 import { notificationAction } from "../../utils/notificationRouting";
@@ -526,7 +527,21 @@ function CommunityNotifications() {
 
 export default function Notifications() {
   const { user } = useAuth();
-  return user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL
+  const activeCommunityId = useActiveCommunityId();
+  const isSuperAdmin = user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL;
+
+  // The Platform Admin sidebar's own "Notifications" link (no community
+  // context at all) is the only place the cross-platform view belongs.
+  // Every other way of reaching this page -- the regular per-community
+  // sidebar's "Notifications" item, the bell dropdown's per-community
+  // destination, a notification row's own deep link -- carries or implies a
+  // specific active community (via useActiveCommunityId's ?community= param
+  // or its localStorage fallback, same convention Settings already uses
+  // since this route never puts ?community= in its own URL). A super admin
+  // is also a regular admin of their own real communities, so the email
+  // check alone was locking them into the all-communities view even while
+  // clearly inside one specific community's admin section.
+  return isSuperAdmin && !activeCommunityId
     ? <SuperAdminNotifications />
     : <CommunityNotifications />;
 }
