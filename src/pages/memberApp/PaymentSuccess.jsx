@@ -115,7 +115,7 @@ export default function PaymentSuccess() {
   // circle + brand spinner while confirming, solid green on success.
   const content = {
     checking: {
-      icon: <Loader2 size={40} className="animate-spin" style={{ color: "#002FA7" }} />,
+      icon: <Loader2 size={40} className="animate-spin" style={{ color: "var(--color-brand)" }} />,
       bg: "#EEF2FF",
       text: "Confirming payment…",
       sub: "Please wait while we verify your transaction.",
@@ -146,7 +146,7 @@ export default function PaymentSuccess() {
       },
     },
     processing: {
-      icon: <Clock size={40} style={{ color: "#002FA7" }} />,
+      icon: <Clock size={40} style={{ color: "var(--color-brand)" }} />,
       bg: "#EEF2FF",
       text: "Payment Processing",
       sub: "Your payment went through — confirmation is taking a moment. You'll get a notification when it's ready.",
@@ -183,7 +183,7 @@ export default function PaymentSuccess() {
           >
             <ChevronLeft size={18} className="text-gray-700" />
           </button>
-          <h1 className="absolute left-1/2 -translate-x-1/2 text-[15px] font-medium text-gray-800">
+          <h1 className="absolute left-1/2 -translate-x-1/2 text-title-sm font-medium text-gray-800">
             Payment Summary
           </h1>
         </div>
@@ -213,15 +213,15 @@ export default function PaymentSuccess() {
         <p
           className={
             state === "success"
-              ? "text-xl font-semibold text-gray-900 mt-1 text-center"
-              : "text-[15px] font-medium text-gray-800 mt-1 text-center"
+              ? "text-headline text-gray-900 mt-1 text-center"
+              : "text-headline text-gray-800 mt-1 text-center"
           }
         >
           {content.text}
         </p>
 
         {content.sub && (
-          <p className="text-[13px] text-gray-500 text-center leading-snug -mt-1 max-w-[280px]">
+          <p className="text-title-sm text-gray-500 text-center -mt-1 max-w-[280px]">
             {content.sub}
           </p>
         )}
@@ -230,16 +230,16 @@ export default function PaymentSuccess() {
           <div className="flex-1 w-full flex flex-col justify-end gap-3 pb-10 max-w-[340px]">
             <button
               onClick={() => navigate(dest, { replace: true })}
-              className="w-full px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
-              style={{ background: "#002FA7" }}
+              className="w-full px-8 py-3.5 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
+              style={{ background: "var(--color-brand)" }}
             >
               Back to Home
             </button>
             <button
               onClick={() => setShareOpen(true)}
               disabled={!tx}
-              className="w-full px-8 py-3.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ color: "#002FA7", border: "1.5px solid #002FA7" }}
+              className="w-full px-8 py-3.5 rounded-full text-button font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ color: "var(--color-brand)", border: "1.5px solid var(--color-brand)" }}
             >
               <Share2 size={15} />
               Share Receipt
@@ -249,8 +249,8 @@ export default function PaymentSuccess() {
           content.action && (
             <button
               onClick={() => navigate(content.action.to, { replace: true })}
-              className="mt-3 px-8 py-3 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
-              style={{ background: "#002FA7" }}
+              className="mt-3 px-8 py-3 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
+              style={{ background: "var(--color-brand)" }}
             >
               {content.action.label}
             </button>

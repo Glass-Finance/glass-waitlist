@@ -212,7 +212,7 @@ export default function PaymentCallback() {
     return (
       <div
         className="min-h-screen flex flex-col items-center px-8 pt-16"
-        style={{ background: "#F4F6FA", fontFamily: "'Inter', system-ui, sans-serif" }}
+        style={{ background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif" }}
       >
         <div className="w-[110px] h-[110px] rounded-full bg-[#DCFCE7] flex items-center justify-center flex-shrink-0">
           <div className="w-16 h-16 rounded-full bg-[#16A34A] flex items-center justify-center">
@@ -220,11 +220,11 @@ export default function PaymentCallback() {
           </div>
         </div>
 
-        <p className="text-xl font-semibold text-gray-900 mt-3 text-center">
+        <p className="text-headline text-gray-900 mt-3 text-center">
           Transaction Successful
         </p>
 
-        <p className="text-[13px] text-gray-500 text-center leading-snug mt-1 max-w-[280px]">
+        <p className="text-title-sm text-gray-500 text-center mt-1 max-w-[280px]">
           {tx ? (
             <>
               Your Payment of <strong className="text-gray-700">{formatNaira(tx.amount, { decimals: 2 })}</strong> for{" "}
@@ -238,7 +238,7 @@ export default function PaymentCallback() {
         <div className="flex-1 w-full flex flex-col justify-end gap-3 pb-10 max-w-[340px]">
           <button
             onClick={() => navigate(effectiveReturnTo, { replace: true })}
-            className="w-full px-8 py-3.5 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
+            className="w-full px-8 py-3.5 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
             style={{ background: "var(--color-brand)" }}
           >
             Back to Home
@@ -246,7 +246,7 @@ export default function PaymentCallback() {
           <button
             onClick={() => setShareOpen(true)}
             disabled={!tx}
-            className="w-full px-8 py-3.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-8 py-3.5 rounded-full text-button font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ color: "var(--color-brand)", border: "1.5px solid var(--color-brand)" }}
           >
             <Share2 size={15} />
@@ -269,7 +269,7 @@ export default function PaymentCallback() {
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ background: "#F4F6FA", fontFamily: "'Inter', system-ui, sans-serif" }}
+      style={{ background: "var(--color-surface-bg)", fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       {/* Top bar */}
       <div className="flex items-center px-4 md:px-8 pt-6 md:pt-8 pb-4">
