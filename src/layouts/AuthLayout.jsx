@@ -38,7 +38,10 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
           design's mobile screens (no hero illustration/welcome text on
           small screens at all). */}
       <div className="md:hidden relative z-20 flex-shrink-0">
-        <div className="flex items-center gap-2 px-6 pt-5 pb-4">
+        <div
+          className="flex items-center gap-2 px-6 pt-5 pb-4 cursor-pointer w-fit"
+          onClick={() => navigate("/")}
+        >
           <img src={glassIcon} alt="" className="h-7 w-7 object-contain" />
           <span className="text-lg font-semibold text-gray-900">Glass</span>
         </div>

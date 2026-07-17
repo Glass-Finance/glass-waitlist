@@ -82,8 +82,9 @@ export const getTransaction = (transactionId, config = {}) =>
 // ─────────────────────────────────────────────────────────────────────────────
 
 // GET /api/v1/finance/authorizations — member's active payment authorisations
-export const getMyAuthorisations = () =>
-  client.get("/finance/authorizations", { params: { pageSize: 100 } });
+// Extra axios config (e.g. _skipAuthRedirect) merges in — see verifyPayment.
+export const getMyAuthorisations = (config = {}) =>
+  client.get("/finance/authorizations", { params: { pageSize: 100 }, ...config });
 
 // GET /api/v1/finance/authorizations/{authorizationId}
 export const getAuthorisation = (authId) =>

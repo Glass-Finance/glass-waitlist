@@ -43,6 +43,16 @@ function shapeDetail(raw) {
         : null),
     transactionType: raw.transactionType ?? raw.paymentMethod ?? null,
     initiatedBy: raw.initiatedBy ?? (raw.recurringPlan ? "Auto-Pay" : null),
+    // Same recurringPlan/paymentType convention usePayments.js's
+    // shapeObligation/shapePaymentLink already use, for the post-payment
+    // "turn on Auto-Pay?" prompt on Home.
+    paymentLinkId: raw.paymentLink?.id ?? null,
+    isRecurring: !!(
+      raw.recurringPlan ||
+      raw.paymentLink?.recurringPlan ||
+      (raw.paymentLink?.paymentType ?? raw.paymentLink?.type ?? "").toUpperCase() === "RECURRING"
+    ),
+    frequency: raw.paymentLink?.frequency ?? raw.paymentLink?.billingFrequency ?? null,
   };
 }
 

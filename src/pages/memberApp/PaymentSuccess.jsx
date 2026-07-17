@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Check, X, Loader2, Clock, Share2 } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 import { beginAuthGrace } from "../../api/client";
-import { settleLocalPaymentForReference } from "../../hooks/usePayments";
+import { settleLocalPaymentForReference, useManagePayments } from "../../hooks/usePayments";
 import { useTransactionDetail } from "../../hooks/useTransactionDetail";
 import { useAuth } from "../../store/AuthContext";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
@@ -63,6 +63,29 @@ export default function PaymentSuccess() {
   const payerName = toTitleCase(
     [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "",
   );
+
+  // Per the UI designer's spec: on returning to Home after a payment,
+  // offer to turn on Auto-Pay when the plan is recurring and the member
+  // hasn't already consented to it (covers both "first time paying this
+  // plan" and "declined/never set it up before"). There's no API to just
+  // flip auto-pay on -- the backend only ever establishes it via a real
+  // payment with a fresh authorisation (see AutoPay.jsx's own comment on
+  // toggleAutoPay) -- so this only decides whether to prompt at all; the
+  // prompt itself (rendered on Home) sends them into the real Auto-Pay
+  // settings flow rather than pretending a tap can enable it instantly.
+  const { data: authorisations, isLoading: authsLoading } = useManagePayments({
+    enabled: state === "success",
+    skipAuthRedirect: true,
+  });
+  const hasAutoPayConsent = (authorisations ?? []).some((auth) =>
+    (auth.consents ?? []).some((c) => !c.revoked && c.paymentLinkId === tx?.paymentLinkId),
+  );
+  // authsLoading guards against a false positive if "Back to Home" is
+  // tapped before this fetch (a separate request from the transaction
+  // detail one) has actually resolved -- an empty/still-loading list must
+  // never be read as "no consent found", or a plan that already has
+  // Auto-Pay on would get prompted again.
+  const shouldOfferAutoPay = !!(tx?.isRecurring && tx?.paymentLinkId && !authsLoading && !hasAutoPayConsent);
 
   function invalidateCaches() {
     queryClient.invalidateQueries({ queryKey: ["obligations"] });
@@ -150,6 +173,25 @@ export default function PaymentSuccess() {
   function goTo(path) {
     beginAuthGrace();
     navigate(path, { replace: true });
+  }
+
+  // "Back to Home" specifically (not the other exits) hands off the
+  // Auto-Pay prompt to Home.jsx via a one-shot sessionStorage flag --
+  // asked once per plan (glass_autopay_asked_<id> in localStorage, same
+  // "set once" convention as glass_notifications_cleared_at) so it doesn't
+  // nag on every future payment for the same plan once answered either way.
+  function goHome() {
+    if (shouldOfferAutoPay && !localStorage.getItem(`glass_autopay_asked_${tx.paymentLinkId}`)) {
+      try {
+        sessionStorage.setItem("glass_autopay_prompt", JSON.stringify({
+          paymentLinkId: tx.paymentLinkId,
+          planName: tx.planName ?? tx.description ?? "this plan",
+          amount: tx.amount,
+          frequency: tx.frequency,
+        }));
+      } catch { /* ignore */ }
+    }
+    goTo(dest);
   }
 
   // Mirrors the dashboard PaymentCallback design language: soft-tinted
@@ -277,7 +319,7 @@ export default function PaymentSuccess() {
         {state === "success" ? (
           <div className="flex-1 w-full flex flex-col justify-end gap-3 pb-10 max-w-[340px]">
             <button
-              onClick={() => goTo(dest)}
+              onClick={goHome}
               className="w-full px-8 py-3.5 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
               style={{ background: "var(--color-brand)" }}
             >

@@ -241,7 +241,10 @@ export default function Notifications() {
   const [activeTab, setActiveTab] = useState("Payments");
 
   const { invites, isLoading: invitesLoading, accept, reject, isAccepting, isRejecting, refresh } = useInvites();
-  const { notifications, isLoading: notifsLoading, markRead } = useNotifications();
+  const {
+    notifications, isLoading: notifsLoading, markRead,
+    markAllRead, isMarkingAllRead, clearAll, isClearing,
+  } = useNotifications();
 
   const { paymentNotifs, communityNotifs } = useMemo(() => {
     const payment = [], community = [];
@@ -269,7 +272,7 @@ export default function Notifications() {
       </div>
 
       {/* Tab bar */}
-      <div style={{ margin: "0 16px 20px", background: "#fff", borderRadius: 12, padding: 4, display: "flex", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+      <div style={{ margin: "0 16px 12px", background: "#fff", borderRadius: 12, padding: 4, display: "flex", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
         {TABS.map((tab) => (
           <button
             key={tab}
@@ -285,6 +288,29 @@ export default function Notifications() {
           </button>
         ))}
       </div>
+
+      {/* Clear All / Mark All As Read — same actions as the bell dropdown
+          and admin notifications page, missing here before. Applies to the
+          whole list regardless of which tab is active, matching how those
+          two surfaces already behave. */}
+      {(activeTab === "Payments" || activeTab === "Community") && notifications.length > 0 && (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 16, padding: "0 20px 12px" }}>
+          <button
+            onClick={() => clearAll()}
+            disabled={isClearing}
+            style={{ fontSize: 12.5, fontWeight: 600, color: "#E53E3E", background: "none", border: "none", cursor: "pointer", padding: 0, opacity: isClearing ? 0.5 : 1 }}
+          >
+            {isClearing ? "Clearing…" : "Clear All"}
+          </button>
+          <button
+            onClick={() => markAllRead()}
+            disabled={isMarkingAllRead}
+            style={{ fontSize: 12.5, fontWeight: 600, color: "#002FA7", background: "none", border: "none", cursor: "pointer", padding: 0, opacity: isMarkingAllRead ? 0.5 : 1 }}
+          >
+            Mark All As Read
+          </button>
+        </div>
+      )}
 
       {/* Content */}
       <div style={{ padding: "0 16px" }}>

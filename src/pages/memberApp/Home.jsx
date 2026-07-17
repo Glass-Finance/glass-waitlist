@@ -14,6 +14,68 @@ import {
   formatDate as formatDateShort,
   toTitleCase,
 } from "../../utils/format";
+import { frequencyAdverb } from "../../utils/recurring";
+
+// ---------------------------------------------------------------------------
+// Auto-Pay prompt — per the UI designer's spec, shown once on returning to
+// Home right after paying a recurring plan for the first time (or any time
+// auto-pay isn't already on for it). PaymentSuccess.jsx decides *whether* to
+// hand this off (it already knows the plan/consent state); this only reads
+// the one-shot flag and renders it. There's no API to flip auto-pay on
+// instantly (see PaymentSuccess.jsx's comment) -- the backend only ever
+// establishes it via a real payment with a fresh authorisation -- so "Yes"
+// sends them into the real Auto-Pay settings flow instead of pretending a
+// tap enabled it.
+function AutoPayPrompt({ prompt, onDismiss, onEnable }) {
+  return (
+    <div
+      style={{
+        position: "fixed", inset: 0, zIndex: 80, display: "flex",
+        alignItems: "flex-end", justifyContent: "center",
+        background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)",
+      }}
+      onClick={(e) => e.target === e.currentTarget && onDismiss()}
+    >
+      <div
+        style={{
+          width: "100%", maxWidth: 430, background: "#fff",
+          borderRadius: "20px 20px 0 0", padding: "28px 24px",
+          boxShadow: "0 -4px 24px rgba(0,0,0,0.12)",
+        }}
+      >
+        <h2 style={{ fontSize: 19, fontWeight: 700, color: "#111", margin: "0 0 10px" }}>
+          Turn on Auto-Pay
+        </h2>
+        <p style={{ fontSize: 14, color: "#555", lineHeight: 1.55, margin: "0 0 24px" }}>
+          Would you like us to charge {formatNaira(prompt.amount)} automatically for{" "}
+          <strong style={{ color: "#111" }}>{prompt.planName}</strong> {frequencyAdverb(prompt.frequency)}?
+        </p>
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+          <button
+            onClick={onDismiss}
+            style={{
+              padding: "11px 22px", borderRadius: 8, border: "1.5px solid #E5E7EB",
+              background: "#fff", color: "#374151", fontSize: 14, fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            No
+          </button>
+          <button
+            onClick={onEnable}
+            style={{
+              padding: "11px 26px", borderRadius: 8, border: "none",
+              background: "var(--color-brand)", color: "#fff", fontSize: 14, fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Yes
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function firstName(user) {
   try {
@@ -688,6 +750,34 @@ export default function Home() {
   // that anything arrived unless they open the notifications page.
   const { unreadCount } = useNotifications();
 
+  // Auto-Pay prompt handoff from PaymentSuccess.jsx's "Back to Home" --
+  // read once on mount and consume immediately so a refresh/re-visit
+  // doesn't reopen it.
+  const [autoPayPrompt, setAutoPayPrompt] = useState(() => {
+    try {
+      const raw = sessionStorage.getItem("glass_autopay_prompt");
+      if (!raw) return null;
+      sessionStorage.removeItem("glass_autopay_prompt");
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  });
+
+  function dismissAutoPayPrompt() {
+    if (autoPayPrompt?.paymentLinkId) {
+      try {
+        localStorage.setItem(`glass_autopay_asked_${autoPayPrompt.paymentLinkId}`, "1");
+      } catch { /* ignore */ }
+    }
+    setAutoPayPrompt(null);
+  }
+
+  function enableAutoPay() {
+    dismissAutoPayPrompt();
+    navigate("/member/auto-pay");
+  }
+
   const nextDue = data?.nextDue ?? null;
   // Previously this excluded nextDue (upcoming[0], already shown in the
   // hero card above) and capped the rest at 2 -- so whenever there was
@@ -1182,6 +1272,14 @@ export default function Home() {
           </>
         )}
       </div>
+
+      {autoPayPrompt && (
+        <AutoPayPrompt
+          prompt={autoPayPrompt}
+          onDismiss={dismissAutoPayPrompt}
+          onEnable={enableAutoPay}
+        />
+      )}
     </>
   );
 }
