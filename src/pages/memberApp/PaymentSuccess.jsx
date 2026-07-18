@@ -198,7 +198,7 @@ export default function PaymentSuccess() {
   // circle + brand spinner while confirming, solid green on success.
   const content = {
     checking: {
-      icon: <Loader2 size={40} className="animate-spin" style={{ color: "var(--color-brand)" }} />,
+      icon: <Loader2 size={40} className="animate-spin text-brand" />,
       bg: "var(--color-brand-tint)",
       text: "Confirming payment…",
       sub: "Please wait while we verify your transaction.",
@@ -229,7 +229,7 @@ export default function PaymentSuccess() {
       },
     },
     processing: {
-      icon: <Clock size={40} style={{ color: "var(--color-brand)" }} />,
+      icon: <Clock size={40} className="text-brand" />,
       bg: "var(--color-brand-tint)",
       text: "Payment Processing",
       sub: "Your payment went through — confirmation is taking a moment. You'll get a notification when it's ready.",
@@ -243,7 +243,7 @@ export default function PaymentSuccess() {
       action: { label: backLabel, to: dest },
     },
     signin: {
-      icon: <Clock size={40} style={{ color: "var(--color-brand)" }} />,
+      icon: <Clock size={40} className="text-brand" />,
       bg: "var(--color-brand-tint)",
       text: "Sign in to see your payment",
       sub: "Your session expired while you were completing the payment. Sign back in — your payment will be confirmed automatically.",

@@ -20,7 +20,7 @@ function maskEmail(email) {
 function ModalShell({ children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="relative bg-surface-container rounded-xl p-8 w-full max-w-md shadow-xl" style={{ border: "1px solid #E5E7EB" }}>{children}</div>
+      <div className="relative bg-surface-container rounded-xl p-8 w-full max-w-md shadow-xl border border-[#E5E7EB]">{children}</div>
     </div>
   );
 }
@@ -145,8 +145,7 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
         <button
           type="submit"
           disabled={loading || codeExpired || otp.some((d) => !d)}
-          className="w-full py-3.5 rounded-3xl text-white font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
-          style={{ background: "#2535c3" }}
+          className="w-full py-3.5 rounded-3xl text-white font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 bg-[#2535c3]"
         >
           {loading ? "Verifying..." : "Continue"}
         </button>

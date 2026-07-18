@@ -271,7 +271,7 @@ export default function PaymentProfile() {
         {/* Main */}
         <main className="flex-1 overflow-y-auto py-10 px-12">
           <div className="w-full max-w-3xl">
-            <div className="bg-white rounded-lg px-8 py-7" style={{ border: "1px solid #E5E7EB" }}>
+            <div className="bg-white rounded-lg px-8 py-7 border border-[#E5E7EB]">
               <div className="mb-6 pb-5" style={{ borderBottom: "1px solid #E5E7EB" }}>
                 <button
                   type="button"

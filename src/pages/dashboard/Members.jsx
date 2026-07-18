@@ -128,7 +128,7 @@ function EmptyState({ onAddMember, onCreatePlan }) {
   return (
     <div className="flex flex-col items-center py-14 px-6">
       <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6" style={{ background: "#E6EEFF" }}>
-        <Building2 size={38} style={{ color: "var(--color-brand)" }} />
+        <Building2 size={38} className="text-brand" />
       </div>
       <h2 className="text-xl font-bold text-gray-900 text-center mb-2 max-w-sm">
         Your Community Is Set Up. Let's Get It Moving.

@@ -133,8 +133,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
         <button
           type="submit"
           disabled={loading || codeExpired || otp.some((d) => !d)}
-          className="w-full py-3.5 rounded-3xl text-white font-semibold text-button transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
-          style={{ background: "#2535c3" }}
+          className="w-full py-3.5 rounded-3xl text-white font-semibold text-button transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 bg-[#2535c3]"
         >
           {loading ? "Verifying..." : "Continue"}
         </button>

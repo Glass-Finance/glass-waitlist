@@ -340,8 +340,7 @@ export default function Profile() {
                 <div className="flex gap-2">
                   <button
                     onClick={closeDeleteModal}
-                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors"
-                    style={{ background: "var(--color-stacked-container)" }}
+                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors bg-stacked-container"
                   >
                     Cancel
                   </button>
@@ -370,8 +369,7 @@ export default function Profile() {
                   <button
                     onClick={handleResendDeletionCode}
                     disabled={resendLoading || deleteLoading}
-                    className="text-xs font-medium cursor-pointer bg-transparent border-none transition-all disabled:opacity-50"
-                    style={{ color: "var(--color-brand)" }}
+                    className="text-xs font-medium cursor-pointer bg-transparent border-none transition-all disabled:opacity-50 text-brand"
                   >
                     {resendLoading ? "Resending…" : resendMessage || "Resend code"}
                   </button>
@@ -382,8 +380,7 @@ export default function Profile() {
                 <div className="flex gap-2">
                   <button
                     onClick={closeDeleteModal}
-                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors"
-                    style={{ background: "var(--color-stacked-container)" }}
+                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors bg-stacked-container"
                   >
                     Cancel
                   </button>

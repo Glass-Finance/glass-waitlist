@@ -1020,8 +1020,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                   {emails.map((em, i) => (
                     <span
                       key={em + i}
-                      className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800"
-                      style={{ background: "var(--color-stacked-container)" }}
+                      className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800 bg-stacked-container"
                     >
                       <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-brand text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
                         {em.charAt(0).toUpperCase()}

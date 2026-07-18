@@ -235,7 +235,7 @@
 //             </div>
 
 //             {/* Direct Add Card */}
-//             <div className="bg-[#EFEFF1] rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
+//             <div className="bg-[#EFEFF1] rounded-lg p-6 border border-[#E5E7EB]">
 //               <h3 className="text-base font-semibold text-gray-900 mb-4">Prefer To Add Members Directly?</h3>
 
 //               {/* Tabs */}
@@ -266,7 +266,7 @@
 //                   </div>
 
 //                   {/* Sample table */}
-//                   <div className="rounded-md overflow-hidden mb-4" style={{ border: "1px solid #E5E7EB" }}>
+//                   <div className="rounded-md overflow-hidden mb-4 border border-[#E5E7EB]">
 //                     <table className="w-full text-xs">
 //                       <thead>
 //                         <tr className="bg-gray-50">
@@ -339,7 +339,7 @@
 //                   <p className="text-sm text-gray-500 mb-4">
 //                     Enter your members' details one by one. Click "Add Row" to add more members.
 //                   </p>
-//                   <div className="rounded-xl overflow-hidden mb-4" style={{ border: "1px solid #E5E7EB" }}>
+//                   <div className="rounded-xl overflow-hidden mb-4 border border-[#E5E7EB]">
 //                     <table className="w-full text-sm">
 //                       <thead>
 //                         <tr className="bg-gray-50">
@@ -829,7 +829,7 @@ export default function AddMembers() {
             </div>
 
             {/* Direct add card */}
-            <div className="bg-stacked-container rounded-lg p-6" style={{ border: "1px solid #E5E7EB" }}>
+            <div className="bg-stacked-container rounded-lg p-6 border border-[#E5E7EB]">
               <h3 className="text-base font-semibold text-gray-900 mb-4">Prefer To Add Members Directly?</h3>
 
               {/* Tabs */}
@@ -855,7 +855,7 @@ export default function AddMembers() {
                   </div>
 
                   {/* Sample table */}
-                  <div className="rounded-md overflow-hidden mb-4" style={{ border: "1px solid #E5E7EB" }}>
+                  <div className="rounded-md overflow-hidden mb-4 border border-[#E5E7EB]">
                     <table className="w-full text-xs">
                       <thead>
                         <tr className="bg-gray-50">
@@ -930,7 +930,7 @@ export default function AddMembers() {
                     )}
 
                     {urlStage === "complete" && urlFileInfo && (
-                      <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3" style={{ border: "1px solid #E5E7EB" }}>
+                      <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
                         <FileSpreadsheet size={20} className="text-green-600 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs text-gray-900 truncate">{urlFileInfo.name}</p>
@@ -964,7 +964,7 @@ export default function AddMembers() {
                   <p className="text-sm font-medium text-gray-900 mb-2">Enter Email(s):</p>
                   <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5" style={{ minHeight: 60, border: "1px solid #E5E7EB", background: "#fff" }}>
                     {emails.map((em, i) => (
-                      <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800" style={{ background: "var(--color-stacked-container)" }}>
+                      <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800 bg-stacked-container">
                         <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-[#002FA7] text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
                           {em.charAt(0).toUpperCase()}
                         </span>

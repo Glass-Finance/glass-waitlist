@@ -2196,8 +2196,7 @@ function FindingReviewModal({ finding, mode, onClose }) {
         <div className="flex gap-2">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors"
-            style={{ background: "var(--color-stacked-container)" }}
+            className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors bg-stacked-container"
           >
             Cancel
           </button>
