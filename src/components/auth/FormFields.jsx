@@ -7,7 +7,7 @@ import { useState } from "react";
 
 export function Label({ htmlFor, children }) {
   return (
-    <label htmlFor={htmlFor} className="block text-label font-medium mb-1.5" style={{ color: "#111" }}>
+    <label htmlFor={htmlFor} className="block text-label font-medium mb-1.5 text-[#111]">
       {children}
     </label>
   );

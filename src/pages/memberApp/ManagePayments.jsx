@@ -214,7 +214,7 @@ export default function ManagePayments() {
           onClick={() => navigate(-1)}
           style={{ position: "absolute", left: 20, width: 36, height: 36, borderRadius: "50%", background: "#fff", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.10)" }}
         >
-          <ChevronLeft size={18} strokeWidth={2} style={{ color: "#111" }} />
+          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
         <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>Manage Payments</h1>
       </div>

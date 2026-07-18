@@ -48,7 +48,7 @@ function AutoPayPrompt({ prompt, onDismiss, onEnable }) {
         </h2>
         <p style={{ fontSize: 14, color: "#555", lineHeight: 1.55, margin: "0 0 24px" }}>
           Would you like us to charge {formatNaira(prompt.amount)} automatically for{" "}
-          <strong style={{ color: "#111" }}>{prompt.planName}</strong> {frequencyAdverb(prompt.frequency)}?
+          <strong className="text-[#111]">{prompt.planName}</strong> {frequencyAdverb(prompt.frequency)}?
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
           <button

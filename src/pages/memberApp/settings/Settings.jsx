@@ -57,7 +57,7 @@ export default function Settings() {
             boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
           }}
         >
-          <ChevronLeft size={18} strokeWidth={2} style={{ color: "#111" }} />
+          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
         <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>Settings</h1>
       </div>

@@ -270,7 +270,7 @@ export default function MFA() {
           onClick={() => flow ? setFlow(null) : navigate(-1)}
           style={{ width: 36, height: 36, borderRadius: "50%", background: "#fff", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.1)" }}
         >
-          <ChevronLeft size={18} strokeWidth={2} style={{ color: "#111" }} />
+          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
         <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>
           {flow === "setup" ? "Set Up MFA" : flow === "disable" ? "Disable MFA" : "Multi-Factor Authentication"}
