@@ -29,61 +29,45 @@ function setActiveMemberCommunity(c) {
 function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
   return (
     <div
-      style={{
-        position: "fixed", inset: 0, zIndex: 60, display: "flex",
-        alignItems: "flex-end", justifyContent: "center",
-        background: "rgba(15,23,42,0.45)",
-      }}
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-[rgba(15,23,42,0.45)]"
       onClick={onCancel}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{
-          width: "100%", maxWidth: 430, background: "#fff",
-          borderRadius: "20px 20px 0 0", padding: "24px 20px 28px",
-        }}
+        className="w-full max-w-[430px] bg-white rounded-t-[20px] pt-6 px-5 pb-7"
       >
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div className="flex justify-end">
           <button
             onClick={onCancel}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#9CA3AF" }}
+            className="bg-transparent border-none cursor-pointer p-1 text-[#9CA3AF]"
             aria-label="Cancel"
           >
             <X size={18} />
           </button>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 10 }}>
-          <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#FEF2F2", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
-            <AlertTriangle size={24} style={{ color: "#DC2626" }} />
+        <div className="flex flex-col items-center text-center gap-2.5">
+          <div className="w-[52px] h-[52px] rounded-full bg-[#FEF2F2] flex items-center justify-center mb-1">
+            <AlertTriangle size={24} className="text-[#DC2626]" />
           </div>
-          <p style={{ fontSize: 17, fontWeight: 700, color: "#111", margin: 0 }}>
+          <p className="text-[17px] font-bold text-[#111] m-0">
             Leave {community?.name}?
           </p>
-          <p style={{ fontSize: 13.5, color: "#6B7280", margin: 0, lineHeight: 1.55, maxWidth: 320 }}>
+          <p className="text-[13.5px] text-[#6B7280] m-0 leading-[1.55] max-w-[320px]">
             You'll lose access to this community's payment history and upcoming dues from your account, and you'll need a new invite to rejoin. This can't be undone from your side.
           </p>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24 }}>
+        <div className="flex flex-col gap-2.5 mt-6">
           <button
             onClick={onConfirm}
             disabled={leaving}
-            style={{
-              width: "100%", padding: "14px 0", borderRadius: 12, border: "none",
-              background: "#DC2626", color: "#fff", fontSize: 14.5, fontWeight: 600,
-              cursor: leaving ? "default" : "pointer", opacity: leaving ? 0.7 : 1,
-            }}
+            className={`w-full py-3.5 px-0 rounded-xl border-none bg-[#DC2626] text-white text-[14.5px] font-semibold ${leaving ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
           >
             {leaving ? "Leaving…" : "Yes, leave community"}
           </button>
           <button
             onClick={onCancel}
             disabled={leaving}
-            className="border border-surface-container-border"
-            style={{
-              width: "100%", padding: "14px 0", borderRadius: 12,
-              background: "#fff", color: "#374151",
-              fontSize: 14.5, fontWeight: 600, cursor: "pointer",
-            }}
+            className="border border-surface-container-border w-full py-3.5 px-0 rounded-xl bg-white text-[#374151] text-[14.5px] font-semibold cursor-pointer"
           >
             Cancel
           </button>
@@ -139,7 +123,7 @@ export default function MyCommunities() {
   }
 
   return (
-    <div className="relative overflow-hidden pb-10" style={{ minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="relative overflow-hidden pb-10 min-h-screen" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
@@ -151,14 +135,10 @@ export default function MyCommunities() {
         <h1 className="text-lg font-semibold text-[#111] m-0">My Communities</h1>
       </div>
 
-      <div style={{ padding: "0 16px 16px" }}>
+      <div className="pt-0 px-4 pb-4">
         <button
           onClick={() => navigate("/onboarding/choose-path")}
-          style={{
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            width: "100%", padding: "12px", borderRadius: 12, background: "#1C2B8A",
-            color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer",
-          }}
+          className="flex items-center justify-center gap-2 w-full p-3 rounded-xl bg-[#1C2B8A] text-white text-sm font-semibold border-none cursor-pointer"
         >
           <Plus size={16} />
           Create a Community
@@ -171,26 +151,16 @@ export default function MyCommunities() {
         ) : communities.length === 0 ? (
           <EmptyState icon={Users} title="You haven't joined any communities yet" className="py-6" />
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div className="flex flex-col gap-2.5">
             {communities.map((c) => (
               <button
                 key={c.id}
                 onClick={() => handleSelect(c)}
                 disabled={navigatingId === c.id}
-                style={{
-                  display: "flex", alignItems: "center", gap: 12, background: "#fff",
-                  borderRadius: 14, padding: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
-                  border: "none", cursor: navigatingId === c.id ? "default" : "pointer",
-                  textAlign: "left", width: "100%", opacity: navigatingId === c.id ? 0.7 : 1,
-                }}
+                className={`flex items-center gap-3 bg-white rounded-2xl p-3.5 shadow-[0_1px_6px_rgba(0,0,0,0.05)] border-none text-left w-full ${navigatingId === c.id ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
               >
                 <div
-                  style={{
-                    width: 44, height: 44, borderRadius: 12,
-                    background: c.logo?.url ? "transparent" : "#1C2B8A",
-                    color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-                    fontWeight: 700, fontSize: 13, flexShrink: 0, overflow: "hidden",
-                  }}
+                  className={`w-11 h-11 rounded-xl text-white flex items-center justify-center font-bold text-[13px] flex-shrink-0 overflow-hidden ${c.logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
                 >
                   {c.logo?.url ? (
                     <img src={c.logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
@@ -199,22 +169,22 @@ export default function MyCommunities() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{c.name}</p>
-                  <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>{c.owned ? "Admin" : "Member"}</p>
+                  <p className="text-sm font-medium text-[#111] m-0">{c.name}</p>
+                  <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">{c.owned ? "Admin" : "Member"}</p>
                 </div>
                 {!c.owned ? (
                   <button
                     onClick={(e) => handleLeave(e, c)}
                     disabled={leaveCommunity.isPending}
                     title="Leave community"
-                    style={{ background: "none", border: "none", cursor: "pointer", padding: 6, color: "#DC2626", flexShrink: 0 }}
+                    className="bg-transparent border-none cursor-pointer p-1.5 text-[#DC2626] flex-shrink-0"
                   >
                     <LogOut size={16} />
                   </button>
                 ) : navigatingId === c.id ? (
-                  <div style={{ width: 16, height: 16, borderRadius: "50%", border: "2px solid var(--color-surface-container-border)", borderTopColor: "#002FA7", flexShrink: 0, animation: "spin 0.7s linear infinite" }} />
+                  <div className="w-4 h-4 rounded-full border-2 border-surface-container-border [border-top-color:#002FA7] flex-shrink-0 animate-[spin_0.7s_linear_infinite]" />
                 ) : (
-                  <ChevronRight size={16} style={{ color: "#ccc", flexShrink: 0 }} />
+                  <ChevronRight size={16} className="text-[#ccc] flex-shrink-0" />
                 )}
               </button>
             ))}
