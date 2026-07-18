@@ -40,6 +40,7 @@ import { useAuth } from "../../store/AuthContext";
 import { useExportJob } from "../../hooks/useExportJob";
 import { exportCommunityTransactions } from "../../api/exports";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { getEmailError } from "../../utils/validators";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import EmptyState from "../../components/common/EmptyState";
 import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
@@ -510,6 +511,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
   // Manual tab state
   const [emails, setEmails] = useState([]);
   const [emailInput, setEmailInput] = useState("");
+  const [emailChipError, setEmailChipError] = useState("");
   const [phoneNumbers, setPhoneNumbers] = useState("");
   const [billingExempt, setBillingExempt] = useState(false);
   const [manualLoading, setManualLoading] = useState(false);
@@ -656,8 +658,18 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
 
   function commitEmailChip() {
     const val = emailInput.trim().replace(/[,;]+$/, "");
-    if (val && !emails.includes(val)) setEmails((arr) => [...arr, val]);
+    if (!val) return;
+    // A malformed address here silently fails later per-row on submit
+    // (Promise.allSettled swallows individual failures into one banner) --
+    // catching it before it even becomes a chip is much clearer than that.
+    const chipError = getEmailError(val);
+    if (chipError) {
+      setEmailChipError(chipError);
+      return;
+    }
+    if (!emails.includes(val)) setEmails((arr) => [...arr, val]);
     setEmailInput("");
+    setEmailChipError("");
   }
   function handleEmailKeyDown(e) {
     if (e.key === "Enter" || e.key === "," || e.key === " ") {
@@ -1011,10 +1023,11 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                   Enter Email(s):
                 </p>
                 <div
-                  className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5 border border-surface-container-border"
+                  className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-1 border border-surface-container-border"
                   style={{
                     minHeight: 60,
                     background: "#fff",
+                    borderColor: emailChipError ? "var(--color-danger)" : undefined,
                   }}
                 >
                   {emails.map((em, i) => (
@@ -1040,7 +1053,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                   <input
                     type="text"
                     value={emailInput}
-                    onChange={(e) => setEmailInput(e.target.value)}
+                    onChange={(e) => { setEmailInput(e.target.value); setEmailChipError(""); }}
                     onKeyDown={handleEmailKeyDown}
                     onBlur={commitEmailChip}
                     placeholder={
@@ -1049,6 +1062,11 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                     className="flex-1 min-w-[160px] outline-none text-sm bg-transparent border-none py-1"
                   />
                 </div>
+                {emailChipError ? (
+                  <p className="text-xs text-danger mb-5">{emailChipError}</p>
+                ) : (
+                  <div className="mb-4" />
+                )}
 
                 <p className="text-sm font-medium text-gray-900 mb-2">
                   Enter Phone Number(s){" "}

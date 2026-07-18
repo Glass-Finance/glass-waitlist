@@ -362,7 +362,7 @@ function BillingDayField({ frequency, value, max, onChange }) {
   );
 }
 
-function Step2({ planType, form, onChange, slugState, accounts }) {
+function Step2({ planType, form, onChange, slugState, accounts, fieldErrors = {}, onFieldBlur }) {
   const { slug, setSlug, available, checking, suggesting, suggestFrom } =
     slugState;
 
@@ -401,8 +401,10 @@ function Step2({ planType, form, onChange, slugState, accounts }) {
           value={form.name || ""}
           placeholder="Enter plan name"
           onChange={(e) => onChange("name", e.target.value)}
-          onBlur={() => !slug && suggestFrom(form.name)}
+          onBlur={(e) => { if (!slug) suggestFrom(form.name); onFieldBlur?.("name")(e); }}
+          style={fieldErrors.name ? { borderColor: "var(--color-danger)" } : undefined}
         />
+        {fieldErrors.name && <p className="text-xs text-danger mt-1">{fieldErrors.name}</p>}
       </div>
       <div>
         <label className="block text-xs font-medium text-gray-700 mb-1">
@@ -463,7 +465,10 @@ function Step2({ planType, form, onChange, slugState, accounts }) {
             value={form.amount || ""}
             placeholder="₦0.00"
             onChange={(e) => onChange("amount", e.target.value)}
+            onBlur={onFieldBlur?.("amount")}
+            style={fieldErrors.amount ? { borderColor: "var(--color-danger)" } : undefined}
           />
+          {fieldErrors.amount && <p className="text-xs text-danger mt-1">{fieldErrors.amount}</p>}
         </div>
         {planType === "recurring" && (
           <div>
@@ -801,6 +806,19 @@ function Step3({ planType, form, slug, accounts }) {
   );
 }
 
+// Shared by CreatePlanModal and EditPlanModal — both collect the same
+// name/amount pair and neither validated anything beyond "is it truthy"
+// before, which let a 0 or negative amount (still "truthy" as a non-empty
+// string) through to the backend instead of catching it inline.
+function validatePlanField(field, value) {
+  if (field === "name" && !String(value ?? "").trim()) return "Plan name is required.";
+  if (field === "amount") {
+    if (!String(value ?? "").trim()) return "Amount is required.";
+    if (!(Number(value) > 0)) return "Enter an amount greater than 0.";
+  }
+  return "";
+}
+
 // ── Create plan modal ─────────────────────────────────────────────────────────
 function CreatePlanModal({ communityId, onClose, onCreate, creating, createError }) {
   useEffect(() => {
@@ -830,7 +848,13 @@ function CreatePlanModal({ communityId, onClose, onCreate, creating, createError
     communityAccountId: "",
   });
   const slugState = useSlug("PAYMENT_LINK");
-  const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const [fieldErrors, setFieldErrors] = useState({ name: "", amount: "" });
+  const update = (k, v) => {
+    setForm((f) => ({ ...f, [k]: v }));
+    setFieldErrors((fe) => (fe[k] ? { ...fe, [k]: validatePlanField(k, v) } : fe));
+  };
+  const handleFieldBlur = (field) => (e) =>
+    setFieldErrors((fe) => ({ ...fe, [field]: validatePlanField(field, e.target.value) }));
 
   // Only relevant when a community has more than one payout account
   // connected (PayoutAccountField hides itself otherwise) — default to
@@ -848,11 +872,21 @@ function CreatePlanModal({ communityId, onClose, onCreate, creating, createError
       : step === 2
         ? !!(
             form.name &&
-            form.amount &&
+            Number(form.amount) > 0 &&
             slugState.slug &&
             (planType === "recurring" ? form.frequency : form.dueDate)
           )
         : true;
+
+  function handleStep2Continue() {
+    const nameError = validatePlanField("name", form.name);
+    const amountError = validatePlanField("amount", form.amount);
+    if (nameError || amountError) {
+      setFieldErrors({ name: nameError, amount: amountError });
+      return;
+    }
+    setStep(3);
+  }
 
   async function handleSubmit() {
     const startIso = form.startDate
@@ -971,6 +1005,8 @@ function CreatePlanModal({ communityId, onClose, onCreate, creating, createError
                     onChange={update}
                     slugState={slugState}
                     accounts={accounts}
+                    fieldErrors={fieldErrors}
+                    onFieldBlur={handleFieldBlur}
                   />
                 )}
                 {step === 3 && (
@@ -997,9 +1033,10 @@ function CreatePlanModal({ communityId, onClose, onCreate, creating, createError
               <ArrowLeft size={12} /> {step > 1 ? "Back" : "Cancel"}
             </button>
             <button
-              onClick={() =>
-                step < 3 ? setStep((s) => s + 1) : handleSubmit()
-              }
+              onClick={() => {
+                if (step === 2) { handleStep2Continue(); return; }
+                step < 3 ? setStep((s) => s + 1) : handleSubmit();
+              }}
               disabled={
                 !canContinue ||
                 creating ||
@@ -1049,6 +1086,7 @@ function EditPlanModal({ plan, communityId, onClose, onSave, saving }) {
     communityAccountId: plan.communityAccountId ?? "",
   });
   const { accounts } = useCommunityAccount(communityId);
+  const [fieldErrors, setFieldErrors] = useState({ name: "", amount: "" });
   // Track the original endAt so we know whether the user has cleared a
   // previously-set value — that's the only case where clearEndAt needs to
   // be sent, since omitting endAt on a PATCH otherwise leaves it untouched.
@@ -1069,7 +1107,17 @@ function EditPlanModal({ plan, communityId, onClose, onSave, saving }) {
     }
   }, [editBillingDayMax]);
 
+  function handleFieldBlur(field) {
+    return (e) => setFieldErrors((fe) => ({ ...fe, [field]: validatePlanField(field, e.target.value) }));
+  }
+
   async function handleSave() {
+    const nameError = validatePlanField("name", form.name);
+    const amountError = validatePlanField("amount", form.amount);
+    if (nameError || amountError) {
+      setFieldErrors({ name: nameError, amount: amountError });
+      return;
+    }
     const clearedEndAt = !!initialEndAtValue && !form.endAt;
     const payload = {
       title: form.name,
@@ -1110,7 +1158,7 @@ function EditPlanModal({ plan, communityId, onClose, onSave, saving }) {
     await onSave(plan.id, payload);
   }
 
-  const isReady = form.name && form.amount;
+  const isReady = form.name && Number(form.amount) > 0;
 
   return (
     <div
@@ -1143,9 +1191,16 @@ function EditPlanModal({ plan, communityId, onClose, onSave, saving }) {
             <input
               className={inputCls}
               value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              onChange={(e) => {
+                const value = e.target.value;
+                setForm((f) => ({ ...f, name: value }));
+                setFieldErrors((fe) => (fe.name ? { ...fe, name: validatePlanField("name", value) } : fe));
+              }}
+              onBlur={handleFieldBlur("name")}
               placeholder="Plan name"
+              style={fieldErrors.name ? { borderColor: "var(--color-danger)" } : undefined}
             />
+            {fieldErrors.name && <p className="text-xs text-danger mt-1">{fieldErrors.name}</p>}
           </div>
 
           <PayoutAccountField
@@ -1164,11 +1219,16 @@ function EditPlanModal({ plan, communityId, onClose, onSave, saving }) {
                 onWheel={blurOnWheel}
                 className={inputCls}
                 value={form.amount}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, amount: e.target.value }))
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setForm((f) => ({ ...f, amount: value }));
+                  setFieldErrors((fe) => (fe.amount ? { ...fe, amount: validatePlanField("amount", value) } : fe));
+                }}
+                onBlur={handleFieldBlur("amount")}
                 placeholder="₦0"
+                style={fieldErrors.amount ? { borderColor: "var(--color-danger)" } : undefined}
               />
+              {fieldErrors.amount && <p className="text-xs text-danger mt-1">{fieldErrors.amount}</p>}
             </div>
             {isRecurring && (
               <div>
