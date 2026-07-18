@@ -4,13 +4,7 @@ import { register } from "../../../services/authService";
 import { notifyError } from "../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import PasswordChecklist from "../../../components/auth/PasswordChecklist";
-
-// ── Shared styles ─────────────────────────────────────────────────────────────
-const inputCls =
-  "w-full px-4 py-3 rounded-xl bg-white text-gray-900 placeholder-gray-400 text-placeholder outline-none transition-all";
-const inputStyle = { border: "1.5px solid #C2C2C2" };
-const onFocus = (e) => (e.target.style.borderColor = "#2535c3");
-const onBlur = (e) => (e.target.style.borderColor = "#C2C2C2");
+import { SignUpTextInput, SignUpFieldError } from "./SignUpTextInput";
 
 const PrimaryBtn = ({ loading, disabled, children, ...props }) => (
   <button
@@ -26,6 +20,19 @@ const PrimaryBtn = ({ loading, disabled, children, ...props }) => (
 // Fires the single register() call with email/phone carried over from
 // EmailPhoneStep plus the fields collected here -- same payload shape and
 // same one-call-only backend contract the old single-screen form used.
+function validateField(field, value, otherValue) {
+  if (field === "firstName" && !value.trim()) return "First name is required.";
+  if (field === "lastName" && !value.trim()) return "Last name is required.";
+  if (field === "password" && !isPasswordValid(value)) {
+    return `Must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`;
+  }
+  if (field === "confirmPassword") {
+    if (!value) return "Please confirm your password.";
+    if (value !== otherValue) return "Passwords don't match.";
+  }
+  return "";
+}
+
 export default function RegisterStep({ email, phone, onNext }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -37,22 +44,42 @@ export default function RegisterStep({ email, phone, onNext }) {
     password: "",
     confirmPassword: "",
   });
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const [fieldErrors, setFieldErrors] = useState({
+    firstName: "", lastName: "", password: "", confirmPassword: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
+    setFieldErrors((fe) => {
+      const next = { ...fe };
+      if (fe[name]) next[name] = validateField(name, value, name === "password" ? form.confirmPassword : form.password);
+      // Editing password after confirmPassword was already checked needs
+      // confirmPassword re-checked against the fresh value.
+      if (name === "password" && fe.confirmPassword) next.confirmPassword = validateField("confirmPassword", form.confirmPassword, value);
+      return next;
+    });
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    setFieldErrors((fe) => ({
+      ...fe,
+      [name]: validateField(name, value, name === "password" ? form.confirmPassword : form.password),
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!form.firstName.trim() || !form.lastName.trim()) {
-      setError("First and last name are required.");
-      return;
-    }
-    if (!isPasswordValid(form.password)) {
-      setError(`Password must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`);
-      return;
-    }
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords don't match.");
+    const nextErrors = {
+      firstName: validateField("firstName", form.firstName),
+      lastName: validateField("lastName", form.lastName),
+      password: validateField("password", form.password),
+      confirmPassword: validateField("confirmPassword", form.confirmPassword, form.password),
+    };
+    if (Object.values(nextErrors).some(Boolean)) {
+      setFieldErrors(nextErrors);
       return;
     }
     setLoading(true);
@@ -86,35 +113,33 @@ export default function RegisterStep({ email, phone, onNext }) {
             <label className="text-label font-medium text-gray-700">
               First Name
             </label>
-            <input
+            <SignUpTextInput
               type="text"
               name="firstName"
               value={form.firstName}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Enter Your Name"
               required
-              className={inputCls}
-              style={inputStyle}
-              onFocus={onFocus}
-              onBlur={onBlur}
+              error={fieldErrors.firstName}
             />
+            <SignUpFieldError message={fieldErrors.firstName} />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-label font-medium text-gray-700">
               Last Name
             </label>
-            <input
+            <SignUpTextInput
               type="text"
               name="lastName"
               value={form.lastName}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Enter Your Name"
               required
-              className={inputCls}
-              style={inputStyle}
-              onFocus={onFocus}
-              onBlur={onBlur}
+              error={fieldErrors.lastName}
             />
+            <SignUpFieldError message={fieldErrors.lastName} />
           </div>
         </div>
 
@@ -123,19 +148,18 @@ export default function RegisterStep({ email, phone, onNext }) {
             Create Password
           </label>
           <div className="relative">
-            <input
+            <SignUpTextInput
               key={showPassword ? "text" : "password"}
               type={showPassword ? "text" : "password"}
               name="password"
               autoComplete="new-password"
               value={form.password}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Enter Your Password"
               required
-              className={`${inputCls} pr-11`}
-              style={inputStyle}
-              onFocus={onFocus}
-              onBlur={onBlur}
+              error={fieldErrors.password}
+              className="pr-11"
             />
             <button
               type="button"
@@ -153,17 +177,16 @@ export default function RegisterStep({ email, phone, onNext }) {
             Confirm Password
           </label>
           <div className="relative">
-            <input
+            <SignUpTextInput
               type={showConfirm ? "text" : "password"}
               name="confirmPassword"
               value={form.confirmPassword}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="re-enter Password"
               required
-              className={`${inputCls} pr-11`}
-              style={inputStyle}
-              onFocus={onFocus}
-              onBlur={onBlur}
+              error={fieldErrors.confirmPassword}
+              className="pr-11"
             />
             <button
               type="button"
@@ -173,6 +196,7 @@ export default function RegisterStep({ email, phone, onNext }) {
               {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
+          <SignUpFieldError message={fieldErrors.confirmPassword} />
         </div>
 
         {error && <p className="text-sm text-red-500 -mt-1">{error}</p>}

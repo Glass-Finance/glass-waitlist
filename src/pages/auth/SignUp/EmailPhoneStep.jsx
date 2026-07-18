@@ -3,13 +3,7 @@ import { Link } from "react-router-dom";
 import { Info } from "lucide-react";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../utils/phone";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
-
-// ── Shared styles ─────────────────────────────────────────────────────────────
-const inputCls =
-  "w-full px-4 py-3 rounded-xl bg-white text-gray-900 placeholder-gray-400 text-placeholder outline-none transition-all";
-const inputStyle = { border: "1.5px solid #C2C2C2" };
-const onFocus = (e) => (e.target.style.borderColor = "#2535c3");
-const onBlur = (e) => (e.target.style.borderColor = "#C2C2C2");
+import { SignUpTextInput, SignUpFieldError } from "./SignUpTextInput";
 
 const PrimaryBtn = ({ loading, disabled, children, ...props }) => (
   <button
@@ -33,11 +27,39 @@ const Divider = () => (
 // No API call here -- email/phone are just handed up to SignUp/index.jsx's
 // local state and combined with CompleteProfileStep's fields into the same
 // single register() call the old one-screen form used to make.
+function validateEmail(value) {
+  const trimmed = value.trim();
+  if (!trimmed) return "Email is required.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return "Enter a valid email address.";
+  return "";
+}
+
+function validatePhone(value) {
+  if (!value.trim()) return "Phone number is required.";
+  if (!isPhoneValid(value)) return PHONE_FORMAT_HINT;
+  return "";
+}
+
 export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onSwitch, onGoogleAuth }) {
   const [email, setEmail] = useState(initialEmail ?? "");
   const [phone, setPhone] = useState(initialPhone ?? "");
   const [agreed, setAgreed] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({ email: "", phone: "" });
   const [error, setError] = useState("");
+
+  function handleFieldChange(field, setValue) {
+    return (e) => {
+      const value = e.target.value;
+      setValue(value);
+      const validate = field === "email" ? validateEmail : validatePhone;
+      setFieldErrors((fe) => (fe[field] ? { ...fe, [field]: validate(value) } : fe));
+    };
+  }
+
+  function handleFieldBlur(field) {
+    const validate = field === "email" ? validateEmail : validatePhone;
+    return (e) => setFieldErrors((fe) => ({ ...fe, [field]: validate(e.target.value) }));
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -46,20 +68,13 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
       setError("Please agree to the Terms of Service and Privacy Policy to continue.");
       return;
     }
-    const trimmedEmail = email.trim().toLowerCase();
-    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      setError("Enter a valid email address.");
+    const emailError = validateEmail(email);
+    const phoneError = validatePhone(phone);
+    if (emailError || phoneError) {
+      setFieldErrors({ email: emailError, phone: phoneError });
       return;
     }
-    if (!phone.trim()) {
-      setError("Phone number is required.");
-      return;
-    }
-    if (!isPhoneValid(phone)) {
-      setError(PHONE_FORMAT_HINT);
-      return;
-    }
-    onNext({ email: trimmedEmail, phone: phone.trim() });
+    onNext({ email: email.trim().toLowerCase(), phone: phone.trim() });
   };
 
   return (
@@ -75,34 +90,32 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
           <label className="text-label font-medium text-gray-700">
             Email Address
           </label>
-          <input
+          <SignUpTextInput
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleFieldChange("email", setEmail)}
+            onBlur={handleFieldBlur("email")}
             placeholder="e.g Bax**re@gmail.com"
             required
-            className={inputCls}
-            style={inputStyle}
-            onFocus={onFocus}
-            onBlur={onBlur}
+            error={fieldErrors.email}
           />
+          <SignUpFieldError message={fieldErrors.email} />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label className="text-label font-medium text-gray-700">
             WhatsApp Number
           </label>
-          <input
+          <SignUpTextInput
             type="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={handleFieldChange("phone", setPhone)}
+            onBlur={handleFieldBlur("phone")}
             placeholder="e.g. 0803 123 4567"
             required
-            className={inputCls}
-            style={inputStyle}
-            onFocus={onFocus}
-            onBlur={onBlur}
+            error={fieldErrors.phone}
           />
+          <SignUpFieldError message={fieldErrors.phone} />
           <div className="flex items-start gap-1.5 mt-0.5 px-0.5">
             <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
             <p className="text-xs text-gray-500 leading-snug">
