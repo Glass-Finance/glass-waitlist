@@ -450,8 +450,7 @@ export function AdminPaymentModal({ item, onClose }) {
             <button
               onClick={handlePay}
               disabled={initiatePayment.isPending || redirecting || isLinkInactive}
-              className="px-6 py-2.5 rounded-xl text-xs font-semibold text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border-none transition-opacity flex items-center gap-2"
-              style={{ background: "var(--color-brand)" }}
+              className="px-6 py-2.5 rounded-xl text-xs font-semibold text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border-none transition-opacity flex items-center gap-2 bg-brand"
             >
               {initiatePayment.isPending || redirecting ? (
                 <>

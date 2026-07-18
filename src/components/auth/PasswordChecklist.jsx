@@ -16,8 +16,7 @@ export default function PasswordChecklist({ password }) {
         >
           {met ? (
             <span
-              className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: "var(--color-brand)" }}
+              className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 bg-brand"
             >
               <Check size={10} className="text-white" strokeWidth={3} />
             </span>

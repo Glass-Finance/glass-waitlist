@@ -121,8 +121,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
               {error && <p className="text-xs text-red-500">{error}</p>}
               <button
                 onClick={startSetup}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer"
-                style={{ background: "var(--color-brand)" }}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer bg-brand"
               >
                 Begin Setup
               </button>
@@ -169,8 +168,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
               <button
                 onClick={confirmEnable}
                 disabled={code.length !== 6 || loading}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer disabled:opacity-50"
-                style={{ background: "var(--color-brand)" }}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer disabled:opacity-50 bg-brand"
               >
                 {loading ? "Activating…" : "Activate MFA"}
               </button>
@@ -218,8 +216,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
               )}
               <button
                 onClick={onSuccess}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer"
-                style={{ background: "var(--color-brand)" }}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer bg-brand"
               >
                 Done
               </button>

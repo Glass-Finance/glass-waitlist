@@ -275,8 +275,7 @@ function AdminPaymentCallback() {
           {config.buttonLabel && (
             <button
               onClick={() => { beginAuthGrace(); navigate(buttonDest, { replace: true }); }}
-              className="mt-4 px-8 py-3 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer"
-              style={{ background: "var(--color-brand)" }}
+              className="mt-4 px-8 py-3 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer bg-brand"
             >
               {config.buttonLabel}
             </button>

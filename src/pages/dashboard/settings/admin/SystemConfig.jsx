@@ -199,8 +199,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
             <button
               type="submit"
               disabled={isSaving}
-              className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white transition-all cursor-pointer border-none flex items-center justify-center gap-1.5 disabled:opacity-60"
-              style={{ background: "var(--color-brand)" }}
+              className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white transition-all cursor-pointer border-none flex items-center justify-center gap-1.5 disabled:opacity-60 bg-brand"
             >
               {isSaving ? (
                 <Loader2 size={12} className="animate-spin" />

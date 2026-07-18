@@ -466,8 +466,7 @@ function CommissionModal({ community, onClose }) {
           <button
             type="submit"
             disabled={mutation.isPending}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
-            style={{ background: "var(--color-brand)" }}
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-brand"
           >
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -545,8 +544,7 @@ function CommunitySettingsModal({ community, onClose }) {
           <button
             type="submit"
             disabled={mutation.isPending}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
-            style={{ background: "var(--color-brand)" }}
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-brand"
           >
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -2206,8 +2204,7 @@ function FindingReviewModal({ finding, mode, onClose }) {
           <button
             onClick={() => (isResolve ? resolve.mutate() : review.mutate())}
             disabled={review.isPending || resolve.isPending}
-            className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50"
-            style={{ background: "var(--color-brand)" }}
+            className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50 bg-brand"
           >
             {review.isPending || resolve.isPending ? "Saving…" : isResolve ? "Resolve" : "Mark Reviewed"}
           </button>
@@ -2522,8 +2519,7 @@ function SendNotificationModal({ onClose }) {
           <button
             type="submit"
             disabled={mutation.isPending || channels.length === 0}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
-            style={{ background: "var(--color-brand)" }}
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-brand"
           >
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -2570,8 +2566,7 @@ function NotificationsSection() {
         right={
           <button
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white cursor-pointer border-none"
-            style={{ background: "var(--color-brand)" }}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white cursor-pointer border-none bg-brand"
           >
             <Bell size={12} /> Send Notification
           </button>

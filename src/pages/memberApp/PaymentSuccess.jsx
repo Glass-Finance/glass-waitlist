@@ -320,8 +320,7 @@ export default function PaymentSuccess() {
           <div className="flex-1 w-full flex flex-col justify-end gap-3 pb-10 max-w-[340px]">
             <button
               onClick={goHome}
-              className="w-full px-8 py-3.5 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
-              style={{ background: "var(--color-brand)" }}
+              className="w-full px-8 py-3.5 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none bg-brand"
             >
               Back to Home
             </button>
@@ -341,8 +340,7 @@ export default function PaymentSuccess() {
           content.action && (
             <button
               onClick={() => goTo(content.action.to)}
-              className="mt-3 px-8 py-3 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none"
-              style={{ background: "var(--color-brand)" }}
+              className="mt-3 px-8 py-3 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none bg-brand"
             >
               {content.action.label}
             </button>
