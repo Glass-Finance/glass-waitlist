@@ -26,10 +26,10 @@ export const TextInput = forwardRef(function TextInput({
   onBlur,
   autoComplete,
   inputMode,
-  maxLength,
   disabled,
   rightElement,
   error,
+  ...rest
 }, ref) {
   const [focused, setFocused] = useState(false);
   const invalid = Boolean(error);
@@ -44,7 +44,6 @@ export const TextInput = forwardRef(function TextInput({
         onChange={onChange}
         autoComplete={autoComplete}
         inputMode={inputMode}
-        maxLength={maxLength}
         disabled={disabled}
         aria-invalid={invalid || undefined}
         onFocus={() => setFocused(true)}
@@ -57,6 +56,7 @@ export const TextInput = forwardRef(function TextInput({
               ? "1.5px solid #1C2B8A"
               : "1.5px solid #E0E0E6",
         }}
+        {...rest}
       />
       {rightElement && <div className="absolute right-3 top-1/2 -translate-y-1/2">{rightElement}</div>}
     </div>

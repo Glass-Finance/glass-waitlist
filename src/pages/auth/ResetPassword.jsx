@@ -17,25 +17,55 @@ export default function ResetPassword() {
   const token = searchParams.get("token") ?? "";
 
   const [form, setForm] = useState({ newPassword: "", confirmPassword: "" });
+  const [fieldErrors, setFieldErrors] = useState({ newPassword: "", confirmPassword: "" });
   const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  function validateField(field, value, otherValue) {
+    if (field === "newPassword") {
+      if (!isPasswordValid(value)) return `Must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`;
+    }
+    if (field === "confirmPassword") {
+      if (!value) return "Please confirm your new password.";
+      if (value !== otherValue) return "Passwords don't match.";
+    }
+    return "";
+  }
+
   function set(field) {
     return (e) => {
-      setForm((f) => ({ ...f, [field]: e.target.value }));
+      const value = e.target.value;
+      setForm((f) => ({ ...f, [field]: value }));
       setError("");
+      setFieldErrors((fe) => {
+        const next = { ...fe };
+        // Only live-validate a field once it's already flagged, so a fresh
+        // field doesn't turn red before the user's even left it.
+        if (fe[field]) next[field] = validateField(field, value, field === "newPassword" ? form.confirmPassword : form.newPassword);
+        // Editing newPassword after confirmPassword was already checked
+        // needs confirmPassword re-checked against the new value too.
+        if (field === "newPassword" && fe.confirmPassword) next.confirmPassword = validateField("confirmPassword", form.confirmPassword, value);
+        return next;
+      });
+    };
+  }
+
+  function handleBlur(field) {
+    return (e) => {
+      setFieldErrors((fe) => ({
+        ...fe,
+        [field]: validateField(field, e.target.value, field === "newPassword" ? form.confirmPassword : form.newPassword),
+      }));
     };
   }
 
   async function handleSubmit() {
-    if (!isPasswordValid(form.newPassword)) {
-      setError(`Password must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`);
-      return;
-    }
-    if (form.newPassword !== form.confirmPassword) {
-      setError("Passwords don't match.");
+    const newPasswordError = validateField("newPassword", form.newPassword, form.confirmPassword);
+    const confirmPasswordError = validateField("confirmPassword", form.confirmPassword, form.newPassword);
+    if (newPasswordError || confirmPasswordError) {
+      setFieldErrors({ newPassword: newPasswordError, confirmPassword: confirmPasswordError });
       return;
     }
     setLoading(true);
@@ -77,8 +107,10 @@ export default function ResetPassword() {
                 placeholder="Enter new password"
                 value={form.newPassword}
                 onChange={set("newPassword")}
+                onBlur={handleBlur("newPassword")}
                 autoComplete="new-password"
                 disabled={loading}
+                error={fieldErrors.newPassword}
                 rightElement={
                   <button
                     type="button"
@@ -102,8 +134,10 @@ export default function ResetPassword() {
                 placeholder="Re-enter new password"
                 value={form.confirmPassword}
                 onChange={set("confirmPassword")}
+                onBlur={handleBlur("confirmPassword")}
                 autoComplete="new-password"
                 disabled={loading}
+                error={fieldErrors.confirmPassword}
                 rightElement={
                   <button
                     type="button"
@@ -116,7 +150,7 @@ export default function ResetPassword() {
                   </button>
                 }
               />
-              <ErrorMessage message={error} />
+              <ErrorMessage message={fieldErrors.confirmPassword || error} />
             </div>
 
             <PrimaryButton onClick={handleSubmit} loading={loading} disabled={!isReady}>

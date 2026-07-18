@@ -16,6 +16,7 @@ export default function ForgotPassword() {
   usePageTitle("Reset your password");
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [step, setStep] = useState("email"); // "email" | "otp"
   const [loading, setLoading] = useState(false);
@@ -25,9 +26,16 @@ export default function ForgotPassword() {
   const secondsLeft = useCountdown(OTP_VALIDITY_SECONDS, `${email}-${resendCount}`);
   const codeExpired = step === "otp" && secondsLeft <= 0;
 
+  function validateEmail(value) {
+    if (!value.trim()) return "Email is required.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return "Enter a valid email address.";
+    return "";
+  }
+
   async function handleSendEmail() {
-    if (!email.trim()) {
-      setError("Email is required.");
+    const nextEmailError = validateEmail(email);
+    if (nextEmailError) {
+      setEmailError(nextEmailError);
       return;
     }
     setLoading(true);
@@ -96,15 +104,19 @@ export default function ForgotPassword() {
                 placeholder="e.g Bax**re@gmail.com"
                 value={email}
                 onChange={(e) => {
-                  setEmail(e.target.value);
+                  const value = e.target.value;
+                  setEmail(value);
                   setError("");
+                  setEmailError((prev) => (prev ? validateEmail(value) : prev));
                 }}
+                onBlur={(e) => setEmailError(validateEmail(e.target.value))}
                 onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
                 autoComplete="email"
                 inputMode="email"
                 disabled={loading}
+                error={emailError}
               />
-              <ErrorMessage message={error} />
+              <ErrorMessage message={emailError || error} />
             </div>
 
             <PrimaryButton onClick={handleSendEmail} loading={loading} disabled={!email.trim()}>
