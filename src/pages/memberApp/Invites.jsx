@@ -12,20 +12,7 @@ function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
   return (
     <div
-      style={{
-        width: 40,
-        height: 40,
-        borderRadius: 10,
-        background: logo?.url ? "transparent" : "#1C2B8A",
-        color: "#fff",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: 13,
-        fontWeight: 700,
-        flexShrink: 0,
-        overflow: "hidden",
-      }}
+      className={`w-10 h-10 rounded-[10px] text-white flex items-center justify-center text-[13px] font-bold flex-shrink-0 overflow-hidden ${logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
     >
       {logo?.url ? (
         <img src={logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
@@ -98,53 +85,27 @@ export default function Invites() {
 
   return (
     <div
-      style={{
-        position: "relative",
-        overflow: "hidden",
-        minHeight: "100vh",
-         
-        fontFamily: "'Inter', system-ui, sans-serif",
-        paddingBottom: 40,
-      }}
+      className="relative overflow-hidden min-h-screen pb-10"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "20px 16px 16px",
-        }}
-      >
+      <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
           onClick={() => navigate("/member/home")}
           aria-label="Go back"
           className="w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
         >
-          <ChevronLeft size={18} strokeWidth={2} style={{ color: "#333" }} />
+          <ChevronLeft size={18} strokeWidth={2} className="text-[#333]" />
         </button>
-        <h1 style={{ fontSize: 17, fontWeight: 600, color: "#111", margin: 0 }}>
+        <h1 className="text-[17px] font-semibold text-[#111] m-0">
           Invitations
         </h1>
       </div>
 
       <div className="px-4">
         {staleNotice && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              background: "#FEF3C7",
-              color: "#92400E",
-              fontSize: 12.5,
-              fontWeight: 500,
-              padding: "10px 12px",
-              borderRadius: 10,
-              marginBottom: 12,
-            }}
-          >
+          <div className="flex items-center gap-2 bg-[#FEF3C7] text-[#92400E] text-[12.5px] font-medium py-2.5 px-3 rounded-[10px] mb-3">
             <Info size={14} strokeWidth={2} className="flex-shrink-0" />
             {staleNotice}
           </div>
@@ -152,55 +113,23 @@ export default function Invites() {
         {isLoading || joinRequestsLoading ? (
           <PageLoadingState label="Loading your invites…" size={56} padding="36px 24px" />
         ) : error ? (
-          <p style={{ fontSize: 13, color: "#DC2626", padding: "24px 4px" }}>
+          <p className="text-[13px] text-[#DC2626] py-6 px-1">
             Couldn't load invitations. Try again later.
           </p>
         ) : invites.length === 0 && joinRequests.length === 0 ? (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 10,
-              padding: "60px 20px",
-              textAlign: "center",
-            }}
-          >
-            <div
-              style={{
-                width: 52,
-                height: 52,
-                borderRadius: "50%",
-                background: "#fff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Mail size={22} strokeWidth={1.6} style={{ color: "#999" }} />
+          <div className="flex flex-col items-center gap-2.5 py-[60px] px-5 text-center">
+            <div className="w-[52px] h-[52px] rounded-full bg-white flex items-center justify-center">
+              <Mail size={22} strokeWidth={1.6} className="text-[#999]" />
             </div>
-            <p style={{ fontSize: 14, fontWeight: 600, color: "#333", margin: 0 }}>
+            <p className="text-sm font-semibold text-[#333] m-0">
               No invitations yet
             </p>
-            <p style={{ fontSize: 13, color: "#888", margin: 0, maxWidth: 260, lineHeight: 1.5 }}>
+            <p className="text-[13px] text-[#888] m-0 max-w-[260px] leading-[1.5]">
               If your admin has already added you, you're good to go — head to your home screen.
             </p>
             <button
               onClick={() => navigate("/member/home", { replace: true })}
-              style={{
-                marginTop: 6,
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "10px 20px",
-                borderRadius: 8,
-                border: "none",
-                background: "#002FA7",
-                color: "#fff",
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
+              className="mt-1.5 flex items-center gap-1.5 py-2.5 px-5 rounded-lg border-none bg-brand text-white text-[13px] font-semibold cursor-pointer"
             >
               <Home size={14} />
               Go to Home
@@ -208,16 +137,7 @@ export default function Invites() {
             <button
               onClick={refresh}
               disabled={isLoading}
-              style={{
-                padding: "9px 18px",
-                borderRadius: 8,
-                border: "1.5px solid #002FA7",
-                background: "#fff",
-                color: "#002FA7",
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
+              className="py-[9px] px-[18px] rounded-lg border-[1.5px] border-brand bg-white text-brand text-[13px] font-semibold cursor-pointer"
             >
               Check Again
             </button>
@@ -228,80 +148,32 @@ export default function Invites() {
               <div
                 key={invite.id}
                 ref={(el) => (cardRefs.current[invite.id] = el)}
-                className="border border-surface-container-border"
-                style={{
-                  background: "#fff",
-                  borderRadius: 14,
-                  padding: 14,
-                  marginBottom: 12,
-                  boxShadow:
-                    invite.id === highlightId
-                      ? "0 0 0 2px #002FA7, 0 1px 6px rgba(0,0,0,0.06)"
-                      : "0 1px 6px rgba(0,0,0,0.06)",
-                  transition: "box-shadow 0.3s ease",
-                }}
+                className={`border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3 transition-shadow duration-300 ease-in-out ${invite.id === highlightId ? "shadow-[0_0_0_2px_#002FA7,0_1px_6px_rgba(0,0,0,0.06)]" : "shadow-[0_1px_6px_rgba(0,0,0,0.06)]"}`}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    marginBottom: 14,
-                  }}
-                >
+                <div className="flex items-center gap-3 mb-3.5">
                   <Avatar name={invite.community?.name} logo={invite.community?.logo} />
                   <div className="min-w-0">
-                    <p
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 600,
-                        color: "#111",
-                        margin: 0,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
+                    <p className="text-sm font-semibold text-[#111] m-0 whitespace-nowrap overflow-hidden text-ellipsis">
                       {invite.community?.name ?? "Community"}
                     </p>
-                    <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>
+                    <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">
                       Invited you to join
                     </p>
                   </div>
                 </div>
 
-                <div style={{ display: "flex", gap: 8 }}>
+                <div className="flex gap-2">
                   <button
                     onClick={() => handleReject(invite)}
                     disabled={isAccepting || isRejecting}
-                    style={{
-                      flex: 1,
-                      padding: "10px 0",
-                      borderRadius: 8,
-                      border: "1.5px solid var(--color-surface-container-border)",
-                      background: "#fff",
-                      color: "#555",
-                      fontSize: 13,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
+                    className="flex-1 py-2.5 px-0 rounded-lg border-[1.5px] border-surface-container-border bg-white text-[#555] text-[13px] font-semibold cursor-pointer"
                   >
                     Decline
                   </button>
                   <button
                     onClick={() => handleAccept(invite)}
                     disabled={isAccepting || isRejecting}
-                    style={{
-                      flex: 1,
-                      padding: "10px 0",
-                      borderRadius: 8,
-                      border: "none",
-                      background: "#002FA7",
-                      color: "#fff",
-                      fontSize: 13,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
+                    className="flex-1 py-2.5 px-0 rounded-lg border-none bg-brand text-white text-[13px] font-semibold cursor-pointer"
                   >
                     Accept
                   </button>
@@ -315,51 +187,18 @@ export default function Invites() {
             {joinRequests.map((req) => (
               <div
                 key={req.id}
-                className="border border-surface-container-border"
-                style={{
-                  background: "#fff",
-                  borderRadius: 14,
-                  padding: 14,
-                  marginBottom: 12,
-                  boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                }}
+                className="border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex items-center gap-3"
               >
                 <Avatar name={req.community?.name} logo={req.community?.logo} />
                 <div className="min-w-0 flex-1">
-                  <p
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 600,
-                      color: "#111",
-                      margin: 0,
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
+                  <p className="text-sm font-semibold text-[#111] m-0 whitespace-nowrap overflow-hidden text-ellipsis">
                     {req.community?.name ?? "Community"}
                   </p>
-                  <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>
+                  <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">
                     Your request to join is pending
                   </p>
                 </div>
-                <span
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: "#B45309",
-                    background: "#FEF3C7",
-                    padding: "5px 10px",
-                    borderRadius: 999,
-                    flexShrink: 0,
-                  }}
-                >
+                <span className="flex items-center gap-1 text-[11px] font-semibold text-[#B45309] bg-[#FEF3C7] py-[5px] px-2.5 rounded-full flex-shrink-0">
                   <Clock size={11} strokeWidth={2} />
                   Pending
                 </span>
