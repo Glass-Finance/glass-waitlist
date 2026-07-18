@@ -582,6 +582,7 @@ export default function OrganizationProfile() {
   const [logoUrl,   setLogoUrl]   = useState(null);   // preview URL
   const [error,     setError]     = useState("");
   const [loading,   setLoading]   = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({ communityName: "", category: "", contactEmail: "", slug: "" });
 
   const [form, setForm] = useState({
     communityName: savedProgress.form?.communityName ?? "",
@@ -605,7 +606,25 @@ export default function OrganizationProfile() {
     saveOnboardingProgress({ form, slug, email, isPaying });
   }, [form, slug, email, isPaying]);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  function validateField(field, value) {
+    if (field === "communityName" && !value.trim()) return "Community name is required.";
+    if (field === "category" && !value) return "Please select a category.";
+    if (field === "contactEmail") {
+      if (!value.trim()) return "A contact email is required.";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return "Enter a valid email address.";
+    }
+    if (field === "slug" && !value.trim()) return "Please choose a community URL slug.";
+    return "";
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
+    setFieldErrors((fe) => (fe[name] ? { ...fe, [name]: validateField(name, value) } : fe));
+  };
+
+  const handleFieldBlur = (field) => (e) =>
+    setFieldErrors((fe) => ({ ...fe, [field]: validateField(field, e.target.value) }));
 
   const handleFile = (file) => {
     if (!file) return;
@@ -623,10 +642,16 @@ export default function OrganizationProfile() {
     e.preventDefault();
     setError("");
 
-    if (!form.communityName.trim()) { setError("Community name is required."); return; }
-    if (!form.category)             { setError("Please select a category.");   return; }
-    if (!form.contactEmail.trim())  { setError("A contact email is required." ); return; }
-    if (!slug.trim())               { setError("Please choose a community URL slug."); return; }
+    const nextFieldErrors = {
+      communityName: validateField("communityName", form.communityName),
+      category: validateField("category", form.category),
+      contactEmail: validateField("contactEmail", form.contactEmail),
+      slug: validateField("slug", slug),
+    };
+    if (Object.values(nextFieldErrors).some(Boolean)) {
+      setFieldErrors(nextFieldErrors);
+      return;
+    }
     // An unchanged slug on a revisit is taken -- by this same community --
     // so the live availability check would otherwise wrongly block re-saving.
     if (available === false && slug.trim() !== existingCommunitySlug) {
@@ -773,8 +798,10 @@ export default function OrganizationProfile() {
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Community Name *</label>
                 <input type="text" name="communityName" value={form.communityName} onChange={handleChange}
-                  onBlur={() => !slug && suggestFrom(form.communityName)}
-                  placeholder="e.g. Babcock University Alumni Association" className={inputCls} />
+                  onBlur={(e) => { if (!slug) suggestFrom(form.communityName); handleFieldBlur("communityName")(e); }}
+                  placeholder="e.g. Babcock University Alumni Association" className={inputCls}
+                  style={fieldErrors.communityName ? { borderColor: "var(--color-danger)" } : undefined} />
+                {fieldErrors.communityName && <span className="text-xs text-danger">{fieldErrors.communityName}</span>}
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Description</label>
@@ -786,27 +813,34 @@ export default function OrganizationProfile() {
             <div className="grid grid-cols-2 gap-5 mb-5">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Category *</label>
-                <select name="category" value={form.category} onChange={handleChange} className={inputCls}>
+                <select name="category" value={form.category} onChange={handleChange} onBlur={handleFieldBlur("category")} className={inputCls}
+                  style={fieldErrors.category ? { borderColor: "var(--color-danger)" } : undefined}>
                   <option value="" disabled>Select a category</option>
                   {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
+                {fieldErrors.category && <span className="text-xs text-danger">{fieldErrors.category}</span>}
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Community URL slug *</label>
                 <div className="relative">
                   <input type="text" value={slug}
-                    onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
-                    placeholder="e.g. babcock-alumni" className={inputCls + " pr-8"} />
+                    onChange={(e) => { const v = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""); setSlug(v); setFieldErrors((fe) => (fe.slug ? { ...fe, slug: validateField("slug", v) } : fe)); }}
+                    onBlur={(e) => setFieldErrors((fe) => ({ ...fe, slug: validateField("slug", e.target.value) }))}
+                    placeholder="e.g. babcock-alumni" className={inputCls + " pr-8"}
+                    style={fieldErrors.slug ? { borderColor: "var(--color-danger)" } : undefined} />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2">
                     {(checking || suggesting) && <Loader2 size={14} className="animate-spin text-gray-400" />}
                     {!checking && !suggesting && available === true && <Check size={14} className="text-green-600" />}
                     {!checking && !suggesting && available === false && <XIcon size={14} className="text-red-500" />}
                   </span>
                 </div>
-                {available === false && !checking && (
+                {fieldErrors.slug && (
+                  <span className="text-xs text-danger">{fieldErrors.slug}</span>
+                )}
+                {!fieldErrors.slug && available === false && !checking && (
                   <span className="text-xs text-red-500">That URL is taken — try another.</span>
                 )}
-                {available === true && !checking && (
+                {!fieldErrors.slug && available === true && !checking && (
                   <span className="text-xs text-green-600">glasspay.app/member/join?community={slug}</span>
                 )}
               </div>
@@ -816,8 +850,14 @@ export default function OrganizationProfile() {
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Contact Email *</label>
                 <input type="email" name="contactEmail" value={form.contactEmail} onChange={handleChange}
-                  placeholder="e.g. contact@babcockalumni.org" className={inputCls} />
-                <p className="text-xs text-gray-400">Where Glass and members can reach your community.</p>
+                  onBlur={handleFieldBlur("contactEmail")}
+                  placeholder="e.g. contact@babcockalumni.org" className={inputCls}
+                  style={fieldErrors.contactEmail ? { borderColor: "var(--color-danger)" } : undefined} />
+                {fieldErrors.contactEmail ? (
+                  <p className="text-xs text-danger">{fieldErrors.contactEmail}</p>
+                ) : (
+                  <p className="text-xs text-gray-400">Where Glass and members can reach your community.</p>
+                )}
               </div>
             </div>
 
