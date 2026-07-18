@@ -206,7 +206,7 @@ export default function ManagePayments() {
   });
 
   return (
-    <div style={{ position: "relative", overflow: "hidden", minHeight: "100vh",  fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 60 }}>
+    <div className="relative overflow-hidden pb-[60px]" style={{ minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif" }}>
       <GlassLogoGlow />
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 20px 20px", position: "relative" }}>
