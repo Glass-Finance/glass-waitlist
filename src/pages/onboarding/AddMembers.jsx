@@ -52,7 +52,7 @@
 // const EMPTY_ROW = { firstName: "", lastName: "", email: "", phone: "", memberId: "", role: "" };
 
 // const inputCls =
-//   "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
+//   "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all";
 
 // const inviteLink = "https://glass.finance/join/babcock-alumni";
 
@@ -94,7 +94,7 @@
 //         {/* Go to Dashboard */}
 //         <button
 //           onClick={onGoToDashboard}
-//           className="w-[80%] py-3.5 rounded-full text-white font-medium text-xs bg-[#002FA7] hover:opacity-90 transition-all border-none cursor-pointer mb-5"
+//           className="w-[80%] py-3.5 rounded-full text-white font-medium text-xs bg-brand hover:opacity-90 transition-all border-none cursor-pointer mb-5"
 //         >
 //           Go To Dashboard
 //         </button>
@@ -103,7 +103,7 @@
 //         <p className="text-xs text-gray-900 mb-1">Ready To Invite Members?</p>
 //         <button
 //           onClick={onCopyLink}
-//           className="text-xs font-medium text-[#002FA7] hover:underline bg-transparent border-none cursor-pointer"
+//           className="text-xs font-medium text-brand hover:underline bg-transparent border-none cursor-pointer"
 //         >
 //           Click here to copy your community link
 //         </button>
@@ -183,7 +183,7 @@
 //               <div key={step.id} className="flex items-start gap-4">
 //                 <div className="flex flex-col items-center">
 //                   <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all
-//                     ${isActive || isCompleted ? "bg-[#002FA7] text-white" : "bg-white border-2 border-gray-300 text-gray-400"}`}>
+//                     ${isActive || isCompleted ? "bg-brand text-white" : "bg-white border-2 border-gray-300 text-gray-400"}`}>
 //                     {isCompleted ? (
 //                       <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
 //                         <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -197,7 +197,7 @@
 //                 </div>
 //                 <div className="pt-1.5 pb-10">
 //                   <span className={`text-sm font-medium transition-all
-//                     ${isActive ? "text-[#002FA7]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}>
+//                     ${isActive ? "text-brand" : isCompleted ? "text-gray-600" : "text-gray-400"}`}>
 //                     {step.label}
 //                   </span>
 //                 </div>
@@ -227,7 +227,7 @@
 //               </div>
 //               <button
 //                 onClick={handleCopyLink}
-//                 className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#002FA7] text-xs font-semibold text-[#002FA7] hover:bg-gray-50 transition-all flex-shrink-0 ml-6 cursor-pointer"
+//                 className="flex items-center gap-2 px-4 py-2 rounded-full border border-brand text-xs font-semibold text-brand hover:bg-gray-50 transition-all flex-shrink-0 ml-6 cursor-pointer"
 //               >
 //                 <Copy size={12} />
 //                 {copied ? "Copied!" : "Copy Link"}
@@ -245,7 +245,7 @@
 //                     key={tab}
 //                     onClick={() => setActiveTab(tab)}
 //                     className={`pb-2.5 text-sm font-medium capitalize transition-all bg-transparent border-none cursor-pointer
-//                       ${activeTab === tab ? "text-[#002FA7] border-b-2 border-[#002FA7]" : "text-gray-400 hover:text-gray-600"}`}
+//                       ${activeTab === tab ? "text-brand border-b-2 border-brand" : "text-gray-400 hover:text-gray-600"}`}
 //                     style={ activeTab === tab ? { borderBottom: "2px solid #002FA7" } : {}}
 //                   >
 //                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -259,7 +259,7 @@
 //                   <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
 //                   <div className="flex items-center justify-between mb-6">
 //                     <p className="text-sm text-gray-500">Upload a CSV file with following sample information</p>
-//                     <button className="flex items-center gap-1.5 text-xs font-medium text-[#002FA7] hover:opacity-80 transition-all bg-transparent border-none cursor-pointer">
+//                     <button className="flex items-center gap-1.5 text-xs font-medium text-brand hover:opacity-80 transition-all bg-transparent border-none cursor-pointer">
 //                       <Download size={12} />
 //                       Download Template
 //                     </button>
@@ -279,7 +279,7 @@
 //                         <tr className="border-t border-gray-100">
 //                           <td className="px-4 py-3 text-gray-900">{SAMPLE_MEMBER.firstName}</td>
 //                           <td className="px-4 py-3 text-gray-900">{SAMPLE_MEMBER.lastName}</td>
-//                           <td className="px-4 py-3 text-[#002FA7] underline">{SAMPLE_MEMBER.email}</td>
+//                           <td className="px-4 py-3 text-brand underline">{SAMPLE_MEMBER.email}</td>
 //                           <td className="px-4 py-3 text-gray-900">{SAMPLE_MEMBER.phone}</td>
 //                           <td className="px-4 py-3 text-gray-900">{SAMPLE_MEMBER.memberId}</td>
 //                           <td className="px-4 py-3 text-gray-900">{SAMPLE_MEMBER.role}</td>
@@ -305,11 +305,11 @@
 //                       onChange={(e) => handleFile(e.target.files[0])} />
 //                     <CloudUpload size={30} className="text-gray-400 mb-3" />
 //                     {uploadedFile ? (
-//                       <p className="text-xs text-[#002FA7] font-medium">{uploadedFile.name}</p>
+//                       <p className="text-xs text-brand font-medium">{uploadedFile.name}</p>
 //                     ) : (
 //                       <p className="text-xs text-gray-500">
 //                         Drag and Drop CSV here or{" "}
-//                         <span className="text-[#002FA7] font-medium underline">Browse</span>
+//                         <span className="text-brand font-medium underline">Browse</span>
 //                       </p>
 //                     )}
 //                   </div>
@@ -325,7 +325,7 @@
 //                         placeholder="Add File Url"
 //                         className={inputCls}
 //                       />
-//                       <button className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-[#002FA7] hover:bg-[#002FA7]/10 transition-all flex-shrink-0 border-none cursor-pointer">
+//                       <button className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer">
 //                         Upload
 //                       </button>
 //                     </div>
@@ -383,7 +383,7 @@
 //                   </div>
 //                   <button
 //                     onClick={addRow}
-//                     className="flex items-center gap-2 text-sm font-medium text-[#002FA7] hover:opacity-80 transition-all bg-transparent border-none cursor-pointer"
+//                     className="flex items-center gap-2 text-sm font-medium text-brand hover:opacity-80 transition-all bg-transparent border-none cursor-pointer"
 //                   >
 //                     <Plus size={16} /> Add Row
 //                   </button>
@@ -394,7 +394,7 @@
 //             {/* Create Community Button */}
 //             <button
 //               onClick={handleSubmit}
-//               className="w-full py-4 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all mt-6 border-none cursor-pointer"
+//               className="w-full py-4 rounded-full text-white font-semibold text-sm bg-brand hover:opacity-90 active:scale-[0.98] transition-all mt-6 border-none cursor-pointer"
 //             >
 //               Create Your Community
 //             </button>
@@ -454,7 +454,7 @@ const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization", "pay
 const HEADERS = ["First Name", "Last Name", "Email Address", "Phone Number", "Member ID", "Role/Title"];
 const SAMPLE_ROW = ["Muhammed", "Dorachinma", "Muha***med@**.com", "0812990293", "A23434", "Student"];
 
-const inputCls = "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+const inputCls = "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-brand transition-all";
 
 function downloadTemplate() {
   const sample = ["Ada", "Okafor", "ada@example.com", "08031234567", "M001", "Member"];
@@ -519,12 +519,12 @@ function SuccessModal({ communityName, onDashboard, onCopy }) {
         <h2 className="text-lg font-semibold text-gray-900 mb-2">Your Community Is Now Live</h2>
         <p className="text-xs text-gray-500 mb-8">{communityName ?? "Your community"} is all set up on Glass!</p>
         <button onClick={onDashboard}
-          className="w-4/5 py-3.5 rounded-full text-white font-medium text-xs bg-[#002FA7] hover:opacity-90 transition-all border-none cursor-pointer mb-5">
+          className="w-4/5 py-3.5 rounded-full text-white font-medium text-xs bg-brand hover:opacity-90 transition-all border-none cursor-pointer mb-5">
           Go To Dashboard
         </button>
         <p className="text-xs text-gray-900 mb-1">Ready To Invite Members?</p>
         <button onClick={onCopy}
-          className="text-xs font-medium text-[#002FA7] hover:underline bg-transparent border-none cursor-pointer">
+          className="text-xs font-medium text-brand hover:underline bg-transparent border-none cursor-pointer">
           Click here to copy your community link
         </button>
       </div>
@@ -773,9 +773,9 @@ export default function AddMembers() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                       isCompleted
-                        ? "bg-[#002FA7] text-white"
+                        ? "bg-brand text-white"
                         : isActive
-                          ? "bg-white border-2 border-[#002FA7] text-[#002FA7]"
+                          ? "bg-white border-2 border-brand text-brand"
                           : "bg-white border border-outline-on-surface text-gray-400"
                     }`}
                     style={isActive && !isCompleted ? { boxShadow: "0 0 0 4px rgba(0,47,167,0.15)" } : undefined}
@@ -823,7 +823,7 @@ export default function AddMembers() {
                 <p className="text-xs text-gray-500">Copy this link and share it with your members to get them on Glass.</p>
               </div>
               <button onClick={copyLink}
-                className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#002FA7] text-xs font-semibold text-[#002FA7] hover:bg-gray-50 transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent">
+                className="flex items-center gap-2 px-4 py-2 rounded-full border border-brand text-xs font-semibold text-brand hover:bg-gray-50 transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent">
                 <Copy size={12} />{copied ? "Copied!" : "Copy Link"}
               </button>
             </div>
@@ -849,7 +849,7 @@ export default function AddMembers() {
                   <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-sm text-gray-500">Upload a CSV file with following sample information</p>
-                    <button onClick={downloadTemplate} className="flex items-center gap-1.5 text-xs font-medium text-[#002FA7] hover:opacity-80 bg-transparent border-none cursor-pointer">
+                    <button onClick={downloadTemplate} className="flex items-center gap-1.5 text-xs font-medium text-brand hover:opacity-80 bg-transparent border-none cursor-pointer">
                       <Download size={12} />Download Template
                     </button>
                   </div>
@@ -865,7 +865,7 @@ export default function AddMembers() {
                       <tbody>
                         <tr className="border-t border-gray-100">
                           {SAMPLE_ROW.map((cell, i) => (
-                            <td key={i} className={`px-4 py-3 ${i === 2 ? "text-[#002FA7] underline" : "text-gray-900"}`}>{cell}</td>
+                            <td key={i} className={`px-4 py-3 ${i === 2 ? "text-brand underline" : "text-gray-900"}`}>{cell}</td>
                           ))}
                         </tr>
                       </tbody>
@@ -889,8 +889,8 @@ export default function AddMembers() {
                       onChange={(e) => handleFile(e.target.files[0])} />
                     <CloudUpload size={30} className="text-gray-400 mb-3" />
                     {uploadedFile
-                      ? <p className="text-xs text-[#002FA7] font-medium">{uploadedFile.name}</p>
-                      : <p className="text-xs text-gray-500">Drag and Drop CSV here or <span className="text-[#002FA7] font-medium underline">Browse</span></p>}
+                      ? <p className="text-xs text-brand font-medium">{uploadedFile.name}</p>
+                      : <p className="text-xs text-gray-500">Drag and Drop CSV here or <span className="text-brand font-medium underline">Browse</span></p>}
                   </div>
 
                   {/* URL upload */}
@@ -902,7 +902,7 @@ export default function AddMembers() {
                         placeholder="Add File URL" className={inputCls}
                         disabled={urlStage === "fetching"} />
                       <button onClick={handleUrlUpload} disabled={!fileUrl.trim() || urlStage === "fetching" || loading}
-                        className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-[#002FA7] hover:bg-[#002FA7]/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50">
+                        className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50">
                         Upload
                       </button>
                     </div>
@@ -951,7 +951,7 @@ export default function AddMembers() {
                   <button
                     onClick={handleSubmit}
                     disabled={loading || urlStage === "fetching"}
-                    className="w-full py-4 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all mt-6 border-none cursor-pointer disabled:opacity-60"
+                    className="w-full py-4 rounded-full text-white font-semibold text-sm bg-brand hover:opacity-90 active:scale-[0.98] transition-all mt-6 border-none cursor-pointer disabled:opacity-60"
                   >
                     {loading ? "Adding members…" : "Create Your Community"}
                   </button>
@@ -965,7 +965,7 @@ export default function AddMembers() {
                   <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5" style={{ minHeight: 60, border: "1px solid #E5E7EB", background: "#fff" }}>
                     {emails.map((em, i) => (
                       <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800 bg-stacked-container">
-                        <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-[#002FA7] text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
+                        <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-brand text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
                           {em.charAt(0).toUpperCase()}
                         </span>
                         {em}
@@ -1020,7 +1020,7 @@ export default function AddMembers() {
                       type="checkbox"
                       checked={billingExempt}
                       onChange={(e) => setBillingExempt(e.target.checked)}
-                      className="w-4 h-4 accent-[#002FA7] cursor-pointer"
+                      className="w-4 h-4 accent-brand cursor-pointer"
                     />
                     Exempt from billing
                     <span className="text-xs text-gray-400 font-normal">(no payment reminders will be sent)</span>
@@ -1032,7 +1032,7 @@ export default function AddMembers() {
                     <button
                       onClick={handleSendInvite}
                       disabled={emails.length === 0 || loading || rolesLoading || !selectedRoleId}
-                      className="px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-[#002FA7] hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
+                      className="px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-brand hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
                     >
                       {loading ? "Sending…" : "Send Invite"}
                     </button>

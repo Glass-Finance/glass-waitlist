@@ -12,7 +12,7 @@ export default function Toggle({ on, onChange, disabled, showLabel = false }) {
       disabled={disabled}
       className={`flex items-center gap-1.5 flex-shrink-0 bg-transparent border-none p-0 ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
     >
-      <div className={`relative w-8 h-[20px] rounded-full transition-all duration-300 ${on ? "bg-[#002FA7]" : "bg-gray-300"}`}>
+      <div className={`relative w-8 h-[20px] rounded-full transition-all duration-300 ${on ? "bg-brand" : "bg-gray-300"}`}>
         <div className={`absolute top-[3px] w-[14px] h-[14px] rounded-full bg-white shadow transition-all duration-300 ${on ? "left-[15px]" : "left-[3px]"}`} />
       </div>
       {showLabel && (

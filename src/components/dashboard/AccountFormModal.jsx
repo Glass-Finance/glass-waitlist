@@ -5,7 +5,7 @@ import { notifyError } from "../../utils/errorHandler";
 import BankSelect from "../common/BankSelect";
 
 const inputCls =
-  "w-full border border-gray-300 px-3.5 py-2.5 rounded-lg text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-1 focus:ring-[#002FA7]/20 transition-all bg-white";
+  "w-full border border-gray-300 px-3.5 py-2.5 rounded-lg text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-brand focus:ring-1 focus:ring-brand/20 transition-all bg-white";
 
 // Bank account entry form — number + bank select, auto-resolves the account
 // name via Paystack, falls back to manual entry if resolution fails.
@@ -229,7 +229,7 @@ export default function AccountFormModal({
             <button
               onClick={handleSave}
               disabled={isSaving || resolving || !accName.trim()}
-              className="px-6 py-2.5 rounded-full text-sm font-semibold text-white bg-[#002FA7] hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
+              className="px-6 py-2.5 rounded-full text-sm font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
             >
               {isSaving ? "Saving…" : "Save Changes"}
             </button>

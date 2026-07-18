@@ -26,7 +26,7 @@ import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization"];
 
 const inputCls =
-  "w-full border-1 border-gray-200 bg-white p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
+  "w-full border-1 border-gray-200 bg-white p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all";
 
 function StepIcon({ id, completed }) {
   if (completed) return (
@@ -255,9 +255,9 @@ export default function PaymentProfile() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                       isCompleted
-                        ? "bg-[#002FA7] text-white"
+                        ? "bg-brand text-white"
                         : isActive
-                          ? "bg-white border-2 border-[#002FA7] text-[#002FA7]"
+                          ? "bg-white border-2 border-brand text-brand"
                           : "bg-white border border-outline-on-surface text-gray-400"
                     }`}
                     style={isActive && !isCompleted ? { boxShadow: "0 0 0 4px rgba(0,47,167,0.15)" } : undefined}

@@ -106,7 +106,7 @@ export default function BankSelect({ banks, value, onChange, placeholder = "Choo
                     setQuery("");
                   }}
                   className={`w-full flex items-center gap-2.5 text-left px-3 py-2 text-xs border-none cursor-pointer transition-colors ${
-                    b.code === value ? "bg-blue-50 font-medium text-[#002FA7]" : "bg-transparent text-gray-700 hover:bg-gray-50"
+                    b.code === value ? "bg-blue-50 font-medium text-brand" : "bg-transparent text-gray-700 hover:bg-gray-50"
                   }`}
                 >
                   <BankLogo bank={b} size={18} />

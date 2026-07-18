@@ -126,7 +126,7 @@ createRoot(document.getElementById("root")).render(
               success: <CheckCircle2 size={18} className="text-emerald-500" />,
               error: <XCircle size={18} className="text-red-500" />,
               warning: <AlertTriangle size={18} className="text-amber-500" />,
-              info: <Info size={18} className="text-[#002FA7]" />,
+              info: <Info size={18} className="text-brand" />,
               loading: <Loader2 size={18} className="text-gray-400 animate-spin" />,
             }}
             toastOptions={{
@@ -142,13 +142,13 @@ createRoot(document.getElementById("root")).render(
                 closeButton:
                   "bg-white! border! border-gray-200! text-gray-400! hover:text-gray-600!",
                 actionButton:
-                  "bg-[#002FA7]! text-white! rounded-full! text-xs! font-semibold!",
+                  "bg-brand! text-white! rounded-full! text-xs! font-semibold!",
                 cancelButton:
                   "bg-gray-100! text-gray-600! rounded-full! text-xs! font-semibold!",
                 error: "border-l-4! border-l-red-500!",
                 success: "border-l-4! border-l-emerald-500!",
                 warning: "border-l-4! border-l-amber-500!",
-                info: "border-l-4! border-l-[#002FA7]!",
+                info: "border-l-4! border-l-brand!",
                 loading: "border-l-4! border-l-gray-300!",
               },
             }}

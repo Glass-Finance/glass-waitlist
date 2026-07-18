@@ -111,7 +111,7 @@ function PrimaryButton({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className="w-full py-4 rounded-full bg-[#002FA7] text-white font-semibold text-button transition-all hover:opacity-90 disabled:cursor-not-allowed cursor-pointer"
+      className="w-full py-4 rounded-full bg-brand text-white font-semibold text-button transition-all hover:opacity-90 disabled:cursor-not-allowed cursor-pointer"
     >
       {loading ? "Loading..." : children}
     </button>

@@ -170,7 +170,7 @@ export default function DashboardTour({ onClose }) {
             className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
             style={{ background: "#E6EEFF" }}
           >
-            <Icon size={20} className="text-[#002FA7]" />
+            <Icon size={20} className="text-brand" />
           </div>
           <button
             onClick={onClose}

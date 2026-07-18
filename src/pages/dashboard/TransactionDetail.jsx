@@ -152,7 +152,7 @@ export default function TransactionDetail() {
             </Row>
             {tx.initiatedBy && (
               <Row label="Initiated by" last>
-                <span className="inline-block bg-[#D7E2FF] text-[#002FA7] text-xs font-semibold rounded-full px-3 py-1">
+                <span className="inline-block bg-[#D7E2FF] text-brand text-xs font-semibold rounded-full px-3 py-1">
                   {tx.initiatedBy}
                 </span>
               </Row>

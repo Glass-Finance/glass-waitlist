@@ -31,7 +31,7 @@ const CATEGORIES = [
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member"];
 
 const inputCls =
-  "w-full border border-gray-300 bg-stacked-container p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] focus:ring-2 focus:ring-[#002FA7]/10 transition-all";
+  "w-full border border-gray-300 bg-stacked-container p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all";
 
 function StepIcon({ id }) {
   const icons = {
@@ -257,9 +257,9 @@ export default function OrganizationProfile() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                       isCompleted
-                        ? "bg-[#002FA7] text-white"
+                        ? "bg-brand text-white"
                         : isActive
-                          ? "bg-white border-2 border-[#002FA7] text-[#002FA7]"
+                          ? "bg-white border-2 border-brand text-brand"
                           : "bg-white border border-outline-on-surface text-gray-400"
                     }`}
                     style={isActive && !isCompleted ? { boxShadow: "0 0 0 4px rgba(0,47,167,0.15)" } : undefined}
@@ -385,7 +385,7 @@ export default function OrganizationProfile() {
                   ? <img src={logoUrl} alt="preview" className="h-16 object-contain mb-2" />
                   : <Upload size={28} className="text-gray-400 mb-3" />}
                 <p className="text-sm text-gray-500 text-center">
-                  <span className="font-medium underline text-[#002FA7]">Upload</span> or Drag and Drop Logo Here
+                  <span className="font-medium underline text-brand">Upload</span> or Drag and Drop Logo Here
                 </p>
                 <p className="text-xs text-gray-400 mt-1">(PNG or JPG, max 2MB.)</p>
               </div>
