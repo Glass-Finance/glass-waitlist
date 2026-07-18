@@ -10,7 +10,7 @@ export default function EmptyState({ icon: Icon, title, subtitle, action, action
           className="w-12 h-12 rounded-full flex items-center justify-center mb-3"
           style={{ background: "#E6EEFF" }}
         >
-          <Icon size={20} style={{ color: "#002FA7" }} />
+          <Icon size={20} className="text-brand" />
         </div>
       )}
       <p className="text-sm font-semibold text-gray-900">{title}</p>

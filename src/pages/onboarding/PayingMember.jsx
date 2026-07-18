@@ -177,7 +177,7 @@ export default function PayingMember() {
               >
                 <div className="absolute top-3 left-3">
                   {isSelected ? (
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "#002FA7" }}>
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center bg-brand">
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                         <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
@@ -197,15 +197,13 @@ export default function PayingMember() {
 
         <button
           onClick={() => go()}
-          className="w-full max-w-sm py-4 rounded-3xl text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer"
-          style={{ background: "#002FA7" }}
+          className="w-full max-w-sm py-4 rounded-3xl text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer bg-brand"
         >
           Continue
         </button>
         <button
           onClick={() => go(true)}
-          className="mt-4 text-sm font-medium hover:underline bg-transparent border-none cursor-pointer"
-          style={{ color: "#002FA7" }}
+          className="mt-4 text-sm font-medium hover:underline bg-transparent border-none cursor-pointer text-brand"
         >
           Skip
         </button>

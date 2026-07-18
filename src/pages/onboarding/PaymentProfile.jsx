@@ -345,8 +345,7 @@ export default function PaymentProfile() {
             <button
               onClick={handleSave}
               disabled={saving || resolving || !accName.trim()}
-              className="w-full mt-6 py-3.5 rounded-lg text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
-              style={{ background: "#002FA7" }}
+              className="w-full mt-6 py-3.5 rounded-lg text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50 bg-brand"
             >
               {saving ? "Setting up…" : "Set-Up Account"}
             </button>

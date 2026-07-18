@@ -127,8 +127,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="font-medium hover:underline"
-              style={{ color: "#002FA7" }}
+              className="font-medium hover:underline text-brand"
             >
               Terms of Service
             </Link>{" "}
@@ -138,8 +137,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="font-medium hover:underline"
-              style={{ color: "#002FA7" }}
+              className="font-medium hover:underline text-brand"
             >
               Privacy Policy
             </Link>
@@ -164,8 +162,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
         Already Have An Account?{" "}
         <button
           onClick={onSwitch}
-          className="font-semibold hover:underline bg-transparent border-none cursor-pointer"
-          style={{ color: "#002FA7" }}
+          className="font-semibold hover:underline bg-transparent border-none cursor-pointer text-brand"
         >
           Sign In
         </button>

@@ -212,8 +212,7 @@ export default function DashboardTour({ onClose }) {
             )}
             <button
               onClick={() => (isLast ? onClose() : setStep(nextStep))}
-              className="px-4 py-2 rounded-lg text-xs font-semibold text-white cursor-pointer border-none hover:opacity-90 transition-opacity"
-              style={{ background: "#002FA7" }}
+              className="px-4 py-2 rounded-lg text-xs font-semibold text-white cursor-pointer border-none hover:opacity-90 transition-opacity bg-brand"
             >
               {isLast ? "Done" : "Next"}
             </button>

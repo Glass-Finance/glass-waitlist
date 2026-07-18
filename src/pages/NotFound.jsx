@@ -48,8 +48,7 @@ export default function NotFound() {
           </button>
           <button
             onClick={() => navigate("/")}
-            className="px-5 py-2.5 rounded-full text-[13px] font-semibold text-white cursor-pointer border-none transition-opacity hover:opacity-90"
-            style={{ background: "#002FA7" }}
+            className="px-5 py-2.5 rounded-full text-[13px] font-semibold text-white cursor-pointer border-none transition-opacity hover:opacity-90 bg-brand"
           >
             Go home
           </button>

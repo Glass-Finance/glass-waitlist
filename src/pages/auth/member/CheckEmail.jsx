@@ -37,8 +37,7 @@ export default function CheckEmail() {
 
           <button
             onClick={() => navigate("/dashboard/home")}
-            className="w-full max-w-xl mt-4 py-3 rounded-full text-white text-sm font-medium transition-all hover:opacity-90 active:scale-[0.98] border-none cursor-pointer"
-            style={{ background: "#002FA7" }}
+            className="w-full max-w-xl mt-4 py-3 rounded-full text-white text-sm font-medium transition-all hover:opacity-90 active:scale-[0.98] border-none cursor-pointer bg-brand"
           >
             Continue
           </button>
@@ -60,8 +59,7 @@ export default function CheckEmail() {
           <p className="text-sm text-gray-900 text-center">
             Didn't get it?{" "}
             <button
-              className="font-medium hover:underline bg-transparent border-none cursor-pointer p-0"
-              style={{ color: "#002FA7" }}
+              className="font-medium hover:underline bg-transparent border-none cursor-pointer p-0 text-brand"
             >
               Resend Email
             </button>

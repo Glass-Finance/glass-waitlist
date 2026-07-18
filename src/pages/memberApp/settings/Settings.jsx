@@ -102,7 +102,7 @@ export default function Settings() {
             cursor: "pointer", boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
           }}
         >
-          <LogOut size={16} style={{ color: "#002FA7" }} />
+          <LogOut size={16} className="text-brand" />
           <span style={{ fontSize: 14, fontWeight: 500, color: "#002FA7" }}>Log Out</span>
         </button>
       </div>

@@ -194,7 +194,7 @@ export default function SignIn() {
         <div className="w-full max-w-sm flex flex-col my-auto gap-6">
           <div className="flex flex-col items-center gap-3 text-center">
             <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-              <ShieldCheck size={22} style={{ color: "#002FA7" }} />
+              <ShieldCheck size={22} className="text-brand" />
             </div>
             <div>
               <h1 className="text-headline text-gray-900 mb-1">Enter MFA Code</h1>

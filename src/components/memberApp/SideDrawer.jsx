@@ -157,7 +157,7 @@ export default function SideDrawer({ open, onClose }) {
                   textAlign: "left",
                 }}
               >
-                <LayoutDashboard size={20} strokeWidth={1.6} style={{ color: "#002FA7" }} />
+                <LayoutDashboard size={20} strokeWidth={1.6} className="text-brand" />
                 <span style={{ fontSize: 15, fontWeight: 400, color: "#002FA7" }}>
                   Admin Dashboard
                 </span>

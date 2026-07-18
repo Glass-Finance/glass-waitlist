@@ -853,8 +853,7 @@ export default function OrganizationProfile() {
             <button
               type="submit"
               disabled={loading || checking || available === false}
-              className="w-1/2 mx-auto block py-4 rounded-full text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-60"
-              style={{ background: "#002FA7" }}
+              className="w-1/2 mx-auto block py-4 rounded-full text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-60 bg-brand"
             >
               {loading ? "Creating community..." : "Next"}
             </button>

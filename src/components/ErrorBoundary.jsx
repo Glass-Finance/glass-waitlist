@@ -44,8 +44,7 @@ export default class ErrorBoundary extends Component {
             </a>
             <button
               onClick={() => window.location.reload()}
-              className="px-5 py-2.5 rounded-full text-[13px] font-semibold text-white cursor-pointer border-none transition-opacity hover:opacity-90"
-              style={{ background: "#002FA7" }}
+              className="px-5 py-2.5 rounded-full text-[13px] font-semibold text-white cursor-pointer border-none transition-opacity hover:opacity-90 bg-brand"
             >
               Refresh page
             </button>

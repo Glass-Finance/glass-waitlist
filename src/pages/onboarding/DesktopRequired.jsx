@@ -67,8 +67,7 @@ export default function DesktopRequired() {
             <span className="text-sm text-[#002FA7] font-medium truncate">{url}</span>
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white border-none cursor-pointer flex-shrink-0 hover:opacity-90"
-              style={{ background: "#002FA7" }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white border-none cursor-pointer flex-shrink-0 hover:opacity-90 bg-brand"
             >
               {copied ? <Check size={12} /> : <Copy size={12} />}
               {copied ? "Copied!" : "Copy"}
@@ -77,8 +76,7 @@ export default function DesktopRequired() {
 
           <button
             onClick={() => navigate(continueTo)}
-            className="w-full max-w-md py-3 rounded-full text-white text-sm font-medium transition-all hover:opacity-90 active:scale-[0.98] border-none cursor-pointer"
-            style={{ background: "#002FA7" }}
+            className="w-full max-w-md py-3 rounded-full text-white text-sm font-medium transition-all hover:opacity-90 active:scale-[0.98] border-none cursor-pointer bg-brand"
           >
             Continue
           </button>

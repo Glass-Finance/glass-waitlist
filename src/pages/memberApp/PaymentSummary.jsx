@@ -224,8 +224,7 @@ export default function PaymentSummary() {
         </p>
         <button
           onClick={() => navigate(-1)}
-          className="px-4 py-2 rounded-lg text-sm font-semibold text-white cursor-pointer"
-          style={{ background: "#002FA7" }}
+          className="px-4 py-2 rounded-lg text-sm font-semibold text-white cursor-pointer bg-brand"
         >
           Go back
         </button>
@@ -325,8 +324,7 @@ export default function PaymentSummary() {
                 </div>
                 <button
                   onClick={() => navigate("/member/settings/payments")}
-                  className="text-[13px] font-semibold bg-transparent border-none cursor-pointer"
-                  style={{ color: "#002FA7" }}
+                  className="text-[13px] font-semibold bg-transparent border-none cursor-pointer text-brand"
                 >
                   Change
                 </button>
@@ -447,8 +445,7 @@ export default function PaymentSummary() {
         <button
           onClick={handlePay}
           disabled={initiatePayment.isPending || redirecting || !obligation || isLinkInactive}
-          className="w-full rounded-md py-4 text-[15px] font-semibold text-white mt-1 cursor-pointer active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          style={{ background: "#002FA7" }}
+          className="w-full rounded-md py-4 text-[15px] font-semibold text-white mt-1 cursor-pointer active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 bg-brand"
         >
           {initiatePayment.isPending || redirecting ? (
             <>

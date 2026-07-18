@@ -56,8 +56,7 @@ export default function MobileRequired() {
 
           <button
             onClick={() => navigate(continueTo)}
-            className="w-full max-w-md mt-4 py-3 rounded-full text-white text-sm font-medium transition-all hover:opacity-90 active:scale-[0.98] border-none cursor-pointer"
-            style={{ background: "#002FA7" }}
+            className="w-full max-w-md mt-4 py-3 rounded-full text-white text-sm font-medium transition-all hover:opacity-90 active:scale-[0.98] border-none cursor-pointer bg-brand"
           >
             Continue
           </button>
