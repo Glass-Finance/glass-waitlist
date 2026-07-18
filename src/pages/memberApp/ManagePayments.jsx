@@ -22,12 +22,12 @@ function frequencyLabel(freq) {
 function CardIcon({ cardType }) {
   const type = (cardType ?? "").toUpperCase();
   // Mastercard: red + orange circles; Visa: blue circle; default: grey
-  const left  = type.includes("MASTER") ? "#EB001B" : type.includes("VISA") ? "#1A1F71" : "#999";
-  const right = type.includes("MASTER") ? "#F79E1B" : type.includes("VISA") ? "#00B1EA" : "#bbb";
+  const leftCls = type.includes("MASTER") ? "bg-[#EB001B]" : type.includes("VISA") ? "bg-[#1A1F71]" : "bg-[#999]";
+  const rightCls = type.includes("MASTER") ? "bg-[#F79E1B]" : type.includes("VISA") ? "bg-[#00B1EA]" : "bg-[#bbb]";
   return (
-    <div style={{ position: "relative", width: 30, height: 20, flexShrink: 0 }}>
-      <div style={{ position: "absolute", left: 0, width: 20, height: 20, borderRadius: "50%", background: left, opacity: 0.9 }} />
-      <div style={{ position: "absolute", left: 10, width: 20, height: 20, borderRadius: "50%", background: right, opacity: 0.85 }} />
+    <div className="relative w-[30px] h-5 flex-shrink-0">
+      <div className={`absolute left-0 w-5 h-5 rounded-full opacity-90 ${leftCls}`} />
+      <div className={`absolute left-2.5 w-5 h-5 rounded-full opacity-85 ${rightCls}`} />
     </div>
   );
 }
@@ -40,22 +40,22 @@ const FILTER_OPTIONS = ["All", "Auto-Pay On", "Auto-Pay Off"];
 function FilterDropdown({ value, onChange }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ position: "relative", display: "inline-block" }}>
+    <div className="relative inline-block">
       <button
         onClick={() => setOpen((o) => !o)}
-        style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8, border: "1.5px solid #D0D0D0", background: "#fff", color: "#111", fontSize: 14, fontWeight: 500, cursor: "pointer" }}
+        className="flex items-center gap-1.5 py-2 px-3.5 rounded-lg border-[1.5px] border-[#D0D0D0] bg-white text-[#111] text-sm font-medium cursor-pointer"
       >
         {value} <ChevronDown size={14} strokeWidth={2} />
       </button>
       {open && (
         <>
-          <div style={{ position: "fixed", inset: 0, zIndex: 10 }} onClick={() => setOpen(false)} />
-          <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, background: "#fff", borderRadius: 10, boxShadow: "0 4px 16px rgba(0,0,0,0.12)", zIndex: 20, minWidth: 150, overflow: "hidden" }}>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute left-0 bg-white rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.12)] z-20 min-w-[150px] overflow-hidden [top:calc(100%+6px)]">
             {FILTER_OPTIONS.map((opt) => (
               <button
                 key={opt}
                 onClick={() => { onChange(opt); setOpen(false); }}
-                style={{ display: "block", width: "100%", textAlign: "left", padding: "11px 16px", fontSize: 13, cursor: "pointer", background: value === opt ? "#F0F2FA" : "#fff", color: value === opt ? "#002FA7" : "#333", fontWeight: value === opt ? 600 : 400, border: "none" }}
+                className={`block w-full text-left py-[11px] px-4 text-[13px] cursor-pointer border-none ${value === opt ? "bg-[#F0F2FA] text-brand font-semibold" : "bg-white text-[#333] font-normal"}`}
               >
                 {opt}
               </button>
@@ -76,62 +76,62 @@ function PlanCard({ plan, auth, onToggle }) {
     : null;
 
   return (
-    <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.07)" }}>
+    <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden shadow-[0_1px_6px_rgba(0,0,0,0.07)]">
       {/* Main body */}
-      <div style={{ padding: "16px 16px 14px" }}>
+      <div className="pt-4 px-4 pb-3.5">
         {/* Row 1: logo + Recurring badge */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 10, background: "#F0F4FF", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="w-11 h-11 rounded-[10px] bg-[#F0F4FF] flex items-center justify-center overflow-hidden flex-shrink-0">
             {plan.logo?.url
               ? <img src={plan.logo.url} alt="" className="w-full h-full object-cover" />
-              : <span style={{ fontSize: 18, fontWeight: 700, color: "#1C2B8A" }}>{plan.logoText ?? "P"}</span>}
+              : <span className="text-lg font-bold text-[#1C2B8A]">{plan.logoText ?? "P"}</span>}
           </div>
-          <span style={{ fontSize: 12, fontWeight: 600, color: "#002FA7", background: "#E8EEFF", padding: "4px 12px", borderRadius: 999 }}>
+          <span className="text-xs font-semibold text-brand bg-[#E8EEFF] py-1 px-3 rounded-full">
             Recurring
           </span>
         </div>
 
         {/* Row 2: amount */}
-        <p style={{ fontSize: 20, fontWeight: 700, color: "#111", margin: "0 0 4px" }}>
+        <p className="text-xl font-bold text-[#111] mt-0 mx-0 mb-1">
           {formatNaira(plan.amount)}
-          <span style={{ fontSize: 13, fontWeight: 400, color: "#888" }}>{frequencyLabel(plan.frequency)}</span>
+          <span className="text-[13px] font-normal text-[#888]">{frequencyLabel(plan.frequency)}</span>
         </p>
 
         {/* Row 3: plan name + auto-pay toggle */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <p style={{ fontSize: 15, fontWeight: 500, color: "#111", margin: 0 }}>{toTitleCase(plan.name)}</p>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 13, color: "#888" }}>Auto-Pay</span>
+        <div className="flex items-center justify-between">
+          <p className="text-[15px] font-medium text-[#111] m-0">{toTitleCase(plan.name)}</p>
+          <div className="flex items-center gap-2">
+            <span className="text-[13px] text-[#888]">Auto-Pay</span>
             <Toggle on={isOn} onChange={() => onToggle(plan, auth)} />
           </div>
         </div>
 
         {/* Row 4: next charge */}
         {plan.dueDate && (
-          <p style={{ fontSize: 13, color: "#888", margin: "6px 0 0" }}>
+          <p className="text-[13px] text-[#888] mt-1.5 mx-0 mb-0">
             Next charge: {formatDate(plan.dueDate)}
           </p>
         )}
       </div>
 
       {/* Card row */}
-      <div style={{ borderTop: "1px solid #F2F2F2", padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div className="border-t border-[#F2F2F2] py-3 px-4 flex items-center justify-between">
         {cardLabel ? (
           <>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div className="flex items-center gap-2.5">
               <CardIcon cardType={auth?.cardType ?? auth?.channel} />
-              <span style={{ fontSize: 14, fontWeight: 500, color: "#333" }}>
+              <span className="text-sm font-medium text-[#333]">
                 {cardLabel}{expiry ? ` | ${expiry}` : ""}
               </span>
             </div>
             <button
-              style={{ fontSize: 14, fontWeight: 600, color: "#002FA7", background: "none", border: "none", cursor: "pointer" }}
+              className="text-sm font-semibold text-brand bg-transparent border-none cursor-pointer"
             >
               Change
             </button>
           </>
         ) : (
-          <span style={{ fontSize: 13, color: "#aaa" }}>No saved card</span>
+          <span className="text-[13px] text-[#aaa]">No saved card</span>
         )}
       </div>
     </div>
@@ -206,13 +206,13 @@ export default function ManagePayments() {
   });
 
   return (
-    <div className="relative overflow-hidden pb-[60px]" style={{ minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="relative overflow-hidden pb-[60px] min-h-screen" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <GlassLogoGlow />
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "22px 20px 20px", position: "relative" }}>
+      <div className="relative flex items-center justify-center pt-[22px] px-5 pb-5">
         <button
           onClick={() => navigate(-1)}
-          style={{ position: "absolute", left: 20, width: 36, height: 36, borderRadius: "50%", background: "#fff", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.10)" }}
+          className="absolute left-5 w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
@@ -221,16 +221,16 @@ export default function ManagePayments() {
 
       <div className="px-4">
         {/* Filter */}
-        <div style={{ marginBottom: 16 }}>
+        <div className="mb-4">
           <FilterDropdown value={filter} onChange={setFilter} />
         </div>
 
         {/* Cards */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div className="flex flex-col gap-3.5">
           {isLoading ? (
             <PageLoadingState size={56} padding="36px 24px" />
           ) : filtered.length === 0 ? (
-            <p style={{ textAlign: "center", color: "#999", fontSize: 14, marginTop: 40 }}>
+            <p className="text-center text-[#999] text-sm mt-10">
               {recurringPlans.length === 0
                 ? "You're not enrolled in any recurring plans yet."
                 : "No plans match this filter."}
