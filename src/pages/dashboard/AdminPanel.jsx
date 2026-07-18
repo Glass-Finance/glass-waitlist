@@ -220,12 +220,11 @@ function Pager({ page, totalPages, onPage }) {
         <button
           key={i}
           onClick={() => onPage(i)}
-          className={`w-7 h-7 flex items-center justify-center rounded-lg text-[11px] font-semibold border-none cursor-pointer transition-all ${
+          className={`w-7 h-7 flex items-center justify-center rounded-lg text-[11px] font-semibold cursor-pointer transition-all ${
             i === page
-              ? "bg-brand text-white"
-              : "bg-white text-gray-500 hover:bg-gray-100"
+              ? "bg-brand text-white border-none"
+              : "bg-white text-gray-500 hover:bg-gray-100 border border-surface-container-border"
           }`}
-          style={{ border: i === page ? "none" : "1px solid var(--color-surface-container-border)" }}
         >
           {i + 1}
         </button>
@@ -304,10 +303,8 @@ function SearchBar({ value, onChange, placeholder = "Search…", width = 200 }) 
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="pl-8 pr-4 py-2 rounded-lg text-xs text-gray-700 placeholder-gray-400 outline-none"
-        style={{ border: "1px solid #D0D0D0", width, background: "#fff" }}
-        onFocus={(e) => (e.target.style.borderColor = "var(--color-brand)")}
-        onBlur={(e) => (e.target.style.borderColor = "#D0D0D0")}
+        className="pl-8 pr-4 py-2 rounded-lg text-xs text-gray-700 placeholder-gray-400 outline-none border border-[#D0D0D0] bg-white focus:border-brand"
+        style={{ width }}
       />
     </div>
   );
@@ -318,8 +315,7 @@ function FilterSelect({ value, onChange, options }) {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="px-3 py-2 rounded-lg text-xs text-gray-700 outline-none cursor-pointer"
-      style={{ border: "1px solid #D0D0D0", background: "#fff" }}
+      className="px-3 py-2 rounded-lg text-xs text-gray-700 outline-none cursor-pointer border border-[#D0D0D0] bg-white"
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>
@@ -654,11 +650,7 @@ function CommunitiesSection() {
             {items.map((c, i) => (
               <tr
                 key={c.id}
-                className="group hover:bg-gray-50 transition-colors"
-                style={{
-                  borderBottom:
-                    i < items.length - 1 ? "1px solid #F9FAFB" : "none",
-                }}
+                className={`group hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
@@ -857,19 +849,25 @@ const REVIEW_DECISIONS = [
     value: "ACCEPT",
     label: "Accept",
     Icon: ShieldCheck,
-    activeStyle: { background: "#ECFDF5", borderColor: "#059669", color: "#059669" },
+    activeCls: "bg-[#ECFDF5] border-[#059669] text-[#059669]",
+    solidCls: "bg-[#059669]",
+    focusCls: "focus:border-[#059669]",
   },
   {
     value: "REQUEST_INFO",
     label: "Request Info",
     Icon: HelpCircle,
-    activeStyle: { background: "#FFFBEB", borderColor: "#B45309", color: "#B45309" },
+    activeCls: "bg-[#FFFBEB] border-[#B45309] text-[#B45309]",
+    solidCls: "bg-[#B45309]",
+    focusCls: "focus:border-[#B45309]",
   },
   {
     value: "REJECT",
     label: "Reject",
     Icon: ShieldAlert,
-    activeStyle: { background: "#FEF2F2", borderColor: "#e11d48", color: "#e11d48" },
+    activeCls: "bg-[#FEF2F2] border-[#e11d48] text-[#e11d48]",
+    solidCls: "bg-[#e11d48]",
+    focusCls: "focus:border-[#e11d48]",
   },
 ];
 
@@ -896,7 +894,6 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
   const [comment, setComment] = useState("");
   const commentRequired = decision === "REJECT" || decision === "REQUEST_INFO";
 
-  const f = { border: "1px solid #D0D0D0" };
   const chosen = REVIEW_DECISIONS.find((d) => d.value === decision);
 
   return (
@@ -925,8 +922,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
           </p>
         ) : (
           <div
-            className="rounded-lg p-4"
-            style={{ background: nameMatches ? "#ECFDF5" : "#FEF2F2" }}
+            className={`rounded-lg p-4 ${nameMatches ? "bg-[#ECFDF5]" : "bg-[#FEF2F2]"}`}
           >
             <p className="text-xs text-gray-500 mb-1">On file:</p>
             <p className="text-sm font-semibold text-gray-900 mb-3">
@@ -952,17 +948,12 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
             Decision
           </label>
           <div className="grid grid-cols-3 gap-2">
-            {REVIEW_DECISIONS.map(({ value, label, Icon, activeStyle }) => (
+            {REVIEW_DECISIONS.map(({ value, label, Icon, activeCls }) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => setDecision(value)}
-                className="flex flex-col items-center gap-1 py-2.5 rounded-lg text-[11px] font-semibold cursor-pointer transition-all border"
-                style={
-                  decision === value
-                    ? activeStyle
-                    : { background: "#fff", borderColor: "var(--color-surface-container-border)", color: "#6b7280" }
-                }
+                className={`flex flex-col items-center gap-1 py-2.5 rounded-lg text-[11px] font-semibold cursor-pointer transition-all border ${decision === value ? activeCls : "bg-white border-surface-container-border text-gray-500"}`}
               >
                 <Icon size={14} />
                 {label}
@@ -981,10 +972,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
               onChange={(e) => setComment(e.target.value)}
               rows={3}
               required={commentRequired}
-              className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors"
-              style={f}
-              onFocus={(e) => (e.target.style.borderColor = chosen?.activeStyle.borderColor ?? "var(--color-brand)")}
-              onBlur={(e) => Object.assign(e.target.style, f)}
+              className={`w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors border border-[#D0D0D0] ${chosen?.focusCls ?? "focus:border-brand"}`}
               placeholder={
                 decision === "REJECT"
                   ? "Why is this account being rejected?"
@@ -1012,8 +1000,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
               isLoading ||
               (commentRequired && !comment.trim())
             }
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
-            style={{ background: chosen?.activeStyle.borderColor ?? "#9CA3AF" }}
+            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none ${chosen?.solidCls ?? "bg-[#9CA3AF]"}`}
           >
             {submitting ? (
               <Loader2 size={12} className="animate-spin" />
@@ -1150,11 +1137,7 @@ function AccountsSection() {
             {items.map((a, i) => (
               <tr
                 key={a.id}
-                className="group hover:bg-gray-50 transition-colors"
-                style={{
-                  borderBottom:
-                    i < items.length - 1 ? "1px solid #F9FAFB" : "none",
-                }}
+                className={`group hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
                   <p className="text-[12px] font-semibold text-gray-900">
@@ -1291,8 +1274,7 @@ function SuspendModal({ user, onClose }) {
           <button
             type="submit"
             disabled={mutation.isPending || !reason.trim()}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
-            style={{ background: "#e11d48" }}
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-[#e11d48]"
           >
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -1327,8 +1309,7 @@ function UnsuspendModal({ user, onClose, onConfirm, unsuspending }) {
             type="button"
             onClick={onConfirm}
             disabled={unsuspending}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none"
-            style={{ background: "#15803d" }}
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-[#15803d]"
           >
             {unsuspending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -1446,11 +1427,7 @@ function UsersSection() {
             {items.map((u, i) => (
               <tr
                 key={u.id}
-                className="group hover:bg-gray-50 transition-colors"
-                style={{
-                  borderBottom:
-                    i < items.length - 1 ? "1px solid #F9FAFB" : "none",
-                }}
+                className={`group hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
                   <p className="text-[12px] font-semibold text-gray-900 leading-tight">
@@ -1656,11 +1633,7 @@ function PaymentLinksSection() {
             {items.map((l, i) => (
               <tr
                 key={l.id}
-                className="hover:bg-gray-50 transition-colors"
-                style={{
-                  borderBottom:
-                    i < items.length - 1 ? "1px solid #F9FAFB" : "none",
-                }}
+                className={`hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
               >
                 <td className="px-4 py-3 max-w-[180px]">
                   <p className="text-[12px] font-semibold text-gray-900 truncate">
@@ -1989,8 +1962,7 @@ function SettlementsSection() {
               <tr
                 key={s.id}
                 onClick={() => setOpenSettlementId(s.id)}
-                className="hover:bg-gray-50 transition-colors cursor-pointer"
-                style={{ borderBottom: i < items.length - 1 ? "1px solid #F9FAFB" : "none" }}
+                className={`hover:bg-gray-50 transition-colors cursor-pointer ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
                   <p className="text-[12px] font-mono text-gray-700">{s.gatewaySettlementId ?? s.id}</p>
@@ -2099,7 +2071,7 @@ function ReconciliationRunsTable() {
           </thead>
           <tbody>
             {items.map((r, i) => (
-              <tr key={r.id} style={{ borderBottom: i < items.length - 1 ? "1px solid #F9FAFB" : "none" }}>
+              <tr key={r.id} className={i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}>
                 <td className="px-4 py-3">
                   <p className="text-[12px] font-semibold text-gray-900">{(r.runType ?? "").replace(/_/g, " ")}</p>
                   <p className="text-[10px] text-gray-400">{fmtDateTime(r.startedAt)}</p>
@@ -2272,7 +2244,7 @@ function ReconciliationFindingsTable() {
           </thead>
           <tbody>
             {items.map((f, i) => (
-              <tr key={f.id} className="group" style={{ borderBottom: i < items.length - 1 ? "1px solid #F9FAFB" : "none" }}>
+              <tr key={f.id} className={`group ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}>
                 <td className="px-4 py-3">
                   <p className="text-[12px] font-semibold text-gray-900">{(f.findingType ?? "").replace(/_/g, " ")}</p>
                   <p className="text-[10px] text-gray-400 truncate max-w-xs">{f.summary}</p>
@@ -2609,11 +2581,7 @@ function NotificationsSection() {
               return (
                 <tr
                   key={j.jobId}
-                  className="hover:bg-gray-50 transition-colors"
-                  style={{
-                    borderBottom:
-                      i < items.length - 1 ? "1px solid #F9FAFB" : "none",
-                  }}
+                  className={`hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
                 >
                   <td className="px-4 py-3">
                     <span className="text-[11px] text-gray-700 font-medium">
@@ -2704,8 +2672,7 @@ export default function AdminPanel() {
 
       <div className="overflow-x-auto mb-8">
         <div
-          className="flex gap-1 bg-stacked-container rounded-xl p-1 w-fit"
-          style={{ border: "1px solid #f0f0f0" }}
+          className="flex gap-1 bg-stacked-container rounded-xl p-1 w-fit border border-[#f0f0f0]"
         >
           {TABS.map(({ id, label, Icon }) => {
             const active = activeTab === id;
