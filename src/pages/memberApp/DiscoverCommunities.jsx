@@ -46,18 +46,18 @@ function usePublicSearch(query) {
 }
 
 // ─── Category badge colours ───────────────────────────────────────────────────
-const CAT_COLORS = {
-  education: { bg: "#E8F0FB", color: "#1C2B8A" },
-  professional: { bg: "#F3E8FF", color: "#7c3aed" },
-  religious: { bg: "#FFF8E7", color: "#d4a017" },
-  sports: { bg: "#ECFDF5", color: "#059669" },
-  social: { bg: "#FFF0F0", color: "#E53E3E" },
+const CAT_CLASSES = {
+  education: "bg-[#E8F0FB] text-[#1C2B8A]",
+  professional: "bg-[#F3E8FF] text-[#7c3aed]",
+  religious: "bg-[#FFF8E7] text-[#d4a017]",
+  sports: "bg-[#ECFDF5] text-[#059669]",
+  social: "bg-[#FFF0F0] text-[#E53E3E]",
 };
-function catStyle(category) {
+function catClassName(category) {
   // category is an array of strings from the API (e.g. ["education"])
   const cat = Array.isArray(category) ? category[0] : category;
   const key = typeof cat === "string" ? cat.toLowerCase() : "";
-  return CAT_COLORS[key] ?? { bg: "#F0F0F0", color: "#555" };
+  return CAT_CLASSES[key] ?? "bg-[#F0F0F0] text-[#555]";
 }
 
 // ─── Single community card ────────────────────────────────────────────────────
@@ -70,7 +70,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  const { bg, color } = catStyle(community.category);
+  const categoryClassName = catClassName(community.category);
   const alreadyMember = status === "member";
   const alreadyPending = status === "pending";
   const logoUrl = community.logo?.url ?? null;
@@ -104,34 +104,12 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
     }
   }
   return (
-    <div
-      style={{
-        background: "#fff",
-        borderRadius: 14,
-        padding: "14px 16px",
-        border: "1px solid var(--color-outline-on-surface)",
-        display: "flex",
-        flexDirection: "column",
-        gap: 10,
-      }}
-    >
+    <div className="bg-white rounded-2xl py-3.5 px-4 border border-outline-on-surface flex flex-col gap-2.5">
       {/* Top row */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+      <div className="flex items-start gap-3">
         {/* Logo */}
         <div
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 10,
-            flexShrink: 0,
-            background: logoUrl ? "transparent" : "#F0F0F0",
-            border: logoUrl ? "none" : "1px solid #E0E0E0",
-            overflow: "hidden",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 18,
-          }}
+          className={`w-11 h-11 rounded-[10px] flex-shrink-0 overflow-hidden flex items-center justify-center text-lg ${logoUrl ? "bg-transparent border-none" : "bg-[#F0F0F0] border border-[#E0E0E0]"}`}
         >
           {logoUrl ? (
             <img
@@ -146,49 +124,24 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
 
         {/* Name + category */}
         <div className="flex-1 min-w-0">
-          <p
-            style={{
-              fontSize: 14,
-              fontWeight: 700,
-              color: "#111",
-              marginBottom: 3,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
+          <p className="text-sm font-bold text-[#111] mb-[3px] overflow-hidden text-ellipsis whitespace-nowrap">
             {community.name}
           </p>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <div className="flex items-center gap-1.5">
             <span
-              style={{
-                fontSize: 11,
-                fontWeight: 600,
-                padding: "2px 8px",
-                borderRadius: 99,
-                background: bg,
-                color,
-              }}
+              className={`text-[11px] font-semibold py-0.5 px-2 rounded-full ${categoryClassName}`}
             >
               {(Array.isArray(community.category)
                 ? community.category[0]
                 : community.category) ?? "Community"}
             </span>
             {community.requiresMemberApproval === false && (
-              <span style={{ fontSize: 11, color: "#059669", fontWeight: 600 }}>
+              <span className="text-[11px] text-[#059669] font-semibold">
                 Open — join instantly
               </span>
             )}
             {community.memberCount != null && (
-              <span
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 3,
-                  fontSize: 11,
-                  color: "#888",
-                }}
-              >
+              <span className="flex items-center gap-[3px] text-[11px] text-[#888]">
                 <Users size={11} />
                 {community.memberCount.toLocaleString()}
               </span>
@@ -199,17 +152,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
 
       {/* Description */}
       {community.description && (
-        <p
-          style={{
-            fontSize: 12,
-            color: "#555",
-            lineHeight: 1.55,
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
+        <p className="text-xs text-[#555] leading-[1.55] line-clamp-2">
           {community.description}
         </p>
       )}
@@ -218,28 +161,14 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
       <button
         onClick={handleRequest}
         disabled={alreadyMember || alreadyPending || loading}
-        style={{
-          width: "100%",
-          padding: "10px 0",
-          borderRadius: 8,
-          border:
-            alreadyPending || alreadyMember ? "1.5px solid #E0E0E0" : "none",
-          background: alreadyMember
-            ? "#ECFDF5"
+        style={{ opacity: loading ? 0.7 : 1 }}
+        className={`w-full py-2.5 rounded-lg text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-opacity duration-150 ${alreadyPending || alreadyMember ? "border-[1.5px] border-[#E0E0E0] cursor-default" : "border-none cursor-pointer"} ${
+          alreadyMember
+            ? "bg-[#ECFDF5] text-[#059669]"
             : alreadyPending
-              ? "#fff"
-              : "#1C2B8A",
-          color: alreadyMember ? "#059669" : alreadyPending ? "#888" : "#fff",
-          fontSize: 13,
-          fontWeight: 600,
-          cursor: alreadyMember || alreadyPending ? "default" : "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 6,
-          transition: "opacity 0.15s",
-          opacity: loading ? 0.7 : 1,
-        }}
+              ? "bg-white text-[#888]"
+              : "bg-[#1C2B8A] text-white"
+        }`}
       >
         {loading && <Loader2 size={13} className="animate-spin" />}
         {alreadyMember && <CheckCircle2 size={13} />}
@@ -253,14 +182,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
               : "Request to Join"}
       </button>
       {errorMsg && (
-        <p
-          style={{
-            fontSize: 11.5,
-            color: "#DC2626",
-            margin: 0,
-            textAlign: "center",
-          }}
-        >
+        <p className="text-[11.5px] text-[#DC2626] m-0 text-center">
           {errorMsg}
         </p>
       )}
@@ -272,39 +194,23 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
 function EmptyState({ query }) {
   if (!query || query.length < 2) {
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          paddingTop: 60,
-          color: "#aaa",
-        }}
-      >
-        <Search size={32} strokeWidth={1.2} style={{ marginBottom: 10 }} />
-        <p style={{ fontSize: 14, textAlign: "center" }}>
+      <div className="flex flex-col items-center pt-[60px] text-[#aaa]">
+        <Search size={32} strokeWidth={1.2} className="mb-2.5" />
+        <p className="text-sm text-center">
           Search for a community by name
         </p>
-        <p style={{ fontSize: 12, marginTop: 4, textAlign: "center" }}>
+        <p className="text-xs mt-1 text-center">
           e.g. "Kings College Alumni"
         </p>
       </div>
     );
   }
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        paddingTop: 60,
-        color: "#aaa",
-      }}
-    >
-      <p style={{ fontSize: 14, textAlign: "center" }}>
+    <div className="flex flex-col items-center pt-[60px] text-[#aaa]">
+      <p className="text-sm text-center">
         No communities found for "{query}"
       </p>
-      <p style={{ fontSize: 12, marginTop: 4, textAlign: "center" }}>
+      <p className="text-xs mt-1 text-center">
         Try a shorter or different search term
       </p>
     </div>
@@ -388,44 +294,15 @@ export default function DiscoverCommunities() {
 
   return (
     <div
-      style={{
-        position: "relative",
-        overflow: "hidden",
-        minHeight: "100vh",
-         
-        fontFamily: "'Inter', system-ui, sans-serif",
-        paddingBottom: 40,
-        maxWidth: 430,
-        margin: "0 auto",
-      }}
+      className="relative overflow-hidden min-h-screen pb-10 max-w-[430px] mx-auto"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* Header — before: padding: "52px 20px 16px" */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "35px 20px 16px",
-          position: "relative",
-        }}
-      >
+      <div className="flex items-center justify-center relative pt-[35px] px-5 pb-4">
         <button
           onClick={() => navigate(-1)}
-          style={{
-            position: "absolute",
-            left: 20,
-            width: 36,
-            height: 36,
-            borderRadius: "50%",
-            background: "#fff",
-            border: "none",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.10)",
-          }}
+          className="absolute left-5 w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
@@ -435,26 +312,15 @@ export default function DiscoverCommunities() {
       </div>
 
       {/* Search input */}
-      <div style={{ padding: "0 16px 16px" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            background: "#fff",
-            borderRadius: 12,
-            padding: "12px 14px",
-            border: "1.5px solid #E0E0E0",
-          }}
-        >
+      <div className="px-4 pb-4">
+        <div className="flex items-center gap-2.5 bg-white rounded-xl py-3 px-3.5 border-[1.5px] border-[#E0E0E0]">
           {isFetching ? (
             <Loader2
               size={15}
-              className="animate-spin"
-              style={{ color: "#1C2B8A", flexShrink: 0 }}
+              className="animate-spin text-[#1C2B8A] flex-shrink-0"
             />
           ) : (
-            <Search size={15} style={{ color: "#aaa", flexShrink: 0 }} />
+            <Search size={15} className="text-[#aaa] flex-shrink-0" />
           )}
           <input
             autoFocus
@@ -462,27 +328,12 @@ export default function DiscoverCommunities() {
             placeholder="Search communities…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            style={{
-              flex: 1,
-              border: "none",
-              outline: "none",
-              background: "transparent",
-              fontSize: 14,
-              color: "#111",
-            }}
+            className="flex-1 border-none outline-none bg-transparent text-sm text-[#111]"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "#aaa",
-                fontSize: 18,
-                lineHeight: 1,
-                padding: 0,
-              }}
+              className="bg-transparent border-none cursor-pointer text-[#aaa] text-lg leading-none p-0"
             >
               ×
             </button>
@@ -491,14 +342,7 @@ export default function DiscoverCommunities() {
       </div>
 
       {/* Results */}
-      <div
-        style={{
-          padding: "0 16px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-        }}
-      >
+      <div className="px-4 flex flex-col gap-2.5">
         {isLoading && query.length > 1 ? (
           <LoadingState label="Searching…" className="pt-12" />
         ) : results.length > 0 ? (
@@ -521,47 +365,26 @@ export default function DiscoverCommunities() {
           persisted/resurfaced elsewhere. */}
       {activeApproval && (
         <div
-          style={{
-            position: "fixed", inset: 0, zIndex: 100,
-            background: "rgba(0,0,0,0.4)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: 20,
-          }}
+          className="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-5"
           onClick={(e) => e.target === e.currentTarget && dismissJoin(activeApproval)}
         >
-          <div
-            className="border border-surface-container-border"
-            style={{
-              width: "100%", maxWidth: 340,
-              background: "#fff", borderRadius: 20,
-              padding: "28px 24px", textAlign: "center",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
-            }}
-          >
-            <span style={{ fontSize: 40, lineHeight: 1, display: "block", marginBottom: 12 }}>🎉</span>
-            <p style={{ fontSize: 17, fontWeight: 700, color: "#065F46", margin: "0 0 6px" }}>
+          <div className="border border-surface-container-border w-full max-w-[340px] bg-white rounded-[20px] py-7 px-6 text-center shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+            <span className="text-4xl leading-none block mb-3">🎉</span>
+            <p className="text-[17px] font-bold text-[#065F46] mb-1.5">
               You're in!
             </p>
-            <p style={{ fontSize: 13.5, color: "#374151", margin: "0 0 22px", lineHeight: 1.5 }}>
+            <p className="text-[13.5px] text-[#374151] mb-[22px] leading-relaxed">
               Your request to join <strong>{activeApproval.name}</strong> was approved — you're now a member.
             </p>
             <button
               onClick={() => openApprovedCommunity(activeApproval)}
-              style={{
-                width: "100%", padding: "13px 0", borderRadius: 10,
-                border: "none", background: "#059669", color: "#fff",
-                fontSize: 14, fontWeight: 600, cursor: "pointer", marginBottom: 10,
-              }}
+              className="w-full py-[13px] rounded-[10px] border-none bg-[#059669] text-white text-sm font-semibold cursor-pointer mb-2.5"
             >
               Open Community
             </button>
             <button
               onClick={() => dismissJoin(activeApproval)}
-              style={{
-                width: "100%", padding: "10px 0", borderRadius: 10,
-                border: "none", background: "none", color: "#6B7280",
-                fontSize: 13, fontWeight: 500, cursor: "pointer",
-              }}
+              className="w-full py-2.5 rounded-[10px] border-none bg-transparent text-[#6B7280] text-[13px] font-medium cursor-pointer"
             >
               Dismiss
             </button>
