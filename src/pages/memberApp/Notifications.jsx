@@ -190,7 +190,7 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
 // ── Empty state ───────────────────────────────────────────────────────────────
 function EmptyState({ icon: Icon, label, hint, onAction, actionLabel }) {
   return (
-    <div style={{ background: "#fff", borderRadius: 14, padding: 32, display: "flex", flexDirection: "column", alignItems: "center", gap: 10, textAlign: "center", border: "1px solid #E0E0EB" }}>
+    <div style={{ background: "#fff", borderRadius: 14, padding: 32, display: "flex", flexDirection: "column", alignItems: "center", gap: 10, textAlign: "center", border: "1px solid var(--color-surface-container-border)" }}>
       <Icon size={22} strokeWidth={1.6} style={{ color: "#bbb" }} />
       <p style={{ color: "#999", fontSize: 13, margin: 0 }}>{label}</p>
       {hint && <p style={{ color: "#aaa", fontSize: 12, margin: 0, maxWidth: 240, lineHeight: 1.5 }}>{hint}</p>}
@@ -214,7 +214,7 @@ function GroupedNotifications({ items, onTap, onNavigate }) {
       style={{
         background: "#fff",
         borderRadius: 16,
-        border: "1px solid #E0E0EB",
+        border: "1px solid var(--color-surface-container-border)",
         padding: 16,
         display: "flex",
         flexDirection: "column",

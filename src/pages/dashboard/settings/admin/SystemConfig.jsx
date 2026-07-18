@@ -94,7 +94,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
     >
       <div
         className="bg-white rounded-2xl w-full max-w-md shadow-2xl"
-        style={{ border: "1px solid #E0E0EB" }}
+        style={{ border: "1px solid var(--color-surface-container-border)" }}
       >
         {/* Header */}
         <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
@@ -335,7 +335,7 @@ export default function SystemConfig() {
       {/* Table */}
       <div
         className="bg-surface-container rounded-2xl overflow-hidden"
-        style={{ border: "1px solid #E0E0EB" }}
+        style={{ border: "1px solid var(--color-surface-container-border)" }}
       >
         {isLoading ? (
           <LoadingState className="py-20" />
@@ -452,7 +452,7 @@ export default function SystemConfig() {
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
               className="w-7 h-7 flex items-center justify-center rounded-lg border-none cursor-pointer bg-white text-gray-500 hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-default"
-              style={{ border: "1px solid #E0E0EB" }}
+              style={{ border: "1px solid var(--color-surface-container-border)" }}
             >
               <ChevronLeft size={13} />
             </button>
@@ -468,7 +468,7 @@ export default function SystemConfig() {
                       ? "bg-brand text-white"
                       : "bg-white text-gray-500 hover:bg-gray-100"
                   }`}
-                  style={{ border: i === page ? "none" : "1px solid #E0E0EB" }}
+                  style={{ border: i === page ? "none" : "1px solid var(--color-surface-container-border)" }}
                 >
                   {i + 1}
                 </button>
@@ -478,7 +478,7 @@ export default function SystemConfig() {
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page >= totalPages - 1}
               className="w-7 h-7 flex items-center justify-center rounded-lg border-none cursor-pointer bg-white text-gray-500 hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-default"
-              style={{ border: "1px solid #E0E0EB" }}
+              style={{ border: "1px solid var(--color-surface-container-border)" }}
             >
               <ChevronRight size={13} />
             </button>

@@ -166,7 +166,7 @@ function toDateInput(iso) {
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
     <div
-      className="bg-surface-container rounded-xl border border-[#E0E0EB] px-4 py-3 flex items-center justify-between"
+      className="bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 flex items-center justify-between"
       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
     >
       <div>
@@ -1425,7 +1425,7 @@ function SendReminderModal({ plan, onClose, onSend, sending }) {
       className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid #E0E0EB" }}>
+      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid var(--color-surface-container-border)" }}>
         <div className="flex items-start justify-between px-6 pt-5">
           <div>
             <h2 className="text-base font-semibold text-black">Send Reminder</h2>
@@ -1893,7 +1893,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
 
         {/* Controls */}
         <div className="px-6 py-3 flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-[#E0E0EB] flex-1 max-w-xs">
+          <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-surface-container-border flex-1 max-w-xs">
             <Search size={12} className="text-gray-400 flex-shrink-0" />
             <input
               value={search}
@@ -1918,7 +1918,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                   className="fixed inset-0 z-10"
                   onClick={() => setFilterOpen(false)}
                 />
-                <div className="absolute left-0 top-full mt-2 bg-white rounded-xl border border-[#E0E0EB] shadow-lg z-20 p-4 w-52">
+                <div className="absolute left-0 top-full mt-2 bg-white rounded-xl border border-surface-container-border shadow-lg z-20 p-4 w-52">
                   <label className="block text-xs font-medium text-gray-700 mb-1">
                     Status
                   </label>
@@ -2303,7 +2303,7 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendRemind
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={close} />
-          <div className="absolute right-0 top-full mt-1 bg-white rounded-xl border border-[#E0E0EB] shadow-xl z-20 overflow-hidden min-w-[180px] py-1">
+          <div className="absolute right-0 top-full mt-1 bg-white rounded-xl border border-surface-container-border shadow-xl z-20 overflow-hidden min-w-[180px] py-1">
             <MenuItem
               icon={<Pencil size={13} />}
               label="Edit Plan"
@@ -2450,7 +2450,7 @@ function PlanCard({
 
   return (
     <div
-      className="bg-surface-container rounded-2xl border border-[#E0E0EB] p-5 flex flex-col gap-4"
+      className="bg-surface-container rounded-2xl border border-surface-container-border p-5 flex flex-col gap-4"
       style={{ boxShadow: "0 1px 6px rgba(0,47,167,0.07)" }}
     >
       {/* Status + overflow */}

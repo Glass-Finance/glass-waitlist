@@ -94,7 +94,7 @@ function PaymentRow({ item, onPay, paying }) {
         background: "#fff",
         borderRadius: 14,
         boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-        border: "1px solid #E0E0EB",
+        border: "1px solid var(--color-surface-container-border)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -250,11 +250,11 @@ export default function UpcomingPayments() {
         }}
       >
         {isLoading ? (
-          <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", border: "1px solid #E0E0EB" }}>
+          <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", border: "1px solid var(--color-surface-container-border)" }}>
             <PageLoadingState label="Loading your payments…" size={56} padding="36px 24px" />
           </div>
         ) : loadError ? (
-          <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", border: "1px solid #E0E0EB", textAlign: "center", padding: "20px 0" }}>
+          <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", border: "1px solid var(--color-surface-container-border)", textAlign: "center", padding: "20px 0" }}>
             <p style={{ color: "#DC2626", fontSize: 14, margin: "0 0 8px" }}>
               Couldn't load upcoming payments.
             </p>
@@ -266,7 +266,7 @@ export default function UpcomingPayments() {
             </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", border: "1px solid #E0E0EB", padding: "48px 24px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+          <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", border: "1px solid var(--color-surface-container-border)", padding: "48px 24px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
             <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#D7E2FF", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12l5 5 9-9"/>

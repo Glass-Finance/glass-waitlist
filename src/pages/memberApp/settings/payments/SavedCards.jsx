@@ -35,7 +35,7 @@ export default function SavedCards() {
             Saved Cards
           </p>
         )}
-        <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", border: "1px solid #E0E0EB" }}>
+        <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", border: "1px solid var(--color-surface-container-border)" }}>
           {isLoading ? (
             <PageLoadingState size={56} padding="36px 24px" />
           ) : error ? (

@@ -26,7 +26,7 @@ const memberPhone = (m) => m?.user?.phoneNumber ?? m?.phoneNumber ?? "—";
 
 function StatCard({ label, value }) {
   return (
-    <div className="bg-surface-container rounded-xl border border-[#E0E0EB] px-4 py-3" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-surface-container rounded-xl border border-surface-container-border px-4 py-3" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <p className="text-xs text-gray-400 mb-1">{label}</p>
       <p className="text-[13px] font-semibold text-black">{value}</p>
     </div>
@@ -41,7 +41,7 @@ function PlanCard({ plan, successfulLinkIds }) {
     s === "SUCCESSFUL" ||
     (!!plan.paymentLink?.id && successfulLinkIds?.has(plan.paymentLink.id));
   return (
-    <div className="bg-surface-container rounded-md border border-[#E0E0EB] p-4" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-surface-container rounded-md border border-surface-container-border p-4" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
       <div className="flex items-start justify-between mb-2">
         <p className="text-sm font-medium text-black pt-0.5">{plan.paymentLink?.title ?? "Plan"}</p>
         <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full" style={{ color: isPaid ? "#059669" : "#e11d48", background: isPaid ? "#ecfdf5" : "#fff1f2" }}>
@@ -196,7 +196,7 @@ export default function MemberDetail() {
       )}
 
       {tab === "Payment History" && (
-        <div className="bg-surface-container rounded-xl border border-[#E0E0EB]" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+        <div className="bg-surface-container rounded-xl border border-surface-container-border" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
           <div className="flex items-center justify-between px-5 py-4">
             <span className="text-sm font-medium text-black">Member Payments</span>
           </div>
@@ -272,7 +272,7 @@ export default function MemberDetail() {
       )}
 
       {tab === "Contact Details" && (
-        <div className="bg-surface-container rounded-xl border border-[#E0E0EB]" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+        <div className="bg-surface-container rounded-xl border border-surface-container-border" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>

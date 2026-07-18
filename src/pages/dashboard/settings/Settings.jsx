@@ -79,7 +79,7 @@ function MenuList({ items }) {
           key={i}
           onClick={() => navigate(item.path)}
           className="w-full flex items-center justify-between px-5 py-4 bg-surface-container rounded-xl text-left hover:bg-gray-50 transition-all cursor-pointer border-none"
-          style={{ border: "1px solid #E0E0EB" }}
+          style={{ border: "1px solid var(--color-surface-container-border)" }}
         >
           <div>
             <p className="text-sm font-semibold text-gray-900">{item.label}</p>
@@ -161,7 +161,7 @@ export default function Settings() {
           {searchOpen && searchResults.length > 0 && (
             <div
               className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg overflow-hidden z-50"
-              style={{ width: 280, border: "1px solid #E0E0EB" }}
+              style={{ width: 280, border: "1px solid var(--color-surface-container-border)" }}
             >
               {searchResults.map((item) => (
                 <button
@@ -183,7 +183,7 @@ export default function Settings() {
           {searchOpen && q.length > 0 && searchResults.length === 0 && (
             <div
               className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg z-50 px-4 py-3"
-              style={{ width: 240, border: "1px solid #E0E0EB" }}
+              style={{ width: 240, border: "1px solid var(--color-surface-container-border)" }}
             >
               <p className="text-xs text-gray-400">No settings match "{searchQuery}"</p>
             </div>

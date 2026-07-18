@@ -80,7 +80,7 @@ function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
             disabled={leaving}
             style={{
               width: "100%", padding: "14px 0", borderRadius: 12,
-              border: "1px solid #E0E0EB", background: "#fff", color: "#374151",
+              border: "1px solid var(--color-surface-container-border)", background: "#fff", color: "#374151",
               fontSize: 14.5, fontWeight: 600, cursor: "pointer",
             }}
           >
@@ -211,7 +211,7 @@ export default function MyCommunities() {
                     <LogOut size={16} />
                   </button>
                 ) : navigatingId === c.id ? (
-                  <div style={{ width: 16, height: 16, borderRadius: "50%", border: "2px solid #E0E0EB", borderTopColor: "#002FA7", flexShrink: 0, animation: "spin 0.7s linear infinite" }} />
+                  <div style={{ width: 16, height: 16, borderRadius: "50%", border: "2px solid var(--color-surface-container-border)", borderTopColor: "#002FA7", flexShrink: 0, animation: "spin 0.7s linear infinite" }} />
                 ) : (
                   <ChevronRight size={16} style={{ color: "#ccc", flexShrink: 0 }} />
                 )}

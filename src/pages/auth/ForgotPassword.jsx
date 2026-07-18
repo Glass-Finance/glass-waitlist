@@ -166,7 +166,7 @@ export default function ForgotPassword() {
                             fontSize: 22,
                             fontWeight: 700,
                             borderRadius: 12,
-                            border: `2px solid ${d || i === activeIndex ? "#1C2B8A" : "#E0E0EB"}`,
+                            border: `2px solid ${d || i === activeIndex ? "#1C2B8A" : "var(--color-surface-container-border)"}`,
                             background: "#fff",
                             color: "#111827",
                             transition: "border-color .15s",

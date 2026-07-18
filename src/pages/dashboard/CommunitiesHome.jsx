@@ -19,7 +19,7 @@
 // //   return (
 // //     <div
 // //       onClick={onClick}
-// //       className="bg-surface-container rounded-lg border border-[#E0E0EB] overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+// //       className="bg-surface-container rounded-lg border border-surface-container-border overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
 // //       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
 // //     >
 // //       {/* Card top */}
@@ -104,7 +104,7 @@
 // //             {sort} <ChevronDown size={13} />
 // //           </button>
 // //           {sortOpen && (
-// //             <div className="absolute top-full mt-1 left-0 bg-white rounded-xl border border-[#E0E0EB] shadow-lg z-50 min-w-40 overflow-hidden">
+// //             <div className="absolute top-full mt-1 left-0 bg-white rounded-xl border border-surface-container-border shadow-lg z-50 min-w-40 overflow-hidden">
 // //               {SORT_OPTIONS.map(opt => (
 // //                 <button
 // //                   key={opt}
@@ -181,7 +181,7 @@
 // // Skeleton card
 // function CardSkeleton() {
 //   return (
-//     <div className="bg-white rounded-lg border border-[#E0E0EB] overflow-hidden animate-pulse">
+//     <div className="bg-white rounded-lg border border-surface-container-border overflow-hidden animate-pulse">
 //       <div className="p-5">
 //         <div className="flex items-start gap-3 mb-4">
 //           <div className="w-10 h-10 bg-gray-200 rounded flex-shrink-0" />
@@ -229,7 +229,7 @@
 //   return (
 //     <div
 //       onClick={onClick}
-//       className="bg-surface-container rounded-lg border border-[#E0E0EB] overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+//       className="bg-surface-container rounded-lg border border-surface-container-border overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
 //       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
 //     >
 //       <div className="p-5 flex-1">
@@ -379,7 +379,7 @@
 //             {sort} <ChevronDown size={13} />
 //           </button>
 //           {sortOpen && (
-//             <div className="absolute top-full mt-1 left-0 bg-white rounded-xl border border-[#E0E0EB] shadow-lg z-50 min-w-40 overflow-hidden">
+//             <div className="absolute top-full mt-1 left-0 bg-white rounded-xl border border-surface-container-border shadow-lg z-50 min-w-40 overflow-hidden">
 //               {SORT_OPTIONS.map((opt) => (
 //                 <button
 //                   key={opt}
@@ -543,7 +543,7 @@ function formatNaira(amount) {
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 function CardSkeleton() {
   return (
-    <div className="bg-white rounded-lg border border-[#E0E0EB] overflow-hidden animate-pulse">
+    <div className="bg-white rounded-lg border border-surface-container-border overflow-hidden animate-pulse">
       <div className="p-5">
         <div className="flex items-start gap-3 mb-4">
           <div className="w-10 h-10 bg-gray-200 rounded flex-shrink-0" />
@@ -594,7 +594,7 @@ function CommunityCard({ community, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="bg-surface-container rounded-lg border border-[#E0E0EB] overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
+      className="bg-surface-container rounded-lg border border-surface-container-border overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
     >
       <div className="p-5 flex-1">
@@ -705,7 +705,7 @@ function shortDate(dateStr) {
 function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
   return (
     <div
-      className="bg-surface-container rounded-lg border border-[#E0E0EB] flex flex-col"
+      className="bg-surface-container rounded-lg border border-surface-container-border flex flex-col"
       style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
     >
       <div className="flex items-center gap-2 px-4 pt-3.5 pb-2 border-b border-hairline">
@@ -1082,7 +1082,7 @@ export default function CommunitiesHome() {
             {sort} <ChevronDown size={13} />
           </button>
           {sortOpen && (
-            <div className="absolute top-full mt-1 left-0 bg-white rounded-xl border border-[#E0E0EB] shadow-lg z-50 min-w-40 overflow-hidden">
+            <div className="absolute top-full mt-1 left-0 bg-white rounded-xl border border-surface-container-border shadow-lg z-50 min-w-40 overflow-hidden">
               {SORT_OPTIONS.map((opt) => (
                 <button
                   key={opt}

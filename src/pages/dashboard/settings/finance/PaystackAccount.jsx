@@ -58,7 +58,7 @@ function BankAvatar({ bankCode, bankName, storedLogoUrl }) {
     null;
   if (logoUrl && !imgFailed) {
     return (
-      <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden border border-[#E0E0EB] bg-white flex items-center justify-center">
+      <div className="w-10 h-10 rounded-lg flex-shrink-0 overflow-hidden border border-surface-container-border bg-white flex items-center justify-center">
         <img
           src={logoUrl}
           alt={bankName}
@@ -230,7 +230,7 @@ export default function PaystackAccount() {
       ) : account ? (
         <div
           className="bg-surface-container rounded-2xl p-6"
-          style={{ border: "1px solid #E0E0EB" }}
+          style={{ border: "1px solid var(--color-surface-container-border)" }}
         >
           <p className="text-sm font-bold text-gray-900 mb-0.5">
             Current Payout Account
@@ -376,7 +376,7 @@ export default function PaystackAccount() {
         // No account yet — prompt to add one
         <div
           className="bg-surface-container rounded-2xl p-6 text-center"
-          style={{ border: "1px solid #E0E0EB" }}
+          style={{ border: "1px solid var(--color-surface-container-border)" }}
         >
           <p className="text-sm font-bold text-gray-900 mb-1">
             No Payout Account Set Up

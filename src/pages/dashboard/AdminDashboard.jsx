@@ -245,13 +245,13 @@ export function AdminPaymentModal({ item, onClose }) {
     >
       <div
         className="w-full bg-white rounded-2xl overflow-hidden shadow-2xl"
-        style={{ maxWidth: 560, maxHeight: "90vh", overflowY: "auto", border: "1px solid #E0E0EB" }}
+        style={{ maxWidth: 560, maxHeight: "90vh", overflowY: "auto", border: "1px solid var(--color-surface-container-border)" }}
       >
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border border-[#E0E0EB]"
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border border-surface-container-border"
               style={{ background: "#f0f4ff" }}
             >
               {item.logo?.url ? (
@@ -751,7 +751,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
           {/* Direct add card */}
           <div
             className="bg-white rounded-lg p-6"
-            style={{ border: "1px solid #E0E0EB" }}
+            style={{ border: "1px solid var(--color-surface-container-border)" }}
           >
             <h3 className="text-base font-semibold text-gray-900 mb-4">
               Prefer To Add Members Directly?
@@ -796,7 +796,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
 
                 <div
                   className="rounded-md overflow-x-auto mb-4"
-                  style={{ border: "1px solid #E0E0EB" }}
+                  style={{ border: "1px solid var(--color-surface-container-border)" }}
                 >
                   <table className="w-full text-xs">
                     <thead>
@@ -966,7 +966,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                   {urlStage === "complete" && urlFileInfo && (
                     <div
                       className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3"
-                      style={{ border: "1px solid #E0E0EB" }}
+                      style={{ border: "1px solid var(--color-surface-container-border)" }}
                     >
                       <FileSpreadsheet
                         size={20}
@@ -1019,7 +1019,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                   className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5"
                   style={{
                     minHeight: 60,
-                    border: "1px solid #E0E0EB",
+                    border: "1px solid var(--color-surface-container-border)",
                     background: "#fff",
                   }}
                 >
@@ -1696,7 +1696,7 @@ function DashboardContent({ isPaying, communityId }) {
           {stats.map((s) => (
             <div
               key={s.label}
-              className="bg-surface-container rounded-xl px-4 py-3 border border-[#E0E0EB]"
+              className="bg-surface-container rounded-xl px-4 py-3 border border-surface-container-border"
               style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
             >
               <div className="flex items-center justify-between mb-3">
@@ -1726,7 +1726,7 @@ function DashboardContent({ isPaying, communityId }) {
         {/* Your Payments — paying admin's own dues in this community */}
         {isPaying && (
           <div
-            className="bg-surface-container rounded-xl border border-[#E0E0EB] p-5 mb-5"
+            className="bg-surface-container rounded-xl border border-surface-container-border p-5 mb-5"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -1754,7 +1754,7 @@ function DashboardContent({ isPaying, communityId }) {
                     Filter <ChevronDown size={11} />
                   </button>
                   {myPaymentsFilterOpen && (
-                    <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-[#E0E0EB] shadow-lg z-20 min-w-[110px] overflow-hidden">
+                    <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-surface-container-border shadow-lg z-20 min-w-[110px] overflow-hidden">
                       {[
                         { key: null, label: "All" },
                         { key: "unpaid", label: "Unpaid" },
@@ -1877,7 +1877,7 @@ function DashboardContent({ isPaying, communityId }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-5">
           {/* Payment Plans */}
           <div
-            className="rounded-xl border border-[#E0E0EB] p-4 bg-[#D7E2FF]"
+            className="rounded-xl border border-surface-container-border p-4 bg-[#D7E2FF]"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -1973,7 +1973,7 @@ function DashboardContent({ isPaying, communityId }) {
 
           {/* Recent Activity */}
           <div
-            className="bg-surface-container rounded-xl border border-[#E0E0EB] p-4"
+            className="bg-surface-container rounded-xl border border-surface-container-border p-4"
             style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <span className="text-sm font-medium text-black block mb-4">
@@ -2072,7 +2072,7 @@ function DashboardContent({ isPaying, communityId }) {
 
         {/* Member Payments table */}
         <div
-          className="bg-surface-container rounded-xl border border-[#E0E0EB]"
+          className="bg-surface-container rounded-xl border border-surface-container-border"
           style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
         >
           <div className="flex items-center justify-between px-5 pt-4 pb-0">
@@ -2092,7 +2092,7 @@ function DashboardContent({ isPaying, communityId }) {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-5 py-3 gap-2">
-            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-[#E0E0EB] w-full sm:flex-1 sm:min-w-0 sm:max-w-xs">
+            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-surface-container-border w-full sm:flex-1 sm:min-w-0 sm:max-w-xs">
               <Search size={12} className="text-gray-400 flex-shrink-0" />
               <input
                 value={search}
