@@ -6,14 +6,10 @@ import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
 
 function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
   return (
-    <div style={{
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "14px 16px",
-      borderBottom: last ? "none" : "1px solid #F2F2F2",
-    }}>
-      <div style={{ minWidth: 0, paddingRight: 12 }}>
-        <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{label}</p>
-        {desc && <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>{desc}</p>}
+    <div className={`flex items-center justify-between py-3.5 px-4 ${last ? "border-none" : "border-b border-[#F2F2F2]"}`}>
+      <div className="min-w-0 pr-3">
+        <p className="text-sm font-medium text-[#111] m-0">{label}</p>
+        {desc && <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">{desc}</p>}
       </div>
       <Toggle on={!!value} onChange={onChange} disabled={disabled} />
     </div>
@@ -22,17 +18,11 @@ function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
 
 function Section({ title, children }) {
   return (
-    <div style={{ marginBottom: 20 }}>
-      <p style={{
-        fontSize: 11, fontWeight: 700, color: "#999", margin: "0 4px 8px",
-        textTransform: "uppercase", letterSpacing: 0.6,
-      }}>
+    <div className="mb-5">
+      <p className="text-[11px] font-bold text-[#999] mt-0 mx-1 mb-2 uppercase [letter-spacing:0.6px]">
         {title}
       </p>
-      <div className="border border-surface-container-border" style={{
-        background: "#fff", borderRadius: 14,
-        boxShadow: "0 1px 6px rgba(0,0,0,0.05)", overflow: "hidden",
-      }}>
+      <div className="border border-surface-container-border bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.05)] overflow-hidden">
         {children}
       </div>
     </div>
@@ -41,15 +31,12 @@ function Section({ title, children }) {
 
 function SkeletonRow({ last }) {
   return (
-    <div style={{
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "16px", borderBottom: last ? "none" : "1px solid #F2F2F2",
-    }}>
+    <div className={`flex items-center justify-between p-4 ${last ? "border-none" : "border-b border-[#F2F2F2]"}`}>
       <div>
-        <div style={{ width: 140, height: 13, borderRadius: 6, background: "#EBEBEB", marginBottom: 6 }} />
-        <div style={{ width: 200, height: 11, borderRadius: 6, background: "#F2F2F2" }} />
+        <div className="w-[140px] h-[13px] rounded-md bg-[#EBEBEB] mb-1.5" />
+        <div className="w-[200px] h-[11px] rounded-md bg-[#F2F2F2]" />
       </div>
-      <div style={{ width: 40, height: 22, borderRadius: 999, background: "#EBEBEB", flexShrink: 0 }} />
+      <div className="w-10 h-[22px] rounded-full bg-[#EBEBEB] flex-shrink-0" />
     </div>
   );
 }
@@ -65,11 +52,10 @@ export default function NotificationSettings() {
   const Row = (props) => <PrefRow disabled={!!error} {...props} />;
 
   return (
-    <div style={{
-      position: "relative", overflow: "hidden",
-      minHeight: "100vh",  
-      fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: 40,
-    }}>
+    <div
+      className="relative overflow-hidden min-h-screen pb-10"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+    >
       <GlassLogoGlow />
       {/* Header */}
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
@@ -85,21 +71,13 @@ export default function NotificationSettings() {
       <div className="px-4">
         {/* Error state */}
         {error && !isLoading && (
-          <div style={{
-            background: "#FFF0F0", border: "1px solid #FECACA", borderRadius: 12,
-            padding: "14px 16px", marginBottom: 20,
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-          }}>
-            <p style={{ fontSize: 13, color: "#DC2626", margin: 0 }}>
+          <div className="bg-[#FFF0F0] border border-[#FECACA] rounded-xl py-3.5 px-4 mb-5 flex items-center justify-between">
+            <p className="text-[13px] text-[#DC2626] m-0">
               Couldn't load preferences.
             </p>
             <button
               onClick={() => window.location.reload()}
-              style={{
-                background: "none", border: "none", cursor: "pointer",
-                color: "#DC2626", display: "flex", alignItems: "center", gap: 4,
-                fontSize: 12, fontWeight: 600, padding: 0,
-              }}
+              className="bg-transparent border-none cursor-pointer text-[#DC2626] flex items-center gap-1 text-xs font-semibold p-0"
             >
               <RefreshCw size={13} /> Retry
             </button>
@@ -206,19 +184,11 @@ export default function NotificationSettings() {
         </Section>
 
         {/* Info note */}
-        <div style={{
-          display: "flex", alignItems: "flex-start", gap: 8,
-          padding: "12px 14px", borderRadius: 10, background: "#D7E2FF",
-        }}>
-          <div style={{
-            width: 16, height: 16, borderRadius: "50%",
-            border: "1.5px solid #002FA7", display: "flex",
-            alignItems: "center", justifyContent: "center",
-            flexShrink: 0, marginTop: 1,
-          }}>
-            <span style={{ fontSize: 9, fontWeight: 700, color: "#002FA7" }}>i</span>
+        <div className="flex items-start gap-2 py-3 px-3.5 rounded-[10px] bg-[#D7E2FF]">
+          <div className="w-4 h-4 rounded-full border-[1.5px] border-brand flex items-center justify-center flex-shrink-0 mt-px">
+            <span className="text-[9px] font-bold text-brand">i</span>
           </div>
-          <p style={{ fontSize: 12, color: "#333", margin: 0, lineHeight: 1.5 }}>
+          <p className="text-xs text-[#333] m-0 leading-[1.5]">
             Changes take effect immediately. Critical security alerts are always sent regardless of your preferences.
           </p>
         </div>
