@@ -504,6 +504,11 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
+  // Guards handleUrlUpload's post-fetch state updates if this modal closes
+  // (unmounts) while a URL fetch is still in flight.
+  const unmountedRef = useRef(false);
+  useEffect(() => () => { unmountedRef.current = true; }, []);
+
   // Manual tab state
   const [emails, setEmails] = useState([]);
   const [emailInput, setEmailInput] = useState("");
@@ -598,6 +603,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
       if (!res.ok) throw new Error("Couldn't download a file from that URL.");
       const text = await res.text();
       clearInterval(tick);
+      if (unmountedRef.current) return;
       setUrlProgress(100);
       const sizeKb = new Blob([text]).size / 1024;
       const name = url.split("/").pop() || "file.csv";
@@ -613,6 +619,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
       setUrlStage("complete");
     } catch {
       clearInterval(tick);
+      if (unmountedRef.current) return;
       setUrlStage("idle");
       setUrlProgress(0);
       setCsvError("Failed to fetch CSV from URL.");

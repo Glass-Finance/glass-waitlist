@@ -603,6 +603,11 @@ export default function AddMembers() {
   const [urlFileInfo, setUrlFileInfo] = useState(null); // { name, sizeLabel }
   const [urlCsvText,  setUrlCsvText]  = useState(null);
 
+  // Guards handleUrlUpload's post-fetch state updates if this page unmounts
+  // (e.g. the user navigates away) while a URL fetch is still in flight.
+  const unmountedRef = useRef(false);
+  useEffect(() => () => { unmountedRef.current = true; }, []);
+
   const copyLink = () => {
     navigator.clipboard.writeText(inviteLink);
     setCopied(true);
@@ -641,6 +646,7 @@ export default function AddMembers() {
       if (!res.ok) throw new Error("Couldn't download a file from that URL.");
       const text = await res.text();
       clearInterval(tick);
+      if (unmountedRef.current) return;
       setUrlProgress(100);
       const sizeKb = new Blob([text]).size / 1024;
       const name = url.split("/").pop() || "file.csv";
@@ -652,6 +658,7 @@ export default function AddMembers() {
       setUrlStage("complete");
     } catch (err) {
       clearInterval(tick);
+      if (unmountedRef.current) return;
       setUrlStage("idle");
       setUrlProgress(0);
       setError(notifyError(err, { context: "Upload from URL" }));
