@@ -1691,8 +1691,7 @@ function DashboardContent({ isPaying, communityId }) {
           {stats.map((s) => (
             <div
               key={s.label}
-              className="bg-surface-container rounded-xl px-4 py-3 border border-surface-container-border"
-              style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
+              className="bg-surface-container rounded-xl px-4 py-3 border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
             >
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs text-gray-500 font-medium">
@@ -1721,8 +1720,7 @@ function DashboardContent({ isPaying, communityId }) {
         {/* Your Payments — paying admin's own dues in this community */}
         {isPaying && (
           <div
-            className="bg-surface-container rounded-xl border border-surface-container-border p-5 mb-5"
-            style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
+            className="bg-surface-container rounded-xl border border-surface-container-border p-5 mb-5 shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
           >
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-medium text-black">
@@ -1872,8 +1870,7 @@ function DashboardContent({ isPaying, communityId }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-5">
           {/* Payment Plans */}
           <div
-            className="rounded-xl border border-surface-container-border p-4 bg-[#D7E2FF]"
-            style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
+            className="rounded-xl border border-surface-container-border p-4 bg-[#D7E2FF] shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
           >
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-medium text-black">
@@ -1968,8 +1965,7 @@ function DashboardContent({ isPaying, communityId }) {
 
           {/* Recent Activity */}
           <div
-            className="bg-surface-container rounded-xl border border-surface-container-border p-4"
-            style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
+            className="bg-surface-container rounded-xl border border-surface-container-border p-4 shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
           >
             <span className="text-sm font-medium text-black block mb-4">
               Recent Activity
@@ -2067,8 +2063,7 @@ function DashboardContent({ isPaying, communityId }) {
 
         {/* Member Payments table */}
         <div
-          className="bg-surface-container rounded-xl border border-surface-container-border"
-          style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
+          className="bg-surface-container rounded-xl border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
         >
           <div className="flex items-center justify-between px-5 pt-4 pb-0">
             <span className="text-sm font-medium">Member Payments</span>

@@ -166,8 +166,7 @@ function toDateInput(iso) {
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
     <div
-      className="bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 flex items-center justify-between"
-      style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
+      className="bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 flex items-center justify-between shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
     >
       <div>
         <p className="text-xs text-gray-400 mb-1">{label}</p>

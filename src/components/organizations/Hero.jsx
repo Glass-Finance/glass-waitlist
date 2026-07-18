@@ -936,6 +936,7 @@ function DashboardOverlay() {
                     <div
                       key={s.id}
                       id={"dbo-" + s.id}
+                      className="shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
                       style={{
                         opacity: 0,
                         transform: "translateY(10px)",
@@ -944,7 +945,6 @@ function DashboardOverlay() {
                         borderRadius: 10,
                         padding: "12px 14px",
                         border: "1px solid #eef0f8",
-                        boxShadow: "0 1px 4px rgba(0,47,167,0.05)",
                       }}
                     >
                       <div

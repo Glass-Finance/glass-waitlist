@@ -594,8 +594,7 @@ function CommunityCard({ community, onClick }) {
   return (
     <div
       onClick={onClick}
-      className="bg-surface-container rounded-lg border border-surface-container-border overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col"
-      style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
+      className="bg-surface-container rounded-lg border border-surface-container-border overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg flex flex-col shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
     >
       <div className="p-5 flex-1">
         <div className="flex items-start justify-between mb-4">
@@ -705,8 +704,7 @@ function shortDate(dateStr) {
 function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
   return (
     <div
-      className="bg-surface-container rounded-lg border border-surface-container-border flex flex-col"
-      style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
+      className="bg-surface-container rounded-lg border border-surface-container-border flex flex-col shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
     >
       <div className="flex items-center gap-2 px-4 pt-3.5 pb-2 border-b border-hairline">
         {icon}

@@ -49,7 +49,7 @@ function statusStyle(paid, total) {
 
 function StatCard({ icon: Icon, label, value, color, bg }) {
   return (
-    <div className="bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 flex items-center justify-between" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+    <div className="bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 flex items-center justify-between shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
       <div>
         <p className="text-xs text-gray-400 mb-1">{label}</p>
         <p className="text-[13px] font-semibold text-black">{value}</p>
@@ -142,9 +142,8 @@ function EmptyState({ onAddMember, onCreatePlan }) {
             key={i}
             onClick={step.action ?? undefined}
             disabled={!step.action}
-            className={`w-full bg-white rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left transition-colors
+            className={`w-full bg-white rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left transition-colors shadow-[0_1px_4px_rgba(0,47,167,0.05)]
               ${step.action ? "cursor-pointer hover:bg-blue-50/30" : "cursor-default"}`}
-            style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}
           >
             <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
               style={step.iconStyle}>
@@ -318,7 +317,7 @@ export default function Members() {
       </div>
       )}
 
-      {members.length > 0 && <div className="bg-surface-container rounded-xl border border-surface-container-border" style={{ boxShadow: "0 1px 4px rgba(0,47,167,0.05)" }}>
+      {members.length > 0 && <div className="bg-surface-container rounded-xl border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
         <div className="flex items-center justify-between px-5 py-4">
           <span className="text-sm font-medium text-black">Member Payments</span>
           <button onClick={exportCsv} disabled={isExporting} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 transition-all bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
