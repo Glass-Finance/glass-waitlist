@@ -95,18 +95,11 @@ export default function MembersHero() {
             "linear-gradient(105deg, rgba(2,3,18,0.97) 0%, rgba(3,4,22,0.95) 35%, rgba(6,3,20,0.88) 60%, rgba(10,4,24,0.75) 100%)",
         }}
       /> */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(105deg, rgba(2,3,18,0.82) 0%, rgba(3,4,22,0.78) 35%, rgba(6,3,20,0.65) 60%, rgba(10,4,24,0.45) 100%)",
-        }}
-      />
+      <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(2,3,18,0.82)_0%,rgba(3,4,22,0.78)_35%,rgba(6,3,20,0.65)_60%,rgba(10,4,24,0.45)_100%)]" />
 
       <canvas
         id="members-hero-canvas"
-        className="absolute inset-0 pointer-events-none select-none"
-        style={{ width: "100%", height: "100%", opacity: 0.035, mixBlendMode: "screen" }}
+        className="absolute inset-0 pointer-events-none select-none w-full h-full opacity-[0.035] mix-blend-screen"
       />
 
       {/* Glow blobs */}
@@ -134,24 +127,10 @@ export default function MembersHero() {
         {/* Left: Text */}
         <div
           ref={containerRef}
-          className="flex flex-col justify-start pt-8"
-          style={{
-            width: "45%",
-            flexShrink: 0,
-            position: "relative",
-            marginTop: "-60px",
-          }}
+          className="flex flex-col justify-start pt-8 w-[45%] flex-shrink-0 relative -mt-[60px]"
         >
           {/* Line 1 */}
-          <div
-            style={{
-              fontSize: "clamp(38px,5.8vw,62px)",
-              fontWeight: 800,
-              lineHeight: 1.05,
-              letterSpacing: "-0.03em",
-              marginBottom: 2,
-            }}
-          >
+          <div className="text-[clamp(38px,5.8vw,62px)] font-extrabold leading-[1.05] tracking-[-0.03em] mb-0.5">
             <BlurText
               text="Pay Your Dues"
               delay={80}
@@ -163,15 +142,7 @@ export default function MembersHero() {
           </div>
 
           {/* Line 2 */}
-          <div
-            className="mb-6 text-white"
-            style={{
-              fontSize: "clamp(38px,5.8vw,62px)",
-              fontWeight: 800,
-              lineHeight: 1.05,
-              letterSpacing: "-0.03em",
-            }}
-          >
+          <div className="mb-6 text-white text-[clamp(38px,5.8vw,62px)] font-extrabold leading-[1.05] tracking-[-0.03em]">
             <BlurText
               text="Effortlessly"
               delay={400}
@@ -183,7 +154,7 @@ export default function MembersHero() {
           </div>
 
           {/* Sub-text */}
-          <div className="mb-8" style={{ maxWidth: 420 }}>
+          <div className="mb-8 max-w-[420px]">
             <VariableProximity
               label="Stop sending screenshots of receipts. Get instant proof of payment, track your history, and never miss a deadline again."
               s
@@ -192,13 +163,8 @@ export default function MembersHero() {
               containerRef={containerRef}
               radius={140}
               falloff="gaussian"
-              className="leading-relaxed"
-              style={{
-                fontSize: 15,
-                color: "rgba(255,255,255,0.55)",
-                lineHeight: 1.7,
-                fontFamily: "Inter,-apple-system,sans-serif",
-              }}
+              className="text-[15px] text-[rgba(255,255,255,0.55)] leading-[1.7]"
+              style={{ fontFamily: "Inter,-apple-system,sans-serif" }}
             />
           </div>
 
@@ -214,11 +180,8 @@ export default function MembersHero() {
           >
             <button
               onClick={handleJoin}
-              className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer"
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontWeight: 500,
-              }}
+              className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer font-medium"
+              style={{ fontFamily: "Inter, sans-serif" }}
             >
               Join A Community
               <motion.span
@@ -228,10 +191,7 @@ export default function MembersHero() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                }}
+                className="inline-flex items-center"
               >
                 <ArrowRight className="w-3.5 h-3.5" />
               </motion.span>
@@ -240,13 +200,7 @@ export default function MembersHero() {
         </div>
 
         {/* Right: iPhone */}
-        <div
-          className="relative self-stretch flex items-end justify-start"
-          style={{
-            width: "55%",
-            paddingBottom: 0,
-          }}
-        >
+        <div className="relative self-stretch flex items-end justify-start w-[55%] pb-0">
           <motion.div
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}
@@ -255,11 +209,7 @@ export default function MembersHero() {
               ease: [0.22, 1, 0.36, 1],
               delay: 0.25,
             }}
-            style={{
-              position: "relative",
-              width: "min(95%, 620px)",
-              marginLeft: "-90px",
-            }}
+            className="relative w-[min(95%,620px)] -ml-[90px]"
           >
             {/* loading="lazy" here (and on the mobile copy below) is
                 deliberate, not an oversight: this and the mobile-only
@@ -276,11 +226,7 @@ export default function MembersHero() {
             <img
               src={iphone}
               alt="Glass app on iPhone"
-              className="relative block w-full"
-              style={{
-                zIndex: 10,
-                objectFit: "contain",
-              }}
+              className="relative block w-full z-10 object-contain"
               draggable={false}
               loading="lazy"
               decoding="async"
@@ -297,15 +243,7 @@ export default function MembersHero() {
           the whole group up and leaving a gap underneath. */}
       <div className="sm:hidden absolute top-[68px] left-0 right-0 bottom-0 z-10 flex flex-col">
         <div ref={containerRef} className="px-6 pt-30 relative">
-          <div
-            style={{
-              fontSize: "clamp(38px,10vw,56px)",
-              fontWeight: 600,
-              lineHeight: 1.05,
-              letterSpacing: "-0.03em",
-              marginBottom: 2,
-            }}
-          >
+          <div className="text-[clamp(38px,10vw,56px)] font-semibold leading-[1.05] tracking-[-0.03em] mb-0.5">
             <BlurText
               text="Pay Your Dues"
               delay={80}
@@ -313,22 +251,9 @@ export default function MembersHero() {
               direction="top"
               stepDuration={0.36}
               className="text-white block"
-              // style={{
-              //   fontSize: "clamp(38px,10vw,56px)",
-              //   fontWeight: 800,
-              //   lineHeight: 1.05,
-              // }}
             />
           </div>
-          <div
-            className="mb-6 text-white"
-            style={{
-              fontSize: "clamp(38px,10vw,62px)",
-              fontWeight: 600,
-              lineHeight: 1.05,
-              letterSpacing: "-0.03em",
-            }}
-          >
+          <div className="mb-6 text-white text-[clamp(38px,10vw,62px)] font-semibold leading-[1.05] tracking-[-0.03em]">
             <BlurText
               text="Effortlessly"
               delay={400}
@@ -338,17 +263,14 @@ export default function MembersHero() {
               className="block"
             />
           </div>
-          <p
-            className="text-[15px] leading-relaxed mb-8"
-            style={{ color: "rgba(255,255,255,0.5)" }}
-          >
+          <p className="text-[15px] leading-relaxed mb-8 text-white/50">
             Stop sending screenshots of receipts. Get instant proof of payment,
             track your history, and never miss a deadline again.
           </p>
           <button
             onClick={handleJoin}
-            className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer"
-            style={{ fontFamily: "Inter, sans-serif", fontWeight: 500 }}
+            className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer font-medium"
+            style={{ fontFamily: "Inter, sans-serif" }}
           >
             Join A Community
             <motion.span
@@ -358,7 +280,7 @@ export default function MembersHero() {
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              style={{ display: "inline-flex", alignItems: "center" }}
+              className="inline-flex items-center"
             >
               <ArrowRight className="w-3.5 h-3.5" />
             </motion.span>
@@ -369,23 +291,9 @@ export default function MembersHero() {
             always fills flush to the bottom regardless of phone height,
             instead of floating with a gap beneath it. Cropped from the
             top (items-end) if it doesn't fit, never from the bottom. */}
-        <div
-          className="absolute bottom-0 left-0 right-0 flex justify-center items-end overflow-hidden"
-          style={{ maxHeight: "58vh" }}
-        >
-          <div style={{ position: "relative", width: 330 }}>
-            <div
-              style={{
-                position: "absolute",
-                top: "1.8%",
-                left: "8.2%",
-                width: "83.5%",
-                height: "100%",
-                borderRadius: "38px",
-                overflow: "hidden",
-                zIndex: 2,
-              }}
-            >
+        <div className="absolute bottom-0 left-0 right-0 flex justify-center items-end overflow-hidden max-h-[58vh]">
+          <div className="relative w-[330px]">
+            <div className="absolute [top:1.8%] [left:8.2%] [width:83.5%] h-full rounded-[38px] overflow-hidden z-[2]">
               {/* <div
                 style={{
                   width: 390,
@@ -402,13 +310,7 @@ export default function MembersHero() {
             <img
               src={iphone}
               alt="Glass app on iPhone"
-              style={{
-                position: "relative",
-                zIndex: 10,
-                width: "100%",
-                display: "block",
-                filter: "drop-shadow(0 16px 40px rgba(120,10,160,0.5))",
-              }}
+              className="relative z-10 w-full block drop-shadow-[0_16px_40px_rgba(120,10,160,0.5)]"
               draggable={false}
               loading="lazy"
               decoding="async"
@@ -418,14 +320,7 @@ export default function MembersHero() {
       </div>
 
       {/* Bottom fades */}
-      <div
-        className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 hidden sm:block"
-        style={{
-          height: "40px",
-          background:
-            "linear-gradient(to top, rgba(229,229,229,0.97) 0%, rgba(229,229,229,0.65) 35%, rgba(229,229,229,0.1) 75%, transparent 100%)",
-        }}
-      />
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 hidden sm:block h-10 bg-[linear-gradient(to_top,rgba(229,229,229,0.97)_0%,rgba(229,229,229,0.65)_35%,rgba(229,229,229,0.1)_75%,transparent_100%)]" />
     </section>
     </>
   );
