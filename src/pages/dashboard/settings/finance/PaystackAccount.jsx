@@ -116,8 +116,7 @@ function RemoveAccountModal({ onClose, onConfirm, isDeleting }) {
     <>
       <div
         onClick={onClose}
-        className="fixed inset-0 z-70"
-        style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
+        className="fixed inset-0 z-70 bg-black/35 backdrop-blur-xs"
       />
       <div className="fixed inset-0 z-80 flex items-center justify-center p-4">
         <div

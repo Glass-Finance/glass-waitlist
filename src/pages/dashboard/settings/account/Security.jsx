@@ -94,8 +94,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
+      className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/35 backdrop-blur-xs"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl" style={{ border: "1px solid var(--color-surface-container-border)" }}>

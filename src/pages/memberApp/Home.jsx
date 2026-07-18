@@ -29,10 +29,10 @@ import { frequencyAdverb } from "../../utils/recurring";
 function AutoPayPrompt({ prompt, onDismiss, onEnable }) {
   return (
     <div
+      className="bg-black/35 backdrop-blur-xs"
       style={{
         position: "fixed", inset: 0, zIndex: 80, display: "flex",
         alignItems: "flex-end", justifyContent: "center",
-        background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)",
       }}
       onClick={(e) => e.target === e.currentTarget && onDismiss()}
     >

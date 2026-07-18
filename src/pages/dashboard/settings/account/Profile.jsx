@@ -303,8 +303,7 @@ export default function Profile() {
 
       {deleteModal && (
         <div
-          className="fixed inset-0 z-70 flex items-center justify-center p-4"
-          style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
+          className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/35 backdrop-blur-xs"
         >
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" style={{ border: "1px solid var(--color-surface-container-border)" }}>
             <div
