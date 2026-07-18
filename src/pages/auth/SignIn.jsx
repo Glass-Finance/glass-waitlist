@@ -28,6 +28,7 @@ export default function SignIn() {
   const { login, setSession } = useAuth();
   const isMemberSignIn = location.pathname === "/member/app-sign-in";
   const [form, setForm] = useState({ email: "", password: "" });
+  const [fieldErrors, setFieldErrors] = useState({ email: "", password: "" });
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -58,10 +59,31 @@ export default function SignIn() {
     }
   }, []);
 
+  function validateField(field, value) {
+    if (field === "email") {
+      if (!value.trim()) return "Email is required.";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return "Enter a valid email address.";
+    }
+    if (field === "password") {
+      if (!value) return "Password is required.";
+    }
+    return "";
+  }
+
   function set(field) {
     return (e) => {
-      setForm((f) => ({ ...f, [field]: e.target.value }));
+      const value = e.target.value;
+      setForm((f) => ({ ...f, [field]: value }));
       setError("");
+      // Only live-validate once the field has already been flagged invalid,
+      // so a fresh field doesn't turn red before the user's even left it.
+      setFieldErrors((fe) => (fe[field] ? { ...fe, [field]: validateField(field, value) } : fe));
+    };
+  }
+
+  function handleBlur(field) {
+    return (e) => {
+      setFieldErrors((fe) => ({ ...fe, [field]: validateField(field, e.target.value) }));
     };
   }
 
@@ -128,16 +150,10 @@ export default function SignIn() {
   }
 
   async function handleSignIn() {
-    if (!form.email.trim() && !form.password) {
-      setError("Email and password are required.");
-      return;
-    }
-    if (!form.email.trim()) {
-      setError("Email is required.");
-      return;
-    }
-    if (!form.password) {
-      setError("Password is required.");
+    const emailError = validateField("email", form.email);
+    const passwordError = validateField("password", form.password);
+    if (emailError || passwordError) {
+      setFieldErrors({ email: emailError, password: passwordError });
       return;
     }
     setLoading(true);
@@ -216,6 +232,7 @@ export default function SignIn() {
               onKeyDown={(e) => e.key === "Enter" && handleMfaVerify()}
               autoComplete="one-time-code"
               disabled={loading}
+              error={error}
             />
             <ErrorMessage message={error} />
           </div>
@@ -275,10 +292,13 @@ export default function SignIn() {
             placeholder="you@example.com"
             value={form.email}
             onChange={set("email")}
+            onBlur={handleBlur("email")}
             autoComplete="email"
             inputMode="email"
             disabled={loading}
+            error={fieldErrors.email}
           />
+          <ErrorMessage message={fieldErrors.email} />
         </div>
 
         <div>
@@ -294,8 +314,10 @@ export default function SignIn() {
             placeholder="Enter your password"
             value={form.password}
             onChange={set("password")}
+            onBlur={handleBlur("password")}
             autoComplete="current-password"
             disabled={loading}
+            error={fieldErrors.password}
             rightElement={
               <button
                 type="button"
@@ -308,7 +330,7 @@ export default function SignIn() {
               </button>
             }
           />
-          <ErrorMessage message={error} />
+          <ErrorMessage message={fieldErrors.password || error} />
         </div>
 
         <PrimaryButton onClick={handleSignIn} loading={loading} disabled={!isReady}>
