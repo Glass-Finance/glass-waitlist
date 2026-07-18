@@ -20,6 +20,12 @@ function MfaModal({ mode, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
   async function startSetup() {
     setStage("loading");
     setError("");

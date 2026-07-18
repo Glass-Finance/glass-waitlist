@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Info, X, Trash2, AlertTriangle } from "lucide-react";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityAccount } from "../../../../hooks/useCommunityAccount";
@@ -106,6 +106,12 @@ function StatusBadge({ status }) {
 
 // Confirm-delete modal for removing the payout account
 function RemoveAccountModal({ onClose, onConfirm, isDeleting }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
   return (
     <>
       <div

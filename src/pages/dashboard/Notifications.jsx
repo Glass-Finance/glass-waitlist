@@ -143,6 +143,11 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
 // with the full (untruncated) content plus a contextual action button that
 // deep-links to the related page when one can be inferred.
 function NotificationDetailModal({ n, onClose }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
   const navigate = useNavigate();
   const cat = categorize(n);
   const { label: catLabel, border } = SECTION_CONFIG[cat];

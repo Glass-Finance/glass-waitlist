@@ -37,6 +37,13 @@ export default function Profile() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
   const [deletionCode, setDeletionCode] = useState(Array(6).fill(""));
+
+  useEffect(() => {
+    if (!deleteModal) return;
+    const handler = (e) => { if (e.key === "Escape") setDeleteModal(false); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [deleteModal]);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
 

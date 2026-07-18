@@ -32,6 +32,12 @@ export default function AccountFormModal({
   const [manualMode, setManualMode] = useState(false); // allow typing accName after resolve fails
 
   useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  useEffect(() => {
     getBanks()
       .then(({ data }) => {
         const list = data?.data ?? data;

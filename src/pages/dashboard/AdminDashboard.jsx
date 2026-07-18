@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   Info,
@@ -166,6 +166,12 @@ export function AdminPaymentModal({ item, onClose }) {
   // still takes a beat to actually leave the page. Without this, the button
   // flashes back to "Pay" during that gap. (Same fix as PaymentSummary.)
   const [redirecting, setRedirecting] = useState(false);
+
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
 
   const savedMethod = (authorisations ?? []).find(
     (a) => (a.status ?? "").toUpperCase() === "ACTIVE",
@@ -491,6 +497,12 @@ function AddMemberModal({ onClose, communityId }) {
   const [urlProgress, setUrlProgress] = useState(0);
   const [urlFileInfo, setUrlFileInfo] = useState(null);
   const [urlCsvText, setUrlCsvText] = useState(null);
+
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
 
   // Manual tab state
   const [emails, setEmails] = useState([]);

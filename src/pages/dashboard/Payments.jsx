@@ -804,6 +804,11 @@ function Step3({ planType, form, slug, accounts }) {
 
 // ── Create plan modal ─────────────────────────────────────────────────────────
 function CreatePlanModal({ communityId, onClose, onCreate, creating, createError }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
   const [step, setStep] = useState(1);
   const [planType, setPlanType] = useState("recurring");
   const [success, setSuccess] = useState(false);
@@ -1015,6 +1020,11 @@ function CreatePlanModal({ communityId, onClose, onCreate, creating, createError
 
 // ── Edit plan modal ───────────────────────────────────────────────────────────
 function EditPlanModal({ plan, communityId, onClose, onSave, saving }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
   const initialEndAt = toDateInput(plan.endAt ?? plan.recurringPlan?.endAt);
   const [form, setForm] = useState({
     name: plan.name ?? "",
@@ -1391,6 +1401,11 @@ function EditPlanModal({ plan, communityId, onClose, onSave, saving }) {
 // "auto-scheduled" reminder configured at plan creation; admins choose
 // frequency + channels here and send on demand.
 function SendReminderModal({ plan, onClose, onSend, sending }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
   const [frequency, setFrequency] = useState("EVERY_3_DAYS");
   const [channels, setChannels] = useState(new Set(["IN_APP"]));
 
@@ -1500,6 +1515,11 @@ function SendReminderModal({ plan, onClose, onSend, sending }) {
 
 // ── Plan members modal ────────────────────────────────────────────────────────
 function PlanMembersModal({ plan, communityId, onClose }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
   const [search, setSearch] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
@@ -2097,6 +2117,11 @@ function MenuItem({ icon, label, onClick, disabled, danger }) {
 // existing plan rather than re-exposed as editable fields -- a duplicate is
 // meant to recreate the same plan, just with fresh dates.
 function DuplicatePlanModal({ plan, onClose, onDuplicate, duplicating }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
   const [title, setTitle] = useState(`${plan.name ?? ""} (Copy)`.trim());
   const [startDate, setStartDate] = useState(toDateInput(new Date().toISOString()));
   const [dueDate, setDueDate] = useState("");

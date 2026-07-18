@@ -42,6 +42,13 @@ export default function CommunityProfile() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
 
+  useEffect(() => {
+    if (!deleteModal) return;
+    const handler = (e) => { if (e.key === "Escape") setDeleteModal(false); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [deleteModal]);
+
   async function handleDeleteCommunity() {
     setDeleteLoading(true);
     setDeleteError("");

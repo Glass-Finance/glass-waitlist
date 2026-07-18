@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, UserX, Clock, ShieldCheck, Copy, Check, UserCheck, Building2, ChevronRight, DollarSign, Download } from "lucide-react";
@@ -468,6 +468,11 @@ export default function Members() {
 }
 
 function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable, inviteLink }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
   const [email, setEmail] = useState("");
   const defaultRole = roles.find((r) => r.name === "Community Member") ?? roles[0];
   const [roleId, setRoleId] = useState(defaultRole?.id ?? "");

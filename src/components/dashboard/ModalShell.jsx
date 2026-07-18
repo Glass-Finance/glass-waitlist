@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { X } from "lucide-react";
 
 // Shared dashboard modal chrome — extracted out of AdminPanel.jsx so other
@@ -5,6 +6,14 @@ import { X } from "lucide-react";
 // settings) can build confirm dialogs on the same visual language instead
 // of falling back to window.confirm().
 export default function ModalShell({ title, subtitle, onClose, children }) {
+  // Escape-to-close -- every dashboard modal built on this shell gets this
+  // for free; hand-rolled modals elsewhere in the app don't have it yet.
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
   return (
     <div
       className="fixed inset-0 z-70 flex items-center justify-center p-4"
