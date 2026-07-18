@@ -272,7 +272,7 @@ export default function MFA() {
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
-        <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>
+        <h1 className="text-lg font-semibold text-[#111] m-0">
           {flow === "setup" ? "Set Up MFA" : flow === "disable" ? "Disable MFA" : "Multi-Factor Authentication"}
         </h1>
       </div>
