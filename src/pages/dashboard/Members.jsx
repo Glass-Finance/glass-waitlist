@@ -3,6 +3,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, UserX, Clock, ShieldCheck, Copy, Check, UserCheck, Building2, ChevronRight, DollarSign, Download } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
+import { useCommunity } from "../../hooks/useCommunity";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
@@ -165,6 +166,7 @@ export default function Members() {
   usePageTitle("Members");
   const navigate = useNavigate();
   const communityId = useActiveCommunityId();
+  const { data: community } = useCommunity(communityId);
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -443,7 +445,11 @@ export default function Members() {
           error={inviteMember.error ? getErrorMessage(inviteMember.error) : null}
           roles={roles}
           rolesUnavailable={usingFallbackRoles}
-          inviteLink={communityId ? `${APP_ORIGIN}/member/join?community=${communityId}` : null}
+          inviteLink={
+            (community?.slug || communityId)
+              ? `${APP_ORIGIN}/member/join?community=${community?.slug || communityId}`
+              : null
+          }
         />
       )}
 

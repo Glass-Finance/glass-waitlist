@@ -482,7 +482,7 @@ const FALLBACK_ROLES = [{ id: "member", name: "Community Member" }];
 const CSV_TEMPLATE =
   "First Name,Last Name,Email Address,Phone Number,Member ID,Role/Title\nMuhammed,Dorachinma,Muhammed@example.com,0812990293,A23434,Student";
 
-function AddMemberModal({ onClose, communityId }) {
+function AddMemberModal({ onClose, communityId, communitySlug }) {
   const [tab, setTab] = useState("upload");
   const [linkCopied, setLinkCopied] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -514,8 +514,14 @@ function AddMemberModal({ onClose, communityId }) {
 
   const fileRef = useRef(null);
 
-  const inviteLink = communityId
-    ? `${APP_ORIGIN}/member/join?community=${communityId}`
+  // Prefer the community's real slug over communityId -- that's resolved
+  // from whatever's in the current URL/localStorage, which can just as
+  // easily be the raw backend UUID as the friendly slug (see
+  // useActiveCommunityId.js), producing an ugly, opaque invite link
+  // whenever it is.
+  const inviteIdentifier = communitySlug || communityId;
+  const inviteLink = inviteIdentifier
+    ? `${APP_ORIGIN}/member/join?community=${inviteIdentifier}`
     : "";
   const { inviteMember } = useCommunityMembers(communityId);
   const { data: rolesData } = useRoles();
@@ -2270,6 +2276,7 @@ function DashboardContent({ isPaying, communityId }) {
       {addMemberOpen && (
         <AddMemberModal
           communityId={communityId}
+          communitySlug={community?.slug}
           onClose={() => setAddMemberOpen(false)}
         />
       )}
