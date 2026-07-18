@@ -76,26 +76,23 @@ export default function Security() {
       {/* ── Parallax glow orbs ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         <motion.div
-          style={{ y: orb1Y, position: "absolute", top: "10%", left: "5%", width: 340, height: 340, borderRadius: "50%", background: "radial-gradient(circle, rgba(28,43,138,0.08) 0%, transparent 70%)", filter: "blur(60px)", willChange: "transform" }}
+          className="absolute top-[10%] left-[5%] w-[340px] h-[340px] rounded-full bg-[radial-gradient(circle,rgba(28,43,138,0.08)_0%,transparent_70%)] blur-[60px] will-change-transform"
+          style={{ y: orb1Y }}
         />
         <motion.div
-          style={{ y: orb2Y, position: "absolute", bottom: "12%", right: "8%", width: 280, height: 280, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 70%)", filter: "blur(55px)", willChange: "transform" }}
+          className="absolute bottom-[12%] right-[8%] w-[280px] h-[280px] rounded-full bg-[radial-gradient(circle,rgba(124,58,237,0.07)_0%,transparent_70%)] blur-[55px] will-change-transform"
+          style={{ y: orb2Y }}
         />
         <motion.div
-          style={{ y: orb3Y, position: "absolute", top: "40%", right: "20%", width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(28,43,138,0.05) 0%, transparent 70%)", filter: "blur(45px)", willChange: "transform" }}
+          className="absolute top-[40%] right-[20%] w-[200px] h-[200px] rounded-full bg-[radial-gradient(circle,rgba(28,43,138,0.05)_0%,transparent_70%)] blur-[45px] will-change-transform"
+          style={{ y: orb3Y }}
         />
       </div>
       <div className="relative z-10 max-w-[1140px] mx-auto px-6">
         {/* ── Header ── */}
-        <div className="mb-8 md:mb-16" style={{ textAlign: "center" }}>
+        <div className="mb-8 md:mb-16 text-center">
           {/* Badge */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginBottom: "clamp(16px, 4vw, 28px)",
-            }}
-          >
+          <div className="flex justify-center [margin-bottom:clamp(16px,4vw,28px)]">
             <motion.span
               initial={{ clipPath: "inset(0% 100% 0% 0%)" }}
               whileInView={{ clipPath: "inset(0% 0% 0% 0%)" }}
@@ -108,17 +105,8 @@ export default function Security() {
           </div>
 
           {/* Headline */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginBottom: 16,
-            }}
-          >
-            <h2
-              className="text-[clamp(32px,5.5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight"
-              style={{ maxWidth: 1080 }}
-            >
+          <div className="flex justify-center mb-4">
+            <h2 className="text-[clamp(32px,5.5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight max-w-[1080px]">
               <BlurText
                 text="Bank-grade security for your peace of mind"
                 delay={80}
@@ -131,10 +119,9 @@ export default function Security() {
           </div>
 
           {/* Subtext */}
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div className="flex justify-center">
             <motion.p
-              className="text-[17px] text-[#00000099] leading-relaxed"
-              style={{ maxWidth: 700, textAlign: "center" }}
+              className="text-[17px] text-[#00000099] leading-relaxed max-w-[700px] text-center"
               initial={{ clipPath: "inset(0% 0% 100% 0%)", opacity: 0 }}
               whileInView={{ clipPath: "inset(0% 0% 0% 0%)", opacity: 1 }}
               viewport={{ once: true, amount: 0.5 }}
@@ -146,10 +133,7 @@ export default function Security() {
         </div>
 
         {/* ── Cards ── */}
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-14 xl:gap-20 mb-14 justify-items-center"
-          style={{ alignItems: "start" }}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-14 xl:gap-20 mb-14 justify-items-center items-start">
           {cards.map(({ icon, title, desc }, i) => {
             const { rotate, y } = TILTS[i];
 
@@ -157,82 +141,27 @@ export default function Security() {
               <div
                 key={title}
                 ref={(el) => (cardRefs.current[i] = el)}
+                className="w-full max-w-[320px] [transform-origin:top_center] rounded-3xl bg-[#EFEFF1E5] py-8 px-6 flex flex-col items-center text-center"
                 style={{
-                  width: "100%",
-                  maxWidth: "320px",
-
                   transform:
                     window.innerWidth >= 1024
                       ? `rotateZ(${rotate}deg) translateY(${y + 20}px)`
                       : window.innerWidth >= 640
                         ? `rotateZ(${rotate * 0.4}deg) translateY(${(y + 20) * 0.5}px)`
                         : "none",
-                        
                   transition: `transform 0.7s cubic-bezier(0.22,1,0.36,1) ${200 + i * 100}ms`,
-
-                  transformOrigin: "top center",
-
-                  borderRadius: 24,
-                  background: "#EFEFF1E5",
-
-                  padding: "32px 24px",
-
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  textAlign: "center",
-
-                  // boxShadow:
-                  //   "0 0 0 1px rgba(255,255,255,0.7) inset, 0 2px 16px rgba(28,43,138,0.06)",
                 }}
               >
-                <div
-                  style={{
-                    position: "relative",
-                    width: 170,
-                    height: 170,
-                    marginBottom: 28,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
+                <div className="relative w-[170px] h-[170px] mb-7 flex items-center justify-center">
                   {/* Glow */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      borderRadius: "50%",
-                      background:
-                        "radial-gradient(circle, rgba(168,85,247,0.35) 0%, rgba(168,85,247,0.18) 45%, transparent 75%)",
-                      filter: "blur(20px)",
-                    }}
-                  />
+                  <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(168,85,247,0.35)_0%,rgba(168,85,247,0.18)_45%,transparent_75%)] blur-[20px]" />
 
                   {/* White circle */}
-                  <div
-                    style={{
-                      width: 78,
-                      height: 78,
-                      borderRadius: "50%",
-                      background: "#fff",
-                      boxShadow:
-                        "0 0 0 6px rgba(255,255,255,0.35), 0 4px 20px rgba(28,43,138,0.10)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      position: "relative",
-                      zIndex: 1,
-                    }}
-                  >
+                  <div className="w-[78px] h-[78px] rounded-full bg-white shadow-[0_0_0_6px_rgba(255,255,255,0.35),0_4px_20px_rgba(28,43,138,0.1)] flex items-center justify-center relative z-[1]">
                     <img
                       src={icon}
                       alt={title}
-                      style={{
-                        width: 28,
-                        height: 28,
-                        objectFit: "contain",
-                      }}
+                      className="w-7 h-7 object-contain"
                       loading="lazy"
                       decoding="async"
                     />
@@ -240,28 +169,12 @@ export default function Security() {
                 </div>
 
                 {/* Title */}
-                <h3
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 700,
-                    color: "#1C2B8A",
-                    marginBottom: 12,
-                    lineHeight: 1.25,
-                  }}
-                >
+                <h3 className="text-lg font-bold text-[#1C2B8A] mb-3 leading-[1.25]">
                   {title}
                 </h3>
 
                 {/* Description */}
-                <p
-                  style={{
-                    fontSize: 14,
-                    color: "rgba(0,0,0,0.5)",
-                    lineHeight: 1.65,
-                    margin: 0,
-                    maxWidth: 260,
-                  }}
-                >
+                <p className="text-sm text-black/50 leading-[1.65] m-0 max-w-[260px]">
                   {desc}
                 </p>
               </div>
@@ -289,15 +202,7 @@ export default function Security() {
               href="https://tribuneonlineng.com/team-glass-shines-as-winner-of-5th-babcock-innovation-challenge/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0 border border-[#0f1d6e] text-[#0f1d6e] font-semibold text-[14px] px-6 py-3 rounded-full no-underline transition-all"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#0f1d6e";
-                e.currentTarget.style.color = "#fff";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "";
-                e.currentTarget.style.color = "#0f1d6e";
-              }}
+              className="flex-shrink-0 border border-[#0f1d6e] text-[#0f1d6e] font-semibold text-[14px] px-6 py-3 rounded-full no-underline transition-all hover:bg-[#0f1d6e] hover:text-white"
             >
               Check It Out
             </a>
