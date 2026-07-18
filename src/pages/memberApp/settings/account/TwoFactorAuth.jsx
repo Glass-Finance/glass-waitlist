@@ -21,12 +21,7 @@ function CodeInput({ value, onChange, disabled }) {
       value={value}
       disabled={disabled}
       onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, 6))}
-      style={{
-        width: "100%", padding: "12px 16px", fontSize: 22, fontWeight: 700,
-        letterSpacing: 8, textAlign: "center", borderRadius: 12,
-        border: "1.5px solid #D0D0D0", background: "#FAFAFA",
-        outline: "none", color: "#111",
-      }}
+      className="w-full py-3 px-4 text-[22px] font-bold tracking-[8px] text-center rounded-xl border-[1.5px] border-[#D0D0D0] bg-[#FAFAFA] outline-none text-[#111]"
     />
   );
 }
@@ -82,32 +77,26 @@ function SetupFlow({ onSuccess, onCancel }) {
 
   if (stage === "idle") {
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <div style={{ background: "#F0F4FF", borderRadius: 14, padding: "18px 16px", textAlign: "center" }}>
-          <Shield size={28} style={{ color: "#002FA7", marginBottom: 10 }} />
-          <p style={{ fontSize: 15, fontWeight: 600, color: "#111", margin: "0 0 6px" }}>
+      <div className="flex flex-col gap-4">
+        <div className="bg-[#F0F4FF] rounded-2xl py-[18px] px-4 text-center">
+          <Shield size={28} className="text-brand mb-2.5" />
+          <p className="text-[15px] font-semibold text-[#111] mb-1.5">
             Protect your account with MFA
           </p>
-          <p style={{ fontSize: 13, color: "#666", margin: 0, lineHeight: 1.5 }}>
+          <p className="text-[13px] text-[#666] m-0 leading-relaxed">
             Use an authenticator app like Google Authenticator or Authy to generate time-based codes at login.
           </p>
         </div>
 
         <button
           onClick={startSetup}
-          style={{
-            padding: "14px", borderRadius: 12, border: "none", cursor: "pointer",
-            background: "#002FA7", color: "#fff", fontSize: 15, fontWeight: 600,
-          }}
+          className="p-3.5 rounded-xl border-none cursor-pointer bg-[#002FA7] text-white text-[15px] font-semibold"
         >
           Set Up MFA
         </button>
         <button
           onClick={onCancel}
-          style={{
-            padding: "12px", borderRadius: 12, border: "1.5px solid #D0D0D0",
-            background: "#fff", color: "#555", fontSize: 14, cursor: "pointer",
-          }}
+          className="p-3 rounded-xl border-[1.5px] border-[#D0D0D0] bg-white text-[#555] text-sm cursor-pointer"
         >
           Cancel
         </button>
@@ -121,22 +110,22 @@ function SetupFlow({ onSuccess, onCancel }) {
 
   if (stage === "qr" || stage === "verifying") {
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: 0 }}>
+      <div className="flex flex-col gap-4">
+        <p className="text-sm font-semibold text-[#111] m-0">
           1. Scan this QR code with your authenticator app
         </p>
 
         {/* QR code display */}
         {qrSrc ? (
-          <div style={{ display: "flex", justifyContent: "center", padding: "16px", background: "#fff", borderRadius: 12, border: "1px solid var(--color-outline-on-surface)" }}>
-            <img src={qrSrc} alt="MFA QR code" style={{ width: 180, height: 180 }} />
+          <div className="flex justify-center p-4 bg-white rounded-xl border border-outline-on-surface">
+            <img src={qrSrc} alt="MFA QR code" className="w-[180px] h-[180px]" />
           </div>
         ) : qrUri ? (
-          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid var(--color-outline-on-surface)", padding: "12px 16px" }}>
-            <p style={{ fontSize: 11, fontWeight: 600, color: "#999", textTransform: "uppercase", letterSpacing: 0.4, margin: "0 0 6px" }}>
+          <div className="bg-white rounded-xl border border-outline-on-surface py-3 px-4">
+            <p className="text-[11px] font-semibold text-[#999] uppercase tracking-[0.4px] mb-1.5">
               QR URI (scan or paste into your app)
             </p>
-            <p style={{ fontSize: 11, color: "#555", wordBreak: "break-all", margin: 0, lineHeight: 1.4 }}>
+            <p className="text-[11px] text-[#555] break-all m-0 leading-snug">
               {qrUri}
             </p>
           </div>
@@ -145,16 +134,16 @@ function SetupFlow({ onSuccess, onCancel }) {
         {/* Manual secret */}
         {setupData?.secret && (
           <div>
-            <p style={{ fontSize: 13, color: "#666", margin: "0 0 8px" }}>
+            <p className="text-[13px] text-[#666] mb-2">
               Or enter this key manually:
             </p>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "#F5F5F5", borderRadius: 10, padding: "10px 14px" }}>
-              <code style={{ flex: 1, fontSize: 14, fontWeight: 600, letterSpacing: 2, color: "#111", wordBreak: "break-all" }}>
+            <div className="flex items-center gap-2.5 bg-[#F5F5F5] rounded-[10px] py-2.5 px-3.5">
+              <code className="flex-1 text-sm font-semibold tracking-[2px] text-[#111] break-all">
                 {setupData.secret}
               </code>
               <button
                 onClick={copySecret}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "#002FA7", flexShrink: 0, display: "flex" }}
+                className="bg-transparent border-none cursor-pointer text-brand flex-shrink-0 flex"
               >
                 {copied ? <Check size={16} /> : <Copy size={16} />}
               </button>
@@ -162,26 +151,22 @@ function SetupFlow({ onSuccess, onCancel }) {
           </div>
         )}
 
-        <p style={{ fontSize: 14, fontWeight: 600, color: "#111", margin: "4px 0 0" }}>
+        <p className="text-sm font-semibold text-[#111] mt-1 mb-0">
           2. Enter the 6-digit code from the app
         </p>
         <CodeInput value={code} onChange={setCode} disabled={stage === "verifying"} />
-        {error && <p style={{ fontSize: 13, color: "#DC2626", margin: 0 }}>{error}</p>}
+        {error && <p className="text-[13px] text-[#DC2626] m-0">{error}</p>}
 
         <button
           onClick={verifySetup}
           disabled={code.length !== 6 || stage === "verifying"}
-          style={{
-            padding: "14px", borderRadius: 12, border: "none", cursor: code.length === 6 ? "pointer" : "not-allowed",
-            background: code.length === 6 ? "#002FA7" : "#E0E0E0", color: "#fff", fontSize: 15, fontWeight: 600,
-            opacity: stage === "verifying" ? 0.7 : 1,
-          }}
+          className={`p-3.5 rounded-xl border-none text-white text-[15px] font-semibold ${code.length === 6 ? "cursor-pointer bg-[#002FA7]" : "cursor-not-allowed bg-[#E0E0E0]"} ${stage === "verifying" ? "opacity-70" : "opacity-100"}`}
         >
           {stage === "verifying" ? "Activating…" : "Activate MFA"}
         </button>
         <button
           onClick={onCancel}
-          style={{ padding: "12px", borderRadius: 12, border: "1.5px solid #D0D0D0", background: "#fff", color: "#555", fontSize: 14, cursor: "pointer" }}
+          className="p-3 rounded-xl border-[1.5px] border-[#D0D0D0] bg-white text-[#555] text-sm cursor-pointer"
         >
           Cancel
         </button>
@@ -214,32 +199,28 @@ function DisableFlow({ onSuccess, onCancel }) {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ background: "#FFF8F0", borderRadius: 12, padding: "14px 16px", border: "1px solid #FDDCB5" }}>
-        <p style={{ fontSize: 14, fontWeight: 600, color: "#B45309", margin: "0 0 4px" }}>Disable MFA?</p>
-        <p style={{ fontSize: 13, color: "#7C4D0F", margin: 0, lineHeight: 1.5 }}>
+    <div className="flex flex-col gap-4">
+      <div className="bg-[#FFF8F0] rounded-xl py-3.5 px-4 border border-[#FDDCB5]">
+        <p className="text-sm font-semibold text-[#B45309] mb-1">Disable MFA?</p>
+        <p className="text-[13px] text-[#7C4D0F] m-0 leading-relaxed">
           Your account will be less secure. You can re-enable it at any time.
         </p>
       </div>
-      <p style={{ fontSize: 14, color: "#333", margin: 0 }}>
+      <p className="text-sm text-[#333] m-0">
         Enter the 6-digit code from your authenticator app to confirm:
       </p>
       <CodeInput value={code} onChange={setCode} disabled={loading} />
-      {error && <p style={{ fontSize: 13, color: "#DC2626", margin: 0 }}>{error}</p>}
+      {error && <p className="text-[13px] text-[#DC2626] m-0">{error}</p>}
       <button
         onClick={handleDisable}
         disabled={code.length !== 6 || loading}
-        style={{
-          padding: "14px", borderRadius: 12, border: "none", cursor: code.length === 6 ? "pointer" : "not-allowed",
-          background: code.length === 6 ? "#DC2626" : "#E0E0E0", color: "#fff", fontSize: 15, fontWeight: 600,
-          opacity: loading ? 0.7 : 1,
-        }}
+        className={`p-3.5 rounded-xl border-none text-white text-[15px] font-semibold ${code.length === 6 ? "cursor-pointer bg-[#DC2626]" : "cursor-not-allowed bg-[#E0E0E0]"} ${loading ? "opacity-70" : "opacity-100"}`}
       >
         {loading ? "Disabling…" : "Disable MFA"}
       </button>
       <button
         onClick={onCancel}
-        style={{ padding: "12px", borderRadius: 12, border: "1.5px solid #D0D0D0", background: "#fff", color: "#555", fontSize: 14, cursor: "pointer" }}
+        className="p-3 rounded-xl border-[1.5px] border-[#D0D0D0] bg-white text-[#555] text-sm cursor-pointer"
       >
         Cancel
       </button>
@@ -262,7 +243,7 @@ export default function MFA() {
   }
 
   return (
-    <div className="relative overflow-hidden pb-10" style={{ minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="relative overflow-hidden min-h-screen pb-10" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <GlassLogoGlow />
       {/* Header */}
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
@@ -287,31 +268,25 @@ export default function MFA() {
         ) : (
           <>
             {/* Status card */}
-            <div style={{
-              background: "#fff", borderRadius: 16, padding: "20px 16px",
-              boxShadow: "0 1px 6px rgba(0,0,0,0.06)", marginBottom: 20,
-              display: "flex", alignItems: "center", gap: 14,
-            }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                background: mfaEnabled ? "#DCFCE7" : "var(--color-stacked-container)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <ShieldCheck size={22} style={{ color: mfaEnabled ? "#16A34A" : "#9CA3AF" }} />
+            <div className="bg-white rounded-2xl py-5 px-4 shadow-[0_1px_6px_rgba(0,0,0,0.06)] mb-5 flex items-center gap-3.5">
+              <div
+                className={`w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center ${mfaEnabled ? "bg-[#DCFCE7]" : "bg-stacked-container"}`}
+              >
+                <ShieldCheck size={22} className={mfaEnabled ? "text-[#16A34A]" : "text-[#9CA3AF]"} />
               </div>
               <div className="flex-1 min-w-0">
-                <p style={{ fontSize: 15, fontWeight: 600, color: "#111", margin: 0 }}>
+                <p className="text-[15px] font-semibold text-[#111] m-0">
                   Authenticator App (TOTP)
                 </p>
-                <p style={{ fontSize: 13, color: mfaEnabled ? "#16A34A" : "#999", margin: "2px 0 0", fontWeight: mfaEnabled ? 500 : 400 }}>
+                <p
+                  className={`text-[13px] mt-0.5 mb-0 ${mfaEnabled ? "text-[#16A34A] font-medium" : "text-[#999] font-normal"}`}
+                >
                   {mfaEnabled ? "Active — your account is protected" : "Not set up"}
                 </p>
               </div>
-              <span style={{
-                fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 999,
-                background: mfaEnabled ? "#DCFCE7" : "var(--color-stacked-container)",
-                color: mfaEnabled ? "#15803D" : "#9CA3AF",
-              }}>
+              <span
+                className={`text-[11px] font-bold py-1 px-2.5 rounded-full ${mfaEnabled ? "bg-[#DCFCE7] text-[#15803D]" : "bg-stacked-container text-[#9CA3AF]"}`}
+              >
                 {mfaEnabled ? "ON" : "OFF"}
               </span>
             </div>
@@ -320,36 +295,25 @@ export default function MFA() {
             {mfaEnabled ? (
               <button
                 onClick={() => setFlow("disable")}
-                style={{
-                  width: "100%", padding: "14px", borderRadius: 12,
-                  border: "1.5px solid #DC2626", background: "#fff",
-                  color: "#DC2626", fontSize: 14, fontWeight: 600, cursor: "pointer",
-                }}
+                className="w-full p-3.5 rounded-xl border-[1.5px] border-[#DC2626] bg-white text-[#DC2626] text-sm font-semibold cursor-pointer"
               >
                 Disable MFA
               </button>
             ) : (
               <button
                 onClick={() => setFlow("setup")}
-                style={{
-                  width: "100%", padding: "14px", borderRadius: 12,
-                  border: "none", background: "#002FA7",
-                  color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer",
-                }}
+                className="w-full p-3.5 rounded-xl border-none bg-[#002FA7] text-white text-[15px] font-semibold cursor-pointer"
               >
                 Set Up MFA
               </button>
             )}
 
             {/* Info note */}
-            <div style={{
-              display: "flex", alignItems: "flex-start", gap: 8,
-              padding: "12px 14px", borderRadius: 10, background: "#D7E2FF", marginTop: 20,
-            }}>
-              <div style={{ width: 16, height: 16, borderRadius: "50%", border: "1.5px solid #002FA7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                <span style={{ fontSize: 9, fontWeight: 700, color: "#002FA7" }}>i</span>
+            <div className="flex items-start gap-2 py-3 px-3.5 rounded-[10px] bg-[#D7E2FF] mt-5">
+              <div className="w-4 h-4 rounded-full border-[1.5px] border-[#002FA7] flex items-center justify-center flex-shrink-0 mt-px">
+                <span className="text-[9px] font-bold text-brand">i</span>
               </div>
-              <p style={{ fontSize: 12, color: "#333", margin: 0, lineHeight: 1.5 }}>
+              <p className="text-xs text-[#333] m-0 leading-relaxed">
                 With MFA enabled, you'll need to enter a code from your authenticator app every time you sign in. Use Google Authenticator, Authy, or any TOTP-compatible app.
               </p>
             </div>
