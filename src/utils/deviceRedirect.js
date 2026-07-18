@@ -54,6 +54,16 @@ export function isMobileSession() {
     }
     return true;
   }
+  // The cached flag alone isn't enough -- once set it never expires for the
+  // rest of the tab, so an admin who tested with device emulation earlier
+  // in this same tab would stay "verified mobile" forever after, even after
+  // switching back to a genuine wide desktop window and navigating there
+  // fresh (e.g. the "Member View" sidebar link). Requiring the viewport to
+  // still be narrow keeps the flag doing its one real job -- surviving a
+  // reload where the UA override didn't reapply but the viewport is still
+  // small -- without also masking an unrelated later desktop visit.
+  const stillNarrow = typeof window !== "undefined" && window.innerWidth < 768;
+  if (!stillNarrow) return false;
   try {
     return sessionStorage.getItem(MOBILE_SESSION_KEY) === "1";
   } catch {
