@@ -36,6 +36,7 @@ export default function CommunityProfile() {
   const [saved, setSaved] = useState(false);
   const [logoPreview, setLogoPreview] = useState(null);
   const [error, setError] = useState("");
+  const [nameError, setNameError] = useState("");
 
   const [deleteModal, setDeleteModal] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
@@ -71,11 +72,20 @@ export default function CommunityProfile() {
     });
   }, [community]);
 
-  const handleChange = (e) =>
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
+    if (name === "name" && nameError) setNameError(value.trim() ? "" : "Community name is required.");
+  };
+
+  const handleNameBlur = (e) => setNameError(e.target.value.trim() ? "" : "Community name is required.");
 
   const handleSave = async () => {
     setError("");
+    if (!form.name.trim()) {
+      setNameError("Community name is required.");
+      return;
+    }
     try {
       await updateCommunity.mutateAsync({
         name: form.name,
@@ -162,7 +172,9 @@ export default function CommunityProfile() {
         <div className="flex flex-col gap-3">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1.5">Community Name</label>
-            <input type="text" name="name" value={form.name} onChange={handleChange} className={inputCls} />
+            <input type="text" name="name" value={form.name} onChange={handleChange} onBlur={handleNameBlur} className={inputCls}
+              style={nameError ? { borderColor: "var(--color-danger)" } : undefined} />
+            {nameError && <p className="text-xs text-danger mt-1">{nameError}</p>}
           </div>
 
           <div>

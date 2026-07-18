@@ -247,22 +247,60 @@ export default function Security() {
 
   const [show, setShow] = useState({ current: false, new: false, confirm: false });
   const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" });
+  const [fieldErrors, setFieldErrors] = useState({ current: "", new: "", confirm: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [mfaModal, setMfaModal] = useState(null); // "setup" | "disable" | null
 
   const inputCls = "w-full px-4 py-2.5 rounded-md border border-gray-300 text-gray-900 text-xs outline-none transition-all pr-11 focus:border-brand";
 
+  function validatePasswordField(field, value, otherValue) {
+    if (field === "current" && !value) return "Current password is required.";
+    if (field === "new" && !isPasswordValid(value)) return `Must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`;
+    if (field === "confirm") {
+      if (!value) return "Please confirm your new password.";
+      if (value !== otherValue) return "Passwords don't match.";
+    }
+    return "";
+  }
+
+  function setPasswordField(field) {
+    return (e) => {
+      const value = e.target.value;
+      setPasswords((p) => ({ ...p, [field]: value }));
+      setFieldErrors((fe) => {
+        const next = { ...fe };
+        if (fe[field]) next[field] = validatePasswordField(field, value, field === "new" ? passwords.confirm : passwords.new);
+        if (field === "new" && fe.confirm) next.confirm = validatePasswordField("confirm", passwords.confirm, value);
+        return next;
+      });
+    };
+  }
+
+  function handlePasswordBlur(field) {
+    return (e) => setFieldErrors((fe) => ({
+      ...fe,
+      [field]: validatePasswordField(field, e.target.value, field === "new" ? passwords.confirm : passwords.new),
+    }));
+  }
+
   async function handleUpdatePassword() {
     setError("");
     setSuccess(false);
-    if (!passwords.current) { setError("Current password is required."); return; }
-    if (!isPasswordValid(passwords.new)) { setError(`Password must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`); return; }
-    if (passwords.new !== passwords.confirm) { setError("New passwords don't match."); return; }
+    const nextFieldErrors = {
+      current: validatePasswordField("current", passwords.current),
+      new: validatePasswordField("new", passwords.new),
+      confirm: validatePasswordField("confirm", passwords.confirm, passwords.new),
+    };
+    if (Object.values(nextFieldErrors).some(Boolean)) {
+      setFieldErrors(nextFieldErrors);
+      return;
+    }
     try {
       await updatePassword.mutateAsync({ oldPassword: passwords.current, newPassword: passwords.new, confirmPassword: passwords.confirm });
       setSuccess(true);
       setPasswords({ current: "", new: "", confirm: "" });
+      setFieldErrors({ current: "", new: "", confirm: "" });
     } catch (err) {
       setError(getErrorMessage(err, "Failed to update password."));
     }
@@ -286,13 +324,16 @@ export default function Security() {
             <label className="text-xs font-medium text-gray-600">Current Password</label>
             <div className="relative">
               <input type={show.current ? "text" : "password"} value={passwords.current}
-                onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
-                placeholder="Enter Current Password" className={inputCls} />
+                onChange={setPasswordField("current")}
+                onBlur={handlePasswordBlur("current")}
+                placeholder="Enter Current Password" className={inputCls}
+                style={fieldErrors.current ? { borderColor: "var(--color-danger)" } : undefined} />
               <button type="button" onClick={() => setShow({ ...show, current: !show.current })}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                 {show.current ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
             </div>
+            {fieldErrors.current && <p className="text-xs text-danger">{fieldErrors.current}</p>}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -300,8 +341,10 @@ export default function Security() {
               <label className="text-xs font-medium text-gray-600">New Password</label>
               <div className="relative">
                 <input type={show.new ? "text" : "password"} value={passwords.new}
-                  onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
-                  placeholder="Enter New Password" className={inputCls} />
+                  onChange={setPasswordField("new")}
+                  onBlur={handlePasswordBlur("new")}
+                  placeholder="Enter New Password" className={inputCls}
+                  style={fieldErrors.new ? { borderColor: "var(--color-danger)" } : undefined} />
                 <button type="button" onClick={() => setShow({ ...show, new: !show.new })}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                   {show.new ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -313,13 +356,16 @@ export default function Security() {
               <label className="text-xs font-medium text-gray-600">Confirm New Password</label>
               <div className="relative">
                 <input type={show.confirm ? "text" : "password"} value={passwords.confirm}
-                  onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
-                  placeholder="Confirm New Password" className={inputCls} />
+                  onChange={setPasswordField("confirm")}
+                  onBlur={handlePasswordBlur("confirm")}
+                  placeholder="Confirm New Password" className={inputCls}
+                  style={fieldErrors.confirm ? { borderColor: "var(--color-danger)" } : undefined} />
                 <button type="button" onClick={() => setShow({ ...show, confirm: !show.confirm })}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                   {show.confirm ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
               </div>
+              {fieldErrors.confirm && <p className="text-xs text-danger">{fieldErrors.confirm}</p>}
             </div>
           </div>
 

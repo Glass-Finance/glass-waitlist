@@ -27,6 +27,7 @@ export default function Profile() {
   const [savedForm, setSavedForm] = useState(form);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({ firstName: "", lastName: "", email: "" });
   const [photoPreview, setPhotoPreview] = useState(null);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [emailSaving, setEmailSaving] = useState(false);
@@ -117,7 +118,27 @@ export default function Profile() {
     setSavedForm(loaded);
   }, [user]);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  function validateField(field, value) {
+    if (field === "firstName" && !value.trim()) return "First name is required.";
+    if (field === "lastName" && !value.trim()) return "Last name is required.";
+    if (field === "email") {
+      if (!value.trim()) return "Email is required.";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return "Enter a valid email address.";
+    }
+    return "";
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
+    setFieldErrors((fe) => (fe[name] ? { ...fe, [name]: validateField(name, value) } : fe));
+  };
+
+  const handleFieldBlur = (e) => {
+    const { name, value } = e.target;
+    if (!(name in fieldErrors)) return; // phone has no format rule
+    setFieldErrors((fe) => ({ ...fe, [name]: validateField(name, value) }));
+  };
 
   const isDirty =
     form.firstName !== savedForm.firstName ||
@@ -131,6 +152,15 @@ export default function Profile() {
   // the code sent to the new address is confirmed.
   const handleSave = async () => {
     setError("");
+    const nextFieldErrors = {
+      firstName: validateField("firstName", form.firstName),
+      lastName: validateField("lastName", form.lastName),
+      email: validateField("email", form.email),
+    };
+    if (Object.values(nextFieldErrors).some(Boolean)) {
+      setFieldErrors(nextFieldErrors);
+      return;
+    }
     try {
       if (form.firstName !== savedForm.firstName || form.lastName !== savedForm.lastName || form.phone !== savedForm.phone) {
         // Only send what changed — the success toast names the updated
@@ -257,18 +287,24 @@ export default function Profile() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">First Name</label>
-            <input name="firstName" value={form.firstName} onChange={handleChange} className={inputCls} />
+            <input name="firstName" value={form.firstName} onChange={handleChange} onBlur={handleFieldBlur} className={inputCls}
+              style={fieldErrors.firstName ? { borderColor: "var(--color-danger)" } : undefined} />
+            {fieldErrors.firstName && <p className="text-xs text-danger">{fieldErrors.firstName}</p>}
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Last Name</label>
-            <input name="lastName" value={form.lastName} onChange={handleChange} className={inputCls} />
+            <input name="lastName" value={form.lastName} onChange={handleChange} onBlur={handleFieldBlur} className={inputCls}
+              style={fieldErrors.lastName ? { borderColor: "var(--color-danger)" } : undefined} />
+            {fieldErrors.lastName && <p className="text-xs text-danger">{fieldErrors.lastName}</p>}
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Email Address</label>
-            <input name="email" type="email" value={form.email} onChange={handleChange} className={inputCls} />
+            <input name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleFieldBlur} className={inputCls}
+              style={fieldErrors.email ? { borderColor: "var(--color-danger)" } : undefined} />
+            {fieldErrors.email && <p className="text-xs text-danger">{fieldErrors.email}</p>}
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Phone Number</label>
