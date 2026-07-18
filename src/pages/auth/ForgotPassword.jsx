@@ -113,7 +113,7 @@ export default function ForgotPassword() {
 
             <p className="text-sm text-center text-gray-500 pb-2">
               Remember your password?{" "}
-              <Link to="/sign-in" className="font-semibold" style={{ color: "#1C2B8A" }}>
+              <Link to="/sign-in" className="font-semibold text-[#1C2B8A]">
                 Sign In
               </Link>
             </p>
@@ -198,8 +198,7 @@ export default function ForgotPassword() {
                 <button
                   onClick={handleResend}
                   disabled={loading}
-                  className="font-semibold bg-transparent border-none cursor-pointer disabled:opacity-50"
-                  style={{ color: "#1C2B8A" }}
+                  className="font-semibold bg-transparent border-none cursor-pointer disabled:opacity-50 text-[#1C2B8A]"
                 >
                   {loading ? "Sending…" : "Resend code"}
                 </button>

@@ -286,8 +286,7 @@ function StepOTP({ email, onVerified, onBack }) {
         <p className="font-semibold text-sm text-gray-900 mb-1">{email}</p>
         <button
           onClick={() => { sessionStorage.removeItem(PENDING_KEY); onBack(); }}
-          className="text-sm font-medium mt-1"
-          style={{ color: "#1C2B8A" }}
+          className="text-sm font-medium mt-1 text-[#1C2B8A]"
         >
           Wrong email?
         </button>
@@ -375,8 +374,7 @@ function StepOTP({ email, onVerified, onBack }) {
         <button
           onClick={handleResend}
           disabled={resendCooldown > 0}
-          className="font-semibold disabled:opacity-40"
-          style={{ color: "#1C2B8A" }}
+          className="font-semibold disabled:opacity-40 text-[#1C2B8A]"
         >
           {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend"}
         </button>
@@ -594,8 +592,7 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
           </p>
           <Link
             to="/member/app-sign-in?return=/member/invites"
-            className="inline-block mt-2 text-xs font-semibold"
-            style={{ color: "#1C2B8A" }}
+            className="inline-block mt-2 text-xs font-semibold text-[#1C2B8A]"
           >
             Sign in to accept the invite
           </Link>
@@ -617,8 +614,7 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="font-medium"
-            style={{ color: "#1C2B8A" }}
+            className="font-medium text-[#1C2B8A]"
           >
             Terms of Service
           </Link>{" "}
@@ -628,8 +624,7 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="font-medium"
-            style={{ color: "#1C2B8A" }}
+            className="font-medium text-[#1C2B8A]"
           >
             Privacy Policy
           </Link>
@@ -665,8 +660,7 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
         Already Have An Account?{" "}
         <Link
           to="/member/app-sign-in"
-          className="font-semibold"
-          style={{ color: "#1C2B8A" }}
+          className="font-semibold text-[#1C2B8A]"
         >
           Sign In
         </Link>

@@ -284,7 +284,7 @@ export default function SignIn() {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <Label htmlFor="password">Password</Label>
-            <Link to="/forgot-password" className="text-xs font-medium" style={{ color: "#1C2B8A" }}>
+            <Link to="/forgot-password" className="text-xs font-medium text-[#1C2B8A]">
               Forgot password?
             </Link>
           </div>
@@ -333,14 +333,14 @@ export default function SignIn() {
         {isMemberSignIn ? (
           <p className="text-sm text-center text-gray-500 pb-2">
             New to Glass?{" "}
-            <span className="font-semibold" style={{ color: "#1C2B8A" }}>
+            <span className="font-semibold text-[#1C2B8A]">
               Use the invite link your admin shared with you.
             </span>
           </p>
         ) : (
           <p className="text-sm text-center text-gray-500 pb-2">
             New User?{" "}
-            <Link to="/sign-up" className="font-semibold" style={{ color: "#1C2B8A" }}>
+            <Link to="/sign-up" className="font-semibold text-[#1C2B8A]">
               Create Account
             </Link>
           </p>

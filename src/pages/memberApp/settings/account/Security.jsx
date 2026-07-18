@@ -36,7 +36,7 @@ export default function Security() {
               }}
             >
               <div style={{ width: 36, height: 36, borderRadius: 10, background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Icon size={16} style={{ color: "#1C2B8A" }} />
+                <Icon size={16} className="text-[#1C2B8A]" />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{label}</p>
