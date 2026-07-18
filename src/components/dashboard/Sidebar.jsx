@@ -167,10 +167,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           }`}
         >
         {/* Blue rail */}
-        <div
-          className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5"
-          style={{ width: 56 }}
-        >
+        <div className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5 w-14">
           <button
             onClick={() => {
               navigate("/dashboard/admin-panel");
@@ -222,45 +219,21 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
         {/* White panel */}
         <div
-          className="bg-white md:bg-surface-container md:border-r md:border-surface-container-border"
-          style={{
-            width: 220,
-            display: "flex",
-            flexDirection: "column",
-            fontFamily: "Inter, sans-serif",
-          }}
+          className="bg-white md:bg-surface-container md:border-r md:border-surface-container-border w-[220px] flex flex-col"
+          style={{ fontFamily: "Inter, sans-serif" }}
         >
-          <div
-            style={{
-              padding: "14px 12px 13px",
-              borderBottom: "1px solid var(--color-hairline)",
-              minHeight: 56,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
+          <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] min-h-14 flex items-center">
             <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", lineHeight: 1.3 }}>
+              <div className="text-xs font-bold text-brand leading-[1.3]">
                 Platform Admin
               </div>
-              <span
-                style={{
-                  display: "inline-block",
-                  marginTop: 3,
-                  fontSize: 9,
-                  fontWeight: 700,
-                  color: "#7c3aed",
-                  background: "#f5f3ff",
-                  borderRadius: 99,
-                  padding: "1px 7px",
-                }}
-              >
+              <span className="inline-block mt-[3px] text-[9px] font-bold text-[#7c3aed] bg-[#f5f3ff] rounded-full py-px px-[7px]">
                 Super Admin
               </span>
             </div>
           </div>
 
-          <nav style={{ flex: 1, padding: "10px 8px" }}>
+          <nav className="flex-1 py-2.5 px-2">
             {[
               { icon: ShieldCheck, label: "Admin Panel",  path: "/dashboard/admin-panel",               match: "/dashboard/admin-panel" },
               { icon: Bell,        label: "Notifications", path: "/dashboard/notifications",              match: "/dashboard/notifications" },
@@ -275,38 +248,17 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                     navigate(path);
                     onCloseMobile?.();
                   }}
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    padding: "10px 10px",
-                    borderRadius: 8,
-                    border: "none",
-                    cursor: "pointer",
-                    background: isActive ? "var(--color-brand-tint)" : "transparent",
-                    color: isActive ? "var(--color-brand)" : "#6b7280",
-                    fontWeight: isActive ? 700 : 500,
-                    letterSpacing: "normal",
-                    fontSize: 12,
-                    fontFamily: "Inter, sans-serif",
-                    whiteSpace: "nowrap",
-                    marginBottom: 6,
-                    transition: "all .15s",
-                  }}
-                  onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "#f9fafb"; }}
-                  onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
+                  style={{ fontFamily: "Inter, sans-serif" }}
+                  className={`w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer tracking-normal text-xs whitespace-nowrap mb-1.5 transition-all duration-150 ${
+                    isActive
+                      ? "bg-brand-tint text-brand font-bold"
+                      : "bg-transparent text-[#6b7280] font-medium hover:bg-[#f9fafb]"
+                  }`}
                 >
                   <Icon size={14} className="flex-shrink-0" />
-                  <span style={{ flex: 1, textAlign: "left" }}>{label}</span>
+                  <span className="flex-1 text-left">{label}</span>
                   {badge > 0 && (
-                    <span style={{
-                      minWidth: 18, height: 18, borderRadius: 99,
-                      background: "#e11d48", color: "#fff",
-                      fontSize: 10, fontWeight: 700,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      padding: "0 4px", flexShrink: 0,
-                    }}>
+                    <span className="min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
                       {badge > 99 ? "99+" : badge}
                     </span>
                   )}
@@ -315,28 +267,12 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             })}
           </nav>
 
-          <div
-            style={{
-              padding: "10px 12px",
-              borderTop: "1px solid var(--color-hairline)",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <div
-              style={{
-                width: 28, height: 28, borderRadius: "50%",
-                background: "linear-gradient(135deg,#7c3aed,var(--color-brand))",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                color: "#fff", fontSize: 10, fontWeight: 700,
-                flexShrink: 0,
-              }}
-            >
+          <div className="py-2.5 px-3 border-t border-[var(--color-hairline)] flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,#7c3aed,var(--color-brand))] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
               SA
             </div>
             <div className="min-w-0 flex-1">
-              <p style={{ fontSize: 11, fontWeight: 600, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              <p className="text-[11px] font-semibold m-0 whitespace-nowrap overflow-hidden text-ellipsis">
                 {user?.email}
               </p>
             </div>
@@ -361,10 +297,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         }`}
       >
       {/* ── Blue rail ─────────────────────────────────────────────────────── */}
-      <div
-        className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5"
-        style={{ width: 56 }}
-      >
+      <div className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5 w-14">
         {/* Logo — goes to communities overview */}
         <button
           onClick={() => {
@@ -456,8 +389,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                       has its own white/colored background). */}
                   {isActive && (
                     <span
-                      className="absolute top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-white"
-                      style={{ left: -10 }}
+                      className="absolute top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-white -left-2.5"
                       aria-hidden="true"
                     />
                   )}
@@ -520,55 +452,18 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       {/* ── White nav panel ────────────────────────────────────────────────── */}
       {!onCommunitiesOverview  && (
       <div
-        className="bg-white md:bg-surface-container"
-        style={{
-          width: W,
-          borderRight: "1px solid var(--color-surface-container-border)",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          transition: "width .22s cubic-bezier(0.4,0,0.2,1)",
-          fontFamily: "Inter, sans-serif",
-        }}
+        className="bg-white md:bg-surface-container w-[220px] border-r border-surface-container-border flex flex-col overflow-hidden transition-[width] duration-[220ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+        style={{ fontFamily: "Inter, sans-serif" }}
       >
         {/* Org header */}
-        <div
-          style={{
-            padding: "14px 12px 13px",
-            borderBottom: "1px solid var(--color-hairline)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 8,
-            minHeight: 56,
-          }}
-        >
+        <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] flex items-center justify-between gap-2 min-h-14">
           {activeCommunity ? (
             <div className="min-w-0 flex-1">
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: "#000000",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  lineHeight: 1.3,
-                }}
-              >
+              <div className="text-xs font-bold text-black whitespace-nowrap overflow-hidden text-ellipsis leading-[1.3]">
                 {activeCommunity.name}
               </div>
               <span
-                style={{
-                  display: "inline-block",
-                  marginTop: 3,
-                  fontSize: 9,
-                  fontWeight: 700,
-                  color: isCommunityAdmin(activeCommunity) ? "#e85d04" : "#059669",
-                  background: isCommunityAdmin(activeCommunity) ? "#fff4ee" : "#ecfdf5",
-                  borderRadius: 99,
-                  padding: "1px 7px",
-                }}
+                className={`inline-block mt-[3px] text-[9px] font-bold rounded-full py-px px-[7px] ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#fff4ee]" : "text-[#059669] bg-[#ecfdf5]"}`}
               >
                 {activeCommunity.owned
                   ? "Owner"
@@ -579,14 +474,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             </div>
           ) : (
             <div className="min-w-0 flex-1">
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: "#000000",
-                  lineHeight: 1.3,
-                }}
-              >
+              <div className="text-xs font-bold text-black leading-[1.3]">
                 Your Communities
               </div>
             </div>
@@ -623,7 +511,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         </div>
 
         {/* Nav links */}
-        <nav data-tour="sidebar-nav" style={{ flex: 1, padding: "10px 8px", overflowY: "auto" }}>
+        <nav data-tour="sidebar-nav" className="flex-1 py-2.5 px-2 overflow-y-auto">
           {NAV.map(({ icon: Icon, label, segment, path }) => {
             const isActive = activeSegment === segment;
             // Every nav item except "Dashboard" (which points at the
@@ -648,43 +536,19 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   }
                 }}
                 disabled={isDisabled}
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "10px 10px",
-                  borderRadius: 8,
-                  border: "none",
-                  cursor: isDisabled ? "not-allowed" : "pointer",
-                  background: isActive ? "var(--color-brand-tint)" : "transparent",
-                  color: isActive ? "var(--color-brand)" : isDisabled ? "#9ca3af" : "#6b7280",
-                  fontWeight: isActive ? 700 : 500,
-                  letterSpacing: "normal",
-                  fontSize: 12,
-                  marginBottom: 6,
-                  transition: "all .15s",
-                  fontFamily: "Inter, sans-serif",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive && !isDisabled)
-                    e.currentTarget.style.background = "#f9fafb";
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) e.currentTarget.style.background = "transparent";
-                }}
+                style={{ fontFamily: "Inter, sans-serif" }}
+                className={`w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none tracking-normal text-xs mb-1.5 transition-all duration-150 whitespace-nowrap ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"} ${
+                  isActive
+                    ? "bg-brand-tint text-brand font-bold"
+                    : isDisabled
+                      ? "bg-transparent text-[#9ca3af] font-medium"
+                      : "bg-transparent text-[#6b7280] font-medium hover:bg-[#f9fafb]"
+                }`}
               >
                 <Icon size={14} className="flex-shrink-0" />
-                <span style={{ flex: 1, textAlign: "left" }}>{label}</span>
+                <span className="flex-1 text-left">{label}</span>
                 {badge > 0 && (
-                  <span style={{
-                    minWidth: 18, height: 18, borderRadius: 99,
-                    background: "#e11d48", color: "#fff",
-                    fontSize: 10, fontWeight: 700,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    padding: "0 4px", flexShrink: 0,
-                  }}>
+                  <span className="min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
                     {badge > 99 ? "99+" : badge}
                   </span>
                 )}
@@ -694,8 +558,8 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         </nav>
 
         {/* Member View switch */}
-        <div style={{ padding: "0 8px 8px", position: "relative" }}>
-          <div style={{ height: 1, background: "var(--color-hairline)", marginBottom: 8 }} />
+        <div className="px-2 pb-2 relative">
+          <div className="h-px bg-[var(--color-hairline)] mb-2" />
           <button
             onClick={() => {
               // If the admin is also a member of the community they're
@@ -738,88 +602,25 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               setMemberViewHint(true);
               setTimeout(() => setMemberViewHint(false), 3500);
             }}
-            style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "9px 10px",
-              borderRadius: 8,
-              border: "none",
-              cursor: "pointer",
-              background: "transparent",
-              color: "#6b7280",
-              fontWeight: 500,
-              fontSize: 12,
-              transition: "all .15s",
-              fontFamily: "Inter, sans-serif",
-              whiteSpace: "nowrap",
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.color = "var(--color-brand)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#6b7280"; }}
+            style={{ fontFamily: "Inter, sans-serif" }}
+            className="w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer bg-transparent text-[#6b7280] font-medium text-xs transition-all duration-150 whitespace-nowrap hover:bg-[#f9fafb] hover:text-brand"
           >
             <Smartphone size={14} className="flex-shrink-0" />
-            <span style={{ flex: 1, textAlign: "left" }}>Member View</span>
+            <span className="flex-1 text-left">Member View</span>
           </button>
 
           {memberViewHint && (
-            <div style={{
-              position: "absolute",
-              bottom: "calc(100% - 4px)",
-              left: 8,
-              right: 8,
-              background: "#1f2937",
-              color: "#f9fafb",
-              fontSize: 11,
-              lineHeight: 1.5,
-              padding: "8px 10px",
-              borderRadius: 8,
-              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-              zIndex: 10,
-              pointerEvents: "none",
-            }}>
+            <div className="absolute left-2 right-2 bg-[#1f2937] text-[#f9fafb] text-[11px] leading-relaxed py-2 px-2.5 rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.15)] z-10 pointer-events-none [bottom:calc(100%-4px)]">
               Ask another admin to invite you to their community, then come back here.
-              <div style={{
-                position: "absolute",
-                bottom: -5,
-                left: 18,
-                width: 10,
-                height: 10,
-                background: "#1f2937",
-                transform: "rotate(45deg)",
-                borderRadius: 2,
-              }} />
+              <div className="absolute -bottom-[5px] left-[18px] w-2.5 h-2.5 bg-[#1f2937] rotate-45 rounded-sm" />
             </div>
           )}
         </div>
 
         {/* Bottom — user info strip */}
         {!collapsed && (
-          <div
-            style={{
-              padding: "10px 12px",
-              borderTop: "1px solid var(--color-hairline)",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <div
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg,var(--color-brand),#4f46e5)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontSize: 10,
-                fontWeight: 700,
-                flexShrink: 0,
-                overflow: "hidden",
-              }}
-            >
+          <div className="py-2.5 px-3 border-t border-[var(--color-hairline)] flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--color-brand),#4f46e5)] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 overflow-hidden">
               {user?.profileImage?.url ? (
                 <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -827,17 +628,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <p
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-
-                  margin: 0,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
+              <p className="text-[11px] font-semibold m-0 whitespace-nowrap overflow-hidden text-ellipsis">
                 {userDisplayName}
               </p>
             </div>
