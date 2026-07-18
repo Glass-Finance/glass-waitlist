@@ -35,52 +35,25 @@ export default function SideDrawer({ open, onClose }) {
       <div
         onClick={onClose}
         aria-hidden="true"
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 40,
-          background: "rgba(0,0,0,0.25)",
-          opacity: open ? 1 : 0,
-          pointerEvents: open ? "auto" : "none",
-          transition: "opacity 0.28s ease",
-        }}
+        className={`fixed inset-0 z-40 bg-black/25 transition-opacity duration-[280ms] ease-[ease] ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
       />
 
       {/* Panel */}
       <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          bottom: 0,
-          width: 300,
-          zIndex: 50,
-          background: "#D9D9D9",
-          display: "flex",
-          flexDirection: "column",
-          transform: open ? "translateX(0)" : "translateX(-100%)",
-          transition: "transform 0.3s cubic-bezier(0.22,1,0.36,1)",
-          fontFamily: "'Inter', system-ui, sans-serif",
-        }}
+        className={`fixed top-0 left-0 bottom-0 w-[300px] z-50 bg-[#D9D9D9] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${open ? "translate-x-0" : "-translate-x-full"}`}
+        style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
       >
         {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "20px 20px 16px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <div className="flex items-center justify-between pt-5 px-5 pb-4">
+          <div className="flex items-center gap-1.5">
             <div>
               <img
                 src="/Glass.webp"
                 alt="Glass"
-                style={{ width: 30, height: 30 }}
+                className="w-[30px] h-[30px]"
               />
             </div>
-            <span style={{ fontSize: 18, fontWeight: 500, color: "#111" }}>
+            <span className="text-lg font-medium text-[#111]">
               Glass
             </span>
           </div>
@@ -88,30 +61,16 @@ export default function SideDrawer({ open, onClose }) {
           <button
             onClick={onClose}
             aria-label="Close menu"
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: 4,
-              color: "#555",
-            }}
+            className="bg-transparent border-none cursor-pointer p-1 text-[#555]"
           >
             <X size={20} strokeWidth={2} />
           </button>
         </div>
 
-        <div style={{ height: 1, background: "#0000000D", margin: "0 ", }} />
+        <div className="h-px bg-[#0000000D] mx-0 my-0" />
 
         {/* Nav */}
-        <nav
-          style={{
-            flex: 1,
-            padding: "8px 16px",
-            display: "flex",
-            flexDirection: "column",
-            gap: 4,
-          }}
-        >
+        <nav className="flex-1 pt-2 px-4 pb-2 flex flex-col gap-1">
           {NAV_ITEMS.map(({ Icon, label, to }) => (
             <button
               key={label}
@@ -119,21 +78,10 @@ export default function SideDrawer({ open, onClose }) {
                 onClose();
                 navigate(to);
               }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                padding: "14px 12px",
-                borderRadius: 12,
-                border: "none",
-                background: "none",
-                cursor: "pointer",
-                width: "100%",
-                textAlign: "left",
-              }}
+              className="flex items-center gap-3 py-3.5 px-3 rounded-xl border-none bg-transparent cursor-pointer w-full text-left"
             >
-              <Icon size={20} strokeWidth={1.6} style={{ color: "#444" }} />
-              <span style={{ fontSize: 15, fontWeight: 400, color: "#222" }}>
+              <Icon size={20} strokeWidth={1.6} className="text-[#444]" />
+              <span className="text-[15px] font-normal text-[#222]">
                 {label}
               </span>
             </button>
@@ -141,24 +89,13 @@ export default function SideDrawer({ open, onClose }) {
 
           {isAdmin && (
             <>
-              <div style={{ height: 1, background: "#0000000D", margin: "4px 0" }} />
+              <div className="h-px bg-[#0000000D] my-1 mx-0" />
               <button
                 onClick={() => { onClose(); navigate("/dashboard/home"); }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: "14px 12px",
-                  borderRadius: 12,
-                  border: "none",
-                  background: "none",
-                  cursor: "pointer",
-                  width: "100%",
-                  textAlign: "left",
-                }}
+                className="flex items-center gap-3 py-3.5 px-3 rounded-xl border-none bg-transparent cursor-pointer w-full text-left"
               >
                 <LayoutDashboard size={20} strokeWidth={1.6} className="text-brand" />
-                <span style={{ fontSize: 15, fontWeight: 400, color: "#002FA7" }}>
+                <span className="text-[15px] font-normal text-brand">
                   Admin Dashboard
                 </span>
               </button>
@@ -169,21 +106,10 @@ export default function SideDrawer({ open, onClose }) {
         {/* Log out — pinned to bottom */}
         <button
           onClick={handleLogout}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "20px 24px",
-            paddingBottom: `max(env(safe-area-inset-bottom, 0px) + 32px, 56px)`,
-            border: "none",
-            background: "none",
-            cursor: "pointer",
-            textAlign: "left",
-            outline: "none",
-          }}
+          className="flex items-center gap-3 pt-5 px-6 border-none bg-transparent cursor-pointer text-left outline-none pb-[max(env(safe-area-inset-bottom,0px)_+_32px,56px)]"
         >
-          <LogOut size={18} strokeWidth={1.8} style={{ color: "#D32F2F" }} />
-          <span style={{ fontSize: 15, fontWeight: 500, color: "#D32F2F" }}>
+          <LogOut size={18} strokeWidth={1.8} className="text-[#D32F2F]" />
+          <span className="text-[15px] font-medium text-[#D32F2F]">
             Log Out
           </span>
         </button>
