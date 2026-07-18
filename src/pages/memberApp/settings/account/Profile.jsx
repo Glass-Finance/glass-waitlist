@@ -10,17 +10,7 @@ import { getEmailError } from "../../../../utils/validators";
 import { parseUserData } from "../../../../utils/userData";
 import EmailChangeModal from "../../../../components/auth/EmailChangeModal";
 
-const inputStyle = {
-  width: "100%",
-  padding: "12px 14px",
-  borderRadius: 10,
-  border: "1.5px solid #E0E0E0",
-  fontSize: 14,
-  color: "#111",
-  outline: "none",
-  background: "#fff",
-  boxSizing: "border-box",
-};
+const inputCls = "w-full py-3 px-3.5 rounded-[10px] border-[1.5px] border-[#E0E0E0] text-sm text-[#111] outline-none bg-white box-border";
 
 // Names save with the first letter of each word capitalised ("home" → "Home")
 // so they read properly everywhere: greetings, join requests, receipts, emails.
@@ -161,7 +151,10 @@ export default function Profile() {
   const initials = `${form.firstName} ${form.lastName}`.trim().split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
 
   return (
-    <div className="relative overflow-hidden pb-10" style={{ minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div
+      className="relative overflow-hidden min-h-screen pb-10"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+    >
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
@@ -174,92 +167,78 @@ export default function Profile() {
       </div>
 
       <div className="px-4">
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 20 }}>
-          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#D7E2FF", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+        <div className="flex flex-col items-center gap-2 mb-5">
+          <div className="w-16 h-16 rounded-full bg-[#D7E2FF] flex items-center justify-center overflow-hidden">
             {photoPreview || photoUrl ? (
               <img src={photoPreview ?? photoUrl} alt="" className="w-full h-full object-cover" />
             ) : (
-              <span style={{ fontSize: 20, fontWeight: 600, color: "#002FA7" }}>{initials}</span>
+              <span className="text-xl font-semibold text-brand">{initials}</span>
             )}
           </div>
           <input
             ref={photoInputRef}
             type="file"
             accept="image/png,image/jpeg,image/webp"
-            style={{ display: "none" }}
+            className="hidden"
             onChange={(e) => handlePhotoSelect(e.target.files[0])}
           />
           <button
             onClick={() => photoInputRef.current?.click()}
             disabled={uploadFile.isPending}
-            style={{
-              background: "none", border: "none", cursor: "pointer", padding: 0,
-              fontSize: 13, fontWeight: 600, color: "#002FA7", opacity: uploadFile.isPending ? 0.6 : 1,
-            }}
+            className={`bg-transparent border-none cursor-pointer p-0 text-[13px] font-semibold text-brand ${uploadFile.isPending ? "opacity-60" : "opacity-100"}`}
           >
             {uploadFile.isPending ? "Uploading…" : "Change Photo"}
           </button>
-          <p style={{ fontSize: 13, color: "#999", margin: 0 }}>{isLoading ? "Loading…" : user?.email}</p>
+          <p className="text-[13px] text-[#999] m-0">{isLoading ? "Loading…" : user?.email}</p>
         </div>
 
-        <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, padding: 16, display: "flex", flexDirection: "column", gap: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+        <div className="border border-surface-container-border bg-white rounded-2xl p-4 flex flex-col gap-3.5 shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
           <div>
-            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 6 }}>First Name</label>
-            <input style={inputStyle} value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />
+            <label className="text-xs text-[#888] block mb-1.5">First Name</label>
+            <input className={inputCls} value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />
           </div>
           <div>
-            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 6 }}>Last Name</label>
-            <input style={inputStyle} value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} />
+            <label className="text-xs text-[#888] block mb-1.5">Last Name</label>
+            <input className={inputCls} value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} />
           </div>
           <div>
-            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 6 }}>Email Address</label>
+            <label className="text-xs text-[#888] block mb-1.5">Email Address</label>
             {editingEmail ? (
               <>
                 <input
-                  style={inputStyle}
+                  className={inputCls}
                   type="email"
                   value={newEmail}
                   onChange={(e) => { setNewEmail(e.target.value); setEmailError(""); }}
                   placeholder="Enter new email address"
                   autoFocus
                 />
-                {emailError && <p style={{ fontSize: 12, color: "#DC2626", margin: "6px 4px 0" }}>{emailError}</p>}
-                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                {emailError && <p className="text-xs text-[#DC2626] mt-1.5 mx-1 mb-0">{emailError}</p>}
+                <div className="flex gap-2 mt-2">
                   <button
                     onClick={handleRequestEmailChange}
                     disabled={updateEmail.isPending}
-                    style={{
-                      flex: 1, padding: "10px 0", borderRadius: 8, border: "none",
-                      background: "#002FA7", color: "#fff", fontSize: 13, fontWeight: 600,
-                      cursor: "pointer", opacity: updateEmail.isPending ? 0.7 : 1,
-                    }}
+                    className={`flex-1 py-2.5 px-0 rounded-lg border-none bg-brand text-white text-[13px] font-semibold cursor-pointer ${updateEmail.isPending ? "opacity-70" : "opacity-100"}`}
                   >
                     {updateEmail.isPending ? "Sending code…" : "Send Verification Code"}
                   </button>
                   <button
                     onClick={cancelEditEmail}
                     disabled={updateEmail.isPending}
-                    style={{
-                      padding: "10px 16px", borderRadius: 8, border: "1.5px solid #E0E0E0",
-                      background: "#fff", color: "#666", fontSize: 13, fontWeight: 600, cursor: "pointer",
-                    }}
+                    className="py-2.5 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] bg-white text-[#666] text-[13px] font-semibold cursor-pointer"
                   >
                     Cancel
                   </button>
                 </div>
               </>
             ) : (
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <input style={{ ...inputStyle, background: "#F5F5F5", color: "#999" }} value={user?.email ?? ""} disabled />
+              <div className="flex items-center gap-2">
+                <input className={`${inputCls} bg-[#F5F5F5] text-[#999]`} value={user?.email ?? ""} disabled />
                 <button
                   onClick={startEditEmail}
                   title="Change email"
                   aria-label="Change email"
-                  style={{
-                    flexShrink: 0, width: 40, height: 40, borderRadius: 10, border: "1.5px solid #E0E0E0",
-                    background: "#fff", color: "#002FA7", cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}
+                  className="flex-shrink-0 w-10 h-10 rounded-[10px] border-[1.5px] border-[#E0E0E0] bg-white text-brand cursor-pointer flex items-center justify-center"
                 >
                   <Pencil size={15} />
                 </button>
@@ -267,21 +246,17 @@ export default function Profile() {
             )}
           </div>
           <div>
-            <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 6 }}>Phone Number</label>
-            <input style={inputStyle} value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
+            <label className="text-xs text-[#888] block mb-1.5">Phone Number</label>
+            <input className={inputCls} value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
           </div>
         </div>
 
-        {error && <p style={{ fontSize: 13, color: "#DC2626", margin: "12px 4px 0" }}>{error}</p>}
+        {error && <p className="text-[13px] text-[#DC2626] mt-3 mx-1 mb-0">{error}</p>}
 
         <button
           onClick={handleSave}
           disabled={updateProfile.isPending || !isDirty}
-          style={{
-            width: "100%", marginTop: 16, padding: "14px 0", borderRadius: 10, border: "none",
-            background: "#002FA7", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer",
-            opacity: updateProfile.isPending || !isDirty ? 0.7 : 1,
-          }}
+          className={`w-full mt-4 py-3.5 px-0 rounded-[10px] border-none bg-brand text-white text-[15px] font-semibold cursor-pointer ${updateProfile.isPending || !isDirty ? "opacity-70" : "opacity-100"}`}
         >
           {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
         </button>
