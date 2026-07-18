@@ -247,64 +247,21 @@ function DashboardOverlay() {
             "opacity 2s cubic-bezier(.22,1,.36,1), transform 2s cubic-bezier(.22,1,.36,1)",
         }}
       >
-        <div
-          style={{
-            background: "#3a3a3a",
-            borderRadius: 16,
-            padding: "14px 14px 0",
-            boxShadow:
-              "0 32px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.08)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              background: "#F7F8FC",
-              overflow: "hidden",
-              minHeight: 480,
-              borderRadius: "4px 4px 0 0",
-            }}
-          >
+        <div className="bg-[#3a3a3a] rounded-2xl pt-3.5 px-3.5 pb-0 shadow-[0_32px_100px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)] border border-white/[0.08]">
+          <div className="flex bg-[#F7F8FC] overflow-hidden min-h-[480px] rounded-t">
             {/* Blue rail */}
-            <div
-              style={{
-                width: 48,
-                background: "#002FA7",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                paddingTop: 12,
-                flexShrink: 0,
-              }}
-            >
-              <div style={{ marginBottom: 14 }}>
+            <div className="w-12 bg-[#002FA7] flex flex-col items-center pt-3 flex-shrink-0">
+              <div className="mb-3.5">
                 <img
                   src="/Glass.webp"
                   alt=""
-                  style={{
-                    width: 24,
-                    height: 24,
-                    objectFit: "contain",
-                    filter: "brightness(0) invert(1)",
-                  }}
+                  className="w-6 h-6 object-contain brightness-0 invert"
                   onError={(e) => {
                     e.target.style.display = "none";
                   }}
                 />
               </div>
-              <div
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 8,
-                  background: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginBottom: 12,
-                }}
-              >
+              <div className="w-[30px] h-[30px] rounded-lg bg-white flex items-center justify-center mb-3">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <path
                     d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"
@@ -322,90 +279,23 @@ function DashboardOverlay() {
                   />
                 </svg>
               </div>
-              <div
-                style={{
-                  width: 20,
-                  height: 1,
-                  background: "rgba(255,255,255,0.2)",
-                  marginBottom: 12,
-                }}
-              />
-              <div
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 8,
-                  background: "#fff",
-                  color: "#002FA7",
-                  fontSize: 10,
-                  fontWeight: 800,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginBottom: 7,
-                }}
-              >
+              <div className="w-5 h-px bg-white/20 mb-3" />
+              <div className="w-[30px] h-[30px] rounded-lg bg-white text-brand text-[10px] font-extrabold flex items-center justify-center mb-[7px]">
                 KC
               </div>
-              <div
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 8,
-                  background: "rgba(255,255,255,0.18)",
-                  color: "#fff",
-                  fontSize: 10,
-                  fontWeight: 800,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <div className="w-[30px] h-[30px] rounded-lg bg-white/[0.18] text-white text-[10px] font-extrabold flex items-center justify-center">
                 C1
               </div>
             </div>
 
             {/* White sidebar */}
-            <div
-              style={{
-                width: 180,
-                background: "#fff",
-                borderRight: "1px solid #eef0f8",
-                flexShrink: 0,
-              }}
-            >
-              <div
-                style={{
-                  padding: "14px 12px",
-                  borderBottom: "1px solid #eef0f8",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
+            <div className="w-[180px] bg-white border-r border-[#eef0f8] flex-shrink-0">
+              <div className="py-3.5 px-3 border-b border-[#eef0f8] flex items-center justify-between">
                 <div>
-                  <div
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 700,
-                      color: "#0f1d6e",
-                      lineHeight: 1.3,
-                    }}
-                  >
+                  <div className="text-xs font-bold text-[#0f1d6e] leading-[1.3]">
                     Kings College Alumni
                   </div>
-                  <span
-                    style={{
-                      fontSize: 9,
-                      fontWeight: 700,
-                      color: "#e85d04",
-                      background: "#fff4ee",
-                      borderRadius: 99,
-                      padding: "1px 6px",
-                      display: "inline-block",
-                      marginTop: 2,
-                    }}
-                  >
+                  <span className="text-[9px] font-bold text-[#e85d04] bg-[#fff4ee] rounded-full py-px px-1.5 inline-block mt-0.5">
                     Admin
                   </span>
                 </div>
@@ -448,7 +338,7 @@ function DashboardOverlay() {
                   />
                 </svg>
               </div>
-              <div style={{ padding: "10px 8px" }}>
+              <div className="py-2.5 px-2">
                 {[
                   {
                     label: "Dashboard",
@@ -587,18 +477,7 @@ function DashboardOverlay() {
                 ].map((item) => (
                   <div
                     key={item.label}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      padding: "9px 10px",
-                      borderRadius: 8,
-                      marginBottom: 3,
-                      background: item.active ? "#e6eeff" : "transparent",
-                      color: item.active ? "#002FA7" : "#6b7280",
-                      fontSize: 12,
-                      fontWeight: item.active ? 700 : 500,
-                    }}
+                    className={`flex items-center gap-2 py-[9px] px-2.5 rounded-lg mb-[3px] text-xs ${item.active ? "bg-[#e6eeff] text-brand font-bold" : "bg-transparent text-[#6b7280] font-medium"}`}
                   >
                     {item.icon}
                     {item.label}
@@ -608,37 +487,9 @@ function DashboardOverlay() {
             </div>
 
             {/* Main area — identical to original, omitted for brevity but kept intact */}
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                minWidth: 0,
-              }}
-            >
-              <div
-                style={{
-                  background: "#fff",
-                  borderBottom: "1px solid #eef0f8",
-                  padding: "8px 16px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    background: "#f5f6fa",
-                    borderRadius: 7,
-                    padding: "6px 12px",
-                    border: "1px solid #eef0f8",
-                    flex: 1,
-                    maxWidth: 340,
-                  }}
-                >
+            <div className="flex-1 flex flex-col min-w-0">
+              <div className="bg-white border-b border-[#eef0f8] py-2 px-4 flex items-center justify-between">
+                <div className="flex items-center gap-2 bg-[#f5f6fa] rounded-[7px] py-1.5 px-3 border border-[#eef0f8] flex-1 max-w-[340px]">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                     <circle
                       cx="11"
@@ -654,11 +505,11 @@ function DashboardOverlay() {
                       strokeLinecap="round"
                     />
                   </svg>
-                  <span style={{ fontSize: 11, color: "#9ca3af" }}>
+                  <span className="text-[11px] text-[#9ca3af]">
                     Search members, payments, receipts...
                   </span>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div className="flex items-center gap-2.5">
                   <div className="relative">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path
@@ -674,124 +525,51 @@ function DashboardOverlay() {
                         strokeLinecap="round"
                       />
                     </svg>
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        right: 0,
-                        width: 5,
-                        height: 5,
-                        background: "#e11d48",
-                        borderRadius: "50%",
-                        border: "1px solid #fff",
-                      }}
-                    />
+                    <div className="absolute top-0 right-0 w-[5px] h-[5px] bg-[#e11d48] rounded-full border border-white" />
                   </div>
-                  <div
-                    style={{ display: "flex", alignItems: "center", gap: 6 }}
-                  >
-                    <div
-                      style={{
-                        width: 26,
-                        height: 26,
-                        borderRadius: "50%",
-                        background: "linear-gradient(135deg,#002FA7,#4f6fe5)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "#fff",
-                        fontSize: 9,
-                        fontWeight: 700,
-                      }}
-                    >
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-[26px] h-[26px] rounded-full bg-[linear-gradient(135deg,#002FA7,#4f6fe5)] flex items-center justify-center text-white text-[9px] font-bold">
                       AA
                     </div>
                     <div>
-                      <div
-                        style={{
-                          fontSize: 11,
-                          fontWeight: 700,
-                          color: "#0f1d6e",
-                          lineHeight: 1.2,
-                        }}
-                      >
+                      <div className="text-[11px] font-bold text-[#0f1d6e] leading-[1.2]">
                         Amina Agrawal
                       </div>
-                      <div style={{ fontSize: 9, color: "#9ca3af" }}>
+                      <div className="text-[9px] text-[#9ca3af]">
                         amina@gmail.com
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div
-                style={{ flex: 1, padding: "14px 16px 0", overflow: "hidden" }}
-              >
+              <div className="flex-1 pt-3.5 px-4 pb-0 overflow-hidden">
                 <div
                   id="dbo-e0"
                   style={{
                     opacity: 0,
                     transform: "translateY(10px)",
                     transition: "opacity .5s ease, transform .5s ease",
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "space-between",
-                    marginBottom: 14,
                   }}
+                  className="flex items-start justify-between mb-3.5"
                 >
                   <div>
-                    <div
-                      style={{
-                        fontSize: 16,
-                        fontWeight: 800,
-                        color: "#0f1d6e",
-                      }}
-                    >
+                    <div className="text-base font-extrabold text-[#0f1d6e]">
                       Dashboard
                     </div>
-                    <div
-                      style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}
-                    >
+                    <div className="text-[11px] text-[#9ca3af] mt-0.5">
                       A full picture of your community's financial activity.
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: 7 }}>
-                    <button
-                      style={{
-                        padding: "6px 12px",
-                        borderRadius: 7,
-                        border: "1.5px solid #e0e3f0",
-                        background: "#fff",
-                        color: "#0f1d6e",
-                        fontSize: 11,
-                        fontWeight: 600,
-                      }}
-                    >
+                  <div className="flex gap-[7px]">
+                    <button className="py-1.5 px-3 rounded-lg border-[1.5px] border-[#e0e3f0] bg-white text-[#0f1d6e] text-[11px] font-semibold">
                       Create Payment Plan
                     </button>
-                    <button
-                      style={{
-                        padding: "6px 12px",
-                        borderRadius: 7,
-                        border: "none",
-                        background: "#002FA7",
-                        color: "#fff",
-                        fontSize: 11,
-                        fontWeight: 600,
-                      }}
-                    >
+                    <button className="py-1.5 px-3 rounded-lg border-none bg-[#002FA7] text-white text-[11px] font-semibold">
                       + Add Member
                     </button>
                   </div>
                 </div>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(4,1fr)",
-                    gap: 8,
-                    marginBottom: 12,
-                  }}
-                >
+                <div className="grid grid-cols-4 gap-2 mb-3">
                   {[
                     {
                       id: "e1",
@@ -936,28 +714,14 @@ function DashboardOverlay() {
                     <div
                       key={s.id}
                       id={"dbo-" + s.id}
-                      className="shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
+                      className="shadow-[0_1px_4px_rgba(0,47,167,0.05)] bg-white rounded-[10px] py-3 px-3.5 border border-[#eef0f8]"
                       style={{
                         opacity: 0,
                         transform: "translateY(10px)",
                         transition: "opacity .5s ease, transform .5s ease",
-                        background: "#fff",
-                        borderRadius: 10,
-                        padding: "12px 14px",
-                        border: "1px solid #eef0f8",
                       }}
                     >
-                      <div
-                        style={{
-                          fontSize: 10,
-                          color: "#6b7280",
-                          fontWeight: 500,
-                          marginBottom: 8,
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
+                      <div className="text-[10px] text-[#6b7280] font-medium mb-2 flex justify-between items-center">
                         {s.label}
                         <svg
                           width="11"
@@ -980,20 +744,10 @@ function DashboardOverlay() {
                           />
                         </svg>
                       </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 6,
-                        }}
-                      >
+                      <div className="flex items-center gap-1.5">
                         {s.icon}
                         <span
-                          style={{
-                            fontSize: s.small ? 12 : 16,
-                            fontWeight: 800,
-                            color: "#0f1d6e",
-                          }}
+                          className={`font-extrabold text-[#0f1d6e] ${s.small ? "text-xs" : "text-base"}`}
                         >
                           {s.value}
                         </span>
@@ -1001,45 +755,13 @@ function DashboardOverlay() {
                     </div>
                   ))}
                 </div>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 10,
-                  }}
-                >
-                  <div
-                    style={{
-                      background: "rgba(204,219,255,0.4)",
-                      borderRadius: 10,
-                      border: "1px solid #eef0f8",
-                      padding: "12px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        marginBottom: 10,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: "#0f1d6e",
-                        }}
-                      >
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="bg-[rgba(204,219,255,0.4)] rounded-[10px] border border-[#eef0f8] p-3">
+                    <div className="flex items-center justify-between mb-2.5">
+                      <span className="text-xs font-bold text-[#0f1d6e]">
                         Payment Plans
                       </span>
-                      <span
-                        style={{
-                          fontSize: 11,
-                          color: "#002FA7",
-                          fontWeight: 600,
-                        }}
-                      >
+                      <span className="text-[11px] text-brand font-semibold">
                         Manage All
                       </span>
                     </div>
@@ -1084,120 +806,50 @@ function DashboardOverlay() {
                       <div
                         key={p.id}
                         id={"dbo-" + p.id}
+                        className="bg-white rounded-lg py-2.5 px-3 mb-1.5 border border-[rgba(204,219,255,0.6)]"
                         style={{
                           opacity: 0,
                           transform: "translateY(10px)",
                           transition: "opacity .5s ease, transform .5s ease",
-                          background: "#fff",
-                          borderRadius: 8,
-                          padding: "10px 12px",
-                          marginBottom: 6,
-                          border: "1px solid rgba(204,219,255,0.6)",
                         }}
                       >
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            marginBottom: 3,
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 5,
-                            }}
-                          >
-                            <span
-                              style={{
-                                fontSize: 11,
-                                fontWeight: 700,
-                                color: "#0f1d6e",
-                              }}
-                            >
+                        <div className="flex items-center justify-between mb-[3px]">
+                          <div className="flex items-center gap-[5px]">
+                            <span className="text-[11px] font-bold text-[#0f1d6e]">
                               {p.name}
                             </span>
                             <span
-                              style={{
-                                fontSize: 9,
-                                fontWeight: 700,
-                                color: p.fColor,
-                                background: p.fBg,
-                                borderRadius: 99,
-                                padding: "1px 6px",
-                              }}
+                              style={{ color: p.fColor, background: p.fBg }}
+                              className="text-[9px] font-bold rounded-full py-px px-1.5"
                             >
                               {p.freq}
                             </span>
                           </div>
-                          <span
-                            style={{
-                              fontSize: 11,
-                              fontWeight: 800,
-                              color: "#0f1d6e",
-                            }}
-                          >
+                          <span className="text-[11px] font-extrabold text-[#0f1d6e]">
                             {p.amt}
                           </span>
                         </div>
-                        <div
-                          style={{
-                            fontSize: 9,
-                            color: "#9ca3af",
-                            marginBottom: 5,
-                          }}
-                        >
+                        <div className="text-[9px] text-[#9ca3af] mb-[5px]">
                           {p.paid} members paid
                         </div>
-                        <div
-                          style={{
-                            height: 4,
-                            borderRadius: 99,
-                            background: "#eef0f8",
-                            overflow: "hidden",
-                          }}
-                        >
+                        <div className="h-1 rounded-full bg-[#eef0f8] overflow-hidden">
                           <div
                             id={"dbo-" + p.pb}
+                            className="h-full rounded-full"
                             style={{
-                              height: "100%",
-                              borderRadius: 99,
                               background: p.bar,
                               width: 0,
                             }}
                           />
                         </div>
-                        <div
-                          style={{
-                            fontSize: 9,
-                            color: "#9ca3af",
-                            textAlign: "right",
-                            marginTop: 2,
-                          }}
-                        >
+                        <div className="text-[9px] text-[#9ca3af] text-right mt-0.5">
                           {p.pct} Collected
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div
-                    style={{
-                      background: "#fff",
-                      borderRadius: 10,
-                      border: "1px solid #eef0f8",
-                      padding: "12px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: "#0f1d6e",
-                        marginBottom: 10,
-                      }}
-                    >
+                  <div className="bg-white rounded-[10px] border border-[#eef0f8] p-3">
+                    <div className="text-xs font-bold text-[#0f1d6e] mb-2.5">
                       Recent Activity
                     </div>
                     {[
@@ -1241,29 +893,16 @@ function DashboardOverlay() {
                       <div
                         key={a.id}
                         id={"dbo-" + a.id}
+                        className={`flex items-start gap-[9px] py-2.5 ${i < arr.length - 1 ? "border-b border-[#f3f4f8]" : "border-b-0"}`}
                         style={{
                           opacity: 0,
                           transform: "translateY(10px)",
                           transition: "opacity .5s ease, transform .5s ease",
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: 9,
-                          padding: "9px 0",
-                          borderBottom:
-                            i < arr.length - 1 ? "1px solid #f3f4f8" : "none",
                         }}
                       >
                         <div
-                          style={{
-                            width: 28,
-                            height: 28,
-                            borderRadius: "50%",
-                            flexShrink: 0,
-                            background: a.aBg,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
+                          style={{ background: a.aBg }}
+                          className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center"
                         >
                           {a.type === "payment" && (
                             <svg
@@ -1332,18 +971,9 @@ function DashboardOverlay() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p
-                            style={{
-                              fontSize: 11,
-                              color: "#374151",
-                              margin: 0,
-                              lineHeight: 1.45,
-                            }}
-                          >
+                          <p className="text-[11px] text-[#374151] m-0 leading-[1.45]">
                             {a.name && (
-                              <strong
-                                style={{ color: "#002FA7", fontWeight: 700 }}
-                              >
+                              <strong className="text-brand font-bold">
                                 {a.name}{" "}
                               </strong>
                             )}
@@ -1351,20 +981,13 @@ function DashboardOverlay() {
                             {a.detail && (
                               <>
                                 {" "}
-                                <strong style={{ color: "#0f1d6e" }}>
+                                <strong className="text-[#0f1d6e]">
                                   {a.detail}
                                 </strong>
                               </>
                             )}
                           </p>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 3,
-                              marginTop: 3,
-                            }}
-                          >
+                          <div className="flex items-center gap-[3px] mt-[3px]">
                             <svg
                               width="9"
                               height="9"
@@ -1385,7 +1008,7 @@ function DashboardOverlay() {
                                 strokeLinecap="round"
                               />
                             </svg>
-                            <span style={{ fontSize: 9, color: "#9ca3af" }}>
+                            <span className="text-[9px] text-[#9ca3af]">
                               5 hours ago
                             </span>
                           </div>
