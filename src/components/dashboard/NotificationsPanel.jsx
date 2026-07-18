@@ -70,7 +70,7 @@ function NotifAvatar({ n }) {
 
   if (isSelf && user?.profileImage?.url) {
     return (
-      <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, overflow: "hidden", marginTop: 1 }}>
+      <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden mt-px">
         <img src={user.profileImage.url} alt={selfName ?? ""} className="w-full h-full object-cover" />
       </div>
     );
@@ -107,56 +107,37 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
         if (!isRead) onMarkRead?.(n.id);
         onNavigate?.(notifDestination(n, community));
       }}
-      style={{
-        display: "flex", alignItems: "flex-start", gap: 10, width: "100%",
-        background: isRead ? "#F9F9F9" : "#ffffff",
-        borderRadius: 10, padding: "11px 13px",
-        border: "none",
-        cursor: "pointer", textAlign: "left",
-        transition: "background 0.15s", outline: "none",
-      }}
+      className={`flex items-start gap-2.5 w-full rounded-[10px] py-2.5 px-3.5 border-none cursor-pointer text-left transition-[background] duration-150 outline-none ${isRead ? "bg-[#F9F9F9]" : "bg-white"}`}
     >
       <NotifAvatar n={n} />
 
       <div className="flex-1 min-w-0">
         {commName && (
-          <p style={{
-            fontSize: 10, fontWeight: 600, color: "#002FA7",
-            margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.04em",
-            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-          }}>
+          <p className="text-[10px] font-semibold text-brand mt-0 mx-0 mb-0.5 uppercase tracking-[0.04em] overflow-hidden text-ellipsis whitespace-nowrap">
             {commName}
           </p>
         )}
-        <p style={{
-          fontSize: 13, fontWeight: isRead ? 500 : 600,
-          color: isRead ? "#666" : "#111",
-          margin: 0, lineHeight: 1.35,
-          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-        }}>
+        <p className={`text-[13px] m-0 leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap ${isRead ? "font-medium text-[#666]" : "font-semibold text-[#111]"}`}>
           {title}
         </p>
         {body && (
-          <p style={{
-            fontSize: 11.5, color: "#888", margin: "3px 0 0", lineHeight: 1.4,
-            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-          }}>
+          <p className="text-[11.5px] text-[#888] mt-[3px] mx-0 mb-0 leading-[1.4] overflow-hidden text-ellipsis whitespace-nowrap">
             {body}
           </p>
         )}
-        <p style={{ fontSize: 10.5, color: "#aaa", margin: "5px 0 0" }}>
+        <p className="text-[10.5px] text-[#aaa] mt-[5px] mx-0 mb-0">
           {time}
           {(() => {
             const amount = formatNairaAmount(extractNotificationDetails(n).amount);
             return amount ? (
-              <span style={{ color: "#111", fontWeight: 600 }}> · {amount}</span>
+              <span className="text-[#111] font-semibold"> · {amount}</span>
             ) : null;
           })()}
         </p>
       </div>
 
       {!isRead && (
-        <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#002FA7", flexShrink: 0, marginTop: 4 }} />
+        <div className="w-[7px] h-[7px] rounded-full bg-brand flex-shrink-0 mt-1" />
       )}
     </button>
   );
@@ -194,39 +175,30 @@ export default function NotificationsPanel({
 
   return (
     <div
-      style={{
-        position: "absolute", right: 0, top: "calc(100% + 10px)",
-        width: 390, maxWidth: "calc(100vw - 16px)", background: "#F2F2F2",
-        borderRadius: 14, boxShadow: "0 8px 32px rgba(0,0,0,0.14)",
-        zIndex: 50, overflow: "hidden",
-      }}
+      className="absolute right-0 w-[390px] bg-[#F2F2F2] rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.14)] z-50 overflow-hidden [top:calc(100%+10px)] [max-width:calc(100vw-16px)]"
       role="menu"
     >
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px 10px" }}>
-        <p style={{ fontSize: 15, fontWeight: 700, color: "#111", margin: 0 }}>
+      <div className="flex items-center justify-between pt-3.5 px-4 pb-2.5">
+        <p className="text-[15px] font-bold text-[#111] m-0">
           Notifications
           {count > 0 && (
-            <span style={{ marginLeft: 7, fontSize: 13, fontWeight: 600, color: "#555" }}>
+            <span className="ml-[7px] text-sm font-semibold text-[#555]">
               {count}
             </span>
           )}
         </p>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div className="flex items-center gap-3">
           <button
             onClick={onClearAll}
             disabled={isClearing || notifications.length === 0}
-            style={{
-              fontSize: 12, fontWeight: 600, color: "#E53E3E", background: "none",
-              border: "none", cursor: "pointer", padding: 0,
-              opacity: isClearing || notifications.length === 0 ? 0.4 : 1,
-            }}
+            className={`text-xs font-semibold text-[#E53E3E] bg-transparent border-none cursor-pointer p-0 ${isClearing || notifications.length === 0 ? "opacity-40" : "opacity-100"}`}
           >
             {isClearing ? "Clearing…" : "Clear All"}
           </button>
           <button
             onClick={onMarkAllRead}
-            style={{ fontSize: 12, fontWeight: 600, color: "#002FA7", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+            className="text-xs font-semibold text-brand bg-transparent border-none cursor-pointer p-0"
           >
             Mark All As Read
           </button>
@@ -234,7 +206,7 @@ export default function NotificationsPanel({
       </div>
 
       {/* Body */}
-      <div style={{ maxHeight: 440, overflowY: "auto", paddingBottom: 6 }}>
+      <div className="max-h-[440px] overflow-y-auto pb-1.5">
         {isLoading ? (
           <LoadingState className="py-8" />
         ) : notifications.length === 0 ? (
@@ -242,14 +214,10 @@ export default function NotificationsPanel({
         ) : (
           buckets.map(({ label, items }) => (
             <div key={label}>
-              <p style={{
-                fontSize: 10, fontWeight: 700, color: "#999",
-                letterSpacing: "0.06em", textTransform: "uppercase",
-                padding: "10px 16px 5px", margin: 0,
-              }}>
+              <p className="text-[10px] font-bold text-[#999] tracking-[0.06em] uppercase pt-2.5 px-4 pb-[5px] m-0">
                 {label}
               </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 5, padding: "0 10px" }}>
+              <div className="flex flex-col gap-[5px] px-2.5">
                 {items.map((n) => (
                   <NotifCard
                     key={n.id}
@@ -268,12 +236,7 @@ export default function NotificationsPanel({
       {/* Footer */}
       <button
         onClick={() => { onClose?.(); navigate("/dashboard/notifications"); }}
-        style={{
-          display: "block", width: "100%", textAlign: "center",
-          fontSize: 12, fontWeight: 600, color: "#002FA7",
-          background: "var(--color-stacked-container)", border: "none",
-          borderTop: "1px solid #E5E5E5", cursor: "pointer", padding: "10px 0",
-        }}
+        className="block w-full text-center text-xs font-semibold text-brand bg-stacked-container border-t border-t-[#E5E5E5] cursor-pointer py-2.5 px-0"
       >
         View all notifications
       </button>
