@@ -44,11 +44,9 @@ function shapePlan(raw) {
     totalCount: m.audienceSize ?? 0,
     currency: m.currency ?? "NGN",
     dueAt: raw.dueAt ?? null,
-    // Confirmed on the single-resource GET/PATCH .../payment-links/{id}
-    // response — root-level, not nested under recurringPlan. Not confirmed
-    // whether the LIST endpoint (this hook's source) echoes the same
-    // fields per item; if it doesn't, these just read as unset/off here
-    // until Reuben confirms, with no crash either way.
+    // Confirmed via real Swagger schema (PaymentLinkResponse): root-level
+    // on both the single-resource GET/PATCH response AND this hook's own
+    // list-endpoint response, not nested under recurringPlan.
     reminderFrequency: raw.reminderFrequency ?? null,
     reminderChannels: raw.reminderChannels ?? [],
     communityAccountId: raw.communityAccountId ?? null,
@@ -62,7 +60,11 @@ export function usePaymentPlans(communityId) {
   const query = useQuery({
     queryKey: ["community", communityId, "payment-links"],
     queryFn: async () => {
-      const res = await getCommunityPaymentLinks(communityId);
+      // includeMetrics is a real, confirmed query param on this endpoint
+      // (PaymentLinkQueryDto) -- without it the list response's per-item
+      // metrics object can't be assumed populated, silently zeroing every
+      // amountCollected/expectedAmount card on the dashboard.
+      const res = await getCommunityPaymentLinks(communityId, { includeMetrics: true });
       return unwrapList(res).map(shapePlan);
     },
     enabled,
