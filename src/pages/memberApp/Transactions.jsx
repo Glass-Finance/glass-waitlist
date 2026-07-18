@@ -31,24 +31,14 @@ function statusLabel(status) {
 
 function StatusBadge({ status }) {
   const map = {
-    Success: { bg: "#dcfce7", color: "#15803d" },
-    Failed: { bg: "#fce4e4", color: "#dc2626" },
-    Pending: { bg: "#fef9c3", color: "#b45309" },
+    Success: "bg-[#dcfce7] text-[#15803d]",
+    Failed: "bg-[#fce4e4] text-[#dc2626]",
+    Pending: "bg-[#fef9c3] text-[#b45309]",
   };
   const label = statusLabel(status);
-  const s = map[label] ?? map.Pending;
+  const cls = map[label] ?? map.Pending;
   return (
-    <span
-      style={{
-        display: "inline-block",
-        background: s.bg,
-        color: s.color,
-        fontSize: 12,
-        fontWeight: 600,
-        borderRadius: 6,
-        padding: "2px 10px",
-      }}
-    >
+    <span className={`inline-block text-xs font-semibold rounded-md py-0.5 px-2.5 ${cls}`}>
       {label}
     </span>
   );
@@ -59,22 +49,10 @@ function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div style={{ position: "relative", display: "inline-block" }}>
+    <div className="relative inline-block">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="border border-surface-container-border"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          background: "#fff",
-          borderRadius: 8,
-          padding: "7px 14px",
-          fontSize: 14,
-          fontWeight: 500,
-          color: "#111827",
-          cursor: "pointer",
-        }}
+        className="border border-surface-container-border flex items-center gap-1.5 bg-white rounded-lg py-[7px] px-3.5 text-sm font-medium text-[#111827] cursor-pointer"
       >
         {optionLabel(value)}
         <ChevronDown size={14} color="#6b7280" />
@@ -83,23 +61,10 @@ function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
       {open && (
         <>
           <div
-            style={{ position: "fixed", inset: 0, zIndex: 10 }}
+            className="fixed inset-0 z-10"
             onClick={() => setOpen(false)}
           />
-          <div
-            className="border border-surface-container-border"
-            style={{
-              position: "absolute",
-              top: "calc(100% + 6px)",
-              left: 0,
-              background: "#fff",
-              borderRadius: 10,
-              boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-              zIndex: 20,
-              minWidth: 140,
-              overflow: "hidden",
-            }}
-          >
+          <div className="border border-surface-container-border absolute left-0 bg-white rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.1)] z-20 min-w-[140px] overflow-hidden [top:calc(100%+6px)]">
             {options.map((opt) => (
               <button
                 key={opt}
@@ -107,18 +72,7 @@ function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
                   onChange(opt);
                   setOpen(false);
                 }}
-                style={{
-                  display: "block",
-                  width: "100%",
-                  textAlign: "left",
-                  padding: "10px 16px",
-                  fontSize: 14,
-                  color: opt === value ? "#2563eb" : "#111827",
-                  fontWeight: opt === value ? 600 : 400,
-                  background: opt === value ? "#eff6ff" : "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                }}
+                className={`block w-full text-left py-2.5 px-4 text-sm border-none cursor-pointer ${opt === value ? "text-[#2563eb] font-semibold bg-[#eff6ff]" : "text-[#111827] font-normal bg-transparent"}`}
               >
                 {optionLabel(opt)}
               </button>
@@ -135,21 +89,13 @@ function TxRow({ tx, onOpen }) {
   return (
     <div
       onClick={() => onOpen(tx)}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 8,
-        padding: "14px 20px",
-        borderBottom: "1px solid #f3f4f6",
-        cursor: "pointer",
-      }}
+      className="flex items-center justify-between gap-2 py-3.5 px-5 border-b border-[#f3f4f6] cursor-pointer"
     >
       <div className="min-w-0">
-        <p style={{ fontSize: 15, fontWeight: 500, color: "#111827", margin: 0 }}>
+        <p className="text-[15px] font-medium text-[#111827] m-0">
           {toTitleCase(tx.description)}
         </p>
-        <p style={{ fontSize: 13, color: "#9ca3af", margin: "2px 0 0" }}>
+        <p className="text-[13px] text-[#9ca3af] mt-0.5 mx-0 mb-0">
           {tx.communityName}
           {tx.communityName ? " · " : ""}
           {tx.date
@@ -161,8 +107,8 @@ function TxRow({ tx, onOpen }) {
             : "—"}
         </p>
       </div>
-      <div style={{ textAlign: "right", flexShrink: 0 }}>
-        <p style={{ fontSize: 15, fontWeight: 600, color: "#111827", margin: "0 0 4px" }}>
+      <div className="text-right flex-shrink-0">
+        <p className="text-[15px] font-semibold text-[#111827] mt-0 mx-0 mb-1">
           {formatNaira(tx.amount)}
         </p>
         <StatusBadge status={tx.status} />
@@ -222,65 +168,25 @@ export default function Transactions() {
 
   return (
     <div
-      style={{
-        position: "relative",
-        overflow: "hidden",
-        minHeight: "100vh",
-         
-        fontFamily: "Inter, -apple-system, sans-serif",
-        maxWidth: 430,
-        margin: "0 auto",
-        paddingBottom: 40,
-      }}
+      className="relative overflow-hidden min-h-screen max-w-[430px] mx-auto pb-10"
+      style={{ fontFamily: "Inter, -apple-system, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* ── Top bar ── */}
-      <div
-        style={{
-           
-          padding: "24px 20px 16px",
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          position: "sticky",
-          top: 0,
-          zIndex: 40,
-        }}
-      >
+      <div className="pt-6 px-5 pb-4 flex items-center gap-3 sticky top-0 z-40">
         <button
           onClick={() => navigate(-1)}
-          className="border border-surface-container-border"
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: "50%",
-            background: "#fff",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            flexShrink: 0,
-          }}
+          className="border border-surface-container-border w-9 h-9 rounded-full bg-white flex items-center justify-center cursor-pointer flex-shrink-0"
         >
           <ChevronLeft size={18} color="#374151" />
         </button>
-        <h1
-          style={{
-            fontSize: 18,
-            fontWeight: 500,
-            color: "#111827",
-            margin: 0,
-            flex: 1,
-            textAlign: "center",
-            marginRight: 36,
-          }}
-        >
+        <h1 className="text-lg font-medium text-[#111827] m-0 flex-1 text-center mr-9">
           Payment History
         </h1>
       </div>
 
       {/* ── Status + month filters ── */}
-      <div style={{ padding: "0 20px 14px", display: "flex", gap: 8 }}>
+      <div className="pt-0 px-5 pb-3.5 flex gap-2">
         <Dropdown value={statusFilter} options={STATUS_OPTIONS} onChange={setStatusFilter} />
         {monthOptions.length > 0 && (
           <Dropdown
@@ -295,67 +201,35 @@ export default function Transactions() {
       {isLoading ? (
         <PageLoadingState label="Loading your payment history…" size={56} padding="36px 24px" />
       ) : error ? (
-        <div style={{ textAlign: "center", padding: "32px 0" }}>
-          <p style={{ color: "#dc2626", fontSize: 14, marginBottom: 12 }}>
+        <div className="text-center py-8">
+          <p className="text-[#dc2626] text-sm mb-3">
             Couldn't load transactions.
           </p>
           <button
             onClick={() => refetch()}
-            style={{
-              background: "none",
-              border: "1px solid #FCA5A5",
-              borderRadius: 20,
-              color: "#EF4444",
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: "pointer",
-              padding: "6px 18px",
-            }}
+            className="bg-transparent border border-[#FCA5A5] rounded-full text-[#EF4444] text-xs font-semibold cursor-pointer py-1.5 px-4.5"
           >
             Try again
           </button>
         </div>
       ) : groups.length === 0 ? (
-        <div
-          style={{
-            margin: "0 12px",
-            padding: "48px 24px",
-            textAlign: "center",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--color-stacked-container)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
+        <div className="mx-3 py-12 px-6 text-center flex flex-col items-center gap-2">
+          <div className="w-[52px] h-[52px] rounded-full bg-stacked-container flex items-center justify-center mb-1">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
             </svg>
           </div>
-          <p style={{ fontSize: 14, fontWeight: 600, color: "#374151", margin: 0 }}>No transactions yet</p>
-          <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0 }}>Your payment history will appear here.</p>
+          <p className="text-sm font-semibold text-[#374151] m-0">No transactions yet</p>
+          <p className="text-[13px] text-[#9CA3AF] m-0">Your payment history will appear here.</p>
         </div>
       ) : (
         groups.map(([label, txs]) => (
           <div
             key={label}
-            style={{
-              background: "var(--color-surface-container)",
-              borderRadius: 16,
-              margin: "0 12px 12px",
-              overflow: "hidden",
-            }}
+            className="bg-surface-container rounded-2xl mx-3 mt-0 mb-3 overflow-hidden"
           >
-            <div
-              style={{
-                padding: "12px 20px",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                borderBottom: "1px solid #f3f4f6",
-              }}
-            >
-              <span style={{ fontSize: 14, fontWeight: 700, color: "#2563eb" }}>
+            <div className="py-3 px-5 flex items-center gap-1.5 border-b border-[#f3f4f6]">
+              <span className="text-sm font-bold text-[#2563eb]">
                 {label}
               </span>
             </div>
