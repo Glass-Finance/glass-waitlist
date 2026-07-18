@@ -942,20 +942,7 @@ export default function Home() {
           <button
             aria-label="Notifications"
             onClick={() => navigate("/member/notifications")}
-            style={{
-              position: "relative",
-              width: 38,
-              height: 38,
-              borderRadius: "50%",
-              background: "#fff",
-              border: "none",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-              flexShrink: 0,
-            }}
+            className="relative w-[38px] h-[38px] rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)] flex-shrink-0"
           >
             <Bell size={17} strokeWidth={1.8} style={{ color: "#333" }} />
             {unreadCount > 0 && (
