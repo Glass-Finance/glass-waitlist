@@ -75,13 +75,7 @@ function BlurText({
   return (
     <span
       ref={ref}
-      className={className}
-      style={{
-        display: "inline-flex",
-        flexWrap: "wrap",
-        justifyContent: centered ? "center" : "flex-start",
-        width: centered ? "100%" : "auto",
-      }}
+      className={`inline-flex flex-wrap ${centered ? "justify-center w-full" : "justify-start w-auto"} ${className}`}
     >
       {elements.map((seg, i) => (
         <motion.span
@@ -110,8 +104,7 @@ function CommunityMock({ variant }) {
     schools: {
       name: "Kings College Alumni",
       tag: "Education",
-      tagColor: "#002FA7",
-      tagBg: "#e6eeff",
+      tagCls: "text-[#002FA7] bg-[#e6eeff]",
       members: ["AO", "BK", "CF", "DN"],
       stat: "₦2.4M",
       statLabel: "Collected this term",
@@ -124,8 +117,7 @@ function CommunityMock({ variant }) {
     professional: {
       name: "ICAN Lagos Chapter",
       tag: "Professional",
-      tagColor: "#7c3aed",
-      tagBg: "#f3eeff",
+      tagCls: "text-[#7c3aed] bg-[#f3eeff]",
       members: ["JA", "RI", "SO", "TU"],
       stat: "98%",
       statLabel: "Dues compliance rate",
@@ -138,8 +130,7 @@ function CommunityMock({ variant }) {
     clubs: {
       name: "Arsenal Club Lagos",
       tag: "Club",
-      tagColor: "#059669",
-      tagBg: "#ecfdf5",
+      tagCls: "text-[#059669] bg-[#ecfdf5]",
       members: ["LA", "MK", "NP", "OQ"],
       stat: "₦480k",
       statLabel: "Monthly dues pool",
@@ -152,8 +143,7 @@ function CommunityMock({ variant }) {
     religious: {
       name: "Redeemed Parish G45",
       tag: "Religious",
-      tagColor: "#d4a017",
-      tagBg: "#fff8e7",
+      tagCls: "text-[#d4a017] bg-[#fff8e7]",
       members: ["PA", "QB", "RC", "SD"],
       stat: "₦1.1M",
       statLabel: "Building fund raised",
@@ -165,127 +155,54 @@ function CommunityMock({ variant }) {
     },
   };
   const m = mocks[variant];
-  const avatarColors = ["#002FA7", "#7c3aed", "#059669", "#d4a017"];
+  const avatarClasses = ["bg-[#002FA7]", "bg-[#7c3aed]", "bg-[#059669]", "bg-[#d4a017]"];
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        background: "#F5F5F8",
-        borderRadius: 20,
-        padding: "18px 16px",
-        display: "flex",
-        flexDirection: "column",
-        gap: 12,
-        fontFamily: "Inter,-apple-system,sans-serif",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+    <div className="w-full h-full bg-[#F5F5F8] rounded-[20px] pt-[18px] px-4 pb-[18px] flex flex-col gap-3 overflow-hidden [font-family:Inter,-apple-system,sans-serif]">
+      <div className="flex items-center justify-between">
         <div>
-          <div style={{ fontSize: 13, fontWeight: 800, color: "#0f1d6e" }}>
+          <div className="text-[13px] font-extrabold text-[#0f1d6e]">
             {m.name}
           </div>
           <span
-            style={{
-              fontSize: 9,
-              fontWeight: 700,
-              color: m.tagColor,
-              background: m.tagBg,
-              borderRadius: 99,
-              padding: "2px 8px",
-              marginTop: 3,
-              display: "inline-block",
-            }}
+            className={`text-[9px] font-bold rounded-full py-0.5 px-2 mt-[3px] inline-block ${m.tagCls}`}
           >
             {m.tag}
           </span>
         </div>
-        <div style={{ display: "flex" }}>
+        <div className="flex">
           {m.members.map((av, i) => (
             <div
               key={i}
-              style={{
-                width: 26,
-                height: 26,
-                borderRadius: "50%",
-                background: avatarColors[i % avatarColors.length],
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-                fontSize: 8,
-                fontWeight: 800,
-                border: "2px solid #F7F8FC",
-                marginLeft: i === 0 ? 0 : -8,
-                zIndex: m.members.length - i,
-              }}
+              className={`w-[26px] h-[26px] rounded-full flex items-center justify-center text-white text-[8px] font-extrabold border-2 border-[#F7F8FC] ${avatarClasses[i % avatarClasses.length]} ${i === 0 ? "ml-0" : "-ml-2"}`}
+              style={{ zIndex: m.members.length - i }}
             >
               {av}
             </div>
           ))}
         </div>
       </div>
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: 10,
-          padding: "10px 14px",
-          border: "1px solid #eef0f8",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <span style={{ fontSize: 9, color: "#6b7280" }}>{m.statLabel}</span>
-        <span style={{ fontSize: 18, fontWeight: 800, color: "#0f1d6e" }}>
+      <div className="bg-white rounded-[10px] py-2.5 px-3.5 border border-[#eef0f8] flex items-center justify-between">
+        <span className="text-[9px] text-[#6b7280]">{m.statLabel}</span>
+        <span className="text-lg font-extrabold text-[#0f1d6e]">
           {m.stat}
         </span>
       </div>
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: 10,
-          border: "1px solid #eef0f8",
-          overflow: "hidden",
-          flex: 1,
-        }}
-      >
+      <div className="bg-white rounded-[10px] border border-[#eef0f8] overflow-hidden flex-1">
         {m.rows.map((row, i) => (
           <div
             key={i}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "8px 12px",
-              borderBottom:
-                i < m.rows.length - 1 ? "1px solid #f3f4f8" : "none",
-            }}
+            className={`flex items-center justify-between py-2 px-3 ${i < m.rows.length - 1 ? "border-b border-[#f3f4f8]" : ""}`}
           >
-            <span style={{ fontSize: 11, color: "#374151", fontWeight: 500 }}>
+            <span className="text-[11px] text-[#374151] font-medium">
               {row.name}
             </span>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#0f1d6e" }}>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-[#0f1d6e]">
                 {row.amt}
               </span>
               <span
-                style={{
-                  fontSize: 9,
-                  fontWeight: 700,
-                  color: row.paid ? "#059669" : "#e85d04",
-                  background: row.paid ? "#ecfdf5" : "#fff4ee",
-                  borderRadius: 99,
-                  padding: "2px 7px",
-                }}
+                className={`text-[9px] font-bold rounded-full py-0.5 px-[7px] ${row.paid ? "text-[#059669] bg-[#ecfdf5]" : "text-[#e85d04] bg-[#fff4ee]"}`}
               >
                 {row.paid ? "Paid" : "Pending"}
               </span>
@@ -310,7 +227,6 @@ function FlipCard({ title, desc, variant, entryDelay }) {
   const [flipped, setFlipped] = useState(false);
   const cardRef = useRef(null);
   const [inView, setInView] = useState(false);
-  const accent = "#001F6E";
 
   useEffect(() => {
     const el = cardRef.current;
@@ -331,62 +247,24 @@ function FlipCard({ title, desc, variant, entryDelay }) {
       onMouseEnter={() => setFlipped(true)}
       onMouseLeave={() => setFlipped(false)}
       onTouchStart={(e) => { e.preventDefault(); setFlipped((f) => !f); }}
+      className="[perspective:1200px] h-[380px] opacity-0"
       style={{
-        perspective: "1200px",
-        height: "380px",
-        opacity: 0,
         animation: inView
           ? `ucCardIn 0.7s cubic-bezier(0.22,1,0.36,1) ${entryDelay}ms forwards`
           : "none",
       }}
     >
       <div
-        style={{
-          position: "relative",
-          width: "100%",
-          height: "100%",
-          transformStyle: "preserve-3d",
-          transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-          transition: "transform 0.65s cubic-bezier(0.22,1,0.36,1)",
-          willChange: "transform",
-        }}
+        className={`relative w-full h-full [transform-style:preserve-3d] transition-transform duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform ${flipped ? "[transform:rotateY(180deg)]" : "[transform:rotateY(0deg)]"}`}
       >
         {/* ── FRONT ── */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden",
-            borderRadius: 24,
-            background: "#F5F5F8",
-            boxShadow:
-              "0 0 0 1px rgba(255,255,255,0.75) inset, 0 2px 20px rgba(28,43,138,0.08)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 12,
-            padding: "32px 28px",
-            textAlign: "center",
-            overflow: "hidden",
-          }}
-        >
+        <div className="absolute inset-0 [backface-visibility:hidden] [-webkit-backface-visibility:hidden] rounded-3xl bg-[#F5F5F8] shadow-[0_0_0_1px_rgba(255,255,255,0.75)_inset,0_2px_20px_rgba(28,43,138,0.08)] flex flex-col items-center justify-center gap-3 py-8 px-7 text-center overflow-hidden">
           {/* Top-left corner line — imported asset */}
           <img
             src={cornerTL}
             alt=""
             draggable={false}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: 80,
-              height: 80,
-              objectFit: "contain",
-              opacity: 0.55,
-              pointerEvents: "none",
-            }}
+            className="absolute top-0 left-0 w-20 h-20 object-contain opacity-55 pointer-events-none"
             loading="lazy"
             decoding="async"
           />
@@ -396,16 +274,7 @@ function FlipCard({ title, desc, variant, entryDelay }) {
             src={cornerBR}
             alt=""
             draggable={false}
-            style={{
-              position: "absolute",
-              bottom: 0,
-              right: 0,
-              width: 80,
-              height: 80,
-              objectFit: "contain",
-              opacity: 0.45,
-              pointerEvents: "none",
-            }}
+            className="absolute bottom-0 right-0 w-20 h-20 object-contain opacity-45 pointer-events-none"
             loading="lazy"
             decoding="async"
           />
@@ -414,68 +283,26 @@ function FlipCard({ title, desc, variant, entryDelay }) {
           <img
             src={CARD_ICONS[variant]}
             alt={title}
-            style={{
-              width: 72,
-              height: 72,
-              objectFit: "contain",
-              marginBottom: 4,
-            }}
+            className="w-[72px] h-[72px] object-contain mb-1"
             loading="lazy"
             decoding="async"
           />
 
           {/* Title */}
-          <h3
-            style={{
-              fontSize: "clamp(20px,4vw,24px)",
-              fontWeight: 500,
-              color: accent,
-              lineHeight: 1.25,
-              margin: 0,
-            }}
-          >
+          <h3 className="text-[clamp(20px,4vw,24px)] font-medium text-[#001F6E] leading-[1.25] m-0">
             {title}
           </h3>
 
           {/* Desc */}
-          <p
-            style={{
-              fontSize: 18,
-              color: "rgba(0,0,0,0.5)",
-              lineHeight: 1.6,
-              margin: 0,
-              maxWidth: 360,
-            }}
-          >
+          <p className="text-lg text-black/50 leading-[1.6] m-0 max-w-[360px]">
             {desc}
           </p>
         </div>
 
         {/* ── BACK ── */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden",
-            transform: "rotateY(180deg)",
-            borderRadius: 24,
-            overflow: "hidden",
-            boxShadow: `0 0 0 1.5px ${accent}30 inset, 0 8px 40px rgba(28,43,138,0.14)`,
-          }}
-        >
+        <div className="absolute inset-0 [backface-visibility:hidden] [-webkit-backface-visibility:hidden] [transform:rotateY(180deg)] rounded-3xl overflow-hidden shadow-[0_0_0_1.5px_#001F6E30_inset,0_8px_40px_rgba(28,43,138,0.14)]">
           <CommunityMock variant={variant} />
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: 3,
-              background: `linear-gradient(90deg, transparent, ${accent}, transparent)`,
-              opacity: 0.6,
-            }}
-          />
+          <div className="absolute top-0 left-0 right-0 h-[3px] bg-[linear-gradient(90deg,transparent,#001F6E,transparent)] opacity-60" />
         </div>
       </div>
     </div>
@@ -529,37 +356,15 @@ export default function UseCases() {
           {/* ── Header ── */}
           <div className="text-center mb-14">
             {/* Badge */}
-            <div
-              style={{
-                marginBottom: 20,
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
+            <div className="mb-5 flex justify-center">
               <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full">
                 Use Cases
               </span>
             </div>
 
             {/* Headline */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginBottom: 16,
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: "clamp(26px,5.5vw,64px)",
-                  fontWeight: 700,
-                  color: "#0f1d6e",
-                  lineHeight: 1.15,
-                  letterSpacing: "-0.02em",
-                  maxWidth: 1080,
-                  textAlign: "center",
-                }}
-              >
+            <div className="flex justify-center mb-4">
+              <h2 className="text-[clamp(26px,5.5vw,64px)] font-bold text-[#0f1d6e] leading-[1.15] tracking-[-0.02em] max-w-[1080px] text-center">
                 <BlurText
                   text="Built for every Nigerian community"
                   animateBy="words"
@@ -572,16 +377,8 @@ export default function UseCases() {
             </div>
 
             {/* Subtext */}
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <p
-                style={{
-                  fontSize: "clamp(15px,2vw,17px)",
-                  color: "rgba(0,0,0,0.6)",
-                  maxWidth: 700,
-                  lineHeight: 1.7,
-                  textAlign: "center",
-                }}
-              >
+            <div className="flex justify-center">
+              <p className="text-[clamp(15px,2vw,17px)] text-black/60 max-w-[700px] leading-[1.7] text-center">
                 Whether you run a small club or a national association, Glass scales with you.
               </p>
             </div>
