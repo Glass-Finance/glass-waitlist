@@ -86,6 +86,14 @@ export default function PaymentProfile() {
   const [saving,      setSaving]      = useState(false);
   const [error,       setError]       = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const [accNumberTouched, setAccNumberTouched] = useState(false);
+
+  // Only worth flagging once the field's been left, not while still typing —
+  // a 10-digit account number is the norm but nothing else here validates
+  // length as the user goes, so a shorter one just silently never resolves
+  // with no feedback at all otherwise.
+  const accNumberIncomplete =
+    accNumberTouched && accNumber.length > 0 && accNumber.length < 10;
 
   // Fetch banks on mount
   useEffect(() => {
@@ -296,8 +304,11 @@ export default function PaymentProfile() {
                     maxLength={10}
                     value={accNumber}
                     onChange={(e) => { setAccNumber(e.target.value.replace(/\D/g, "")); setAccName(""); }}
+                    onFocus={() => setAccNumberTouched(false)}
+                    onBlur={() => setAccNumberTouched(true)}
                     placeholder="Enter Account Number"
                     className={inputCls}
+                    style={accNumberIncomplete ? { borderColor: "var(--color-danger)" } : undefined}
                   />
                   <BankSelect
                     banks={banks}
@@ -314,6 +325,9 @@ export default function PaymentProfile() {
                     triggerClassName={inputCls}
                   />
                 </div>
+                {accNumberIncomplete && (
+                  <p className="text-xs text-danger mt-1.5">Account number must be 10 digits.</p>
+                )}
               </div>
 
               {/* Resolved account name */}
