@@ -14,19 +14,7 @@ function FilterDropdown({ value, onChange }) {
     <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          padding: "8px 14px",
-          borderRadius: 8,
-          border: "1.5px solid #CCC",
-          background: "#fff",
-          color: "#111",
-          fontSize: 13,
-          fontWeight: 600,
-          cursor: "pointer",
-        }}
+        className="flex items-center gap-1.5 py-2 px-3.5 rounded-lg border-[1.5px] border-[#CCC] bg-white text-[#111] text-[13px] font-semibold cursor-pointer"
       >
         {value}
         <ChevronDown size={14} strokeWidth={2} />
@@ -34,23 +22,10 @@ function FilterDropdown({ value, onChange }) {
       {open && (
         <>
           <div
-            style={{ position: "fixed", inset: 0, zIndex: 10 }}
+            className="fixed inset-0 z-10"
             onClick={() => setOpen(false)}
           />
-          <div
-            style={{
-              position: "absolute",
-              top: "calc(100% + 6px)",
-              left: 0,
-              background: "#fff",
-              borderRadius: 10,
-              boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
-              border: "1px solid var(--color-outline-on-surface)",
-              zIndex: 20,
-              overflow: "hidden",
-              minWidth: 130,
-            }}
-          >
+          <div className="absolute left-0 bg-white rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-outline-on-surface z-20 overflow-hidden min-w-[130px] [top:calc(100%+6px)]">
             {FILTER_OPTIONS.map((opt) => (
               <button
                 key={opt}
@@ -58,18 +33,7 @@ function FilterDropdown({ value, onChange }) {
                   onChange(opt);
                   setOpen(false);
                 }}
-                style={{
-                  display: "block",
-                  width: "100%",
-                  textAlign: "left",
-                  padding: "11px 16px",
-                  fontSize: 13,
-                  cursor: "pointer",
-                  background: value === opt ? "#F0F2FA" : "#fff",
-                  color: value === opt ? "#002FA7" : "#333",
-                  fontWeight: value === opt ? 600 : 400,
-                  border: "none",
-                }}
+                className={`block w-full text-left py-[11px] px-4 text-[13px] cursor-pointer border-none ${value === opt ? "bg-[#F0F2FA] text-brand font-semibold" : "bg-white text-[#333] font-normal"}`}
               >
                 {opt}
               </button>
@@ -84,83 +48,35 @@ function FilterDropdown({ value, onChange }) {
 function PaymentRow({ item, onPay, paying }) {
   const isRecurring = item.type === "recurring";
   const badge = isRecurring
-    ? { label: "Recurring", color: "#7C3AED", bg: "#F3E8FF" }
-    : { label: "One-time", color: "#DC2626", bg: "#FEE2E2" };
+    ? { label: "Recurring", cls: "text-[#7C3AED]", dotCls: "bg-[#7C3AED]" }
+    : { label: "One-time", cls: "text-[#DC2626]", dotCls: "bg-[#DC2626]" };
 
   return (
-    <div
-      className="border border-surface-container-border"
-      style={{
-        padding: "18px 16px",
-        background: "#fff",
-        borderRadius: 14,
-        boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 12,
-      }}
-    >
+    <div className="border border-surface-container-border py-[18px] px-4 bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex items-center justify-between gap-3">
       <div className="min-w-0">
-        <div
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            gap: 6,
-            marginBottom: 6,
-          }}
-        >
-          <span style={{ fontSize: 20, fontWeight: 700, color: "#111" }}>
+        <div className="flex items-baseline gap-1.5 mb-1.5">
+          <span className="text-xl font-bold text-[#111]">
             {formatNaira(item.amount)}
           </span>
           {isRecurring && (
-            <span style={{ fontSize: 13, color: "#888" }}>/month</span>
+            <span className="text-[13px] text-[#888]">/month</span>
           )}
-          <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 5,
-              fontSize: 12,
-              fontWeight: 600,
-              color: badge.color,
-              marginLeft: 4,
-            }}
-          >
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: badge.color,
-                flexShrink: 0,
-              }}
-            />
+          <span className={`inline-flex items-center gap-[5px] text-xs font-semibold ml-1 ${badge.cls}`}>
+            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${badge.dotCls}`} />
             {badge.label}
           </span>
         </div>
-        <p style={{ fontSize: 15, color: "#111", margin: "0 0 3px", fontWeight: 500 }}>
+        <p className="text-[15px] text-[#111] mt-0 mx-0 mb-[3px] font-medium">
           {toTitleCase(item.name)}
         </p>
-        <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0 }}>
+        <p className="text-[13px] text-[#9CA3AF] m-0">
           Due: {formatDate(item.dueDate)}
         </p>
       </div>
       <button
         onClick={() => onPay(item)}
         disabled={paying}
-        style={{
-          flexShrink: 0,
-          padding: "9px 18px",
-          borderRadius: 8,
-          border: "1.5px solid #002FA7",
-          background: "#fff",
-          color: "#002FA7",
-          fontSize: 13,
-          fontWeight: 600,
-          cursor: "pointer",
-          opacity: paying ? 0.6 : 1,
-        }}
+        className={`flex-shrink-0 py-[9px] px-[18px] rounded-lg border-[1.5px] border-brand bg-white text-brand text-[13px] font-semibold cursor-pointer ${paying ? "opacity-60" : "opacity-100"}`}
       >
         {paying ? "Starting…" : "Pay Now"}
       </button>
@@ -191,83 +107,58 @@ export default function UpcomingPayments() {
 
   return (
     <div
-      style={{
-        position: "relative",
-        overflow: "hidden",
-        minHeight: "100vh",
-         
-        fontFamily: "'Inter', system-ui, sans-serif",
-        paddingBottom: 40,
-      }}
+      className="relative overflow-hidden min-h-screen pb-10"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "24px 20px 20px",
-          position: "relative",
-        }}
-      >
+      <div className="relative flex items-center justify-center pt-6 px-5 pb-5">
         <button
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
-          style={{
-            position: "absolute",
-            left: 20,
-          }}
+          className="absolute left-5 w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
-        <h1 style={{ fontSize: 18, fontWeight: 500, color: "#111", margin: 0 }}>
+        <h1 className="text-lg font-medium text-[#111] m-0">
           Upcoming Payments
         </h1>
       </div>
 
       {/* Filter */}
-      <div style={{ padding: "0 16px 16px" }}>
+      <div className="pt-0 px-4 pb-4">
         <FilterDropdown value={filter} onChange={setFilter} />
       </div>
 
       {/* List */}
-      <div
-        style={{
-          margin: "0 16px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 12,
-        }}
-      >
+      <div className="mx-4 flex flex-col gap-3">
         {isLoading ? (
-          <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)" }}>
+          <div className="border border-surface-container-border bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.06)]">
             <PageLoadingState label="Loading your payments…" size={56} padding="36px 24px" />
           </div>
         ) : loadError ? (
-          <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", textAlign: "center", padding: "20px 0" }}>
-            <p style={{ color: "#DC2626", fontSize: 14, margin: "0 0 8px" }}>
+          <div className="border border-surface-container-border bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.06)] text-center py-5">
+            <p className="text-[#DC2626] text-sm mt-0 mx-0 mb-2">
               Couldn't load upcoming payments.
             </p>
             <button
               onClick={refresh}
-              style={{ background: "none", border: "none", color: "#002FA7", fontSize: 13, fontWeight: 600, textDecoration: "underline", cursor: "pointer", padding: 0 }}
+              className="bg-transparent border-none text-brand text-[13px] font-semibold underline cursor-pointer p-0"
             >
               Try again
             </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.06)", padding: "48px 24px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#D7E2FF", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4 }}>
+          <div className="border border-surface-container-border bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.06)] py-12 px-6 text-center flex flex-col items-center gap-2">
+            <div className="w-[52px] h-[52px] rounded-full bg-[#D7E2FF] flex items-center justify-center mb-1">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12l5 5 9-9"/>
               </svg>
             </div>
-            <p style={{ fontSize: 14, fontWeight: 600, color: "#374151", margin: 0 }}>Nothing due right now</p>
-            <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0 }}>You're up to date on all payments.</p>
+            <p className="text-sm font-semibold text-[#374151] m-0">Nothing due right now</p>
+            <p className="text-[13px] text-[#9CA3AF] m-0">You're up to date on all payments.</p>
             <button
               onClick={refresh}
-              style={{ marginTop: 4, background: "none", border: "none", color: "#002FA7", fontSize: 13, fontWeight: 600, cursor: "pointer", padding: 0 }}
+              className="mt-1 bg-transparent border-none text-brand text-[13px] font-semibold cursor-pointer p-0"
             >
               Check again
             </button>
