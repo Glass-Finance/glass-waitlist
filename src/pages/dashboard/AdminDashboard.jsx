@@ -243,8 +243,8 @@ export function AdminPaymentModal({ item, onClose }) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="w-full bg-white rounded-2xl overflow-hidden shadow-2xl"
-        style={{ maxWidth: 560, maxHeight: "90vh", overflowY: "auto", border: "1px solid var(--color-surface-container-border)" }}
+        className="w-full bg-white rounded-2xl overflow-hidden shadow-2xl border border-surface-container-border"
+        style={{ maxWidth: 560, maxHeight: "90vh", overflowY: "auto" }}
       >
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
@@ -1012,10 +1012,9 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                   Enter Email(s):
                 </p>
                 <div
-                  className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5"
+                  className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5 border border-surface-container-border"
                   style={{
                     minHeight: 60,
-                    border: "1px solid var(--color-surface-container-border)",
                     background: "#fff",
                   }}
                 >

@@ -24,7 +24,7 @@ export default function Security() {
       </div>
 
       <div style={{ padding: "0 16px" }}>
-        <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", border: "1px solid var(--color-surface-container-border)" }}>
+        <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           {ITEMS.map(({ Icon, label, desc, to }, i) => (
             <button
               key={label}

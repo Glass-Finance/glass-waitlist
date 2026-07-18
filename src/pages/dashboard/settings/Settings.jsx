@@ -159,8 +159,8 @@ export default function Settings() {
           {/* Dropdown results */}
           {searchOpen && searchResults.length > 0 && (
             <div
-              className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg overflow-hidden z-50"
-              style={{ width: 280, border: "1px solid var(--color-surface-container-border)" }}
+              className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg overflow-hidden z-50 border border-surface-container-border"
+              style={{ width: 280 }}
             >
               {searchResults.map((item) => (
                 <button
@@ -181,8 +181,8 @@ export default function Settings() {
           {/* No results */}
           {searchOpen && q.length > 0 && searchResults.length === 0 && (
             <div
-              className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg z-50 px-4 py-3"
-              style={{ width: 240, border: "1px solid var(--color-surface-container-border)" }}
+              className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg z-50 px-4 py-3 border border-surface-container-border"
+              style={{ width: 240 }}
             >
               <p className="text-xs text-gray-400">No settings match "{searchQuery}"</p>
             </div>

@@ -108,7 +108,7 @@ export default function AutoPay() {
             Active Plans
           </p>
         )}
-        <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", border: "1px solid var(--color-surface-container-border)" }}>
+        <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           {isLoading ? (
             <PageLoadingState size={56} padding="36px 24px" />
           ) : allPlans.length === 0 ? (

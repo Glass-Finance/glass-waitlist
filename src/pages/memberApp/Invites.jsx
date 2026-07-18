@@ -239,12 +239,12 @@ export default function Invites() {
               <div
                 key={invite.id}
                 ref={(el) => (cardRefs.current[invite.id] = el)}
+                className="border border-surface-container-border"
                 style={{
                   background: "#fff",
                   borderRadius: 14,
                   padding: 14,
                   marginBottom: 12,
-                  border: "1px solid var(--color-surface-container-border)",
                   boxShadow:
                     invite.id === highlightId
                       ? "0 0 0 2px #002FA7, 0 1px 6px rgba(0,0,0,0.06)"
@@ -326,12 +326,12 @@ export default function Invites() {
             {joinRequests.map((req) => (
               <div
                 key={req.id}
+                className="border border-surface-container-border"
                 style={{
                   background: "#fff",
                   borderRadius: 14,
                   padding: 14,
                   marginBottom: 12,
-                  border: "1px solid var(--color-surface-container-border)",
                   boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
                   display: "flex",
                   alignItems: "center",

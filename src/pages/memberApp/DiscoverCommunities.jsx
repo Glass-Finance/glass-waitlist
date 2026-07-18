@@ -530,12 +530,12 @@ export default function DiscoverCommunities() {
           onClick={(e) => e.target === e.currentTarget && dismissJoin(activeApproval)}
         >
           <div
+            className="border border-surface-container-border"
             style={{
               width: "100%", maxWidth: 340,
               background: "#fff", borderRadius: 20,
               padding: "28px 24px", textAlign: "center",
               boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
-              border: "1px solid var(--color-surface-container-border)",
             }}
           >
             <span style={{ fontSize: 40, lineHeight: 1, display: "block", marginBottom: 12 }}>🎉</span>

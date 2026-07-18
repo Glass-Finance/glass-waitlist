@@ -465,10 +465,12 @@ function CommunityNotifications() {
               {t}
               {count > 0 && (
                 <span
-                  className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
+                  className={`min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center border ${
+                    active ? "border-brand" : "border-surface-container-border"
+                  }`}
                   style={active
-                    ? { background: "#EEF2FF", color: "var(--color-brand)", border: "1px solid var(--color-brand)" }
-                    : { background: "#fff", color: "#6b7280", border: "1px solid var(--color-surface-container-border)" }}
+                    ? { background: "#EEF2FF", color: "var(--color-brand)" }
+                    : { background: "#fff", color: "#6b7280" }}
                 >
                   {count}
                 </span>

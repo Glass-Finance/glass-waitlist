@@ -68,7 +68,7 @@ export default function Settings() {
             <p style={{ fontSize: 12, fontWeight: 600, color: "#999", margin: "0 4px 8px", textTransform: "uppercase", letterSpacing: 0.4 }}>
               {section.label}
             </p>
-            <div style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)", border: "1px solid var(--color-surface-container-border)" }}>
+            <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
               {section.items.map(({ Icon, label, desc, to }, i) => (
                 <button
                   key={label}
@@ -95,9 +95,10 @@ export default function Settings() {
 
         <button
           onClick={handleLogout}
+          className="border border-surface-container-border"
           style={{
             display: "flex", alignItems: "center", gap: 10, width: "100%", textAlign: "left",
-            padding: "14px 16px", background: "#fff", border: "1px solid var(--color-surface-container-border)", borderRadius: 14,
+            padding: "14px 16px", background: "#fff", borderRadius: 14,
             cursor: "pointer", boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
           }}
         >

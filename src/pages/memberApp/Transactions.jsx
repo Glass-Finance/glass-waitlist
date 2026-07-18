@@ -62,12 +62,12 @@ function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
     <div style={{ position: "relative", display: "inline-block" }}>
       <button
         onClick={() => setOpen((o) => !o)}
+        className="border border-surface-container-border"
         style={{
           display: "flex",
           alignItems: "center",
           gap: 6,
           background: "#fff",
-          border: "1px solid var(--color-surface-container-border)",
           borderRadius: 8,
           padding: "7px 14px",
           fontSize: 14,
@@ -87,12 +87,12 @@ function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
             onClick={() => setOpen(false)}
           />
           <div
+            className="border border-surface-container-border"
             style={{
               position: "absolute",
               top: "calc(100% + 6px)",
               left: 0,
               background: "#fff",
-              border: "1px solid var(--color-surface-container-border)",
               borderRadius: 10,
               boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
               zIndex: 20,
@@ -249,12 +249,12 @@ export default function Transactions() {
       >
         <button
           onClick={() => navigate(-1)}
+          className="border border-surface-container-border"
           style={{
             width: 36,
             height: 36,
             borderRadius: "50%",
             background: "#fff",
-            border: "1px solid var(--color-surface-container-border)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

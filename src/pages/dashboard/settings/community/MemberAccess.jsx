@@ -28,8 +28,8 @@ function MemberActionsMenu({ open, onToggle, onClose, busy, actions }) {
         <>
           <div className="fixed inset-0 z-10" onClick={onClose} />
           <div
-            className="absolute right-0 top-full mt-1 z-20 bg-white rounded-xl overflow-hidden min-w-[190px]"
-            style={{ border: "1px solid var(--color-surface-container-border)", boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}
+            className="absolute right-0 top-full mt-1 z-20 bg-white rounded-xl overflow-hidden min-w-[190px] border border-surface-container-border"
+            style={{ boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}
           >
             {actions.map((a) => (
               <button

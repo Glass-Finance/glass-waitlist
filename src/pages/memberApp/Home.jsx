@@ -240,13 +240,13 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
 
   return (
     <div
+      className="border border-surface-container-border"
       style={{
         margin: "0 16px",
         borderRadius: 16,
         overflow: "hidden",
         background: "#fff",
         boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
-        border: "1px solid var(--color-surface-container-border)",
       }}
     >
       {/* Top block carries the accent border on 3 sides. Structural, not an
@@ -271,11 +271,11 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
       >
         {/* Recurring pill */}
         <div
+          className="border border-surface-container-border"
           style={{
             marginBottom: 14,
             padding: "5px 18px",
             borderRadius: 999,
-            border: "1px solid var(--color-surface-container-border)",
             color: "#374151",
             fontSize: 12,
             fontWeight: 500,

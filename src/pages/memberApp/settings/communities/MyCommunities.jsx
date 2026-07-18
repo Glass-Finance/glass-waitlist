@@ -78,9 +78,10 @@ function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
           <button
             onClick={onCancel}
             disabled={leaving}
+            className="border border-surface-container-border"
             style={{
               width: "100%", padding: "14px 0", borderRadius: 12,
-              border: "1px solid var(--color-surface-container-border)", background: "#fff", color: "#374151",
+              background: "#fff", color: "#374151",
               fontSize: 14.5, fontWeight: 600, cursor: "pointer",
             }}
           >

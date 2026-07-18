@@ -29,10 +29,9 @@ function Section({ title, children }) {
       }}>
         {title}
       </p>
-      <div style={{
+      <div className="border border-surface-container-border" style={{
         background: "#fff", borderRadius: 14,
         boxShadow: "0 1px 6px rgba(0,0,0,0.05)", overflow: "hidden",
-        border: "1px solid var(--color-surface-container-border)",
       }}>
         {children}
       </div>
