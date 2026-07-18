@@ -72,7 +72,7 @@ function NotifIcon({ n }) {
 
   if (isSelf && user?.profileImage?.url) {
     return (
-      <div style={{ width: 38, height: 38, borderRadius: "50%", flexShrink: 0, overflow: "hidden" }}>
+      <div className="w-[38px] h-[38px] rounded-full flex-shrink-0 overflow-hidden">
         <img src={user.profileImage.url} alt={selfName ?? ""} className="w-full h-full object-cover" />
       </div>
     );
@@ -85,10 +85,8 @@ function NotifIcon({ n }) {
 
   return (
     <div
-      style={{
-        width: 38, height: 38, borderRadius: "50%", flexShrink: 0,
-        background: bg, display: "flex", alignItems: "center", justifyContent: "center",
-      }}
+      style={{ background: bg }}
+      className="w-[38px] h-[38px] rounded-full flex-shrink-0 flex items-center justify-center"
     >
       <Icon size={18} strokeWidth={2} color={fg} />
     </div>
@@ -108,34 +106,25 @@ function NotificationRow({ n, onTap, onNavigate }) {
 
   return (
     <div
-      style={{
-        display: "flex",
-        alignItems: "flex-start",
-        gap: 10,
-        padding: isRead ? "10px 4px" : "14px 16px",
-        background: isRead ? "transparent" : "var(--color-stacked-container)",
-        borderRadius: isRead ? 0 : 12,
-        position: "relative",
-        cursor: target ? "pointer" : "default",
-      }}
+      className={`flex items-start gap-2.5 relative ${target ? "cursor-pointer" : "cursor-default"} ${isRead ? "py-2.5 px-1 bg-transparent rounded-none" : "py-3.5 px-4 bg-stacked-container rounded-xl"}`}
       onClick={() => {
         if (!isRead) onTap(n.id);
         if (target) onNavigate?.(target);
       }}
     >
       {!isRead && (
-        <span style={{ position: "absolute", top: 10, right: 12, width: 7, height: 7, borderRadius: "50%", background: "#002FA7" }} />
+        <span className="absolute top-2.5 right-3 w-[7px] h-[7px] rounded-full bg-[#002FA7]" />
       )}
       <NotifIcon n={n} />
-      <div style={{ flex: 1, minWidth: 0, paddingRight: isRead ? 0 : 14 }}>
-        <p style={{ fontSize: 14, color: "#111", margin: 0, lineHeight: 1.45 }}>
-          {n.title && <span style={{ fontWeight: isRead ? 500 : 700 }}>{n.title} </span>}
-          {messageText && <span style={{ color: "#444" }}>{messageText}</span>}
-          {!n.title && !messageText && <span style={{ fontWeight: 500 }}>Notification</span>}
+      <div className={`flex-1 min-w-0 ${isRead ? "pr-0" : "pr-3.5"}`}>
+        <p className="text-sm text-[#111] m-0 leading-[1.45]">
+          {n.title && <span className={isRead ? "font-medium" : "font-bold"}>{n.title} </span>}
+          {messageText && <span className="text-[#444]">{messageText}</span>}
+          {!n.title && !messageText && <span className="font-medium">Notification</span>}
         </p>
-        <p style={{ fontSize: 11.5, color: "#999", margin: "4px 0 0" }}>
+        <p className="text-[11.5px] text-[#999] mt-1 mb-0">
           {amount && (
-            <span style={{ color: "#111", fontWeight: 600 }}>{amount} · </span>
+            <span className="text-[#111] font-semibold">{amount} · </span>
           )}
           {[details.communityName, timeLabel(n.createdAt)].filter(Boolean).join(" · ")}
         </p>
@@ -148,7 +137,9 @@ function NotificationRow({ n, onTap, onNavigate }) {
 function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
   return (
-    <div style={{ width: 40, height: 40, borderRadius: 10, background: logo?.url ? "transparent" : "#1C2B8A22", border: logo?.url ? "none" : "1px solid #1C2B8A44", color: "#1C2B8A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, flexShrink: 0, overflow: "hidden" }}>
+    <div
+      className={`w-10 h-10 rounded-[10px] text-[#1C2B8A] flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden ${logo?.url ? "bg-transparent border-none" : "bg-[#1C2B8A22] border border-[#1C2B8A44]"}`}
+    >
       {logo?.url
         ? <img src={logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
         : initials}
@@ -158,28 +149,28 @@ function Avatar({ name, logo }) {
 
 function InviteCard({ invite, onAccept, onReject, busy }) {
   return (
-    <div style={{ background: "#fff", borderRadius: 14, padding: 16, border: "1px solid var(--color-outline-on-surface)" }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
+    <div className="bg-white rounded-2xl p-4 border border-outline-on-surface">
+      <div className="flex items-start gap-3 mb-3.5">
         <Avatar name={invite.community?.name} logo={invite.community?.logo} />
         <div className="min-w-0 flex-1">
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
-            <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{invite.community?.name ?? "Community"}</p>
+          <div className="flex items-start justify-between gap-2">
+            <p className="text-sm font-medium text-[#111] m-0">{invite.community?.name ?? "Community"}</p>
             {invite.createdAt && (
-              <span style={{ fontSize: 11, color: "#aaa", flexShrink: 0, whiteSpace: "nowrap" }}>
+              <span className="text-[11px] text-[#aaa] flex-shrink-0 whitespace-nowrap">
                 {formatRelativeDateTime(invite.createdAt)}
               </span>
             )}
           </div>
-          <p style={{ fontSize: 12, color: "#888", margin: "2px 0 0" }}>Invited you to join</p>
+          <p className="text-xs text-[#888] mt-0.5 mb-0">Invited you to join</p>
         </div>
       </div>
-      <div style={{ display: "flex", gap: 10 }}>
+      <div className="flex gap-2.5">
         <button onClick={() => onAccept(invite)} disabled={busy}
-          style={{ flex: 1, padding: "12px 0", borderRadius: 4, border: "none", background: "#002FA7", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+          className="flex-1 py-3 rounded border-none bg-[#002FA7] text-white text-sm font-semibold cursor-pointer">
           Accept
         </button>
         <button onClick={() => onReject(invite)} disabled={busy}
-          style={{ flex: 1, padding: "12px 0", borderRadius: 4, border: "1.5px solid #002FA7", background: "#fff", color: "#002FA7", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
+          className="flex-1 py-3 rounded border-[1.5px] border-[#002FA7] bg-white text-brand text-sm font-semibold cursor-pointer">
           Decline
         </button>
       </div>
@@ -190,13 +181,13 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
 // ── Empty state ───────────────────────────────────────────────────────────────
 function EmptyState({ icon: Icon, label, hint, onAction, actionLabel }) {
   return (
-    <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, padding: 32, display: "flex", flexDirection: "column", alignItems: "center", gap: 10, textAlign: "center" }}>
-      <Icon size={22} strokeWidth={1.6} style={{ color: "#bbb" }} />
-      <p style={{ color: "#999", fontSize: 13, margin: 0 }}>{label}</p>
-      {hint && <p style={{ color: "#aaa", fontSize: 12, margin: 0, maxWidth: 240, lineHeight: 1.5 }}>{hint}</p>}
+    <div className="border border-surface-container-border bg-white rounded-2xl p-8 flex flex-col items-center gap-2.5 text-center">
+      <Icon size={22} strokeWidth={1.6} className="text-[#bbb]" />
+      <p className="text-[#999] text-[13px] m-0">{label}</p>
+      {hint && <p className="text-[#aaa] text-xs m-0 max-w-[240px] leading-relaxed">{hint}</p>}
       {onAction && (
         <button onClick={onAction}
-          style={{ marginTop: 4, padding: "8px 16px", borderRadius: 8, border: "1.5px solid #002FA7", background: "#fff", color: "#002FA7", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+          className="mt-1 py-2 px-4 rounded-lg border-[1.5px] border-[#002FA7] bg-white text-brand text-[13px] font-semibold cursor-pointer">
           {actionLabel}
         </button>
       )}
@@ -210,21 +201,11 @@ function EmptyState({ icon: Icon, label, hint, onAction, actionLabel }) {
 function GroupedNotifications({ items, onTap, onNavigate }) {
   const groups = useMemo(() => groupByDay(items), [items]);
   return (
-    <div
-      className="border border-surface-container-border"
-      style={{
-        background: "#fff",
-        borderRadius: 16,
-        padding: 16,
-        display: "flex",
-        flexDirection: "column",
-        gap: 16,
-      }}
-    >
+    <div className="border border-surface-container-border bg-white rounded-2xl p-4 flex flex-col gap-4">
       {[...groups.entries()].map(([label, notifs]) => (
         <div key={label}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "#555", margin: "0 0 8px" }}>{label}</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <p className="text-[13px] font-semibold text-[#555] mb-2">{label}</p>
+          <div className="flex flex-col gap-0.5">
             {notifs.map((n) => (
               <NotificationRow key={n.id} n={n} onTap={onTap} onNavigate={onNavigate} />
             ))}
@@ -258,31 +239,26 @@ export default function Notifications() {
   async function handleReject(invite) { await reject(invite.id); }
 
   return (
-    <div className="relative overflow-hidden pb-10" style={{ minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="relative overflow-hidden min-h-screen pb-10" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       <GlassLogoGlow />
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 20px 20px", position: "relative" }}>
+      <div className="flex items-center justify-center relative pt-6 px-5 pb-5">
         <button
           onClick={() => navigate(-1)}
           className="absolute left-5 w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
-        <h1 style={{ fontSize: 18, fontWeight: 500, color: "#111", margin: 0 }}>Notifications</h1>
+        <h1 className="text-lg font-medium text-[#111] m-0">Notifications</h1>
       </div>
 
       {/* Tab bar */}
-      <div style={{ margin: "0 16px 12px", background: "#fff", borderRadius: 12, padding: 4, display: "flex", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+      <div className="mx-4 mb-3 bg-white rounded-xl p-1 flex shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
         {TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            style={{
-              flex: 1, padding: "9px 0", borderRadius: 9, border: "none", cursor: "pointer",
-              fontSize: 13, fontWeight: activeTab === tab ? 600 : 400,
-              background: activeTab === tab ? "var(--color-stacked-container)" : "transparent",
-              color: activeTab === tab ? "#111" : "#888", transition: "all 0.2s",
-            }}
+            className={`flex-1 py-[9px] rounded-[9px] border-none cursor-pointer text-[13px] transition-all duration-200 ${activeTab === tab ? "font-semibold bg-stacked-container text-[#111]" : "font-normal bg-transparent text-[#888]"}`}
           >
             {tab}
           </button>
@@ -294,18 +270,18 @@ export default function Notifications() {
           whole list regardless of which tab is active, matching how those
           two surfaces already behave. */}
       {(activeTab === "Payments" || activeTab === "Community") && notifications.length > 0 && (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 16, padding: "0 20px 12px" }}>
+        <div className="flex items-center justify-end gap-4 px-5 pb-3">
           <button
             onClick={() => clearAll()}
             disabled={isClearing}
-            style={{ fontSize: 12.5, fontWeight: 600, color: "#E53E3E", background: "none", border: "none", cursor: "pointer", padding: 0, opacity: isClearing ? 0.5 : 1 }}
+            className={`text-[12.5px] font-semibold text-[#E53E3E] bg-transparent border-none cursor-pointer p-0 ${isClearing ? "opacity-50" : "opacity-100"}`}
           >
             {isClearing ? "Clearing…" : "Clear All"}
           </button>
           <button
             onClick={() => markAllRead()}
             disabled={isMarkingAllRead}
-            style={{ fontSize: 12.5, fontWeight: 600, color: "#002FA7", background: "none", border: "none", cursor: "pointer", padding: 0, opacity: isMarkingAllRead ? 0.5 : 1 }}
+            className={`text-[12.5px] font-semibold text-brand bg-transparent border-none cursor-pointer p-0 ${isMarkingAllRead ? "opacity-50" : "opacity-100"}`}
           >
             Mark All As Read
           </button>
@@ -342,7 +318,7 @@ export default function Notifications() {
                   actionLabel="Check Again"
                 />
               : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div className="flex flex-col gap-3">
                   {invites.map((invite) => (
                     <InviteCard
                       key={invite.id}
