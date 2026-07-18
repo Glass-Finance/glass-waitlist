@@ -551,15 +551,7 @@ function HistoryRow({ item, onOpen }) {
 }
 
 // ---------------------------------------------------------------------------
-// Home — root export
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
 // Empty state — no community yet
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// Loading state — mirrors NoCommunityState's layout (same icon-circle size,
-// same centering/padding) so the page doesn't visibly jump once data
-// resolves into the empty, pending, or loaded state.
 // ---------------------------------------------------------------------------
 function NoCommunityState({ navigate }) {
   return (
@@ -990,6 +982,10 @@ export default function Home() {
           </p>
         </div>
 
+        {/* Mirrors NoCommunityState/PendingApprovalState's layout (same
+            icon-circle size, same centering/padding) so the page doesn't
+            visibly jump once data resolves into the empty, pending, or
+            loaded state. */}
         {isLoading ? (
           <PageLoadingState label="Loading your community…" />
         ) : hasPendingCommunity ? (

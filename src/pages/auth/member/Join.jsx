@@ -91,22 +91,6 @@ function PrimaryButton({
   type = "button",
 }) {
   return (
-    // <button
-    //   type={type}
-    //   onClick={onClick}
-    //   disabled={disabled || loading}
-    //   className="w-full rounded-full py-4 text-sm font-semibold text-white transition-all duration-150 disabled:opacity-50 active:scale-[0.98]"
-    //   style={{ background: disabled || loading ? "#B0B8D8" : "#1C2B8A" }}
-    // >
-    //   {loading ? (
-    //     <span className="flex items-center justify-center gap-2">
-    //       <Loader2 size={16} className="animate-spin" />
-    //       <span>Please wait…</span>
-    //     </span>
-    //   ) : (
-    //     children
-    //   )}
-    // </button>
     <button
       type={type}
       onClick={onClick}
