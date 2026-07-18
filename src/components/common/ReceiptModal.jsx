@@ -490,23 +490,9 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
     <button
       onClick={onClick}
       disabled={!!saving}
-      style={{
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 6,
-        padding: "13px 10px",
-        background: primary ? "#002FA7" : "#EEF2FF",
-        color: primary ? "#ffffff" : "#1E3A8A",
-        border: "none",
-        fontSize: 13,
-        fontWeight: 600,
-        cursor: saving ? "not-allowed" : "pointer",
-        opacity: saving && !isActive ? 0.55 : 1,
-        transition: "opacity 0.15s",
-        // no border-radius — sharp buttons to match the receipt
-      }}
+      style={{ opacity: saving && !isActive ? 0.55 : 1 }}
+      // no border-radius — sharp buttons to match the receipt
+      className={`flex-1 flex items-center justify-center gap-1.5 py-[13px] px-2.5 border-none text-[13px] font-semibold transition-opacity duration-150 ${saving ? "cursor-not-allowed" : "cursor-pointer"} ${primary ? "bg-[#002FA7] text-white" : "bg-[#EEF2FF] text-[#1E3A8A]"}`}
     >
       {children}
     </button>
@@ -514,97 +500,36 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
 
   return createPortal(
     <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 200,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-end",
-      }}
+      className="fixed inset-0 z-[200] flex flex-col justify-end"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       {/* Backdrop */}
       <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: "rgba(0,0,0,0.6)",
-          backdropFilter: "blur(4px)",
-          WebkitBackdropFilter: "blur(4px)",
-        }}
+        className="absolute inset-0 bg-black/60 backdrop-blur-xs"
         onClick={onClose}
       />
 
       {/* Sheet */}
       <div
-        style={{
-          position: "relative",
-          background: "#F0F4FF",
-          borderRadius: "20px 20px 0 0", // rounded only at the top of the sheet itself, not the receipt card
-          maxHeight: "92dvh",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-        }}
+        // rounded only at the top of the sheet itself, not the receipt card
+        className="relative bg-[#F0F4FF] rounded-t-[20px] max-h-[92dvh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            paddingTop: 12,
-            paddingBottom: 4,
-            flexShrink: 0,
-          }}
-        >
-          <div
-            style={{
-              width: 36,
-              height: 4,
-              borderRadius: 2,
-              background: "rgba(0,0,0,0.15)",
-            }}
-          />
+        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+          <div className="w-9 h-1 rounded-sm bg-black/15" />
         </div>
 
         {/* Title row */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "8px 20px 12px",
-            flexShrink: 0,
-          }}
-        >
-          <span style={{ fontSize: 15, fontWeight: 700, color: "#0F172A" }}>
+        <div className="flex items-center justify-between pt-2 px-5 pb-3 flex-shrink-0">
+          <span className="text-[15px] font-bold text-[#0F172A]">
             Payment Receipt
           </span>
           <button
             onClick={onClose}
-            style={{
-              background: "rgba(0,0,0,0.06)",
-              border: "none",
-              borderRadius: "50%",
-              width: 32,
-              height: 32,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              color: "#475569",
-              flexShrink: 0,
-            }}
+            className="bg-black/[0.06] border-none rounded-full w-8 h-8 flex items-center justify-center cursor-pointer text-[#475569] flex-shrink-0"
           >
             <X size={16} />
           </button>
@@ -612,12 +537,8 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
 
         {/* Scrollable receipt */}
         <div
-          style={{
-            flex: 1,
-            overflowY: "auto",
-            padding: "0 16px 12px",
-            WebkitOverflowScrolling: "touch",
-          }}
+          style={{ WebkitOverflowScrolling: "touch" }}
+          className="flex-1 overflow-y-auto px-4 pt-0 pb-3"
         >
           <ReceiptCard
             tx={tx}
@@ -632,15 +553,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
         </div>
 
         {/* Action bar */}
-        <div
-          style={{
-            background: "#fff",
-            borderTop: "1px solid #E2E8F0",
-            display: "flex",
-            gap: 1,
-            flexShrink: 0,
-          }}
-        >
+        <div className="bg-white border-t border-[#E2E8F0] flex gap-px flex-shrink-0">
           {canShare &&
             actionBtn(
               handleShare,
