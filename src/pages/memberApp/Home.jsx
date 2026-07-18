@@ -29,45 +29,27 @@ import { frequencyAdverb } from "../../utils/recurring";
 function AutoPayPrompt({ prompt, onDismiss, onEnable }) {
   return (
     <div
-      className="bg-black/35 backdrop-blur-xs"
-      style={{
-        position: "fixed", inset: 0, zIndex: 80, display: "flex",
-        alignItems: "flex-end", justifyContent: "center",
-      }}
+      className="bg-black/35 backdrop-blur-xs fixed inset-0 z-[80] flex items-end justify-center"
       onClick={(e) => e.target === e.currentTarget && onDismiss()}
     >
-      <div
-        style={{
-          width: "100%", maxWidth: 430, background: "#fff",
-          borderRadius: "20px 20px 0 0", padding: "28px 24px",
-          boxShadow: "0 -4px 24px rgba(0,0,0,0.12)",
-        }}
-      >
-        <h2 style={{ fontSize: 19, fontWeight: 700, color: "#111", margin: "0 0 10px" }}>
+      <div className="w-full max-w-[430px] bg-white rounded-t-[20px] px-6 py-7 shadow-[0_-4px_24px_rgba(0,0,0,0.12)]">
+        <h2 className="text-[19px] font-bold text-[#111] mb-2.5">
           Turn on Auto-Pay
         </h2>
-        <p style={{ fontSize: 14, color: "#555", lineHeight: 1.55, margin: "0 0 24px" }}>
+        <p className="text-sm text-[#555] leading-[1.55] mb-6">
           Would you like us to charge {formatNaira(prompt.amount)} automatically for{" "}
           <strong className="text-[#111]">{prompt.planName}</strong> {frequencyAdverb(prompt.frequency)}?
         </p>
-        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+        <div className="flex gap-2.5 justify-end">
           <button
             onClick={onDismiss}
-            style={{
-              padding: "11px 22px", borderRadius: 8, border: "1.5px solid #E5E7EB",
-              background: "#fff", color: "#374151", fontSize: 14, fontWeight: 600,
-              cursor: "pointer",
-            }}
+            className="py-[11px] px-[22px] rounded-lg border-[1.5px] border-[#E5E7EB] bg-white text-[#374151] text-sm font-semibold cursor-pointer"
           >
             No
           </button>
           <button
             onClick={onEnable}
-            style={{
-              padding: "11px 26px", borderRadius: 8, border: "none",
-              background: "var(--color-brand)", color: "#fff", fontSize: 14, fontWeight: 600,
-              cursor: "pointer",
-            }}
+            className="py-[11px] px-[26px] rounded-lg border-none bg-brand text-white text-sm font-semibold cursor-pointer"
           >
             Yes
           </button>
@@ -98,30 +80,11 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
     const isError = Boolean(error);
     return (
       <div
-        style={{
-          margin: "0 16px",
-          borderRadius: 16,
-          background: isError ? "#FFF7F7" : "#002FA7",
-          padding: "40px 24px 44px",
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 0,
-        }}
+        className={`mx-4 rounded-2xl text-center flex flex-col items-center gap-0 px-6 pt-10 pb-11 ${isError ? "bg-[#FFF7F7]" : "bg-[#002FA7]"}`}
       >
         {/* Icon bubble */}
         <div
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: "50%",
-            background: isError ? "#FEE2E2" : "rgba(255,255,255,0.15)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 20,
-          }}
+          className={`w-14 h-14 rounded-full flex items-center justify-center mb-5 ${isError ? "bg-[#FEE2E2]" : "bg-white/15"}`}
         >
           {isError ? (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -164,64 +127,25 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
 
         {isError ? (
           <>
-            <p
-              style={{
-                fontSize: 18,
-                color: "#111",
-                fontWeight: 700,
-                margin: "0 0 6px",
-              }}
-            >
+            <p className="text-lg text-[#111] font-bold mb-1.5">
               Couldn't load payments
             </p>
-            <p
-              style={{
-                fontSize: 13,
-                color: "#9CA3AF",
-                margin: 0,
-                lineHeight: 1.5,
-              }}
-            >
+            <p className="text-[13px] text-[#9CA3AF] m-0 leading-normal">
               Check your connection and try again.
             </p>
             <button
               onClick={onRefresh}
-              style={{
-                marginTop: 16,
-                background: "none",
-                border: "1px solid #FCA5A5",
-                borderRadius: 20,
-                color: "#EF4444",
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: "pointer",
-                padding: "6px 18px",
-              }}
+              className="mt-4 bg-transparent border border-[#FCA5A5] rounded-[20px] text-[#EF4444] text-xs font-semibold cursor-pointer py-1.5 px-[18px]"
             >
               Try again
             </button>
           </>
         ) : (
           <>
-            <p
-              style={{
-                fontSize: 20,
-                color: "#fff",
-                fontWeight: 600,
-                margin: "0 0 8px",
-                letterSpacing: "-0.2px",
-              }}
-            >
+            <p className="text-xl text-white font-semibold mb-2 tracking-[-0.2px]">
               No Payments Due
             </p>
-            <p
-              style={{
-                fontSize: 13,
-                color: "rgba(255,255,255,0.6)",
-                margin: 0,
-                lineHeight: 1.5,
-              }}
-            >
+            <p className="text-[13px] text-white/60 m-0 leading-normal">
               New dues Will Appear Here
             </p>
           </>
@@ -239,16 +163,7 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   const accentColor = isOverdue ? "#DC2626" : "#002FA7";
 
   return (
-    <div
-      className="border border-surface-container-border"
-      style={{
-        margin: "0 16px",
-        borderRadius: 16,
-        overflow: "hidden",
-        background: "#fff",
-        boxShadow: "0 1px 6px rgba(0,0,0,0.05)",
-      }}
-    >
+    <div className="border border-surface-container-border mx-4 rounded-2xl overflow-hidden bg-white shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
       {/* Top block carries the accent border on 3 sides. Structural, not an
           absolutely-positioned overlay sized with height:50% — that relied
           on a percentage height resolving against this card's height, but
@@ -259,105 +174,37 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
           the whole card instead of just the top. Two stacked, normally-
           flowing blocks can't have that ambiguity. */}
       <div
-        style={{
-          border: `1.5px solid ${accentColor}`,
-          borderBottom: "none",
-          borderRadius: "16px 16px 0 0",
-          padding: "20px 20px 0",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
+        className={`border-t-[1.5px] border-x-[1.5px] rounded-t-2xl pt-5 px-5 flex flex-col items-center ${isOverdue ? "border-[#DC2626]" : "border-[#002FA7]"}`}
       >
         {/* Recurring pill */}
-        <div
-          className="border border-surface-container-border"
-          style={{
-            marginBottom: 14,
-            padding: "5px 18px",
-            borderRadius: 999,
-            color: "#374151",
-            fontSize: 12,
-            fontWeight: 500,
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-          }}
-        >
+        <div className="border border-surface-container-border mb-3.5 py-1.5 px-[18px] rounded-full text-[#374151] text-xs font-medium flex items-center gap-1.5">
           <span
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: isRecurring ? "#7C3AED" : "#DC2626",
-              flexShrink: 0,
-            }}
+            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isRecurring ? "bg-[#7C3AED]" : "bg-[#DC2626]"}`}
           />
           {isRecurring ? "Recurring" : "One-time"}
         </div>
 
         {/* Label */}
-        <p
-          style={{
-            fontSize: 13,
-            color: "#6B7280",
-            marginBottom: 6,
-            fontWeight: 400,
-          }}
-        >
+        <p className="text-[13px] text-[#6B7280] mb-1.5 font-normal">
           Next Payment Due
         </p>
 
         {/* Amount */}
-        <p
-          style={{
-            fontSize: 42,
-            fontWeight: 700,
-            color: "#111827",
-            letterSpacing: "-1px",
-            lineHeight: 1,
-            marginBottom: 14,
-          }}
-        >
+        <p className="text-[42px] font-bold text-[#111827] tracking-[-1px] leading-none mb-3.5">
           {formatNaira(nextDue.amount)}
         </p>
       </div>
 
       {/* Bottom block — no border */}
-      <div
-        style={{
-          padding: "0 20px 20px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
+      <div className="px-5 pb-5 flex flex-col items-center">
         {/* Plan name badge */}
-        <div
-          style={{
-            padding: "6px 16px",
-            borderRadius: 8,
-            background: "#D7E2FF",
-            color: "#002FA7",
-            fontSize: 12,
-            fontWeight: 400,
-            marginBottom: 10,
-          }}
-        >
+        <div className="py-1.5 px-4 rounded-lg bg-[#D7E2FF] text-brand text-xs font-normal mb-2.5">
           {nextDue.name}
         </div>
 
         {/* Due date */}
         <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 5,
-            marginBottom: 18,
-            color: isOverdue ? "#DC2626" : "#9CA3AF",
-            fontSize: 12,
-            fontWeight: isOverdue ? 600 : 400,
-          }}
+          className={`flex items-center gap-[5px] mb-[18px] text-xs ${isOverdue ? "text-[#DC2626] font-semibold" : "text-[#9CA3AF] font-normal"}`}
         >
           <Clock size={12} strokeWidth={1.8} />
           <span>Due {formatDate(nextDue.dueDate)}</span>
@@ -366,17 +213,7 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
         {/* Pay Now button */}
         <button
           onClick={() => onPay(nextDue)}
-          style={{
-            width: "100%",
-            padding: "14px 0",
-            borderRadius: 4,
-            border: "none",
-            background: accentColor,
-            color: "#fff",
-            fontSize: 15,
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
+          className={`w-full py-3.5 rounded border-none text-white text-[15px] font-semibold cursor-pointer ${isOverdue ? "bg-[#DC2626]" : "bg-[#002FA7]"}`}
         >
           Pay Now
         </button>
@@ -390,98 +227,39 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
 // ---------------------------------------------------------------------------
 function UpcomingRow({ payment, onPay }) {
   const isRecurring = payment.type === "recurring";
-
-  const badge = isRecurring
-    ? { label: "Recurring", color: "#1C2B8A", bg: "#E8ECF8" }
-    : { label: "One-time", color: "#9C27B0", bg: "#F3E5F5" };
+  const badgeLabel = isRecurring ? "Recurring" : "One-time";
+  const badgeCls = isRecurring
+    ? "text-[#1C2B8A] bg-[#E8ECF8]"
+    : "text-[#9C27B0] bg-[#F3E5F5]";
 
   return (
-    <div
-      style={{
-        padding: "14px 12px",
-        margin: "16px 0",
-        borderRadius: 8,
-        background: "#ffffff",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 12,
-      }}
-    >
+    <div className="py-3.5 px-3 my-4 rounded-lg bg-white flex items-center justify-between gap-3">
       {/* Left — all text */}
       <div className="flex-1 min-w-0">
-        <div
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            gap: 2,
-            marginBottom: 6,
-          }}
-        >
-          <span style={{ fontSize: 17, fontWeight: 700, color: "#111" }}>
+        <div className="flex items-baseline gap-0.5 mb-1.5">
+          <span className="text-[17px] font-bold text-[#111]">
             {formatNaira(payment.amount)}
           </span>
         </div>
-        <p
-          style={{
-            fontSize: 13,
-            color: "#333",
-            fontWeight: 400,
-            marginBottom: 4,
-          }}
-        >
+        <p className="text-[13px] text-[#333] font-normal mb-1">
           {payment.name}
         </p>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 4,
-            color: "#999",
-          }}
-        >
+        <div className="flex items-center gap-1 text-[#999]">
           <Clock size={11} strokeWidth={1.8} />
-          <span style={{ fontSize: 12 }}>
+          <span className="text-xs">
             Due: {formatDateShort(payment.dueDate)}
           </span>
         </div>
       </div>
 
       {/* Right — badge above Pay Now */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          gap: 16,
-          flexShrink: 0,
-        }}
-      >
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: badge.color,
-            background: badge.bg,
-            padding: "3px 10px",
-            borderRadius: 999,
-          }}
-        >
-          {badge.label}
+      <div className="flex flex-col items-end gap-4 flex-shrink-0">
+        <span className={`text-[11px] font-semibold py-[3px] px-2.5 rounded-full ${badgeCls}`}>
+          {badgeLabel}
         </span>
         <button
           onClick={() => onPay(payment)}
-          style={{
-            padding: "7px 16px",
-            borderRadius: 4,
-            border: "1.5px solid #002FA7",
-            background: "#fff",
-            color: "#002FA7",
-            fontSize: 12,
-            fontWeight: 600,
-            cursor: "pointer",
-            whiteSpace: "nowrap",
-          }}
+          className="py-[7px] px-4 rounded border-[1.5px] border-[#002FA7] bg-white text-brand text-xs font-semibold cursor-pointer whitespace-nowrap"
         >
           Pay Now
         </button>
@@ -498,50 +276,22 @@ function HistoryRow({ item, onOpen }) {
   return (
     <div
       onClick={() => onOpen(item)}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "13px 0",
-        borderBottom: "1px solid #F0F0F0",
-        cursor: "pointer",
-      }}
+      className="flex items-center justify-between py-[13px] border-b border-[#F0F0F0] cursor-pointer"
     >
       <div>
-        <p
-          style={{
-            fontSize: 14,
-            fontWeight: 500,
-            color: "#111",
-            marginBottom: 3,
-          }}
-        >
+        <p className="text-sm font-medium text-[#111] mb-[3px]">
           {item.description}
         </p>
-        <p style={{ fontSize: 12, color: "#999" }}>
+        <p className="text-xs text-[#999]">
           {formatDateShort(item.date)}
         </p>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          gap: 4,
-        }}
-      >
-        <span style={{ fontSize: 14, fontWeight: 700, color: "#111" }}>
+      <div className="flex flex-col items-end gap-1">
+        <span className="text-sm font-bold text-[#111]">
           {formatNaira(item.amount)}
         </span>
         <span
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            color: isSuccess ? "#059669" : "#DC2626",
-            background: isSuccess ? "#ECFDF5" : "#FEF2F2",
-            padding: "2px 10px",
-            borderRadius: 999,
-          }}
+          className={`text-[11px] font-semibold py-0.5 px-2.5 rounded-full ${isSuccess ? "text-[#059669] bg-[#ECFDF5]" : "text-[#DC2626] bg-[#FEF2F2]"}`}
         >
           {isSuccess ? "Success" : "Failed"}
         </span>
@@ -555,79 +305,29 @@ function HistoryRow({ item, onOpen }) {
 // ---------------------------------------------------------------------------
 function NoCommunityState({ navigate }) {
   return (
-    <div
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "60px 32px 80px",
-        textAlign: "center",
-      }}
-    >
+    <div className="flex-1 flex flex-col items-center justify-center px-8 pt-[60px] pb-20 text-center">
       {/* Icon */}
-      <div
-        style={{
-          width: 80,
-          height: 80,
-          borderRadius: "50%",
-          background: "#E4E4F0",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 28,
-          flexShrink: 0,
-        }}
-      >
+      <div className="w-20 h-20 rounded-full bg-[#E4E4F0] flex items-center justify-center mb-7 flex-shrink-0">
         <img
           src={joinCommunityIcon}
           alt=""
-          style={{ width: 44, height: 44, objectFit: "contain" }}
+          className="w-11 h-11 object-contain"
         />
       </div>
 
-      <p
-        style={{
-          fontSize: 20,
-          fontWeight: 700,
-          color: "#111",
-          margin: "0 0 10px",
-          lineHeight: 1.3,
-        }}
-      >
+      <p className="text-xl font-bold text-[#111] mb-2.5 leading-snug">
         You Are Not In Any
         <br />
         Community Yet
       </p>
-      <p
-        style={{
-          fontSize: 14,
-          color: "#888",
-          margin: "0 0 36px",
-          lineHeight: 1.6,
-          maxWidth: 260,
-        }}
-      >
+      <p className="text-sm text-[#888] mb-9 leading-relaxed max-w-[260px]">
         Join a community to start tracking your dues and payments.
       </p>
 
       {/* Primary CTA */}
       <button
         onClick={() => navigate("/member/communities/search")}
-        style={{
-          width: "100%",
-          maxWidth: 300,
-          padding: "16px 0",
-          borderRadius: 10,
-          border: "none",
-          background: "#002FA7",
-          color: "#fff",
-          fontSize: 15,
-          fontWeight: 600,
-          cursor: "pointer",
-          marginBottom: 16,
-        }}
+        className="w-full max-w-[300px] py-4 rounded-[10px] border-none bg-[#002FA7] text-white text-[15px] font-semibold cursor-pointer mb-4"
       >
         Join A Community
       </button>
@@ -635,14 +335,7 @@ function NoCommunityState({ navigate }) {
       {/* Secondary link */}
       <button
         onClick={() => navigate("/member/notifications")}
-        style={{
-          background: "none",
-          border: "none",
-          color: "#002FA7",
-          fontSize: 14,
-          fontWeight: 600,
-          cursor: "pointer",
-        }}
+        className="bg-transparent border-none text-brand text-sm font-semibold cursor-pointer"
       >
         Check Your Invites
       </button>
@@ -655,67 +348,23 @@ function NoCommunityState({ navigate }) {
 // ---------------------------------------------------------------------------
 function PendingApprovalState({ navigate, community }) {
   return (
-    <div
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "60px 32px 80px",
-        textAlign: "center",
-      }}
-    >
-      <div
-        style={{
-          width: 80,
-          height: 80,
-          borderRadius: "50%",
-          background: "#FFF7E0",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 28,
-        }}
-      >
-        <Clock size={36} strokeWidth={1.6} style={{ color: "#D4A017" }} />
+    <div className="flex-1 flex flex-col items-center justify-center px-8 pt-[60px] pb-20 text-center">
+      <div className="w-20 h-20 rounded-full bg-[#FFF7E0] flex items-center justify-center mb-7">
+        <Clock size={36} strokeWidth={1.6} className="text-[#D4A017]" />
       </div>
-      <p
-        style={{
-          fontSize: 20,
-          fontWeight: 700,
-          color: "#111",
-          margin: "0 0 10px",
-        }}
-      >
+      <p className="text-xl font-bold text-[#111] mb-2.5">
         Request Pending
       </p>
-      <p
-        style={{
-          fontSize: 14,
-          color: "#888",
-          margin: "0 0 8px",
-          lineHeight: 1.6,
-          maxWidth: 260,
-        }}
-      >
+      <p className="text-sm text-[#888] mb-2 leading-relaxed max-w-[260px]">
         Your request to join {community?.name ?? "this community"} is awaiting
         admin approval.
       </p>
-      <p style={{ fontSize: 13, color: "#aaa", margin: "0 0 36px" }}>
+      <p className="text-[13px] text-[#aaa] mb-9">
         You'll get access once it's approved.
       </p>
       <button
         onClick={() => navigate("/member/communities/search")}
-        style={{
-          background: "none",
-          border: "1.5px solid #002FA7",
-          borderRadius: 10,
-          padding: "12px 24px",
-          color: "#002FA7",
-          fontWeight: 600,
-          cursor: "pointer",
-        }}
+        className="bg-transparent border-[1.5px] border-[#002FA7] rounded-[10px] py-3 px-6 text-brand font-semibold cursor-pointer"
       >
         Browse Other Communities
       </button>
@@ -824,14 +473,8 @@ export default function Home() {
   return (
     <>
       <div
-        style={{
-          position: "relative",
-          overflow: "hidden",
-          minHeight: "100vh",
-           
-          fontFamily: "'Inter', system-ui, sans-serif",
-          paddingBottom: 40,
-        }}
+        className="relative overflow-hidden min-h-screen pb-10"
+        style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
       >
         <GlassLogoGlow />
         <SideDrawer open={menuOpen} onClose={() => setMenuOpen(false)} />
@@ -840,92 +483,42 @@ export default function Home() {
             row, the menu button is the persistent access point to
             Settings/My Communities since those have no other reachable
             path from this page. ── */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "25px 20px 20px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 15,
-              minWidth: 0,
-            }}
-          >
+        <div className="flex items-center justify-between pt-[25px] px-5 pb-5">
+          <div className="flex items-center gap-[15px] min-w-0">
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
               className="flex items-center justify-center border-none cursor-pointer bg-transparent p-0 flex-shrink-0"
             >
-              <Menu size={28} strokeWidth={2} style={{ color: "#222" }} />
+              <Menu size={28} strokeWidth={2} className="text-[#222]" />
             </button>
 
             {/* Community pill — tapping navigates to communities list */}
             <button
               onClick={() => navigate("/member/communities")}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 7,
-                minWidth: 0,
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-              }}
+              className="flex items-center gap-[7px] min-w-0 bg-transparent border-none cursor-pointer p-0"
             >
               <div
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 6,
-                  background: communityLogo?.url ? "transparent" : "#1C2B8A",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#fff",
-                  fontSize: 11,
-                  fontWeight: 700,
-                  flexShrink: 0,
-                  overflow: "hidden",
-                }}
+                className={`w-7 h-7 rounded-md flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 overflow-hidden ${communityLogo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
               >
                 {communityLogo?.url ? (
                   <img
                     src={communityLogo.url}
                     alt=""
                     decoding="async"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
+                    className="w-full h-full object-cover"
                   />
                 ) : (
                   communityInitial
                 )}
               </div>
-              <span
-                style={{
-                  fontSize: 14,
-                  fontWeight: 500,
-                  color: "#111",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  maxWidth: 120,
-                }}
-              >
+              <span className="text-sm font-medium text-[#111] whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
                 {communityName}
               </span>
               <ChevronDown
                 size={14}
                 strokeWidth={2}
-                style={{ color: "#666", flexShrink: 0 }}
+                className="text-[#666] flex-shrink-0"
               />
             </button>
           </div>
@@ -936,27 +529,9 @@ export default function Home() {
             onClick={() => navigate("/member/notifications")}
             className="relative w-[38px] h-[38px] rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)] flex-shrink-0"
           >
-            <Bell size={17} strokeWidth={1.8} style={{ color: "#333" }} />
+            <Bell size={17} strokeWidth={1.8} className="text-[#333]" />
             {unreadCount > 0 && (
-              <span
-                style={{
-                  position: "absolute",
-                  top: 4,
-                  right: 4,
-                  minWidth: 15,
-                  height: 15,
-                  padding: "0 3px",
-                  borderRadius: 999,
-                  background: "#DC2626",
-                  color: "#fff",
-                  fontSize: 9,
-                  fontWeight: 700,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: "1.5px solid #fff",
-                }}
-              >
+              <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-[#DC2626] text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}
@@ -964,20 +539,11 @@ export default function Home() {
         </div>
 
         {/* ── Greeting ────────────────────────────────────────────────────── */}
-        <div style={{ padding: "4px 20px 20px" }}>
-          <h1
-            style={{ fontSize: 24, fontWeight: 500, color: "#111", margin: 0 }}
-          >
+        <div className="pt-1 px-5 pb-5">
+          <h1 className="text-2xl font-medium text-[#111] m-0">
             Hi {firstName(data?.user)},
           </h1>
-          <p
-            style={{
-              fontSize: 13,
-              color: "#888",
-              marginTop: 3,
-              fontWeight: 400,
-            }}
-          >
+          <p className="text-[13px] text-[#888] mt-[3px] font-normal">
             Here's Your Community At A Glance
           </p>
         </div>
@@ -1007,25 +573,10 @@ export default function Home() {
             />
 
             {/* ── Upcoming Payments ────────────────────────────────────────────── */}
-            <div
-              style={{
-                margin: "16px 16px 0",
-                background: "var(--color-surface-container)",
-                borderRadius: 16,
-                padding: "16px 16px 4px",
-                boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: 4,
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
+            <div className="mx-4 mt-4 bg-surface-container rounded-2xl px-4 pt-4 pb-1 shadow-[0_1px_6px_rgba(0,0,0,0.06)]">
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm font-semibold text-[#111]">
                     Upcoming Payments
                   </span>
                   {/* The true total -- not upcoming.length, which is capped
@@ -1033,17 +584,7 @@ export default function Home() {
                       with more payments than fit on the card has no way to
                       tell more exist until they tap into the full list. */}
                   {totalUpcomingCount > 0 && (
-                    <span
-                      style={{
-                        fontSize: 11,
-                        fontWeight: 700,
-                        color: "#1C2B8A",
-                        background: "#E4E7F9",
-                        borderRadius: 999,
-                        padding: "1px 7px",
-                        lineHeight: 1.5,
-                      }}
-                    >
+                    <span className="text-[11px] font-bold text-[#1C2B8A] bg-[#E4E7F9] rounded-full py-px px-[7px] leading-normal">
                       {totalUpcomingCount}
                     </span>
                   )}
@@ -1051,28 +592,8 @@ export default function Home() {
               </div>
 
               {upcoming.length === 0 && totalUpcomingCount === 0 ? (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    padding: "28px 16px 20px",
-                    textAlign: "center",
-                    gap: 0,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 52,
-                      height: 52,
-                      borderRadius: "50%",
-                      background: "#EBEBEB",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginBottom: 14,
-                    }}
-                  >
+                <div className="flex flex-col items-center px-4 pt-7 pb-5 text-center gap-0">
+                  <div className="w-[52px] h-[52px] rounded-full bg-[#EBEBEB] flex items-center justify-center mb-3.5">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                       <rect
                         x="2"
@@ -1093,25 +614,10 @@ export default function Home() {
                       />
                     </svg>
                   </div>
-                  <p
-                    style={{
-                      fontSize: 17,
-                      fontWeight: 600,
-                      color: "#111",
-                      margin: "0 0 6px",
-                    }}
-                  >
+                  <p className="text-[17px] font-semibold text-[#111] mb-1.5">
                     No Upcoming Payments
                   </p>
-                  <p
-                    style={{
-                      fontSize: 13,
-                      color: "#9CA3AF",
-                      margin: 0,
-                      lineHeight: 1.55,
-                      maxWidth: 220,
-                    }}
-                  >
+                  <p className="text-[13px] text-[#9CA3AF] m-0 leading-[1.55] max-w-[220px]">
                     New Dues from community will show up here once scheduled
                   </p>
                 </div>
@@ -1123,18 +629,7 @@ export default function Home() {
 
               <button
                 onClick={() => navigate("/member/upcoming")}
-                style={{
-                  display: "block",
-                  width: "100%",
-                  padding: "4px 0 10px",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: "#1C2B8A",
-                  textAlign: "center",
-                }}
+                className="block w-full pt-1 pb-2.5 bg-transparent border-none cursor-pointer text-[13px] font-semibold text-[#1C2B8A] text-center"
               >
                 {hiddenUpcomingCount > 0
                   ? `View All — ${hiddenUpcomingCount} more`
@@ -1143,65 +638,22 @@ export default function Home() {
             </div>
 
             {/* ── Payment History ──────────────────────────────────────────────── */}
-            <div
-              style={{
-                margin: "16px 16px 0",
-                background: "var(--color-surface-container)",
-                borderRadius: 16,
-                padding: "16px 16px 4px",
-                boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: 4,
-                }}
-              >
-                <span style={{ fontSize: 14, fontWeight: 600, color: "#111" }}>
+            <div className="mx-4 mt-4 bg-surface-container rounded-2xl px-4 pt-4 pb-1 shadow-[0_1px_6px_rgba(0,0,0,0.06)]">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-semibold text-[#111]">
                   Payment History
                 </span>
                 <button
                   onClick={() => navigate("/member/transactions")}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: "#002FA7",
-                    padding: 0,
-                  }}
+                  className="bg-transparent border-none cursor-pointer text-[13px] font-semibold text-brand p-0"
                 >
                   See All
                 </button>
               </div>
 
               {history.length === 0 ? (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    padding: "28px 16px 20px",
-                    textAlign: "center",
-                    gap: 0,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 52,
-                      height: 52,
-                      borderRadius: "50%",
-                      background: "#EBEBEB",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginBottom: 14,
-                    }}
-                  >
+                <div className="flex flex-col items-center px-4 pt-7 pb-5 text-center gap-0">
+                  <div className="w-[52px] h-[52px] rounded-full bg-[#EBEBEB] flex items-center justify-center mb-3.5">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                       <rect
                         x="4"
@@ -1219,25 +671,10 @@ export default function Home() {
                       />
                     </svg>
                   </div>
-                  <p
-                    style={{
-                      fontSize: 17,
-                      fontWeight: 600,
-                      color: "#111",
-                      margin: "0 0 6px",
-                    }}
-                  >
+                  <p className="text-[17px] font-semibold text-[#111] mb-1.5">
                     No Payment History
                   </p>
-                  <p
-                    style={{
-                      fontSize: 13,
-                      color: "#9CA3AF",
-                      margin: 0,
-                      lineHeight: 1.55,
-                      maxWidth: 230,
-                    }}
-                  >
+                  <p className="text-[13px] text-[#9CA3AF] m-0 leading-[1.55] max-w-[230px]">
                     Once you make your transaction history will appear here.
                   </p>
                 </div>
