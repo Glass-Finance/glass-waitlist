@@ -17,38 +17,15 @@ function statusLabel(status) {
 function StatusPill({ status }) {
   const label = statusLabel(status);
   const map = {
-    Success: { bg: "#dcfce7", color: "#15803d", text: "Successful" },
-    Failed: { bg: "#fce4e4", color: "#dc2626", text: "Failed" },
-    Pending: { bg: "#fef9c3", color: "#b45309", text: "Pending" },
+    Success: { cls: "bg-[#dcfce7] text-[#15803d]", dotCls: "bg-[#15803d]", text: "Successful" },
+    Failed: { cls: "bg-[#fce4e4] text-[#dc2626]", dotCls: "bg-[#dc2626]", text: "Failed" },
+    Pending: { cls: "bg-[#fef9c3] text-[#b45309]", dotCls: "bg-[#b45309]", text: "Pending" },
   };
   const s = map[label] ?? map.Pending;
   return (
-    <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 6,
-        background: s.bg,
-        color: s.color,
-        fontSize: 14,
-        fontWeight: 600,
-        borderRadius: 8,
-        padding: "6px 14px",
-      }}
-    >
+    <span className={`inline-flex items-center gap-1.5 text-sm font-semibold rounded-lg py-1.5 px-3.5 ${s.cls}`}>
       {label === "Success" && (
-        <span
-          style={{
-            width: 16,
-            height: 16,
-            borderRadius: "50%",
-            background: s.color,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
+        <span className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${s.dotCls}`}>
           <Check size={11} color="#fff" strokeWidth={3} />
         </span>
       )}
@@ -60,26 +37,10 @@ function StatusPill({ status }) {
 function Row({ label, children, last }) {
   return (
     <div
-      style={{
-        display: "flex",
-        alignItems: "flex-start",
-        justifyContent: "space-between",
-        gap: 16,
-        padding: "14px 0",
-        borderBottom: last ? "none" : "1px solid #F3F4F6",
-      }}
+      className={`flex items-start justify-between gap-4 py-3.5 ${last ? "border-none" : "border-b border-[#F3F4F6]"}`}
     >
-      <span style={{ fontSize: 14, color: "#6B7280", flexShrink: 0, paddingTop: 1 }}>{label}</span>
-      <span
-        style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: "#111827",
-          textAlign: "right",
-          wordBreak: "break-word",
-          maxWidth: "62%",
-        }}
-      >
+      <span className="text-sm text-[#6B7280] flex-shrink-0 pt-px">{label}</span>
+      <span className="text-sm font-semibold text-[#111827] text-right break-words max-w-[62%]">
         {children}
       </span>
     </div>
@@ -107,16 +68,8 @@ export default function TransactionDetail() {
 
   return (
     <div
-      style={{
-        position: "relative",
-        overflow: "hidden",
-        minHeight: "100vh",
-         
-        fontFamily: "'Inter', system-ui, sans-serif",
-        paddingBottom: 40,
-        maxWidth: 430,
-        margin: "0 auto",
-      }}
+      className="relative overflow-hidden min-h-screen pb-10 max-w-[430px] mx-auto"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* Header */}
@@ -127,7 +80,7 @@ export default function TransactionDetail() {
         >
           <ChevronLeft size={18} color="#374151" />
         </button>
-        <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0, flex: 1, textAlign: "center", marginRight: 36 }}>
+        <h1 className="text-lg font-semibold text-[#111] m-0 flex-1 text-center mr-9">
           Transaction Details
         </h1>
       </div>
@@ -135,29 +88,18 @@ export default function TransactionDetail() {
       {isLoading ? (
         <PageLoadingState label="Loading transaction…" />
       ) : error || !tx ? (
-        <div style={{ padding: "40px 20px", textAlign: "center" }}>
-          <p style={{ fontSize: 14, color: "#DC2626" }}>Couldn't load this transaction.</p>
+        <div className="py-10 px-5 text-center">
+          <p className="text-sm text-[#DC2626]">Couldn't load this transaction.</p>
         </div>
       ) : (
-        <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="py-0 px-4 flex flex-col gap-3">
           {/* Amount card */}
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: 16,
-              padding: "28px 20px",
-              boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 12,
-            }}
-          >
-            <p style={{ fontSize: 34, fontWeight: 700, color: "#111827", margin: 0, letterSpacing: "-0.5px" }}>
+          <div className="bg-white rounded-2xl pt-7 px-5 pb-7 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex flex-col items-center gap-3">
+            <p className="text-[34px] font-bold text-[#111827] m-0 tracking-[-0.5px]">
               {formatNaira(tx.amount, { decimals: 2 })}
             </p>
             <StatusPill status={tx.status} />
-            <p style={{ fontSize: 13, color: "#9CA3AF", margin: 0 }}>
+            <p className="text-[13px] text-[#9CA3AF] m-0">
               {tx.date
                 ? new Date(tx.date).toLocaleString("en-NG", {
                     month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit",
@@ -167,25 +109,18 @@ export default function TransactionDetail() {
           </div>
 
           {/* Details card */}
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: 16,
-              padding: "18px 20px",
-              boxShadow: "0 1px 6px rgba(0,0,0,0.06)",
-            }}
-          >
-            <p style={{ fontSize: 15, fontWeight: 600, color: "#111", margin: "0 0 6px" }}>
+          <div className="bg-white rounded-2xl pt-[18px] px-5 pb-[18px] shadow-[0_1px_6px_rgba(0,0,0,0.06)]">
+            <p className="text-[15px] font-semibold text-[#111] mt-0 mx-0 mb-1.5">
               Transaction Details
             </p>
 
             <Row label="Community:">
-              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span className="flex items-center gap-2">
                 {tx.communityLogo?.url && (
                   <img
                     src={tx.communityLogo.url}
                     alt=""
-                    style={{ width: 32, height: 32, objectFit: "cover" }}
+                    className="w-8 h-8 object-cover"
                   />
                 )}
                 {tx.communityName ?? "—"}
@@ -211,11 +146,11 @@ export default function TransactionDetail() {
               {tx.feeMinor != null ? formatNaira(tx.feeMinor, { decimals: 2 }) : "—"}
             </Row>
             <Row label="Transaction ID:" last={!tx.initiatedBy}>
-              <span style={{ wordBreak: "break-all" }}>{tx.reference ?? tx.id}</span>{" "}
-              <span style={{ display: "inline-flex", verticalAlign: "middle" }}>
+              <span className="break-all">{tx.reference ?? tx.id}</span>{" "}
+              <span className="inline-flex align-middle">
                 <button
                   onClick={copyReference}
-                  style={{ background: "none", border: "none", cursor: "pointer", padding: 2, color: "#9CA3AF", display: "flex" }}
+                  className="bg-transparent border-none cursor-pointer p-0.5 text-[#9CA3AF] flex"
                   aria-label="Copy transaction ID"
                 >
                   {copied ? <CheckCheck size={13} color="#15803d" /> : <Copy size={13} />}
@@ -224,17 +159,7 @@ export default function TransactionDetail() {
             </Row>
             {tx.initiatedBy && (
               <Row label="Initiated by:" last>
-                <span
-                  style={{
-                    display: "inline-block",
-                    background: "#D7E2FF",
-                    color: "#002FA7",
-                    fontSize: 12,
-                    fontWeight: 600,
-                    borderRadius: 999,
-                    padding: "3px 12px",
-                  }}
-                >
+                <span className="inline-block bg-[#D7E2FF] text-brand text-xs font-semibold rounded-full py-[3px] px-3">
                   {tx.initiatedBy}
                 </span>
               </Row>
@@ -243,12 +168,7 @@ export default function TransactionDetail() {
 
           <button
             onClick={() => setShareOpen(true)}
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              width: "100%", padding: "14px 0", borderRadius: 12,
-              background: "#fff", border: "1.5px solid #002FA7", color: "#002FA7",
-              fontSize: 14, fontWeight: 600, cursor: "pointer",
-            }}
+            className="flex items-center justify-center gap-2 w-full py-3.5 px-0 rounded-xl bg-white border-[1.5px] border-brand text-brand text-sm font-semibold cursor-pointer"
           >
             <Share2 size={15} />
             Share Receipt
