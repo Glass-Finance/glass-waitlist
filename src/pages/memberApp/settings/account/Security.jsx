@@ -23,7 +23,7 @@ export default function Security() {
         <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>Security</h1>
       </div>
 
-      <div style={{ padding: "0 16px" }}>
+      <div className="px-4">
         <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           {ITEMS.map(({ Icon, label, desc, to }, i) => (
             <button
@@ -38,7 +38,7 @@ export default function Security() {
               <div style={{ width: 36, height: 36, borderRadius: 10, background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <Icon size={16} className="text-[#1C2B8A]" />
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="flex-1 min-w-0">
                 <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{label}</p>
                 <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>{desc}</p>
               </div>

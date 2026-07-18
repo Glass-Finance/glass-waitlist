@@ -83,7 +83,7 @@ function PlanCard({ plan, auth, onToggle }) {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
           <div style={{ width: 44, height: 44, borderRadius: 10, background: "#F0F4FF", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
             {plan.logo?.url
-              ? <img src={plan.logo.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ? <img src={plan.logo.url} alt="" className="w-full h-full object-cover" />
               : <span style={{ fontSize: 18, fontWeight: 700, color: "#1C2B8A" }}>{plan.logoText ?? "P"}</span>}
           </div>
           <span style={{ fontSize: 12, fontWeight: 600, color: "#002FA7", background: "#E8EEFF", padding: "4px 12px", borderRadius: 999 }}>
@@ -219,7 +219,7 @@ export default function ManagePayments() {
         <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>Manage Payments</h1>
       </div>
 
-      <div style={{ padding: "0 16px" }}>
+      <div className="px-4">
         {/* Filter */}
         <div style={{ marginBottom: 16 }}>
           <FilterDropdown value={filter} onChange={setFilter} />

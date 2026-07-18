@@ -291,7 +291,7 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
           loading="lazy"
           decoding="async"
         />
-        <div style={{ minWidth: 0 }}>
+        <div className="min-w-0">
           {/* Title types first */}
           <h3
             style={{

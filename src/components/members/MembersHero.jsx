@@ -296,7 +296,7 @@ export default function MembersHero() {
           any phone height) without the section's centering logic shifting
           the whole group up and leaving a gap underneath. */}
       <div className="sm:hidden absolute top-[68px] left-0 right-0 bottom-0 z-10 flex flex-col">
-        <div ref={containerRef} className="px-6 pt-30" style={{ position: "relative" }}>
+        <div ref={containerRef} className="px-6 pt-30 relative">
           <div
             style={{
               fontSize: "clamp(38px,10vw,56px)",

@@ -297,7 +297,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = "#f9fafb"; }}
                   onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
                 >
-                  <Icon size={14} style={{ flexShrink: 0 }} />
+                  <Icon size={14} className="flex-shrink-0" />
                   <span style={{ flex: 1, textAlign: "left" }}>{label}</span>
                   {badge > 0 && (
                     <span style={{
@@ -335,7 +335,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             >
               SA
             </div>
-            <div style={{ minWidth: 0, flex: 1 }}>
+            <div className="min-w-0 flex-1">
               <p style={{ fontSize: 11, fontWeight: 600, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 {user?.email}
               </p>
@@ -544,7 +544,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           }}
         >
           {activeCommunity ? (
-            <div style={{ minWidth: 0, flex: 1 }}>
+            <div className="min-w-0 flex-1">
               <div
                 style={{
                   fontSize: 12,
@@ -578,7 +578,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               </span>
             </div>
           ) : (
-            <div style={{ minWidth: 0, flex: 1 }}>
+            <div className="min-w-0 flex-1">
               <div
                 style={{
                   fontSize: 12,
@@ -675,7 +675,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   if (!isActive) e.currentTarget.style.background = "transparent";
                 }}
               >
-                <Icon size={14} style={{ flexShrink: 0 }} />
+                <Icon size={14} className="flex-shrink-0" />
                 <span style={{ flex: 1, textAlign: "left" }}>{label}</span>
                 {badge > 0 && (
                   <span style={{
@@ -758,7 +758,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             onMouseEnter={(e) => { e.currentTarget.style.background = "#f9fafb"; e.currentTarget.style.color = "var(--color-brand)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#6b7280"; }}
           >
-            <Smartphone size={14} style={{ flexShrink: 0 }} />
+            <Smartphone size={14} className="flex-shrink-0" />
             <span style={{ flex: 1, textAlign: "left" }}>Member View</span>
           </button>
 
@@ -821,12 +821,12 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               }}
             >
               {user?.profileImage?.url ? (
-                <img src={user.profileImage.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
               ) : (
                 userInitials
               )}
             </div>
-            <div style={{ minWidth: 0, flex: 1 }}>
+            <div className="min-w-0 flex-1">
               <p
                 style={{
                   fontSize: 11,

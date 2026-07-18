@@ -73,7 +73,7 @@ function NotifIcon({ n }) {
   if (isSelf && user?.profileImage?.url) {
     return (
       <div style={{ width: 38, height: 38, borderRadius: "50%", flexShrink: 0, overflow: "hidden" }}>
-        <img src={user.profileImage.url} alt={selfName ?? ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={user.profileImage.url} alt={selfName ?? ""} className="w-full h-full object-cover" />
       </div>
     );
   }
@@ -150,7 +150,7 @@ function Avatar({ name, logo }) {
   return (
     <div style={{ width: 40, height: 40, borderRadius: 10, background: logo?.url ? "transparent" : "#1C2B8A22", border: logo?.url ? "none" : "1px solid #1C2B8A44", color: "#1C2B8A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 700, flexShrink: 0, overflow: "hidden" }}>
       {logo?.url
-        ? <img src={logo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        ? <img src={logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
         : initials}
     </div>
   );
@@ -161,7 +161,7 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
     <div style={{ background: "#fff", borderRadius: 14, padding: 16, border: "1px solid var(--color-outline-on-surface)" }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
         <Avatar name={invite.community?.name} logo={invite.community?.logo} />
-        <div style={{ minWidth: 0, flex: 1 }}>
+        <div className="min-w-0 flex-1">
           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
             <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{invite.community?.name ?? "Community"}</p>
             {invite.createdAt && (
@@ -313,7 +313,7 @@ export default function Notifications() {
       )}
 
       {/* Content */}
-      <div style={{ padding: "0 16px" }}>
+      <div className="px-4">
         {activeTab === "Payments" && (
           notifsLoading
             ? <PageLoadingState size={56} padding="36px 24px" />

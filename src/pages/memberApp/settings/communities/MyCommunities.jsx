@@ -165,7 +165,7 @@ export default function MyCommunities() {
         </button>
       </div>
 
-      <div style={{ padding: "0 16px" }}>
+      <div className="px-4">
         {isLoading ? (
           <PageLoadingState size={56} padding="36px 24px" />
         ) : communities.length === 0 ? (
@@ -193,12 +193,12 @@ export default function MyCommunities() {
                   }}
                 >
                   {c.logo?.url ? (
-                    <img src={c.logo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img src={c.logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
                   ) : (
                     getInitials(c.name) || "?"
                   )}
                 </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="flex-1 min-w-0">
                   <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{c.name}</p>
                   <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>{c.owned ? "Admin" : "Member"}</p>
                 </div>

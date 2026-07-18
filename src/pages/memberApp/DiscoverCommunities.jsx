@@ -137,7 +137,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
             <img
               src={logoUrl}
               alt=""
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              className="w-full h-full object-cover"
             />
           ) : (
             (community.name?.charAt(0) ?? "C")
@@ -145,7 +145,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
         </div>
 
         {/* Name + category */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="flex-1 min-w-0">
           <p
             style={{
               fontSize: 14,

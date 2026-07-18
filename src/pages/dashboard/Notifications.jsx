@@ -345,8 +345,7 @@ function SuperAdminNotifications() {
 
   return (
     <div
-      className="flex flex-col h-full px-4 md:px-6 py-6"
-      style={{ minHeight: 0 }}
+      className="flex flex-col h-full px-4 md:px-6 py-6 min-h-0"
     >
       <div className="mb-5 flex-shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
@@ -366,7 +365,7 @@ function SuperAdminNotifications() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
+      <div className="flex-1 overflow-y-auto min-h-0">
         {isLoading ? (
           <LoadingState className="py-12" />
         ) : notifications.length === 0 ? (
@@ -411,8 +410,7 @@ function CommunityNotifications() {
 
   return (
     <div
-      className="flex flex-col h-full px-4 md:px-6 py-6"
-      style={{ minHeight: 0 }}
+      className="flex flex-col h-full px-4 md:px-6 py-6 min-h-0"
     >
       {/* Header */}
       <div className="mb-5 flex-shrink-0">
@@ -482,7 +480,7 @@ function CommunityNotifications() {
       </div>
 
       {/* Notification list — independently scrollable */}
-      <div className="flex-1 overflow-y-auto" style={{ minHeight: 0 }}>
+      <div className="flex-1 overflow-y-auto min-h-0">
         {isLoading ? (
           <LoadingState className="py-12" />
         ) : notifications.length === 0 ? (

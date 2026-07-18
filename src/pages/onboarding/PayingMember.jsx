@@ -38,7 +38,7 @@
 //       {/* Glass logo top left */}
 //       <div className="absolute top-5 left-8 flex items-center gap-2">
 //         <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
-//         <span className="font-semibold text-gray-900" style={{ fontFamily: "var(--font-sans)" }}>Glass</span>
+//         <span className="font-semibold text-gray-900 font-sans">Glass</span>
 //       </div>
 
 //       {/* Content */}
@@ -46,7 +46,7 @@
 
 //         {/* Heading */}
 //         <div className="text-center mb-8">
-//           <h1 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontFamily: "var(--font-sans)" }}>
+//           <h1 className="text-2xl font-bold text-gray-900 mb-2 font-sans">
 //             Are you a paying member of this community?
 //           </h1>
 //           <p className="text-sm text-gray-500 max-w-sm mx-auto">

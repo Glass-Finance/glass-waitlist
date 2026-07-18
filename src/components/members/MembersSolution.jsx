@@ -236,7 +236,7 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
 
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "clamp(16px,3vw,28px) clamp(14px,2.5vw,20px) 0px" }}>
         <img src={icon} alt="" style={{ width: "clamp(36px,5vw,50px)", height: "clamp(36px,5vw,50px)", objectFit: "contain", flexShrink: 0 }} loading="lazy" decoding="async" />
-        <div style={{ minWidth: 0 }}>
+        <div className="min-w-0">
           <h3 style={{ fontSize: "clamp(16px,2.5vw,18px)", fontWeight: 700, color: "#0f1d6e", lineHeight: 1.3, marginBottom: 6 }}>
             {title}
           </h3>

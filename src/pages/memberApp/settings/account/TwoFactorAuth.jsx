@@ -277,7 +277,7 @@ export default function MFA() {
         </h1>
       </div>
 
-      <div style={{ padding: "0 16px" }}>
+      <div className="px-4">
         {isLoading ? (
           <PageLoadingState size={56} padding="36px 24px" />
         ) : flow === "setup" ? (
@@ -299,7 +299,7 @@ export default function MFA() {
               }}>
                 <ShieldCheck size={22} style={{ color: mfaEnabled ? "#16A34A" : "#9CA3AF" }} />
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="flex-1 min-w-0">
                 <p style={{ fontSize: 15, fontWeight: 600, color: "#111", margin: 0 }}>
                   Authenticator App (TOTP)
                 </p>

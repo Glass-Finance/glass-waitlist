@@ -161,8 +161,7 @@ export default function JoinRequests() {
 
   return (
     <div
-      className="flex flex-col h-full px-4 md:px-6 py-6 overflow-y-auto"
-      style={{ minHeight: 0 }}
+      className="flex flex-col h-full px-4 md:px-6 py-6 overflow-y-auto min-h-0"
     >
       {/* Header */}
       <div className="mb-5 flex-shrink-0">

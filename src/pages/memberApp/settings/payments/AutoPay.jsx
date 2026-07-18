@@ -102,7 +102,7 @@ export default function AutoPay() {
         <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>Auto-Pay</h1>
       </div>
 
-      <div style={{ padding: "0 16px" }}>
+      <div className="px-4">
         {allPlans.length > 0 && (
           <p style={{ fontSize: 12, fontWeight: 600, color: "#999", margin: "0 4px 8px", textTransform: "uppercase", letterSpacing: 0.4 }}>
             Active Plans

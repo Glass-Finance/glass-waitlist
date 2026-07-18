@@ -88,7 +88,7 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
     <style>{ICON_POP_CSS}</style>
     <motion.div ref={innerRef} style={{ opacity: rowOpacity, y: rowY }}>
       {/* ── Mobile — label overlaps top-left of image ── */}
-      <div className="flex flex-col md:hidden" style={{ position: "relative" }}>
+      <div className="flex flex-col md:hidden relative">
         <div className="relative w-full rounded-lg overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
           <img
             src={step.img}

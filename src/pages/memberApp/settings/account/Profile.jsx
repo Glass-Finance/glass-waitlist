@@ -171,11 +171,11 @@ export default function Profile() {
         <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>Profile</h1>
       </div>
 
-      <div style={{ padding: "0 16px" }}>
+      <div className="px-4">
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 20 }}>
           <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#D7E2FF", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
             {photoPreview || photoUrl ? (
-              <img src={photoPreview ?? photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src={photoPreview ?? photoUrl} alt="" className="w-full h-full object-cover" />
             ) : (
               <span style={{ fontSize: 20, fontWeight: 600, color: "#002FA7" }}>{initials}</span>
             )}

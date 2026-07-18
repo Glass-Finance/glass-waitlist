@@ -87,7 +87,7 @@ export default function NotificationSettings() {
         <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>Notifications</h1>
       </div>
 
-      <div style={{ padding: "0 16px" }}>
+      <div className="px-4">
         {/* Error state */}
         {error && !isLoading && (
           <div style={{

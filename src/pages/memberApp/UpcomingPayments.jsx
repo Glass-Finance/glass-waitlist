@@ -11,7 +11,7 @@ const FILTER_OPTIONS = ["All", "Recurring", "One-time"];
 function FilterDropdown({ value, onChange }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ position: "relative" }}>
+    <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
         style={{
@@ -101,7 +101,7 @@ function PaymentRow({ item, onPay, paying }) {
         gap: 12,
       }}
     >
-      <div style={{ minWidth: 0 }}>
+      <div className="min-w-0">
         <div
           style={{
             display: "flex",

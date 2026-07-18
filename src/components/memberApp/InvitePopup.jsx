@@ -42,7 +42,7 @@ function CommunityAvatar({ name, logo }) {
           src={logo.url}
           alt=""
           decoding="async"
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          className="w-full h-full object-cover"
         />
       ) : (
         initials

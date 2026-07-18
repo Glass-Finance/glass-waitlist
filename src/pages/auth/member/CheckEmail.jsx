@@ -16,7 +16,7 @@ export default function CheckEmail() {
       <header className="px-8 py-3 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain" />
-          <span className="font-semibold text-gray-900 text-base" style={{ fontFamily: "var(--font-sans)" }}>
+          <span className="font-semibold text-gray-900 text-base font-sans">
             Glass
           </span>
         </div>
@@ -26,7 +26,7 @@ export default function CheckEmail() {
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-2 overflow-hidden">
         <div className="w-full max-w-xl flex flex-col items-center">
 
-          <h1 className="text-2xl font-bold text-gray-900 mb-1.5 text-center" style={{ fontFamily: "var(--font-sans)" }}>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1.5 text-center font-sans">
             Scan To Join From Your Phone
           </h1>
           <p className="text-sm text-gray-500 mb-4 text-center">

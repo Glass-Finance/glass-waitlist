@@ -62,7 +62,7 @@ export default function Settings() {
         <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>Settings</h1>
       </div>
 
-      <div style={{ padding: "0 16px" }}>
+      <div className="px-4">
         {SECTIONS.map((section) => (
           <div key={section.label} style={{ marginBottom: 20 }}>
             <p style={{ fontSize: 12, fontWeight: 600, color: "#999", margin: "0 4px 8px", textTransform: "uppercase", letterSpacing: 0.4 }}>
@@ -82,7 +82,7 @@ export default function Settings() {
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     <Icon size={16} className="text-[#1C2B8A]" />
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="flex-1 min-w-0">
                     <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{label}</p>
                     <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>{desc}</p>
                   </div>

@@ -32,8 +32,7 @@ export default function MobileRequired() {
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain" />
           <span
-            className="font-semibold text-gray-900 text-base"
-            style={{ fontFamily: "var(--font-sans)" }}
+            className="font-semibold text-gray-900 text-base font-sans"
           >
             Glass
           </span>
@@ -43,8 +42,7 @@ export default function MobileRequired() {
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-2 overflow-hidden">
         <div className="w-full max-w-xl flex flex-col items-center">
           <h1
-            className="text-2xl font-bold text-gray-900 mb-1.5 text-center"
-            style={{ fontFamily: "var(--font-sans)" }}
+            className="text-2xl font-bold text-gray-900 mb-1.5 text-center font-sans"
           >
             Scan To Continue On Your Phone
           </h1>

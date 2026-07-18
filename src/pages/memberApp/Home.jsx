@@ -409,7 +409,7 @@ function UpcomingRow({ payment, onPay }) {
       }}
     >
       {/* Left — all text */}
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div className="flex-1 min-w-0">
         <div
           style={{
             display: "flex",
@@ -867,8 +867,7 @@ export default function Home() {
             <button
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
-              className="flex items-center justify-center border-none cursor-pointer bg-transparent p-0"
-              style={{ flexShrink: 0 }}
+              className="flex items-center justify-center border-none cursor-pointer bg-transparent p-0 flex-shrink-0"
             >
               <Menu size={28} strokeWidth={2} style={{ color: "#222" }} />
             </button>

@@ -145,7 +145,7 @@ function TxRow({ tx, onOpen }) {
         cursor: "pointer",
       }}
     >
-      <div style={{ minWidth: 0 }}>
+      <div className="min-w-0">
         <p style={{ fontSize: 15, fontWeight: 500, color: "#111827", margin: 0 }}>
           {toTitleCase(tx.description)}
         </p>

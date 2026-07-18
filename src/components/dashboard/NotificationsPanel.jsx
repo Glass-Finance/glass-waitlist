@@ -71,7 +71,7 @@ function NotifAvatar({ n }) {
   if (isSelf && user?.profileImage?.url) {
     return (
       <div style={{ width: 36, height: 36, borderRadius: "50%", flexShrink: 0, overflow: "hidden", marginTop: 1 }}>
-        <img src={user.profileImage.url} alt={selfName ?? ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={user.profileImage.url} alt={selfName ?? ""} className="w-full h-full object-cover" />
       </div>
     );
   }
@@ -118,7 +118,7 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
     >
       <NotifAvatar n={n} />
 
-      <div style={{ flex: 1, minWidth: 0 }}>
+      <div className="flex-1 min-w-0">
         {commName && (
           <p style={{
             fontSize: 10, fontWeight: 600, color: "#002FA7",

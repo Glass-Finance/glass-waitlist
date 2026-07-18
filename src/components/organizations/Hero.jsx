@@ -659,7 +659,7 @@ function DashboardOverlay() {
                   </span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ position: "relative" }}>
+                  <div className="relative">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path
                         d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
@@ -1331,7 +1331,7 @@ function DashboardOverlay() {
                             </svg>
                           )}
                         </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
+                        <div className="flex-1 min-w-0">
                           <p
                             style={{
                               fontSize: 11,

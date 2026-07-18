@@ -23,7 +23,7 @@ function PasswordField({ label, value, onChange, show, onToggleShow }) {
   return (
     <div>
       <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 6 }}>{label}</label>
-      <div style={{ position: "relative" }}>
+      <div className="relative">
         <input
           type={show ? "text" : "password"}
           value={value}
@@ -90,7 +90,7 @@ export default function Password() {
         <h1 style={{ fontSize: 18, fontWeight: 600, color: "#111", margin: 0 }}>Password</h1>
       </div>
 
-      <div style={{ padding: "0 16px" }}>
+      <div className="px-4">
         <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, padding: 16, display: "flex", flexDirection: "column", gap: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
           <PasswordField
             label="Current Password"

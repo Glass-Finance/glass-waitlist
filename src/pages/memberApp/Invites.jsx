@@ -28,7 +28,7 @@ function Avatar({ name, logo }) {
       }}
     >
       {logo?.url ? (
-        <img src={logo.url} alt="" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
       ) : (
         initials
       )}
@@ -140,7 +140,7 @@ export default function Invites() {
         </h1>
       </div>
 
-      <div style={{ padding: "0 16px" }}>
+      <div className="px-4">
         {staleNotice && (
           <div
             style={{
@@ -156,7 +156,7 @@ export default function Invites() {
               marginBottom: 12,
             }}
           >
-            <Info size={14} strokeWidth={2} style={{ flexShrink: 0 }} />
+            <Info size={14} strokeWidth={2} className="flex-shrink-0" />
             {staleNotice}
           </div>
         )}
@@ -261,7 +261,7 @@ export default function Invites() {
                   }}
                 >
                   <Avatar name={invite.community?.name} logo={invite.community?.logo} />
-                  <div style={{ minWidth: 0 }}>
+                  <div className="min-w-0">
                     <p
                       style={{
                         fontSize: 14,
@@ -339,7 +339,7 @@ export default function Invites() {
                 }}
               >
                 <Avatar name={req.community?.name} logo={req.community?.logo} />
-                <div style={{ minWidth: 0, flex: 1 }}>
+                <div className="min-w-0 flex-1">
                   <p
                     style={{
                       fontSize: 14,

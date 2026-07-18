@@ -68,8 +68,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
     <div className="w-full max-w-sm flex flex-col">
       <div className="mb-7">
         <h1
-          className="text-headline text-gray-900 mb-3"
-          style={{ fontFamily: "var(--font-sans)" }}
+          className="text-headline text-gray-900 mb-3 font-sans"
         >
           Verification Code Sent
         </h1>
