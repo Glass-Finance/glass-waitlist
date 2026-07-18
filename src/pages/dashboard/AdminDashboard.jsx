@@ -70,13 +70,13 @@ function timeAgo(dateString) {
 }
 
 const STATUS_STYLE = {
-  paid: { bg: "#ecfdf5", color: "#059669", label: "Paid" },
-  success: { bg: "#ecfdf5", color: "#059669", label: "Paid" },
-  successful: { bg: "#ecfdf5", color: "#059669", label: "Paid" },
-  unpaid: { bg: "#fff1f2", color: "#e11d48", label: "Unpaid" },
-  pending: { bg: "#fffbeb", color: "#b45309", label: "Pending" },
-  initiated: { bg: "#fffbeb", color: "#b45309", label: "Pending" },
-  failed: { bg: "#fff1f2", color: "#e11d48", label: "Failed" },
+  paid: { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" },
+  success: { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" },
+  successful: { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" },
+  unpaid: { cls: "bg-[#fff1f2] text-[#e11d48]", label: "Unpaid" },
+  pending: { cls: "bg-[#fffbeb] text-[#b45309]", label: "Pending" },
+  initiated: { cls: "bg-[#fffbeb] text-[#b45309]", label: "Pending" },
+  failed: { cls: "bg-[#fff1f2] text-[#e11d48]", label: "Failed" },
 };
 
 function statusStyle(status = "") {
@@ -84,19 +84,18 @@ function statusStyle(status = "") {
 }
 
 const FREQUENCY_STYLE = {
-  MONTHLY: { bg: "#FFF8E7", color: "#b45309", label: "Monthly" },
-  WEEKLY: { bg: "#E6EEFF", color: "var(--color-brand)", label: "Weekly" },
-  QUARTERLY: { bg: "#ECFDF5", color: "#0f766e", label: "Quarterly" },
-  YEARLY: { bg: "#ECFDF5", color: "#059669", label: "Annually" },
+  MONTHLY: { cls: "bg-[#FFF8E7] text-[#b45309]", label: "Monthly" },
+  WEEKLY: { cls: "bg-[#E6EEFF] text-brand", label: "Weekly" },
+  QUARTERLY: { cls: "bg-[#ECFDF5] text-[#0f766e]", label: "Quarterly" },
+  YEARLY: { cls: "bg-[#ECFDF5] text-[#059669]", label: "Annually" },
 };
 
 function freqStyle(row) {
   if (row.type !== "recurring")
-    return { bg: "#F3EEFF", color: "#7c3aed", label: "One-Time" };
+    return { cls: "bg-[#F3EEFF] text-[#7c3aed]", label: "One-Time" };
   return (
     FREQUENCY_STYLE[(row.frequency ?? "").toUpperCase()] ?? {
-      bg: "#F3EEFF",
-      color: "#7c3aed",
+      cls: "bg-[#F3EEFF] text-[#7c3aed]",
       label: "Recurring",
     }
   );
@@ -244,15 +243,13 @@ export function AdminPaymentModal({ item, onClose }) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="w-full bg-white rounded-2xl overflow-hidden shadow-2xl border border-surface-container-border"
-        style={{ maxWidth: 560, maxHeight: "90vh", overflowY: "auto" }}
+        className="w-full bg-white rounded-2xl overflow-hidden shadow-2xl border border-surface-container-border max-w-[560px] max-h-[90vh] overflow-y-auto"
       >
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border border-surface-container-border"
-              style={{ background: "#f0f4ff" }}
+              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border border-surface-container-border bg-[#f0f4ff]"
             >
               {item.logo?.url ? (
                 <img
@@ -284,22 +281,14 @@ export function AdminPaymentModal({ item, onClose }) {
         </div>
 
         {/* ── Amount hero ── */}
-        <div
-          className="px-7 py-8 text-center"
-          style={{
-            background: "linear-gradient(135deg, var(--color-brand) 0%, #1C2B8A 100%)",
-          }}
-        >
+        <div className="px-7 py-8 text-center bg-[linear-gradient(135deg,var(--color-brand)_0%,#1C2B8A_100%)]">
           <p className="text-[12px] text-blue-200 uppercase tracking-widest mb-2 font-medium">
             Amount Due
           </p>
           <p className="text-[42px] font-bold text-white leading-none mb-3">
             {formatNaira(item.amount)}
           </p>
-          <span
-            className="inline-block text-[11px] font-semibold px-4 py-1 rounded-full"
-            style={{ background: "rgba(255,255,255,0.15)", color: "#fff" }}
-          >
+          <span className="inline-block text-[11px] font-semibold px-4 py-1 rounded-full bg-white/15 text-white">
             {isRecurring ? "Recurring Payment" : "One-Time Payment"}
           </span>
         </div>
@@ -318,10 +307,7 @@ export function AdminPaymentModal({ item, onClose }) {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Schedule</span>
-              <span
-                className="text-[11px] font-semibold px-3 py-0.5 rounded-full"
-                style={{ background: "#EEF1FB", color: "var(--color-brand)" }}
-              >
+              <span className="text-[11px] font-semibold px-3 py-0.5 rounded-full bg-[#EEF1FB] text-brand">
                 {isRecurring ? "Recurring" : "One-Time"}
               </span>
             </div>
@@ -390,10 +376,7 @@ export function AdminPaymentModal({ item, onClose }) {
           </p>
           {savedMethod ? (
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-stacked-container">
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: "#EEF2FF" }}
-              >
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#EEF2FF]">
                 <Landmark size={16} className="text-brand" />
               </div>
               <div>
@@ -736,10 +719,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
 
         <div className="px-8 pb-8 flex flex-col gap-5">
           {/* Invite link banner */}
-          <div
-            className="flex items-center justify-between px-5 py-4 rounded-xl"
-            style={{ background: "#D7E2FF", border: "1px solid #0E628C33" }}
-          >
+          <div className="flex items-center justify-between px-5 py-4 rounded-xl bg-[#D7E2FF] border border-[#0E628C33]">
             <div>
               <p className="text-xs text-gray-900 mb-0.5">
                 Your community is ready to grow.
@@ -772,12 +752,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className="pb-2.5 text-sm font-medium capitalize bg-transparent border-none cursor-pointer transition-all"
-                  style={{
-                    color: tab === t ? "var(--color-brand)" : "#9ca3af",
-                    borderBottom:
-                      tab === t ? "2px solid var(--color-brand)" : "2px solid transparent",
-                  }}
+                  className={`pb-2.5 text-sm font-medium capitalize bg-transparent cursor-pointer transition-all border-x-0 border-t-0 border-b-2 ${tab === t ? "text-brand border-b-brand" : "text-[#9ca3af] border-b-transparent"}`}
                 >
                   {t.charAt(0).toUpperCase() + t.slice(1)}
                 </button>
@@ -856,14 +831,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                   }}
                   onDragLeave={() => setDragOver(false)}
                   onDrop={handleDrop}
-                  className="w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-5"
-                  style={{
-                    minHeight: 140,
-                    background: dragOver ? "#EEF2FF" : "#FAFAFA",
-                    border: dragOver
-                      ? "2px dashed var(--color-brand)"
-                      : "2px dashed #D1D5DB",
-                  }}
+                  className={`w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-5 min-h-[140px] border-2 border-dashed ${dragOver ? "bg-[#EEF2FF] border-brand" : "bg-[#FAFAFA] border-[#D1D5DB]"}`}
                 >
                   <input
                     ref={fileRef}
@@ -918,13 +886,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                   </div>
 
                   {urlStage === "fetching" && (
-                    <div
-                      className="mt-3 rounded-lg flex flex-col items-center justify-center py-10"
-                      style={{
-                        border: "2px dashed var(--color-brand)",
-                        background: "#EEF2FF",
-                      }}
-                    >
+                    <div className="mt-3 rounded-lg flex flex-col items-center justify-center py-10 border-2 border-dashed border-brand bg-[#EEF2FF]">
                       <div className="relative w-16 h-16 mb-3">
                         <svg
                           viewBox="0 0 64 64"
@@ -950,9 +912,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                               2 * Math.PI * 28 * (1 - urlProgress / 100)
                             }
                             strokeLinecap="round"
-                            style={{
-                              transition: "stroke-dashoffset 0.2s linear",
-                            }}
+                            className="transition-[stroke-dashoffset] duration-200 ease-linear"
                           />
                         </svg>
                         <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-gray-900">
@@ -1023,12 +983,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                   Enter Email(s):
                 </p>
                 <div
-                  className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-1 border border-surface-container-border"
-                  style={{
-                    minHeight: 60,
-                    background: "#fff",
-                    borderColor: emailChipError ? "var(--color-danger)" : undefined,
-                  }}
+                  className={`rounded-lg p-3 flex flex-wrap items-center gap-2 mb-1 border min-h-[60px] bg-white ${emailChipError ? "border-danger" : "border-surface-container-border"}`}
                 >
                   {emails.map((em, i) => (
                     <span
@@ -1826,8 +1781,7 @@ function DashboardContent({ isPaying, communityId }) {
                           </td>
                           <td className="py-3 px-2">
                             <span
-                              className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                              style={{ color: f.color, background: f.bg }}
+                              className={`text-xs font-semibold px-2.5 py-1 rounded-full ${f.cls}`}
                             >
                               {f.label}
                             </span>
@@ -1849,8 +1803,7 @@ function DashboardContent({ isPaying, communityId }) {
                           </td>
                           <td className="py-3 px-2">
                             <span
-                              className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                              style={{ color: s.color, background: s.bg }}
+                              className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.cls}`}
                             >
                               {s.label}
                             </span>
@@ -1930,15 +1883,15 @@ function DashboardContent({ isPaying, communityId }) {
                     expected > 0
                       ? Math.min(100, Math.round((collected / expected) * 100))
                       : 0;
-                  const BAR_COLORS = [
-                    "#d4a017",
-                    "#7c3aed",
-                    "#099DA8",
-                    "#059669",
-                    "var(--color-brand)",
-                    "#e11d48",
+                  const BAR_COLOR_CLASSES = [
+                    "bg-[#d4a017]",
+                    "bg-[#7c3aed]",
+                    "bg-[#099DA8]",
+                    "bg-[#059669]",
+                    "bg-brand",
+                    "bg-[#e11d48]",
                   ];
-                  const barColor = BAR_COLORS[idx % BAR_COLORS.length];
+                  const barColorCls = BAR_COLOR_CLASSES[idx % BAR_COLOR_CLASSES.length];
                   return (
                     <div
                       key={p.id}
@@ -1949,10 +1902,7 @@ function DashboardContent({ isPaying, communityId }) {
                           <span className="text-xs font-medium text-black truncate">
                             {toTitleCase(p.name)}
                           </span>
-                          <span
-                            className="text-[10px] font-normal px-2 py-0.5 rounded-full flex-shrink-0"
-                            style={{ color: "#7c3aed", background: "#f3eeff" }}
-                          >
+                          <span className="text-[10px] font-normal px-2 py-0.5 rounded-full flex-shrink-0 text-[#7c3aed] bg-[#f3eeff]">
                             {p.frequency ?? p.type ?? "—"}
                           </span>
                         </div>
@@ -1965,8 +1915,8 @@ function DashboardContent({ isPaying, communityId }) {
                       </p>
                       <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
                         <div
-                          className="h-full rounded-full"
-                          style={{ width: `${pct}%`, background: barColor }}
+                          className={`h-full rounded-full ${barColorCls}`}
+                          style={{ width: `${pct}%` }}
                         />
                       </div>
                       <p className="text-[11px] text-gray-400 text-right mt-1">
@@ -2011,7 +1961,7 @@ function DashboardContent({ isPaying, communityId }) {
                   : isPmt
                     ? "#059669"
                     : "var(--color-brand)";
-                const aBg = failed ? "#fff1f2" : isPmt ? "#ecfdf5" : "var(--color-brand-tint)";
+                const aBgCls = failed ? "bg-[#fff1f2]" : isPmt ? "bg-[#ecfdf5]" : "bg-brand-tint";
                 const type = isPmt
                   ? "payment"
                   : event.includes("MEMBER")
@@ -2028,8 +1978,7 @@ function DashboardContent({ isPaying, communityId }) {
                     className={`flex items-start gap-3 py-3 ${i < recentActivity.length - 1 ? "border-b border-gray-50" : ""}`}
                   >
                     <div
-                      className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center"
-                      style={{ background: aBg }}
+                      className={`w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center ${aBgCls}`}
                     >
                       <ActivityIcon type={type} color={aColor} />
                     </div>
@@ -2215,8 +2164,7 @@ function DashboardContent({ isPaying, communityId }) {
                         </td>
                         <td className="px-5 py-3">
                           <span
-                            className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                            style={{ color: s.color, background: s.bg }}
+                            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.cls}`}
                           >
                             {s.label}
                           </span>
