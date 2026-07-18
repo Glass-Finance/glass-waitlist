@@ -154,8 +154,7 @@ export default function CommunityProfile() {
 
       {/* ── Community Information ── */}
       <div
-        className="bg-surface-container rounded-lg px-5 pt-4 pb-5"
-        style={{ border: "1px solid var(--color-surface-container-border)" }}
+        className="bg-surface-container rounded-lg px-5 pt-4 pb-5 border border-surface-container-border"
       >
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Community Information</p>
         <p className="text-xs text-gray-500 mb-4">This is how your information will appear across glass</p>
@@ -200,8 +199,7 @@ export default function CommunityProfile() {
           community but don't get its destructive controls. ── */}
       {community?.owned && (
       <div
-        className="bg-surface-container rounded-lg px-5 pt-4 pb-4"
-        style={{ border: "1px solid var(--color-surface-container-border)" }}
+        className="bg-surface-container rounded-lg px-5 pt-4 pb-4 border border-surface-container-border"
       >
         <p className="text-sm text-gray-900 mb-0.5">Delete Community</p>
         <p className="text-xs text-gray-500 mb-3">Permanent actions that cannot be undone.</p>
@@ -228,7 +226,7 @@ export default function CommunityProfile() {
         <div
           className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/35 backdrop-blur-xs"
         >
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6" style={{ border: "1px solid var(--color-surface-container-border)" }}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-surface-container-border">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
               style={{ background: "#FEE2E2" }}

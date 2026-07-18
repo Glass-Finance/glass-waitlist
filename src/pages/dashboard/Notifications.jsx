@@ -207,8 +207,7 @@ function NotificationDetailModal({ n, onClose }) {
 
           {/* Facts — inner card matching the app's var(--color-surface-container)/var(--color-surface-container-border) standard */}
           <div
-            className="flex flex-col gap-2.5 mt-5 rounded-xl px-4 py-3.5 bg-surface-container"
-            style={{ border: "1px solid var(--color-surface-container-border)" }}
+            className="flex flex-col gap-2.5 mt-5 rounded-xl px-4 py-3.5 bg-surface-container border border-surface-container-border"
           >
             {factRows.map((r) => (
               <div key={r.label} className="flex items-center justify-between gap-4">

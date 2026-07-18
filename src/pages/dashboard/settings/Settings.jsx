@@ -78,8 +78,7 @@ function MenuList({ items }) {
         <button
           key={i}
           onClick={() => navigate(item.path)}
-          className="w-full flex items-center justify-between px-5 py-4 bg-surface-container rounded-xl text-left hover:bg-gray-50 transition-all cursor-pointer border-none"
-          style={{ border: "1px solid var(--color-surface-container-border)" }}
+          className="w-full flex items-center justify-between px-5 py-4 bg-surface-container rounded-xl text-left hover:bg-gray-50 transition-all cursor-pointer border border-surface-container-border"
         >
           <div>
             <p className="text-sm font-semibold text-gray-900">{item.label}</p>

@@ -22,8 +22,7 @@ export default function ModalShell({ title, subtitle, onClose, children }) {
       }}
     >
       <div
-        className="bg-white rounded-2xl w-full max-w-md shadow-2xl"
-        style={{ border: "1px solid var(--color-surface-container-border)" }}
+        className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border"
       >
         <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <div>

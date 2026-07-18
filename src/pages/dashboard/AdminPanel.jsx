@@ -199,8 +199,7 @@ function PagerBtn({ children, onClick, disabled }) {
     <button
       onClick={onClick}
       disabled={disabled}
-      className="w-7 h-7 flex items-center justify-center rounded-lg border-none cursor-pointer bg-white text-gray-500 hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-default"
-      style={{ border: "1px solid var(--color-surface-container-border)" }}
+      className="w-7 h-7 flex items-center justify-center rounded-lg cursor-pointer bg-white text-gray-500 hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-default border border-surface-container-border"
     >
       {children}
     </button>
@@ -245,8 +244,7 @@ function TableShell({ isLoading, isEmpty, error, emptyIcon, emptyLabel = "No res
   const is403 = error?.response?.status === 403;
   return (
     <div
-      className="bg-surface-container rounded-2xl overflow-hidden"
-      style={{ border: "1px solid var(--color-surface-container-border)" }}
+      className="bg-surface-container rounded-2xl overflow-hidden border border-surface-container-border"
     >
       {isLoading ? (
         <LoadingState className="py-16" />
@@ -1747,8 +1745,7 @@ function BalancesSection() {
         right={
           <button
             onClick={() => refetch()}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer border-none"
-            style={{ border: "1px solid var(--color-surface-container-border)" }}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer border border-surface-container-border"
           >
             <RefreshCw size={12} /> Refresh
           </button>
@@ -1769,8 +1766,7 @@ function BalancesSection() {
               figure — rounding to whole naira could hide a real
               discrepancy that should surface as "Out of balance". */}
           <div
-            className="bg-surface-container rounded-2xl p-5 mb-4 flex items-center justify-between"
-            style={{ border: "1px solid var(--color-surface-container-border)" }}
+            className="bg-surface-container rounded-2xl p-5 mb-4 flex items-center justify-between border border-surface-container-border"
           >
             <div>
               <p className="text-xs text-gray-400 mb-1">Platform Residual</p>
@@ -1790,8 +1786,7 @@ function BalancesSection() {
             {balances.map((b) => (
               <div
                 key={b.code}
-                className="bg-surface-container rounded-2xl p-5"
-                style={{ border: "1px solid var(--color-surface-container-border)" }}
+                className="bg-surface-container rounded-2xl p-5 border border-surface-container-border"
               >
                 <p className="text-[10px] text-gray-400 font-mono mb-1">
                   {b.code}
@@ -1838,19 +1833,19 @@ function SettlementDetailModal({ settlementId, onClose }) {
         ) : (
           <>
             <div className="grid grid-cols-2 gap-3 mb-5">
-              <div className="bg-white rounded-xl p-3" style={{ border: "1px solid var(--color-surface-container-border)" }}>
+              <div className="bg-white rounded-xl p-3 border border-surface-container-border">
                 <p className="text-[10px] text-gray-400 mb-0.5">Gross</p>
                 <p className="text-sm font-bold text-gray-900">{fmt(data.gross, data.currency)}</p>
               </div>
-              <div className="bg-white rounded-xl p-3" style={{ border: "1px solid var(--color-surface-container-border)" }}>
+              <div className="bg-white rounded-xl p-3 border border-surface-container-border">
                 <p className="text-[10px] text-gray-400 mb-0.5">Net</p>
                 <p className="text-sm font-bold text-gray-900">{fmt(data.net, data.currency)}</p>
               </div>
-              <div className="bg-white rounded-xl p-3" style={{ border: "1px solid var(--color-surface-container-border)" }}>
+              <div className="bg-white rounded-xl p-3 border border-surface-container-border">
                 <p className="text-[10px] text-gray-400 mb-0.5">Fees + Deductions</p>
                 <p className="text-sm font-bold text-gray-900">{fmt((data.fees ?? 0) + (data.deductions ?? 0), data.currency)}</p>
               </div>
-              <div className="bg-white rounded-xl p-3" style={{ border: "1px solid var(--color-surface-container-border)" }}>
+              <div className="bg-white rounded-xl p-3 border border-surface-container-border">
                 <p className="text-[10px] text-gray-400 mb-0.5">Variance</p>
                 <p className={`text-sm font-bold ${data.variance ? "text-red-600" : "text-gray-900"}`}>
                   {fmt(data.variance, data.currency)}
@@ -1874,7 +1869,7 @@ function SettlementDetailModal({ settlementId, onClose }) {
             ) : (
               <div className="flex flex-col gap-2">
                 {transactions.map((t) => (
-                  <div key={t.id} className="bg-white rounded-lg p-3 flex items-center justify-between gap-3" style={{ border: "1px solid var(--color-surface-container-border)" }}>
+                  <div key={t.id} className="bg-white rounded-lg p-3 flex items-center justify-between gap-3 border border-surface-container-border">
                     <div className="min-w-0">
                       <p className="text-xs font-mono text-gray-700 truncate">{t.reference}</p>
                       <p className="text-[10px] text-gray-400">{fmtDateTime(t.paidAt)}</p>
@@ -1959,8 +1954,7 @@ function SettlementsSection() {
             <button
               onClick={() => csvExport.run(() => exportAdminSettlements(params))}
               disabled={csvExport.isExporting}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer border-none disabled:opacity-50"
-              style={{ border: "1px solid var(--color-surface-container-border)" }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-surface-container-border"
             >
               <Download size={12} /> {csvExport.isExporting ? "Exporting…" : "Export"}
             </button>
@@ -2073,8 +2067,7 @@ function ReconciliationRunsTable() {
             <button
               onClick={() => runPassOne.mutate()}
               disabled={busy}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50"
-              style={{ border: "1px solid var(--color-surface-container-border)" }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-surface-container-border"
             >
               <RefreshCw size={12} className={runPassOne.isPending ? "animate-spin" : ""} /> Run Pass 1
             </button>
@@ -2180,7 +2173,7 @@ function FindingReviewModal({ finding, mode, onClose }) {
   return (
     <ModalShell title={isResolve ? "Resolve Finding" : "Review Finding"} subtitle={finding.findingKey} onClose={onClose}>
       <div className="p-6">
-        <div className="bg-white rounded-xl p-3 mb-4" style={{ border: "1px solid var(--color-surface-container-border)" }}>
+        <div className="bg-white rounded-xl p-3 mb-4 border border-surface-container-border">
           <p className="text-xs font-semibold text-gray-900 mb-1">{(finding.findingType ?? "").replace(/_/g, " ")}</p>
           <p className="text-xs text-gray-500 mb-2">{finding.summary}</p>
           <div className="flex items-center gap-2">
@@ -2300,8 +2293,7 @@ function ReconciliationFindingsTable() {
                     <div className="opacity-0 group-hover:opacity-100 flex items-center gap-2 justify-end transition-opacity">
                       <button
                         onClick={() => setModal({ finding: f, mode: "review" })}
-                        className="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-gray-600 bg-white hover:bg-gray-50 cursor-pointer"
-                        style={{ border: "1px solid var(--color-surface-container-border)" }}
+                        className="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-gray-600 bg-white hover:bg-gray-50 cursor-pointer border border-surface-container-border"
                       >
                         Review
                       </button>

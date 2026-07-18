@@ -749,8 +749,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
 
           {/* Direct add card */}
           <div
-            className="bg-white rounded-lg p-6"
-            style={{ border: "1px solid var(--color-surface-container-border)" }}
+            className="bg-white rounded-lg p-6 border border-surface-container-border"
           >
             <h3 className="text-base font-semibold text-gray-900 mb-4">
               Prefer To Add Members Directly?
@@ -794,8 +793,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
                 </div>
 
                 <div
-                  className="rounded-md overflow-x-auto mb-4"
-                  style={{ border: "1px solid var(--color-surface-container-border)" }}
+                  className="rounded-md overflow-x-auto mb-4 border border-surface-container-border"
                 >
                   <table className="w-full text-xs">
                     <thead>
@@ -964,8 +962,7 @@ function AddMemberModal({ onClose, communityId, communitySlug }) {
 
                   {urlStage === "complete" && urlFileInfo && (
                     <div
-                      className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3"
-                      style={{ border: "1px solid var(--color-surface-container-border)" }}
+                      className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-surface-container-border"
                     >
                       <FileSpreadsheet
                         size={20}

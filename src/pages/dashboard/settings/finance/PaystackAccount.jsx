@@ -228,8 +228,7 @@ export default function PaystackAccount() {
         <LoadingState />
       ) : account ? (
         <div
-          className="bg-surface-container rounded-2xl p-6"
-          style={{ border: "1px solid var(--color-surface-container-border)" }}
+          className="bg-surface-container rounded-2xl p-6 border border-surface-container-border"
         >
           <p className="text-sm font-bold text-gray-900 mb-0.5">
             Current Payout Account
@@ -374,8 +373,7 @@ export default function PaystackAccount() {
       ) : (
         // No account yet — prompt to add one
         <div
-          className="bg-surface-container rounded-2xl p-6 text-center"
-          style={{ border: "1px solid var(--color-surface-container-border)" }}
+          className="bg-surface-container rounded-2xl p-6 text-center border border-surface-container-border"
         >
           <p className="text-sm font-bold text-gray-900 mb-1">
             No Payout Account Set Up

@@ -60,8 +60,7 @@ function RequestCard({ r, onApprove, onReject, busy }) {
 
   return (
     <div
-      className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-surface-container rounded-xl"
-      style={{ border: "1px solid var(--color-surface-container-border)" }}
+      className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-surface-container rounded-xl border border-surface-container-border"
     >
       <div className="flex items-center gap-3.5 min-w-0">
         <Avatar requester={requester} />
