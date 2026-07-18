@@ -4,6 +4,7 @@ import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { updateEmail, deleteAccount, requestAccountDeletionCode } from "../../../../api/members";
 import { getErrorMessage } from "../../../../utils/errorHandler";
+import { getEmailError } from "../../../../utils/validators";
 import { useAuth } from "../../../../store/AuthContext";
 import { parseUserData } from "../../../../utils/userData";
 import EmailChangeModal from "../../../../components/auth/EmailChangeModal";
@@ -121,10 +122,7 @@ export default function Profile() {
   function validateField(field, value) {
     if (field === "firstName" && !value.trim()) return "First name is required.";
     if (field === "lastName" && !value.trim()) return "Last name is required.";
-    if (field === "email") {
-      if (!value.trim()) return "Email is required.";
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return "Enter a valid email address.";
-    }
+    if (field === "email") return getEmailError(value);
     return "";
   }
 

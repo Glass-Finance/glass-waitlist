@@ -9,6 +9,7 @@ import { notifyError } from "../../../utils/errorHandler";
 import { toastSuccess } from "../../../utils/toast";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../utils/phone";
+import { getEmailError } from "../../../utils/validators";
 import { useAuth } from "../../../store/AuthContext";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 import LoadingState from "../../../components/common/LoadingState";
@@ -418,8 +419,9 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
       return;
     }
     const trimmedEmail = form.email.trim().toLowerCase();
-    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      setError("Enter a valid email address.");
+    const emailFormatError = getEmailError(trimmedEmail);
+    if (emailFormatError) {
+      setError(emailFormatError);
       return;
     }
     if (!form.firstName.trim() || !form.lastName.trim()) {

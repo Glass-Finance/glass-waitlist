@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Info } from "lucide-react";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../utils/phone";
+import { getEmailError } from "../../../utils/validators";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 import { SignUpTextInput, SignUpFieldError } from "./SignUpTextInput";
 
@@ -27,13 +28,6 @@ const Divider = () => (
 // No API call here -- email/phone are just handed up to SignUp/index.jsx's
 // local state and combined with CompleteProfileStep's fields into the same
 // single register() call the old one-screen form used to make.
-function validateEmail(value) {
-  const trimmed = value.trim();
-  if (!trimmed) return "Email is required.";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return "Enter a valid email address.";
-  return "";
-}
-
 function validatePhone(value) {
   if (!value.trim()) return "Phone number is required.";
   if (!isPhoneValid(value)) return PHONE_FORMAT_HINT;
@@ -51,13 +45,13 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
     return (e) => {
       const value = e.target.value;
       setValue(value);
-      const validate = field === "email" ? validateEmail : validatePhone;
+      const validate = field === "email" ? getEmailError : validatePhone;
       setFieldErrors((fe) => (fe[field] ? { ...fe, [field]: validate(value) } : fe));
     };
   }
 
   function handleFieldBlur(field) {
-    const validate = field === "email" ? validateEmail : validatePhone;
+    const validate = field === "email" ? getEmailError : validatePhone;
     return (e) => setFieldErrors((fe) => ({ ...fe, [field]: validate(e.target.value) }));
   }
 
@@ -68,7 +62,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
       setError("Please agree to the Terms of Service and Privacy Policy to continue.");
       return;
     }
-    const emailError = validateEmail(email);
+    const emailError = getEmailError(email);
     const phoneError = validatePhone(phone);
     if (emailError || phoneError) {
       setFieldErrors({ email: emailError, phone: phoneError });

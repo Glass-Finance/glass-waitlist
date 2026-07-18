@@ -18,6 +18,7 @@ import { updateCommunity } from "../../api/communities";
 import { useSlug } from "../../hooks/useSlug";
 import { useAuth } from "../../store/AuthContext";
 import { notifyError } from "../../utils/errorHandler";
+import { getEmailError } from "../../utils/validators";
 import { resizeImageFile } from "../../utils/resizeImage";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
@@ -78,7 +79,7 @@ export default function OrganizationProfile() {
   const [logoUrl,   setLogoUrl]   = useState(null);   // preview URL
   const [error,     setError]     = useState("");
   const [loading,   setLoading]   = useState(false);
-  const [fieldErrors, setFieldErrors] = useState({ communityName: "", category: "", contactEmail: "", slug: "" });
+  const [fieldErrors, setFieldErrors] = useState({ communityName: "", category: "", contactEmail: "", slug: "", description: "" });
 
   const [form, setForm] = useState({
     communityName: savedProgress.form?.communityName ?? "",
@@ -105,11 +106,13 @@ export default function OrganizationProfile() {
   function validateField(field, value) {
     if (field === "communityName" && !value.trim()) return "Community name is required.";
     if (field === "category" && !value) return "Please select a category.";
-    if (field === "contactEmail") {
-      if (!value.trim()) return "A contact email is required.";
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return "Enter a valid email address.";
-    }
+    if (field === "contactEmail") return getEmailError(value);
     if (field === "slug" && !value.trim()) return "Please choose a community URL slug.";
+    if (field === "description") {
+      const trimmed = value.trim();
+      if (!trimmed) return "Tell members a bit about your community.";
+      if (trimmed.length < 10) return "Description is too short — add a few more words.";
+    }
     return "";
   }
 
@@ -143,6 +146,7 @@ export default function OrganizationProfile() {
       category: validateField("category", form.category),
       contactEmail: validateField("contactEmail", form.contactEmail),
       slug: validateField("slug", slug),
+      description: validateField("description", form.description),
     };
     if (Object.values(nextFieldErrors).some(Boolean)) {
       setFieldErrors(nextFieldErrors);
@@ -300,9 +304,12 @@ export default function OrganizationProfile() {
                 {fieldErrors.communityName && <span className="text-xs text-danger">{fieldErrors.communityName}</span>}
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-gray-700">Description</label>
+                <label className="text-sm font-medium text-gray-700">Description *</label>
                 <input type="text" name="description" value={form.description} onChange={handleChange}
-                  placeholder="Briefly describe what your community is about" className={inputCls} />
+                  onBlur={handleFieldBlur("description")}
+                  placeholder="Briefly describe what your community is about" className={inputCls}
+                  style={fieldErrors.description ? { borderColor: "var(--color-danger)" } : undefined} />
+                {fieldErrors.description && <span className="text-xs text-danger">{fieldErrors.description}</span>}
               </div>
             </div>
 

@@ -7,6 +7,7 @@ import { verifyMfaLogin } from "../../services/authService";
 import { getMyInvites, getMyCommunityJoinRequests, submitJoinRequest } from "../../api/invites";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { notifyError } from "../../utils/errorHandler";
+import { getEmailError } from "../../utils/validators";
 import { toastInfo, toastSuccess } from "../../utils/toast";
 import { JOIN_COMMUNITY_KEY } from "../../hooks/useJoinCommunityParam";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
@@ -60,13 +61,8 @@ export default function SignIn() {
   }, []);
 
   function validateField(field, value) {
-    if (field === "email") {
-      if (!value.trim()) return "Email is required.";
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return "Enter a valid email address.";
-    }
-    if (field === "password") {
-      if (!value) return "Password is required.";
-    }
+    if (field === "email") return getEmailError(value);
+    if (field === "password" && !value) return "Password is required.";
     return "";
   }
 

@@ -6,6 +6,7 @@ import { useMe, useUpdateProfile, useUpdateEmail } from "../../../../hooks/useMy
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { useAuth } from "../../../../store/AuthContext";
 import { getErrorMessage } from "../../../../utils/errorHandler";
+import { getEmailError } from "../../../../utils/validators";
 import { parseUserData } from "../../../../utils/userData";
 import EmailChangeModal from "../../../../components/auth/EmailChangeModal";
 
@@ -123,8 +124,9 @@ export default function Profile() {
 
   async function handleRequestEmailChange() {
     const trimmed = newEmail.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setEmailError("Enter a valid email address.");
+    const emailFormatError = getEmailError(trimmed);
+    if (emailFormatError) {
+      setEmailError(emailFormatError);
       return;
     }
     if (trimmed === user?.email?.toLowerCase()) {

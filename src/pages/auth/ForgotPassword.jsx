@@ -3,6 +3,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import { Link, useNavigate } from "react-router-dom";
 import { forgotPassword } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
+import { getEmailError } from "../../utils/validators";
 import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
@@ -26,14 +27,8 @@ export default function ForgotPassword() {
   const secondsLeft = useCountdown(OTP_VALIDITY_SECONDS, `${email}-${resendCount}`);
   const codeExpired = step === "otp" && secondsLeft <= 0;
 
-  function validateEmail(value) {
-    if (!value.trim()) return "Email is required.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return "Enter a valid email address.";
-    return "";
-  }
-
   async function handleSendEmail() {
-    const nextEmailError = validateEmail(email);
+    const nextEmailError = getEmailError(email);
     if (nextEmailError) {
       setEmailError(nextEmailError);
       return;
@@ -107,9 +102,9 @@ export default function ForgotPassword() {
                   const value = e.target.value;
                   setEmail(value);
                   setError("");
-                  setEmailError((prev) => (prev ? validateEmail(value) : prev));
+                  setEmailError((prev) => (prev ? getEmailError(value) : prev));
                 }}
-                onBlur={(e) => setEmailError(validateEmail(e.target.value))}
+                onBlur={(e) => setEmailError(getEmailError(e.target.value))}
                 onKeyDown={(e) => e.key === "Enter" && handleSendEmail()}
                 autoComplete="email"
                 inputMode="email"
