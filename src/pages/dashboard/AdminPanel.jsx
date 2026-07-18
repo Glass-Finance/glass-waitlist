@@ -632,7 +632,7 @@ function CommunitiesSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
+            <tr className="border-b border-stacked-container">
               {[
                 "Community",
                 "Status",
@@ -1128,7 +1128,7 @@ function AccountsSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
+            <tr className="border-b border-stacked-container">
               {[
                 "Bank",
                 "Account Number",
@@ -1423,7 +1423,7 @@ function UsersSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
+            <tr className="border-b border-stacked-container">
               {[
                 "User",
                 "Role",
@@ -1632,7 +1632,7 @@ function PaymentLinksSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
+            <tr className="border-b border-stacked-container">
               {[
                 "Title",
                 "Community",
@@ -1976,7 +1976,7 @@ function SettlementsSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
+            <tr className="border-b border-stacked-container">
               {["Settlement", "Gross", "Fees", "Net", "Status", "Variance", "Settled At"].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                   {h}
@@ -2089,7 +2089,7 @@ function ReconciliationRunsTable() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
+            <tr className="border-b border-stacked-container">
               {["Run", "Status", "Window", "Residual", "Reconciles", "Findings", "Reports"].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                   {h}
@@ -2263,7 +2263,7 @@ function ReconciliationFindingsTable() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
+            <tr className="border-b border-stacked-container">
               {["Finding", "Severity", "Amount", "Variance", "Status", "Occurred", ""].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
                   {h}
@@ -2582,7 +2582,7 @@ function NotificationsSection() {
       >
         <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
+            <tr className="border-b border-stacked-container">
               {[
                 "Type",
                 "Channels",

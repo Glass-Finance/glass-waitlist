@@ -349,7 +349,7 @@ export default function SystemConfig() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr style={{ borderBottom: "1px solid var(--color-stacked-container)" }}>
+                <tr className="border-b border-stacked-container">
                   {["Key", "Name", "Value", "Category", "Type", "Env", ""].map((h) => (
                     <th
                       key={h}

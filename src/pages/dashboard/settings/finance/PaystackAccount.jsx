@@ -285,8 +285,7 @@ export default function PaystackAccount() {
           {/* Inner white card — bank row + stats */}
           <div className="bg-white rounded-xl p-5 max-w-md">
             <div
-              className="flex items-center justify-between gap-4 pb-4 mb-4"
-              style={{ borderBottom: "1px solid var(--color-stacked-container)" }}
+              className="flex items-center justify-between gap-4 pb-4 mb-4 border-b border-stacked-container"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <BankAvatar
