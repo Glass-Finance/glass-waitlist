@@ -44,13 +44,13 @@ function PlanCard({ plan, successfulLinkIds }) {
     <div className="bg-surface-container rounded-md border border-surface-container-border p-4 shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
       <div className="flex items-start justify-between mb-2">
         <p className="text-sm font-medium text-black pt-0.5">{plan.paymentLink?.title ?? "Plan"}</p>
-        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full" style={{ color: isPaid ? "#059669" : "#e11d48", background: isPaid ? "#ecfdf5" : "#fff1f2" }}>
+        <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${isPaid ? "text-[#059669] bg-[#ecfdf5]" : "text-[#e11d48] bg-[#fff1f2]"}`}>
           {isPaid ? "Paid" : "Unpaid"}
         </span>
       </div>
       <div className="flex items-center gap-2 mb-3">
         <span className="text-md font-semibold text-gray-900">{formatNaira(plan.amount)}</span>
-        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ color: "#7c3aed", background: "#f3eeff" }}>
+        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full text-[#7c3aed] bg-[#f3eeff]">
           {isRecurring ? plan.recurringPlan?.frequency ?? "Recurring" : "One-Time"}
         </span>
       </div>
@@ -156,8 +156,7 @@ export default function MemberDetail() {
         <button
           onClick={handleRemove}
           disabled={removeMember.isPending}
-          className="flex items-center gap-1.5 px-4 py-2 rounded text-xs font-medium text-white hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
-          style={{ background: "#E53E3E" }}
+          className="flex items-center gap-1.5 px-4 py-2 rounded text-xs font-medium text-white hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50 bg-[#E53E3E]"
         >
           <UserMinus size={14} /> Remove Member
         </button>
@@ -225,7 +224,7 @@ export default function MemberDetail() {
                         <td className="px-5 py-3 text-sm font-medium text-black">{t.paymentLink?.title ?? t.description ?? "—"}</td>
                         <td className="px-5 py-3 text-sm font-semibold text-gray-900">{formatNaira(t.amount)}</td>
                         <td className="px-5 py-3">
-                          <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ color: isPaid ? "#059669" : "#dc2626", background: isPaid ? "#ecfdf5" : "#fff1f2" }}>
+                          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isPaid ? "text-[#059669] bg-[#ecfdf5]" : "text-[#dc2626] bg-[#fff1f2]"}`}>
                             {isPaid ? "Paid" : statusLabel}
                           </span>
                         </td>
