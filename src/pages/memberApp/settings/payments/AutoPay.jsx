@@ -90,7 +90,10 @@ export default function AutoPay() {
   const isLoading = paymentsLoading || authsLoading;
 
   return (
-    <div className="relative overflow-hidden pb-10" style={{ minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div
+      className="relative overflow-hidden min-h-screen pb-10"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+    >
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
@@ -104,11 +107,11 @@ export default function AutoPay() {
 
       <div className="px-4">
         {allPlans.length > 0 && (
-          <p style={{ fontSize: 12, fontWeight: 600, color: "#999", margin: "0 4px 8px", textTransform: "uppercase", letterSpacing: 0.4 }}>
+          <p className="text-xs font-semibold text-[#999] mt-0 mx-1 mb-2 uppercase [letter-spacing:0.4px]">
             Active Plans
           </p>
         )}
-        <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+        <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
           {isLoading ? (
             <PageLoadingState size={56} padding="36px 24px" />
           ) : allPlans.length === 0 ? (
@@ -122,26 +125,22 @@ export default function AutoPay() {
               return (
                 <div
                   key={plan.paymentLinkId ?? `${plan.name}-${plan.communityName}`}
-                  style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                    padding: "16px",
-                    borderBottom: i < allPlans.length - 1 ? "1px solid #F2F2F2" : "none",
-                  }}
+                  className={`flex items-center justify-between p-4 ${i < allPlans.length - 1 ? "border-b border-[#F2F2F2]" : "border-none"}`}
                 >
-                  <div style={{ minWidth: 0, paddingRight: 12 }}>
-                    <p style={{ fontSize: 15, fontWeight: 500, color: "#111", margin: 0 }}>{plan.name}</p>
-                    <p style={{ fontSize: 13, color: "#999", margin: "3px 0 0" }}>
+                  <div className="min-w-0 pr-3">
+                    <p className="text-[15px] font-medium text-[#111] m-0">{plan.name}</p>
+                    <p className="text-[13px] text-[#999] mt-[3px] mx-0 mb-0">
                       {[plan.communityName, plan.amount != null ? formatNaira(plan.amount) : null].filter(Boolean).join(" · ")}
                     </p>
                     {expired && (
-                      <p style={{ fontSize: 11, color: "#DC2626", margin: "4px 0 0", lineHeight: 1.4 }}>
+                      <p className="text-[11px] text-[#DC2626] mt-1 mx-0 mb-0 leading-[1.4]">
                         Your saved card expired
                         {auth.expMonth && auth.expYear ? ` ${auth.expMonth}/${auth.expYear}` : ""}.
                         Auto-Pay charges will fail — pay once with a new card to update it.
                       </p>
                     )}
                     {!expired && inactive && (
-                      <p style={{ fontSize: 11, color: "#D97706", margin: "4px 0 0", lineHeight: 1.4 }}>
+                      <p className="text-[11px] text-[#D97706] mt-1 mx-0 mb-0 leading-[1.4]">
                         Your saved payment method is no longer active, so automatic
                         charges may fail. Pay once with a new method to re-enable Auto-Pay.
                       </p>
@@ -154,11 +153,11 @@ export default function AutoPay() {
           )}
         </div>
 
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginTop: 14, padding: "12px 14px", borderRadius: 10, background: "#D7E2FF" }}>
-          <div style={{ width: 16, height: 16, borderRadius: "50%", border: "1px solid #002FA7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-            <span style={{ fontSize: 9, fontWeight: 700, color: "#002FA7" }}>i</span>
+        <div className="flex items-start gap-2 mt-3.5 py-3 px-3.5 rounded-[10px] bg-[#D7E2FF]">
+          <div className="w-4 h-4 rounded-full border border-brand flex items-center justify-center flex-shrink-0 mt-px">
+            <span className="text-[9px] font-bold text-brand">i</span>
           </div>
-          <p style={{ fontSize: 12, color: "#333", margin: 0, lineHeight: 1.5 }}>
+          <p className="text-xs text-[#333] m-0 leading-[1.5]">
             Auto-Pay charges your saved method on each due date, and you'll get an
             in-app and email reminder 3 days before every charge. If a charge fails
             (an expired card, insufficient funds, or a declined transaction), the
