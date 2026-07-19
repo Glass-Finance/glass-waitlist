@@ -44,11 +44,11 @@ import {
 } from "../../api/transactions";
 
 const PLAN_STATUS = {
-  ACTIVE: { bg: "#ecfdf5", color: "#059669", label: "Active" },
-  PAUSED: { bg: "#fffbeb", color: "#b45309", label: "Paused" },
-  DRAFT: { bg: "#f5f6fa", color: "#6b7280", label: "Draft" },
-  EXPIRED: { bg: "#fff1f2", color: "#e11d48", label: "Inactive" },
-  ARCHIVED: { bg: "#fff1f2", color: "#e11d48", label: "Inactive" },
+  ACTIVE: { cls: "bg-[#ecfdf5] text-[#059669]", dotCls: "bg-[#059669]", label: "Active" },
+  PAUSED: { cls: "bg-[#fffbeb] text-[#b45309]", dotCls: "bg-[#b45309]", label: "Paused" },
+  DRAFT: { cls: "bg-[#f5f6fa] text-[#6b7280]", dotCls: "bg-[#6b7280]", label: "Draft" },
+  EXPIRED: { cls: "bg-[#fff1f2] text-[#e11d48]", dotCls: "bg-[#e11d48]", label: "Inactive" },
+  ARCHIVED: { cls: "bg-[#fff1f2] text-[#e11d48]", dotCls: "bg-[#e11d48]", label: "Inactive" },
 };
 
 // NOTE: value must match the backend's RecurringPlanRequest.frequency enum
@@ -132,7 +132,7 @@ const REMINDER_CHANNELS = [
   { label: "WhatsApp", value: "WHATSAPP" },
 ];
 const TABS = ["All Plans", "Recurring", "One Time"];
-const BAR_COLORS = ["#d4a017", "#7c3aed", "var(--color-brand)", "#059669"];
+const BAR_COLOR_CLASSES = ["bg-[#d4a017]", "bg-[#7c3aed]", "bg-brand", "bg-[#059669]"];
 
 const inputCls =
   "w-full px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 bg-white outline-none transition-all focus:border-brand";
@@ -163,7 +163,7 @@ function toDateInput(iso) {
 }
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
-function StatCard({ icon: Icon, label, value, color, bg }) {
+function StatCard({ icon: Icon, label, value, iconCls }) {
   return (
     <div
       className="bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 flex items-center justify-between shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
@@ -173,10 +173,9 @@ function StatCard({ icon: Icon, label, value, color, bg }) {
         <p className="text-[13px] font-semibold text-black">{value}</p>
       </div>
       <div
-        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-        style={{ background: bg }}
+        className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${iconCls}`}
       >
-        <Icon size={14} style={{ color }} />
+        <Icon size={14} />
       </div>
     </div>
   );
@@ -1871,14 +1870,14 @@ function PlanMembersModal({ plan, communityId, onClose }) {
   }
 
   function statusStyle(s) {
-    if (s === "PAID") return { bg: "#ecfdf5", color: "#059669", label: "Paid" };
+    if (s === "PAID") return { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" };
     if (s === "OVERDUE")
-      return { bg: "#fff1f2", color: "#e11d48", label: "Overdue" };
-    if (s === "DUE") return { bg: "#fffbeb", color: "#b45309", label: "Due" };
+      return { cls: "bg-[#fff1f2] text-[#e11d48]", label: "Overdue" };
+    if (s === "DUE") return { cls: "bg-[#fffbeb] text-[#b45309]", label: "Due" };
     if (s === "WAIVED")
-      return { bg: "#f5f6fa", color: "#6b7280", label: "Waived" };
-    if (s === "NONE") return { bg: "#f5f6fa", color: "#9ca3af", label: "N/A" };
-    return { bg: "#fffbeb", color: "#b45309", label: "Pending" };
+      return { cls: "bg-[#f5f6fa] text-[#6b7280]", label: "Waived" };
+    if (s === "NONE") return { cls: "bg-[#f5f6fa] text-[#9ca3af]", label: "N/A" };
+    return { cls: "bg-[#fffbeb] text-[#b45309]", label: "Pending" };
   }
 
   const filtered = planMembers.filter((m) => {
@@ -2102,8 +2101,7 @@ function PlanMembersModal({ plan, communityId, onClose }) {
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className="text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap"
-                          style={{ color: s.color, background: s.bg }}
+                          className={`text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${s.cls}`}
                         >
                           {s.label}
                         </span>
@@ -2478,7 +2476,7 @@ function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendRemind
 function PlanCard({
   plan,
   planPlans,
-  barColor,
+  barColorCls,
   onEdit,
   onViewMembers,
   onSendReminder,
@@ -2509,18 +2507,15 @@ function PlanCard({
 
   return (
     <div
-      className="bg-surface-container rounded-2xl border border-surface-container-border p-5 flex flex-col gap-4"
-      style={{ boxShadow: "0 1px 6px rgba(0,47,167,0.07)" }}
+      className="bg-surface-container rounded-2xl border border-surface-container-border p-5 flex flex-col gap-4 shadow-[0_1px_6px_rgba(0,47,167,0.07)]"
     >
       {/* Status + overflow */}
       <div className="flex items-center justify-between">
         <span
-          className="text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5"
-          style={{ color: ps.color, background: ps.bg }}
+          className={`text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5 ${ps.cls}`}
         >
           <span
-            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-            style={{ background: ps.color }}
+            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${ps.dotCls}`}
           />
           {ps.label}
         </span>
@@ -2546,8 +2541,7 @@ function PlanCard({
             {formatNaira(plan.amount)}
           </span>
           <span
-            className="text-[11px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0"
-            style={{ color: "#7c3aed", background: "#f3eeff" }}
+            className="text-[11px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0 text-[#7c3aed] bg-[#f3eeff]"
           >
             {freqLabel}
           </span>
@@ -2564,8 +2558,8 @@ function PlanCard({
       <div>
         <div className="h-2.5 rounded-full bg-gray-100 overflow-hidden mb-2">
           <div
-            className="h-full rounded-full transition-all"
-            style={{ width: `${pct}%`, background: barColor }}
+            className={`h-full rounded-full transition-all ${barColorCls}`}
+            style={{ width: `${pct}%` }}
           />
         </div>
         <div className="flex items-center justify-between">
@@ -2806,29 +2800,25 @@ export default function Payments() {
           icon={Wallet}
           label="Total Amount Collected"
           value={formatNaira(stats.collected)}
-          color="var(--color-brand)"
-          bg="#E6EEFF"
+          iconCls="text-brand bg-[#E6EEFF]"
         />
         <StatCard
           icon={ListChecks}
           label="Active Plans"
           value={String(stats.active)}
-          color="#dc2626"
-          bg="#FFE9EC"
+          iconCls="text-[#dc2626] bg-[#FFE9EC]"
         />
         <StatCard
           icon={Clock}
           label="Yet to pay"
           value={String(stats.yetToPay)}
-          color="#b45309"
-          bg="#FFF8E7"
+          iconCls="text-[#b45309] bg-[#FFF8E7]"
         />
         <StatCard
           icon={XCircle}
           label="Failed Payments"
           value={String(stats.failed)}
-          color="#7c3aed"
-          bg="#F3EEFF"
+          iconCls="text-[#7c3aed] bg-[#F3EEFF]"
         />
       </div>
 
@@ -2858,7 +2848,7 @@ export default function Payments() {
               key={plan.id}
               plan={plan}
               planPlans={planPlans}
-              barColor={BAR_COLORS[i % BAR_COLORS.length]}
+              barColorCls={BAR_COLOR_CLASSES[i % BAR_COLOR_CLASSES.length]}
               onEdit={setEditingPlan}
               onViewMembers={setViewingMembersPlan}
               onSendReminder={setRemindingPlan}
