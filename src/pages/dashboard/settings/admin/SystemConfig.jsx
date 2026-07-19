@@ -145,10 +145,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
                 type={config.valueType === "NUMBER" ? "number" : "text"}
                 value={form.value}
                 onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
-                className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none transition-colors"
-                style={{ border: "1px solid #D0D0D0" }}
-                onFocus={(e) => (e.target.style.borderColor = "var(--color-brand)")}
-                onBlur={(e) => (e.target.style.borderColor = "#D0D0D0")}
+                className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none transition-colors border border-[#D0D0D0] focus:border-brand"
                 placeholder={`Enter ${(config.valueType ?? "value").toLowerCase()}…`}
               />
             )}
@@ -162,10 +159,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
             <input
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none transition-colors"
-              style={{ border: "1px solid #D0D0D0" }}
-              onFocus={(e) => (e.target.style.borderColor = "var(--color-brand)")}
-              onBlur={(e) => (e.target.style.borderColor = "#D0D0D0")}
+              className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none transition-colors border border-[#D0D0D0] focus:border-brand"
               placeholder="Human-readable label"
             />
           </div>
@@ -179,10 +173,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               rows={3}
-              className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none transition-colors resize-none"
-              style={{ border: "1px solid #D0D0D0" }}
-              onFocus={(e) => (e.target.style.borderColor = "var(--color-brand)")}
-              onBlur={(e) => (e.target.style.borderColor = "#D0D0D0")}
+              className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none transition-colors resize-none border border-[#D0D0D0] focus:border-brand"
               placeholder="What does this configuration control?"
             />
           </div>
@@ -305,8 +296,7 @@ export default function SystemConfig() {
               placeholder="Search configs…"
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-8 pr-4 py-2 rounded-lg text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-brand transition-colors"
-              style={{ border: "1px solid #D0D0D0", width: 200, background: "#fff" }}
+              className="pl-8 pr-4 py-2 rounded-lg text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-brand transition-colors border border-[#D0D0D0] w-[200px] bg-white"
             />
           </div>
         </div>
@@ -364,10 +354,7 @@ export default function SystemConfig() {
                 {configs.map((cfg, i) => (
                   <tr
                     key={cfg.id}
-                    className="group transition-colors hover:bg-gray-50"
-                    style={{
-                      borderBottom: i < configs.length - 1 ? "1px solid #F9FAFB" : "none",
-                    }}
+                    className={`group transition-colors hover:bg-gray-50 ${i < configs.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
                   >
                     {/* Key */}
                     <td className="px-4 py-3 max-w-[200px]">
@@ -458,12 +445,11 @@ export default function SystemConfig() {
                 <button
                   key={i}
                   onClick={() => setPage(i)}
-                  className={`w-7 h-7 flex items-center justify-center rounded-lg text-[11px] font-semibold border-none cursor-pointer transition-all ${
+                  className={`w-7 h-7 flex items-center justify-center rounded-lg text-[11px] font-semibold cursor-pointer transition-all ${
                     i === page
-                      ? "bg-brand text-white"
-                      : "bg-white text-gray-500 hover:bg-gray-100"
+                      ? "bg-brand text-white border-none"
+                      : "bg-white text-gray-500 hover:bg-gray-100 border border-surface-container-border"
                   }`}
-                  style={{ border: i === page ? "none" : "1px solid var(--color-surface-container-border)" }}
                 >
                   {i + 1}
                 </button>
