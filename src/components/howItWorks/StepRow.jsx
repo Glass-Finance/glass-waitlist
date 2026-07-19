@@ -55,33 +55,12 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
     return unsub;
   }, [scrollYProgress]);
 
-  const glassCard = isMobileScreen
-    ? {
-        background: "#fff",
-        border: "1px solid rgba(255,255,255,0.8)",
-        boxShadow: "0 8px 30px rgba(15,29,110,0.1)",
-      }
-    : {
-        background: "rgba(255,255,255,0.6)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        border: "1px solid rgba(255,255,255,0.8)",
-        boxShadow: "0 8px 30px rgba(15,29,110,0.1)",
-      };
-  const glassBadge = {
-    position: "absolute",
-    bottom: 12,
-    right: 12,
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    borderRadius: 999,
-    padding: "8px 14px",
-    background: isMobileScreen ? "#fff" : "rgba(255,255,255,0.85)",
-    ...(isMobileScreen ? {} : { backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }),
-    border: "1px solid rgba(255,255,255,0.9)",
-    boxShadow: "0 4px 20px rgba(15,29,110,0.14)",
-  };
+  const glassCardCls = isMobileScreen
+    ? "bg-white border border-white/80 shadow-[0_8px_30px_rgba(15,29,110,0.1)]"
+    : "bg-white/60 backdrop-blur-md [-webkit-backdrop-filter:blur(12px)] border border-white/80 shadow-[0_8px_30px_rgba(15,29,110,0.1)]";
+  const glassSurfaceCls = isMobileScreen
+    ? "bg-white"
+    : "bg-white/85 backdrop-blur-md [-webkit-backdrop-filter:blur(12px)]";
 
   return (
     <>
@@ -98,47 +77,25 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
             loading="lazy"
             decoding="async"
           />
-          <div style={glassBadge}>
-            <span
-              style={{
-                width: 7,
-                height: 7,
-                borderRadius: "50%",
-                background: "#002FA7",
-                flexShrink: 0,
-                display: "inline-block",
-              }}
-            />
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#0f1d6e" }}>
+          <div className={`absolute bottom-3 right-3 flex items-center gap-2 rounded-full py-2 px-3.5 border border-white/90 shadow-[0_4px_20px_rgba(15,29,110,0.14)] ${glassSurfaceCls}`}>
+            <span className="w-[7px] h-[7px] rounded-full bg-[#002FA7] flex-shrink-0 inline-block" />
+            <span className="text-xs font-bold text-[#0f1d6e]">
               {step.badge}
             </span>
           </div>
         </div>
         <div
-          style={{
-            ...glassCard,
-            position: "absolute",
-            top: -20,
-            left: -10,
-            width: 130,
-            borderRadius: 12,
-            padding: "14px 12px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            textAlign: "center",
-            zIndex: 20,
-          }}
+          className={`absolute -top-5 -left-2.5 w-[130px] rounded-xl py-3.5 px-3 flex flex-col items-center text-center z-20 ${glassCardCls}`}
         >
           <img
             ref={iconRef}
             src={step.stepIcon}
             alt=""
-            style={{ width: 32, height: 32, objectFit: "contain", marginBottom: 8 }}
+            className="w-8 h-8 object-contain mb-2"
             loading="lazy"
             decoding="async"
           />
-          <p style={{ fontSize: 12, fontWeight: 700, color: "#0f1d6e", lineHeight: 1.3, margin: 0 }}>
+          <p className="text-xs font-bold text-[#0f1d6e] leading-[1.3] m-0">
             {step.label}
           </p>
         </div>
@@ -149,14 +106,13 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
         className={`hidden md:flex relative items-center w-[min(720px,100%)] ${hugRight ? "ml-auto" : "mr-auto"}`}
       >
         <div
-          className="flex-shrink-0 w-[190px] rounded-2xl p-5 z-20 flex flex-col items-center text-center mr-[-30px]"
-          style={glassCard}
+          className={`flex-shrink-0 w-[190px] rounded-2xl p-5 z-20 flex flex-col items-center text-center mr-[-30px] ${glassCardCls}`}
         >
           <img
             ref={iconRef}
             src={step.stepIcon}
             alt=""
-            style={{ width: 40, height: 40, objectFit: "contain", marginBottom: 10 }}
+            className="w-10 h-10 object-contain mb-2.5"
             loading="lazy"
             decoding="async"
           />
@@ -164,18 +120,9 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
         </div>
         <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
           <img src={step.img} alt={step.label} className="w-full h-auto block" draggable={false} loading="lazy" decoding="async" />
-          <div ref={badgeRef} style={{ ...glassBadge, bottom: 16, right: 16, padding: "10px 18px" }}>
-            <span
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: "50%",
-                background: "#002FA7",
-                flexShrink: 0,
-                display: "inline-block",
-              }}
-            />
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#0f1d6e" }}>{step.badge}</span>
+          <div ref={badgeRef} className={`absolute bottom-4 right-4 flex items-center gap-2 rounded-full py-2.5 px-[18px] border border-white/90 shadow-[0_4px_20px_rgba(15,29,110,0.14)] ${glassSurfaceCls}`}>
+            <span className="w-2 h-2 rounded-full bg-[#002FA7] flex-shrink-0 inline-block" />
+            <span className="text-xs font-bold text-[#0f1d6e]">{step.badge}</span>
           </div>
         </div>
         <div className="absolute top-3 right-[-8px] w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/8 bg-[#EEF1FB]/45 -z-10" />
