@@ -75,7 +75,7 @@ export default function Role() {
         <div className="bg-surface-container rounded-2xl p-6 border border-surface-container-border">
           <div className="flex flex-col gap-3">
             {[0, 1].map((i) => (
-              <div key={i} className="flex items-start gap-3 px-4 py-4 rounded-xl bg-gray-100 animate-pulse" style={{ border: "1.5px solid var(--color-surface-container-border)" }}>
+              <div key={i} className="flex items-start gap-3 px-4 py-4 rounded-xl bg-gray-100 animate-pulse border-[1.5px] border-surface-container-border">
                 <div className="w-5 h-5 rounded-full bg-gray-200 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <div className="h-3.5 w-32 bg-gray-200 rounded mb-2" />
@@ -138,15 +138,13 @@ export default function Role() {
                 key={opt.id}
                 onClick={() => handleSelect(opt.id)}
                 disabled={saving}
-                className={`flex items-start gap-3 px-4 py-4 rounded-xl text-left transition-all
-                  ${isSelected ? "bg-blue-50" : "bg-gray-50 hover:bg-gray-100"}
+                className={`flex items-start gap-3 px-4 py-4 rounded-xl text-left transition-all border-[1.5px]
+                  ${isSelected ? "bg-blue-50 border-brand" : "bg-gray-50 hover:bg-gray-100 border-surface-container-border"}
                   ${saving ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
-                style={{ border: isSelected ? "1.5px solid var(--color-brand)" : "1.5px solid var(--color-surface-container-border)" }}
               >
                 <div
                   className={`w-5 h-5 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center
-                    ${isSelected ? "bg-brand" : "bg-white"}`}
-                  style={{ border: isSelected ? "none" : "1px solid #D1D5DB" }}
+                    ${isSelected ? "bg-brand border-none" : "bg-white border border-[#D1D5DB]"}`}
                 >
                   {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                 </div>
@@ -167,8 +165,7 @@ export default function Role() {
 
       {/* Info banner */}
       <div
-        className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-blue-50"
-        style={{ border: "1px solid var(--color-brand)" }}
+        className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-blue-50 border border-brand"
       >
         <div className="w-4 h-4 rounded-full border border-brand flex items-center justify-center flex-shrink-0">
           <span className="text-brand text-[9px] font-bold">i</span>
