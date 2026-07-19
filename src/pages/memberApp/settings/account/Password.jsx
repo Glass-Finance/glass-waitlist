@@ -7,33 +7,23 @@ import { getErrorMessage } from "../../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
 import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
 
-const inputStyle = {
-  width: "100%",
-  padding: "12px 14px",
-  borderRadius: 10,
-  border: "1.5px solid #E0E0E0",
-  fontSize: 14,
-  color: "#111",
-  outline: "none",
-  background: "#fff",
-  boxSizing: "border-box",
-};
+const inputCls = "w-full py-3 pl-3.5 pr-10 rounded-[10px] border-[1.5px] border-[#E0E0E0] text-sm text-[#111] outline-none bg-white box-border";
 
 function PasswordField({ label, value, onChange, show, onToggleShow }) {
   return (
     <div>
-      <label style={{ fontSize: 12, color: "#888", display: "block", marginBottom: 6 }}>{label}</label>
+      <label className="text-xs text-[#888] block mb-1.5">{label}</label>
       <div className="relative">
         <input
           type={show ? "text" : "password"}
           value={value}
           onChange={onChange}
-          style={{ ...inputStyle, paddingRight: 40 }}
+          className={inputCls}
         />
         <button
           type="button"
           onClick={onToggleShow}
-          style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: "#999", padding: 4 }}
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[#999] p-1"
         >
           {show ? <EyeOff size={15} /> : <Eye size={15} />}
         </button>
@@ -78,7 +68,10 @@ export default function Password() {
   }
 
   return (
-    <div className="relative overflow-hidden pb-10" style={{ minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div
+      className="relative overflow-hidden min-h-screen pb-10"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+    >
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
@@ -91,7 +84,7 @@ export default function Password() {
       </div>
 
       <div className="px-4">
-        <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, padding: 16, display: "flex", flexDirection: "column", gap: 14, boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+        <div className="border border-surface-container-border bg-white rounded-2xl p-4 flex flex-col gap-3.5 shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
           <PasswordField
             label="Current Password"
             value={form.currentPassword}
@@ -118,17 +111,13 @@ export default function Password() {
           />
         </div>
 
-        {error && <p style={{ fontSize: 13, color: "#DC2626", margin: "12px 4px 0" }}>{error}</p>}
-        {success && <p style={{ fontSize: 13, color: "#059669", margin: "12px 4px 0" }}>Password updated.</p>}
+        {error && <p className="text-[13px] text-[#DC2626] mt-3 mx-1 mb-0">{error}</p>}
+        {success && <p className="text-[13px] text-[#059669] mt-3 mx-1 mb-0">Password updated.</p>}
 
         <button
           onClick={handleSubmit}
           disabled={updatePassword.isPending}
-          style={{
-            width: "100%", marginTop: 16, padding: "14px 0", borderRadius: 10, border: "none",
-            background: "#002FA7", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer",
-            opacity: updatePassword.isPending ? 0.7 : 1,
-          }}
+          className={`w-full mt-4 py-3.5 px-0 rounded-[10px] border-none bg-brand text-white text-[15px] font-semibold cursor-pointer ${updatePassword.isPending ? "opacity-70" : "opacity-100"}`}
         >
           {updatePassword.isPending ? "Updating…" : "Update Password"}
         </button>
