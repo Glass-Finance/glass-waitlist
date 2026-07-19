@@ -22,20 +22,7 @@ function CommunityAvatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
   return (
     <div
-      style={{
-        width: 72,
-        height: 72,
-        borderRadius: 18,
-        background: logo?.url ? "transparent" : "#1C2B8A",
-        color: "#fff",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: 24,
-        fontWeight: 700,
-        overflow: "hidden",
-        margin: "0 auto 20px",
-      }}
+      className={`w-[72px] h-[72px] rounded-[18px] text-white flex items-center justify-center text-2xl font-bold overflow-hidden mx-auto mt-0 mb-5 ${logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
     >
       {logo?.url ? (
         <img
@@ -92,29 +79,9 @@ export default function InvitePopup() {
 
   return (
     /* Full-screen backdrop */
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.55)",
-        zIndex: 200,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "0 24px",
-      }}
-    >
+    <div className="fixed inset-0 bg-black/55 z-[200] flex items-center justify-center py-0 px-6">
       {/* Modal card */}
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 360,
-          background: "var(--color-surface-bg)",
-          borderRadius: 20,
-          padding: "36px 24px 28px",
-          textAlign: "center",
-        }}
-      >
+      <div className="w-full max-w-[360px] bg-surface-bg rounded-2xl pt-9 px-6 pb-7 text-center">
         {/* Community avatar */}
         <CommunityAvatar
           name={invite.community?.name}
@@ -122,39 +89,17 @@ export default function InvitePopup() {
         />
 
         {/* Heading */}
-        <p
-          style={{
-            fontSize: 18,
-            fontWeight: 700,
-            color: "#111",
-            margin: "0 0 8px",
-            lineHeight: 1.3,
-          }}
-        >
+        <p className="text-lg font-bold text-[#111] mt-0 mx-0 mb-2 leading-[1.3]">
           You've Been Invited To Join
         </p>
 
         {/* Community name */}
-        <p
-          style={{
-            fontSize: 16,
-            fontWeight: 700,
-            color: "#1C2B8A",
-            margin: "0 0 8px",
-          }}
-        >
+        <p className="text-base font-bold text-[#1C2B8A] mt-0 mx-0 mb-2">
           {invite.community?.name ?? "a Community"}
         </p>
 
         {/* Subtitle */}
-        <p
-          style={{
-            fontSize: 13,
-            color: "#888",
-            margin: "0 0 32px",
-            lineHeight: 1.5,
-          }}
-        >
+        <p className="text-[13px] text-[#888] mt-0 mx-0 mb-8 leading-[1.5]">
           Accept the invite to start tracking your dues and payments.
         </p>
 
@@ -162,20 +107,7 @@ export default function InvitePopup() {
         <button
           onClick={handleAccept}
           disabled={isBusy}
-          style={{
-            display: "block",
-            width: "100%",
-            padding: "15px 0",
-            borderRadius: 10,
-            border: "none",
-            background: "#002FA7",
-            color: "#fff",
-            fontSize: 15,
-            fontWeight: 600,
-            cursor: isBusy ? "not-allowed" : "pointer",
-            opacity: isBusy ? 0.7 : 1,
-            marginBottom: 14,
-          }}
+          className={`block w-full py-[15px] px-0 rounded-[10px] border-none bg-brand text-white text-[15px] font-semibold mb-3.5 ${isBusy ? "cursor-not-allowed opacity-70" : "cursor-pointer opacity-100"}`}
         >
           {isAccepting ? "Accepting…" : "Accept Invite"}
         </button>
@@ -184,17 +116,7 @@ export default function InvitePopup() {
         <button
           onClick={handleDecline}
           disabled={isBusy}
-          style={{
-            display: "block",
-            width: "100%",
-            background: "none",
-            border: "none",
-            color: "#002FA7",
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: isBusy ? "not-allowed" : "pointer",
-            marginBottom: remaining > 1 ? 10 : 0,
-          }}
+          className={`block w-full bg-transparent border-none text-brand text-sm font-semibold ${isBusy ? "cursor-not-allowed" : "cursor-pointer"} ${remaining > 1 ? "mb-2.5" : "mb-0"}`}
         >
           Decline Invite
         </button>
@@ -203,16 +125,7 @@ export default function InvitePopup() {
         {remaining > 1 && (
           <button
             onClick={() => { handleLater(); navigate("/member/notifications"); }}
-            style={{
-              display: "block",
-              width: "100%",
-              background: "none",
-              border: "none",
-              color: "#999",
-              fontSize: 12,
-              cursor: "pointer",
-              paddingTop: 4,
-            }}
+            className="block w-full bg-transparent border-none text-[#999] text-xs cursor-pointer pt-1"
           >
             +{remaining - 1} more invite{remaining - 1 > 1 ? "s" : ""} · View all
           </button>
