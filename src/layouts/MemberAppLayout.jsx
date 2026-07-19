@@ -19,17 +19,14 @@ export default function MemberAppLayout() {
   return (
     <div className="flex justify-center items-start min-h-screen bg-surface-bg">
       <div
-        className="relative bg-surface-bg w-full max-w-[390px] min-h-screen"
+        className="relative bg-surface-bg w-full max-w-[390px] min-h-screen bg-cover bg-center bg-no-repeat"
         style={{
           fontFamily: "'Inter', system-ui, sans-serif",
           backgroundImage: `url(${MobileBackground})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
         }}
       >
         {/* Content — window scrolls naturally; paddingBottom clears the fixed nav */}
-        <main style={{ paddingBottom: "88px" }}>
+        <main className="pb-[88px]">
           <Outlet />
         </main>
 
@@ -38,18 +35,11 @@ export default function MemberAppLayout() {
 
         {/* Bottom nav */}
         <nav
-          className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-30"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(249,249,251,0) 0%, var(--color-surface-bg) 28%)",
-          }}
+          className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-30 bg-[linear-gradient(180deg,rgba(249,249,251,0)_0%,var(--color-surface-bg)_28%)]"
           aria-label="Main navigation"
         >
           <div
-            className="mx-3 mb-3 rounded-2xl bg-white border border-surface-container-border"
-            style={{
-              boxShadow: "0 2px 20px rgba(0,0,0,0.10)",
-            }}
+            className="mx-3 mb-3 rounded-2xl bg-white border border-surface-container-border shadow-[0_2px_20px_rgba(0,0,0,0.1)]"
           >
             <ul className="flex items-center justify-around px-2 py-2">
               {TABS.map(({ to, label, Icon }) => {
@@ -67,24 +57,17 @@ export default function MemberAppLayout() {
                     >
                       {/* Icon wrapper */}
                       <span
-                        className="relative flex items-center justify-center w-10 h-7 rounded-xl transition-all duration-200"
-                        style={
-                          isActive ? { background: "rgba(0,0,0,0.07)" } : {}
-                        }
+                        className={`relative flex items-center justify-center w-10 h-7 rounded-xl transition-all duration-200 ${isActive ? "bg-black/7" : ""}`}
                       >
                         <Icon
                           size={18}
                           strokeWidth={isActive ? 2.2 : 1.6}
-                          className="transition-colors duration-200"
-                          style={{
-                            color: isActive ? "#111111" : "rgba(0,0,0,0.35)",
-                          }}
+                          className={`transition-colors duration-200 ${isActive ? "text-[#111111]" : "text-black/35"}`}
                         />
                         {/* Active dot */}
                         {isActive && (
                           <span
-                            className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
-                            style={{ background: "#111111" }}
+                            className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#111111]"
                             aria-hidden="true"
                           />
                         )}
@@ -92,11 +75,7 @@ export default function MemberAppLayout() {
 
                       {/* Label */}
                       <span
-                        className="text-[10px] leading-none tracking-wide transition-colors duration-200 select-none"
-                        style={{
-                          color: isActive ? "#111111" : "rgba(0,0,0,0.35)",
-                          fontWeight: isActive ? 600 : 400,
-                        }}
+                        className={`text-[10px] leading-none tracking-wide transition-colors duration-200 select-none ${isActive ? "text-[#111111] font-semibold" : "text-black/35 font-normal"}`}
                       >
                         {label}
                       </span>
