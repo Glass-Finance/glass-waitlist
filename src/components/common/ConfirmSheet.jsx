@@ -18,90 +18,46 @@ export default function ConfirmSheet({
 }) {
   return (
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 60,
-        display: "flex",
-        alignItems: "flex-end",
-        justifyContent: "center",
-        background: "rgba(15,23,42,0.45)",
-      }}
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-[rgba(15,23,42,0.45)]"
       onClick={onCancel}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{
-          width: "100%",
-          maxWidth: 430,
-          background: "#fff",
-          borderRadius: "20px 20px 0 0",
-          padding: "24px 20px 28px",
-        }}
+        className="w-full max-w-[430px] bg-white rounded-t-[20px] pt-6 px-5 pb-7"
       >
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div className="flex justify-end">
           <button
             onClick={onCancel}
             disabled={confirming}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#9CA3AF" }}
+            className="bg-transparent border-none cursor-pointer p-1 text-[#9CA3AF]"
             aria-label="Cancel"
           >
             <X size={18} />
           </button>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 10 }}>
+        <div className="flex flex-col items-center text-center gap-2.5">
           <div
-            style={{
-              width: 52,
-              height: 52,
-              borderRadius: "50%",
-              background: danger ? "#FEF2F2" : "var(--color-brand-tint)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 4,
-            }}
+            className={`w-[52px] h-[52px] rounded-full flex items-center justify-center mb-1 ${danger ? "bg-[#FEF2F2]" : "bg-brand-tint"}`}
           >
-            <Icon size={24} style={{ color: danger ? "#DC2626" : "var(--color-brand)" }} />
+            <Icon size={24} className={danger ? "text-[#DC2626]" : "text-brand"} />
           </div>
-          <p style={{ fontSize: 17, fontWeight: 700, color: "#111", margin: 0 }}>{title}</p>
-          <p style={{ fontSize: 13.5, color: "#6B7280", margin: 0, lineHeight: 1.55, maxWidth: 320 }}>
+          <p className="text-[17px] font-bold text-[#111] m-0">{title}</p>
+          <p className="text-[13.5px] text-[#6B7280] m-0 leading-[1.55] max-w-[320px]">
             {description}
           </p>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24 }}>
+        <div className="flex flex-col gap-2.5 mt-6">
           <button
             onClick={onConfirm}
             disabled={confirming}
-            style={{
-              width: "100%",
-              padding: "14px 0",
-              borderRadius: 12,
-              border: "none",
-              background: danger ? "#DC2626" : "var(--color-brand)",
-              color: "#fff",
-              fontSize: 14.5,
-              fontWeight: 600,
-              cursor: confirming ? "default" : "pointer",
-              opacity: confirming ? 0.7 : 1,
-            }}
+            className={`w-full py-3.5 px-0 rounded-xl border-none text-white text-[14.5px] font-semibold ${danger ? "bg-[#DC2626]" : "bg-brand"} ${confirming ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
           >
             {confirming ? (confirmingLabel ?? "Please wait…") : confirmLabel}
           </button>
           <button
             onClick={onCancel}
             disabled={confirming}
-            style={{
-              width: "100%",
-              padding: "14px 0",
-              borderRadius: 12,
-              border: "1px solid #E5E7EB",
-              background: "#fff",
-              color: "#374151",
-              fontSize: 14.5,
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
+            className="w-full py-3.5 px-0 rounded-xl border border-[#E5E7EB] bg-white text-[#374151] text-[14.5px] font-semibold cursor-pointer"
           >
             Cancel
           </button>
