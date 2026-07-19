@@ -152,15 +152,13 @@ export default function Settings() {
             onChange={(e) => { setSearchQuery(e.target.value); setSearchOpen(true); }}
             onFocus={() => setSearchOpen(true)}
             onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
-            className="pl-9 pr-4 py-2 rounded-md text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-brand transition-colors w-full max-w-[220px]"
-            style={{ border: "1px solid #D0D0D0", background: "#fff" }}
+            className="pl-9 pr-4 py-2 rounded-md text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-brand transition-colors w-full max-w-[220px] border border-[#D0D0D0] bg-white"
           />
 
           {/* Dropdown results */}
           {searchOpen && searchResults.length > 0 && (
             <div
-              className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg overflow-hidden z-50 border border-surface-container-border"
-              style={{ width: 280 }}
+              className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg overflow-hidden z-50 border border-surface-container-border w-[280px]"
             >
               {searchResults.map((item) => (
                 <button
@@ -181,8 +179,7 @@ export default function Settings() {
           {/* No results */}
           {searchOpen && q.length > 0 && searchResults.length === 0 && (
             <div
-              className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg z-50 px-4 py-3 border border-surface-container-border"
-              style={{ width: 240 }}
+              className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg z-50 px-4 py-3 border border-surface-container-border w-[240px]"
             >
               <p className="text-xs text-gray-400">No settings match "{searchQuery}"</p>
             </div>
@@ -193,8 +190,7 @@ export default function Settings() {
       {/* Tab bar — hidden for super-admin */}
       {!isSuperAdmin && (
         <div
-          className="flex gap-1 mb-6 bg-stacked-container rounded-md p-1 w-fit"
-          style={{ border: "1px solid #fafafa" }}
+          className="flex gap-1 mb-6 bg-stacked-container rounded-md p-1 w-fit border border-[#fafafa]"
         >
           {TABS.map(tab => {
             const isActive = activeTab === tab.label;
