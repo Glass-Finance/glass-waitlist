@@ -66,6 +66,48 @@ function maskEmail(email) {
   return `${local.slice(0, 2)}**${local.slice(-2)}@${domain}`;
 }
 
+function getInitials(name) {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? "?";
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+// Photo-or-initials circle for the Member Details row. Plain <img>/div with
+// borderRadius: "50%" rather than a CSS mask -- html2canvas (used for Save
+// Image/Share) already renders that reliably elsewhere on this same card
+// (the ticket-edge dots, the status checkmark circle), it's only
+// mask-image/repeating-gradients it struggles with.
+function Avatar({ photo, name, size = 28 }) {
+  return photo ? (
+    <img
+      src={photo}
+      alt=""
+      width={size}
+      height={size}
+      style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+    />
+  ) : (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+      }}
+    >
+      <span style={{ color: "#fff", fontSize: size * 0.38, fontWeight: 700, lineHeight: 1 }}>
+        {getInitials(name)}
+      </span>
+    </div>
+  );
+}
+
 function DetailRow({ label, children, last }) {
   return (
     <div
@@ -294,13 +336,16 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
         </DetailRow>
 
         <DetailRow label="Member Details">
-          <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
-            <span>{toTitleCase(payerName) || "—"}</span>
-            {maskedEmail && (
-              <span style={{ fontSize: 11, fontWeight: 500, color: "#94A3B8" }}>
-                {maskedEmail}
-              </span>
-            )}
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+            <Avatar photo={tx?.payerPhoto} name={payerName} />
+            <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
+              <span>{toTitleCase(payerName) || "—"}</span>
+              {maskedEmail && (
+                <span style={{ fontSize: 11, fontWeight: 500, color: "#94A3B8" }}>
+                  {maskedEmail}
+                </span>
+              )}
+            </span>
           </span>
         </DetailRow>
 

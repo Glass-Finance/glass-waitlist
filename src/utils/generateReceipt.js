@@ -71,6 +71,30 @@ function receiptRows(tx, payerName, payerEmail) {
   ];
 }
 
+// Same fetch-and-inline-as-base64 approach ReceiptModal.jsx uses for the
+// Glass logo -- jsPDF's addImage() needs the raw image data, not a URL, and
+// this also sidesteps the payer photo URL potentially requiring credentials
+// jsPDF's own fetch wouldn't send. Resolves to null (never throws) on any
+// failure so a broken/expired photo URL just omits the avatar, same as
+// leaving payerPhoto unset.
+async function fetchImageAsB64(url) {
+  if (!url) return null;
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const format = blob.type.includes("png") ? "PNG" : blob.type.includes("webp") ? "WEBP" : "JPEG";
+    const dataUrl = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+    return dataUrl ? { dataUrl, format } : null;
+  } catch {
+    return null;
+  }
+}
+
 function receiptFilename(tx, ext) {
   return `glass-receipt-${tx.reference ?? tx.id ?? Date.now()}.${ext}`;
 }
@@ -96,6 +120,7 @@ function drawGradientBand(doc, x, y, w, h, [r1, g1, b1], [r2, g2, b2], steps = 4
 // PDF receipt — clean document layout, branded gradient header band.
 // ─────────────────────────────────────────────────────────────────────────────
 export async function downloadReceiptPdf(tx, { payerName, payerEmail } = {}) {
+  const avatar = await fetchImageAsB64(tx.payerPhoto);
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
   const margin = 56;
@@ -169,9 +194,26 @@ export async function downloadReceiptPdf(tx, { payerName, payerEmail } = {}) {
       doc.rect(margin - 8, y - 15, W - (margin - 8) * 2, 26, "F");
     }
 
+    // Member Details is the one row that gets a photo-or-nothing avatar --
+    // circular clip via jsPDF's save/clip/discard graphics-state calls,
+    // matching the circular photo already used in the in-app card.
+    let labelX = margin;
+    if (label === "Member Details" && avatar) {
+      const r = 9;
+      const cx = margin + r;
+      const cy = y - 4;
+      doc.saveGraphicsState();
+      doc.circle(cx, cy, r, null);
+      doc.clip();
+      doc.discardPath();
+      doc.addImage(avatar.dataUrl, avatar.format, cx - r, cy - r, r * 2, r * 2);
+      doc.restoreGraphicsState();
+      labelX = margin + r * 2 + 6;
+    }
+
     doc.setFont("helvetica", "normal");
     doc.setTextColor(148, 163, 184);
-    doc.text(label, margin, y);
+    doc.text(label, labelX, y);
 
     doc.setFont("helvetica", "bold");
     doc.setTextColor(15, 23, 42);

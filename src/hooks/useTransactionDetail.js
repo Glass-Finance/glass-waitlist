@@ -42,6 +42,11 @@ function shapeDetail(raw) {
     planName: raw.paymentLink?.title,
     channel: raw.channel,
     reference: raw.internalReference,
+    // This is the member's own transaction (fetched via .../transactions/me),
+    // so this is just their own photo -- kept for parity with the admin
+    // hook's payerPhoto so ReceiptModal doesn't need to special-case which
+    // side is rendering it.
+    payerPhoto: raw.member?.profileImage?.url ?? raw.user?.profileImage?.url ?? null,
     // platformFee is a real field on the community/admin-scoped transaction
     // responses but confirmed ABSENT on this one (the member's own
     // finance/transactions/me endpoint) -- billedAmount minus amount (both

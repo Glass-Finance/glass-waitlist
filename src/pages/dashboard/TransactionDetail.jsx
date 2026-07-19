@@ -36,6 +36,14 @@ function StatusPill({ status }) {
   );
 }
 
+function getInitials(name) {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? "?";
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 function Row({ label, children, last }) {
   return (
     <div
@@ -127,7 +135,20 @@ export default function TransactionDetail() {
               </span>
             </Row>
             <Row label="Plan">{toTitleCase(tx.planName ?? tx.description) ?? "—"}</Row>
-            {tx.payerName && <Row label="Member">{toTitleCase(tx.payerName)}</Row>}
+            {tx.payerName && (
+              <Row label="Member">
+                <span className="inline-flex items-center gap-2 justify-end">
+                  {tx.payerPhoto ? (
+                    <img src={tx.payerPhoto} alt="" className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
+                  ) : (
+                    <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white bg-gradient-to-br from-[#7C3AED] to-[#002FA7]">
+                      {getInitials(tx.payerName)}
+                    </span>
+                  )}
+                  {toTitleCase(tx.payerName)}
+                </span>
+              </Row>
+            )}
             <Row label="Transaction Type">{toTitleCase(tx.transactionType ?? tx.channel) || "—"}</Row>
             <Row label="Dues Amount">{formatNaira(tx.amount)}</Row>
             {/* Always shown, never conditional -- transparency about the

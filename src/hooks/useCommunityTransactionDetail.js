@@ -13,10 +13,10 @@ import { useCommunity } from "./useCommunity";
 // ({firstName, lastName, email, profileImage, ...}) -- there's no nested
 // member.user sub-object, so that guess was always falling through to the
 // second branch below rather than actually matching. The transaction also
-// carries its own root-level `user` (the payer's platform identity, with a
-// real profileImage) separate from `member` (their community-specific
-// record) -- not consumed here yet, but a real payer photo does exist on
-// this endpoint if a receipt/avatar ever wants one.
+// carries its own root-level `user` (the payer's platform identity, with
+// its own profileImage) separate from `member` (their community-specific
+// record) -- member's photo is preferred since it's the identity actually
+// tied to this community, falling back to the platform one.
 function shapeDetail(raw) {
   return {
     id: raw.id,
@@ -35,6 +35,7 @@ function shapeDetail(raw) {
       .filter(Boolean)
       .join(" ") || raw.member?.email || raw.user?.email || null,
     payerEmail: raw.member?.email ?? raw.user?.email ?? null,
+    payerPhoto: raw.member?.profileImage?.url ?? raw.user?.profileImage?.url ?? null,
     // platformFee is a real, confirmed field on this response -- prefer it
     // directly; billedAmount minus amount (both also confirmed present) is
     // the fallback derivation if it's ever absent on a given record.
