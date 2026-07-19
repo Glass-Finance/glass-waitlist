@@ -42,9 +42,9 @@ function categorize(n) {
 }
 
 const SECTION_CONFIG = {
-  urgent:  { label: "Urgent",            border: "#E53E3E" },
-  payment: { label: "Payment Activity",  border: "#D69E2E" },
-  member:  { label: "Community Activity",border: "var(--color-brand)" },
+  urgent:  { label: "Urgent",             badgeCls: "bg-[#E53E3E14] text-[#E53E3E]" },
+  payment: { label: "Payment Activity",   badgeCls: "bg-[#D69E2E14] text-[#D69E2E]" },
+  member:  { label: "Community Activity", badgeCls: "bg-brand-tint text-brand" },
 };
 
 // Failed/overdue payment notifications ("urgent") are still a payment event
@@ -109,18 +109,13 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
         if (!isRead) onMarkRead(n.id);
         onOpen(n);
       }}
-      className="relative w-full text-left flex items-start gap-3 cursor-pointer border-none bg-transparent"
-      style={{
-        padding: isRead ? "10px 4px" : "14px 16px",
-        background: isRead ? "transparent" : "var(--color-stacked-container)",
-        borderRadius: isRead ? 0 : 12,
-      }}
+      className={`relative w-full text-left flex items-start gap-3 cursor-pointer border-none ${isRead ? "py-2.5 px-1 bg-transparent rounded-none" : "py-3.5 px-4 bg-stacked-container rounded-xl"}`}
     >
       {!isRead && (
-        <span className="absolute rounded-full bg-brand" style={{ top: 10, right: 12, width: 7, height: 7 }} />
+        <span className="absolute rounded-full bg-brand top-2.5 right-3 w-[7px] h-[7px]" />
       )}
       <Avatar n={n} />
-      <div className="flex-1 min-w-0" style={{ paddingRight: isRead ? 0 : 14 }}>
+      <div className={`flex-1 min-w-0 ${isRead ? "pr-0" : "pr-3.5"}`}>
         <p className={`text-sm leading-snug ${isRead ? "text-gray-500" : "text-gray-900 font-semibold"}`}>
           {title}
         </p>
@@ -150,7 +145,7 @@ function NotificationDetailModal({ n, onClose }) {
   }, [onClose]);
   const navigate = useNavigate();
   const cat = categorize(n);
-  const { label: catLabel, border } = SECTION_CONFIG[cat];
+  const { label: catLabel, badgeCls } = SECTION_CONFIG[cat];
   const title = n.title ?? n.subject ?? "Notification";
   const desc = n.description ?? n.message ?? n.bodyText ?? n.body ?? "";
   const action = notificationAction(n);
@@ -170,19 +165,17 @@ function NotificationDetailModal({ n, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.5)" }}
+      className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/50"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full bg-white rounded-2xl shadow-2xl overflow-hidden" style={{ maxWidth: 440 }}>
+      <div className="w-full bg-white rounded-2xl shadow-2xl overflow-hidden max-w-[440px]">
         {/* Header */}
         <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-surface-container-border">
           <div className="flex items-start gap-3 min-w-0">
             <Avatar n={n} />
             <div className="min-w-0">
               <span
-                className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5"
-                style={{ background: `${border}14`, color: border }}
+                className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5 ${badgeCls}`}
               >
                 {catLabel}
               </span>
@@ -224,8 +217,7 @@ function NotificationDetailModal({ n, onClose }) {
 
         {/* Footer */}
         <div
-          className="flex items-center justify-end gap-3 px-6 py-4 bg-surface-container"
-          style={{ borderTop: "1px solid var(--color-surface-container-border)" }}
+          className="flex items-center justify-end gap-3 px-6 py-4 bg-surface-container border-t border-surface-container-border"
         >
           <button
             onClick={onClose}
@@ -425,8 +417,7 @@ function CommunityNotifications() {
             <button
               onClick={() => clearAll()}
               disabled={isClearing || notifications.length === 0}
-              className="text-sm font-medium bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
-              style={{ color: "#E53E3E" }}
+              className="text-sm font-medium bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default text-[#E53E3E]"
             >
               {isClearing ? "Clearing…" : "Clear All"}
             </button>
@@ -444,8 +435,7 @@ function CommunityNotifications() {
       {/* Tabs — matches Settings' Account/Finance/Community segmented style */}
       <div className="overflow-x-auto flex-shrink-0 mb-5">
       <div
-        className="flex gap-1 bg-stacked-container rounded-md p-1 w-fit"
-        style={{ border: "1px solid #fafafa" }}
+        className="flex gap-1 bg-stacked-container rounded-md p-1 w-fit border border-[#fafafa]"
       >
         {TABS.map((t) => {
           const count =
@@ -464,11 +454,8 @@ function CommunityNotifications() {
               {count > 0 && (
                 <span
                   className={`min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center border ${
-                    active ? "border-brand" : "border-surface-container-border"
+                    active ? "border-brand bg-[#EEF2FF] text-brand" : "border-surface-container-border bg-white text-gray-500"
                   }`}
-                  style={active
-                    ? { background: "#EEF2FF", color: "var(--color-brand)" }
-                    : { background: "#fff", color: "#6b7280" }}
                 >
                   {count}
                 </span>
