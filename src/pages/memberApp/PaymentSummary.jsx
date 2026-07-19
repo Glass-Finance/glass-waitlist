@@ -128,11 +128,16 @@ export default function PaymentSummary() {
   const communityLogo = obligation?.community?.logo ?? navState.communityLogo;
   const isRecurring = !!obligation?.recurringPlan;
   const savedMethod = authorisations?.find((a) => (a.status ?? "").toUpperCase() === "ACTIVE");
-  // Recurring plans always save the method — required for Auto-Pay. For a
-  // one-time payment with no method on file yet (a new card is about to be
-  // entered on Paystack's page), the member gets a real choice.
+  // Confirmed with backend: savePaymentMethod is optional at the API level
+  // for every payment, recurring or not -- forcing it on here (an earlier
+  // frontend-only choice) silently enrolled every recurring payer in
+  // Auto-Pay with no real way to decline, since the consent is created the
+  // instant the payment succeeds and can't be selectively revoked
+  // afterward (only by deleting the whole saved card). Defaults to on for
+  // a recurring plan since that's the point of Auto-Pay, but it's a real,
+  // changeable choice now, same as a one-time plan already had.
   const [saveMethod, setSaveMethod] = useState(true);
-  const effectiveSaveMethod = isRecurring ? true : saveMethod;
+  const effectiveSaveMethod = saveMethod;
   // The backend surfaces this as a plain rejection message on submit, with
   // no separate status field to check up front -- detected here so the
   // button can be permanently disabled instead of allowing endless retries.
@@ -335,25 +340,26 @@ export default function PaymentSummary() {
               </p>
             )}
 
-            {/* Automatic Payment — for a recurring plan this is required to
-                keep charging future cycles, so it's shown locked on with an
-                explanation rather than letting it be turned off and quietly
-                breaking the plan's own renewal. One-time plans keep the
-                real choice this used to be a plain checkbox for. */}
+            {/* Automatic Payment — a real, changeable choice for every plan
+                (confirmed with backend: savePaymentMethod is optional at
+                the API level regardless of plan type). Defaults to on for
+                a recurring plan since that's the point of Auto-Pay, but
+                turning it off here means this specific payment won't
+                enroll the card -- there's no way to opt out after paying,
+                since the consent is created the instant this succeeds. */}
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
               <span className="flex items-center gap-1.5 text-[12px] text-gray-600">
                 Automatic Payment
                 <span title={isRecurring
-                  ? "Required so this plan can keep charging you automatically each cycle."
+                  ? "Save this card and charge it automatically each cycle. Turn off to pay this cycle only."
                   : "Save this method and reuse it automatically for future payments."}
                 >
                   <Info size={12} className="text-gray-400" />
                 </span>
               </span>
               <Toggle
-                on={isRecurring ? true : saveMethod}
+                on={saveMethod}
                 onChange={setSaveMethod}
-                disabled={isRecurring}
               />
             </div>
           </div>

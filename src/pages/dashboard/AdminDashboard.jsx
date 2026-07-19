@@ -180,11 +180,16 @@ export function AdminPaymentModal({ item, onClose }) {
   const communityInitials = (item.communityName ?? "C")
     .slice(0, 2)
     .toUpperCase();
-  // Recurring plans always save the method — it's required for Auto-Pay.
-  // For one-time payments (with no method on file yet, so a new card is
-  // about to be entered on Paystack's page) the admin gets a real choice.
+  // Confirmed with backend: savePaymentMethod is optional at the API level
+  // for every payment, recurring or not -- forcing it on here (an earlier
+  // frontend-only choice) silently enrolled every recurring payer in
+  // Auto-Pay with no real way to decline, since the consent is created the
+  // instant the payment succeeds and can't be selectively revoked
+  // afterward (only by deleting the whole saved card). Defaults to on for
+  // a recurring plan since that's the point of Auto-Pay, but it's a real,
+  // changeable choice now.
   const [saveMethod, setSaveMethod] = useState(true);
-  const effectiveSaveMethod = isRecurring ? true : saveMethod;
+  const effectiveSaveMethod = saveMethod;
   // Same permanent-rejection case as PaymentSummary.jsx's member-side flow --
   // once the backend says the link isn't accepting payments, retrying hits
   // the same wall every time, so the button should stop inviting it.
@@ -393,24 +398,19 @@ export function AdminPaymentModal({ item, onClose }) {
               <p className="text-sm text-gray-500">
                 You'll select your payment method on the next screen.
               </p>
-              {!isRecurring && (
-                <label className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={saveMethod}
-                    onChange={(e) => setSaveMethod(e.target.checked)}
-                    className="w-3.5 h-3.5 accent-brand cursor-pointer"
-                  />
-                  <span className="text-xs text-gray-500">
-                    Save this payment method for faster checkout next time
-                  </span>
-                </label>
-              )}
-              {isRecurring && (
-                <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-200">
-                  This method will be saved for Auto-Pay after your first successful payment.
-                </p>
-              )}
+              <label className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={saveMethod}
+                  onChange={(e) => setSaveMethod(e.target.checked)}
+                  className="w-3.5 h-3.5 accent-brand cursor-pointer"
+                />
+                <span className="text-xs text-gray-500">
+                  {isRecurring
+                    ? "Save this card and charge it automatically each cycle (Auto-Pay). Uncheck to pay this cycle only."
+                    : "Save this payment method for faster checkout next time"}
+                </span>
+              </label>
             </div>
           )}
         </div>
