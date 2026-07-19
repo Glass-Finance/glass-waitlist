@@ -14,22 +14,12 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
           ratios), swapped by breakpoint visibility rather than one shared
           background-image, since the two assets aren't the same crop. */}
       <div
-        className="absolute inset-0 md:hidden"
-        style={{
-          backgroundImage: `url(${MobileAuthBackground})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
+        className="absolute inset-0 md:hidden bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${MobileAuthBackground})` }}
       />
       <div
-        className="hidden md:block absolute inset-0"
-        style={{
-          backgroundImage: `url(${AuthBackground})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
+        className="hidden md:block absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${AuthBackground})` }}
       />
 
       {/* ── Mobile header ──
@@ -75,22 +65,16 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
               <div className="text-center">
                 {heroTitle && (
                   <h1
-                    className="text-white font-normal leading-tight"
-                    style={{
-                      fontSize: "clamp(2rem, 2vw, 2rem)",
-                      fontFamily: "Inter, sans-serif",
-                    }}
+                    className="text-white font-normal leading-tight text-[clamp(2rem,2vw,2rem)]"
+                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     {heroTitle}
                   </h1>
                 )}
                 {heroSubtitle && (
                   <h2
-                    className="text-white font-normal leading-tight mt-2"
-                    style={{
-                      fontSize: "clamp(2rem, 2vw, 2rem)",
-                      fontFamily: "Inter, sans-serif",
-                    }}
+                    className="text-white font-normal leading-tight mt-2 text-[clamp(2rem,2vw,2rem)]"
+                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     {heroSubtitle}
                   </h2>
@@ -110,7 +94,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
                    py-8 md:py-10 overflow-y-auto min-h-0 relative z-20"
       >
         {children}
-        <div style={{ height: "env(safe-area-inset-bottom, 20px)" }} />
+        <div className="h-[env(safe-area-inset-bottom,20px)]" />
       </div>
     </div>
   );
