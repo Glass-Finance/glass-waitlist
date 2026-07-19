@@ -151,7 +151,7 @@ export default function ForgotPassword() {
             >
             <div>
               <Label>Verification Code</Label>
-              <div style={{ marginTop: 6 }}>
+              <div className="mt-1.5">
                 <OtpBoxes
                   key={resendCount}
                   value={otp}
@@ -159,26 +159,12 @@ export default function ForgotPassword() {
                   length={6}
                   autoFocus
                   renderBoxes={(digits, activeIndex) => (
-                    <div style={{ display: "flex", gap: 8 }} className="pointer-events-none">
+                    <div className="flex gap-2 pointer-events-none">
                       {digits.map((d, i) => (
                         <div
                           key={i}
-                          style={{
-                            flex: 1,
-                            height: 52,
-                            minWidth: 0,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontSize: 22,
-                            fontWeight: 700,
-                            borderRadius: 12,
-                            border: `2px solid ${d || i === activeIndex ? "#1C2B8A" : "var(--color-surface-container-border)"}`,
-                            background: "#fff",
-                            color: "#111827",
-                            transition: "border-color .15s",
-                            fontFamily: "Inter, sans-serif",
-                          }}
+                          className={`flex-1 h-[52px] min-w-0 flex items-center justify-center text-[22px] font-bold rounded-xl bg-white text-[#111827] transition-[border-color] duration-150 border-2 ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-surface-container-border"}`}
+                          style={{ fontFamily: "Inter, sans-serif" }}
                         >
                           {d}
                         </div>
@@ -216,8 +202,7 @@ export default function ForgotPassword() {
                   setError("");
                   setOtp(["", "", "", "", "", ""]);
                 }}
-                className="text-xs bg-transparent border-none cursor-pointer mt-1"
-                style={{ color: "#6b7280" }}
+                className="text-xs bg-transparent border-none cursor-pointer mt-1 text-[#6b7280]"
               >
                 ← Change email address
               </button>
