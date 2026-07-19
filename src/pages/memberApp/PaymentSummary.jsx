@@ -61,8 +61,7 @@ function normalizeLinkToObligation(link) {
 function MethodIcon() {
   return (
     <div
-      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-      style={{ background: "#EEF2FF" }}
+      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#EEF2FF]"
     >
       <Landmark size={16} className="text-[#1C2B8A]" />
     </div>
@@ -242,13 +241,8 @@ export default function PaymentSummary() {
 
   return (
     <div
-      className="relative flex flex-col min-h-screen overflow-hidden"
-      style={{
-         
-        fontFamily: "'Inter', system-ui, sans-serif",
-        maxWidth: 430,
-        margin: "0 auto",
-      }}
+      className="relative flex flex-col min-h-screen overflow-hidden max-w-[430px] mx-auto"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* ── Top bar ── */}
@@ -267,12 +261,11 @@ export default function PaymentSummary() {
       {/* ── Test mode banner ── */}
       {isTestMode && (
         <div
-          className="mx-4 mb-3 rounded-xl px-4 py-3"
-          style={{ background: "#FFFBEB", border: "1.5px solid #FCD34D" }}
+          className="mx-4 mb-3 rounded-xl px-4 py-3 bg-[#FFFBEB] border-[1.5px] border-[#FCD34D]"
         >
           <p className="text-[12px] font-bold text-amber-800 mb-1.5">🧪 Test Mode — No real money is charged</p>
           <p className="text-[11px] text-amber-700 mb-2">Use the card details below to complete this payment:</p>
-          <div className="rounded-lg px-3 py-2.5 flex flex-col gap-1" style={{ background: "#FEF3C7" }}>
+          <div className="rounded-lg px-3 py-2.5 flex flex-col gap-1 bg-[#FEF3C7]">
             <div className="flex justify-between text-[11px]">
               <span className="text-amber-700">Card number</span>
               <span className="font-mono font-bold text-amber-900 tracking-wide">4084 0840 8408 4081</span>
@@ -303,8 +296,7 @@ export default function PaymentSummary() {
           {/* Community row */}
           <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
             <div
-              className="w-11 h-11 flex items-center justify-center flex-shrink-0"
-              style={{ background: communityLogo?.url ? "transparent" : "#f0f4ff" }}
+              className={`w-11 h-11 flex items-center justify-center flex-shrink-0 ${communityLogo?.url ? "bg-transparent" : "bg-[#f0f4ff]"}`}
             >
               {communityLogo?.url ? (
                 <img src={communityLogo.url} alt="" decoding="async" className="object-contain w-full h-full" />
@@ -377,8 +369,7 @@ export default function PaymentSummary() {
           <div className={`flex items-center justify-between ${isRecurring ? "mb-3" : "mb-2.5 pb-3 border-b border-gray-100"}`}>
             <span className="text-[13px] text-gray-500">Payment Schedule:</span>
             <span
-              className="text-[12px] font-semibold px-3 py-0.5 rounded-full"
-              style={{ background: "#EEF1FB", color: "#1C2B8A" }}
+              className="text-[12px] font-semibold px-3 py-0.5 rounded-full bg-[#EEF1FB] text-[#1C2B8A]"
             >
               {isRecurring
                 ? toTitleCase((obligation?.recurringPlan?.frequency ?? "Recurring").toLowerCase())
