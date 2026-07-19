@@ -54,7 +54,6 @@ function TextInput({
   disabled,
   rightElement,
 }) {
-  const [focused, setFocused] = useState(false);
   return (
     <div className="relative">
       <input
@@ -66,13 +65,7 @@ function TextInput({
         autoComplete={autoComplete}
         inputMode={inputMode}
         disabled={disabled}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        className="w-full rounded-md px-4 py-3.5 text-placeholder text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 bg-white focus:bg-white disabled:opacity-50 autofill:text-gray-900"
-        style={{
-          backgroundColor: "#FFFFFF",
-          border: focused ? "1.5px solid #797D86" : "1.5px solid #E0E0E6",
-        }}
+        className="w-full rounded-md px-4 py-3.5 text-placeholder text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 bg-white focus:bg-white disabled:opacity-50 autofill:text-gray-900 border-[1.5px] border-[#E0E0E6] focus:border-[#797D86]"
       />
       {rightElement && (
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -106,8 +99,7 @@ function ErrorMessage({ message }) {
   if (!message) return null;
   return (
     <p
-      className="text-xs mt-1.5 px-1"
-      style={{ color: "#E53E3E" }}
+      className="text-xs mt-1.5 px-1 text-[#E53E3E]"
       role="alert"
     >
       {message}
@@ -127,13 +119,7 @@ function MobileShell({ children, step }) {
       >
         {/* ── Top image section (45% height) ── */}
         <div
-          className="relative flex-shrink-0"
-          style={{
-            height: step === STEPS.PROFILE ? "30vh" : "45vh",
-            minHeight: step === STEPS.PROFILE ? 180 : 220,
-            borderRadius: 0,
-            transition: "height 0.45s ease",
-          }}
+          className={`relative flex-shrink-0 rounded-none transition-[height] duration-[450ms] ease-[ease] ${step === STEPS.PROFILE ? "h-[30vh] min-h-[180px]" : "h-[45vh] min-h-[220px]"}`}
         >
           <img
             src={authHeroBg}
@@ -172,18 +158,11 @@ function MobileShell({ children, step }) {
 
         {/* ── Bottom sheet (55% height) ── */}
         <div
-          className="flex-1 flex flex-col px-6 pt-2 pb-safe z-30"
-          style={{
-            background: "#E5E5E5F2",
-            borderRadius: "20px 20px 0 0",
-            marginTop: -28,
-            overflowY: "auto",
-            overflowX: "hidden",
-          }}
+          className="flex-1 flex flex-col px-6 pt-2 pb-safe z-30 bg-[#E5E5E5F2] rounded-t-[20px] -mt-7 overflow-y-auto overflow-x-hidden"
         >
           {children}
           {/* iOS safe area */}
-          <div style={{ height: "env(safe-area-inset-bottom, 20px)" }} />
+          <div className="h-[env(safe-area-inset-bottom,20px)]" />
         </div>
       </div>
     </div>
@@ -315,8 +294,7 @@ function StepOTP({ email, onVerified, onBack }) {
                 <div
                   key={i}
                   aria-label={`Digit ${i + 1} of ${OTP_LENGTH}`}
-                  className="flex-1 h-14 rounded-xl flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150"
-                  style={{ minWidth: 0, maxWidth: 48, border: d || i === activeIndex ? "2px solid #1C2B8A" : "1.5px solid #D0D5E8", fontSize: 22 }}
+                  className={`flex-1 h-14 rounded-xl flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150 min-w-0 max-w-[48px] text-[22px] ${d || i === activeIndex ? "border-2 border-[#1C2B8A]" : "border-[1.5px] border-[#D0D5E8]"}`}
                 >
                   {d}
                 </div>
@@ -330,8 +308,7 @@ function StepOTP({ email, onVerified, onBack }) {
                   <div
                     key={idx}
                     aria-label={`Digit ${idx + 1} of ${OTP_LENGTH}`}
-                    className="flex-1 h-14 rounded-xl flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150"
-                    style={{ minWidth: 0, maxWidth: 48, border: d || idx === activeIndex ? "2px solid #1C2B8A" : "1.5px solid #D0D5E8", fontSize: 22 }}
+                    className={`flex-1 h-14 rounded-xl flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150 min-w-0 max-w-[48px] text-[22px] ${d || idx === activeIndex ? "border-2 border-[#1C2B8A]" : "border-[1.5px] border-[#D0D5E8]"}`}
                   >
                     {d}
                   </div>
@@ -589,8 +566,7 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
           type="checkbox"
           checked={agreed}
           onChange={(e) => setAgreed(e.target.checked)}
-          className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer"
-          style={{ accentColor: "#1C2B8A" }}
+          className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer accent-[#1C2B8A]"
         />
         <span className="text-xs text-gray-500 leading-snug">
           I agree to the{" "}
