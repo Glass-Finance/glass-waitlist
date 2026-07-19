@@ -11,7 +11,10 @@ export default function Security() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative overflow-hidden pb-10" style={{ minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div
+      className="relative overflow-hidden min-h-screen pb-10"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+    >
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
@@ -24,25 +27,21 @@ export default function Security() {
       </div>
 
       <div className="px-4">
-        <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+        <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
           {ITEMS.map(({ Icon, label, desc, to }, i) => (
             <button
               key={label}
               onClick={() => navigate(to)}
-              style={{
-                display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left",
-                padding: "14px 16px", background: "none", border: "none", cursor: "pointer",
-                borderBottom: i < ITEMS.length - 1 ? "1px solid #F2F2F2" : "none",
-              }}
+              className={`flex items-center gap-3 w-full text-left py-3.5 px-4 bg-transparent border-none cursor-pointer ${i < ITEMS.length - 1 ? "border-b border-[#F2F2F2]" : "border-b-0"}`}
             >
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <div className="w-9 h-9 rounded-[10px] bg-[#EEF2FF] flex items-center justify-center flex-shrink-0">
                 <Icon size={16} className="text-[#1C2B8A]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>{label}</p>
-                <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>{desc}</p>
+                <p className="text-sm font-medium text-[#111] m-0">{label}</p>
+                <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">{desc}</p>
               </div>
-              <ChevronRight size={16} style={{ color: "#ccc", flexShrink: 0 }} />
+              <ChevronRight size={16} className="text-[#ccc] flex-shrink-0" />
             </button>
           ))}
         </div>
