@@ -199,14 +199,14 @@ export default function PaymentSuccess() {
   const content = {
     checking: {
       icon: <Loader2 size={40} className="animate-spin text-brand" />,
-      bg: "var(--color-brand-tint)",
+      bgCls: "bg-brand-tint",
       text: "Confirming payment…",
       sub: "Please wait while we verify your transaction.",
       action: null,
     },
     success: {
       icon: <Check size={40} color="white" strokeWidth={2.5} />,
-      bg: "var(--color-success)",
+      bgCls: "bg-success",
       text: "Transaction Successful",
       sub: tx ? (
         <>
@@ -220,7 +220,7 @@ export default function PaymentSuccess() {
     },
     failed: {
       icon: <X size={40} color="white" strokeWidth={2.5} />,
-      bg: "var(--color-danger)",
+      bgCls: "bg-danger",
       text: "Payment Failed",
       sub: "Something went wrong with this payment. Please try again.",
       action: {
@@ -230,21 +230,21 @@ export default function PaymentSuccess() {
     },
     processing: {
       icon: <Clock size={40} className="text-brand" />,
-      bg: "var(--color-brand-tint)",
+      bgCls: "bg-brand-tint",
       text: "Payment Processing",
       sub: "Your payment went through — confirmation is taking a moment. You'll get a notification when it's ready.",
       action: { label: backLabel, to: dest },
     },
     unknown: {
-      icon: <Loader2 size={40} style={{ color: "#6B7280" }} />,
-      bg: "var(--color-stacked-container)",
+      icon: <Loader2 size={40} className="text-[#6B7280]" />,
+      bgCls: "bg-stacked-container",
       text: "Still confirming…",
       sub: "Check your Transactions tab in a moment.",
       action: { label: backLabel, to: dest },
     },
     signin: {
       icon: <Clock size={40} className="text-brand" />,
-      bg: "var(--color-brand-tint)",
+      bgCls: "bg-brand-tint",
       text: "Sign in to see your payment",
       sub: "Your session expired while you were completing the payment. Sign back in — your payment will be confirmed automatically.",
       action: { label: "Sign in to continue", to: "/member/app-sign-in" },
@@ -253,13 +253,8 @@ export default function PaymentSuccess() {
 
   return (
     <div
-      className="relative flex flex-col min-h-screen overflow-hidden"
-      style={{
-         
-        fontFamily: "'Inter', system-ui, sans-serif",
-        maxWidth: 430,
-        margin: "0 auto",
-      }}
+      className="relative flex flex-col min-h-screen overflow-hidden max-w-[430px] mx-auto"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* Top bar — the success screen is a deliberate landing page (two
@@ -293,8 +288,7 @@ export default function PaymentSuccess() {
           </div>
         ) : (
           <div
-            className="w-[100px] h-[100px] rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: content.bg }}
+            className={`w-[100px] h-[100px] rounded-full flex items-center justify-center flex-shrink-0 ${content.bgCls}`}
           >
             {content.icon}
           </div>
@@ -327,8 +321,7 @@ export default function PaymentSuccess() {
             <button
               onClick={() => setShareOpen(true)}
               disabled={!tx}
-              className="w-full px-8 py-3.5 rounded-full text-button font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ color: "var(--color-brand)", border: "1.5px solid var(--color-brand)" }}
+              className="w-full px-8 py-3.5 rounded-full text-button font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-brand border-[1.5px] border-brand"
             >
               {txLoading
                 ? <Loader2 size={15} className="animate-spin" />
