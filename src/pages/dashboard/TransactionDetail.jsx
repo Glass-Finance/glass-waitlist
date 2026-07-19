@@ -17,18 +17,17 @@ function statusLabel(status) {
 function StatusPill({ status }) {
   const label = statusLabel(status);
   const map = {
-    Success: { bg: "#dcfce7", color: "#15803d", text: "Successful" },
-    Failed: { bg: "#fce4e4", color: "#dc2626", text: "Failed" },
-    Pending: { bg: "#fef9c3", color: "#b45309", text: "Pending" },
+    Success: { cls: "bg-[#dcfce7] text-[#15803d]", dotCls: "bg-[#15803d]", text: "Successful" },
+    Failed: { cls: "bg-[#fce4e4] text-[#dc2626]", dotCls: "bg-[#dc2626]", text: "Failed" },
+    Pending: { cls: "bg-[#fef9c3] text-[#b45309]", dotCls: "bg-[#b45309]", text: "Pending" },
   };
   const s = map[label] ?? map.Pending;
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-sm font-semibold"
-      style={{ background: s.bg, color: s.color }}
+      className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-sm font-semibold ${s.cls}`}
     >
       {label === "Success" && (
-        <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: s.color }}>
+        <span className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${s.dotCls}`}>
           <Check size={11} color="#fff" strokeWidth={3} />
         </span>
       )}
@@ -40,11 +39,10 @@ function StatusPill({ status }) {
 function Row({ label, children, last }) {
   return (
     <div
-      className="flex items-start justify-between gap-4 py-3.5"
-      style={{ borderBottom: last ? "none" : "1px solid #F3F4F6" }}
+      className={`flex items-start justify-between gap-4 py-3.5 ${last ? "border-none" : "border-b border-[#F3F4F6]"}`}
     >
       <span className="text-sm text-gray-500 flex-shrink-0 pt-0.5">{label}</span>
-      <span className="text-sm font-semibold text-gray-900 text-right" style={{ wordBreak: "break-word", maxWidth: "62%" }}>
+      <span className="text-sm font-semibold text-gray-900 text-right break-words max-w-[62%]">
         {children}
       </span>
     </div>
@@ -101,7 +99,7 @@ export default function TransactionDetail() {
           <div
             className="bg-surface-container rounded-xl border border-surface-container-border px-8 py-9 flex flex-col items-center gap-3 shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
           >
-            <p className="text-4xl font-bold text-gray-900" style={{ letterSpacing: "-0.5px" }}>
+            <p className="text-4xl font-bold text-gray-900 tracking-[-0.5px]">
               {formatNaira(tx.amount, { decimals: 2 })}
             </p>
             <StatusPill status={tx.status} />
@@ -141,7 +139,7 @@ export default function TransactionDetail() {
               {tx.feeMinor != null ? formatNaira(tx.feeMinor, { decimals: 2 }) : "—"}
             </Row>
             <Row label="Transaction ID" last={!tx.initiatedBy}>
-              <span style={{ wordBreak: "break-all" }}>{tx.reference ?? tx.id}</span>{" "}
+              <span className="break-all">{tx.reference ?? tx.id}</span>{" "}
               <button
                 onClick={copyReference}
                 className="bg-transparent border-none cursor-pointer p-0.5 text-gray-400 inline-flex align-middle"
@@ -161,8 +159,7 @@ export default function TransactionDetail() {
 
           <button
             onClick={() => setShareOpen(true)}
-            className="w-full flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold cursor-pointer"
-            style={{ background: "#fff", border: "1.5px solid #002FA7", color: "#002FA7" }}
+            className="w-full flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold cursor-pointer bg-white border-[1.5px] border-brand text-brand"
           >
             <Share2 size={15} />
             Share Receipt
