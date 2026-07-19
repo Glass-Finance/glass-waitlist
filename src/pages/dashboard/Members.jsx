@@ -41,21 +41,21 @@ const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes((m.roleCode ??
 const memberInitials = (m) => memberName(m).split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
 
 function statusStyle(paid, total) {
-  if (total === 0) return { bg: "#f5f6fa", color: "#6b7280" };
-  if (paid === total) return { bg: "#ecfdf5", color: "#059669" };
-  if (paid === 0) return { bg: "#fff1f2", color: "#e11d48" };
-  return { bg: "#fffbeb", color: "#b45309" };
+  if (total === 0) return "bg-[#f5f6fa] text-[#6b7280]";
+  if (paid === total) return "bg-[#ecfdf5] text-[#059669]";
+  if (paid === 0) return "bg-[#fff1f2] text-[#e11d48]";
+  return "bg-[#fffbeb] text-[#b45309]";
 }
 
-function StatCard({ icon: Icon, label, value, color, bg }) {
+function StatCard({ icon: Icon, label, value, iconCls }) {
   return (
     <div className="bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 flex items-center justify-between shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
       <div>
         <p className="text-xs text-gray-400 mb-1">{label}</p>
         <p className="text-[13px] font-semibold text-black">{value}</p>
       </div>
-      <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: bg }}>
-        <Icon size={14} style={{ color }} />
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${iconCls}`}>
+        <Icon size={14} />
       </div>
     </div>
   );
@@ -127,7 +127,7 @@ function EmptyState({ onAddMember, onCreatePlan }) {
 
   return (
     <div className="flex flex-col items-center py-14 px-6">
-      <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6" style={{ background: "#E6EEFF" }}>
+      <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 bg-[#E6EEFF]">
         <Building2 size={38} className="text-brand" />
       </div>
       <h2 className="text-xl font-bold text-gray-900 text-center mb-2 max-w-sm">
@@ -279,13 +279,12 @@ export default function Members() {
         return (
           <button
             onClick={() => navigate("/dashboard/join-requests")}
-            className="w-full flex items-center justify-between gap-4 px-5 py-3.5 rounded-xl border border-amber-100 mb-5 text-left cursor-pointer transition-shadow hover:shadow-md"
-            style={{ background: "#FFFBEB", boxShadow: "0 1px 4px rgba(180,83,9,0.07)" }}
+            className="w-full flex items-center justify-between gap-4 px-5 py-3.5 rounded-xl border border-amber-100 mb-5 text-left cursor-pointer transition-shadow hover:shadow-md bg-[#FFFBEB] shadow-[0_1px_4px_rgba(180,83,9,0.07)]"
           >
             <div className="flex items-center gap-3 min-w-0">
-              <Clock size={15} style={{ color: "#b45309" }} className="flex-shrink-0" />
+              <Clock size={15} className="flex-shrink-0 text-[#b45309]" />
               <div className="min-w-0">
-                <p className="text-xs font-semibold m-0" style={{ color: "#b45309" }}>
+                <p className="text-xs font-semibold m-0 text-[#b45309]">
                   {pendingJoinRequests.length} pending join{" "}
                   {pendingJoinRequests.length === 1 ? "request" : "requests"}
                 </p>
@@ -310,10 +309,10 @@ export default function Members() {
       {/* Stats — only when there are members */}
       {members.length > 0 && (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        <StatCard icon={Users} label="Total Members" value={String(stats.total)} color="var(--color-brand)" bg="#E6EEFF" />
-        <StatCard icon={UserX} label="Active Members" value={String(stats.active)} color="#dc2626" bg="#FFE9EC" />
-        <StatCard icon={Clock} label="Inactive" value={String(stats.inactive)} color="#b45309" bg="#FFF8E7" />
-        <StatCard icon={ShieldCheck} label="Admins" value={String(stats.admins)} color="#7c3aed" bg="#F3EEFF" />
+        <StatCard icon={Users} label="Total Members" value={String(stats.total)} iconCls="text-brand bg-[#E6EEFF]" />
+        <StatCard icon={UserX} label="Active Members" value={String(stats.active)} iconCls="text-[#dc2626] bg-[#FFE9EC]" />
+        <StatCard icon={Clock} label="Inactive" value={String(stats.inactive)} iconCls="text-[#b45309] bg-[#FFF8E7]" />
+        <StatCard icon={ShieldCheck} label="Admins" value={String(stats.admins)} iconCls="text-[#7c3aed] bg-[#F3EEFF]" />
       </div>
       )}
 
@@ -414,7 +413,7 @@ export default function Members() {
                       </td>
                       <td className="px-5 py-3 text-xs text-gray-600">{m.planCount}</td>
                       <td className="px-5 py-3">
-                        <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ color: s.color, background: s.bg }}>
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s}`}>
                           {m.paidCount}/{m.totalCount} Paid
                         </span>
                       </td>
@@ -546,7 +545,7 @@ function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable
           <div className="mt-3">
             <p className="text-xs text-red-500">{error}</p>
             {isNotRegistered && inviteLink && (
-              <div className="mt-2.5 rounded-lg p-3" style={{ background: "#EEF2FF", border: "1px solid #C7D2FE" }}>
+              <div className="mt-2.5 rounded-lg p-3 bg-[#EEF2FF] border border-[#C7D2FE]">
                 <p className="text-xs text-gray-700 mb-2">
                   Share your community link so they can register and join:
                 </p>
