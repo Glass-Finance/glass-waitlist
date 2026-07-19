@@ -78,8 +78,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
         <p className="text-sm font-semibold text-gray-900">{email}</p>
         <button
           onClick={onBack}
-          className="text-sm font-medium mt-1 hover:underline"
-          style={{ color: "#1B2FE8" }}
+          className="text-sm font-medium mt-1 hover:underline text-[#1B2FE8]"
         >
           Wrong email?
         </button>
@@ -103,8 +102,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
               {digits.slice(0, 3).map((d, i) => (
                 <div
                   key={i}
-                  className="w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all"
-                  style={{ border: `1.5px solid ${d || i === activeIndex ? "var(--color-primary)" : "#C2C2C2"}` }}
+                  className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
                 >
                   {d}
                 </div>
@@ -115,8 +113,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
                 return (
                   <div
                     key={idx}
-                    className="w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all"
-                    style={{ border: `1.5px solid ${d || idx === activeIndex ? "var(--color-primary)" : "#C2C2C2"}` }}
+                    className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
                   >
                     {d}
                   </div>
@@ -140,15 +137,13 @@ export default function OTPStep({ email, onVerified, onBack }) {
       </form>
 
       <p
-        className="text-center text-sm mt-5"
-        style={{ color: "var(--color-gray-text)" }}
+        className="text-center text-sm mt-5 text-gray-text"
       >
         Didn't get OTP?{" "}
         <button
           onClick={handleResend}
           disabled={resending}
-          className="font-semibold hover:underline disabled:opacity-60"
-          style={{ color: "#1B2FE8" }}
+          className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]"
         >
           {resending ? "Resending..." : "Resend"}
         </button>
