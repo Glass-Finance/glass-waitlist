@@ -42,7 +42,13 @@ function shapeDetail(raw) {
         ? raw.amountPaid - raw.amount
         : null),
     transactionType: raw.transactionType ?? raw.paymentMethod ?? null,
-    initiatedBy: raw.initiatedBy ?? (raw.recurringPlan ? "Auto-Pay" : null),
+    // Used to guess "Auto-Pay" whenever the plan was recurring -- now
+    // known wrong: confirmed with backend that savePaymentMethod is a
+    // real per-payment choice, so a recurring plan can just as easily be
+    // paid manually (Auto-Pay declined, or a manual catch-up on a specific
+    // cycle) as auto-charged. Only show this when the backend says so
+    // directly; the row already hides itself when this is null.
+    initiatedBy: raw.initiatedBy ?? null,
     // Same recurringPlan/paymentType convention usePayments.js's
     // shapeObligation/shapePaymentLink already use, for the post-payment
     // "turn on Auto-Pay?" prompt on Home.
