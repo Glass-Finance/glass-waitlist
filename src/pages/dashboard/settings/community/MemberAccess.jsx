@@ -28,8 +28,7 @@ function MemberActionsMenu({ open, onToggle, onClose, busy, actions }) {
         <>
           <div className="fixed inset-0 z-10" onClick={onClose} />
           <div
-            className="absolute right-0 top-full mt-1 z-20 bg-white rounded-xl overflow-hidden min-w-[190px] border border-surface-container-border"
-            style={{ boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}
+            className="absolute right-0 top-full mt-1 z-20 bg-white rounded-xl overflow-hidden min-w-[190px] border border-surface-container-border shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
           >
             {actions.map((a) => (
               <button
@@ -172,8 +171,7 @@ export default function MemberAccess() {
             </div>
           )}
           <div
-            className="flex items-center justify-between px-4 py-3 rounded-xl flex-1 min-w-0"
-            style={{ background: "#EEF2FF", border: "1px solid #C7D2FE" }}
+            className="flex items-center justify-between px-4 py-3 rounded-xl flex-1 min-w-0 bg-[#EEF2FF] border border-[#C7D2FE]"
           >
             <span className="text-sm text-gray-700 font-medium truncate">
               {inviteLink ?? "Select a community to generate an invite link"}
@@ -209,8 +207,7 @@ export default function MemberAccess() {
             members.map((member, i) => (
               <div
                 key={member.id ?? i}
-                className="flex items-center justify-between py-3"
-                style={{ borderBottom: i < members.length - 1 ? "1px solid var(--color-stacked-container)" : "none" }}
+                className={`flex items-center justify-between py-3 ${i < members.length - 1 ? "border-b border-stacked-container" : "border-b-0"}`}
               >
                 <div className="flex items-center gap-3">
                   <div>
@@ -218,11 +215,7 @@ export default function MemberAccess() {
                     <p className="text-xs text-gray-500">{memberEmail(member)}</p>
                   </div>
                   <span
-                    className="text-xs font-semibold px-2.5 py-0.5 rounded-full"
-                    style={{
-                      color:      isAdminRole(member) ? "var(--color-brand)" : "#D97706",
-                      background: isAdminRole(member) ? "#EEF2FF" : "#FEF3C7",
-                    }}
+                    className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${isAdminRole(member) ? "text-brand bg-[#EEF2FF]" : "text-[#D97706] bg-[#FEF3C7]"}`}
                   >
                     {memberRoleLabel(member)}
                   </span>
