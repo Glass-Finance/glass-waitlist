@@ -125,13 +125,11 @@ export default function CommunityProfile() {
         <p className="text-xs text-gray-500 mb-3">Manage how your community appears across Glass</p>
 
         <div
-          className="bg-surface-container rounded-lg px-4 py-4 flex items-center justify-between"
-          style={{ border: "1px solid var(--color-outline-on-surface)" }}
+          className="bg-surface-container rounded-lg px-4 py-4 flex items-center justify-between border border-outline-on-surface"
         >
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-xs text-brand flex-shrink-0 overflow-hidden"
-              style={{ background: "#D7E2FF" }}
+              className="w-10 h-10 rounded-full flex items-center justify-center text-xs text-brand flex-shrink-0 overflow-hidden bg-[#D7E2FF]"
             >
               {logoPreview || community?.logo?.url || community?.logoUrl ? (
                 <img src={logoPreview ?? community?.logo?.url ?? community?.logoUrl} alt="" className="w-full h-full object-cover" />
@@ -154,8 +152,7 @@ export default function CommunityProfile() {
           <button
             onClick={() => logoInputRef.current?.click()}
             disabled={uploadFile.isPending}
-            className="px-3 py-2 rounded-sm text-xs text-gray-700 hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50"
-            style={{ border: "1px solid" }}
+            className="px-3 py-2 rounded-sm text-xs text-gray-700 hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-gray-700"
           >
             {uploadFile.isPending ? "Uploading…" : "Change Logo"}
           </button>
@@ -217,16 +214,14 @@ export default function CommunityProfile() {
         <p className="text-xs text-gray-500 mb-3">Permanent actions that cannot be undone.</p>
 
         <div
-          className="flex items-center justify-between px-4 py-3 rounded-xl"
-          style={{ border: "1px solid #FECACA", background: "#FFF5F5" }}
+          className="flex items-center justify-between px-4 py-3 rounded-xl border border-[#FECACA] bg-[#FFF5F5]"
         >
           <p className="text-xs text-gray-700">
             Permanently remove this community and all associated data from Glass.
           </p>
           <button
             onClick={() => setDeleteModal(true)}
-            className="ml-4 px-3 py-1.5 rounded-md text-xs text-red-600 bg-white hover:bg-red-50 transition-all flex-shrink-0 cursor-pointer"
-            style={{ border: "1px solid #FECACA" }}
+            className="ml-4 px-3 py-1.5 rounded-md text-xs text-red-600 bg-white hover:bg-red-50 transition-all flex-shrink-0 cursor-pointer border border-[#FECACA]"
           >
             Delete
           </button>
@@ -240,8 +235,7 @@ export default function CommunityProfile() {
         >
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-surface-container-border">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
-              style={{ background: "#FEE2E2" }}
+              className="w-10 h-10 rounded-full flex items-center justify-center mb-4 bg-[#FEE2E2]"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="3 6 5 6 21 6" />
@@ -278,8 +272,7 @@ export default function CommunityProfile() {
               <button
                 onClick={handleDeleteCommunity}
                 disabled={deleteConfirm !== community?.name || deleteLoading}
-                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50"
-                style={{ background: "#DC2626" }}
+                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50 bg-[#DC2626]"
               >
                 {deleteLoading ? "Deleting…" : "Delete Community"}
               </button>
