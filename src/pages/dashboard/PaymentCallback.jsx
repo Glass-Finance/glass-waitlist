@@ -163,16 +163,16 @@ function AdminPaymentCallback() {
   const config = {
     checking: {
       icon: <Loader2 size={28} className="animate-spin" color="#fff" />,
-      iconOuterBg: "var(--color-brand-tint)",
-      iconInnerBg: "var(--color-brand)",
+      outerBgCls: "bg-brand-tint",
+      innerBgCls: "bg-brand",
       title: "Confirming payment…",
       subtitle: "Please wait while we verify your transaction.",
       buttonLabel: null,
     },
     success: {
       icon: <Check size={28} strokeWidth={3} color="#fff" />,
-      iconOuterBg: "var(--color-success-tint)",
-      iconInnerBg: "var(--color-success)",
+      outerBgCls: "bg-success-tint",
+      innerBgCls: "bg-success",
       title: "Payment Successful",
       subtitle: autoRedirectIn != null
         ? `Redirecting you in ${autoRedirectIn}s…`
@@ -181,32 +181,32 @@ function AdminPaymentCallback() {
     },
     failed: {
       icon: <X size={28} strokeWidth={3} color="#fff" />,
-      iconOuterBg: "var(--color-danger-tint)",
-      iconInnerBg: "var(--color-danger)",
+      outerBgCls: "bg-danger-tint",
+      innerBgCls: "bg-danger",
       title: "Payment Failed",
       subtitle: "Something went wrong with this payment. Please try again.",
       buttonLabel: backLabel,
     },
     processing: {
       icon: <Clock size={28} color="#fff" />,
-      iconOuterBg: "var(--color-brand-tint)",
-      iconInnerBg: "var(--color-brand)",
+      outerBgCls: "bg-brand-tint",
+      innerBgCls: "bg-brand",
       title: "Payment Processing",
       subtitle: "Your payment went through but status confirmation is taking a moment. You'll receive a notification when it's ready — usually within a few minutes.",
       buttonLabel: backLabel,
     },
     unknown: {
       icon: <Loader2 size={28} strokeWidth={2} color="#fff" />,
-      iconOuterBg: "var(--color-stacked-container)",
-      iconInnerBg: "#9CA3AF",
+      outerBgCls: "bg-stacked-container",
+      innerBgCls: "bg-[#9CA3AF]",
       title: "Still confirming…",
       subtitle: "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
       buttonLabel: backLabel,
     },
     signin: {
       icon: <Clock size={28} color="#fff" />,
-      iconOuterBg: "var(--color-brand-tint)",
-      iconInnerBg: "var(--color-brand)",
+      outerBgCls: "bg-brand-tint",
+      innerBgCls: "bg-brand",
       title: "Sign in to see your payment",
       subtitle:
         "Your session expired while you were completing the payment. Sign back in — your payment will be confirmed on your dashboard automatically.",
@@ -218,13 +218,10 @@ function AdminPaymentCallback() {
 
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
       style={{
         fontFamily: "'Inter', system-ui, sans-serif",
         backgroundImage: `url(${AdminBackground})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
       }}
     >
       {/* Top bar */}
@@ -248,16 +245,13 @@ function AdminPaymentCallback() {
       {/* Centered card */}
       <div className="flex-1 flex items-center justify-center px-4 pb-16">
         <div
-          className="w-full bg-surface-container border border-surface-container-border rounded-2xl shadow-sm flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center"
-          style={{ maxWidth: 560 }}
+          className="w-full bg-surface-container border border-surface-container-border rounded-2xl shadow-sm flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center max-w-[560px]"
         >
           <div
-            className="w-[110px] h-[110px] rounded-full flex items-center justify-center mb-6 flex-shrink-0"
-            style={{ background: config.iconOuterBg }}
+            className={`w-[110px] h-[110px] rounded-full flex items-center justify-center mb-6 flex-shrink-0 ${config.outerBgCls}`}
           >
             <div
-              className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{ background: config.iconInnerBg }}
+              className={`w-16 h-16 rounded-full flex items-center justify-center ${config.innerBgCls}`}
             >
               {config.icon}
             </div>
