@@ -172,15 +172,13 @@ function FloatingIcon({ icon, inView }) {
 
   return (
     <div
+      className="absolute z-[2] will-change-transform"
       style={{
-        position: "absolute",
         width: `clamp(30px, 8vw, ${icon.size}px)`,
         height: `clamp(30px, 8vw, ${icon.size}px)`,
         ...posStyle,
-        willChange: "transform",
         /* initial state — invisible until entrance fires */
         transform: `${icon.style.transform || ""} translate(${icon.entranceFrom.x}px, ${icon.entranceFrom.y}px) scale(0.84)`,
-        zIndex: 2,
       }}
       ref={elRef}
     >
@@ -188,12 +186,7 @@ function FloatingIcon({ icon, inView }) {
         src={icon.src}
         alt=""
         draggable={false}
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "contain",
-          display: "block",
-        }}
+        className="w-full h-full object-contain block"
         loading="lazy"
         decoding="async"
       />
@@ -275,17 +268,7 @@ export default function CTA() {
     >
       <div
         ref={cardRef}
-        className="max-w-[1140px] mx-auto rounded-3xl overflow-hidden relative"
-        style={{
-          background: "#0d1a6e",
-          padding: "clamp(40px,7vw,88px) clamp(24px,10vw,200px)",
-          textAlign: "center",
-          minHeight: 300,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+        className="max-w-[1140px] mx-auto rounded-3xl overflow-hidden relative bg-[#0d1a6e] text-center min-h-[300px] flex flex-col items-center justify-center [padding:clamp(40px,7vw,88px)_clamp(24px,10vw,200px)]"
       >
         {/* ── Floating icons ── */}
         {icons.map((icon) => (
@@ -293,36 +276,18 @@ export default function CTA() {
         ))}
 
         {/* ── Glass logo ── */}
-        <div style={{ marginBottom: 18, position: "relative", zIndex: 5 }}>
+        <div className="mb-[18px] relative z-[5]">
           <img
             src={logo}
             alt="Glass"
-            style={{
-              width: 34,
-              height: 34,
-              objectFit: "contain",
-              // filter: "brightness(0) invert(1)",
-              opacity: 0.88,
-            }}
+            className="w-[34px] h-[34px] object-contain opacity-[0.88]"
             loading="lazy"
             decoding="async"
           />
         </div>
 
         {/* ── Headline ── */}
-        <h2
-          style={{
-            fontSize: "clamp(24px,4.5vw,52px)",
-            fontWeight: 800,
-            color: "white",
-            lineHeight: 1.1,
-            letterSpacing: "-0.02em",
-            maxWidth: 580,
-            marginBottom: 14,
-            position: "relative",
-            zIndex: 5,
-          }}
-        >
+        <h2 className="text-[clamp(24px,4.5vw,52px)] font-extrabold text-white leading-[1.1] tracking-[-0.02em] max-w-[580px] mb-3.5 relative z-[5]">
           <BlurText
             text="Bring clarity to your community finances."
             animateBy="words"
@@ -334,16 +299,7 @@ export default function CTA() {
         </h2>
 
         {/* ── Subtext ── */}
-        <p
-          style={{
-            fontSize: "clamp(13px, 3vw, 16px)",
-            color: "rgba(255,255,255,0.52)",
-            marginBottom: 36,
-            lineHeight: 1.6,
-            position: "relative",
-            zIndex: 5,
-          }}
-        >
+        <p className="text-[clamp(13px,3vw,16px)] text-white/52 mb-9 leading-[1.6] relative z-[5]">
           Pay dues, track your history, and get receipts — all in one place.
         </p>
 
@@ -351,22 +307,10 @@ export default function CTA() {
         <button
           ref={btnRef}
           onClick={handleJoin}
+          className="inline-flex items-center gap-2 bg-white text-[#0d1a6e] text-[15px] font-semibold py-3.5 px-8 rounded-full border-none cursor-pointer relative z-[5]"
           style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            background: "white",
-            color: "#0d1a6e",
-            fontSize: 15,
-            fontWeight: 600,
-            padding: "14px 32px",
-            borderRadius: 99,
-            border: "none",
-            cursor: "pointer",
             boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
             transition: "transform 0.2s ease, box-shadow 0.2s ease",
-            position: "relative",
-            zIndex: 5,
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "translateY(-4px) scale(1.03)";
@@ -381,7 +325,7 @@ export default function CTA() {
           <motion.span
             animate={{ x: [0, 5, 0] }}
             transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-            style={{ display: "inline-flex", alignItems: "center" }}
+            className="inline-flex items-center"
           >
             <ArrowRight className="w-4 h-4" />
           </motion.span>
