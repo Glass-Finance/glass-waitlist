@@ -36,8 +36,8 @@ export default function ChoosePath() {
 
   return (
     <div
-      className="h-screen w-screen flex flex-col overflow-hidden"
-      style={{ backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
+      className="h-screen w-screen flex flex-col overflow-hidden bg-contain bg-center"
+      style={{ backgroundImage: `url(${Background})` }}
     >
       <header className="flex items-center px-8 py-5 flex-shrink-0">
         <div className="flex items-center gap-2">
@@ -60,12 +60,7 @@ export default function ChoosePath() {
               <button
                 key={option.id}
                 onClick={() => setSelected(option.id)}
-                className="relative flex flex-col items-center text-center px-10 py-8 rounded-2xl transition-all duration-200 cursor-pointer"
-                style={{
-                  width: 380,
-                  border: isSelected ? "2px solid #002FA7" : "2px solid #E5E5E5",
-                  background: isSelected ? "white" : "#FAFAFA",
-                }}
+                className={`relative flex flex-col items-center text-center px-10 py-8 rounded-2xl transition-all duration-200 cursor-pointer w-[380px] border-2 ${isSelected ? "border-brand bg-white" : "border-[#E5E5E5] bg-[#FAFAFA]"}`}
               >
                 <div className="absolute top-4 left-4">
                   {isSelected ? (
@@ -75,7 +70,7 @@ export default function ChoosePath() {
                       </svg>
                     </div>
                   ) : (
-                    <div className="w-6 h-6 rounded-full border-2" style={{ borderColor: "#C2C2C2" }} />
+                    <div className="w-6 h-6 rounded-full border-2 border-[#C2C2C2]" />
                   )}
                 </div>
                 <div className="mt-6 mb-5">
@@ -88,14 +83,14 @@ export default function ChoosePath() {
           })}
         </div>
 
-        <div className="flex items-start gap-1.5 mb-6" style={{ width: 500 }}>
+        <div className="flex items-start gap-1.5 mb-6 w-[500px]">
           <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-gray-500 leading-snug text-left">
             This choice isn't final — whichever option you pick now, you can still create or join additional communities later from your dashboard.
           </p>
         </div>
 
-        <div className="flex flex-col items-center gap-4" style={{ width: 500 }}>
+        <div className="flex flex-col items-center gap-4 w-[500px]">
           <button
             onClick={handleContinue}
             className="w-full py-4 rounded-3xl text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer bg-brand"
