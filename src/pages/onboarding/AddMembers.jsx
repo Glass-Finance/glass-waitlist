@@ -94,10 +94,9 @@ function csvRowToMember(row, roles, defaultRoleId) {
 
 function SuccessModal({ communityName, onDashboard, onCopy }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(2px)" }}>
-      <div className="bg-white rounded-3xl flex flex-col items-center text-center px-10 py-20 w-full max-w-[550px]" style={{ boxShadow: "0 24px 64px rgba(0,0,0,0.15)" }}>
-        <div className="flex items-center justify-center rounded-full mb-6"
-          style={{ width: 70, height: 70, background: "radial-gradient(circle, #22c55e 60%, #16a34a 100%)", boxShadow: "0 0 0 12px #dcfce7" }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 backdrop-blur-[2px]">
+      <div className="bg-white rounded-3xl flex flex-col items-center text-center px-10 py-20 w-full max-w-[550px] shadow-[0_24px_64px_rgba(0,0,0,0.15)]">
+        <div className="flex items-center justify-center rounded-full mb-6 w-[70px] h-[70px] bg-[radial-gradient(circle,#22c55e_60%,#16a34a_100%)] shadow-[0_0_0_12px_#dcfce7]">
           <Check size={40} color="white" strokeWidth={3} />
         </div>
         <h2 className="text-lg font-semibold text-gray-900 mb-2">Your Community Is Now Live</h2>
@@ -373,7 +372,7 @@ export default function AddMembers() {
                         </svg>
                     }
                   </div>
-                  {!isLast && <div className="w-px my-1" style={{ minHeight: 40, background: isCompleted ? "#002FA7" : "var(--color-outline-on-surface)" }} />}
+                  {!isLast && <div className={`w-px my-1 min-h-10 ${isCompleted ? "bg-brand" : "bg-outline-on-surface"}`} />}
                 </div>
                 <div className="pt-1.5 pb-10">
                   <span className={`text-sm font-medium ${isActive ? "text-[#000000]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}>{step.label}</span>
@@ -400,8 +399,7 @@ export default function AddMembers() {
             </div>
 
             {/* Invite banner */}
-            <div className="flex items-center justify-between px-5 py-4 rounded-xl mb-6"
-              style={{ background: "#D7E2FF", border: "1px solid #0E628C33" }}>
+            <div className="flex items-center justify-between px-5 py-4 rounded-xl mb-6 bg-[#D7E2FF] border border-[#0E628C33]">
               <div>
                 <p className="text-xs text-gray-900 mb-0.5">Your community is ready to grow.</p>
                 <p className="text-xs text-gray-500">Copy this link and share it with your members to get them on Glass.</p>
@@ -420,8 +418,7 @@ export default function AddMembers() {
               <div className="flex gap-6 border-b border-gray-200 mb-5">
                 {["upload", "manual"].map((t) => (
                   <button key={t} onClick={() => setTab(t)}
-                    className="pb-2.5 text-sm font-medium capitalize bg-transparent border-none cursor-pointer transition-all"
-                    style={{ color: tab === t ? "#002FA7" : "#9ca3af", borderBottom: tab === t ? "2px solid #002FA7" : "2px solid transparent" }}>
+                    className={`pb-2.5 text-sm font-medium capitalize bg-transparent cursor-pointer transition-all border-x-0 border-t-0 border-b-2 ${tab === t ? "text-brand border-b-brand" : "text-[#9ca3af] border-b-transparent"}`}>
                     {t.charAt(0).toUpperCase() + t.slice(1)}
                   </button>
                 ))}
@@ -462,12 +459,7 @@ export default function AddMembers() {
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                     onDragLeave={() => setDragOver(false)}
                     onDrop={handleDrop}
-                    className="w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-5"
-                    style={{
-                      minHeight: 140,
-                      background: dragOver ? "#EEF2FF" : "#FAFAFA",
-                      border: dragOver ? "2px dashed #002FA7" : "2px dashed #D1D5DB",
-                    }}
+                    className={`w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-5 min-h-[140px] border-2 border-dashed ${dragOver ? "bg-[#EEF2FF] border-brand" : "bg-[#FAFAFA] border-[#D1D5DB]"}`}
                   >
                     <input ref={fileRef} type="file" accept=".csv" className="hidden"
                       onChange={(e) => handleFile(e.target.files[0])} />
@@ -492,14 +484,14 @@ export default function AddMembers() {
                     </div>
 
                     {urlStage === "fetching" && (
-                      <div className="mt-3 rounded-lg flex flex-col items-center justify-center py-10" style={{ border: "2px dashed #002FA7", background: "#EEF2FF" }}>
+                      <div className="mt-3 rounded-lg flex flex-col items-center justify-center py-10 border-2 border-dashed border-brand bg-[#EEF2FF]">
                         <div className="relative w-16 h-16 mb-3">
                           <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90">
                             <circle cx="32" cy="32" r="28" fill="none" stroke="#E0E3F0" strokeWidth="6" />
                             <circle cx="32" cy="32" r="28" fill="none" stroke="#002FA7" strokeWidth="6"
                               strokeDasharray={2 * Math.PI * 28}
                               strokeDashoffset={2 * Math.PI * 28 * (1 - urlProgress / 100)}
-                              strokeLinecap="round" style={{ transition: "stroke-dashoffset 0.2s linear" }} />
+                              strokeLinecap="round" className="transition-[stroke-dashoffset] duration-200 ease-linear" />
                           </svg>
                           <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-gray-900">
                             {Math.round(urlProgress)}%
@@ -546,7 +538,7 @@ export default function AddMembers() {
               {tab === "manual" && (
                 <>
                   <p className="text-sm font-medium text-gray-900 mb-2">Enter Email(s):</p>
-                  <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5" style={{ minHeight: 60, border: "1px solid #E5E7EB", background: "#fff" }}>
+                  <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5 min-h-[60px] border border-[#E5E7EB] bg-white">
                     {emails.map((em, i) => (
                       <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800 bg-stacked-container">
                         <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-brand text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
