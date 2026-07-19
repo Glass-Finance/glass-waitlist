@@ -45,11 +45,11 @@ function StepIcon({ id, completed }) {
 
 function SuccessModal() {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(20,20,30,0.45)" }}>
-      <div className="bg-white rounded-2xl px-12 py-16 flex flex-col items-center shadow-2xl" style={{ minWidth: 480 }}>
-        <div className="relative flex items-center justify-center mb-8" style={{ width: 110, height: 110 }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(20,20,30,0.45)]">
+      <div className="bg-white rounded-2xl px-12 py-16 flex flex-col items-center shadow-2xl min-w-[480px]">
+        <div className="relative flex items-center justify-center mb-8 w-[110px] h-[110px]">
           <div className="absolute inset-0 rounded-full border border-gray-300" />
-          <div className="absolute rounded-full border border-gray-300" style={{ inset: 10 }} />
+          <div className="absolute rounded-full border border-gray-300 inset-[10px]" />
           <div className="w-20 h-20 rounded-full bg-[#16C147] flex items-center justify-center">
             <Check size={36} color="white" strokeWidth={3} />
           </div>
@@ -264,7 +264,7 @@ export default function PaymentProfile() {
                   >
                     <StepIcon id={step.id} completed={isCompleted} />
                   </div>
-                  {!isLast && <div className="w-px my-1" style={{ minHeight: 40, background: isCompleted ? "#002FA7" : "var(--color-outline-on-surface)" }} />}
+                  {!isLast && <div className={`w-px my-1 min-h-10 ${isCompleted ? "bg-brand" : "bg-outline-on-surface"}`} />}
                 </div>
                 <div className="pt-1.5 pb-10">
                   <span className={`text-sm font-medium ${isActive ? "text-[#000000]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}>
@@ -280,7 +280,7 @@ export default function PaymentProfile() {
         <main className="flex-1 overflow-y-auto py-10 px-12">
           <div className="w-full max-w-3xl">
             <div className="bg-white rounded-lg px-8 py-7 border border-[#E5E7EB]">
-              <div className="mb-6 pb-5" style={{ borderBottom: "1px solid #E5E7EB" }}>
+              <div className="mb-6 pb-5 border-b border-[#E5E7EB]">
                 <button
                   type="button"
                   onClick={handleBack}
@@ -340,8 +340,7 @@ export default function PaymentProfile() {
                     readOnly={!manualMode}
                     onChange={(e) => manualMode && setAccName(e.target.value)}
                     placeholder={manualMode ? "Type account name" : "Account name will appear here"}
-                    className={inputCls + (!manualMode ? " bg-gray-50 cursor-default select-none" : "")}
-                    style={{ color: resolving ? "#9CA3AF" : undefined }}
+                    className={inputCls + (!manualMode ? " bg-gray-50 cursor-default select-none" : "") + (resolving ? " text-[#9CA3AF]" : "")}
                   />
                   {accName && !resolving && !manualMode && (
                     <Check size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500" />
@@ -350,7 +349,7 @@ export default function PaymentProfile() {
               </div>
 
               {error && (
-                <p className="text-sm mt-3" style={{ color: manualMode ? "#B45309" : "#EF4444" }}>
+                <p className={`text-sm mt-3 ${manualMode ? "text-[#B45309]" : "text-[#EF4444]"}`}>
                   {error}
                 </p>
               )}
