@@ -236,7 +236,7 @@ export default function Profile() {
   };
 
   const inputCls =
-    "w-full px-4 py-2.5 rounded-lg bg-white text-gray-900 text-xs outline-none transition-all border border-gray-300 focus:border-brand";
+    "w-full px-4 py-2.5 rounded-lg bg-white text-gray-900 text-xs outline-none transition-all border focus:border-brand";
 
   const displayName = `${form.firstName} ${form.lastName}`.trim() || user?.email || "—";
   const initials = displayName.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
@@ -269,8 +269,7 @@ export default function Profile() {
           <button
             onClick={() => photoInputRef.current?.click()}
             disabled={uploadFile.isPending}
-            className="flex-shrink-0 px-2 py-2 rounded-sm text-xs bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50"
-            style={{ border: "1px solid" }}
+            className="flex-shrink-0 px-2 py-2 rounded-sm text-xs bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-gray-700"
           >
             {uploadFile.isPending ? "Uploading…" : "Change Photo"}
           </button>
@@ -285,14 +284,12 @@ export default function Profile() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">First Name</label>
-            <input name="firstName" value={form.firstName} onChange={handleChange} onBlur={handleFieldBlur} className={inputCls}
-              style={fieldErrors.firstName ? { borderColor: "var(--color-danger)" } : undefined} />
+            <input name="firstName" value={form.firstName} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.firstName ? "border-danger" : "border-gray-300"}`} />
             {fieldErrors.firstName && <p className="text-xs text-danger">{fieldErrors.firstName}</p>}
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Last Name</label>
-            <input name="lastName" value={form.lastName} onChange={handleChange} onBlur={handleFieldBlur} className={inputCls}
-              style={fieldErrors.lastName ? { borderColor: "var(--color-danger)" } : undefined} />
+            <input name="lastName" value={form.lastName} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.lastName ? "border-danger" : "border-gray-300"}`} />
             {fieldErrors.lastName && <p className="text-xs text-danger">{fieldErrors.lastName}</p>}
           </div>
         </div>
@@ -300,13 +297,12 @@ export default function Profile() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Email Address</label>
-            <input name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleFieldBlur} className={inputCls}
-              style={fieldErrors.email ? { borderColor: "var(--color-danger)" } : undefined} />
+            <input name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.email ? "border-danger" : "border-gray-300"}`} />
             {fieldErrors.email && <p className="text-xs text-danger">{fieldErrors.email}</p>}
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Phone Number</label>
-            <input name="phone" value={form.phone} onChange={handleChange} className={inputCls} />
+            <input name="phone" value={form.phone} onChange={handleChange} className={`${inputCls} border-gray-300`} />
           </div>
         </div>
 
@@ -341,8 +337,7 @@ export default function Profile() {
         >
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-surface-container-border">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
-              style={{ background: "#FEE2E2" }}
+              className="w-10 h-10 rounded-full flex items-center justify-center mb-4 bg-[#FEE2E2]"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="3 6 5 6 21 6" />
@@ -381,8 +376,7 @@ export default function Profile() {
                   <button
                     onClick={handleRequestDeletionCode}
                     disabled={deleteConfirm !== "DELETE" || deleteLoading}
-                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50"
-                    style={{ background: "#DC2626" }}
+                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50 bg-[#DC2626]"
                   >
                     {deleteLoading ? "Sending code…" : "Continue"}
                   </button>
@@ -421,8 +415,7 @@ export default function Profile() {
                   <button
                     onClick={handleConfirmDeletion}
                     disabled={deletionCode.some((d) => !d) || deleteLoading}
-                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50"
-                    style={{ background: "#DC2626" }}
+                    className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50 bg-[#DC2626]"
                   >
                     {deleteLoading ? "Deleting…" : "Delete Account"}
                   </button>
@@ -438,16 +431,14 @@ export default function Profile() {
         <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Account</p>
         <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
         <div
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 rounded-lg"
-          style={{ border: "1px solid #FECACA", background: "#FFF5F5" }}
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 rounded-lg border border-[#FECACA] bg-[#FFF5F5]"
         >
           <p className="text-xs text-gray-700">
             Permanently remove your account and all associated data from Glass.
           </p>
           <button
             onClick={() => setDeleteModal(true)}
-            className="self-start sm:self-auto flex-shrink-0 px-4 py-1.5 rounded-md text-xs font-medium text-red-500 hover:bg-red-50 transition-all cursor-pointer bg-transparent"
-            style={{ border: "1px solid #FECACA" }}
+            className="self-start sm:self-auto flex-shrink-0 px-4 py-1.5 rounded-md text-xs font-medium text-red-500 hover:bg-red-50 transition-all cursor-pointer bg-transparent border border-[#FECACA]"
           >
             Delete
           </button>
