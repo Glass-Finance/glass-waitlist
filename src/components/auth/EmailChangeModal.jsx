@@ -79,8 +79,8 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
     return (
       <ModalShell>
         <div className="flex flex-col items-center text-center gap-4 py-4">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: "#ECFDF5" }}>
-            <CheckCircle2 size={36} style={{ color: "#059669" }} />
+          <div className="w-16 h-16 rounded-full flex items-center justify-center bg-[#ECFDF5]">
+            <CheckCircle2 size={36} className="text-[#059669]" />
           </div>
           <p className="text-lg font-semibold text-gray-900">Your Email Has Been Changed Successfully!</p>
         </div>
@@ -96,7 +96,7 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
       <h1 className="text-headline text-gray-900 mb-3">Enter Confirmation Code</h1>
       <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code that was sent to</p>
       <p className="text-sm font-semibold text-gray-900 mb-2">{maskEmail(newEmail)}</p>
-      <button onClick={onWrongEmail} className="text-sm font-medium hover:underline" style={{ color: "#1B2FE8" }}>
+      <button onClick={onWrongEmail} className="text-sm font-medium hover:underline text-[#1B2FE8]">
         Wrong email?
       </button>
       <p className={`text-xs mt-2 mb-6 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
@@ -117,8 +117,7 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
               {digits.slice(0, 3).map((d, i) => (
                 <div
                   key={i}
-                  className="w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all"
-                  style={{ border: `1.5px solid ${d || i === activeIndex ? "#1C2B8A" : "#C2C2C2"}` }}
+                  className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
                 >
                   {d}
                 </div>
@@ -129,8 +128,7 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
                 return (
                   <div
                     key={idx}
-                    className="w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all"
-                    style={{ border: `1.5px solid ${d || idx === activeIndex ? "#1C2B8A" : "#C2C2C2"}` }}
+                    className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || idx === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
                   >
                     {d}
                   </div>
@@ -153,7 +151,7 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
 
       <p className="text-center text-sm mt-5 text-gray-500">
         Didn't get OTP?{" "}
-        <button onClick={handleResend} disabled={resending} className="font-semibold hover:underline disabled:opacity-60" style={{ color: "#1B2FE8" }}>
+        <button onClick={handleResend} disabled={resending} className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]">
           {resending ? "Resending..." : "Resend"}
         </button>
       </p>
