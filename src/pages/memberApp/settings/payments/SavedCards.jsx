@@ -17,7 +17,10 @@ export default function SavedCards() {
   }
 
   return (
-    <div className="relative overflow-hidden pb-10" style={{ minHeight: "100vh", fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div
+      className="relative overflow-hidden min-h-screen pb-10"
+      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
+    >
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
@@ -31,15 +34,15 @@ export default function SavedCards() {
 
       <div className="px-4">
         {data.length > 0 && (
-          <p style={{ fontSize: 12, fontWeight: 600, color: "#999", margin: "0 4px 8px", textTransform: "uppercase", letterSpacing: 0.4 }}>
+          <p className="text-xs font-semibold text-[#999] mt-0 mx-1 mb-2 uppercase [letter-spacing:0.4px]">
             Saved Cards
           </p>
         )}
-        <div className="border border-surface-container-border" style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 6px rgba(0,0,0,0.05)" }}>
+        <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
           {isLoading ? (
             <PageLoadingState size={56} padding="36px 24px" />
           ) : error ? (
-            <p style={{ textAlign: "center", color: "#DC2626", fontSize: 13, padding: "24px 0" }}>
+            <p className="text-center text-[#DC2626] text-[13px] py-6">
               Couldn't load saved payment methods.
             </p>
           ) : data.length === 0 ? (
@@ -48,29 +51,26 @@ export default function SavedCards() {
             data.map((item, i) => (
               <div
                 key={item.id}
-                style={{
-                  display: "flex", alignItems: "center", gap: 12, padding: "14px 16px",
-                  borderBottom: i < data.length - 1 ? "1px solid #F2F2F2" : "none",
-                }}
+                className={`flex items-center gap-3 py-3.5 px-4 ${i < data.length - 1 ? "border-b border-[#F2F2F2]" : "border-b-0"}`}
               >
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <div className="w-9 h-9 rounded-[10px] bg-[#EEF2FF] flex items-center justify-center flex-shrink-0">
                   <CreditCard size={16} className="text-[#1C2B8A]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p style={{ fontSize: 14, fontWeight: 500, color: "#111", margin: 0 }}>
+                  <p className="text-sm font-medium text-[#111] m-0">
                     {item.bank ?? "Card"} •••{item.last4 ?? "----"}
                   </p>
                   {item.channel && (
-                    <p style={{ fontSize: 12, color: "#999", margin: "2px 0 0" }}>{item.channel}</p>
+                    <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">{item.channel}</p>
                   )}
                 </div>
                 <button
                   onClick={() => handleDelete(item)}
                   disabled={isRemoving}
                   aria-label="Remove saved card"
-                  style={{ background: "none", border: "none", cursor: "pointer", padding: 6, flexShrink: 0, opacity: isRemoving ? 0.5 : 1 }}
+                  className={`bg-transparent border-none cursor-pointer p-1.5 flex-shrink-0 ${isRemoving ? "opacity-50" : "opacity-100"}`}
                 >
-                  <Trash2 size={16} style={{ color: "#DC2626" }} />
+                  <Trash2 size={16} className="text-[#DC2626]" />
                 </button>
               </div>
             ))
