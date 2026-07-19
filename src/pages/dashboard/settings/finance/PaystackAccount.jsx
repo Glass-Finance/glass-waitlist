@@ -16,7 +16,7 @@ const BANK_LOGO_BY_CODE = Object.fromEntries(
 );
 
 // Map common Nigerian bank names to their brand colours
-function bankColor(name = "") {
+function bankColorCls(name = "") {
   const n = name.toLowerCase();
   if (
     n.includes("guaranty") ||
@@ -24,18 +24,18 @@ function bankColor(name = "") {
     n.includes("gtb") ||
     n.includes("gt ")
   )
-    return "#E05C00";
-  if (n.includes("access")) return "#C8102E";
-  if (n.includes("zenith")) return "#841B2D";
-  if (n.includes("first bank") || n.includes("firstbank")) return "#003087";
-  if (n.includes("uba") || n.includes("united bank")) return "#C8102E";
-  if (n.includes("stanbic")) return "#009EE0";
-  if (n.includes("union bank")) return "#2B5B3F";
-  if (n.includes("sterling")) return "#9B2335";
-  if (n.includes("fidelity")) return "#005B98";
-  if (n.includes("polaris")) return "#6C2382";
-  if (n.includes("wema")) return "#5C068C";
-  return "var(--color-brand)";
+    return "bg-[#E05C00]";
+  if (n.includes("access")) return "bg-[#C8102E]";
+  if (n.includes("zenith")) return "bg-[#841B2D]";
+  if (n.includes("first bank") || n.includes("firstbank")) return "bg-[#003087]";
+  if (n.includes("uba") || n.includes("united bank")) return "bg-[#C8102E]";
+  if (n.includes("stanbic")) return "bg-[#009EE0]";
+  if (n.includes("union bank")) return "bg-[#2B5B3F]";
+  if (n.includes("sterling")) return "bg-[#9B2335]";
+  if (n.includes("fidelity")) return "bg-[#005B98]";
+  if (n.includes("polaris")) return "bg-[#6C2382]";
+  if (n.includes("wema")) return "bg-[#5C068C]";
+  return "bg-brand";
 }
 
 // Two-letter initials from the bank name
@@ -70,8 +70,7 @@ function BankAvatar({ bankCode, bankName, storedLogoUrl }) {
   }
   return (
     <div
-      className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
-      style={{ background: bankColor(bankName) }}
+      className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 ${bankColorCls(bankName)}`}
     >
       {bankInitials(bankName)}
     </div>
@@ -84,20 +83,19 @@ function BankAvatar({ bankCode, bankName, storedLogoUrl }) {
 function StatusBadge({ status }) {
   if (!status) return null;
   const styles = {
-    ACTIVE: { bg: "#ECFDF3", fg: "#027A48" },
-    VERIFIED: { bg: "#ECFDF3", fg: "#027A48" },
-    PENDING: { bg: "#FFFAEB", fg: "#B54708" },
-    UNVERIFIED: { bg: "#FFFAEB", fg: "#B54708" },
-    FAILED: { bg: "#FEF3F2", fg: "#B42318" },
-    REJECTED: { bg: "#FEF3F2", fg: "#B42318" },
-    NEED_MORE_INFORMATION: { bg: "#FFF7ED", fg: "#C2410C" },
-    DISABLED: { bg: "#F2F4F7", fg: "#475467" },
+    ACTIVE: "bg-[#ECFDF3] text-[#027A48]",
+    VERIFIED: "bg-[#ECFDF3] text-[#027A48]",
+    PENDING: "bg-[#FFFAEB] text-[#B54708]",
+    UNVERIFIED: "bg-[#FFFAEB] text-[#B54708]",
+    FAILED: "bg-[#FEF3F2] text-[#B42318]",
+    REJECTED: "bg-[#FEF3F2] text-[#B42318]",
+    NEED_MORE_INFORMATION: "bg-[#FFF7ED] text-[#C2410C]",
+    DISABLED: "bg-[#F2F4F7] text-[#475467]",
   };
-  const { bg, fg } = styles[status] ?? { bg: "#F2F4F7", fg: "#475467" };
+  const cls = styles[status] ?? "bg-[#F2F4F7] text-[#475467]";
   return (
     <span
-      className="text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide"
-      style={{ background: bg, color: fg }}
+      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide ${cls}`}
     >
       {status.replace(/_/g, " ").toLowerCase()}
     </span>
@@ -120,8 +118,7 @@ function RemoveAccountModal({ onClose, onConfirm, isDeleting }) {
       />
       <div className="fixed inset-0 z-80 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-sm rounded-xl p-6"
-          style={{ background: "#fff" }}
+          className="w-full max-w-sm rounded-xl p-6 bg-white"
           onClick={(e) => e.stopPropagation()}
         >
           <h2 className="text-[16px] font-bold text-gray-900 mb-1.5">
@@ -243,38 +240,22 @@ export default function PaystackAccount() {
             account.status === "NEED_MORE_INFORMATION") &&
             account.verificationComment && (
               <div
-                className="flex items-start gap-2.5 rounded-xl px-4 py-3.5 mb-5"
-                style={{
-                  background:
-                    account.status === "REJECTED" ? "#FEF3F2" : "#FFF7ED",
-                }}
+                className={`flex items-start gap-2.5 rounded-xl px-4 py-3.5 mb-5 ${account.status === "REJECTED" ? "bg-[#FEF3F2]" : "bg-[#FFF7ED]"}`}
               >
                 <AlertTriangle
                   size={14}
-                  className="flex-shrink-0 mt-0.5"
-                  style={{
-                    color:
-                      account.status === "REJECTED" ? "#B42318" : "#C2410C",
-                  }}
+                  className={`flex-shrink-0 mt-0.5 ${account.status === "REJECTED" ? "text-[#B42318]" : "text-[#C2410C]"}`}
                 />
                 <div>
                   <p
-                    className="text-xs font-semibold mb-0.5"
-                    style={{
-                      color:
-                        account.status === "REJECTED" ? "#B42318" : "#C2410C",
-                    }}
+                    className={`text-xs font-semibold mb-0.5 ${account.status === "REJECTED" ? "text-[#B42318]" : "text-[#C2410C]"}`}
                   >
                     {account.status === "REJECTED"
                       ? "This account was rejected"
                       : "More information needed"}
                   </p>
                   <p
-                    className="text-xs leading-relaxed"
-                    style={{
-                      color:
-                        account.status === "REJECTED" ? "#B42318" : "#C2410C",
-                    }}
+                    className={`text-xs leading-relaxed ${account.status === "REJECTED" ? "text-[#B42318]" : "text-[#C2410C]"}`}
                   >
                     {account.verificationComment}
                   </p>
@@ -392,8 +373,7 @@ export default function PaystackAccount() {
 
       {/* Info notice */}
       <div
-        className="flex items-start gap-2.5 rounded-xl px-4 py-3.5"
-        style={{ background: "#EEF2FF" }}
+        className="flex items-start gap-2.5 rounded-xl px-4 py-3.5 bg-[#EEF2FF]"
       >
         <Info size={14} className="text-brand flex-shrink-0 mt-0.5" />
         <p className="text-xs text-brand leading-relaxed">
