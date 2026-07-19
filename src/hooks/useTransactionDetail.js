@@ -17,11 +17,22 @@ function unwrapList(res) {
 // schema. Rows for those only render when the field is actually present
 // (see TransactionDetail.jsx), so a wrong guess here just hides a row
 // instead of showing incorrect data.
+// Field names below confirmed against the real UserTransactionResponse
+// schema (backend Swagger). Two real bugs this caught: isRecurring was
+// checking raw.paymentLink?.recurringPlan, a field that doesn't exist
+// anywhere on this response (paymentLink here is only
+// {id,title,slug,referenceCode,paymentType,status}) -- isRecurring was
+// unconditionally false, silently disabling the post-payment "Turn on
+// Auto-Pay?" prompt for every transaction. And the fee fallback read
+// raw.amountPaid, which also doesn't exist at the transaction root
+// (amountPaid only exists nested under raw.obligation.amountPaid) --
+// billedAmount and amount are the two real root-level fields that give
+// the same number.
 function shapeDetail(raw) {
   return {
     id: raw.id,
     amount: raw.amount,
-    amountPaid: raw.amountPaid,
+    amountPaid: raw.obligation?.amountPaid ?? null,
     description: raw.description ?? raw.paymentLink?.title ?? "Payment",
     communityName: raw.community?.name,
     communitySlug: raw.community?.slug,
@@ -31,34 +42,27 @@ function shapeDetail(raw) {
     planName: raw.paymentLink?.title,
     channel: raw.channel,
     reference: raw.internalReference,
-    // No dedicated fee field on the transaction record -- derived the same
-    // way PaymentSummary.jsx's confirmed "Platform Fee" row is (billedAmount
-    // minus amount), using amountPaid (actual charged total) vs amount (due
-    // amount) here, guarded against a nonsensical negative fee.
+    // platformFee is a real field on the community/admin-scoped transaction
+    // responses but confirmed ABSENT on this one (the member's own
+    // finance/transactions/me endpoint) -- billedAmount minus amount (both
+    // confirmed present here) derives the same number when it's missing.
     feeMinor:
-      raw.feeMinor ??
-      raw.fee ??
-      (raw.amountPaid != null && raw.amount != null && raw.amountPaid > raw.amount
-        ? raw.amountPaid - raw.amount
+      raw.platformFee ??
+      (raw.billedAmount != null && raw.amount != null && raw.billedAmount > raw.amount
+        ? raw.billedAmount - raw.amount
         : null),
-    transactionType: raw.transactionType ?? raw.paymentMethod ?? null,
-    // Used to guess "Auto-Pay" whenever the plan was recurring -- now
-    // known wrong: confirmed with backend that savePaymentMethod is a
-    // real per-payment choice, so a recurring plan can just as easily be
-    // paid manually (Auto-Pay declined, or a manual catch-up on a specific
-    // cycle) as auto-charged. Only show this when the backend says so
+    // Confirmed absent from this notification/transaction schema, not a
+    // guess that happened to fail -- only shown when the backend states it
     // directly; the row already hides itself when this is null.
     initiatedBy: raw.initiatedBy ?? null,
-    // Same recurringPlan/paymentType convention usePayments.js's
-    // shapeObligation/shapePaymentLink already use, for the post-payment
-    // "turn on Auto-Pay?" prompt on Home.
     paymentLinkId: raw.paymentLink?.id ?? null,
-    isRecurring: !!(
-      raw.recurringPlan ||
-      raw.paymentLink?.recurringPlan ||
-      (raw.paymentLink?.paymentType ?? raw.paymentLink?.type ?? "").toUpperCase() === "RECURRING"
-    ),
-    frequency: raw.paymentLink?.frequency ?? raw.paymentLink?.billingFrequency ?? null,
+    isRecurring: raw.paymentLink?.paymentType === "RECURRING",
+    // No frequency field exists anywhere on the transaction response (the
+    // nested paymentLink object doesn't carry recurringPlan at all) --
+    // there is genuinely no way to know "monthly" vs "weekly" from this
+    // endpoint. frequencyAdverb()'s "regularly" fallback is what actually
+    // renders here, not a bug to chase.
+    frequency: null,
   };
 }
 

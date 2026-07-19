@@ -8,11 +8,20 @@ import { useCommunity } from "./useCommunity";
 // render when actually present), just backed by the community-scoped
 // endpoint an admin can call for any member's transaction rather than the
 // member-only "my transactions" one.
+// Field names below confirmed against the real CommunityTransactionResponse
+// schema (backend Swagger). member here is its own flat object
+// ({firstName, lastName, email, profileImage, ...}) -- there's no nested
+// member.user sub-object, so that guess was always falling through to the
+// second branch below rather than actually matching. The transaction also
+// carries its own root-level `user` (the payer's platform identity, with a
+// real profileImage) separate from `member` (their community-specific
+// record) -- not consumed here yet, but a real payer photo does exist on
+// this endpoint if a receipt/avatar ever wants one.
 function shapeDetail(raw) {
   return {
     id: raw.id,
     amount: raw.amount,
-    amountPaid: raw.amountPaid,
+    amountPaid: raw.obligation?.amountPaid ?? null,
     description: raw.description ?? raw.paymentLink?.title ?? "Payment",
     communityName: raw.community?.name,
     communitySlug: raw.community?.slug,
@@ -22,26 +31,21 @@ function shapeDetail(raw) {
     planName: raw.paymentLink?.title,
     channel: raw.channel,
     reference: raw.internalReference,
-    payerName: [raw.member?.user?.firstName ?? raw.member?.firstName, raw.member?.user?.lastName ?? raw.member?.lastName]
+    payerName: [raw.member?.firstName ?? raw.user?.firstName, raw.member?.lastName ?? raw.user?.lastName]
       .filter(Boolean)
-      .join(" ") || raw.member?.user?.email || raw.member?.email || null,
-    payerEmail: raw.member?.user?.email ?? raw.member?.email ?? null,
-    // Same derivation as the member app: no dedicated fee field on the
-    // transaction record, so it's the gap between what was actually
-    // charged (amountPaid) and the due amount, when both are present.
+      .join(" ") || raw.member?.email || raw.user?.email || null,
+    payerEmail: raw.member?.email ?? raw.user?.email ?? null,
+    // platformFee is a real, confirmed field on this response -- prefer it
+    // directly; billedAmount minus amount (both also confirmed present) is
+    // the fallback derivation if it's ever absent on a given record.
     feeMinor:
-      raw.feeMinor ??
-      raw.fee ??
-      (raw.amountPaid != null && raw.amount != null && raw.amountPaid > raw.amount
-        ? raw.amountPaid - raw.amount
+      raw.platformFee ??
+      (raw.billedAmount != null && raw.amount != null && raw.billedAmount > raw.amount
+        ? raw.billedAmount - raw.amount
         : null),
-    transactionType: raw.transactionType ?? raw.paymentMethod ?? null,
-    // Used to guess "Auto-Pay" whenever the plan was recurring -- now
-    // known wrong: confirmed with backend that savePaymentMethod is a
-    // real per-payment choice, so a recurring plan can just as easily be
-    // paid manually (Auto-Pay declined, or a manual catch-up on a specific
-    // cycle) as auto-charged. Only show this when the backend says so
-    // directly; the row already hides itself when this is null.
+    // Confirmed absent from the transaction schema, not a guess that
+    // happened to fail -- only shown when the backend states it directly;
+    // the row already hides itself when this is null.
     initiatedBy: raw.initiatedBy ?? null,
   };
 }
