@@ -83,10 +83,8 @@ function NotifAvatar({ n }) {
 
   return (
     <div
-      style={{
-        width: 36, height: 36, borderRadius: "50%", flexShrink: 0, marginTop: 1,
-        background: bg, display: "flex", alignItems: "center", justifyContent: "center",
-      }}
+      className="w-9 h-9 rounded-full flex-shrink-0 mt-px flex items-center justify-center"
+      style={{ background: bg }}
     >
       <Icon size={17} strokeWidth={2} color={fg} />
     </div>

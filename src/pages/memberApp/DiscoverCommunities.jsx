@@ -161,8 +161,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
       <button
         onClick={handleRequest}
         disabled={alreadyMember || alreadyPending || loading}
-        style={{ opacity: loading ? 0.7 : 1 }}
-        className={`w-full py-2.5 rounded-lg text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-opacity duration-150 ${alreadyPending || alreadyMember ? "border-[1.5px] border-[#E0E0E0] cursor-default" : "border-none cursor-pointer"} ${
+        className={`w-full py-2.5 rounded-lg text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-opacity duration-150 ${loading ? "opacity-70" : "opacity-100"} ${alreadyPending || alreadyMember ? "border-[1.5px] border-[#E0E0E0] cursor-default" : "border-none cursor-pointer"} ${
           alreadyMember
             ? "bg-[#ECFDF5] text-[#059669]"
             : alreadyPending

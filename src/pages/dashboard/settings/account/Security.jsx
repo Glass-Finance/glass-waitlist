@@ -192,8 +192,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
               <button
                 onClick={confirmDisable}
                 disabled={code.length !== 6 || loading}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer disabled:opacity-50"
-                style={{ background: "#DC2626" }}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer disabled:opacity-50 bg-danger"
               >
                 {loading ? "Disabling…" : "Disable MFA"}
               </button>
