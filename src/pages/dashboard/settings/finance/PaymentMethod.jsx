@@ -19,7 +19,7 @@ export default function PaymentMethod() {
         <p className="text-sm font-medium text-gray-900 mb-0.5">Payment methods</p>
         <p className="text-xs text-gray-500 mb-5">Saved cards and bank accounts used for your personal dues payments.</p>
 
-        <div className="bg-surface-container rounded-xl p-5 mb-4" style={{ border: "1px solid var(--color-outline-on-surface)" }}>
+        <div className="bg-surface-container rounded-xl p-5 mb-4 border border-outline-on-surface">
           <p className="text-sm font-medium text-gray-900 mb-0.5">Saved methods</p>
           <p className="text-xs text-gray-500 mb-4">
             Methods used across all communities you're a paying member of.
@@ -40,7 +40,7 @@ export default function PaymentMethod() {
               authorisations.map((auth) => (
                 <div key={auth.id} className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "#EEF2FF" }}>
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#EEF2FF]">
                       <Landmark size={16} className="text-brand" />
                     </div>
                     <div>
