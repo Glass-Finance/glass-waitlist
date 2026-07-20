@@ -1,52 +1,35 @@
 import { useState, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import {
-  Download,
-  MoreHorizontal,
-  Plus,
-  ChevronDown,
-  Search,
-  X,
-  AlertCircle,
-  Clock,
-  Wallet,
-  Activity,
-  Receipt,
-} from "lucide-react";
+import { Plus, AlertCircle } from "lucide-react";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useCommunityDashboard } from "../../hooks/useCommunityDashboard";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
-import { useCommunityMembers } from "../../hooks/useCommunityMembers";
 import { useCommunityAccount } from "../../hooks/useCommunityAccount";
 import {
   usePayments,
   useManagePayments,
   usePendingPaymentVerification,
 } from "../../hooks/usePayments";
-import { useAuth } from "../../store/AuthContext";
 import { useExportJob } from "../../hooks/useExportJob";
 import { exportCommunityTransactions } from "../../api/exports";
-import EmptyState from "../../components/common/EmptyState";
-import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
-import AutoPayPrompt from "../../components/common/AutoPayPrompt";
-import { toTitleCase, formatDate } from "../../utils/format";
 import totalMembersIcon from "../../assets/dashboard/tdesign-member.webp";
 import inactiveMembersIcon from "../../assets/dashboard/inactive-members.webp";
 import totalContribIcon from "../../assets/dashboard/tcontributions.webp";
 import activePlansIcon from "../../assets/dashboard/active-plans.webp";
-import TimerIcon from "../../assets/dashboard/timer.webp";
-import WarnSignIcon from "../../assets/dashboard/warn-sign.webp";
-import { formatNaira, timeAgo, statusStyle, freqStyle } from "./admin-dashboard/helpers";
-import { Skeleton, ActivityIcon } from "./admin-dashboard/SkeletonUI";
+import { formatNaira } from "./admin-dashboard/helpers";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 import AddMemberModal from "./admin-dashboard/AddMemberModal";
 import GettingStartedChecklist from "./admin-dashboard/sections/GettingStartedChecklist";
 import DashboardStats from "./admin-dashboard/sections/DashboardStats";
+import UnpaidObligationAlert from "./admin-dashboard/sections/UnpaidObligationAlert";
+import YourPaymentsSection from "./admin-dashboard/sections/YourPaymentsSection";
+import PaymentPlansCard from "./admin-dashboard/sections/PaymentPlansCard";
+import RecentActivityCard from "./admin-dashboard/sections/RecentActivityCard";
+import MemberPaymentsSection from "./admin-dashboard/sections/MemberPaymentsSection";
 
 function DashboardContent({ isPaying, communityId }) {
   usePageTitle("Community Dashboard");
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { run: runExport, isExporting } = useExportJob();
   const [search, setSearch] = useState("");
   const [sortDir, setSortDir] = useState("desc");
@@ -404,612 +387,75 @@ function DashboardContent({ isPaying, communityId }) {
         )}
 
         {/* Alert — paying admin with an unpaid obligation */}
-        {isPaying &&
-          alertVisible &&
-          (() => {
-            const dueList = myUpcoming.filter(
-              (o) => (o.status ?? "").toUpperCase() !== "PAID",
-            );
-            const due = dueList[0];
-            if (!due) return null;
-            const othersDue = dueList.length - 1;
-            const daysLeft = due.dueDate
-              ? Math.ceil((new Date(due.dueDate) - new Date()) / 86400000)
-              : null;
-            return (
-              <div className="flex items-start justify-between px-4 py-4 rounded-md mb-5 bg-[#D7E2FF] border border-blue-100">
-                <div className="flex items-start gap-6">
-                  <img
-                    src={WarnSignIcon}
-                    alt=""
-                    className="w-[26px] h-[26px] object-contain flex-shrink-0 mt-1.5"
-                  />
-                  <div>
-                    <p className="text-[13px] font-medium text-gray-800">
-                      Your {toTitleCase(due.name)} payment
-                      {daysLeft != null
-                        ? ` is due in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`
-                        : " is due soon"}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {formatNaira(due.amount)}
-                      {due.dueDate
-                        ? ` due ${new Date(due.dueDate).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" })}`
-                        : ""}
-                      {due.type === "recurring" && (
-                        <>
-                          {" · "}
-                          <span className="text-brand font-medium">
-                            Auto-Pay is {hasActiveAutoPay(due) ? "on" : "off"}
-                          </span>
-                        </>
-                      )}
-                    </p>
-                    {othersDue > 0 && (
-                      <p className="text-xs text-brand font-medium mt-1">
-                        + {othersDue} other payment{othersDue === 1 ? "" : "s"} due
-                        — see Your Payments below.
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-                  <button
-                    onClick={() => handlePayMine(due)}
-                    className="px-4 py-2 rounded-sm text-xs font-semibold text-brand border cursor-pointer"
-                  >
-                    Pay Now
-                  </button>
-                  <button
-                    onClick={() => setAlertVisible(false)}
-                    className="text-brand bg-transparent border-none cursor-pointer"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-              </div>
-            );
-          })()}
+        {isPaying && alertVisible && (
+          <UnpaidObligationAlert
+            myUpcoming={myUpcoming}
+            onPayNow={handlePayMine}
+            onDismiss={() => setAlertVisible(false)}
+            hasActiveAutoPay={hasActiveAutoPay}
+          />
+        )}
 
         {/* Stats */}
         <DashboardStats stats={stats} isLoading={isLoading} />
 
         {/* Your Payments — paying admin's own dues in this community */}
         {isPaying && (
-          <div
-            className="bg-surface-container rounded-xl border border-surface-container-border p-5 mb-5 shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-medium text-black">
-                Your Payments
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() =>
-                    setMyPaymentsSort((d) => (d === "desc" ? "asc" : "desc"))
-                  }
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-200 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
-                >
-                  Sort
-                  <ChevronDown
-                    size={11}
-                    className={myPaymentsSort === "asc" ? "rotate-180" : ""}
-                  />
-                </button>
-                <div className="relative">
-                  <button
-                    onClick={() => setMyPaymentsFilterOpen((o) => !o)}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-200 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
-                  >
-                    Filter <ChevronDown size={11} />
-                  </button>
-                  {myPaymentsFilterOpen && (
-                    <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-surface-container-border shadow-lg z-20 min-w-[110px] overflow-hidden">
-                      {[
-                        { key: null, label: "All" },
-                        { key: "unpaid", label: "Unpaid" },
-                        { key: "paid", label: "Paid" },
-                      ].map((opt) => (
-                        <button
-                          key={String(opt.key)}
-                          onClick={() => {
-                            setMyPaymentsFilter(opt.key);
-                            setMyPaymentsFilterOpen(false);
-                          }}
-                          className={`w-full px-3 py-2 text-left text-xs cursor-pointer border-none ${
-                            myPaymentsFilter === opt.key
-                              ? "bg-blue-50 font-medium text-brand"
-                              : "bg-transparent text-gray-600 hover:bg-gray-50"
-                          }`}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-            {myUpcomingFiltered.length === 0 ? (
-              <EmptyState icon={Clock} title="Nothing due right now" className="py-4" />
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm border-collapse text-left">
-                  <thead>
-                    <tr className="border-b border-gray-100 bg-[#F3F4F6]">
-                      {[
-                        "Plan",
-                        "Frequency",
-                        "Amount",
-                        "Due Date",
-                        "Status",
-                        "Action",
-                      ].map((h) => (
-                        <th
-                          key={h}
-                          className="p-2 text-left text-xs font-normal text-gray-400"
-                        >
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {myUpcomingFiltered.map((row) => {
-                      const isPaid =
-                        row.status === "PAID" || row.status === "SUCCESSFUL";
-                      const s = statusStyle(isPaid ? "paid" : "unpaid");
-                      const f = freqStyle(row);
-                      return (
-                        <tr key={row.id} className="border-b border-gray-50">
-                          <td className="py-3 px-2 text-xs font-medium text-gray-800">
-                            {toTitleCase(row.name)}
-                          </td>
-                          <td className="py-3 px-2">
-                            <span
-                              className={`text-xs font-semibold px-2.5 py-1 rounded-full ${f.cls}`}
-                            >
-                              {f.label}
-                            </span>
-                          </td>
-                          <td className="py-3 px-2 text-xs text-black">
-                            {formatNaira(row.amount)}
-                          </td>
-                          <td className="py-3 px-2 text-xs text-gray-500">
-                            {row.dueDate
-                              ? new Date(row.dueDate).toLocaleDateString(
-                                  "en-NG",
-                                  {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  },
-                                )
-                              : "—"}
-                          </td>
-                          <td className="py-3 px-2">
-                            <span
-                              className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.cls}`}
-                            >
-                              {s.label}
-                            </span>
-                          </td>
-                          <td className="py-3 px-2">
-                            {isPaid ? (
-                              <button
-                                disabled
-                                className="px-4 py-1.5 rounded text-xs font-semibold text-gray-300 border border-gray-200 bg-white cursor-not-allowed"
-                              >
-                                Pay Now
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => handlePayMine(row)}
-                                className="px-4 py-1.5 rounded text-xs font-semibold text-brand border border-brand bg-white hover:bg-blue-50 cursor-pointer transition-all"
-                              >
-                                Pay Now
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+          <YourPaymentsSection
+            rows={myUpcomingFiltered}
+            sortDir={myPaymentsSort}
+            onToggleSort={() =>
+              setMyPaymentsSort((d) => (d === "desc" ? "asc" : "desc"))
+            }
+            filter={myPaymentsFilter}
+            filterOpen={myPaymentsFilterOpen}
+            onToggleFilterOpen={() => setMyPaymentsFilterOpen((o) => !o)}
+            onFilterSelect={(key) => {
+              setMyPaymentsFilter(key);
+              setMyPaymentsFilterOpen(false);
+            }}
+            onPayNow={handlePayMine}
+          />
         )}
 
         {/* Payment Plans + Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-5">
-          {/* Payment Plans */}
-          <div
-            className="rounded-xl border border-surface-container-border p-4 bg-[#D7E2FF] shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-medium text-black">
-                Payment Plans
-              </span>
-              <button
-                onClick={() =>
-                  navigate(`/dashboard/payments?community=${communityId ?? ""}`)
-                }
-                className="text-xs font-medium text-brand bg-transparent border-none cursor-pointer hover:underline"
-              >
-                Manage All
-              </button>
-            </div>
-
-            {plansLoading ? (
-              <div className="flex flex-col gap-3">
-                {[0, 1, 2].map((i) => (
-                  <Skeleton key={i} className="h-20 rounded-xl" />
-                ))}
-              </div>
-            ) : visiblePlans.length === 0 ? (
-              <EmptyState icon={Wallet} title="No payment plans yet" className="py-6" />
-            ) : (
-              <div className="flex flex-col gap-3">
-                {visiblePlans.map((p, idx) => {
-                  const cm = planMetrics[p.id] ?? {};
-                  const paidCount = cm.paidCount ?? p.paidCount ?? 0;
-                  const totalCount =
-                    cm.totalCount > 0
-                      ? cm.totalCount
-                      : p.totalCount > 0
-                        ? p.totalCount
-                        : members.total;
-                  const collected = cm.collected ?? p.amountCollected ?? 0;
-                  const expected =
-                    p.amount > 0 && totalCount > 0
-                      ? p.amount * totalCount
-                      : (p.expectedAmount ?? 0);
-                  const pct =
-                    expected > 0
-                      ? Math.min(100, Math.round((collected / expected) * 100))
-                      : 0;
-                  const BAR_COLOR_CLASSES = [
-                    "bg-[#d4a017]",
-                    "bg-[#7c3aed]",
-                    "bg-[#099DA8]",
-                    "bg-[#059669]",
-                    "bg-brand",
-                    "bg-[#e11d48]",
-                  ];
-                  const barColorCls = BAR_COLOR_CLASSES[idx % BAR_COLOR_CLASSES.length];
-                  return (
-                    <div
-                      key={p.id}
-                      className="bg-surface-container rounded-xl p-4 border border-blue-100/60"
-                    >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="text-xs font-medium text-black truncate">
-                            {toTitleCase(p.name)}
-                          </span>
-                          <span className="text-[10px] font-normal px-2 py-0.5 rounded-full flex-shrink-0 text-[#7c3aed] bg-[#f3eeff]">
-                            {p.frequency ?? p.type ?? "—"}
-                          </span>
-                        </div>
-                        <span className="text-xs font-semibold text-gray-800 flex-shrink-0 ml-2">
-                          {formatNaira(p.amount)}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-gray-400 mb-2">
-                        {paidCount} / {totalCount} members paid
-                      </p>
-                      <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full ${barColorCls}`}
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                      <p className="text-[11px] text-gray-400 text-right mt-1">
-                        {pct}% Collected
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Recent Activity */}
-          <div
-            className="bg-surface-container rounded-xl border border-surface-container-border p-4 shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
-          >
-            <span className="text-sm font-medium text-black block mb-4">
-              Recent Activity
-            </span>
-
-            {activity.isLoading ? (
-              <div className="flex flex-col gap-3">
-                {[0, 1, 2, 3].map((i) => (
-                  <div key={i} className="flex gap-3">
-                    <Skeleton className="w-9 h-9 rounded-full flex-shrink-0" />
-                    <div className="flex-1">
-                      <Skeleton className="h-3 w-3/4 mb-1.5" />
-                      <Skeleton className="h-2.5 w-1/3" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : recentActivity.length === 0 ? (
-              <EmptyState icon={Activity} title="No recent activity" className="py-6" />
-            ) : (
-              recentActivity.map((a, i) => {
-                const event = a.event ?? "";
-                const failed = a.result === "FAILED";
-                const isPmt = event.includes("PAYMENT");
-                const aColor = failed
-                  ? "#e11d48"
-                  : isPmt
-                    ? "#059669"
-                    : "var(--color-brand)";
-                const aBgCls = failed ? "bg-[#fff1f2]" : isPmt ? "bg-[#ecfdf5]" : "bg-brand-tint";
-                const type = isPmt
-                  ? "payment"
-                  : event.includes("MEMBER")
-                    ? "member"
-                    : undefined;
-                const actorName = toTitleCase(
-                  [a.actor?.firstName, a.actor?.lastName]
-                    .filter(Boolean)
-                    .join(" "),
-                );
-                return (
-                  <div
-                    key={a.id ?? i}
-                    className={`flex items-start gap-3 py-3 ${i < recentActivity.length - 1 ? "border-b border-gray-50" : ""}`}
-                  >
-                    <div
-                      className={`w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center ${aBgCls}`}
-                    >
-                      <ActivityIcon type={type} color={aColor} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-700 leading-relaxed">
-                        {actorName && !a.description?.startsWith(actorName) && (
-                          <strong className="text-brand font-semibold">
-                            {actorName}{" "}
-                          </strong>
-                        )}
-                        {a.description ??
-                          event.replaceAll("_", " ").toLowerCase() ??
-                          "activity"}
-                      </p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <svg
-                          width="11"
-                          height="11"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                        >
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="#9ca3af"
-                            strokeWidth="1.8"
-                          />
-                          <path
-                            d="M12 6v6l4 2"
-                            stroke="#9ca3af"
-                            strokeWidth="1.8"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                        <span className="text-[11px] text-gray-400">
-                          {timeAgo(a.occurredAt)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
+          <PaymentPlansCard
+            plans={visiblePlans}
+            plansLoading={plansLoading}
+            planMetrics={planMetrics}
+            membersTotal={members.total}
+            onManageAll={() =>
+              navigate(`/dashboard/payments?community=${communityId ?? ""}`)
+            }
+          />
+          <RecentActivityCard
+            isLoading={activity.isLoading}
+            items={recentActivity}
+          />
         </div>
 
         {/* Member Payments table */}
-        <div
-          className="bg-surface-container rounded-xl border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
-        >
-          <div className="flex items-center justify-between px-5 pt-4 pb-0">
-            <span className="text-sm font-medium">Member Payments</span>
-            <button
-              onClick={() =>
-                runExport(() =>
-                  exportCommunityTransactions(communityId, {}, "CSV"),
-                )
-              }
-              disabled={isExporting || !communityId}
-              title="Export all transactions for this community as CSV"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-200 bg-white text-xs text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Download size={12} /> {isExporting ? "Exporting…" : "Export CSV"}
-            </button>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-5 py-3 gap-2">
-            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-surface-container-border w-full sm:flex-1 sm:min-w-0 sm:max-w-xs">
-              <Search size={12} className="text-gray-400 flex-shrink-0" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search members, payments, receipts..."
-                className="flex-1 bg-transparent border-none outline-none text-xs text-gray-600 placeholder-gray-400"
-              />
-            </div>
-            <div className="flex items-center gap-1.5 text-xs self-end sm:self-auto">
-              Sort by:
-              <button
-                onClick={() =>
-                  setSortDir((d) => (d === "desc" ? "asc" : "desc"))
-                }
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-500 bg-white font-medium text-gray-500 cursor-pointer hover:bg-gray-50"
-              >
-                {sortDir === "desc" ? "Recent" : "Oldest"}{" "}
-                <ChevronDown
-                  size={11}
-                  className={sortDir === "asc" ? "rotate-180" : ""}
-                />
-              </button>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="border-y border-hairline bg-[#F9F9FB]">
-                  <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
-                    Member
-                  </th>
-                  <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
-                    Plan
-                  </th>
-                  <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
-                    Amount
-                  </th>
-                  <th className="hidden md:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
-                    Date
-                  </th>
-                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
-                    Email
-                  </th>
-                  <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
-                    Status
-                  </th>
-                  <th className="hidden sm:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <tr key={i} className="border-b border-[#f3f4f8]">
-                      {Array.from({ length: 7 }).map((_, j) => (
-                        <td key={j} className="px-5 py-3">
-                          <Skeleton className="h-3 w-full" />
-                        </td>
-                      ))}
-                    </tr>
-                  ))
-                ) : filteredTransactions.length === 0 ? (
-                  <tr>
-                    <td colSpan={7}>
-                      <EmptyState icon={Receipt} title="No transactions found" className="py-10" />
-                    </td>
-                  </tr>
-                ) : (
-                  filteredTransactions.map((tx, i) => {
-                    const s = statusStyle(tx.status ?? "pending");
-                    const isPaid = ["success", "successful", "paid"].includes(
-                      (tx.status ?? "").toLowerCase(),
-                    );
-                    return (
-                      <tr
-                        key={tx.id ?? i}
-                        onClick={() =>
-                          tx.id &&
-                          navigate(`/dashboard/transactions/${tx.id}?community=${communityId ?? ""}`)
-                        }
-                        className={`border-b border-[#f3f4f8] hover:bg-[#fafbff] transition-colors ${tx.id ? "cursor-pointer" : "cursor-default"}`}
-                      >
-                        <td className="px-5 py-3 text-xs font-medium text-brand">
-                          {resolveMemberName(tx) ??
-                            tx.member?.user?.email ??
-                            tx.user?.email ??
-                            tx.email ??
-                            "—"}
-                        </td>
-                        <td className="px-5 py-3">
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-[#d4a017]" />
-                            <span className="text-xs text-black">
-                              {toTitleCase(tx.planName ?? tx.description) ??
-                                "—"}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-5 py-3 text-xs text-black">
-                          {formatNaira(tx.amount)}
-                        </td>
-                        <td className="hidden md:table-cell px-5 py-3 text-xs text-black">
-                          {formatDate(tx.paidAt ?? tx.createdAt)}
-                        </td>
-                        <td className="hidden lg:table-cell px-5 py-3 text-xs text-black">
-                          {tx.member?.user?.email ??
-                            tx.user?.email ??
-                            tx.payer?.email ??
-                            tx.member?.email ??
-                            tx.email ??
-                            "—"}
-                        </td>
-                        <td className="px-5 py-3">
-                          <span
-                            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.cls}`}
-                          >
-                            {s.label}
-                          </span>
-                        </td>
-                        <td className="hidden sm:table-cell px-5 py-3" onClick={(e) => e.stopPropagation()}>
-                          <div className="flex items-center gap-2">
-                            <ReceiptDownloadButton
-                              tx={{
-                                amount: tx.amount,
-                                description: tx.planName ?? tx.description,
-                                communityName: community?.name,
-                                communityLogo: community?.logo,
-                                date: tx.paidAt ?? tx.createdAt,
-                                channel: tx.channel,
-                                reference: tx.internalReference ?? tx.id,
-                                status: tx.status,
-                                payerPhoto: tx.member?.profileImage?.url ?? tx.user?.profileImage?.url ?? null,
-                                feeMinor:
-                                  tx.feeMinor ??
-                                  tx.fee ??
-                                  (tx.amountPaid != null && tx.amount != null && tx.amountPaid > tx.amount
-                                    ? tx.amountPaid - tx.amount
-                                    : null),
-                              }}
-                              payerName={resolveMemberName(tx)}
-                              payerEmail={tx.member?.user?.email ?? tx.user?.email ?? tx.email}
-                              disabled={!isPaid}
-                              iconSize={11}
-                              title={isPaid ? "Download receipt" : "Receipts are only available for successful payments"}
-                              buttonClassName={`w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center ${isPaid ? "text-gray-500 hover:bg-gray-50 cursor-pointer" : "text-gray-300 cursor-not-allowed opacity-40"}`}
-                            />
-                            <button
-                              disabled
-                              title="Send reminder — coming soon"
-                              className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center cursor-not-allowed opacity-40"
-                            >
-                              <img
-                                src={TimerIcon}
-                                className="w-2.5 h-2.5 object-contain"
-                                alt="Send reminder"
-                              />
-                            </button>
-                            <button
-                              disabled
-                              title="More options — coming soon"
-                              className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center text-gray-400 cursor-not-allowed opacity-40"
-                            >
-                              <MoreHorizontal size={12} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <MemberPaymentsSection
+          transactions={filteredTransactions}
+          isLoading={isLoading}
+          search={search}
+          onSearchChange={setSearch}
+          sortDir={sortDir}
+          onToggleSort={() =>
+            setSortDir((d) => (d === "desc" ? "asc" : "desc"))
+          }
+          onExport={() =>
+            runExport(() => exportCommunityTransactions(communityId, {}, "CSV"))
+          }
+          isExporting={isExporting}
+          communityId={communityId}
+          resolveMemberName={resolveMemberName}
+          community={community}
+          onRowClick={(txId) =>
+            navigate(`/dashboard/transactions/${txId}?community=${communityId ?? ""}`)
+          }
+        />
       </main>
 
       {/* Payment confirmation modal */}
