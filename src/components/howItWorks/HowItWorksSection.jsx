@@ -121,8 +121,7 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
               face is hidden behind it — only the segments in the gaps
               between rows end up visible, matching the Figma reference. */}
           <svg
-            className="hidden md:block pointer-events-none absolute inset-0"
-            style={{ width: "100%", height: "100%", overflow: "visible", zIndex: 0 }}
+            className="hidden md:block pointer-events-none absolute inset-0 w-full h-full overflow-visible z-0"
             fill="none"
           >
             {steps.slice(0, -1).map((step, i) => {
@@ -142,10 +141,10 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
           </svg>
 
           {steps.map((step, i) => (
-            <div key={step.num} className="relative" style={{ zIndex: 10 }}>
+            <div key={step.num} className="relative z-10">
               <StepRow step={step} index={i} innerRef={stepRefs[i]} badgeRef={badgeRefs[i]} />
               {i < steps.length - 1 && <MobileDivider />}
-              {i < steps.length - 1 && <div className="hidden md:block" style={{ height: 90 }} />}
+              {i < steps.length - 1 && <div className="hidden md:block h-[90px]" />}
             </div>
           ))}
         </div>
