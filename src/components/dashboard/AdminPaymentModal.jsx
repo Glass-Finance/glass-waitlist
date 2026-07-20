@@ -7,13 +7,19 @@ import {
   recordLocalPayment,
   stashPendingPaymentCtx,
   findAuthorisationForPlan,
-} from "../../../hooks/usePayments";
-import { initiatePayment as initiatePaymentApi } from "../../../api/members";
-import { getErrorMessage } from "../../../utils/errorHandler";
-import { toTitleCase } from "../../../utils/format";
-import Toggle from "../../../components/common/Toggle";
-import AutoPayPrompt from "../../../components/common/AutoPayPrompt";
-import { formatNaira } from "./helpers";
+} from "../../hooks/usePayments";
+import { initiatePayment as initiatePaymentApi } from "../../api/members";
+import { getErrorMessage } from "../../utils/errorHandler";
+import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
+import Toggle from "../common/Toggle";
+import AutoPayPrompt from "../common/AutoPayPrompt";
+
+// This modal shows "—" for a null/undefined amount rather than "₦0" (the
+// prefetch-derived fee breakdown reads as genuinely unknown before it
+// loads, not zero).
+function formatNaira(amount) {
+  return sharedFormatNaira(amount, { emptyDash: true });
+}
 
 export function AdminPaymentModal({ item, onClose }) {
   const navigate = useNavigate();

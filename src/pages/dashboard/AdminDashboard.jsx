@@ -40,7 +40,7 @@ import TimerIcon from "../../assets/dashboard/timer.webp";
 import WarnSignIcon from "../../assets/dashboard/warn-sign.webp";
 import { formatNaira, timeAgo, statusStyle, freqStyle } from "./admin-dashboard/helpers";
 import { Skeleton, ActivityIcon } from "./admin-dashboard/SkeletonUI";
-import { AdminPaymentModal } from "./admin-dashboard/AdminPaymentModal";
+import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 import AddMemberModal from "./admin-dashboard/AddMemberModal";
 
 function DashboardContent({ isPaying, communityId }) {

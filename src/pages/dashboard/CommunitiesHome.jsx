@@ -25,7 +25,7 @@ import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin, isCommunityAdmin, roleKeyword } from "../../utils/communityRole";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingState from "../../components/common/LoadingState";
-import { AdminPaymentModal } from "./admin-dashboard/AdminPaymentModal";
+import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 
 const SORT_OPTIONS = ["Recently Viewed", "A-Z", "Z-A", "Newest First"];
 
