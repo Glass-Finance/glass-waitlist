@@ -33,7 +33,8 @@ export default function Navbar() {
   return (
     <>
     <motion.div
-      style={{ scaleX, transformOrigin: "0% 50%", background: "linear-gradient(90deg, #002FA7 0%, #4f46e5 60%, #7c3aed 100%)", height: 3, position: "fixed", top: 0, left: 0, right: 0, zIndex: 200, pointerEvents: "none" }}
+      className="[transform-origin:0%_50%] bg-[linear-gradient(90deg,#002FA7_0%,#4f46e5_60%,#7c3aed_100%)] h-[3px] fixed top-0 left-0 right-0 z-[200] pointer-events-none"
+      style={{ scaleX }}
     />
     <nav
       className={`fixed top-0 left-0 right-0 z-50 min-h-[80px] transition-all duration-300 ${

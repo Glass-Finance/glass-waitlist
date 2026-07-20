@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { forwardRef } from "react";
 
 // Shared input for the SignUp step flow (EmailPhoneStep, RegisterStep) —
 // was duplicated as a raw <input> + module-level inputCls/inputStyle/
@@ -13,22 +13,14 @@ export const SignUpTextInput = forwardRef(function SignUpTextInput({
   className = "",
   ...rest
 }, ref) {
-  const [focused, setFocused] = useState(false);
   const invalid = Boolean(error);
   return (
     <input
       ref={ref}
       aria-invalid={invalid || undefined}
-      onFocus={(e) => { setFocused(true); onFocus?.(e); }}
-      onBlur={(e) => { setFocused(false); onBlur?.(e); }}
-      className={`w-full px-4 py-3 rounded-xl bg-white text-gray-900 placeholder-gray-400 text-placeholder outline-none transition-all ${className}`}
-      style={{
-        border: invalid
-          ? "1.5px solid var(--color-danger)"
-          : focused
-            ? "1.5px solid #2535c3"
-            : "1.5px solid #C2C2C2",
-      }}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      className={`w-full px-4 py-3 rounded-xl bg-white text-gray-900 placeholder-gray-400 text-placeholder outline-none transition-all border-[1.5px] ${invalid ? "border-danger" : "border-[#C2C2C2] focus:border-[#2535c3]"} ${className}`}
       {...rest}
     />
   );

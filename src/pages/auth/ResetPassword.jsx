@@ -91,7 +91,7 @@ export default function ResetPassword() {
         </div>
 
         {!email || !token ? (
-          <p className="text-sm" style={{ color: "#E53E3E" }}>
+          <p className="text-sm text-[#E53E3E]">
             This reset link is invalid or has expired.{" "}
             <Link to="/forgot-password" className="font-semibold text-[#1C2B8A]">
               Request a new one

@@ -42,11 +42,7 @@ export default function Footer() {
       {/* ── CTA ── */}
       <div className="relative pt-20 md:pt-28 pb-20 overflow-hidden">
         <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(30,50,160,0.35) 0%, transparent 70%)",
-          }}
+          className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(30,50,160,0.35)_0%,transparent_70%)]"
         />
         <div className="relative z-10 max-w-[860px] mx-auto px-6 text-center">
           <h2 className="text-[clamp(30px,5vw,54px)] font-bold text-white leading-tight tracking-tight mb-5">

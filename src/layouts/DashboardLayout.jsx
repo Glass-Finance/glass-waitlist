@@ -75,13 +75,8 @@ export default function DashboardLayout() {
           the sidebar's own footprint, which reads as shifted left relative
           to the actual visible content area. */}
       <div
-        className="flex-1 flex flex-col overflow-hidden"
-        style={{
-          backgroundImage: `url(${AdminBackground})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
+        className="flex-1 flex flex-col overflow-hidden bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${AdminBackground})` }}
       >
         {/* Topbar */}
         <Topbar onMenuClick={() => setMobileNavOpen(true)} onOpenTour={() => setTourOpen(true)} />

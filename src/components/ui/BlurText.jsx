@@ -89,13 +89,7 @@ const BlurText = ({
   return (
     <span
       ref={ref}
-      className={className}
-      style={{
-        display: "inline-flex",
-        flexWrap: "wrap",
-        justifyContent: centered ? "center" : "flex-start",
-        width: centered ? "100%" : "auto",
-      }}
+      className={`inline-flex flex-wrap ${centered ? "justify-center w-full" : "justify-start w-auto"} ${className}`}
     >
       {elements.map((segment, index) => {
         const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots);

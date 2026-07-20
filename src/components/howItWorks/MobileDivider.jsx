@@ -6,8 +6,7 @@ export default function MobileDivider() {
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          className="w-px rounded-full"
-          style={{ height: 32, background: "linear-gradient(to bottom, #002FA7, rgba(0,47,167,0.25))" }}
+          className="w-px rounded-full h-8 bg-[linear-gradient(to_bottom,#002FA7,rgba(0,47,167,0.25))]"
           animate={{ scaleY: [0, 1, 0], opacity: [0, 1, 0] }}
           transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: i * 0.15 }}
         />

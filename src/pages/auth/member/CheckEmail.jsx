@@ -10,7 +10,7 @@ export default function CheckEmail() {
   const joinUrl   = buildMobileUrl("/member/join");
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden" style={{ background: "#E5E5E5" }}>
+    <div className="h-screen w-screen flex flex-col overflow-hidden bg-[#E5E5E5]">
 
       {/* Glass logo top left */}
       <header className="px-8 py-3 flex-shrink-0">

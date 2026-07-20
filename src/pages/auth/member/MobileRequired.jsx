@@ -20,13 +20,8 @@ export default function MobileRequired() {
 
   return (
     <div
-      className="h-screen w-screen flex flex-col overflow-hidden"
-      style={{
-        height: "100vh",
-        backgroundImage: `url(${Background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      className="h-screen w-screen flex flex-col overflow-hidden bg-cover bg-center"
+      style={{ backgroundImage: `url(${Background})` }}
     >
       <header className="px-8 py-3 flex-shrink-0">
         <div className="flex items-center gap-2">
