@@ -13,6 +13,7 @@ import { exportCommunityObligations } from "../../api/exports";
 import { useExportJob } from "../../hooks/useExportJob";
 import LoadingState from "../../components/common/LoadingState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
+import StatCard from "../../components/dashboard/StatCard";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 // Only these three roles should be assignable when inviting members.
@@ -45,20 +46,6 @@ function statusStyle(paid, total) {
   if (paid === total) return "bg-[#ecfdf5] text-[#059669]";
   if (paid === 0) return "bg-[#fff1f2] text-[#e11d48]";
   return "bg-[#fffbeb] text-[#b45309]";
-}
-
-function StatCard({ icon: Icon, label, value, iconCls }) {
-  return (
-    <div className="bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 flex items-center justify-between shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
-      <div>
-        <p className="text-xs text-gray-400 mb-1">{label}</p>
-        <p className="text-[13px] font-semibold text-black">{value}</p>
-      </div>
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${iconCls}`}>
-        <Icon size={14} />
-      </div>
-    </div>
-  );
 }
 
 function FilterPanel({ planOptions, filters, onApply, onClose }) {

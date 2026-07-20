@@ -10,6 +10,7 @@ import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
+import StatCard from "../../components/dashboard/StatCard";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 const TABS = ["All Plans", "Payment History", "Contact Details"];
@@ -24,14 +25,6 @@ function memberName(m) {
 const memberEmail = (m) => m?.user?.email ?? m?.email ?? "—";
 const memberPhone = (m) => m?.user?.phoneNumber ?? m?.phoneNumber ?? "—";
 
-function StatCard({ label, value }) {
-  return (
-    <div className="bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
-      <p className="text-xs text-gray-400 mb-1">{label}</p>
-      <p className="text-[13px] font-semibold text-black">{value}</p>
-    </div>
-  );
-}
 
 function PlanCard({ plan, successfulLinkIds }) {
   const isRecurring = !!plan.recurringPlan;
