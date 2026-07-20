@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
@@ -8,7 +7,6 @@ import waveBg from "../../assets/hero/hero.webp";
 import iphone from "../../assets/hero/iphone.webp";
 import BlurText from "../ui/BlurText";
 import VariableProximity from "../ui/VariableProximity";
-import MembersDashboard from "../MemberDashboardOverlay";
 
 export default function MembersHero() {
   const navigate = useNavigate();
@@ -21,7 +19,7 @@ export default function MembersHero() {
   function handleJoin() {
     navigate(isMobileDevice() ? "/member/join" : mobileRequiredPath("/member/join"));
   }
-//
+
   useEffect(() => {
     // index.css sets `scroll-behavior: smooth` globally for anchor links —
     // that also hijacks plain scrollTo() calls, turning this reset into a
@@ -68,7 +66,6 @@ export default function MembersHero() {
       }
       @media (max-width: 640px) {
         .hero-wave-bg { animation: none !important; transform: scale(1.06) !important; will-change: auto !important; }
-        .hero-blur-blobs { display: none !important; }
       }
     `}</style>
     <section
@@ -88,39 +85,12 @@ export default function MembersHero() {
       />
 
       {/* Dark overlay */}
-      {/* <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(105deg, rgba(2,3,18,0.97) 0%, rgba(3,4,22,0.95) 35%, rgba(6,3,20,0.88) 60%, rgba(10,4,24,0.75) 100%)",
-        }}
-      /> */}
       <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(2,3,18,0.82)_0%,rgba(3,4,22,0.78)_35%,rgba(6,3,20,0.65)_60%,rgba(10,4,24,0.45)_100%)]" />
 
       <canvas
         id="members-hero-canvas"
         className="absolute inset-0 pointer-events-none select-none w-full h-full opacity-[0.035] mix-blend-screen"
       />
-
-      {/* Glow blobs */}
-      {/* <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-        <div
-          className="absolute bottom-0 right-0 w-[700px] h-[480px]"
-          style={{
-            background:
-              "radial-gradient(ellipse at bottom right, rgba(120,10,150,0.4) 0%, transparent 65%)",
-            filter: "blur(60px)",
-          }}
-        />
-        <div
-          className="absolute bottom-0 left-0 w-[500px] h-[320px]"
-          style={{
-            background:
-              "radial-gradient(ellipse at bottom left, rgba(80,8,110,0.28) 0%, transparent 60%)",
-            filter: "blur(70px)",
-          }}
-        />
-      </div> */}
 
       {/* ── DESKTOP ── */}
       <div className="hidden sm:flex relative z-10 w-full max-w-[1280px] mx-auto px-8 lg:px-16 min-h-[calc(100vh-68px)] flex-row items-center">
@@ -293,18 +263,6 @@ export default function MembersHero() {
             top (items-end) if it doesn't fit, never from the bottom. */}
         <div className="absolute bottom-0 left-0 right-0 flex justify-center items-end overflow-hidden max-h-[58vh]">
           <div className="relative w-[330px]">
-            <div className="absolute [top:1.8%] [left:8.2%] [width:83.5%] h-full rounded-[38px] overflow-hidden z-[2]">
-              {/* <div
-                style={{
-                  width: 390,
-                  height: 844,
-                  transform: `scale(${(280 * 0.835) / 390})`,
-                  transformOrigin: "top left",
-                }}
-              >
-                <MembersDashboard />
-              </div> */}
-            </div>
             {/* See the desktop copy of this <img> above for why
                 loading="lazy" is deliberate here, not an oversight. */}
             <img
