@@ -91,30 +91,13 @@ export default function OtpBoxes({
         onKeyDown={onKeyDown}
         disabled={disabled}
         aria-label="Verification code"
-        className="otp-hidden-input"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: 1,
-          margin: 0,
-          padding: 0,
-          border: "none",
-          outline: "none",
-          background: "transparent",
-          // Kept opacity: 1 deliberately — see comment above the component.
-          // Every visual trace is erased via transparent color/caret
-          // instead, so Safari's own visibility heuristics still see a
-          // real, "visible" field.
-          color: "transparent",
-          caretColor: "transparent",
-          WebkitTextFillColor: "transparent",
-          // Below 16px, iOS auto-zooms the page on focus — the input is
-          // invisible but the browser still applies that heuristic based
-          // on its computed font size.
-          fontSize: 16,
-        }}
+        // Kept opacity: 1 deliberately — see comment above the component.
+        // Every visual trace is erased via transparent color/caret instead,
+        // so Safari's own visibility heuristics still see a real, "visible"
+        // field. text-base (16px) is deliberate too: below that, iOS
+        // auto-zooms the page on focus based on the input's computed font
+        // size, even though the input itself is invisible.
+        className="otp-hidden-input absolute inset-0 w-full h-full z-[1] m-0 p-0 border-none outline-none bg-transparent text-transparent caret-transparent [-webkit-text-fill-color:transparent] text-base"
       />
       {renderBoxes ? (
         renderBoxes(digits, activeIndex)
@@ -123,8 +106,7 @@ export default function OtpBoxes({
           {digits.map((d, i) => (
             <div
               key={i}
-              className="w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all"
-              style={{ border: d || i === activeIndex ? "2px solid #1C2B8A" : "1.5px solid #D0D5E8" }}
+              className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all ${d || i === activeIndex ? "border-2 border-[#1C2B8A]" : "border-[1.5px] border-[#D0D5E8]"}`}
             >
               {d}
             </div>
