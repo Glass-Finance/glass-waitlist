@@ -4,7 +4,6 @@ import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 import DashboardTour, { DASHBOARD_TOUR_SEEN_KEY } from "../components/dashboard/DashboardTour";
 import AutoPayPrompt from "../components/common/AutoPayPrompt";
-import AdminBackground from "../assets/admin-background.webp";
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
@@ -75,8 +74,7 @@ export default function DashboardLayout() {
           the sidebar's own footprint, which reads as shifted left relative
           to the actual visible content area. */}
       <div
-        className="flex-1 flex flex-col overflow-hidden bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${AdminBackground})` }}
+        className="flex-1 flex flex-col overflow-hidden bg-cover bg-center bg-no-repeat bg-admin-default"
       >
         {/* Topbar */}
         <Topbar onMenuClick={() => setMobileNavOpen(true)} onOpenTour={() => setTourOpen(true)} />

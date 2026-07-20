@@ -158,7 +158,6 @@ export default function Transactions() {
   return (
     <div
       className="relative overflow-hidden min-h-screen max-w-[430px] mx-auto pb-10"
-      style={{ fontFamily: "Inter, -apple-system, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* ── Top bar ── */}

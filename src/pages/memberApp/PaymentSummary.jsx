@@ -252,7 +252,6 @@ export default function PaymentSummary() {
   return (
     <div
       className="relative flex flex-col min-h-screen overflow-hidden max-w-[430px] mx-auto"
-      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* ── Top bar ── */}

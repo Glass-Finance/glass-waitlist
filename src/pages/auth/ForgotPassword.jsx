@@ -164,7 +164,6 @@ export default function ForgotPassword() {
                         <div
                           key={i}
                           className={`flex-1 h-[52px] min-w-0 flex items-center justify-center text-[22px] font-bold rounded-xl bg-white text-[#111827] transition-[border-color] duration-150 border-2 ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-surface-container-border"}`}
-                          style={{ fontFamily: "Inter, sans-serif" }}
                         >
                           {d}
                         </div>

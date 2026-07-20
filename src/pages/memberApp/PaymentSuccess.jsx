@@ -254,7 +254,6 @@ export default function PaymentSuccess() {
   return (
     <div
       className="relative flex flex-col min-h-screen overflow-hidden max-w-[430px] mx-auto"
-      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* Top bar — the success screen is a deliberate landing page (two

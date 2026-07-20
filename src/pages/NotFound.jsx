@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import GlassLogo from "../assets/Glass.webp";
-import Background from "../assets/background.webp";
 import { usePageTitle } from "../hooks/usePageTitle";
 
 export default function NotFound() {
@@ -9,8 +8,7 @@ export default function NotFound() {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-cover bg-center"
-      style={{ backgroundImage: `url(${Background})` }}
+      className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-cover bg-center bg-page-default"
     >
       {/* Logo — no container */}
       <img

@@ -172,6 +172,24 @@ body {
   font-family: var(--font-playfair);
 }
 
+/* Shared page background — used by every full-screen state/onboarding page
+   that shows this artwork, so the asset is only referenced from one place. */
+.bg-page-default {
+  background-image: url("./assets/background.webp");
+}
+
+.bg-admin-default {
+  background-image: url("./assets/admin-background.webp");
+}
+
+.bg-mobile-auth-default {
+  background-image: url("./assets/mobile-auth-background.webp");
+}
+
+.bg-problem-glow {
+  background-image: url("./assets/problem-glow.webp");
+}
+
 /* Keyframe Animations */
 @keyframes fadeIn {
   from {

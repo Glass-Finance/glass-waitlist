@@ -7,7 +7,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import GlassLogo from "../../assets/Glass.webp";
 import PayingMemberIcon from "../../assets/auth/paying-dues.webp";
 import ExemptPaymentIcon from "../../assets/auth/exempt-payments.webp";
-import Background from "../../assets/background.webp";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 
 export default function PayingMember() {
@@ -28,8 +27,7 @@ export default function PayingMember() {
 
   return (
     <div
-      className="h-screen w-screen flex flex-col items-center justify-center overflow-hidden px-6 bg-contain bg-center"
-      style={{ backgroundImage: `url(${Background})` }}
+      className="h-screen w-screen flex flex-col items-center justify-center overflow-hidden px-6 bg-contain bg-center bg-page-default"
     >
       <div className="absolute top-5 left-8 flex items-center gap-2">
         <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />

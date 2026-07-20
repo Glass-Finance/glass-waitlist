@@ -15,7 +15,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Papa from "papaparse";
 import { Bell, Download, CloudUpload, Copy, Check, X, FileSpreadsheet, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
-import Background from "../../assets/background.webp";
 import { notifyError } from "../../utils/errorHandler";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { toastProgress, toastSuccess } from "../../utils/toast";
@@ -329,8 +328,7 @@ export default function AddMembers() {
 
   return (
     <div
-      className="flex flex-col overflow-hidden"
-      style={{ height: "100vh", backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
+      className="flex flex-col overflow-hidden h-screen bg-contain bg-center bg-page-default"
     >
       <header className="flex items-center justify-between px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
         <div className="flex items-center gap-2">

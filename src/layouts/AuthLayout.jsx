@@ -3,7 +3,6 @@ import AuthPanel from "../assets/auth/auth-panel.webp";
 import glassLogo from "../assets/cta/ctalogo.webp";
 import glassIcon from "../assets/Glass.webp";
 import AuthBackground from "../assets/auth-background.webp";
-import MobileAuthBackground from "../assets/mobile-auth-background.webp";
 
 export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
   const navigate = useNavigate();
@@ -14,8 +13,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
           ratios), swapped by breakpoint visibility rather than one shared
           background-image, since the two assets aren't the same crop. */}
       <div
-        className="absolute inset-0 md:hidden bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${MobileAuthBackground})` }}
+        className="absolute inset-0 md:hidden bg-cover bg-center bg-no-repeat bg-mobile-auth-default"
       />
       <div
         className="hidden md:block absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -66,7 +64,6 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
                 {heroTitle && (
                   <h1
                     className="text-white font-normal leading-tight text-[clamp(2rem,2vw,2rem)]"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     {heroTitle}
                   </h1>
@@ -74,7 +71,6 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
                 {heroSubtitle && (
                   <h2
                     className="text-white font-normal leading-tight mt-2 text-[clamp(2rem,2vw,2rem)]"
-                    style={{ fontFamily: "Inter, sans-serif" }}
                   >
                     {heroSubtitle}
                   </h2>

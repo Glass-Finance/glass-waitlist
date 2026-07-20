@@ -14,7 +14,6 @@ import { useAuth } from "../../store/AuthContext";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingScreen from "../../components/LoadingScreen";
 import MemberPaymentConfirm from "../memberApp/PaymentSuccess";
-import AdminBackground from "../../assets/admin-background.webp";
 
 // The backend's verify endpoint is async: it queues a verification job and
 // returns the current DB status (often still "INITIATED"). The job updates the
@@ -255,11 +254,7 @@ function AdminPaymentCallback() {
 
   return (
     <div
-      className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
-      style={{
-        fontFamily: "'Inter', system-ui, sans-serif",
-        backgroundImage: `url(${AdminBackground})`,
-      }}
+      className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-admin-default"
     >
       {/* Top bar */}
       <div className="flex items-center px-4 md:px-8 pt-6 md:pt-8 pb-4">

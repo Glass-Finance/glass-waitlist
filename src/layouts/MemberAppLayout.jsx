@@ -3,7 +3,6 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { Home, ArrowLeftRight, CalendarClock, Bell, Menu } from "lucide-react";
 import SideDrawer from "../components/memberApp/SideDrawer";
 import InvitePopup from "../components/memberApp/InvitePopup";
-import MobileBackground from "../assets/mobile-auth-background.webp";
 
 const TABS = [
   { to: "/member/home", label: "Home", Icon: Home },
@@ -19,11 +18,7 @@ export default function MemberAppLayout() {
   return (
     <div className="flex justify-center items-start min-h-screen bg-surface-bg">
       <div
-        className="relative bg-surface-bg w-full max-w-[390px] min-h-screen bg-cover bg-center bg-no-repeat"
-        style={{
-          fontFamily: "'Inter', system-ui, sans-serif",
-          backgroundImage: `url(${MobileBackground})`,
-        }}
+        className="relative bg-surface-bg w-full max-w-[390px] min-h-screen bg-cover bg-center bg-no-repeat bg-mobile-auth-default"
       >
         {/* Content — window scrolls naturally; paddingBottom clears the fixed nav */}
         <main className="pb-[88px]">

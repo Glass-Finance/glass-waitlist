@@ -295,7 +295,6 @@ export default function DiscoverCommunities() {
   return (
     <div
       className="relative overflow-hidden min-h-screen pb-10 max-w-[430px] mx-auto"
-      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* Header — before: padding: "52px 20px 16px" */}

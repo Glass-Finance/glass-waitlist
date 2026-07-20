@@ -239,7 +239,7 @@ export default function Notifications() {
   async function handleReject(invite) { await reject(invite.id); }
 
   return (
-    <div className="relative overflow-hidden min-h-screen pb-10" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       {/* Header */}
       <div className="flex items-center justify-center relative pt-6 px-5 pb-5">

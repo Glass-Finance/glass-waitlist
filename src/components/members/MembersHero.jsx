@@ -134,7 +134,6 @@ export default function MembersHero() {
               radius={140}
               falloff="gaussian"
               className="text-[15px] text-[rgba(255,255,255,0.55)] leading-[1.7]"
-              style={{ fontFamily: "Inter,-apple-system,sans-serif" }}
             />
           </div>
 
@@ -151,7 +150,6 @@ export default function MembersHero() {
             <button
               onClick={handleJoin}
               className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer font-medium"
-              style={{ fontFamily: "Inter, sans-serif" }}
             >
               Join A Community
               <motion.span
@@ -240,7 +238,6 @@ export default function MembersHero() {
           <button
             onClick={handleJoin}
             className="inline-flex items-center gap-2 bg-white text-[#0c1020] text-[13px] px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30 cursor-pointer font-medium"
-            style={{ fontFamily: "Inter, sans-serif" }}
           >
             Join A Community
             <motion.span

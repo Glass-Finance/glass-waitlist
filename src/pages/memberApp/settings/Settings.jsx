@@ -39,7 +39,6 @@ export default function Settings() {
   return (
     <div
       className="relative overflow-hidden min-h-screen pb-10"
-      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">

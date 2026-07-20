@@ -41,7 +41,6 @@ export default function SideDrawer({ open, onClose }) {
       {/* Panel */}
       <div
         className={`fixed top-0 left-0 bottom-0 w-[300px] z-50 bg-[#D9D9D9] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${open ? "translate-x-0" : "-translate-x-full"}`}
-        style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
       >
         {/* Header */}
         <div className="flex items-center justify-between pt-5 px-5 pb-4">

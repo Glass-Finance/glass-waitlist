@@ -131,7 +131,6 @@ createRoot(document.getElementById("root")).render(
             }}
             toastOptions={{
               style: {
-                fontFamily: "'Inter', sans-serif",
                 fontSize: "13px",
               },
               classNames: {

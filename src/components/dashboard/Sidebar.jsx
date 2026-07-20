@@ -220,7 +220,6 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         {/* White panel */}
         <div
           className="bg-white md:bg-surface-container md:border-r md:border-surface-container-border w-[220px] flex flex-col"
-          style={{ fontFamily: "Inter, sans-serif" }}
         >
           <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] min-h-14 flex items-center">
             <div>
@@ -248,7 +247,6 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                     navigate(path);
                     onCloseMobile?.();
                   }}
-                  style={{ fontFamily: "Inter, sans-serif" }}
                   className={`w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer tracking-normal text-xs whitespace-nowrap mb-1.5 transition-all duration-150 ${
                     isActive
                       ? "bg-brand-tint text-brand font-bold"
@@ -453,7 +451,6 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       {!onCommunitiesOverview  && (
       <div
         className="bg-white md:bg-surface-container w-[220px] border-r border-surface-container-border flex flex-col overflow-hidden transition-[width] duration-[220ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-        style={{ fontFamily: "Inter, sans-serif" }}
       >
         {/* Org header */}
         <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] flex items-center justify-between gap-2 min-h-14">
@@ -536,7 +533,6 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   }
                 }}
                 disabled={isDisabled}
-                style={{ fontFamily: "Inter, sans-serif" }}
                 className={`w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none tracking-normal text-xs mb-1.5 transition-all duration-150 whitespace-nowrap ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"} ${
                   isActive
                     ? "bg-brand-tint text-brand font-bold"
@@ -602,7 +598,6 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               setMemberViewHint(true);
               setTimeout(() => setMemberViewHint(false), 3500);
             }}
-            style={{ fontFamily: "Inter, sans-serif" }}
             className="w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer bg-transparent text-[#6b7280] font-medium text-xs transition-all duration-150 whitespace-nowrap hover:bg-[#f9fafb] hover:text-brand"
           >
             <Smartphone size={14} className="flex-shrink-0" />

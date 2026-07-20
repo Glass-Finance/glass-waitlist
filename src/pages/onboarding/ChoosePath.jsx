@@ -8,7 +8,6 @@ import { Info } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
 import CreateCommunityIcon from "../../assets/auth/create-community.webp";
 import JoinCommunityIcon from "../../assets/auth/join-community.webp";
-import Background from "../../assets/background.webp";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 
 export default function ChoosePath() {
@@ -36,8 +35,7 @@ export default function ChoosePath() {
 
   return (
     <div
-      className="h-screen w-screen flex flex-col overflow-hidden bg-contain bg-center"
-      style={{ backgroundImage: `url(${Background})` }}
+      className="h-screen w-screen flex flex-col overflow-hidden bg-contain bg-center bg-page-default"
     >
       <header className="flex items-center px-8 py-5 flex-shrink-0">
         <div className="flex items-center gap-2">

@@ -123,7 +123,7 @@ export default function MyCommunities() {
   }
 
   return (
-    <div className="relative overflow-hidden pb-10 min-h-screen" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="relative overflow-hidden pb-10 min-h-screen">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button

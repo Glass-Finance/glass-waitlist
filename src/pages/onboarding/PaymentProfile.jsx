@@ -15,7 +15,6 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bell, Check, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
-import Background from "../../assets/background.webp";
 import client from "../../api/client";
 import { notifyError, getErrorMessage } from "../../utils/errorHandler";
 import { useCommunityAccount } from "../../hooks/useCommunityAccount";
@@ -226,8 +225,7 @@ export default function PaymentProfile() {
 
   return (
     <div
-      className="flex flex-col overflow-hidden"
-      style={{ height: "100vh", backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
+      className="flex flex-col overflow-hidden h-screen bg-contain bg-center bg-page-default"
     >
       {showSuccess && <SuccessModal />}
 

@@ -12,7 +12,6 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bell, Upload, Check, X as XIcon, Loader2, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
-import Background from "../../assets/background.webp";
 import client from "../../api/client";
 import { updateCommunity } from "../../api/communities";
 import { useSlug } from "../../hooks/useSlug";
@@ -227,8 +226,7 @@ export default function OrganizationProfile() {
 
   return (
     <div
-      className="flex flex-col overflow-hidden h-screen bg-contain bg-center"
-      style={{ backgroundImage: `url(${Background})` }}
+      className="flex flex-col overflow-hidden h-screen bg-contain bg-center bg-page-default"
     >
       {/* Navbar */}
       <header className="flex items-center justify-between px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">

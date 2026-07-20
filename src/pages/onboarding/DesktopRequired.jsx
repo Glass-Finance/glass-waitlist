@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Check, Copy } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
-import Background from "../../assets/background.webp";
 import { buildMobileUrl } from "../../utils/deviceRedirect";
 import { useAuth } from "../../store/AuthContext";
 
@@ -28,8 +27,7 @@ export default function DesktopRequired() {
 
   return (
     <div
-      className="h-screen w-screen flex flex-col overflow-hidden bg-cover bg-center"
-      style={{ backgroundImage: `url(${Background})` }}
+      className="h-screen w-screen flex flex-col overflow-hidden bg-cover bg-center bg-page-default"
     >
       <header className="px-8 py-3 flex-shrink-0">
         <div className="flex items-center gap-2">

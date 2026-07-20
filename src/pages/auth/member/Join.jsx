@@ -115,7 +115,6 @@ function MobileShell({ children, step }) {
     <div className="flex justify-center items-start min-h-screen bg-surface-bg">
       <div
         className="relative w-full max-w-[430px] min-h-screen overflow-hidden flex flex-col"
-        style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
       >
         {/* ── Top image section (45% height) ── */}
         <div

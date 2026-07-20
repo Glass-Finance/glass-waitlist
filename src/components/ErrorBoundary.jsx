@@ -1,7 +1,6 @@
 import { Component } from "react";
 import { captureRenderError } from "../utils/monitoring";
 import GlassLogo from "../assets/Glass.webp";
-import Background from "../assets/background.webp";
 
 export default class ErrorBoundary extends Component {
   state = { error: null };
@@ -18,8 +17,7 @@ export default class ErrorBoundary extends Component {
     if (this.state.error) {
       return (
         <div
-          className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-cover bg-center"
-          style={{ backgroundImage: `url(${Background})`, fontFamily: "Inter, sans-serif" }}
+          className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-cover bg-center bg-page-default"
         >
           <img src={GlassLogo} alt="Glass" className="w-10 h-10 object-contain mb-8" />
 

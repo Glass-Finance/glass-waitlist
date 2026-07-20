@@ -54,7 +54,6 @@ export default function NotificationSettings() {
   return (
     <div
       className="relative overflow-hidden min-h-screen pb-10"
-      style={{ fontFamily: "'Inter', system-ui, sans-serif" }}
     >
       <GlassLogoGlow />
       {/* Header */}

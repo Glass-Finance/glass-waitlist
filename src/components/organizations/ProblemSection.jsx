@@ -15,7 +15,6 @@
 import { useEffect, useRef } from "react";
 import { Clock, Eye, Lightbulb } from "lucide-react";
 import Problem from "../../assets/problem.webp";
-import ProblemGlow from "../../assets/problem-glow.webp";
 import BlurText from "../ui/BlurText";
 
 const problems = [
@@ -113,8 +112,7 @@ export default function ProblemSection() {
           DOM order, so without it this would wash out the section's real
           text content instead of sitting behind it. */}
       <div
-        className="absolute inset-0 pointer-events-none -z-[1] bg-cover bg-left bg-no-repeat"
-        style={{ backgroundImage: `url(${ProblemGlow})` }}
+        className="absolute inset-0 pointer-events-none -z-[1] bg-cover bg-left bg-no-repeat bg-problem-glow"
         aria-hidden="true"
       />
       <div className="max-w-[1140px] mx-auto px-6 relative">
