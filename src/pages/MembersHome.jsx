@@ -4,7 +4,7 @@ import MembersHero from "../components/members/MembersHero";
 import MembersHowItWorks from "../components/members/MembersHowItWorks";
 import MembersProblem from "../components/members/MembersProblem";
 import MembersSolution from "../components/members/MembersSolution";
-import Security from "../components/Security";
+import SecurityFeatures from "../components/SecurityFeatures";
 import TrustedBy from "../components/TrustedBy";
 import Pricing from "../components/Pricing";
 import UseCases from "../components/Usecases";
@@ -28,7 +28,7 @@ export default function MembersHome() {
       <MembersHowItWorks />
       <UseCases />
       <TrustedBy />
-      <Security />
+      <SecurityFeatures />
       <Pricing />
       <MembersCTA />
       <WhyGlass />

@@ -12,8 +12,8 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bell, Upload, Check, X as XIcon, Loader2, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
-import client from "../../api/client";
-import { updateCommunity } from "../../api/communities";
+import { createCommunity, updateCommunity } from "../../api/communities";
+import { uploadFile } from "../../api/files";
 import { useSlug } from "../../hooks/useSlug";
 import { useAuth } from "../../store/AuthContext";
 import { notifyError } from "../../utils/errorHandler";
@@ -164,12 +164,7 @@ export default function OrganizationProfile() {
       let logoFileId = undefined;
       if (logoFile) {
         const resizedLogo = await resizeImageFile(logoFile);
-        const fd = new FormData();
-        fd.append("file", resizedLogo);
-        fd.append("fileCategory", "COMMUNITY_LOGO");
-        const uploadRes = await client.post("/file/upload", fd, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        const uploadRes = await uploadFile(resizedLogo, "COMMUNITY_LOGO");
         logoFileId = uploadRes.data?.data?.id;
       }
 
@@ -192,7 +187,7 @@ export default function OrganizationProfile() {
       // duplicate community rather than editing the one already made.
       const res = existingCommunityId
         ? await updateCommunity(existingCommunityId, payload)
-        : await client.post("/communities", payload);
+        : await createCommunity(payload);
 
       const community = res.data?.data;
       if (!community?.id) throw new Error("Community creation failed.");

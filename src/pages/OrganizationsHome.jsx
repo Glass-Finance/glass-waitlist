@@ -7,7 +7,7 @@ import OurSolution from "../components/organizations/OurSolution";
 import GetStarted from "../components/organizations/GetStarted";
 import Usecases from "../components/Usecases";
 import TrustedBy from "../components/TrustedBy";
-import Security from "../components/Security";
+import SecurityFeatures from "../components/SecurityFeatures";
 import CTA from "../components/organizations/CTA";
 import WhyGlass from "../components/WhyGlass";
 import Footer from "../components/Footer";
@@ -30,7 +30,7 @@ export default function OrganizationsHome() {
       <GetStarted />
       <Usecases />
       <TrustedBy />
-      <Security />
+      <SecurityFeatures />
       <CTA />
       <WhyGlass />
       <Footer />

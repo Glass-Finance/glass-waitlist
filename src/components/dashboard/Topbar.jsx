@@ -14,7 +14,7 @@ import { useAuth } from "../../store/AuthContext";
 import { useAllNotifications } from "../../hooks/useNotifications";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunities } from "../../hooks/useCommunities";
-import client from "../../api/client";
+import { searchCommunity } from "../../api/communities";
 import NotificationsPanel from "./NotificationsPanel";
 import { formatNaira, toTitleCase } from "../../utils/format";
 
@@ -111,9 +111,7 @@ export default function Topbar({
     setSearching(true);
     const timer = setTimeout(async () => {
       try {
-        const { data } = await client.get(`/communities/${communityId}/search`, {
-          params: { search: q, pageSize: 5 },
-        });
+        const { data } = await searchCommunity(communityId, { search: q, pageSize: 5 });
         setResults(data?.data ?? null);
         setSearchOpen(true);
       } catch {

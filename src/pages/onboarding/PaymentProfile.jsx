@@ -15,7 +15,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bell, Check, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
-import client from "../../api/client";
+import { getBanks, resolveAccount } from "../../api/members";
 import { notifyError, getErrorMessage } from "../../utils/errorHandler";
 import { useCommunityAccount } from "../../hooks/useCommunityAccount";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
@@ -96,7 +96,7 @@ export default function PaymentProfile() {
 
   // Fetch banks on mount
   useEffect(() => {
-    client.get("/finance/banks")
+    getBanks()
       .then(({ data }) => {
         if (!data.success) return;
         // The bank list has been observed to contain duplicate codes —
@@ -137,9 +137,7 @@ export default function PaymentProfile() {
       setResolving(true);
       setError("");
       try {
-        const { data } = await client.get("/finance/resolve-account", {
-          params: { bankCode, accountNumber: accNumber },
-        });
+        const { data } = await resolveAccount(bankCode, accNumber);
         const name =
           data?.data?.accountName ??
           data?.accountName ??

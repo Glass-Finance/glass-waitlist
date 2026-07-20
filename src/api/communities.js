@@ -61,6 +61,13 @@ export const updateCommunityMember = (communityId, memberId, payload) =>
 export const removeCommunityMember = (communityId, memberId) =>
   client.patch(`/communities/${communityId}/members/${memberId}/remove`);
 
+// GET /api/v1/communities/{communityIdentifier}/search
+// Admin-scoped global search within one community (Topbar's search bar) --
+// distinct from searchPublicCommunities below, which searches the public
+// directory of communities themselves, not within one.
+export const searchCommunity = (communityId, params = {}) =>
+  client.get(`/communities/${communityId}/search`, { params });
+
 // GET /api/v1/public/communities/search
 // Public directory search — no auth-scoped community membership required,
 // used by members with zero communities to discover ones to request

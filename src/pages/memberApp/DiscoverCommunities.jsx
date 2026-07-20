@@ -9,8 +9,9 @@ import {
   Clock,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import client from "../../api/client";
 import { getMyCommunities } from "../../api/members";
+import { searchPublicCommunities } from "../../api/communities";
+import { submitJoinRequest } from "../../api/invites";
 import {
   recordPendingJoinRequest,
   getPendingJoinRequests,
@@ -24,19 +25,12 @@ function unwrapList(res) {
   return Array.isArray(d) ? d : (d?.content ?? []);
 }
 
-// ─── API calls ────────────────────────────────────────────────────────────────
-const searchPublicCommunities = (search) =>
-  client.get("/public/communities/search", { params: { search, size: 30 } });
-
-const submitJoinRequest = (communityIdentifier) =>
-  client.post(`/communities/${communityIdentifier}/join-requests`);
-
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 function usePublicSearch(query) {
   return useQuery({
     queryKey: ["public-communities", query],
     queryFn: async () => {
-      const res = await searchPublicCommunities(query);
+      const res = await searchPublicCommunities({ search: query, size: 30 });
       const d = res.data?.data;
       return Array.isArray(d) ? d : (d?.content ?? []);
     },

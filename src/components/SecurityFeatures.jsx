@@ -30,7 +30,7 @@ const TILTS = [
   { rotate: 3, y: 18 },
 ];
 
-export default function Security() {
+export default function SecurityFeatures() {
   const cardRefs = useRef([]);
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
