@@ -81,13 +81,8 @@ export default function StepConnector({ p1, p2, bendY, stepRef }) {
               strokeWidth={STROKE_W[i]}
               strokeLinecap="round"
               fill="none"
-              style={{
-                pathLength: progress,
-                filter:
-                  i === 0
-                    ? "drop-shadow(0 0 2px rgba(0,47,167,0.9)) drop-shadow(0 0 5px rgba(79,70,229,0.45))"
-                    : "none",
-              }}
+              className={i === 0 ? "[filter:drop-shadow(0_0_2px_rgba(0,47,167,0.9))_drop-shadow(0_0_5px_rgba(79,70,229,0.45))]" : ""}
+              style={{ pathLength: progress }}
             />
           </g>
         );
@@ -100,21 +95,16 @@ export default function StepConnector({ p1, p2, bendY, stepRef }) {
         fill="none"
         stroke="#4f46e5"
         strokeWidth={1.5}
-        style={{
-          opacity: 0,
-          filter: "blur(2px)",
-        }}
+        className="blur-[2px]"
+        style={{ opacity: 0 }}
       />
       {/* Leading dot */}
       <circle
         ref={dotRef}
         r={3.5}
         fill="#4f46e5"
-        style={{
-          opacity: 0,
-          filter:
-            "drop-shadow(0 0 3px rgba(99,102,241,1)) drop-shadow(0 0 7px rgba(79,70,229,0.7))",
-        }}
+        className="[filter:drop-shadow(0_0_3px_rgba(99,102,241,1))_drop-shadow(0_0_7px_rgba(79,70,229,0.7))]"
+        style={{ opacity: 0 }}
       />
     </motion.g>
   );
