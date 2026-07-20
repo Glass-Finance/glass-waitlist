@@ -35,6 +35,7 @@ import {
   usePendingPaymentVerification,
   recordLocalPayment,
   stashPendingPaymentCtx,
+  findAuthorisationForPlan,
 } from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
 import { useExportJob } from "../../hooks/useExportJob";
@@ -173,9 +174,16 @@ export function AdminPaymentModal({ item, onClose }) {
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
-  const savedMethod = (authorisations ?? []).find(
-    (a) => (a.status ?? "").toUpperCase() === "ACTIVE",
-  );
+  // Confirmed with backend: a consent is scoped per recurring plan -- the
+  // card saved on a plan's first payment is what auto-charges that plan
+  // going forward, so "any ACTIVE authorisation" isn't necessarily the one
+  // that will actually be charged here if this admin has other recurring
+  // plans on other saved cards. Must match this specific payment link.
+  const savedMethod = findAuthorisationForPlan(authorisations, {
+    paymentLinkId: item.paymentLinkId,
+    title: item.name,
+    communityName: item.communityName,
+  });
   const isRecurring = item.type === "recurring";
   const communityInitials = (item.communityName ?? "C")
     .slice(0, 2)

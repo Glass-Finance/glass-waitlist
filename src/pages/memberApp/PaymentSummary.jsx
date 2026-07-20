@@ -9,6 +9,7 @@ import {
   recordLocalPayment,
   recordLocalFee,
   stashPendingPaymentCtx,
+  findAuthorisationForPlan,
 } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
 import PageLoadingState from "../../components/common/PageLoadingState";
@@ -126,7 +127,16 @@ export default function PaymentSummary() {
   const communityInitials = communityName.slice(0, 2).toUpperCase();
   const communityLogo = obligation?.community?.logo ?? navState.communityLogo;
   const isRecurring = !!obligation?.recurringPlan;
-  const savedMethod = authorisations?.find((a) => (a.status ?? "").toUpperCase() === "ACTIVE");
+  // Confirmed with backend: a consent is scoped per recurring plan -- the
+  // card saved on a plan's first payment is what auto-charges that plan
+  // going forward, so "any ACTIVE authorisation" isn't necessarily the one
+  // that will actually be charged here if the payer has other recurring
+  // plans on other saved cards. Must match this specific payment link.
+  const savedMethod = findAuthorisationForPlan(authorisations, {
+    paymentLinkId: obligation?.paymentLink?.id,
+    title: obligation?.paymentLink?.title,
+    communityName: obligation?.community?.name,
+  });
   // Confirmed with backend: savePaymentMethod is optional at the API level
   // for every payment, recurring or not -- forcing it on here (an earlier
   // frontend-only choice) silently enrolled every recurring payer in
