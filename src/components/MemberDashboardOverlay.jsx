@@ -3,25 +3,10 @@ import { Bell, ChevronDown, Clock3, Filter, Menu } from "lucide-react";
 export default function MembersDashboardOverlay() {
   return (
     <div
-      className="w-full h-full bg-[#f5f5f5] overflow-hidden"
-      style={{
-        top: "6.2%",
-        left: "21.2%",
-        width: "70%",
-        height: "100%",
-        borderRadius: "42px",
-        transform: `perspective(1200px) rotateZ(18deg) rotateY(16deg)`,
-        transformOrigin: "right",
-      }}
+      className="h-full bg-[#f5f5f5] overflow-hidden [top:6.2%] [left:21.2%] w-[70%] rounded-[42px] [transform-origin:right] [transform:perspective(1200px)_rotateZ(18deg)_rotateY(16deg)]"
     >
       <div
-        style={{
-          width: "100%",
-          height: "100%",
-          transform: "scale(0.48)",
-          transformOrigin: "top left",
-          background: "#f5f5f5",
-        }}
+        className="w-full h-full [transform:scale(0.48)] [transform-origin:top_left] bg-[#f5f5f5]"
       >
         {/* HEADER */}
 
@@ -155,10 +140,10 @@ export default function MembersDashboardOverlay() {
           </div>
 
           {[
-            ["Success", "#c8f7cb"],
-            ["Failed", "#ffd0d0"],
-            ["Success", "#c8f7cb"],
-          ].map(([status, bg], index) => (
+            ["Success", "bg-[#c8f7cb]"],
+            ["Failed", "bg-[#ffd0d0]"],
+            ["Success", "bg-[#c8f7cb]"],
+          ].map(([status, bgCls], index) => (
             <div
               key={index}
               className="flex justify-between py-5 border-b border-gray-100"
@@ -173,8 +158,7 @@ export default function MembersDashboardOverlay() {
                 <div className="font-medium">₦24,000</div>
 
                 <span
-                  style={{ background: bg }}
-                  className="inline-block mt-2 px-3 py-1 rounded text-sm"
+                  className={`inline-block mt-2 px-3 py-1 rounded text-sm ${bgCls}`}
                 >
                   {status}
                 </span>
