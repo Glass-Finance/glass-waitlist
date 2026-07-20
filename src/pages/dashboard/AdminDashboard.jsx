@@ -43,7 +43,6 @@ import { useExportJob } from "../../hooks/useExportJob";
 import { exportCommunityTransactions } from "../../api/exports";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { getEmailError } from "../../utils/validators";
-import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import EmptyState from "../../components/common/EmptyState";
 import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
 import Toggle from "../../components/common/Toggle";
@@ -343,32 +342,8 @@ export function AdminPaymentModal({ item, onClose }) {
         className="w-full bg-white rounded-2xl overflow-hidden shadow-2xl border border-surface-container-border max-w-[560px] max-h-[90vh] overflow-y-auto"
       >
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-7 py-5 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border border-surface-container-border bg-[#f0f4ff]"
-            >
-              {item.logo?.url ? (
-                <img
-                  src={item.logo.url}
-                  alt=""
-                  className="w-full h-full object-cover rounded-xl"
-                />
-              ) : (
-                <span className="text-[11px] font-bold text-brand">
-                  {communityInitials}
-                </span>
-              )}
-            </div>
-            <div>
-              <p className="text-[11px] text-gray-400 uppercase tracking-wide font-medium">
-                Paying to
-              </p>
-              <p className="text-[15px] font-semibold text-gray-900 leading-tight">
-                {item.communityName ?? "Community"}
-              </p>
-            </div>
-          </div>
+        <div className="flex items-center justify-between px-7 py-5">
+          <span className="text-lg font-bold text-gray-900">Transaction Details</span>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 cursor-pointer bg-transparent border-none transition-colors"
@@ -377,81 +352,92 @@ export function AdminPaymentModal({ item, onClose }) {
           </button>
         </div>
 
-        {/* ── Amount hero ── */}
-        <div className="px-7 py-8 text-center bg-[linear-gradient(135deg,var(--color-brand)_0%,#1C2B8A_100%)]">
-          <p className="text-[12px] text-blue-200 uppercase tracking-widest mb-2 font-medium">
-            Amount Due
-          </p>
-          <p className="text-[42px] font-bold text-white leading-none mb-3">
-            {formatNaira(item.amount)}
-          </p>
-          <span className="inline-block text-[11px] font-semibold px-4 py-1 rounded-full bg-white/15 text-white">
-            {isRecurring ? "Recurring Payment" : "One-Time Payment"}
-          </span>
+        {/* ── Community + payment method + Auto-Pay toggle ── */}
+        <div className="mx-7 rounded-xl bg-stacked-container px-4">
+          <div className="flex items-center gap-3 py-4 border-b border-gray-200">
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 border border-surface-container-border bg-[#f0f4ff]"
+            >
+              {item.logo?.url ? (
+                <img
+                  src={item.logo.url}
+                  alt=""
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              ) : (
+                <span className="text-[11px] font-bold text-brand">
+                  {communityInitials}
+                </span>
+              )}
+            </div>
+            <span className="text-sm font-medium text-gray-900">
+              {item.communityName ?? "Community"}
+            </span>
+          </div>
+
+          {savedMethod ? (
+            <div className="flex items-center justify-between py-3 border-b border-gray-200">
+              <div className="flex items-center gap-2.5">
+                <Landmark size={16} className="text-brand" />
+                <span className="text-sm font-medium text-gray-900">
+                  {toTitleCase(savedMethod.cardType ?? savedMethod.bank ?? "Card")} ●●●●{savedMethod.last4}
+                  {savedMethod.expMonth && savedMethod.expYear
+                    ? ` | ${String(savedMethod.expMonth).padStart(2, "0")}/${String(savedMethod.expYear).slice(-2)}`
+                    : ""}
+                </span>
+              </div>
+              <button
+                onClick={() => navigate("/dashboard/settings/finance/payment-methods")}
+                className="text-[13px] font-semibold bg-transparent border-none cursor-pointer text-brand"
+              >
+                Change
+              </button>
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500 py-3 border-b border-gray-200">
+              You'll select your payment method on the next screen.
+            </p>
+          )}
+
+          {/* Always shown, saved method or not -- a real, changeable choice
+              for every plan (confirmed with backend: savePaymentMethod is
+              optional at the API level regardless of plan type). */}
+          <div className="flex items-center justify-between py-3">
+            <span className="flex items-center gap-1.5 text-sm text-gray-500">
+              {isRecurring ? "Enable Recurring Payment" : "Save Payment Method"}
+              <span
+                title={
+                  isRecurring
+                    ? "Save this card and charge it automatically each cycle. Turn off to pay this cycle only."
+                    : "Save this payment method for faster checkout next time."
+                }
+              >
+                <Info size={12} className="text-gray-400" />
+              </span>
+            </span>
+            <Toggle on={saveMethod} onChange={setSaveMethod} />
+          </div>
         </div>
 
         {/* ── Plan details ── */}
-        <div className="px-7 py-6 border-b border-gray-100">
-          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">
-            Plan Details
-          </p>
+        <div className="mx-7 mt-4 mb-6 rounded-xl bg-stacked-container p-4">
+          <p className="text-sm font-semibold text-gray-900 mb-4">Plan Details</p>
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">Plan Name</span>
+              <span className="text-sm text-gray-500">Plan</span>
               <span className="text-sm font-medium text-gray-900">
                 {item.name ?? "—"}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">Schedule</span>
+              <span className="text-sm text-gray-500">Payment Schedule</span>
               <span className="text-[11px] font-semibold px-3 py-0.5 rounded-full bg-[#EEF1FB] text-brand">
-                {isRecurring ? "Recurring" : "One-Time"}
+                {isRecurring ? toTitleCase((item.frequency ?? "Recurring").toLowerCase()) : "One-Time"}
               </span>
             </div>
-            {item.dueDate && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Due Date</span>
-                <span className="text-sm font-medium text-gray-900">
-                  {new Date(item.dueDate).toLocaleDateString("en-NG", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </span>
-              </div>
-            )}
-            {isRecurring && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Renews</span>
-                <span className="text-sm font-medium text-gray-900">
-                  {scheduleCopy({ frequency: item.frequency })}
-                </span>
-              </div>
-            )}
-            {isRecurring && (() => {
-              const next = estimateNextCharge(
-                { frequency: item.frequency },
-                item.dueDate,
-              );
-              if (!next) return null;
-              return (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">
-                    Next charge (est.)
-                  </span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {next.toLocaleDateString("en-NG", {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-              );
-            })()}
             {prefetch?.billedAmount != null && prefetch.billedAmount !== item.amount ? (
               <>
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                <div className="flex items-center justify-between pt-1">
                   <span className="text-sm text-gray-500">Amount</span>
                   <span className="text-sm font-medium text-gray-900">
                     {formatNaira(item.amount)}
@@ -463,7 +449,7 @@ export function AdminPaymentModal({ item, onClose }) {
                     {formatNaira(prefetch.billedAmount - item.amount)}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pt-2 border-t border-gray-200">
                   <span className="text-sm font-semibold text-gray-700">Total</span>
                   <span className="text-[17px] font-bold text-gray-900">
                     {formatNaira(prefetch.billedAmount)}
@@ -471,115 +457,37 @@ export function AdminPaymentModal({ item, onClose }) {
                 </div>
               </>
             ) : (
-              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                <span className="text-sm font-semibold text-gray-700">Total</span>
-                <span className="text-[17px] font-bold text-gray-900">
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-sm text-gray-500">Amount</span>
+                <span className="text-sm font-medium text-gray-900">
                   {formatNaira(item.amount)}
                 </span>
               </div>
             )}
-            {isRecurring && (
-              <p className="text-xs text-gray-400 leading-relaxed m-0 pt-1">
-                Today covers the current cycle. After that,{" "}
-                {formatNaira(item.amount)} renews{" "}
-                {scheduleCopy({ frequency: item.frequency }).toLowerCase()}{" "}
-                until the plan ends or you turn off Auto-Pay in Settings.
-              </p>
-            )}
           </div>
         </div>
 
-        {/* ── Payment method ── */}
-        <div className="px-7 py-5 border-b border-gray-100">
-          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">
-            Payment Method
-          </p>
-          <div className="px-4 py-3 rounded-xl bg-stacked-container">
-            {savedMethod ? (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#EEF2FF]">
-                    <Landmark size={16} className="text-brand" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">
-                    {toTitleCase(savedMethod.cardType ?? savedMethod.bank ?? "Card")} ●●●●{savedMethod.last4}
-                    {savedMethod.expMonth && savedMethod.expYear
-                      ? ` | ${String(savedMethod.expMonth).padStart(2, "0")}/${String(savedMethod.expYear).slice(-2)}`
-                      : ""}
-                  </span>
-                </div>
-                <button
-                  onClick={() => navigate("/dashboard/settings/finance/payment-methods")}
-                  className="text-[13px] font-semibold bg-transparent border-none cursor-pointer text-brand"
-                >
-                  Change
-                </button>
-              </div>
+        {error && <p className="text-xs text-red-500 px-7 pb-4">{error}</p>}
+
+        {/* ── Footer -- single action, matching the X close button for
+            "never mind" instead of a redundant second Cancel button. ── */}
+        <div className="px-7 pb-6 flex items-center justify-end">
+          <button
+            onClick={handlePay}
+            disabled={initiatePayment.isPending || redirecting || isLinkInactive}
+            className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border-none transition-opacity flex items-center gap-2 bg-brand"
+          >
+            {initiatePayment.isPending || redirecting ? (
+              <>
+                <Loader2 size={14} className="animate-spin" />{" "}
+                {redirecting ? "Opening secure payment…" : "Processing…"}
+              </>
+            ) : isLinkInactive ? (
+              "Payment Unavailable"
             ) : (
-              <p className="text-sm text-gray-500">
-                You'll select your payment method on the next screen.
-              </p>
+              "Make Payment"
             )}
-
-            {/* Always shown, saved method or not -- a real, changeable
-                choice for every plan (confirmed with backend:
-                savePaymentMethod is optional at the API level regardless of
-                plan type). Mirrors PaymentSummary.jsx's member checkout. */}
-            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
-              <span className="flex items-center gap-1.5 text-xs text-gray-500">
-                {isRecurring ? "Auto-Pay" : "Save Payment Method"}
-                <span
-                  title={
-                    isRecurring
-                      ? "Save this card and charge it automatically each cycle. Turn off to pay this cycle only."
-                      : "Save this payment method for faster checkout next time."
-                  }
-                >
-                  <Info size={12} className="text-gray-400" />
-                </span>
-              </span>
-              <Toggle on={saveMethod} onChange={setSaveMethod} />
-            </div>
-          </div>
-        </div>
-
-        {/* ── Footer ── */}
-        <div className="px-7 py-5 bg-stacked-container flex items-center justify-between gap-3">
-          {error ? (
-            <p className="text-xs text-red-500">{error}</p>
-          ) : savedMethod ? (
-            <p className="text-xs text-gray-400">
-              Charged instantly using your saved payment method.
-            </p>
-          ) : (
-            <p className="text-xs text-gray-400">
-              You'll be redirected to complete payment securely.
-            </p>
-          )}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <button
-              onClick={onClose}
-              className="px-5 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 cursor-pointer transition-colors border-none"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handlePay}
-              disabled={initiatePayment.isPending || redirecting || isLinkInactive}
-              className="px-6 py-2.5 rounded-xl text-xs font-semibold text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border-none transition-opacity flex items-center gap-2 bg-brand"
-            >
-              {initiatePayment.isPending || redirecting ? (
-                <>
-                  <Loader2 size={14} className="animate-spin" />{" "}
-                  {redirecting ? "Opening secure payment…" : "Processing…"}
-                </>
-              ) : isLinkInactive ? (
-                "Payment Unavailable"
-              ) : (
-                `Pay ${formatNaira(item.amount)}`
-              )}
-            </button>
-          </div>
+          </button>
         </div>
       </div>
     </div>
