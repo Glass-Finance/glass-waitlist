@@ -113,14 +113,8 @@ export default function ProblemSection() {
           DOM order, so without it this would wash out the section's real
           text content instead of sitting behind it. */}
       <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          zIndex: -1,
-          backgroundImage: `url(${ProblemGlow})`,
-          backgroundSize: "cover",
-          backgroundPosition: "left center",
-          backgroundRepeat: "no-repeat",
-        }}
+        className="absolute inset-0 pointer-events-none -z-[1] bg-cover bg-left bg-no-repeat"
+        style={{ backgroundImage: `url(${ProblemGlow})` }}
         aria-hidden="true"
       />
       <div className="max-w-[1140px] mx-auto px-6 relative">
@@ -182,14 +176,12 @@ export default function ProblemSection() {
             {/* Image wrapper — clipPath wipe applied here */}
             <div
               ref={imageRef}
-              className="relative rounded-2xl overflow-hidden w-full shadow-xl shadow-[#1C2B8A]/15"
-              style={{ aspectRatio: "458 / 250" }}
+              className="relative rounded-2xl overflow-hidden w-full shadow-xl shadow-[#1C2B8A]/15 aspect-[458/250]"
             >
               <img
                 src={Problem}
                 alt="Manual reconciliation on laptop and phone"
-                className="absolute inset-0 w-full h-full object-cover"
-                style={{ objectPosition: "50% 40%" }}
+                className="absolute inset-0 w-full h-full object-cover object-[50%_40%]"
                 loading="lazy"
                 decoding="async"
               />
@@ -198,17 +190,7 @@ export default function ProblemSection() {
             {/* Floating card */}
             <div
               ref={cardRef}
-              className="rounded-2xl shadow-lg shadow-[#1C2B8A]/10 border border-[#eef0f8] px-5 py-4 flex items-center gap-4 self-start"
-              style={{
-                marginTop: "-28px",
-                marginLeft: "-20px",
-                width: "260px",
-                position: "relative",
-                zIndex: 10,
-                backgroundColor: "#EFEFF199",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-              }}
+              className="rounded-2xl shadow-lg shadow-[#1C2B8A]/10 border border-[#eef0f8] px-5 py-4 flex items-center gap-4 self-start -mt-7 -ml-5 w-[260px] relative z-10 bg-[#EFEFF199] backdrop-blur-sm [-webkit-backdrop-filter:blur(8px)]"
             >
               <div className="w-10 h-10 rounded-xl bg-[#eef0fb] flex items-center justify-center flex-shrink-0">
                 <Lightbulb
