@@ -188,10 +188,10 @@ function obligationStatusChip(o) {
     ? Math.ceil((new Date(o.dueDate) - new Date()) / 86400000)
     : null;
   if (days != null && days < 0)
-    return { label: "Overdue", bg: "#FEF2F2", color: "#DC2626" };
+    return { label: "Overdue", cls: "bg-[#FEF2F2] text-[#DC2626]" };
   if (days != null && days <= 7)
-    return { label: "Due soon", bg: "#FFFBEB", color: "#B45309" };
-  return { label: "Upcoming", bg: "#EEF2FF", color: "var(--color-brand)" };
+    return { label: "Due soon", cls: "bg-[#FFFBEB] text-[#B45309]" };
+  return { label: "Upcoming", cls: "bg-[#EEF2FF] text-brand" };
 }
 
 function shortDate(dateStr) {
@@ -221,7 +221,6 @@ function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
         <button
           onClick={onFooter}
           className="flex items-center justify-center gap-1 w-full py-2.5 text-[11px] font-semibold text-brand bg-transparent border-t border-gray-50 cursor-pointer hover:bg-blue-50 transition-colors"
-          style={{ borderLeft: "none", borderRight: "none", borderBottom: "none" }}
         >
           {footerLabel} <ChevronRight size={12} />
         </button>
@@ -307,8 +306,7 @@ function GlobalOverview() {
                     {formatNaira(o.amount)}
                   </span>
                   <span
-                    className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                    style={{ background: chip.bg, color: chip.color }}
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${chip.cls}`}
                   >
                     {chip.label}
                   </span>
