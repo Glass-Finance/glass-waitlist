@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
-import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
+import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, RefreshCw } from "lucide-react";
 import { usePayments, useManagePayments, isAuthorisationExpired } from "../../../../hooks/usePayments";
-import PageLoadingState from "../../../../components/common/PageLoadingState";
+import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
 import Toggle from "../../../../components/common/Toggle";
-import ConfirmSheet from "../../../../components/common/ConfirmSheet";
+import ConfirmSheet from "../../../../components/memberApp/ConfirmSheet";
 import { formatNaira } from "../../../../utils/format";
 
 export default function AutoPay() {

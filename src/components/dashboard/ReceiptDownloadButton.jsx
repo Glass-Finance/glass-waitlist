@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Download } from "lucide-react";
-import ReceiptModal from "./ReceiptModal";
+import ReceiptModal from "../common/ReceiptModal";
 
 export default function ReceiptDownloadButton({
   tx,

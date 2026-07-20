@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, RefreshCw } from "lucide-react";
 import { useNotificationPreferences } from "../../../../hooks/useNotifications";
 import Toggle from "../../../../components/common/Toggle";
-import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
+import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 
 function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
   return (
@@ -41,7 +41,7 @@ function SkeletonRow({ last }) {
   );
 }
 
-export default function NotificationSettings() {
+export default function Notifications() {
   const navigate = useNavigate();
   const { preferences, isLoading, error, update } = useNotificationPreferences();
 

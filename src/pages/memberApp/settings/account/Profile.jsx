@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
+import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Pencil } from "lucide-react";
 import { useMe, useUpdateProfile, useUpdateEmail } from "../../../../hooks/useMyAccount";
@@ -8,7 +8,7 @@ import { useAuth } from "../../../../store/AuthContext";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { getEmailError } from "../../../../utils/validators";
 import { parseUserData } from "../../../../utils/userData";
-import EmailChangeModal from "../../../../components/auth/EmailChangeModal";
+import EmailChangeModal from "../../../../components/common/EmailChangeModal";
 
 const inputCls = "w-full py-3 px-3.5 rounded-[10px] border-[1.5px] border-[#E0E0E0] text-sm text-[#111] outline-none bg-white box-border";
 

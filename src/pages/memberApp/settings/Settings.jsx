@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, User, Shield, Bell, CreditCard, RefreshCw, Users, LogOut } from "lucide-react";
 import { useAuth } from "../../../store/AuthContext";
-import GlassLogoGlow from "../../../components/common/GlassLogoGlow";
+import GlassLogoGlow from "../../../components/memberApp/GlassLogoGlow";
 
 const SECTIONS = [
   {

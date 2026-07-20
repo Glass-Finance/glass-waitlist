@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
-import PageLoadingState from "../../components/common/PageLoadingState";
-import GlassLogoGlow from "../../components/common/GlassLogoGlow";
+import PageLoadingState from "../../components/memberApp/PageLoadingState";
+import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 const FILTER_OPTIONS = ["All", "Recurring", "One-time"];

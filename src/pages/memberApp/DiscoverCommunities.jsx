@@ -17,7 +17,7 @@ import {
   getPendingJoinRequests,
   useJoinApprovalWatcher,
 } from "../../hooks/useJoinApproval";
-import GlassLogoGlow from "../../components/common/GlassLogoGlow";
+import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import LoadingState from "../../components/common/LoadingState";
 
 function unwrapList(res) {

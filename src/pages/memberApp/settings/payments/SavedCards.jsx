@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
+import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { ChevronLeft, CreditCard, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
-import PageLoadingState from "../../../../components/common/PageLoadingState";
+import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
-import ConfirmSheet from "../../../../components/common/ConfirmSheet";
+import ConfirmSheet from "../../../../components/memberApp/ConfirmSheet";
 
 export default function SavedCards() {
   const navigate = useNavigate();

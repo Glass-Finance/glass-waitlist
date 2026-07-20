@@ -1,4 +1,4 @@
-import BrandedSpinner from "./BrandedSpinner";
+import BrandedSpinner from "../common/BrandedSpinner";
 
 // The app's one full-page loading treatment -- a large BrandedSpinner plus a
 // message, used whenever a whole screen has nothing else to show yet (the

@@ -14,7 +14,7 @@ import { useExportJob } from "../../hooks/useExportJob";
 import LoadingState from "../../components/common/LoadingState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import StatCard from "../../components/dashboard/StatCard";
-import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
+import { formatDate, toTitleCase } from "../../utils/format";
 
 // Only these three roles should be assignable when inviting members.
 const ALLOWED_ROLE_NAMES = new Set(["Community Owner", "Community Admin", "Community Member"]);
@@ -423,7 +423,7 @@ export default function Members() {
       </div>}
 
       {modalOpen && (
-        <AddMemberModal
+        <QuickAddMemberModal
           onClose={() => setModalOpen(false)}
           onAdd={handleAdd}
           adding={inviteMember.isPending}
@@ -458,7 +458,7 @@ export default function Members() {
   );
 }
 
-function AddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable, inviteLink }) {
+function QuickAddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable, inviteLink }) {
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handler);

@@ -5,7 +5,7 @@ import Hero from "../components/organizations/Hero";
 import ProblemSection from "../components/organizations/ProblemSection";
 import OurSolution from "../components/organizations/OurSolution";
 import GetStarted from "../components/organizations/GetStarted";
-import Usecases from "../components/Usecases";
+import UseCases from "../components/UseCases";
 import TrustedBy from "../components/TrustedBy";
 import SecurityFeatures from "../components/SecurityFeatures";
 import CTA from "../components/organizations/CTA";
@@ -28,7 +28,7 @@ export default function OrganizationsHome() {
       <ProblemSection />
       <OurSolution />
       <GetStarted />
-      <Usecases />
+      <UseCases />
       <TrustedBy />
       <SecurityFeatures />
       <CTA />

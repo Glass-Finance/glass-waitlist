@@ -1,10 +1,10 @@
 import { useState } from "react";
-import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
+import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { AlertTriangle, ChevronLeft, ChevronRight, LogOut, Plus, Users, X } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
-import PageLoadingState from "../../../../components/common/PageLoadingState";
+import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
 
 function getInitials(name = "") {

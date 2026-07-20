@@ -7,7 +7,7 @@ import { getErrorMessage } from "../../../../utils/errorHandler";
 import { getEmailError } from "../../../../utils/validators";
 import { useAuth } from "../../../../store/AuthContext";
 import { parseUserData } from "../../../../utils/userData";
-import EmailChangeModal from "../../../../components/auth/EmailChangeModal";
+import EmailChangeModal from "../../../../components/common/EmailChangeModal";
 import OtpBoxes from "../../../../components/common/OtpBoxes";
 
 // Names save with the first letter of each word capitalised ("home" → "Home")

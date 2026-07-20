@@ -12,8 +12,8 @@ import {
   findAuthorisationForPlan,
 } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
-import PageLoadingState from "../../components/common/PageLoadingState";
-import GlassLogoGlow from "../../components/common/GlassLogoGlow";
+import PageLoadingState from "../../components/memberApp/PageLoadingState";
+import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import Toggle from "../../components/common/Toggle";
 import { toastSuccess } from "../../utils/toast";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";

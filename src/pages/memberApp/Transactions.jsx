@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
-import GlassLogoGlow from "../../components/common/GlassLogoGlow";
-import PageLoadingState from "../../components/common/PageLoadingState";
+import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
+import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { transactionStatusLabel, transactionStatusStyle } from "../../utils/transactionStatus";
 

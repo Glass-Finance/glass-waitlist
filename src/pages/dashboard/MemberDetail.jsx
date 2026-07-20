@@ -6,7 +6,7 @@ import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useMembersWithPayments, useMemberPaymentLinks } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers } from "../../hooks/useCommunityMembers";
 import { useCommunity } from "../../hooks/useCommunity";
-import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
+import ReceiptDownloadButton from "../../components/dashboard/ReceiptDownloadButton";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";

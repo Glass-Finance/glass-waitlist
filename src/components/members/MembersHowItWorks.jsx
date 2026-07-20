@@ -36,7 +36,7 @@ const steps = [
   },
 ];
 
-export default function MemberHowItWorks() {
+export default function MembersHowItWorks() {
   const navigate = useNavigate();
 
   function handleJoin() {

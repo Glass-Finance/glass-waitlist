@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import GlassLogoGlow from "../../components/common/GlassLogoGlow";
+import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Bell, Mail, User } from "lucide-react";
 import { useInvites } from "../../hooks/useInvites";
@@ -9,7 +9,7 @@ import { notificationTarget } from "../../utils/notificationRouting";
 import { isPaymentNotificationType, isSelfAccountType, notificationVisual } from "../../utils/notificationTypes";
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import { useAuth } from "../../store/AuthContext";
-import PageLoadingState from "../../components/common/PageLoadingState";
+import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import { formatRelativeDateTime } from "../../utils/format";
 
 const TABS = ["Payments", "Community", "Invites"];

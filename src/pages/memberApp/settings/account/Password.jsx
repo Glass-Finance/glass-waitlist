@@ -1,5 +1,5 @@
 import { useState } from "react";
-import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
+import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Eye, EyeOff } from "lucide-react";
 import { useUpdatePassword } from "../../../../hooks/useMyAccount";

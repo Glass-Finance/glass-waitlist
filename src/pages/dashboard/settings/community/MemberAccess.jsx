@@ -4,7 +4,7 @@ import { roleKeyword } from "../../../../utils/communityRole";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityMembers, useRoles } from "../../../../hooks/useCommunityMembers";
 import { useCommunity, useUpdateCommunitySettings } from "../../../../hooks/useCommunity";
-import QRCodeCanvas from "../../../../components/dashboard/QRCode";
+import QRCodeCanvas from "../../../../components/common/QRCodeCanvas";
 import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
 import LoadingState from "../../../../components/common/LoadingState";
 import EmptyState from "../../../../components/common/EmptyState";

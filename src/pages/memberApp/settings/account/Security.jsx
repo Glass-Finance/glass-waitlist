@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
+import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { ChevronLeft, ChevronRight, Lock, ShieldCheck } from "lucide-react";
 
 const ITEMS = [

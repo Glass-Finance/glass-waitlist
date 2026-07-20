@@ -3,7 +3,7 @@ import { CheckCircle2 } from "lucide-react";
 import { resendVerification } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
-import OtpBoxes from "../common/OtpBoxes";
+import OtpBoxes from "./OtpBoxes";
 
 // Codes are valid for 15 minutes (see the same figure quoted in SignIn.jsx).
 const OTP_VALIDITY_SECONDS = 15 * 60;

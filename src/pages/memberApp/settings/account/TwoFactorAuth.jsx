@@ -1,6 +1,6 @@
 import { useState } from "react";
-import GlassLogoGlow from "../../../../components/common/GlassLogoGlow";
-import PageLoadingState from "../../../../components/common/PageLoadingState";
+import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
+import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
 import LoadingState from "../../../../components/common/LoadingState";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Shield, Copy, Check } from "lucide-react";
@@ -229,7 +229,7 @@ function DisableFlow({ onSuccess, onCancel }) {
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
-export default function MFA() {
+export default function TwoFactorAuth() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: profile, isLoading } = useMe();

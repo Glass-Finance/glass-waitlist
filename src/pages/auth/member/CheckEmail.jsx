@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import GlassLogo from "../../../assets/Glass.webp";
-import QRCodeCanvas from "../../../components/dashboard/QRCode";
+import QRCodeCanvas from "../../../components/common/QRCodeCanvas";
 import { buildMobileUrl } from "../../../utils/deviceRedirect";
 
 export default function CheckEmail() {

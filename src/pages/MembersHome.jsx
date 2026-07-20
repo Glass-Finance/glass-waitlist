@@ -7,7 +7,7 @@ import MembersSolution from "../components/members/MembersSolution";
 import SecurityFeatures from "../components/SecurityFeatures";
 import TrustedBy from "../components/TrustedBy";
 import Pricing from "../components/Pricing";
-import UseCases from "../components/Usecases";
+import UseCases from "../components/UseCases";
 import WhyGlass from "../components/WhyGlass";
 import MembersCTA from "../components/members/MembersCTA";
 import Footer from "../components/Footer";

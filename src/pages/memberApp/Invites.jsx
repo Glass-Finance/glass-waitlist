@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, Mail, Clock, Home, Info } from "lucide-react";
 import { useCommunities } from "../../hooks/useCommunities";
 import { getInvite } from "../../api/invites";
-import GlassLogoGlow from "../../components/common/GlassLogoGlow";
-import PageLoadingState from "../../components/common/PageLoadingState";
+import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
+import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import { PENDING_INVITE_KEY } from "../InviteLanding";
 
 function Avatar({ name, logo }) {

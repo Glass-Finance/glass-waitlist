@@ -7,7 +7,7 @@ import { beginAuthGrace } from "../../api/client";
 import { settleLocalPaymentForReference, useManagePayments } from "../../hooks/usePayments";
 import { useTransactionDetail } from "../../hooks/useTransactionDetail";
 import { useAuth } from "../../store/AuthContext";
-import GlassLogoGlow from "../../components/common/GlassLogoGlow";
+import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import ReceiptModal from "../../components/common/ReceiptModal";
 import { formatNaira, toTitleCase } from "../../utils/format";
 
