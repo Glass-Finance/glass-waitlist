@@ -92,7 +92,7 @@ export default function AutoPay() {
           Manage automatic payments for your personal dues across all communities.
         </p>
       </div>
-      <div className="bg-surface-container rounded-lg p-6" style={{ border: "1px solid var(--color-outline-on-surface)" }}>
+      <div className="bg-surface-container rounded-lg p-6 border border-outline-on-surface">
         <div className="flex flex-col">
           {isLoading ? (
             <LoadingState className="py-4" />
@@ -142,7 +142,7 @@ export default function AutoPay() {
       </div>
 
       {/* Info banner */}
-      <div className="flex items-start gap-2.5 px-4 py-3 rounded-md" style={{ background: "#D7E2FF", border: "1px solid var(--color-brand)" }}>
+      <div className="flex items-start gap-2.5 px-4 py-3 rounded-md bg-[#D7E2FF] border border-brand">
         <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 border border-brand mt-0.5">
           <span className="text-brand text-[9px] font-bold">i</span>
         </div>
