@@ -147,13 +147,13 @@ const VariableProximity = forwardRef((props, ref) => {
   return (
     <span
       ref={ref}
-      className={`${className} variable-proximity`}
+      className={`${className} variable-proximity inline`}
       onClick={onClick}
-      style={{ display: 'inline', ...style }}
+      style={style}
       {...restProps}
     >
       {words.map((word, wordIndex) => (
-        <span key={wordIndex} style={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
+        <span key={wordIndex} className="inline-block whitespace-nowrap">
           {word.split('').map(letter => {
             const currentLetterIndex = letterIndex++;
             return (
@@ -162,8 +162,8 @@ const VariableProximity = forwardRef((props, ref) => {
                 ref={el => {
                   letterRefs.current[currentLetterIndex] = el;
                 }}
+                className="inline-block"
                 style={{
-                  display: 'inline-block',
                   fontVariationSettings: interpolatedSettingsRef.current[currentLetterIndex]
                 }}
                 aria-hidden="true"
@@ -172,7 +172,7 @@ const VariableProximity = forwardRef((props, ref) => {
               </motion.span>
             );
           })}
-          {wordIndex < words.length - 1 && <span style={{ display: 'inline-block' }}>&nbsp;</span>}
+          {wordIndex < words.length - 1 && <span className="inline-block">&nbsp;</span>}
         </span>
       ))}
       <span className="sr-only">{label}</span>
