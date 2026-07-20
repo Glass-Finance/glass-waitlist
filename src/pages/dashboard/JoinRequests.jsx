@@ -24,17 +24,16 @@ function formatRequestedAt(r) {
 }
 
 const STATUS_CHIP = {
-  APPROVED: { label: "Approved", bg: "#ECFDF5", color: "#059669" },
-  REJECTED: { label: "Rejected", bg: "#FEF2F2", color: "#DC2626" },
-  CANCELLED: { label: "Cancelled", bg: "var(--color-stacked-container)", color: "#6B7280" },
-  EXPIRED: { label: "Expired", bg: "var(--color-stacked-container)", color: "#6B7280" },
+  APPROVED: { label: "Approved", cls: "bg-[#ECFDF5] text-[#059669]" },
+  REJECTED: { label: "Rejected", cls: "bg-[#FEF2F2] text-[#DC2626]" },
+  CANCELLED: { label: "Cancelled", cls: "bg-stacked-container text-[#6B7280]" },
+  EXPIRED: { label: "Expired", cls: "bg-stacked-container text-[#6B7280]" },
 };
 
 function Avatar({ requester }) {
   return (
     <div
-      className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-blue-100"
-      style={{ background: "#EEF2FF" }}
+      className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-blue-100 bg-[#EEF2FF]"
     >
       {requester.image ? (
         <img src={requester.image} alt="" className="w-full h-full object-cover" />
@@ -112,8 +111,7 @@ function RequestCard({ r, onApprove, onReject, busy }) {
         chip && (
           <div className="flex flex-col items-end gap-1 flex-shrink-0">
             <span
-              className="text-xs font-semibold px-3 py-1 rounded-full"
-              style={{ background: chip.bg, color: chip.color }}
+              className={`text-xs font-semibold px-3 py-1 rounded-full ${chip.cls}`}
             >
               {chip.label}
             </span>
@@ -192,7 +190,7 @@ export default function JoinRequests() {
       {isLoading ? (
         <LoadingState className="py-8" />
       ) : pending.length === 0 ? (
-        <div className="bg-surface-container rounded-xl" style={{ border: "1px dashed var(--color-surface-container-border)" }}>
+        <div className="bg-surface-container rounded-xl border border-dashed border-surface-container-border">
           <EmptyState
             icon={UserPlus}
             title="No pending join requests"
