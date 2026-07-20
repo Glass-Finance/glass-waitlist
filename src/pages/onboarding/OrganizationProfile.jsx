@@ -31,7 +31,7 @@ const CATEGORIES = [
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member"];
 
 const inputCls =
-  "w-full border border-gray-300 bg-stacked-container p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all";
+  "w-full border bg-stacked-container p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all";
 
 function StepIcon({ id }) {
   const icons = {
@@ -227,8 +227,8 @@ export default function OrganizationProfile() {
 
   return (
     <div
-      className="flex flex-col overflow-hidden"
-      style={{ height: "100vh", backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
+      className="flex flex-col overflow-hidden h-screen bg-contain bg-center"
+      style={{ backgroundImage: `url(${Background})` }}
     >
       {/* Navbar */}
       <header className="flex items-center justify-between px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
@@ -259,16 +259,15 @@ export default function OrganizationProfile() {
                       isCompleted
                         ? "bg-brand text-white"
                         : isActive
-                          ? "bg-white border-2 border-brand text-brand"
+                          ? "bg-white border-2 border-brand text-brand shadow-[0_0_0_4px_rgba(0,47,167,0.15)]"
                           : "bg-white border border-outline-on-surface text-gray-400"
                     }`}
-                    style={isActive && !isCompleted ? { boxShadow: "0 0 0 4px rgba(0,47,167,0.15)" } : undefined}
                   >
                     {isCompleted
                       ? <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       : <StepIcon id={step.id} />}
                   </div>
-                  {!isLast && <div className="w-px my-1" style={{ minHeight: 40, background: isCompleted ? "#002FA7" : "var(--color-outline-on-surface)" }} />}
+                  {!isLast && <div className={`w-px my-1 min-h-10 ${isCompleted ? "bg-brand" : "bg-outline-on-surface"}`} />}
                 </div>
                 <div className="pt-1.5 pb-10">
                   <span className={`text-sm font-medium ${isActive ? "text-[#000000]" : "text-gray-400"}`}>{step.label}</span>
@@ -299,16 +298,14 @@ export default function OrganizationProfile() {
                 <label className="text-sm font-medium text-gray-700">Community Name *</label>
                 <input type="text" name="communityName" value={form.communityName} onChange={handleChange}
                   onBlur={(e) => { if (!slug) suggestFrom(form.communityName); handleFieldBlur("communityName")(e); }}
-                  placeholder="e.g. Babcock University Alumni Association" className={inputCls}
-                  style={fieldErrors.communityName ? { borderColor: "var(--color-danger)" } : undefined} />
+                  placeholder="e.g. Babcock University Alumni Association" className={`${inputCls} ${fieldErrors.communityName ? "border-danger" : "border-gray-300"}`} />
                 {fieldErrors.communityName && <span className="text-xs text-danger">{fieldErrors.communityName}</span>}
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Description *</label>
                 <input type="text" name="description" value={form.description} onChange={handleChange}
                   onBlur={handleFieldBlur("description")}
-                  placeholder="Briefly describe what your community is about" className={inputCls}
-                  style={fieldErrors.description ? { borderColor: "var(--color-danger)" } : undefined} />
+                  placeholder="Briefly describe what your community is about" className={`${inputCls} ${fieldErrors.description ? "border-danger" : "border-gray-300"}`} />
                 {fieldErrors.description && <span className="text-xs text-danger">{fieldErrors.description}</span>}
               </div>
             </div>
@@ -316,8 +313,7 @@ export default function OrganizationProfile() {
             <div className="grid grid-cols-2 gap-5 mb-5">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Category *</label>
-                <select name="category" value={form.category} onChange={handleChange} onBlur={handleFieldBlur("category")} className={inputCls}
-                  style={fieldErrors.category ? { borderColor: "var(--color-danger)" } : undefined}>
+                <select name="category" value={form.category} onChange={handleChange} onBlur={handleFieldBlur("category")} className={`${inputCls} ${fieldErrors.category ? "border-danger" : "border-gray-300"}`}>
                   <option value="" disabled>Select a category</option>
                   {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -329,8 +325,7 @@ export default function OrganizationProfile() {
                   <input type="text" value={slug}
                     onChange={(e) => { const v = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""); setSlug(v); setFieldErrors((fe) => (fe.slug ? { ...fe, slug: validateField("slug", v) } : fe)); }}
                     onBlur={(e) => setFieldErrors((fe) => ({ ...fe, slug: validateField("slug", e.target.value) }))}
-                    placeholder="e.g. babcock-alumni" className={inputCls + " pr-8"}
-                    style={fieldErrors.slug ? { borderColor: "var(--color-danger)" } : undefined} />
+                    placeholder="e.g. babcock-alumni" className={`${inputCls} pr-8 ${fieldErrors.slug ? "border-danger" : "border-gray-300"}`} />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2">
                     {(checking || suggesting) && <Loader2 size={14} className="animate-spin text-gray-400" />}
                     {!checking && !suggesting && available === true && <Check size={14} className="text-green-600" />}
@@ -354,8 +349,7 @@ export default function OrganizationProfile() {
                 <label className="text-sm font-medium text-gray-700">Contact Email *</label>
                 <input type="email" name="contactEmail" value={form.contactEmail} onChange={handleChange}
                   onBlur={handleFieldBlur("contactEmail")}
-                  placeholder="e.g. contact@babcockalumni.org" className={inputCls}
-                  style={fieldErrors.contactEmail ? { borderColor: "var(--color-danger)" } : undefined} />
+                  placeholder="e.g. contact@babcockalumni.org" className={`${inputCls} ${fieldErrors.contactEmail ? "border-danger" : "border-gray-300"}`} />
                 {fieldErrors.contactEmail ? (
                   <p className="text-xs text-danger">{fieldErrors.contactEmail}</p>
                 ) : (
@@ -372,12 +366,7 @@ export default function OrganizationProfile() {
                 onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleDrop}
-                className="w-full rounded-xl flex flex-col items-center justify-center py-12 px-6 cursor-pointer transition-all"
-                style={{
-                  minHeight: 200,
-                  background: dragOver ? "#EEF2FF" : "#FAFAFA",
-                  border: dragOver ? "1.5px dashed #002FA7" : "1.5px dashed #C2C2C2",
-                }}
+                className={`w-full rounded-xl flex flex-col items-center justify-center py-12 px-6 cursor-pointer transition-all min-h-[200px] border-[1.5px] border-dashed ${dragOver ? "bg-[#EEF2FF] border-brand" : "bg-[#FAFAFA] border-[#C2C2C2]"}`}
               >
                 <input ref={fileRef} type="file" accept="image/png,image/jpeg" className="hidden"
                   onChange={(e) => handleFile(e.target.files[0])} />
