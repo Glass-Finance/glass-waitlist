@@ -377,7 +377,7 @@ export default function Members() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="border-y border-gray-100">
+              <tr className="border-y border-gray-100 bg-[#F9F9FB]">
                 <th className="hidden sm:table-cell px-5 py-2.5 w-8">
                   <input type="checkbox" checked={selected.length === filtered.length && filtered.length > 0}
                     onChange={(e) => setSelected(e.target.checked ? filtered.map((m) => m.id) : [])} />

@@ -1790,7 +1790,7 @@ function DashboardContent({ isPaying, communityId }) {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border-collapse text-left">
                   <thead>
-                    <tr className="border-b border-gray-100">
+                    <tr className="border-b border-gray-100 bg-[#F3F4F6]">
                       {[
                         "Plan",
                         "Frequency",
