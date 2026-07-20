@@ -14,25 +14,17 @@ export default function PageLoadingState({
 }) {
   return (
     <div
-      className={className}
-      style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding,
-        textAlign: "center",
-      }}
+      className={`flex-1 flex flex-col items-center justify-center text-center ${className}`}
+      style={{ padding }}
     >
-      <div style={{ marginBottom: 20 }}>
+      <div className="mb-5">
         <BrandedSpinner size={size} />
       </div>
-      <p style={{ fontSize: 15, fontWeight: 600, color: "#333", margin: 0 }}>
+      <p className="text-[15px] font-semibold text-[#333] m-0">
         {label}
       </p>
       {subtitle && (
-        <p style={{ fontSize: 13, color: "#999", margin: "6px 0 0" }}>
+        <p className="text-[13px] text-[#999] mt-1.5 mx-0 mb-0">
           {subtitle}
         </p>
       )}
