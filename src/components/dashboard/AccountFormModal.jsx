@@ -129,8 +129,7 @@ export default function AccountFormModal({
       {/* Modal — centred */}
       <div className="fixed inset-0 z-80 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-xl rounded-xl p-7 shadow-2xl"
-          style={{ background: "#fff" }}
+          className="w-full max-w-xl rounded-xl p-7 shadow-2xl bg-white"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -196,9 +195,8 @@ export default function AccountFormModal({
                   onChange={(e) => manualMode && setAccName(e.target.value)}
                   placeholder={manualMode ? "Type account name" : ""}
                   className={
-                    inputCls + (manualMode ? "" : " cursor-default select-none")
+                    inputCls + (manualMode ? "" : " cursor-default select-none") + (resolving ? " !text-[#999]" : " !text-[#111]")
                   }
-                  style={{ color: resolving ? "#999" : "#111" }}
                 />
                 {accName && !resolving && !manualMode && (
                   <Check
@@ -211,8 +209,7 @@ export default function AccountFormModal({
 
             {resolveError && (
               <p
-                className="text-xs"
-                style={{ color: manualMode ? "#B45309" : "#DC2626" }}
+                className={`text-xs ${manualMode ? "text-[#B45309]" : "text-[#DC2626]"}`}
               >
                 {resolveError}
               </p>
