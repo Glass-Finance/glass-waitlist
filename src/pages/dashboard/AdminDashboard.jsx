@@ -2221,6 +2221,7 @@ function DashboardContent({ isPaying, communityId }) {
                                 channel: tx.channel,
                                 reference: tx.internalReference ?? tx.id,
                                 status: tx.status,
+                                payerPhoto: tx.member?.profileImage?.url ?? tx.user?.profileImage?.url ?? null,
                                 feeMinor:
                                   tx.feeMinor ??
                                   tx.fee ??

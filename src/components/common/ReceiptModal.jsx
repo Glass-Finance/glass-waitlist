@@ -545,7 +545,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[200] flex flex-col justify-end"
+      className="fixed inset-0 z-[200] flex flex-col justify-end sm:items-center sm:justify-center sm:p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -556,14 +556,16 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
         onClick={onClose}
       />
 
-      {/* Sheet */}
+      {/* Sheet — full-width bottom sheet on mobile (the member app, where
+          this is meant to feel native); a normal capped-width centered
+          dialog from sm: up so it doesn't swallow most of a desktop
+          viewport (this component is shared with the admin dashboard). */}
       <div
-        // rounded only at the top of the sheet itself, not the receipt card
-        className="relative bg-[#F0F4FF] rounded-t-[20px] max-h-[92dvh] flex flex-col overflow-hidden"
+        className="relative bg-[#F0F4FF] rounded-t-[20px] sm:rounded-[20px] max-h-[92dvh] sm:max-h-[85vh] sm:w-full sm:max-w-[420px] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Drag handle */}
-        <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
+        {/* Drag handle — mobile-only affordance, meaningless on a centered desktop dialog */}
+        <div className="flex justify-center pt-3 pb-1 flex-shrink-0 sm:hidden">
           <div className="w-9 h-1 rounded-sm bg-black/15" />
         </div>
 

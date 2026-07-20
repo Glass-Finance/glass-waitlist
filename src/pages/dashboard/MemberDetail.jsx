@@ -234,6 +234,7 @@ export default function MemberDetail() {
                               channel: t.channel,
                               reference: t.internalReference ?? t.id,
                               status: t.status,
+                              payerPhoto: member?.profileImage?.url ?? t.member?.profileImage?.url ?? t.user?.profileImage?.url ?? null,
                               // No dedicated fee field on the transaction
                               // record -- derived the same way
                               // PaymentSummary.jsx's confirmed "Platform
