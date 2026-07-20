@@ -343,7 +343,7 @@ export function AdminPaymentModal({ item, onClose }) {
       >
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-7 py-5">
-          <span className="text-lg font-normal text-gray-900">Transaction Details</span>
+          <span className="text-lg font-medium text-gray-900">Transaction Details</span>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 cursor-pointer bg-transparent border-none transition-colors"
