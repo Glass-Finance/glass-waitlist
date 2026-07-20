@@ -4,7 +4,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Check, X, Loader2, ArrowLeft, Clock } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 import { beginAuthGrace } from "../../api/client";
-import { settleLocalPaymentForReference } from "../../hooks/usePayments";
+import {
+  settleLocalPaymentForReference,
+  peekPendingPaymentCtx,
+  findAuthorisationForPlan,
+  fetchAuthorisationsOnce,
+} from "../../hooks/usePayments";
 import { useAuth } from "../../store/AuthContext";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingScreen from "../../components/LoadingScreen";
@@ -89,6 +94,37 @@ function AdminPaymentCallback() {
       sessionStorage.removeItem("paymentPendingRef");
     }
 
+    // Mirrors PaymentSuccess.jsx's goHome() handoff, but for the
+    // redirect-based (Paystack-hosted) admin payment path -- the modal that
+    // knew the plan context is long gone by the time this page confirms the
+    // payment, so that context travels via stashPendingPaymentCtx instead
+    // (see AdminPaymentModal.handlePay). Must peek it before
+    // settleLocalPaymentForReference consumes the same sessionStorage key.
+    // Fetches authorisations fresh (not the stale pre-payment list) since a
+    // consent this payment just created needs to actually show up here, or
+    // a payer who *did* choose to save would get asked again for nothing.
+    async function maybeOfferAutoPay(ref) {
+      const ctx = peekPendingPaymentCtx();
+      if (!ctx || !ctx.isRecurring || !ctx.paymentLinkId) return;
+      if (ctx.reference && ctx.reference !== ref) return;
+      try {
+        if (localStorage.getItem(`glass_autopay_asked_${ctx.paymentLinkId}`)) return;
+      } catch {
+        return;
+      }
+      const authorisations = await fetchAuthorisationsOnce({ _skipAuthRedirect: true });
+      const hasConsent = !!findAuthorisationForPlan(authorisations, { paymentLinkId: ctx.paymentLinkId });
+      if (hasConsent) return;
+      try {
+        sessionStorage.setItem("glass_autopay_prompt_admin", JSON.stringify({
+          paymentLinkId: ctx.paymentLinkId,
+          planName: ctx.planName,
+          amount: ctx.amount,
+          frequency: ctx.frequency,
+        }));
+      } catch { /* ignore */ }
+    }
+
     async function poll() {
       try {
         const res = await verifyPayment(reference, { _skipAuthRedirect: true });
@@ -103,11 +139,12 @@ function AdminPaymentCallback() {
           const s = status.toUpperCase();
           const finalState = (s === "SUCCESS" || s === "SUCCESSFUL") ? "success" : "failed";
           invalidateCaches();
-          consumePendingFlags();
           if (finalState === "success") {
+            await maybeOfferAutoPay(reference);
             settleLocalPaymentForReference(reference);
             setAutoRedirectIn(5);
           }
+          consumePendingFlags();
           setState(finalState);
           return;
         }

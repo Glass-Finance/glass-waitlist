@@ -90,6 +90,20 @@ export function stashPendingPaymentCtx(ctx) {
   }
 }
 
+// Non-destructive read -- settleLocalPaymentForReference (below) consumes
+// this same key on terminal success, so anything else that needs the stashed
+// plan context (e.g. AdminPaymentCallback deciding whether to offer the
+// Auto-Pay prompt after a redirect-based payment) must peek it first, in the
+// same tick, before that consumes it.
+export function peekPendingPaymentCtx() {
+  try {
+    const raw = sessionStorage.getItem(PENDING_CTX_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 // ─── Local fee cache ────────────────────────────────────────────────────────
 // The transaction fee is known and already shown to the payer at checkout
 // (PaymentSummary.jsx's "Platform Fee" = billedAmount - amount), but the
@@ -745,6 +759,19 @@ export function findAuthorisationForPlan(authorisations, { paymentLinkId, title,
 // fetch on that page. Every other caller (Auto-Pay/Manage Payments
 // settings, a normal ProtectedRoute-gated visit) leaves this off, so a
 // genuinely dead session there still signs out normally.
+// Plain (non-hook) fetch for imperative contexts that can't use
+// useManagePayments -- e.g. AdminPaymentCallback deciding whether to offer
+// the Auto-Pay prompt from inside an async poll loop rather than component
+// render. Same skipAuthRedirect reasoning as the hook below applies here too.
+export async function fetchAuthorisationsOnce(config = {}) {
+  try {
+    const res = await getMyAuthorisations(config);
+    return unwrapList(res).map(shapeAuthorisation);
+  } catch {
+    return [];
+  }
+}
+
 export function useManagePayments({ enabled = true, skipAuthRedirect = false } = {}) {
   const queryClient = useQueryClient();
   const config = skipAuthRedirect ? { _skipAuthRedirect: true } : {};

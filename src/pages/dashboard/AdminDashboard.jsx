@@ -37,6 +37,7 @@ import {
   stashPendingPaymentCtx,
   findAuthorisationForPlan,
 } from "../../hooks/usePayments";
+import { initiatePayment as initiatePaymentApi } from "../../api/members";
 import { useAuth } from "../../store/AuthContext";
 import { useExportJob } from "../../hooks/useExportJob";
 import { exportCommunityTransactions } from "../../api/exports";
@@ -45,6 +46,8 @@ import { getEmailError } from "../../utils/validators";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import EmptyState from "../../components/common/EmptyState";
 import ReceiptDownloadButton from "../../components/common/ReceiptDownloadButton";
+import Toggle from "../../components/common/Toggle";
+import AutoPayPrompt from "../../components/common/AutoPayPrompt";
 import { formatNaira as sharedFormatNaira, toTitleCase, formatDate } from "../../utils/format";
 import totalMembersIcon from "../../assets/dashboard/tdesign-member.webp";
 import inactiveMembersIcon from "../../assets/dashboard/inactive-members.webp";
@@ -159,6 +162,7 @@ function ActivityIcon({ type, color }) {
 // own desktop dashboard shouldn't be bounced to a "scan this on your phone"
 // screen just to see a modal).
 export function AdminPaymentModal({ item, onClose }) {
+  const navigate = useNavigate();
   const initiatePayment = useInitiatePayment();
   const { data: authorisations } = useManagePayments();
   const [error, setError] = useState("");
@@ -167,12 +171,41 @@ export function AdminPaymentModal({ item, onClose }) {
   // still takes a beat to actually leave the page. Without this, the button
   // flashes back to "Pay" during that gap. (Same fix as PaymentSummary.)
   const [redirecting, setRedirecting] = useState(false);
+  // Set only when a direct (no-redirect) charge just succeeded and this
+  // plan is eligible for the "Turn on Auto-Pay?" nudge -- swaps the modal
+  // body for AutoPayPrompt instead of closing outright. The redirect-based
+  // path (Paystack-hosted checkout) can't do this in-place since the page
+  // navigates away entirely; that case is handled after the fact by
+  // AdminPaymentCallback + DashboardLayout via the stashed pending ctx.
+  const [autoPayPrompt, setAutoPayPrompt] = useState(null);
 
+  // No keyboard dismiss for the Auto-Pay prompt, matching Home.jsx's own
+  // AutoPayPrompt (backdrop click only) -- Escape here would otherwise
+  // close the whole flow without recording that they were asked.
   useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    const handler = (e) => { if (e.key === "Escape" && !autoPayPrompt) onClose(); };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  }, [onClose, autoPayPrompt]);
+
+  // Pre-fetch the initiate-payment response as soon as the modal opens so
+  // the real billedAmount (amount + platform fee) can be shown before the
+  // admin confirms -- same pattern as PaymentSummary.jsx's member checkout.
+  // Silent failure -- falls back to item.amount with no fee breakdown.
+  const [prefetch, setPrefetch] = useState(null);
+  useEffect(() => {
+    if (!item.paymentLinkId || prefetch) return;
+    let cancelled = false;
+    initiatePaymentApi(item.paymentLinkId, {
+      idempotencyKey: crypto.randomUUID(),
+      amount: item.amount,
+      savePaymentMethod: true,
+      ...(item.obligationId ? { obligationId: item.obligationId } : {}),
+    })
+      .then((res) => { if (!cancelled) setPrefetch(res.data?.data ?? null); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [item.paymentLinkId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Confirmed with backend: a consent is scoped per recurring plan -- the
   // card saved on a plan's first payment is what auto-charges that plan
@@ -228,10 +261,18 @@ export function AdminPaymentModal({ item, onClose }) {
         // if Paystack sends the admin back without one in the URL, and stash
         // the plan context so the confirmed payment writes the local paid log.
         if (reference) sessionStorage.setItem("paymentPendingRef", reference);
+        // Plan context beyond just paymentLinkId/obligationId -- read back by
+        // AdminPaymentCallback on the far side of the redirect to decide
+        // whether to offer the Auto-Pay prompt once this admin lands back on
+        // the dashboard (see PaymentCallback.jsx).
         stashPendingPaymentCtx({
           reference,
           paymentLinkId: item.paymentLinkId,
           obligationId: item.obligationId ?? null,
+          isRecurring,
+          planName: item.name,
+          frequency: item.frequency,
+          amount: item.amount,
         });
         window.location.href = url;
       } else {
@@ -241,13 +282,56 @@ export function AdminPaymentModal({ item, onClose }) {
           paymentLinkId: item.paymentLinkId,
           obligationId: item.obligationId,
         });
-        onClose();
+        // Offer Auto-Pay only when this specific payment just declined to
+        // save a method and the plan still has no consent -- if they *did*
+        // save this time, it's already on and asking again would be
+        // redundant (savedMethod/hasAutoPayConsent below reflect the
+        // pre-payment authorisations list, which wouldn't show a
+        // just-created consent yet).
+        const justAskedNotTo = isRecurring && item.paymentLinkId && !effectiveSaveMethod && !savedMethod;
+        const alreadyAsked = (() => {
+          try { return !!localStorage.getItem(`glass_autopay_asked_${item.paymentLinkId}`); }
+          catch { return false; }
+        })();
+        if (justAskedNotTo && !alreadyAsked) {
+          setAutoPayPrompt({
+            paymentLinkId: item.paymentLinkId,
+            planName: item.name,
+            amount: item.amount,
+            frequency: item.frequency,
+          });
+        } else {
+          onClose();
+        }
       }
     } catch (err) {
       setError(
         getErrorMessage(err, "Could not start payment. Please try again."),
       );
     }
+  }
+
+  function dismissAutoPayPrompt() {
+    if (autoPayPrompt?.paymentLinkId) {
+      try { localStorage.setItem(`glass_autopay_asked_${autoPayPrompt.paymentLinkId}`, "1"); } catch { /* ignore */ }
+    }
+    setAutoPayPrompt(null);
+    onClose();
+  }
+
+  function enableAutoPay() {
+    dismissAutoPayPrompt();
+    navigate("/dashboard/settings/finance/auto-pay");
+  }
+
+  if (autoPayPrompt) {
+    return (
+      <AutoPayPrompt
+        prompt={autoPayPrompt}
+        onDismiss={dismissAutoPayPrompt}
+        onEnable={enableAutoPay}
+      />
+    );
   }
 
   return (
@@ -365,12 +449,35 @@ export function AdminPaymentModal({ item, onClose }) {
                 </div>
               );
             })()}
-            <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-              <span className="text-sm font-semibold text-gray-700">Total</span>
-              <span className="text-[17px] font-bold text-gray-900">
-                {formatNaira(item.amount)}
-              </span>
-            </div>
+            {prefetch?.billedAmount != null && prefetch.billedAmount !== item.amount ? (
+              <>
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <span className="text-sm text-gray-500">Amount</span>
+                  <span className="text-sm font-medium text-gray-900">
+                    {formatNaira(item.amount)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500">Charge</span>
+                  <span className="text-sm text-gray-600">
+                    {formatNaira(prefetch.billedAmount - item.amount)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-700">Total</span>
+                  <span className="text-[17px] font-bold text-gray-900">
+                    {formatNaira(prefetch.billedAmount)}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                <span className="text-sm font-semibold text-gray-700">Total</span>
+                <span className="text-[17px] font-bold text-gray-900">
+                  {formatNaira(item.amount)}
+                </span>
+              </div>
+            )}
             {isRecurring && (
               <p className="text-xs text-gray-400 leading-relaxed m-0 pt-1">
                 Today covers the current cycle. After that,{" "}
@@ -387,46 +494,63 @@ export function AdminPaymentModal({ item, onClose }) {
           <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-3">
             Payment Method
           </p>
-          {savedMethod ? (
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-stacked-container">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#EEF2FF]">
-                <Landmark size={16} className="text-brand" />
+          <div className="px-4 py-3 rounded-xl bg-stacked-container">
+            {savedMethod ? (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#EEF2FF]">
+                    <Landmark size={16} className="text-brand" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-900">
+                    {toTitleCase(savedMethod.cardType ?? savedMethod.bank ?? "Card")} ●●●●{savedMethod.last4}
+                    {savedMethod.expMonth && savedMethod.expYear
+                      ? ` | ${String(savedMethod.expMonth).padStart(2, "0")}/${String(savedMethod.expYear).slice(-2)}`
+                      : ""}
+                  </span>
+                </div>
+                <button
+                  onClick={() => navigate("/dashboard/settings/finance/payment-methods")}
+                  className="text-[13px] font-semibold bg-transparent border-none cursor-pointer text-brand"
+                >
+                  Change
+                </button>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-900">
-                  {savedMethod.bank ?? "Bank"} ●●●● {savedMethod.last4}
-                </p>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  Saved payment method
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="px-4 py-3 rounded-xl border border-dashed border-gray-200 bg-stacked-container">
+            ) : (
               <p className="text-sm text-gray-500">
                 You'll select your payment method on the next screen.
               </p>
-              <label className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={saveMethod}
-                  onChange={(e) => setSaveMethod(e.target.checked)}
-                  className="w-3.5 h-3.5 accent-brand cursor-pointer"
-                />
-                <span className="text-xs text-gray-500">
-                  {isRecurring
-                    ? "Save this card and charge it automatically each cycle (Auto-Pay). Uncheck to pay this cycle only."
-                    : "Save this payment method for faster checkout next time"}
+            )}
+
+            {/* Always shown, saved method or not -- a real, changeable
+                choice for every plan (confirmed with backend:
+                savePaymentMethod is optional at the API level regardless of
+                plan type). Mirrors PaymentSummary.jsx's member checkout. */}
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
+              <span className="flex items-center gap-1.5 text-xs text-gray-500">
+                {isRecurring ? "Auto-Pay" : "Save Payment Method"}
+                <span
+                  title={
+                    isRecurring
+                      ? "Save this card and charge it automatically each cycle. Turn off to pay this cycle only."
+                      : "Save this payment method for faster checkout next time."
+                  }
+                >
+                  <Info size={12} className="text-gray-400" />
                 </span>
-              </label>
+              </span>
+              <Toggle on={saveMethod} onChange={setSaveMethod} />
             </div>
-          )}
+          </div>
         </div>
 
         {/* ── Footer ── */}
         <div className="px-7 py-5 bg-stacked-container flex items-center justify-between gap-3">
           {error ? (
             <p className="text-xs text-red-500">{error}</p>
+          ) : savedMethod ? (
+            <p className="text-xs text-gray-400">
+              Charged instantly using your saved payment method.
+            </p>
           ) : (
             <p className="text-xs text-gray-400">
               You'll be redirected to complete payment securely.

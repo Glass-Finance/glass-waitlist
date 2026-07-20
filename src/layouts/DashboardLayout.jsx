@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 import DashboardTour, { DASHBOARD_TOUR_SEEN_KEY } from "../components/dashboard/DashboardTour";
+import AutoPayPrompt from "../components/common/AutoPayPrompt";
 import AdminBackground from "../assets/admin-background.webp";
 
 export default function DashboardLayout() {
+  const navigate = useNavigate();
   // Sidebar is an off-canvas drawer below the md breakpoint (see
   // Sidebar.jsx) -- this state is lifted here since the hamburger that
   // opens it lives in the sibling Topbar, not Sidebar itself.
@@ -25,6 +27,40 @@ export default function DashboardLayout() {
   function closeTour() {
     setTourOpen(false);
     try { localStorage.setItem(DASHBOARD_TOUR_SEEN_KEY, "1"); } catch {}
+  }
+
+  // Auto-Pay prompt handoff for the redirect-based (Paystack-hosted) admin
+  // payment path -- AdminPaymentCallback stashes this once verification
+  // lands on success (see its own maybeOfferAutoPay), since the admin can
+  // land back on any /dashboard/* route depending on where they paid from
+  // (AdminDashboard's own "Your Payments", or CommunitiesHome's
+  // cross-community overview) -- this layout wraps both, so reading it here
+  // once covers every landing page instead of duplicating the same
+  // read-on-mount logic in each page. Read once on mount and consume
+  // immediately so a refresh/re-visit doesn't reopen it.
+  const [autoPayPrompt, setAutoPayPrompt] = useState(() => {
+    try {
+      const raw = sessionStorage.getItem("glass_autopay_prompt_admin");
+      if (!raw) return null;
+      sessionStorage.removeItem("glass_autopay_prompt_admin");
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  });
+
+  function dismissAutoPayPrompt() {
+    if (autoPayPrompt?.paymentLinkId) {
+      try {
+        localStorage.setItem(`glass_autopay_asked_${autoPayPrompt.paymentLinkId}`, "1");
+      } catch { /* ignore */ }
+    }
+    setAutoPayPrompt(null);
+  }
+
+  function enableAutoPay() {
+    dismissAutoPayPrompt();
+    navigate("/dashboard/settings/finance/auto-pay");
   }
 
   return (
@@ -61,6 +97,13 @@ export default function DashboardLayout() {
       </div>
 
       {tourOpen && <DashboardTour onClose={closeTour} />}
+      {autoPayPrompt && (
+        <AutoPayPrompt
+          prompt={autoPayPrompt}
+          onDismiss={dismissAutoPayPrompt}
+          onEnable={enableAutoPay}
+        />
+      )}
     </div>
   );
 }
