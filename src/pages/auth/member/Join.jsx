@@ -133,17 +133,7 @@ function MobileShell({ children, step }) {
             alt="Glass"
             className="absolute top-10 left-5 h-9 w-auto object-contain"
             draggable={false}
-            // style={{ filter: "brightness(0) invert(1)" }}
           />
-          {/* Tagline */}
-          {/* <p
-            className="absolute bottom-10 left-0 right-0 text-center text-white font-normal leading-snug px-8"
-            style={{ fontSize: "clamp(20px,4vw,22px)" }}
-          >
-            Manage Your Community
-            <br />
-            Finance Effortlessly
-          </p> */}
           {step === STEPS.OTP && (
             <div className="absolute inset-0 flex items-center justify-center">
               <h1 className="text-white text-center font-normal text-[clamp(20px,5vw,24px)] leading-tight px-6">
