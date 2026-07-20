@@ -28,8 +28,8 @@ export default function PayingMember() {
 
   return (
     <div
-      className="h-screen w-screen flex flex-col items-center justify-center overflow-hidden px-6"
-      style={{ backgroundImage: `url(${Background})`, backgroundSize: "contain", backgroundPosition: "center" }}
+      className="h-screen w-screen flex flex-col items-center justify-center overflow-hidden px-6 bg-contain bg-center"
+      style={{ backgroundImage: `url(${Background})` }}
     >
       <div className="absolute top-5 left-8 flex items-center gap-2">
         <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
@@ -54,8 +54,7 @@ export default function PayingMember() {
               <button
                 key={opt.id}
                 onClick={() => setSelected(opt.id)}
-                className="flex-1 relative flex flex-col items-center text-center px-6 py-8 rounded-2xl bg-white transition-all duration-200 cursor-pointer border-none"
-                style={{ border: isSelected ? "2px solid #002FA7" : "2px solid #E5E5E5" }}
+                className={`flex-1 relative flex flex-col items-center text-center px-6 py-8 rounded-2xl bg-white transition-all duration-200 cursor-pointer border-2 ${isSelected ? "border-brand" : "border-[#E5E5E5]"}`}
               >
                 <div className="absolute top-3 left-3">
                   {isSelected ? (
