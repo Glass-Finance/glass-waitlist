@@ -111,7 +111,7 @@ export default function Password() {
           />
         </div>
 
-        {error && <p className="text-[13px] text-[#DC2626] mt-3 mx-1 mb-0">{error}</p>}
+        {error && <p className="text-[13px] text-danger mt-3 mx-1 mb-0">{error}</p>}
         {success && <p className="text-[13px] text-[#059669] mt-3 mx-1 mb-0">Password updated.</p>}
 
         <button

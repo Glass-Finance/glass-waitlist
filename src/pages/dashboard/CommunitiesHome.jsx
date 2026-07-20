@@ -188,7 +188,7 @@ function obligationStatusChip(o) {
     ? Math.ceil((new Date(o.dueDate) - new Date()) / 86400000)
     : null;
   if (days != null && days < 0)
-    return { label: "Overdue", cls: "bg-[#FEF2F2] text-[#DC2626]" };
+    return { label: "Overdue", cls: "bg-[#FEF2F2] text-danger" };
   if (days != null && days <= 7)
     return { label: "Due soon", cls: "bg-[#FFFBEB] text-[#B45309]" };
   return { label: "Upcoming", cls: "bg-[#EEF2FF] text-brand" };

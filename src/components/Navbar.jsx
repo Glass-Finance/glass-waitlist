@@ -52,7 +52,7 @@ export default function Navbar() {
           }}
           className={`flex-1 px-4 py-2 rounded-md text-[13px] font-semibold cursor-pointer transition-all ${
             viewMode === "organizations"
-              ? "bg-[#808080] text-white"
+              ? "bg-gray-text text-white"
               : "text-white/55"
           }`}
         >
@@ -64,7 +64,7 @@ export default function Navbar() {
             setMenuOpen(false);
           }}
           className={`flex-1 px-4 py-3 rounded-md text-[13px] font-semibold cursor-pointer transition-all ${
-            viewMode === "members" ? "bg-[#808080] text-white" : "text-white/55"
+            viewMode === "members" ? "bg-gray-text text-white" : "text-white/55"
           }`}
         >
           Members

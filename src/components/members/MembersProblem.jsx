@@ -159,7 +159,7 @@ export default function MembersProblem() {
                   <h3 className="text-[22px] font-bold text-[#0f1d6e] leading-snug mb-2">
                     {title}
                   </h3>
-                  <p className="text-[17px] text-[#808080] leading-relaxed">
+                  <p className="text-[17px] text-gray-text leading-relaxed">
                     {desc}
                   </p>
                 </div>

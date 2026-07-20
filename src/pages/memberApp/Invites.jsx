@@ -113,7 +113,7 @@ export default function Invites() {
         {isLoading || joinRequestsLoading ? (
           <PageLoadingState label="Loading your invites…" size={56} padding="36px 24px" />
         ) : error ? (
-          <p className="text-[13px] text-[#DC2626] py-6 px-1">
+          <p className="text-[13px] text-danger py-6 px-1">
             Couldn't load invitations. Try again later.
           </p>
         ) : invites.length === 0 && joinRequests.length === 0 ? (

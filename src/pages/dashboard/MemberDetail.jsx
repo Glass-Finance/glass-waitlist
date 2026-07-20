@@ -224,7 +224,7 @@ export default function MemberDetail() {
                         <td className="px-5 py-3 text-sm font-medium text-black">{t.paymentLink?.title ?? t.description ?? "—"}</td>
                         <td className="px-5 py-3 text-sm font-semibold text-gray-900">{formatNaira(t.amount)}</td>
                         <td className="px-5 py-3">
-                          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isPaid ? "text-[#059669] bg-[#ecfdf5]" : "text-[#dc2626] bg-[#fff1f2]"}`}>
+                          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isPaid ? "text-[#059669] bg-[#ecfdf5]" : "text-danger bg-[#fff1f2]"}`}>
                             {isPaid ? "Paid" : statusLabel}
                           </span>
                         </td>

@@ -209,7 +209,7 @@ export default function AccountFormModal({
 
             {resolveError && (
               <p
-                className={`text-xs ${manualMode ? "text-[#B45309]" : "text-[#DC2626]"}`}
+                className={`text-xs ${manualMode ? "text-[#B45309]" : "text-danger"}`}
               >
                 {resolveError}
               </p>

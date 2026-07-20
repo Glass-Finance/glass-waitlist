@@ -127,7 +127,7 @@ function EmptyState({ onAddMember, onCreatePlan }) {
 
   return (
     <div className="flex flex-col items-center py-14 px-6">
-      <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 bg-[#E6EEFF]">
+      <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 bg-brand-tint">
         <Building2 size={38} className="text-brand" />
       </div>
       <h2 className="text-xl font-bold text-gray-900 text-center mb-2 max-w-sm">
@@ -309,8 +309,8 @@ export default function Members() {
       {/* Stats — only when there are members */}
       {members.length > 0 && (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        <StatCard icon={Users} label="Total Members" value={String(stats.total)} iconCls="text-brand bg-[#E6EEFF]" />
-        <StatCard icon={UserX} label="Active Members" value={String(stats.active)} iconCls="text-[#dc2626] bg-[#FFE9EC]" />
+        <StatCard icon={Users} label="Total Members" value={String(stats.total)} iconCls="text-brand bg-brand-tint" />
+        <StatCard icon={UserX} label="Active Members" value={String(stats.active)} iconCls="text-danger bg-[#FFE9EC]" />
         <StatCard icon={Clock} label="Inactive" value={String(stats.inactive)} iconCls="text-[#b45309] bg-[#FFF8E7]" />
         <StatCard icon={ShieldCheck} label="Admins" value={String(stats.admins)} iconCls="text-[#7c3aed] bg-[#F3EEFF]" />
       </div>

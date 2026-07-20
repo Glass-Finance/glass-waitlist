@@ -31,8 +31,8 @@ function statusLabel(status) {
 
 function StatusBadge({ status }) {
   const map = {
-    Success: "bg-[#dcfce7] text-[#15803d]",
-    Failed: "bg-[#fce4e4] text-[#dc2626]",
+    Success: "bg-success-tint text-[#15803d]",
+    Failed: "bg-[#fce4e4] text-danger",
     Pending: "bg-[#fef9c3] text-[#b45309]",
   };
   const label = statusLabel(status);
@@ -89,7 +89,7 @@ function TxRow({ tx, onOpen }) {
   return (
     <div
       onClick={() => onOpen(tx)}
-      className="flex items-center justify-between gap-2 py-3.5 px-5 border-b border-[#f3f4f6] cursor-pointer"
+      className="flex items-center justify-between gap-2 py-3.5 px-5 border-b border-stacked-container cursor-pointer"
     >
       <div className="min-w-0">
         <p className="text-[15px] font-medium text-[#111827] m-0">
@@ -202,7 +202,7 @@ export default function Transactions() {
         <PageLoadingState label="Loading your payment history…" size={56} padding="36px 24px" />
       ) : error ? (
         <div className="text-center py-8">
-          <p className="text-[#dc2626] text-sm mb-3">
+          <p className="text-danger text-sm mb-3">
             Couldn't load transactions.
           </p>
           <button
@@ -228,7 +228,7 @@ export default function Transactions() {
             key={label}
             className="bg-surface-container rounded-2xl mx-3 mt-0 mb-3 overflow-hidden"
           >
-            <div className="py-3 px-5 flex items-center gap-1.5 border-b border-[#f3f4f6]">
+            <div className="py-3 px-5 flex items-center gap-1.5 border-b border-stacked-container">
               <span className="text-sm font-bold text-[#2563eb]">
                 {label}
               </span>

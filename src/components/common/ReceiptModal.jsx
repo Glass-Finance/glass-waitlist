@@ -537,7 +537,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
       disabled={!!saving}
       style={{ opacity: saving && !isActive ? 0.55 : 1 }}
       // no border-radius — sharp buttons to match the receipt
-      className={`flex-1 flex items-center justify-center gap-1.5 py-[13px] px-2.5 border-none text-[13px] font-semibold transition-opacity duration-150 ${saving ? "cursor-not-allowed" : "cursor-pointer"} ${primary ? "bg-[#002FA7] text-white" : "bg-[#EEF2FF] text-[#1E3A8A]"}`}
+      className={`flex-1 flex items-center justify-center gap-1.5 py-[13px] px-2.5 border-none text-[13px] font-semibold transition-opacity duration-150 ${saving ? "cursor-not-allowed" : "cursor-pointer"} ${primary ? "bg-brand text-white" : "bg-[#EEF2FF] text-[#1E3A8A]"}`}
     >
       {children}
     </button>

@@ -47,7 +47,7 @@ function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
         </div>
         <div className="flex flex-col items-center text-center gap-2.5">
           <div className="w-[52px] h-[52px] rounded-full bg-[#FEF2F2] flex items-center justify-center mb-1">
-            <AlertTriangle size={24} className="text-[#DC2626]" />
+            <AlertTriangle size={24} className="text-danger" />
           </div>
           <p className="text-[17px] font-bold text-[#111] m-0">
             Leave {community?.name}?
@@ -60,7 +60,7 @@ function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
           <button
             onClick={onConfirm}
             disabled={leaving}
-            className={`w-full py-3.5 px-0 rounded-xl border-none bg-[#DC2626] text-white text-[14.5px] font-semibold ${leaving ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
+            className={`w-full py-3.5 px-0 rounded-xl border-none bg-danger text-white text-[14.5px] font-semibold ${leaving ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
           >
             {leaving ? "Leaving…" : "Yes, leave community"}
           </button>
@@ -177,7 +177,7 @@ export default function MyCommunities() {
                     onClick={(e) => handleLeave(e, c)}
                     disabled={leaveCommunity.isPending}
                     title="Leave community"
-                    className="bg-transparent border-none cursor-pointer p-1.5 text-[#DC2626] flex-shrink-0"
+                    className="bg-transparent border-none cursor-pointer p-1.5 text-danger flex-shrink-0"
                   >
                     <LogOut size={16} />
                   </button>

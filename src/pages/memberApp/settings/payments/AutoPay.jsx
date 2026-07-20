@@ -133,7 +133,7 @@ export default function AutoPay() {
                       {[plan.communityName, plan.amount != null ? formatNaira(plan.amount) : null].filter(Boolean).join(" · ")}
                     </p>
                     {expired && (
-                      <p className="text-[11px] text-[#DC2626] mt-1 mx-0 mb-0 leading-[1.4]">
+                      <p className="text-[11px] text-danger mt-1 mx-0 mb-0 leading-[1.4]">
                         Your saved card expired
                         {auth.expMonth && auth.expYear ? ` ${auth.expMonth}/${auth.expYear}` : ""}.
                         Auto-Pay charges will fail — pay once with a new card to update it.

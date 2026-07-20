@@ -25,7 +25,7 @@ function formatRequestedAt(r) {
 
 const STATUS_CHIP = {
   APPROVED: { label: "Approved", cls: "bg-[#ECFDF5] text-[#059669]" },
-  REJECTED: { label: "Rejected", cls: "bg-[#FEF2F2] text-[#DC2626]" },
+  REJECTED: { label: "Rejected", cls: "bg-[#FEF2F2] text-danger" },
   CANCELLED: { label: "Cancelled", cls: "bg-stacked-container text-[#6B7280]" },
   EXPIRED: { label: "Expired", cls: "bg-stacked-container text-[#6B7280]" },
 };

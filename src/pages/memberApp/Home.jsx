@@ -37,11 +37,11 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
     const isError = Boolean(error);
     return (
       <div
-        className={`mx-4 rounded-2xl text-center flex flex-col items-center gap-0 px-6 pt-10 pb-11 ${isError ? "bg-[#FFF7F7]" : "bg-[#002FA7]"}`}
+        className={`mx-4 rounded-2xl text-center flex flex-col items-center gap-0 px-6 pt-10 pb-11 ${isError ? "bg-[#FFF7F7]" : "bg-brand"}`}
       >
         {/* Icon bubble */}
         <div
-          className={`w-14 h-14 rounded-full flex items-center justify-center mb-5 ${isError ? "bg-[#FEE2E2]" : "bg-white/15"}`}
+          className={`w-14 h-14 rounded-full flex items-center justify-center mb-5 ${isError ? "bg-danger-tint" : "bg-white/15"}`}
         >
           {isError ? (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -117,7 +117,6 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   // this is the one place the card itself (not just a list row) needs to
   // know it, to decide the border color below.
   const isOverdue = new Date(nextDue.dueDate) < new Date();
-  const accentColor = isOverdue ? "#DC2626" : "#002FA7";
 
   return (
     <div className="border border-surface-container-border mx-4 rounded-2xl overflow-hidden bg-white shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
@@ -131,12 +130,12 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
           the whole card instead of just the top. Two stacked, normally-
           flowing blocks can't have that ambiguity. */}
       <div
-        className={`border-t-[1.5px] border-x-[1.5px] rounded-t-2xl pt-5 px-5 flex flex-col items-center ${isOverdue ? "border-[#DC2626]" : "border-[#002FA7]"}`}
+        className={`border-t-[1.5px] border-x-[1.5px] rounded-t-2xl pt-5 px-5 flex flex-col items-center ${isOverdue ? "border-danger" : "border-brand"}`}
       >
         {/* Recurring pill */}
         <div className="border border-surface-container-border mb-3.5 py-1.5 px-[18px] rounded-full text-[#374151] text-xs font-medium flex items-center gap-1.5">
           <span
-            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isRecurring ? "bg-[#7C3AED]" : "bg-[#DC2626]"}`}
+            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isRecurring ? "bg-[#7C3AED]" : "bg-danger"}`}
           />
           {isRecurring ? "Recurring" : "One-time"}
         </div>
@@ -161,7 +160,7 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
 
         {/* Due date */}
         <div
-          className={`flex items-center gap-[5px] mb-[18px] text-xs ${isOverdue ? "text-[#DC2626] font-semibold" : "text-[#9CA3AF] font-normal"}`}
+          className={`flex items-center gap-[5px] mb-[18px] text-xs ${isOverdue ? "text-danger font-semibold" : "text-[#9CA3AF] font-normal"}`}
         >
           <Clock size={12} strokeWidth={1.8} />
           <span>Due {formatDate(nextDue.dueDate)}</span>
@@ -170,7 +169,7 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
         {/* Pay Now button */}
         <button
           onClick={() => onPay(nextDue)}
-          className={`w-full py-3.5 rounded border-none text-white text-[15px] font-semibold cursor-pointer ${isOverdue ? "bg-[#DC2626]" : "bg-[#002FA7]"}`}
+          className={`w-full py-3.5 rounded border-none text-white text-[15px] font-semibold cursor-pointer ${isOverdue ? "bg-danger" : "bg-brand"}`}
         >
           Pay Now
         </button>
@@ -216,7 +215,7 @@ function UpcomingRow({ payment, onPay }) {
         </span>
         <button
           onClick={() => onPay(payment)}
-          className="py-[7px] px-4 rounded border-[1.5px] border-[#002FA7] bg-white text-brand text-xs font-semibold cursor-pointer whitespace-nowrap"
+          className="py-[7px] px-4 rounded border-[1.5px] border-brand bg-white text-brand text-xs font-semibold cursor-pointer whitespace-nowrap"
         >
           Pay Now
         </button>
@@ -248,7 +247,7 @@ function HistoryRow({ item, onOpen }) {
           {formatNaira(item.amount)}
         </span>
         <span
-          className={`text-[11px] font-semibold py-0.5 px-2.5 rounded-full ${isSuccess ? "text-[#059669] bg-[#ECFDF5]" : "text-[#DC2626] bg-[#FEF2F2]"}`}
+          className={`text-[11px] font-semibold py-0.5 px-2.5 rounded-full ${isSuccess ? "text-[#059669] bg-[#ECFDF5]" : "text-danger bg-[#FEF2F2]"}`}
         >
           {isSuccess ? "Success" : "Failed"}
         </span>
@@ -284,7 +283,7 @@ function NoCommunityState({ navigate }) {
       {/* Primary CTA */}
       <button
         onClick={() => navigate("/member/communities/search")}
-        className="w-full max-w-[300px] py-4 rounded-[10px] border-none bg-[#002FA7] text-white text-[15px] font-semibold cursor-pointer mb-4"
+        className="w-full max-w-[300px] py-4 rounded-[10px] border-none bg-brand text-white text-[15px] font-semibold cursor-pointer mb-4"
       >
         Join A Community
       </button>
@@ -321,7 +320,7 @@ function PendingApprovalState({ navigate, community }) {
       </p>
       <button
         onClick={() => navigate("/member/communities/search")}
-        className="bg-transparent border-[1.5px] border-[#002FA7] rounded-[10px] py-3 px-6 text-brand font-semibold cursor-pointer"
+        className="bg-transparent border-[1.5px] border-brand rounded-[10px] py-3 px-6 text-brand font-semibold cursor-pointer"
       >
         Browse Other Communities
       </button>
@@ -488,7 +487,7 @@ export default function Home() {
           >
             <Bell size={17} strokeWidth={1.8} className="text-[#333]" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-[#DC2626] text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
+              <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}

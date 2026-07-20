@@ -90,7 +90,7 @@ function SetupFlow({ onSuccess, onCancel }) {
 
         <button
           onClick={startSetup}
-          className="p-3.5 rounded-xl border-none cursor-pointer bg-[#002FA7] text-white text-[15px] font-semibold"
+          className="p-3.5 rounded-xl border-none cursor-pointer bg-brand text-white text-[15px] font-semibold"
         >
           Set Up MFA
         </button>
@@ -155,12 +155,12 @@ function SetupFlow({ onSuccess, onCancel }) {
           2. Enter the 6-digit code from the app
         </p>
         <CodeInput value={code} onChange={setCode} disabled={stage === "verifying"} />
-        {error && <p className="text-[13px] text-[#DC2626] m-0">{error}</p>}
+        {error && <p className="text-[13px] text-danger m-0">{error}</p>}
 
         <button
           onClick={verifySetup}
           disabled={code.length !== 6 || stage === "verifying"}
-          className={`p-3.5 rounded-xl border-none text-white text-[15px] font-semibold ${code.length === 6 ? "cursor-pointer bg-[#002FA7]" : "cursor-not-allowed bg-[#E0E0E0]"} ${stage === "verifying" ? "opacity-70" : "opacity-100"}`}
+          className={`p-3.5 rounded-xl border-none text-white text-[15px] font-semibold ${code.length === 6 ? "cursor-pointer bg-brand" : "cursor-not-allowed bg-[#E0E0E0]"} ${stage === "verifying" ? "opacity-70" : "opacity-100"}`}
         >
           {stage === "verifying" ? "Activating…" : "Activate MFA"}
         </button>
@@ -210,11 +210,11 @@ function DisableFlow({ onSuccess, onCancel }) {
         Enter the 6-digit code from your authenticator app to confirm:
       </p>
       <CodeInput value={code} onChange={setCode} disabled={loading} />
-      {error && <p className="text-[13px] text-[#DC2626] m-0">{error}</p>}
+      {error && <p className="text-[13px] text-danger m-0">{error}</p>}
       <button
         onClick={handleDisable}
         disabled={code.length !== 6 || loading}
-        className={`p-3.5 rounded-xl border-none text-white text-[15px] font-semibold ${code.length === 6 ? "cursor-pointer bg-[#DC2626]" : "cursor-not-allowed bg-[#E0E0E0]"} ${loading ? "opacity-70" : "opacity-100"}`}
+        className={`p-3.5 rounded-xl border-none text-white text-[15px] font-semibold ${code.length === 6 ? "cursor-pointer bg-danger" : "cursor-not-allowed bg-[#E0E0E0]"} ${loading ? "opacity-70" : "opacity-100"}`}
       >
         {loading ? "Disabling…" : "Disable MFA"}
       </button>
@@ -270,22 +270,22 @@ export default function MFA() {
             {/* Status card */}
             <div className="bg-white rounded-2xl py-5 px-4 shadow-[0_1px_6px_rgba(0,0,0,0.06)] mb-5 flex items-center gap-3.5">
               <div
-                className={`w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center ${mfaEnabled ? "bg-[#DCFCE7]" : "bg-stacked-container"}`}
+                className={`w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center ${mfaEnabled ? "bg-success-tint" : "bg-stacked-container"}`}
               >
-                <ShieldCheck size={22} className={mfaEnabled ? "text-[#16A34A]" : "text-[#9CA3AF]"} />
+                <ShieldCheck size={22} className={mfaEnabled ? "text-success" : "text-[#9CA3AF]"} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[15px] font-semibold text-[#111] m-0">
                   Authenticator App (TOTP)
                 </p>
                 <p
-                  className={`text-[13px] mt-0.5 mb-0 ${mfaEnabled ? "text-[#16A34A] font-medium" : "text-[#999] font-normal"}`}
+                  className={`text-[13px] mt-0.5 mb-0 ${mfaEnabled ? "text-success font-medium" : "text-[#999] font-normal"}`}
                 >
                   {mfaEnabled ? "Active — your account is protected" : "Not set up"}
                 </p>
               </div>
               <span
-                className={`text-[11px] font-bold py-1 px-2.5 rounded-full ${mfaEnabled ? "bg-[#DCFCE7] text-[#15803D]" : "bg-stacked-container text-[#9CA3AF]"}`}
+                className={`text-[11px] font-bold py-1 px-2.5 rounded-full ${mfaEnabled ? "bg-success-tint text-[#15803D]" : "bg-stacked-container text-[#9CA3AF]"}`}
               >
                 {mfaEnabled ? "ON" : "OFF"}
               </span>
@@ -295,14 +295,14 @@ export default function MFA() {
             {mfaEnabled ? (
               <button
                 onClick={() => setFlow("disable")}
-                className="w-full p-3.5 rounded-xl border-[1.5px] border-[#DC2626] bg-white text-[#DC2626] text-sm font-semibold cursor-pointer"
+                className="w-full p-3.5 rounded-xl border-[1.5px] border-danger bg-white text-danger text-sm font-semibold cursor-pointer"
               >
                 Disable MFA
               </button>
             ) : (
               <button
                 onClick={() => setFlow("setup")}
-                className="w-full p-3.5 rounded-xl border-none bg-[#002FA7] text-white text-[15px] font-semibold cursor-pointer"
+                className="w-full p-3.5 rounded-xl border-none bg-brand text-white text-[15px] font-semibold cursor-pointer"
               >
                 Set Up MFA
               </button>
@@ -310,7 +310,7 @@ export default function MFA() {
 
             {/* Info note */}
             <div className="flex items-start gap-2 py-3 px-3.5 rounded-[10px] bg-[#D7E2FF] mt-5">
-              <div className="w-4 h-4 rounded-full border-[1.5px] border-[#002FA7] flex items-center justify-center flex-shrink-0 mt-px">
+              <div className="w-4 h-4 rounded-full border-[1.5px] border-brand flex items-center justify-center flex-shrink-0 mt-px">
                 <span className="text-[9px] font-bold text-brand">i</span>
               </div>
               <p className="text-xs text-[#333] m-0 leading-relaxed">

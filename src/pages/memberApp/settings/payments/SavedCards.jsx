@@ -42,7 +42,7 @@ export default function SavedCards() {
           {isLoading ? (
             <PageLoadingState size={56} padding="36px 24px" />
           ) : error ? (
-            <p className="text-center text-[#DC2626] text-[13px] py-6">
+            <p className="text-center text-danger text-[13px] py-6">
               Couldn't load saved payment methods.
             </p>
           ) : data.length === 0 ? (
@@ -70,7 +70,7 @@ export default function SavedCards() {
                   aria-label="Remove saved card"
                   className={`bg-transparent border-none cursor-pointer p-1.5 flex-shrink-0 ${isRemoving ? "opacity-50" : "opacity-100"}`}
                 >
-                  <Trash2 size={16} className="text-[#DC2626]" />
+                  <Trash2 size={16} className="text-danger" />
                 </button>
               </div>
             ))

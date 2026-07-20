@@ -39,7 +39,7 @@ export default function ConfirmSheet({
           <div
             className={`w-[52px] h-[52px] rounded-full flex items-center justify-center mb-1 ${danger ? "bg-[#FEF2F2]" : "bg-brand-tint"}`}
           >
-            <Icon size={24} className={danger ? "text-[#DC2626]" : "text-brand"} />
+            <Icon size={24} className={danger ? "text-danger" : "text-brand"} />
           </div>
           <p className="text-[17px] font-bold text-[#111] m-0">{title}</p>
           <p className="text-[13.5px] text-[#6B7280] m-0 leading-[1.55] max-w-[320px]">
@@ -50,7 +50,7 @@ export default function ConfirmSheet({
           <button
             onClick={onConfirm}
             disabled={confirming}
-            className={`w-full py-3.5 px-0 rounded-xl border-none text-white text-[14.5px] font-semibold ${danger ? "bg-[#DC2626]" : "bg-brand"} ${confirming ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
+            className={`w-full py-3.5 px-0 rounded-xl border-none text-white text-[14.5px] font-semibold ${danger ? "bg-danger" : "bg-brand"} ${confirming ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
           >
             {confirming ? (confirmingLabel ?? "Please wait…") : confirmLabel}
           </button>

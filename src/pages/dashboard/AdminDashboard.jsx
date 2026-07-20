@@ -88,7 +88,7 @@ function statusStyle(status = "") {
 
 const FREQUENCY_STYLE = {
   MONTHLY: { cls: "bg-[#FFF8E7] text-[#b45309]", label: "Monthly" },
-  WEEKLY: { cls: "bg-[#E6EEFF] text-brand", label: "Weekly" },
+  WEEKLY: { cls: "bg-brand-tint text-brand", label: "Weekly" },
   QUARTERLY: { cls: "bg-[#ECFDF5] text-[#0f766e]", label: "Quarterly" },
   YEARLY: { cls: "bg-[#ECFDF5] text-[#059669]", label: "Annually" },
 };

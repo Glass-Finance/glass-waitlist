@@ -113,7 +113,7 @@ function NotificationRow({ n, onTap, onNavigate }) {
       }}
     >
       {!isRead && (
-        <span className="absolute top-2.5 right-3 w-[7px] h-[7px] rounded-full bg-[#002FA7]" />
+        <span className="absolute top-2.5 right-3 w-[7px] h-[7px] rounded-full bg-brand" />
       )}
       <NotifIcon n={n} />
       <div className={`flex-1 min-w-0 ${isRead ? "pr-0" : "pr-3.5"}`}>
@@ -166,11 +166,11 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
       </div>
       <div className="flex gap-2.5">
         <button onClick={() => onAccept(invite)} disabled={busy}
-          className="flex-1 py-3 rounded border-none bg-[#002FA7] text-white text-sm font-semibold cursor-pointer">
+          className="flex-1 py-3 rounded border-none bg-brand text-white text-sm font-semibold cursor-pointer">
           Accept
         </button>
         <button onClick={() => onReject(invite)} disabled={busy}
-          className="flex-1 py-3 rounded border-[1.5px] border-[#002FA7] bg-white text-brand text-sm font-semibold cursor-pointer">
+          className="flex-1 py-3 rounded border-[1.5px] border-brand bg-white text-brand text-sm font-semibold cursor-pointer">
           Decline
         </button>
       </div>
@@ -187,7 +187,7 @@ function EmptyState({ icon: Icon, label, hint, onAction, actionLabel }) {
       {hint && <p className="text-[#aaa] text-xs m-0 max-w-[240px] leading-relaxed">{hint}</p>}
       {onAction && (
         <button onClick={onAction}
-          className="mt-1 py-2 px-4 rounded-lg border-[1.5px] border-[#002FA7] bg-white text-brand text-[13px] font-semibold cursor-pointer">
+          className="mt-1 py-2 px-4 rounded-lg border-[1.5px] border-brand bg-white text-brand text-[13px] font-semibold cursor-pointer">
           {actionLabel}
         </button>
       )}

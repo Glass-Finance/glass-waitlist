@@ -17,8 +17,8 @@ function statusLabel(status) {
 function StatusPill({ status }) {
   const label = statusLabel(status);
   const map = {
-    Success: { cls: "bg-[#dcfce7] text-[#15803d]", dotCls: "bg-[#15803d]", text: "Successful" },
-    Failed: { cls: "bg-[#fce4e4] text-[#dc2626]", dotCls: "bg-[#dc2626]", text: "Failed" },
+    Success: { cls: "bg-success-tint text-[#15803d]", dotCls: "bg-[#15803d]", text: "Successful" },
+    Failed: { cls: "bg-[#fce4e4] text-danger", dotCls: "bg-danger", text: "Failed" },
     Pending: { cls: "bg-[#fef9c3] text-[#b45309]", dotCls: "bg-[#b45309]", text: "Pending" },
   };
   const s = map[label] ?? map.Pending;
@@ -47,7 +47,7 @@ function getInitials(name) {
 function Row({ label, children, last }) {
   return (
     <div
-      className={`flex items-start justify-between gap-4 py-3.5 ${last ? "border-none" : "border-b border-[#F3F4F6]"}`}
+      className={`flex items-start justify-between gap-4 py-3.5 ${last ? "border-none" : "border-b border-stacked-container"}`}
     >
       <span className="text-sm text-gray-500 flex-shrink-0 pt-0.5">{label}</span>
       <span className="text-sm font-semibold text-gray-900 text-right break-words max-w-[62%]">
@@ -141,7 +141,7 @@ export default function TransactionDetail() {
                   {tx.payerPhoto ? (
                     <img src={tx.payerPhoto} alt="" className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
                   ) : (
-                    <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white bg-gradient-to-br from-[#7C3AED] to-[#002FA7]">
+                    <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white bg-gradient-to-br from-[#7C3AED] to-brand">
                       {getInitials(tx.payerName)}
                     </span>
                   )}

@@ -213,7 +213,7 @@ export default function Profile() {
                   placeholder="Enter new email address"
                   autoFocus
                 />
-                {emailError && <p className="text-xs text-[#DC2626] mt-1.5 mx-1 mb-0">{emailError}</p>}
+                {emailError && <p className="text-xs text-danger mt-1.5 mx-1 mb-0">{emailError}</p>}
                 <div className="flex gap-2 mt-2">
                   <button
                     onClick={handleRequestEmailChange}
@@ -251,7 +251,7 @@ export default function Profile() {
           </div>
         </div>
 
-        {error && <p className="text-[13px] text-[#DC2626] mt-3 mx-1 mb-0">{error}</p>}
+        {error && <p className="text-[13px] text-danger mt-3 mx-1 mb-0">{error}</p>}
 
         <button
           onClick={handleSave}

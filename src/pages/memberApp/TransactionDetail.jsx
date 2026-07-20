@@ -17,8 +17,8 @@ function statusLabel(status) {
 function StatusPill({ status }) {
   const label = statusLabel(status);
   const map = {
-    Success: { cls: "bg-[#dcfce7] text-[#15803d]", dotCls: "bg-[#15803d]", text: "Successful" },
-    Failed: { cls: "bg-[#fce4e4] text-[#dc2626]", dotCls: "bg-[#dc2626]", text: "Failed" },
+    Success: { cls: "bg-success-tint text-[#15803d]", dotCls: "bg-[#15803d]", text: "Successful" },
+    Failed: { cls: "bg-[#fce4e4] text-danger", dotCls: "bg-danger", text: "Failed" },
     Pending: { cls: "bg-[#fef9c3] text-[#b45309]", dotCls: "bg-[#b45309]", text: "Pending" },
   };
   const s = map[label] ?? map.Pending;
@@ -37,7 +37,7 @@ function StatusPill({ status }) {
 function Row({ label, children, last }) {
   return (
     <div
-      className={`flex items-start justify-between gap-4 py-3.5 ${last ? "border-none" : "border-b border-[#F3F4F6]"}`}
+      className={`flex items-start justify-between gap-4 py-3.5 ${last ? "border-none" : "border-b border-stacked-container"}`}
     >
       <span className="text-sm text-[#6B7280] flex-shrink-0 pt-px">{label}</span>
       <span className="text-sm font-semibold text-[#111827] text-right break-words max-w-[62%]">
@@ -89,7 +89,7 @@ export default function TransactionDetail() {
         <PageLoadingState label="Loading transaction…" />
       ) : error || !tx ? (
         <div className="py-10 px-5 text-center">
-          <p className="text-sm text-[#DC2626]">Couldn't load this transaction.</p>
+          <p className="text-sm text-danger">Couldn't load this transaction.</p>
         </div>
       ) : (
         <div className="py-0 px-4 flex flex-col gap-3">

@@ -165,7 +165,7 @@ export default function DashboardTour({ onClose }) {
       >
         <div className="flex items-start justify-between px-6 pt-6">
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-[#E6EEFF]"
+            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-brand-tint"
           >
             <Icon size={20} className="text-brand" />
           </div>

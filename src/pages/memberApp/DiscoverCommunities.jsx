@@ -182,7 +182,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
               : "Request to Join"}
       </button>
       {errorMsg && (
-        <p className="text-[11.5px] text-[#DC2626] m-0 text-center">
+        <p className="text-[11.5px] text-danger m-0 text-center">
           {errorMsg}
         </p>
       )}

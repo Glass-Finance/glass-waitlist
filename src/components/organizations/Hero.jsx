@@ -250,7 +250,7 @@ function DashboardOverlay() {
         <div className="bg-[#3a3a3a] rounded-2xl pt-3.5 px-3.5 pb-0 shadow-[0_32px_100px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)] border border-white/[0.08]">
           <div className="flex bg-[#F7F8FC] overflow-hidden min-h-[480px] rounded-t">
             {/* Blue rail */}
-            <div className="w-12 bg-[#002FA7] flex flex-col items-center pt-3 flex-shrink-0">
+            <div className="w-12 bg-brand flex flex-col items-center pt-3 flex-shrink-0">
               <div className="mb-3.5">
                 <img
                   src="/Glass.webp"
@@ -477,7 +477,7 @@ function DashboardOverlay() {
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className={`flex items-center gap-2 py-[9px] px-2.5 rounded-lg mb-[3px] text-xs ${item.active ? "bg-[#e6eeff] text-brand font-bold" : "bg-transparent text-[#6b7280] font-medium"}`}
+                    className={`flex items-center gap-2 py-[9px] px-2.5 rounded-lg mb-[3px] text-xs ${item.active ? "bg-brand-tint text-brand font-bold" : "bg-transparent text-[#6b7280] font-medium"}`}
                   >
                     {item.icon}
                     {item.label}
@@ -564,7 +564,7 @@ function DashboardOverlay() {
                     <button className="py-1.5 px-3 rounded-lg border-[1.5px] border-[#e0e3f0] bg-white text-[#0f1d6e] text-[11px] font-semibold">
                       Create Payment Plan
                     </button>
-                    <button className="py-1.5 px-3 rounded-lg border-none bg-[#002FA7] text-white text-[11px] font-semibold">
+                    <button className="py-1.5 px-3 rounded-lg border-none bg-brand text-white text-[11px] font-semibold">
                       + Add Member
                     </button>
                   </div>

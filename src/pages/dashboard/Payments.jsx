@@ -2800,13 +2800,13 @@ export default function Payments() {
           icon={Wallet}
           label="Total Amount Collected"
           value={formatNaira(stats.collected)}
-          iconCls="text-brand bg-[#E6EEFF]"
+          iconCls="text-brand bg-brand-tint"
         />
         <StatCard
           icon={ListChecks}
           label="Active Plans"
           value={String(stats.active)}
-          iconCls="text-[#dc2626] bg-[#FFE9EC]"
+          iconCls="text-danger bg-[#FFE9EC]"
         />
         <StatCard
           icon={Clock}

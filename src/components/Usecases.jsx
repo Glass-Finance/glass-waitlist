@@ -104,7 +104,7 @@ function CommunityMock({ variant }) {
     schools: {
       name: "Kings College Alumni",
       tag: "Education",
-      tagCls: "text-[#002FA7] bg-[#e6eeff]",
+      tagCls: "text-brand bg-brand-tint",
       members: ["AO", "BK", "CF", "DN"],
       stat: "₦2.4M",
       statLabel: "Collected this term",
@@ -155,7 +155,7 @@ function CommunityMock({ variant }) {
     },
   };
   const m = mocks[variant];
-  const avatarClasses = ["bg-[#002FA7]", "bg-[#7c3aed]", "bg-[#059669]", "bg-[#d4a017]"];
+  const avatarClasses = ["bg-brand", "bg-[#7c3aed]", "bg-[#059669]", "bg-[#d4a017]"];
 
   return (
     <div className="w-full h-full bg-[#F5F5F8] rounded-[20px] pt-[18px] px-4 pb-[18px] flex flex-col gap-3 overflow-hidden [font-family:Inter,-apple-system,sans-serif]">

@@ -49,7 +49,7 @@ function PaymentRow({ item, onPay, paying }) {
   const isRecurring = item.type === "recurring";
   const badge = isRecurring
     ? { label: "Recurring", cls: "text-[#7C3AED]", dotCls: "bg-[#7C3AED]" }
-    : { label: "One-time", cls: "text-[#DC2626]", dotCls: "bg-[#DC2626]" };
+    : { label: "One-time", cls: "text-danger", dotCls: "bg-danger" };
 
   return (
     <div className="border border-surface-container-border py-[18px] px-4 bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex items-center justify-between gap-3">
@@ -137,7 +137,7 @@ export default function UpcomingPayments() {
           </div>
         ) : loadError ? (
           <div className="border border-surface-container-border bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.06)] text-center py-5">
-            <p className="text-[#DC2626] text-sm mt-0 mx-0 mb-2">
+            <p className="text-danger text-sm mt-0 mx-0 mb-2">
               Couldn't load upcoming payments.
             </p>
             <button

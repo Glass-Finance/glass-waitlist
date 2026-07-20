@@ -72,12 +72,12 @@ export default function NotificationSettings() {
         {/* Error state */}
         {error && !isLoading && (
           <div className="bg-[#FFF0F0] border border-[#FECACA] rounded-xl py-3.5 px-4 mb-5 flex items-center justify-between">
-            <p className="text-[13px] text-[#DC2626] m-0">
+            <p className="text-[13px] text-danger m-0">
               Couldn't load preferences.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-transparent border-none cursor-pointer text-[#DC2626] flex items-center gap-1 text-xs font-semibold p-0"
+              className="bg-transparent border-none cursor-pointer text-danger flex items-center gap-1 text-xs font-semibold p-0"
             >
               <RefreshCw size={13} /> Retry
             </button>

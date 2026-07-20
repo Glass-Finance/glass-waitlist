@@ -78,7 +78,7 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
             decoding="async"
           />
           <div className={`absolute bottom-3 right-3 flex items-center gap-2 rounded-full py-2 px-3.5 border border-white/90 shadow-[0_4px_20px_rgba(15,29,110,0.14)] ${glassSurfaceCls}`}>
-            <span className="w-[7px] h-[7px] rounded-full bg-[#002FA7] flex-shrink-0 inline-block" />
+            <span className="w-[7px] h-[7px] rounded-full bg-brand flex-shrink-0 inline-block" />
             <span className="text-xs font-bold text-[#0f1d6e]">
               {step.badge}
             </span>
@@ -121,7 +121,7 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
         <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
           <img src={step.img} alt={step.label} className="w-full h-auto block" draggable={false} loading="lazy" decoding="async" />
           <div ref={badgeRef} className={`absolute bottom-4 right-4 flex items-center gap-2 rounded-full py-2.5 px-[18px] border border-white/90 shadow-[0_4px_20px_rgba(15,29,110,0.14)] ${glassSurfaceCls}`}>
-            <span className="w-2 h-2 rounded-full bg-[#002FA7] flex-shrink-0 inline-block" />
+            <span className="w-2 h-2 rounded-full bg-brand flex-shrink-0 inline-block" />
             <span className="text-xs font-bold text-[#0f1d6e]">{step.badge}</span>
           </div>
         </div>
