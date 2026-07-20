@@ -11,7 +11,6 @@
 export default function GlassLogoGlow({ className = "" }) {
   return (
     <div
-      className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
       // A positioned element paints above normal-flow content regardless of
       // DOM order -- that's a CSS stacking rule, not related to source
       // order. The old single-image version got away with this because
@@ -20,26 +19,16 @@ export default function GlassLogoGlow({ className = "" }) {
       // Surface Overlay panel below is a ~95%-opaque, full-area layer, so
       // without an explicit negative z-index it was painting straight over
       // every page's real content, washing it out to near-blank.
-      style={{ zIndex: -1 }}
+      className={`absolute inset-0 overflow-hidden pointer-events-none -z-[1] ${className}`}
       aria-hidden="true"
     >
       <img
         src="/Bg.png"
         alt=""
-        style={{
-          position: "absolute",
-          left: "-15%",
-          bottom: "-10%",
-          width: "85%",
-          maxWidth: 420,
-        }}
+        className="absolute left-[-15%] bottom-[-10%] w-[85%] max-w-[420px]"
       />
       <div
-        className="absolute inset-0 bg-surface-overlay"
-        style={{
-          backdropFilter: "blur(var(--blur-logo-overlay))",
-          WebkitBackdropFilter: "blur(var(--blur-logo-overlay))",
-        }}
+        className="absolute inset-0 bg-surface-overlay backdrop-blur-[var(--blur-logo-overlay)] [-webkit-backdrop-filter:blur(var(--blur-logo-overlay))]"
       />
     </div>
   );
