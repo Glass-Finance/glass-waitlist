@@ -162,8 +162,7 @@ export default function WhyGlass() {
               </button>
 
               <div
-                className="overflow-hidden transition-all duration-300 ease-out"
-                style={{ maxHeight: open === i ? "200px" : "0px" }}
+                className={`overflow-hidden transition-all duration-300 ease-out ${open === i ? "max-h-[200px]" : "max-h-0"}`}
               >
                 <p className="text-[15px] text-[#9099b2] leading-relaxed pl-11 pr-14 pb-6">
                   {faq.a}
@@ -178,20 +177,7 @@ export default function WhyGlass() {
           <a
             ref={btnRef}
             href="mailto:glasspayhq@gmail.com"
-            className="inline-flex items-center gap-2.5 bg-[#0f1d6e] text-white font-semibold text-[15px] px-7 py-3.5 rounded-full no-underline shadow-lg shadow-[#0f1d6e]/25"
-            style={{
-              transition: "background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background  = "#1C2B8A";
-              e.currentTarget.style.transform   = "translateY(-3px)";
-              e.currentTarget.style.boxShadow   = "0 10px 28px rgba(15,29,110,0.35)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background  = "#0f1d6e";
-              e.currentTarget.style.transform   = "translateY(0)";
-              e.currentTarget.style.boxShadow   = "";
-            }}
+            className="inline-flex items-center gap-2.5 bg-[#0f1d6e] text-white font-semibold text-[15px] px-7 py-3.5 rounded-full no-underline shadow-lg shadow-[#0f1d6e]/25 transition-[background,transform,box-shadow] duration-200 ease-in-out hover:bg-[#1C2B8A] hover:-translate-y-[3px] hover:shadow-[0_10px_28px_rgba(15,29,110,0.35)]"
           >
             Ask A Question
             <ArrowRight className="w-4 h-4" />
