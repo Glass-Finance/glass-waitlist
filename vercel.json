@@ -26,7 +26,7 @@
         },
         {
           "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; script-src 'self' 'sha256-ZTWZKj8vT7ET9aDxKmDfFlB74OgD4Bfjm0+Y61Y9fQc=' 'sha256-jA77kKAY8/LSlDao2Y2Av3NY2SaWY0pFlHUJV8tg0uI=' 'sha256-uHodxVGMf5RzCUW6Fkv5lELeGKtibsO1KOGbFnV83d4=' 'sha256-W8xMiuZsqt0s8uZHsVWRsFMrWP26vcJgWK39HRPYdbI=' 'sha256-Jj/w9NImuFke4EpaFpQIWVcQn5+XrQTYB32hXoKm9ZU=' https://cdn.pendo.io https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.glasspay.app https://*.pendo.io https://accounts.google.com; frame-src https://accounts.google.com; worker-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'sha256-ZTWZKj8vT7ET9aDxKmDfFlB74OgD4Bfjm0+Y61Y9fQc=' 'sha256-jA77kKAY8/LSlDao2Y2Av3NY2SaWY0pFlHUJV8tg0uI=' 'sha256-uHodxVGMf5RzCUW6Fkv5lELeGKtibsO1KOGbFnV83d4=' 'sha256-W8xMiuZsqt0s8uZHsVWRsFMrWP26vcJgWK39HRPYdbI=' 'sha256-Jj/w9NImuFke4EpaFpQIWVcQn5+XrQTYB32hXoKm9ZU=' https://cdn.pendo.io https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.glasspay.app https://*.pendo.io https://accounts.google.com; frame-src https://accounts.google.com; worker-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
         }
       ]
     },
