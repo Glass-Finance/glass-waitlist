@@ -1,6 +1,21 @@
 <!doctype html>
 <html lang="en-NG">
   <head>
+    <!-- CSP script-src hardening (see vercel.json's Content-Security-Policy-
+         Report-Only): every inline script tag below with no src attribute
+         (structured data, font-preload listener, Pendo bootstrap) is
+         allowlisted by a 'sha256-<hash>' entry instead of 'unsafe-inline'
+         -- these three are the only inline scripts in the whole app, so
+         removing 'unsafe-inline' from script-src (unlike style-src, which
+         still needs it for framer-motion/mouse-tracking effects) only
+         requires covering them.
+
+         If you edit any of those scripts' content: `npm run build` then
+         `node scripts/compute-csp-hashes.mjs`, and swap the matching hash
+         into vercel.json's Report-Only value. Currently running Report-Only
+         (not enforced) specifically to catch a stale/missed hash via
+         browser console warnings before it would ever actually block
+         something in production. -->
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -11,6 +26,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Structured data -->
+    <!-- CSP: this exact content is allowlisted by a sha256 hash in
+         vercel.json's Content-Security-Policy-Report-Only script-src.
+         Any edit to the text below invalidates that hash and must be
+         paired with recomputing it (see the CSP note at the top of
+         <head> for how). -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -96,11 +116,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      id="font-preload-link"
       rel="preload"
       as="style"
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@1,400&display=swap"
-      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <!-- CSP: hash-allowlisted (see the CSP note at the top of <head>) -- an
+         inline onload="" attribute on the <link> above was replaced with
+         this listener specifically because CSP hashes/nonces don't cover
+         inline event-handler attributes, only script tags. -->
+    <script>
+    (function () {
+      var link = document.getElementById('font-preload-link');
+      if (link) {
+        link.addEventListener('load', function () {
+          this.rel = 'stylesheet';
+        }, { once: true });
+      }
+    })();
+    </script>
     <noscript>
       <link
         rel="stylesheet"
@@ -109,6 +143,10 @@
     </noscript>
 
     <!-- Pendo -->
+    <!-- CSP: hash-allowlisted (see the CSP note at the top of <head>). The
+         API key below is part of the hashed content -- rotating it (or
+         Pendo changing this bootstrap snippet) invalidates the hash and
+         needs it recomputed, same as the structured-data block above. -->
     <script>
     (function(apiKey){
         (function(p,e,n,d,o){var v,w,x,y,z;o=p[d]=p[d]||{};o._q=o._q||[];
