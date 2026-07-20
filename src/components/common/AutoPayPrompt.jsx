@@ -16,7 +16,7 @@ export default function AutoPayPrompt({ prompt, onDismiss, onEnable }) {
       className="bg-black/35 backdrop-blur-xs fixed inset-0 z-[80] flex items-end justify-center"
       onClick={(e) => e.target === e.currentTarget && onDismiss()}
     >
-      <div className="w-full max-w-[430px] bg-white rounded-t-[20px] px-6 py-7 shadow-[0_-4px_24px_rgba(0,0,0,0.12)]">
+      <div className="w-full max-w-[430px] bg-[#E0E0EB] rounded-t-[20px] px-6 py-7 shadow-[0_-4px_24px_rgba(0,0,0,0.12)]">
         <h2 className="text-[19px] font-bold text-[#111] mb-2.5">
           Turn on Auto-Pay
         </h2>
