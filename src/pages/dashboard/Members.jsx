@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, UserX, Clock, ShieldCheck, Copy, Check, UserCheck, Building2, ChevronRight, DollarSign, Download } from "lucide-react";
+import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, Clock, ShieldCheck, Copy, Check, UserCheck, Building2, ChevronRight, DollarSign, Download } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunity } from "../../hooks/useCommunity";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
@@ -310,7 +310,7 @@ export default function Members() {
       {members.length > 0 && (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
         <StatCard icon={Users} label="Total Members" value={String(stats.total)} iconCls="text-brand bg-brand-tint" />
-        <StatCard icon={UserX} label="Active Members" value={String(stats.active)} iconCls="text-danger bg-[#FFE9EC]" />
+        <StatCard icon={UserCheck} label="Active Members" value={String(stats.active)} iconCls="text-success bg-success-tint" />
         <StatCard icon={Clock} label="Inactive" value={String(stats.inactive)} iconCls="text-[#b45309] bg-[#FFF8E7]" />
         <StatCard icon={ShieldCheck} label="Admins" value={String(stats.admins)} iconCls="text-[#7c3aed] bg-[#F3EEFF]" />
       </div>

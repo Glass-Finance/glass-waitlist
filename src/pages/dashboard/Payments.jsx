@@ -2806,7 +2806,7 @@ export default function Payments() {
           icon={ListChecks}
           label="Active Plans"
           value={String(stats.active)}
-          iconCls="text-danger bg-[#FFE9EC]"
+          iconCls="text-success bg-success-tint"
         />
         <StatCard
           icon={Clock}

@@ -39,11 +39,14 @@ window.addEventListener("vite:preloadError", () => {
   window.location.reload();
 });
 
-// Boot Pendo with an anonymous visitor. The SDK resolves the previous
-// visitor from cookies/localStorage if available, otherwise it falls back
-// to a new anonymous visitor. pendo.identify() is called later once the
-// user signs in (see AuthContext).
-pendo.initialize({ visitor: { id: '' } });
+// Boot Pendo with an anonymous visitor. Deliberately omitting visitor.id
+// (rather than passing an explicit "") -- Pendo's own agent generates and
+// persists an anonymous ID via its own cookie/localStorage when no id is
+// given; an explicit empty string is a documented Pendo footgun where every
+// anonymous visitor site-wide can collapse into one merged visitor record
+// instead of each getting their own, corrupting pre-login funnel data.
+// pendo.identify() is called later once the user signs in (see AuthContext).
+pendo.initialize();
 
 /**
  * QueryClient — React Query
