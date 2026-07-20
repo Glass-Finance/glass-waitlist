@@ -1,14 +1,12 @@
 import { useState, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import {
-  Info,
   Download,
   MoreHorizontal,
   Plus,
   ChevronDown,
   Search,
   X,
-  Check,
   AlertCircle,
   Clock,
   Wallet,
@@ -42,6 +40,8 @@ import { formatNaira, timeAgo, statusStyle, freqStyle } from "./admin-dashboard/
 import { Skeleton, ActivityIcon } from "./admin-dashboard/SkeletonUI";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 import AddMemberModal from "./admin-dashboard/AddMemberModal";
+import GettingStartedChecklist from "./admin-dashboard/sections/GettingStartedChecklist";
+import DashboardStats from "./admin-dashboard/sections/DashboardStats";
 
 function DashboardContent({ isPaying, communityId }) {
   usePageTitle("Community Dashboard");
@@ -391,165 +391,16 @@ function DashboardContent({ isPaying, communityId }) {
 
         {/* Getting started checklist — shown until both a plan and members exist */}
         {showGettingStarted && (
-          <div
-            data-tour="getting-started-checklist"
-            className="rounded-xl border border-blue-100 bg-[#EEF3FF] p-5 mb-5"
-          >
-            <div className="flex items-start justify-between gap-4 mb-4">
-              <div>
-                <p className="text-sm font-semibold text-gray-900">
-                  Get your community ready
-                </p>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Complete these steps to start collecting dues.
-                </p>
-              </div>
-              <button
-                onClick={dismissGs}
-                className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer p-0 flex-shrink-0 mt-0.5"
-                aria-label="Dismiss"
-              >
-                <X size={15} />
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-2.5">
-              {/* Step 1 — always done (they're here) */}
-              <div className="flex items-center gap-3">
-                <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                  <Check
-                    size={11}
-                    className="text-emerald-600"
-                    strokeWidth={2.5}
-                  />
-                </span>
-                <span className="text-xs text-gray-400 line-through">
-                  Create your community
-                </span>
-              </div>
-
-              {/* Step 2 — create a payment plan */}
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasPlans ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}
-                  >
-                    {gsHasPlans && (
-                      <Check
-                        size={11}
-                        className="text-emerald-600"
-                        strokeWidth={2.5}
-                      />
-                    )}
-                  </span>
-                  <span
-                    className={`text-xs ${gsHasPlans ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}
-                  >
-                    Create a payment plan
-                  </span>
-                </div>
-                {!gsHasPlans && (
-                  <button
-                    onClick={() =>
-                      navigate(
-                        `/dashboard/payments?community=${communityId ?? ""}`,
-                      )
-                    }
-                    className="text-xs font-semibold text-brand bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
-                  >
-                    Create plan
-                  </button>
-                )}
-              </div>
-
-              {/* Step 3 — add members */}
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${gsHasMembers ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}
-                  >
-                    {gsHasMembers && (
-                      <Check
-                        size={11}
-                        className="text-emerald-600"
-                        strokeWidth={2.5}
-                      />
-                    )}
-                  </span>
-                  <span
-                    className={`text-xs ${gsHasMembers ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}
-                  >
-                    Add your first member
-                  </span>
-                </div>
-                {!gsHasMembers && (
-                  <button
-                    onClick={() => setAddMemberOpen(true)}
-                    className="text-xs font-semibold text-brand bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
-                  >
-                    Add member
-                  </button>
-                )}
-              </div>
-
-              {/* Step 4 — payout account. Three real states, not just
-                  done/not-done: submitting the account isn't the same as
-                  it being usable -- it still needs to clear verification
-                  on our side before payment plans can actually collect. */}
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      gsHasPayoutAccount
-                        ? "bg-emerald-100"
-                        : gsPayoutAccountRejected
-                          ? "bg-red-100"
-                          : gsPayoutAccountPending
-                            ? "bg-amber-100"
-                            : "bg-white border-2 border-gray-200"
-                    }`}
-                  >
-                    {gsHasPayoutAccount && (
-                      <Check size={11} className="text-emerald-600" strokeWidth={2.5} />
-                    )}
-                    {gsPayoutAccountRejected && (
-                      <AlertCircle size={11} className="text-red-600" strokeWidth={2.5} />
-                    )}
-                    {gsPayoutAccountPending && (
-                      <Clock size={11} className="text-amber-600" strokeWidth={2.5} />
-                    )}
-                  </span>
-                  <span
-                    className={`text-xs ${gsHasPayoutAccount ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}
-                  >
-                    {gsPayoutAccountRejected
-                      ? "Payout account verification rejected"
-                      : gsPayoutAccountPending
-                        ? "Payout account pending verification"
-                        : "Set up your payout account"}
-                  </span>
-                </div>
-                {!gsHasPayoutAccount && (
-                  <button
-                    onClick={() =>
-                      navigate("/dashboard/settings/finance/paystack")
-                    }
-                    className={`text-xs font-semibold bg-white px-3 py-1.5 rounded-lg transition-colors cursor-pointer flex-shrink-0 border ${
-                      gsPayoutAccountRejected
-                        ? "text-red-700 border-red-100 hover:bg-red-50"
-                        : "text-brand border-blue-100 hover:bg-blue-50"
-                    }`}
-                  >
-                    {gsPayoutAccountRejected
-                      ? "Review"
-                      : gsPayoutAccountPending
-                        ? "View status"
-                        : "Set up"}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+          <GettingStartedChecklist
+            communityId={communityId}
+            hasPlans={gsHasPlans}
+            hasMembers={gsHasMembers}
+            hasPayoutAccount={gsHasPayoutAccount}
+            payoutAccountRejected={gsPayoutAccountRejected}
+            payoutAccountPending={gsPayoutAccountPending}
+            onDismiss={dismissGs}
+            onAddMember={() => setAddMemberOpen(true)}
+          />
         )}
 
         {/* Alert — paying admin with an unpaid obligation */}
@@ -621,35 +472,7 @@ function DashboardContent({ isPaying, communityId }) {
           })()}
 
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
-          {stats.map((s) => (
-            <div
-              key={s.label}
-              className="bg-surface-container rounded-xl px-4 py-3 border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-gray-500 font-medium">
-                  {s.label}
-                </span>
-                <Info size={13} className="text-brand" />
-              </div>
-              <div className="flex items-center gap-2.5">
-                <img
-                  src={s.icon}
-                  alt={s.label}
-                  className="w-7 h-7 object-contain flex-shrink-0"
-                />
-                {isLoading ? (
-                  <Skeleton className="h-4 w-16" />
-                ) : (
-                  <span className="text-[13px] font-semibold text-black">
-                    {s.value}
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        <DashboardStats stats={stats} isLoading={isLoading} />
 
         {/* Your Payments — paying admin's own dues in this community */}
         {isPaying && (
