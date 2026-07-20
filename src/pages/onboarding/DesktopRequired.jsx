@@ -28,13 +28,8 @@ export default function DesktopRequired() {
 
   return (
     <div
-      className="h-screen w-screen flex flex-col overflow-hidden"
-      style={{
-        height: "100vh",
-        backgroundImage: `url(${Background})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      className="h-screen w-screen flex flex-col overflow-hidden bg-cover bg-center"
+      style={{ backgroundImage: `url(${Background})` }}
     >
       <header className="px-8 py-3 flex-shrink-0">
         <div className="flex items-center gap-2">
@@ -59,8 +54,7 @@ export default function DesktopRequired() {
           </p>
 
           <div
-            className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl mb-4"
-            style={{ background: "#EEF2FF", border: "1px solid #C7D2FE" }}
+            className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl mb-4 bg-[#EEF2FF] border border-[#C7D2FE]"
           >
             <span className="text-sm text-brand font-medium truncate">{url}</span>
             <button
