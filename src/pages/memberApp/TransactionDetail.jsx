@@ -7,21 +7,10 @@ import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import PageLoadingState from "../../components/common/PageLoadingState";
 import ReceiptModal from "../../components/common/ReceiptModal";
 import { formatNaira, toTitleCase } from "../../utils/format";
-
-function statusLabel(status) {
-  if (status === "success" || status === "successful") return "Success";
-  if (status === "failed") return "Failed";
-  return "Pending";
-}
+import { transactionStatusStyle } from "../../utils/transactionStatus";
 
 function StatusPill({ status }) {
-  const label = statusLabel(status);
-  const map = {
-    Success: { cls: "bg-success-tint text-[#15803d]", dotCls: "bg-[#15803d]", text: "Successful" },
-    Failed: { cls: "bg-[#fce4e4] text-danger", dotCls: "bg-danger", text: "Failed" },
-    Pending: { cls: "bg-[#fef9c3] text-[#b45309]", dotCls: "bg-[#b45309]", text: "Pending" },
-  };
-  const s = map[label] ?? map.Pending;
+  const { label, ...s } = transactionStatusStyle(status);
   return (
     <span className={`inline-flex items-center gap-1.5 text-sm font-semibold rounded-lg py-1.5 px-3.5 ${s.cls}`}>
       {label === "Success" && (

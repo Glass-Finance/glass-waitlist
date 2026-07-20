@@ -7,21 +7,10 @@ import { useCommunityTransactionDetail } from "../../hooks/useCommunityTransacti
 import ReceiptModal from "../../components/common/ReceiptModal";
 import LoadingState from "../../components/common/LoadingState";
 import { formatNaira, toTitleCase } from "../../utils/format";
-
-function statusLabel(status) {
-  if (status === "success" || status === "successful") return "Success";
-  if (status === "failed") return "Failed";
-  return "Pending";
-}
+import { transactionStatusStyle } from "../../utils/transactionStatus";
 
 function StatusPill({ status }) {
-  const label = statusLabel(status);
-  const map = {
-    Success: { cls: "bg-success-tint text-[#15803d]", dotCls: "bg-[#15803d]", text: "Successful" },
-    Failed: { cls: "bg-[#fce4e4] text-danger", dotCls: "bg-danger", text: "Failed" },
-    Pending: { cls: "bg-[#fef9c3] text-[#b45309]", dotCls: "bg-[#b45309]", text: "Pending" },
-  };
-  const s = map[label] ?? map.Pending;
+  const { label, ...s } = transactionStatusStyle(status);
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-sm font-semibold ${s.cls}`}

@@ -5,6 +5,7 @@ import { useTransactions } from "../../hooks/useTransactions";
 import GlassLogoGlow from "../../components/common/GlassLogoGlow";
 import PageLoadingState from "../../components/common/PageLoadingState";
 import { formatNaira, toTitleCase } from "../../utils/format";
+import { transactionStatusLabel, transactionStatusStyle } from "../../utils/transactionStatus";
 
 const STATUS_OPTIONS = ["All Status", "Success", "Failed", "Pending"];
 
@@ -23,20 +24,8 @@ function monthShort(label) {
   return label.split(" ")[0];
 }
 
-function statusLabel(status) {
-  if (status === "success" || status === "successful") return "Success";
-  if (status === "failed") return "Failed";
-  return "Pending";
-}
-
 function StatusBadge({ status }) {
-  const map = {
-    Success: "bg-success-tint text-[#15803d]",
-    Failed: "bg-[#fce4e4] text-danger",
-    Pending: "bg-[#fef9c3] text-[#b45309]",
-  };
-  const label = statusLabel(status);
-  const cls = map[label] ?? map.Pending;
+  const { label, cls } = transactionStatusStyle(status);
   return (
     <span className={`inline-block text-xs font-semibold rounded-md py-0.5 px-2.5 ${cls}`}>
       {label}
@@ -150,7 +139,7 @@ export default function Transactions() {
   }, [monthOptions, selectedMonth]);
 
   const filtered = transactions.filter(
-    (tx) => statusFilter === "All Status" || statusLabel(tx.status) === statusFilter
+    (tx) => statusFilter === "All Status" || transactionStatusLabel(tx.status) === statusFilter
   );
 
   // Group by month, then keep only the currently-selected month's group —
