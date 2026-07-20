@@ -4,18 +4,28 @@
     <!-- CSP script-src hardening (see vercel.json's Content-Security-Policy-
          Report-Only): every inline script tag below with no src attribute
          (structured data, font-preload listener, Pendo bootstrap) is
-         allowlisted by a 'sha256-<hash>' entry instead of 'unsafe-inline'
-         -- these three are the only inline scripts in the whole app, so
-         removing 'unsafe-inline' from script-src (unlike style-src, which
-         still needs it for framer-motion/mouse-tracking effects) only
-         requires covering them.
+         allowlisted by a 'sha256-<hash>' entry instead of 'unsafe-inline'.
 
          If you edit any of those scripts' content: `npm run build` then
          `node scripts/compute-csp-hashes.mjs`, and swap the matching hash
-         into vercel.json's Report-Only value. Currently running Report-Only
-         (not enforced) specifically to catch a stale/missed hash via
-         browser console warnings before it would ever actually block
-         something in production. -->
+         into vercel.json's Report-Only value.
+
+         Two more sha256 hashes also live in that same script-src value,
+         with no corresponding script anywhere in this repo: Google
+         Identity Services (loaded for the "Continue with Google" button)
+         injects its own inline scripts directly into the page at runtime,
+         not just into its iframe. Those hashes were read off an actual
+         CSP violation report in the browser console, not computed by
+         scripts/compute-csp-hashes.mjs -- if Google ever changes that
+         injected content, script-src will start silently failing to run
+         it, and the fix is to sign in, read the new hash off the console
+         warning, and swap it in. This is a real, ongoing fragility (Google
+         controls that content, not us) which is exactly why this is still
+         Report-Only and not enforced.
+
+         Currently running Report-Only specifically to catch a stale/missed
+         hash -- ours or Google's -- via browser console warnings before it
+         would ever actually block something in production. -->
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
