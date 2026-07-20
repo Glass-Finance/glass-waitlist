@@ -28,7 +28,7 @@ const AcceptableUsePolicy = lazy(() => import("./pages/legal/AcceptableUsePolicy
 const RefundPolicy = lazy(() => import("./pages/legal/RefundPolicy"));
 
 // ── Auth pages ────────────────────────────────────────────────────────────────
-const SignUp = lazy(() => import("./pages/auth/SignUp"));
+const SignUp = lazy(() => import("./pages/auth/SignUp/SignUp"));
 const SignIn = lazy(() => import("./pages/auth/SignIn"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/auth/ResetPassword"));

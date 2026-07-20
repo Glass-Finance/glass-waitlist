@@ -2818,7 +2818,7 @@ export default function Payments() {
           icon={XCircle}
           label="Failed Payments"
           value={String(stats.failed)}
-          iconCls="text-[#7c3aed] bg-[#F3EEFF]"
+          iconCls="text-danger bg-danger-tint"
         />
       </div>
 
