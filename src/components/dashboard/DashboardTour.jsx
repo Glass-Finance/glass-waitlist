@@ -149,26 +149,23 @@ export default function DashboardTour({ onClose }) {
       {/* Highlight ring around the spotlighted element */}
       {rect && (
         <div
-          className="fixed rounded-xl pointer-events-none"
+          className="fixed rounded-xl pointer-events-none shadow-[0_0_0_2px_#002FA7] transition-[top,left] duration-200 ease-in-out"
           style={{
             top: rect.top,
             left: rect.left,
             width: rect.width,
             height: rect.height,
-            boxShadow: "0 0 0 2px #002FA7",
-            transition: "top .2s ease, left .2s ease",
           }}
         />
       )}
 
       <div
-        className="bg-white rounded-2xl shadow-2xl overflow-hidden"
-        style={{ width: "100%", maxWidth: CARD_WIDTH, ...getCardStyle() }}
+        className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-[380px]"
+        style={getCardStyle()}
       >
         <div className="flex items-start justify-between px-6 pt-6">
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "#E6EEFF" }}
+            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-[#E6EEFF]"
           >
             <Icon size={20} className="text-brand" />
           </div>
@@ -191,12 +188,7 @@ export default function DashboardTour({ onClose }) {
             {STEPS.map((_, i) => (
               <span
                 key={i}
-                className="rounded-full transition-all"
-                style={{
-                  width: i === step ? 16 : 6,
-                  height: 6,
-                  background: i === step ? "#002FA7" : "var(--color-surface-container-border)",
-                }}
+                className={`rounded-full transition-all h-1.5 ${i === step ? "w-4 bg-brand" : "w-1.5 bg-surface-container-border"}`}
               />
             ))}
           </div>
