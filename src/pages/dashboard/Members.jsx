@@ -369,13 +369,13 @@ export default function Members() {
                   <input type="checkbox" checked={selected.length === filtered.length && filtered.length > 0}
                     onChange={(e) => setSelected(e.target.checked ? filtered.map((m) => m.id) : [])} />
                 </th>
-                <th className="px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Members</th>
-                <th className="px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Plans</th>
-                <th className="px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Status</th>
-                <th className="hidden md:table-cell px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Date</th>
-                <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Email</th>
-                <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Date Joined</th>
-                <th className="hidden sm:table-cell px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap">Actions</th>
+                <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Members</th>
+                <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Plans</th>
+                <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Status</th>
+                <th className="hidden md:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Date</th>
+                <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Email</th>
+                <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Date Joined</th>
+                <th className="hidden sm:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>

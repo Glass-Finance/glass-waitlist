@@ -1801,7 +1801,7 @@ function DashboardContent({ isPaying, communityId }) {
                       ].map((h) => (
                         <th
                           key={h}
-                          className="p-2 text-left text-xs text-gray-400"
+                          className="p-2 text-left text-xs font-normal text-gray-400"
                         >
                           {h}
                         </th>
@@ -2116,26 +2116,26 @@ function DashboardContent({ isPaying, communityId }) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-y border-hairline">
-                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                <tr className="border-y border-hairline bg-[#F9F9FB]">
+                  <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
                     Member
                   </th>
-                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                  <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
                     Plan
                   </th>
-                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                  <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
                     Amount
                   </th>
-                  <th className="hidden md:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                  <th className="hidden md:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
                     Date
                   </th>
-                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                  <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
                     Email
                   </th>
-                  <th className="px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                  <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
                     Status
                   </th>
-                  <th className="hidden sm:table-cell px-5 py-2.5 text-left text-xs text-gray-400 whitespace-nowrap">
+                  <th className="hidden sm:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
                     Actions
                   </th>
                 </tr>
