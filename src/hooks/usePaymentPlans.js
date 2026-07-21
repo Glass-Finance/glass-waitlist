@@ -37,7 +37,6 @@ function shapePlan(raw) {
     activateImmediately: raw.activateImmediately,
     amountCollected: collected,
     expectedAmount: expected,
-    pct: expected > 0 ? Math.round((collected / expected) * 100) : 0,
     paidCount: m.membersFullyPaid ?? 0,
     partialCount: m.membersPartiallyPaid ?? 0,
     unpaidCount: m.membersUnpaid ?? 0,
