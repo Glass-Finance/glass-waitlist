@@ -11,6 +11,7 @@ import EmptyState from "../../../../components/common/EmptyState";
 import Toggle from "../../../../components/common/Toggle";
 import ConfirmDialog from "../../../../components/dashboard/ConfirmDialog";
 import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
+import { resolveDisplayName, resolveEmail } from "../../../../utils/memberName";
 
 // Per-member "⋯" actions menu — one open at a time (state lives in the page),
 // dismissed by the invisible full-screen overlay behind it.
@@ -88,12 +89,10 @@ export default function MemberAccess() {
 
   const handleCopy = () => copy(inviteLink);
 
-  function memberName(m) {
-    const first = m.user?.firstName ?? m.firstName ?? "";
-    const last = m.user?.lastName ?? m.lastName ?? "";
-    return `${first} ${last}`.trim() || m.user?.email || m.email || "Member";
-  }
-  const memberEmail = (m) => m.user?.email ?? m.email ?? "—";
+  // titleCase:false preserves this page's existing behavior of showing
+  // names in whatever case the backend returned them.
+  const memberName = (m) => resolveDisplayName(m, "Member", { titleCase: false });
+  const memberEmail = (m) => resolveEmail(m);
   // Role strings vary by endpoint ("ADMIN"/"COMMUNITY_ADMIN"/"Community
   // Admin") — match by keyword via roleKeyword, never exact-match. Exact
   // matching here previously made promoted admins read as plain members,

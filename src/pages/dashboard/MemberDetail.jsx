@@ -11,19 +11,14 @@ import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import StatCard from "../../components/dashboard/StatCard";
-import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
+import { formatNaira, formatDate } from "../../utils/format";
+import { resolveDisplayName, resolveEmail, resolvePhone } from "../../utils/memberName";
 
 const TABS = ["All Plans", "Payment History", "Contact Details"];
 
-function memberName(m) {
-  if (!m) return "Member";
-  if (m.name) return toTitleCase(m.name);
-  const first = m.user?.firstName ?? m.firstName ?? "";
-  const last = m.user?.lastName ?? m.lastName ?? "";
-  return toTitleCase(`${first} ${last}`.trim() || m.user?.email || m.email || "Member");
-}
-const memberEmail = (m) => m?.user?.email ?? m?.email ?? "—";
-const memberPhone = (m) => m?.user?.phoneNumber ?? m?.phoneNumber ?? "—";
+const memberName = (m) => resolveDisplayName(m);
+const memberEmail = (m) => resolveEmail(m);
+const memberPhone = (m) => resolvePhone(m);
 
 
 function PlanCard({ plan, successfulLinkIds }) {

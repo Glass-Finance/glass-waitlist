@@ -14,7 +14,8 @@ import { useExportJob } from "../../hooks/useExportJob";
 import LoadingState from "../../components/common/LoadingState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import StatCard from "../../components/dashboard/StatCard";
-import { formatDate, toTitleCase } from "../../utils/format";
+import { formatDate } from "../../utils/format";
+import { resolveDisplayName, resolveEmail } from "../../utils/memberName";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 
 // Only these three roles should be assignable when inviting members.
@@ -28,14 +29,8 @@ const FALLBACK_ROLES = [
 
 const SORT_OPTIONS = ["Recently Paid", "Name A-Z", "Date Joined"];
 
-function memberName(m) {
-  if (m.name) return toTitleCase(m.name);
-  const first = m.user?.firstName ?? m.firstName ?? "";
-  const last = m.user?.lastName ?? m.lastName ?? "";
-  const full = `${first} ${last}`.trim();
-  return toTitleCase(full || m.user?.email || m.email || "Member");
-}
-const memberEmail = (m) => m.user?.email ?? m.email ?? "—";
+const memberName = (m) => resolveDisplayName(m);
+const memberEmail = (m) => resolveEmail(m);
 const memberRole = (m) => m.roleCode ?? m.role?.name ?? m.roleName ?? m.role ?? "Member";
 // Matches AuthContext's hasAdminCommunity check — roleCode is the stable
 // enum value (OWNER/ADMIN/MANAGER/MEMBER/...), not a free-text display name.

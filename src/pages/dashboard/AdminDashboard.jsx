@@ -17,6 +17,7 @@ import inactiveMembersIcon from "../../assets/dashboard/inactive-members.webp";
 import totalContribIcon from "../../assets/dashboard/tcontributions.webp";
 import activePlansIcon from "../../assets/dashboard/active-plans.webp";
 import { formatNaira } from "./admin-dashboard/helpers";
+import { toTitleCase } from "../../utils/format";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 import AddMemberModal from "./admin-dashboard/AddMemberModal";
 import GettingStartedChecklist from "./admin-dashboard/sections/GettingStartedChecklist";
@@ -187,7 +188,7 @@ function DashboardContent({ isPaying, communityId }) {
       const first = m.user?.firstName ?? m.firstName ?? "";
       const last = m.user?.lastName ?? m.lastName ?? "";
       const raw = `${first} ${last}`.trim() || m.user?.email || m.email || null;
-      const name = raw ? raw.replace(/\b\w/g, (c) => c.toUpperCase()) : null;
+      const name = raw ? toTitleCase(raw) : null;
       if (!name) continue;
       if (m.id) byMemberId[String(m.id)] = name;
       if (m.user?.id) byUserId[String(m.user.id)] = name;
@@ -208,7 +209,7 @@ function DashboardContent({ isPaying, communityId }) {
     const f = u.firstName ?? tx.firstName ?? "";
     const l = u.lastName ?? tx.lastName ?? "";
     const full = `${f} ${l}`.trim();
-    return full ? full.replace(/\b\w/g, (c) => c.toUpperCase()) : null;
+    return full ? toTitleCase(full) : null;
   }
 
   // ── Per-plan metrics computed from obligations + transactions ────────────────
