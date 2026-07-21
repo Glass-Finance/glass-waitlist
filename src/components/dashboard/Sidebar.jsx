@@ -357,7 +357,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         <div className="w-5 h-px bg-white/20 mb-3" />
 
         {/* Community avatar list */}
-        <div className="flex flex-col gap-2 items-center flex-1 overflow-y-auto w-full px-2">
+        <div data-tour="community-switcher" className="flex flex-col gap-2 items-center flex-1 overflow-y-auto w-full px-2">
           {loading ? (
             // Skeleton
             [0, 1].map((i) => (

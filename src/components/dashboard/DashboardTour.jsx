@@ -1,11 +1,12 @@
 import { useState, useLayoutEffect, useCallback } from "react";
-import { LayoutDashboard, Search, ListChecks, Settings, X } from "lucide-react";
+import { LayoutDashboard, Building2, Search, Plus, ListChecks, Receipt, Settings, X } from "lucide-react";
 
 export const DASHBOARD_TOUR_SEEN_KEY = "glass_dashboard_tour_seen";
 
 // `target` is a data-tour selector on the real element being described —
-// see Sidebar.jsx, Topbar.jsx, and AdminDashboard.jsx for the matching
-// data-tour attributes. Steps without a target (intro/outro) just center.
+// see Sidebar.jsx, Topbar.jsx, AdminDashboard.jsx, and
+// MemberPaymentsSection.jsx for the matching data-tour attributes. Steps
+// without a target (intro/outro) just center.
 const STEPS = [
   {
     icon: LayoutDashboard,
@@ -14,9 +15,15 @@ const STEPS = [
     target: null,
   },
   {
+    icon: Building2,
+    title: "Switch between communities",
+    body: "The icon rail on the far left lists every community you help run — tap one to jump straight into managing it.",
+    target: '[data-tour="community-switcher"]',
+  },
+  {
     icon: LayoutDashboard,
-    title: "Switch communities and pages from the sidebar",
-    body: "The sidebar on the left lets you jump between communities you belong to, and move between Dashboard, Payment Plans, Members, Notifications, and Settings.",
+    title: "Move between pages",
+    body: "Use this list to get to Dashboard, Payments, Members, Notifications, and Settings for the community you're currently in.",
     target: '[data-tour="sidebar-nav"]',
   },
   {
@@ -26,10 +33,22 @@ const STEPS = [
     target: '[data-tour="topbar-search"]',
   },
   {
+    icon: Plus,
+    title: "Create a plan or add a member in one click",
+    body: "These two buttons set up a new payment plan or invite a member without leaving this page.",
+    target: '[data-tour="dashboard-header-actions"]',
+  },
+  {
     icon: ListChecks,
     title: "Follow your Getting Started checklist",
     body: "New communities see a checklist for the essentials — creating a payment plan, adding members, and setting up your payout account. It updates automatically as you complete each step.",
     target: '[data-tour="getting-started-checklist"]',
+  },
+  {
+    icon: Receipt,
+    title: "Every transaction, in one table",
+    body: "Search, sort, and export a community's payments here — each row also has a receipt you can download and hand to a member.",
+    target: '[data-tour="member-payments-table"]',
   },
   {
     icon: Settings,

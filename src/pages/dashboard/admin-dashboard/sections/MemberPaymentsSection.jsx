@@ -21,7 +21,10 @@ export default function MemberPaymentsSection({
   onRowClick,
 }) {
   return (
-    <div className="bg-surface-container rounded-xl border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
+    <div
+      data-tour="member-payments-table"
+      className="bg-surface-container rounded-xl border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
+    >
       <div className="flex items-center justify-between px-5 pt-4 pb-0">
         <span className="text-sm font-medium">Member Payments</span>
         <button

@@ -354,7 +354,7 @@ function DashboardContent({ isPaying, communityId }) {
               A full picture of your community's financial activity.
             </p>
           </div>
-          <div className="flex gap-2.5">
+          <div data-tour="dashboard-header-actions" className="flex gap-2.5">
             <button
               onClick={() =>
                 navigate(`/dashboard/payments?community=${communityId ?? ""}`)
