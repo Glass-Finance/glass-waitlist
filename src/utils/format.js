@@ -5,16 +5,19 @@
 
 // "₦12,000" by default. Pass { decimals: 2 } for receipt-style precision,
 // { emptyDash: true } to render "—" for null/undefined instead of "₦0"
-// (a few dashboard summary cards want that distinction).
-export function formatNaira(amount, { decimals = 0, emptyDash = false } = {}) {
+// (a few dashboard summary cards want that distinction), { minor: true }
+// when `amount` is in kobo and needs dividing by 100 first (most admin
+// balance/commission fields on this backend are minor-unit).
+export function formatNaira(amount, { decimals = 0, emptyDash = false, minor = false } = {}) {
   if (emptyDash && (amount === null || amount === undefined)) return "—";
+  const value = minor ? (amount ?? 0) / 100 : (amount ?? 0);
   return new Intl.NumberFormat("en-NG", {
     style: "currency",
     currency: "NGN",
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   })
-    .format(amount ?? 0)
+    .format(value)
     .replace("NGN", "₦");
 }
 
@@ -44,6 +47,16 @@ export function formatDate(d) {
   });
 }
 
+// "Jul 11" — no year, for contexts where the year is implied (due dates,
+// recent activity) and the extra characters aren't worth the space.
+export function formatDateShort(d) {
+  if (!d) return "—";
+  return new Date(d).toLocaleDateString("en-NG", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
 // "11 July 2026" — used where a fuller, non-abbreviated date reads better.
 export function formatDateLong(d) {
   if (!d) return "—";
@@ -70,4 +83,19 @@ export function formatRelativeDateTime(dateStr) {
   if (d.toDateString() === now.toDateString()) return `Today ${time}`;
   if (d.toDateString() === yesterday.toDateString()) return `Yesterday ${time}`;
   return `${d.toLocaleDateString("en-NG", { month: "short", day: "numeric" })}, ${time}`;
+}
+
+// "Today" / "Yesterday" / "This Week" / a full date for anything older —
+// the date-separator bucketing used by both notification lists.
+export function dayLabel(dateStr) {
+  if (!dateStr) return "Earlier";
+  const d = new Date(dateStr);
+  const now = new Date();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  if (d.toDateString() === now.toDateString()) return "Today";
+  if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
+  const diffDays = Math.floor((now - d) / 86400000);
+  if (diffDays >= 0 && diffDays < 7) return "This Week";
+  return d.toLocaleDateString("en-NG", { weekday: "long", month: "short", day: "numeric" });
 }

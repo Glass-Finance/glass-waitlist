@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Check, Copy } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
 import { buildMobileUrl } from "../../utils/deviceRedirect";
 import { useAuth } from "../../store/AuthContext";
+import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 
 export default function DesktopRequired() {
   const navigate = useNavigate();
@@ -11,19 +11,13 @@ export default function DesktopRequired() {
   const [searchParams] = useSearchParams();
   const target = searchParams.get("to") || "/onboarding/choose-path";
   const url = buildMobileUrl(target);
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopyToClipboard();
 
   // Mirrors MobileRequired.jsx's continueTo logic for the opposite
   // direction — a brand-new signup isn't an admin of anything yet, so
   // /member/home is the only real destination that won't just bounce them
   // back here (they're still on mobile).
   const continueTo = isAdmin ? "/dashboard/home" : "/member/home";
-
-  function handleCopy() {
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
 
   return (
     <div
@@ -56,7 +50,7 @@ export default function DesktopRequired() {
           >
             <span className="text-sm text-brand font-medium truncate">{url}</span>
             <button
-              onClick={handleCopy}
+              onClick={() => copy(url)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white border-none cursor-pointer flex-shrink-0 hover:opacity-90 bg-brand"
             >
               {copied ? <Check size={12} /> : <Copy size={12} />}

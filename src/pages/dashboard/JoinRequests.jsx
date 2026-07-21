@@ -9,6 +9,7 @@ import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
+import { formatDate, formatDateShort } from "../../utils/format";
 
 function formatRequestedAt(r) {
   const raw = r.createdAt ?? r.requestedAt ?? r.submittedAt ?? null;
@@ -20,7 +21,7 @@ function formatRequestedAt(r) {
   if (mins < 60) return `${mins}m ago`;
   if (mins < 60 * 24) return `${Math.floor(mins / 60)}h ago`;
   if (mins < 60 * 24 * 7) return `${Math.floor(mins / (60 * 24))}d ago`;
-  return d.toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" });
+  return formatDate(d);
 }
 
 const STATUS_CHIP = {
@@ -49,12 +50,7 @@ function RequestCard({ r, onApprove, onReject, busy }) {
   const status = statusOf(r);
   const isPending = status === "PENDING";
   const requestedAt = formatRequestedAt(r);
-  const reviewedAt = r.reviewedAt
-    ? new Date(r.reviewedAt).toLocaleDateString("en-NG", {
-        month: "short",
-        day: "numeric",
-      })
-    : null;
+  const reviewedAt = r.reviewedAt ? formatDateShort(r.reviewedAt) : null;
   const chip = STATUS_CHIP[status];
 
   return (

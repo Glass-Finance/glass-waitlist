@@ -3,6 +3,7 @@ import { Copy, X, Download, UploadCloud, FileSpreadsheet, Check } from "lucide-r
 import { APP_ORIGIN } from "../../../utils/deviceRedirect";
 import { useCommunityMembers, useRoles } from "../../../hooks/useCommunityMembers";
 import { getEmailError } from "../../../utils/validators";
+import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
 
 const ALLOWED_ROLE_NAMES = new Set([
   "Community Member",
@@ -15,7 +16,7 @@ const CSV_TEMPLATE =
 
 export default function AddMemberModal({ onClose, communityId, communitySlug }) {
   const [tab, setTab] = useState("upload");
-  const [linkCopied, setLinkCopied] = useState(false);
+  const [linkCopied, copyLinkText] = useCopyToClipboard();
   const [dragOver, setDragOver] = useState(false);
   const [csvFile, setCsvFile] = useState(null);
   const [csvRows, setCsvRows] = useState([]);
@@ -72,10 +73,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
     "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-brand transition-all";
 
   function copyLink() {
-    if (!inviteLink) return;
-    navigator.clipboard.writeText(inviteLink);
-    setLinkCopied(true);
-    setTimeout(() => setLinkCopied(false), 2000);
+    copyLinkText(inviteLink);
   }
 
   function downloadTemplate() {

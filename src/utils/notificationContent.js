@@ -1,3 +1,5 @@
+import { toTitleCase, formatNaira } from "./format";
+
 // Extracts the structured facts (member, community, amount, plan, time,
 // transaction reference) out of a notification.
 //
@@ -30,13 +32,6 @@ function textOf(n) {
 // nothing stops the greedy match at the title/message boundary.
 function messageOnly(n) {
   return n.message ?? n.bodyText ?? "";
-}
-
-// Names can arrive in any case depending on the source (a structured field
-// echoing exactly what the user typed at signup, or a regex match) — title
-// case them consistently for display, same convention as Join Requests.
-function capitalizeName(s) {
-  return (s ?? "").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // "₦5,000", "NGN 5000", "₦ 12,500.50"
@@ -179,7 +174,7 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
   const memberPhoto = content.profileImage?.url ?? content.profileImageUrl ?? content.avatarUrl ?? content.photoUrl ?? null;
 
   return {
-    memberName: rawMemberName ? capitalizeName(rawMemberName) : null,
+    memberName: rawMemberName ? toTitleCase(rawMemberName) : null,
     memberPhoto,
     communityName: content.communityName ?? resolveCommunityName(n, communityMap),
     communityLogo: content.communityLogo?.url ?? resolveCommunityLogo(n, communityMap),
@@ -209,9 +204,12 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
   };
 }
 
+// Callers rely on getting `null` back (not "—") for a missing amount, so
+// rows/fragments can be conditionally hidden via a plain truthiness check —
+// see NotificationsPanel.jsx and Notifications.jsx's factRows filter.
 export function formatNairaAmount(amount) {
   if (amount == null) return null;
-  return "₦" + new Intl.NumberFormat("en-NG").format(amount);
+  return formatNaira(amount);
 }
 
 // Shared avatar-fallback initials -- a photo/logo is preferred, but a

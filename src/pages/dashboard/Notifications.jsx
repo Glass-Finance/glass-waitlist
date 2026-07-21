@@ -11,7 +11,7 @@ import { notificationCategory, isSelfAccountType, notificationVisual } from "../
 import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
-import { formatRelativeDateTime as formatTime } from "../../utils/format";
+import { formatRelativeDateTime as formatTime, dayLabel } from "../../utils/format";
 
 const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";
 
@@ -275,20 +275,6 @@ function useNotificationDetail(notifications, markRead) {
 }
 
 // Date separator label used by the chronological view — Today / Yesterday /
-// This Week (last 7 days) / a full date for anything older, matching the
-// bucket set in the redesigned Notifications mockup.
-function dayLabel(dateStr) {
-  if (!dateStr) return "Earlier";
-  const d = new Date(dateStr);
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  if (d.toDateString() === today.toDateString()) return "Today";
-  if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
-  const diffDays = Math.floor((today - d) / 86400000);
-  if (diffDays >= 0 && diffDays < 7) return "This Week";
-  return d.toLocaleDateString("en-NG", { weekday: "long", month: "short", day: "numeric" });
-}
 
 // All-tab: strict newest-first with date separators only (no category
 // grouping). Wrapped in one shared bordered card -- matching the member

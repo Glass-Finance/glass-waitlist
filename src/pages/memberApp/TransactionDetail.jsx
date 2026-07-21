@@ -8,6 +8,7 @@ import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import ReceiptModal from "../../components/common/ReceiptModal";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { transactionStatusStyle } from "../../utils/transactionStatus";
+import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 
 function StatusPill({ status }) {
   const { label, ...s } = transactionStatusStyle(status);
@@ -41,18 +42,14 @@ export default function TransactionDetail() {
   const { user } = useAuth();
   const { transactionId } = useParams();
   const { data: tx, isLoading, error } = useTransactionDetail(transactionId);
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopyToClipboard(1500);
   const [shareOpen, setShareOpen] = useState(false);
   const payerName = toTitleCase(
     [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "",
   );
 
   function copyReference() {
-    if (!tx?.reference) return;
-    navigator.clipboard?.writeText(tx.reference).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
+    copy(tx?.reference);
   }
 
   return (

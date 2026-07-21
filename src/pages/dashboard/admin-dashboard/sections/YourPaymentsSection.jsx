@@ -1,6 +1,6 @@
 import { ChevronDown, Clock } from "lucide-react";
 import EmptyState from "../../../../components/common/EmptyState";
-import { toTitleCase } from "../../../../utils/format";
+import { toTitleCase, formatDate } from "../../../../utils/format";
 import { formatNaira, statusStyle, freqStyle } from "../helpers";
 
 export default function YourPaymentsSection({
@@ -96,13 +96,7 @@ export default function YourPaymentsSection({
                       {formatNaira(row.amount)}
                     </td>
                     <td className="py-3 px-2 text-xs text-gray-500">
-                      {row.dueDate
-                        ? new Date(row.dueDate).toLocaleDateString("en-NG", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })
-                        : "—"}
+                      {row.dueDate ? formatDate(row.dueDate) : "—"}
                     </td>
                     <td className="py-3 px-2">
                       <span

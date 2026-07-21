@@ -5,16 +5,11 @@ import {
   rejectJoinRequest,
 } from "../api/communities";
 import { parseUserData } from "../utils/userData";
+import { toTitleCase } from "../utils/format";
 
 function unwrap(res) {
   const d = res.data?.data;
   return Array.isArray(d) ? d : (d?.content ?? []);
-}
-
-// Names are stored in whatever case the user typed ("home alone") —
-// capitalise for display.
-function capitalizeName(s) {
-  return (s ?? "").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 // The requester lives under `requestedUser` (confirmed against the live
@@ -25,8 +20,8 @@ export function requesterOf(r) {
   const u =
     r.requestedUser ?? r.user ?? r.member ?? r.requester ?? r.requestedBy ?? r;
   const ud = parseUserData(u);
-  const firstName = capitalizeName(u.firstName ?? ud.firstName ?? "");
-  const lastName = capitalizeName(u.lastName ?? ud.lastName ?? "");
+  const firstName = toTitleCase(u.firstName ?? ud.firstName ?? "");
+  const lastName = toTitleCase(u.lastName ?? ud.lastName ?? "");
   const email = u.email ?? r.email ?? r.userEmail ?? null;
   const phone = u.phoneNumber ?? ud.phone ?? r.phoneNumber ?? null;
   const image = ud.profileImage ?? u.profileImage?.url ?? u.avatarUrl ?? null;

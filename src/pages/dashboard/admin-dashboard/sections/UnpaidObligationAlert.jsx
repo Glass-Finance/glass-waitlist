@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { toTitleCase } from "../../../../utils/format";
+import { toTitleCase, formatDate } from "../../../../utils/format";
 import WarnSignIcon from "../../../../assets/dashboard/warn-sign.webp";
 import { formatNaira } from "../helpers";
 
@@ -36,9 +36,7 @@ export default function UnpaidObligationAlert({
           </p>
           <p className="text-xs text-gray-500 mt-1">
             {formatNaira(due.amount)}
-            {due.dueDate
-              ? ` due ${new Date(due.dueDate).toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" })}`
-              : ""}
+            {due.dueDate ? ` due ${formatDate(due.dueDate)}` : ""}
             {due.type === "recurring" && (
               <>
                 {" · "}

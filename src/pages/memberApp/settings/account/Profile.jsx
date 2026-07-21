@@ -9,14 +9,9 @@ import { getErrorMessage } from "../../../../utils/errorHandler";
 import { getEmailError } from "../../../../utils/validators";
 import { parseUserData } from "../../../../utils/userData";
 import EmailChangeModal from "../../../../components/common/EmailChangeModal";
+import { toTitleCase } from "../../../../utils/format";
 
 const inputCls = "w-full py-3 px-3.5 rounded-[10px] border-[1.5px] border-[#E0E0E0] text-sm text-[#111] outline-none bg-white box-border";
-
-// Names save with the first letter of each word capitalised ("home" → "Home")
-// so they read properly everywhere: greetings, join requests, receipts, emails.
-function capitalizeName(s) {
-  return (s ?? "").replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -61,8 +56,8 @@ export default function Profile() {
       // Only send what changed — the success toast names the updated
       // field(s), so sending everything would always read "Profile updated".
       const userData = {};
-      if (form.firstName !== savedForm.firstName) userData.firstName = capitalizeName(form.firstName.trim());
-      if (form.lastName !== savedForm.lastName) userData.lastName = capitalizeName(form.lastName.trim());
+      if (form.firstName !== savedForm.firstName) userData.firstName = toTitleCase(form.firstName.trim());
+      if (form.lastName !== savedForm.lastName) userData.lastName = toTitleCase(form.lastName.trim());
       if (form.phone !== savedForm.phone) userData.phoneNumber = form.phone;
       await updateProfile.mutateAsync({
         username: user?.username,
@@ -72,8 +67,8 @@ export default function Profile() {
       // what was actually saved.
       const next = {
         ...form,
-        firstName: capitalizeName(form.firstName.trim()),
-        lastName: capitalizeName(form.lastName.trim()),
+        firstName: toTitleCase(form.firstName.trim()),
+        lastName: toTitleCase(form.lastName.trim()),
       };
       setForm(next);
       setSavedForm(next);

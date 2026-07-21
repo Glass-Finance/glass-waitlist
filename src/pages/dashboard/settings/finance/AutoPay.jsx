@@ -9,7 +9,7 @@ import LoadingState from "../../../../components/common/LoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
 import Toggle from "../../../../components/common/Toggle";
 import ConfirmDialog from "../../../../components/dashboard/ConfirmDialog";
-import { formatNaira } from "../../../../utils/format";
+import { formatNaira, formatDateShort } from "../../../../utils/format";
 
 export default function AutoPay() {
   const { data, isLoading: paymentsLoading } = usePayments();
@@ -112,7 +112,7 @@ export default function AutoPay() {
                         plan.communityName,
                         plan.amount != null ? formatNaira(plan.amount) : null,
                         plan.dueDate
-                          ? `Next due ${new Date(plan.dueDate).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}`
+                          ? `Next due ${formatDateShort(plan.dueDate)}`
                           : null,
                       ].filter(Boolean).join(" · ")}
                     </p>

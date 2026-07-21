@@ -8,6 +8,7 @@ import { useMe } from "../../../../hooks/useMyAccount";
 import { useQueryClient } from "@tanstack/react-query";
 import { setupMfaTotp, enableMfaTotp, disableMfaTotp } from "../../../../services/authService";
 import { getErrorMessage } from "../../../../utils/errorHandler";
+import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
 
 // ── OTP digit input ───────────────────────────────────────────────────────────
 function CodeInput({ value, onChange, disabled }) {
@@ -32,7 +33,7 @@ function SetupFlow({ onSuccess, onCancel }) {
   const [setupData, setSetupData] = useState(null); // { secret, qrCodeUri, qrCodeImage }
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopyToClipboard();
 
   async function startSetup() {
     setStage("loading");
@@ -63,11 +64,7 @@ function SetupFlow({ onSuccess, onCancel }) {
   }
 
   function copySecret() {
-    if (!setupData?.secret) return;
-    navigator.clipboard.writeText(setupData.secret).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    copy(setupData?.secret);
   }
 
   // Resolve the QR image: prefer an explicit image field, otherwise use

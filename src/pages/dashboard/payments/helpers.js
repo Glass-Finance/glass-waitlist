@@ -1,15 +1,12 @@
 import { FREQUENCY_UNIT_LABEL, WEEKDAYS } from "./constants";
+import { ordinal } from "../../../utils/recurring";
+
+export { ordinal };
 
 export function intervalUnitLabel(frequency, interval) {
   const unit = FREQUENCY_UNIT_LABEL[frequency] ?? "cycle";
   const n = Number(interval);
   return n === 1 ? unit : `${unit}s`;
-}
-
-export function ordinal(n) {
-  const s = ["th", "st", "nd", "rd"];
-  const v = n % 100;
-  return n + (s[(v - 20) % 10] ?? s[v] ?? s[0]);
 }
 
 // Human-readable billing day for review rows ("Monday" / "The 5th").

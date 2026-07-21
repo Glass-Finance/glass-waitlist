@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import banksData from "nigerian-bank-icons/assets/banks.json";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 // Exclude entries that point to the generic placeholder image — those banks
 // have no real logo in the package and should fall back to colored initials.
@@ -44,17 +45,14 @@ export default function BankSelect({ banks, value, onChange, placeholder = "Choo
   const rootRef = useRef(null);
   const searchRef = useRef(null);
 
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(e) {
-      if (rootRef.current && !rootRef.current.contains(e.target)) {
-        setOpen(false);
-        setQuery("");
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [open]);
+  useClickOutside(
+    rootRef,
+    () => {
+      setOpen(false);
+      setQuery("");
+    },
+    open,
+  );
 
   useEffect(() => {
     if (open) setTimeout(() => searchRef.current?.focus(), 0);

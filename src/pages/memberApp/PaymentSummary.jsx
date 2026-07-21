@@ -17,7 +17,7 @@ import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import Toggle from "../../components/common/Toggle";
 import { toastSuccess } from "../../utils/toast";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
-import { toTitleCase, formatNaira as fmt } from "../../utils/format";
+import { toTitleCase, formatNaira as fmt, formatDate } from "../../utils/format";
 
 function useObligation(obligationId) {
   return useQuery({
@@ -402,7 +402,7 @@ export default function PaymentSummary() {
               <div className="flex items-center justify-between mb-2.5 pb-3 border-b border-gray-100">
                 <span className="text-[13px] text-gray-500">Next charge (est.):</span>
                 <span className="text-[13px] text-gray-900">
-                  {next.toLocaleDateString("en-NG", { month: "short", day: "numeric", year: "numeric" })}
+                  {formatDate(next)}
                 </span>
               </div>
             );

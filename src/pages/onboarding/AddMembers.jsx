@@ -11,6 +11,7 @@
  * Invite link format: {APP_ORIGIN}/member/join?community={communitySlug}
  */
 import { useState, useEffect, useRef } from "react";
+import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 import { useNavigate, useLocation } from "react-router-dom";
 import Papa from "papaparse";
 import { Bell, Download, CloudUpload, Copy, Check, X, FileSpreadsheet, ArrowLeft } from "lucide-react";
@@ -165,7 +166,7 @@ export default function AddMembers() {
   const [dragOver,     setDragOver]     = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [fileUrl,      setFileUrl]      = useState("");
-  const [copied,       setCopied]       = useState(false);
+  const [copied, copy] = useCopyToClipboard();
   const [showSuccess,  setShowSuccess]  = useState(false);
   const [loading,      setLoading]      = useState(false);
   const [error,        setError]        = useState("");
@@ -190,11 +191,7 @@ export default function AddMembers() {
   const unmountedRef = useRef(false);
   useEffect(() => () => { unmountedRef.current = true; }, []);
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(inviteLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const copyLink = () => copy(inviteLink);
 
   const handleFile = (file) => { if (file) setUploadedFile(file); };
   const handleDrop = (e) => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]); };

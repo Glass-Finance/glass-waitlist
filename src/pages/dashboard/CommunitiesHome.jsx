@@ -14,7 +14,7 @@ import {
   CreditCard,
   ChevronRight,
 } from "lucide-react";
-import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
+import { formatNaira as sharedFormatNaira, formatDateShort, toTitleCase } from "../../utils/format";
 import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
 import { useInvites } from "../../hooks/useInvites";
 import { useGlobalOverview } from "../../hooks/usePayments";
@@ -194,14 +194,6 @@ function obligationStatusChip(o) {
   return { label: "Upcoming", cls: "bg-[#EEF2FF] text-brand" };
 }
 
-function shortDate(dateStr) {
-  if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("en-NG", {
-    month: "short",
-    day: "numeric",
-  });
-}
-
 function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
   return (
     <div
@@ -296,7 +288,7 @@ function GlobalOverview() {
                     {toTitleCase(o.name)}
                   </p>
                   <p className="text-[11px] text-gray-400 mt-0.5 truncate">
-                    {[o.communityName, o.dueDate ? `Due ${shortDate(o.dueDate)}` : null]
+                    {[o.communityName, o.dueDate ? `Due ${formatDateShort(o.dueDate)}` : null]
                       .filter(Boolean)
                       .join(" · ")}
                   </p>
@@ -339,7 +331,7 @@ function GlobalOverview() {
                   {toTitleCase(t.description)}
                 </p>
                 <p className="text-[11px] text-gray-400 mt-0.5 truncate">
-                  {[t.communityName, shortDate(t.date)].filter(Boolean).join(" · ")}
+                  {[t.communityName, t.date ? formatDateShort(t.date) : null].filter(Boolean).join(" · ")}
                 </p>
               </div>
               <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
@@ -403,7 +395,7 @@ function GlobalOverview() {
                     </p>
                   )}
                   <p className="text-[11px] text-gray-400 mt-0.5">
-                    {[amount, details.communityName, shortDate(n.createdAt)]
+                    {[amount, details.communityName, n.createdAt ? formatDateShort(n.createdAt) : null]
                       .filter(Boolean)
                       .join(" · ")}
                   </p>

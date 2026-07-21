@@ -8,6 +8,7 @@ import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/p
 import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
 import LoadingState from "../../../../components/common/LoadingState";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
 
 // ─── MFA Modal ────────────────────────────────────────────────────────────────
 
@@ -18,7 +19,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopyToClipboard();
 
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
@@ -71,11 +72,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
   }
 
   function copySecret() {
-    if (!secret) return;
-    navigator.clipboard.writeText(secret).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    copy(secret);
   }
 
   const otpauthUri = setupData?.otpauthUri ?? setupData?.qrCodeUri ?? setupData?.otpAuthUri ?? setupData?.otpauth_url ?? setupData?.uri ?? null;

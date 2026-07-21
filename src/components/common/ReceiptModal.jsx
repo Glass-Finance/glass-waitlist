@@ -4,6 +4,7 @@ import { X, FileText, Image as ImageIcon, Share2, Check, Copy, CheckCheck } from
 import html2canvas from "html2canvas";
 import ctaLogoUrl from "../../assets/cta/ctalogo.webp";
 import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
+import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 // Receipts show 2 decimal places (kobo precision), unlike the app-wide 0-decimal default.
@@ -428,7 +429,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
   const [logoB64, setLogoB64] = useState(null);
   const [footerLogoB64, setFooterLogoB64] = useState(null);
   const [saving, setSaving] = useState(null); // "image" | "pdf" | "share" | null
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopyToClipboard(1500);
 
   useEffect(() => {
     function toB64(blob) {
@@ -452,12 +453,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
   }, [onClose]);
 
   function copyReference() {
-    const refValue = tx?.reference ?? tx?.id;
-    if (!refValue) return;
-    navigator.clipboard?.writeText(String(refValue)).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
+    copy(tx?.reference ?? tx?.id);
   }
 
   async function captureCard(scale = 3) {

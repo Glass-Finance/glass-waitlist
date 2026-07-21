@@ -1,6 +1,8 @@
 // Shared formatters, pagination helpers, and the status-color lookup used
 // across every AdminPanel section.
 
+import { formatNaira } from "../../../utils/format";
+
 // `minor` controls whether `amount` is in minor units (kobo) and needs
 // dividing by 100 — true for most money fields on this backend (e.g.
 // commissionCapMinor). The /admin/balances endpoint is the exception: it
@@ -9,8 +11,12 @@
 // `decimals` controls displayed precision — reconciliation/audit figures
 // (Balances) should show kobo-level precision so a small discrepancy isn't
 // silently rounded away; most other tables stay at whole-naira (decimals: 0).
+// `currency` is almost always "NGN" in practice, but settlement/reconciliation
+// records carry their own currency field, so it stays parameterized rather
+// than assuming NGN outright.
 export function fmt(amount, currency = "NGN", { minor = true, decimals = 0 } = {}) {
   if (amount == null) return "—";
+  if (currency === "NGN") return formatNaira(amount, { decimals, minor });
   const value = minor ? amount / 100 : amount;
   return new Intl.NumberFormat("en-NG", {
     style: "currency",

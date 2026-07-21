@@ -1,4 +1,4 @@
-import { formatNaira, toTitleCase } from "../../../utils/format";
+import { formatNaira, formatDateShort, toTitleCase } from "../../../utils/format";
 import { PLAN_STATUS, FREQUENCIES } from "./constants";
 import { formatCompact } from "./helpers";
 import PlanOverflowMenu from "./PlanOverflowMenu";
@@ -98,12 +98,7 @@ export default function PlanCard({
           </p>
           <p className="text-xs text-gray-400">
             Due{" "}
-            {plan.dueAt
-              ? new Date(plan.dueAt).toLocaleDateString("en-NG", {
-                  month: "short",
-                  day: "numeric",
-                })
-              : "—"}
+            {plan.dueAt ? formatDateShort(plan.dueAt) : "—"}
           </p>
         </div>
       </div>

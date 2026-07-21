@@ -9,12 +9,7 @@ import { useAuth } from "../../../../store/AuthContext";
 import { parseUserData } from "../../../../utils/userData";
 import EmailChangeModal from "../../../../components/common/EmailChangeModal";
 import OtpBoxes from "../../../../components/common/OtpBoxes";
-
-// Names save with the first letter of each word capitalised ("home" → "Home")
-// so they read properly everywhere: greetings, join requests, receipts, emails.
-function capitalizeName(s) {
-  return (s ?? "").replace(/\b\w/g, (c) => c.toUpperCase());
-}
+import { toTitleCase } from "../../../../utils/format";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -164,8 +159,8 @@ export default function Profile() {
         // Only send what changed — the success toast names the updated
         // field(s), so sending everything would always read "Profile updated".
         const userData = {};
-        const firstName = capitalizeName(form.firstName.trim());
-        const lastName = capitalizeName(form.lastName.trim());
+        const firstName = toTitleCase(form.firstName.trim());
+        const lastName = toTitleCase(form.lastName.trim());
         if (form.firstName !== savedForm.firstName) userData.firstName = firstName;
         if (form.lastName !== savedForm.lastName) userData.lastName = lastName;
         if (form.phone !== savedForm.phone) userData.phoneNumber = form.phone;

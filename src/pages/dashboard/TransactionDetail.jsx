@@ -8,6 +8,7 @@ import ReceiptModal from "../../components/common/ReceiptModal";
 import LoadingState from "../../components/common/LoadingState";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { transactionStatusStyle } from "../../utils/transactionStatus";
+import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 
 function StatusPill({ status }) {
   const { label, ...s } = transactionStatusStyle(status);
@@ -58,15 +59,11 @@ export default function TransactionDetail() {
   const { transactionId } = useParams();
   const communityId = useActiveCommunityId();
   const { data: tx, isLoading, error } = useCommunityTransactionDetail(communityId, transactionId);
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopyToClipboard(1500);
   const [shareOpen, setShareOpen] = useState(false);
 
   function copyReference() {
-    if (!tx?.reference) return;
-    navigator.clipboard?.writeText(tx.reference).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
+    copy(tx?.reference);
   }
 
   return (

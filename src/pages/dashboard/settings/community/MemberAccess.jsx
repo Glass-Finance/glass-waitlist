@@ -10,6 +10,7 @@ import LoadingState from "../../../../components/common/LoadingState";
 import EmptyState from "../../../../components/common/EmptyState";
 import Toggle from "../../../../components/common/Toggle";
 import ConfirmDialog from "../../../../components/dashboard/ConfirmDialog";
+import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
 
 // Per-member "⋯" actions menu — one open at a time (state lives in the page),
 // dismissed by the invisible full-screen overlay behind it.
@@ -71,7 +72,7 @@ export default function MemberAccess() {
   // useActiveCommunityId() returns the community slug (preferred over id)
   // since both the Sidebar and CommunitiesHome set ?community= to the slug.
   const communitySlug = useActiveCommunityId();
-  const [copied, setCopied] = useState(false);
+  const [copied, copy] = useCopyToClipboard();
   const [openMenuId, setOpenMenuId] = useState(null);
   const [pendingAction, setPendingAction] = useState(null); // { member, type: "demote"|"promote"|"remove" }
   const { members, isLoading, removeMember, updateMember } = useCommunityMembers(communitySlug);
@@ -85,12 +86,7 @@ export default function MemberAccess() {
     ? `${APP_ORIGIN}/member/join?community=${communitySlug}`
     : null;
 
-  const handleCopy = () => {
-    if (!inviteLink) return;
-    navigator.clipboard.writeText(inviteLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const handleCopy = () => copy(inviteLink);
 
   function memberName(m) {
     const first = m.user?.firstName ?? m.firstName ?? "";

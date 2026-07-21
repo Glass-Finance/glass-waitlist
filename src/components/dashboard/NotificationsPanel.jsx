@@ -5,20 +5,7 @@ import { isSelfAccountType, notificationVisual } from "../../utils/notificationT
 import { useAuth } from "../../store/AuthContext";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
-import { formatRelativeDateTime as formatTimestamp } from "../../utils/format";
-
-function dayLabel(dateStr) {
-  if (!dateStr) return "Earlier";
-  const d = new Date(dateStr);
-  const now = new Date();
-  const yesterday = new Date(now);
-  yesterday.setDate(now.getDate() - 1);
-  if (d.toDateString() === now.toDateString()) return "Today";
-  if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
-  const diffDays = Math.floor((now - d) / 86400000);
-  if (diffDays >= 0 && diffDays < 7) return "This Week";
-  return d.toLocaleDateString("en-NG", { weekday: "long", month: "short", day: "numeric" });
-}
+import { formatRelativeDateTime as formatTimestamp, dayLabel } from "../../utils/format";
 
 // Resolve community info for display AND for the owned/member routing
 // split below — shares notificationContent.js's resolveCommunity (id

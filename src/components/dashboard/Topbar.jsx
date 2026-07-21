@@ -17,6 +17,7 @@ import { useCommunities } from "../../hooks/useCommunities";
 import { searchCommunity } from "../../api/communities";
 import NotificationsPanel from "./NotificationsPanel";
 import { formatNaira, toTitleCase } from "../../utils/format";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 // user.firstName/lastName come from AuthContext's refreshUser() (GET /user/me)
@@ -71,16 +72,7 @@ export default function Topbar({
   const email = user?.email ?? "";
 
   // Close the dropdown on outside click
-  useEffect(() => {
-    if (!panelOpen) return;
-    function handleClick(e) {
-      if (panelRef.current && !panelRef.current.contains(e.target)) {
-        setPanelOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [panelOpen]);
+  useClickOutside(panelRef, () => setPanelOpen(false), panelOpen);
 
   // ── Search — GET /communities/{id}/search, debounced (backend requires
   // 2+ chars and returns a capped top-10 preview per category). ───────────
@@ -90,16 +82,7 @@ export default function Topbar({
   const [searchOpen, setSearchOpen] = useState(false);
   const searchRef = useRef(null);
 
-  useEffect(() => {
-    if (!searchOpen) return;
-    function handleClick(e) {
-      if (searchRef.current && !searchRef.current.contains(e.target)) {
-        setSearchOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [searchOpen]);
+  useClickOutside(searchRef, () => setSearchOpen(false), searchOpen);
 
   useEffect(() => {
     const q = query.trim();

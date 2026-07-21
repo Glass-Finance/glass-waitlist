@@ -15,6 +15,7 @@ import LoadingState from "../../components/common/LoadingState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import StatCard from "../../components/dashboard/StatCard";
 import { formatDate, toTitleCase } from "../../utils/format";
+import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 
 // Only these three roles should be assignable when inviting members.
 const ALLOWED_ROLE_NAMES = new Set(["Community Owner", "Community Admin", "Community Member"]);
@@ -468,7 +469,7 @@ function QuickAddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavai
   const defaultRole = roles.find((r) => r.name === "Community Member") ?? roles[0];
   const [roleId, setRoleId] = useState(defaultRole?.id ?? "");
   const [billingExempt, setBillingExempt] = useState(false);
-  const [linkCopied, setLinkCopied] = useState(false);
+  const [linkCopied, copyInviteLinkText] = useCopyToClipboard();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -477,10 +478,7 @@ function QuickAddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavai
   }
 
   function copyInviteLink() {
-    if (!inviteLink) return;
-    navigator.clipboard.writeText(inviteLink);
-    setLinkCopied(true);
-    setTimeout(() => setLinkCopied(false), 2000);
+    copyInviteLinkText(inviteLink);
   }
 
   const isReady = email.trim() && !rolesUnavailable;
