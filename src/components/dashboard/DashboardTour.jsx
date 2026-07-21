@@ -62,6 +62,18 @@ const SPOTLIGHT_PADDING = 8;
 const CARD_WIDTH = 380;
 const CARD_MARGIN = 16;
 
+// Below Tailwind's `md` breakpoint the sidebar is an off-canvas drawer
+// (see Sidebar.jsx) that's translated out of the viewport by default --
+// these two steps live inside it, so on mobile the drawer has to be
+// opened before their target can actually be seen, not just measured.
+const SIDEBAR_TARGETS = new Set([
+  '[data-tour="community-switcher"]',
+  '[data-tour="sidebar-nav"]',
+]);
+const MOBILE_QUERY = "(max-width: 767px)";
+// Matches Sidebar.jsx's own `duration-300` slide transition.
+const SIDEBAR_TRANSITION_MS = 300;
+
 // A step with a non-null target only makes sense to show while its real
 // on-page element exists (e.g. the getting-started checklist disappears
 // once a community has both a plan and members) -- otherwise it renders as
@@ -77,7 +89,7 @@ function findValidStep(from, direction) {
   return null;
 }
 
-export default function DashboardTour({ onClose }) {
+export default function DashboardTour({ onClose, onNeedMobileNav }) {
   const [step, setStep] = useState(0);
   const [rect, setRect] = useState(null);
   const nextStep = findValidStep(step, 1);
@@ -122,6 +134,26 @@ export default function DashboardTour({ onClose }) {
       window.removeEventListener("scroll", measure, true);
     };
   }, [measure]);
+
+  // Open the mobile sidebar drawer for the two steps that live inside it,
+  // close it again for every other step. The drawer's own slide-in
+  // transition means its target's rect isn't settled until that finishes,
+  // so re-measure once more after it should have.
+  useLayoutEffect(() => {
+    if (!onNeedMobileNav) return;
+    const isMobile = window.matchMedia(MOBILE_QUERY).matches;
+    const needsDrawerOpen = isMobile && SIDEBAR_TARGETS.has(current.target);
+    onNeedMobileNav(needsDrawerOpen);
+    if (!needsDrawerOpen) return;
+    const t = setTimeout(measure, SIDEBAR_TRANSITION_MS + 20);
+    return () => clearTimeout(t);
+  }, [current.target, onNeedMobileNav, measure]);
+
+  // Leave the drawer the way we found it once the tour itself is closed.
+  useLayoutEffect(() => {
+    return () => onNeedMobileNav?.(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- unmount-only cleanup
+  }, []);
 
   // Position the tooltip card next to the highlighted element (below it,
   // or above if there's no room), clamped inside the viewport.

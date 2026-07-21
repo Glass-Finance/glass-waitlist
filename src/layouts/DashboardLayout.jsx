@@ -89,7 +89,9 @@ export default function DashboardLayout() {
         </main>
       </div>
 
-      {tourOpen && <DashboardTour onClose={closeTour} />}
+      {tourOpen && (
+        <DashboardTour onClose={closeTour} onNeedMobileNav={setMobileNavOpen} />
+      )}
       {autoPayPrompt && (
         <AutoPayPrompt
           prompt={autoPayPrompt}
