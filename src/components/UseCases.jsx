@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
+import BlurText from "./ui/BlurText";
 // import case1 from "../assets/usecase/case1.webp";
 // import case2 from "../assets/usecase/case2.webp";
 // import case3 from "../assets/usecase/case3.webp";
@@ -17,86 +18,6 @@ import iconReligious from "../assets/usecase/icon-religious.webp";
 // Place them in src/assets/usecase/
 import cornerTL from "../assets/usecase/corner-tl.webp"; // top-left curved line
 import cornerBR from "../assets/usecase/corner-br.webp"; // bottom-right curved line
-
-// ─── BlurText (inline) ────────────────────────────────────────────────────────
-const buildKeyframes = (from, steps) => {
-  const keys = new Set([
-    ...Object.keys(from),
-    ...steps.flatMap((s) => Object.keys(s)),
-  ]);
-  const kf = {};
-  keys.forEach((k) => {
-    kf[k] = [from[k], ...steps.map((s) => s[k])];
-  });
-  return kf;
-};
-
-function BlurText({
-  text = "",
-  delay = 70,
-  className = "",
-  animateBy = "words",
-  direction = "top",
-  threshold = 0.15,
-  stepDuration = 0.4,
-  centered = false,
-}) {
-  const elements = animateBy === "words" ? text.split(" ") : text.split("");
-  const [inView, setInView] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setInView(true);
-          obs.disconnect();
-        }
-      },
-      { threshold },
-    );
-    obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, [threshold]);
-
-  const from =
-    direction === "top"
-      ? { filter: "blur(8px)", opacity: 0, y: -18 }
-      : { filter: "blur(8px)", opacity: 0, y: 18 };
-  const to = [
-    { filter: "blur(3px)", opacity: 0.5, y: direction === "top" ? 2 : -2 },
-    { filter: "blur(0px)", opacity: 1, y: 0 },
-  ];
-  const totalDuration = stepDuration * to.length;
-  const times = Array.from({ length: to.length + 1 }, (_, i) => i / to.length);
-  const kf = buildKeyframes(from, to);
-
-  return (
-    <span
-      ref={ref}
-      className={`inline-flex flex-wrap ${centered ? "justify-center w-full" : "justify-start w-auto"} ${className}`}
-    >
-      {elements.map((seg, i) => (
-        <motion.span
-          key={i}
-          className="inline-block will-change-[transform,filter,opacity]"
-          initial={from}
-          animate={inView ? kf : from}
-          transition={{
-            duration: totalDuration,
-            times,
-            delay: (i * delay) / 1000,
-            ease: "easeOut",
-          }}
-        >
-          {seg === " " ? "\u00A0" : seg}
-          {animateBy === "words" && i < elements.length - 1 && "\u00A0"}
-        </motion.span>
-      ))}
-    </span>
-  );
-}
 
 // ─── Community mock UI (back of card) ────────────────────────────────────────
 function CommunityMock({ variant }) {

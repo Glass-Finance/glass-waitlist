@@ -1,9 +1,9 @@
-import { useRef } from "react";
 import { Search, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { getErrorMessage } from "../../../utils/errorHandler";
 import EmptyState from "../../../components/common/EmptyState";
 import LoadingState from "../../../components/common/LoadingState";
 import { STATUS_COLORS } from "./shared";
+export { useDebounce } from "../../../hooks/useDebounce";
 
 export function StatusBadge({ status }) {
   const c = STATUS_COLORS[status] ?? {
@@ -149,14 +149,6 @@ export function FilterSelect({ value, onChange, options }) {
       ))}
     </select>
   );
-}
-
-export function useDebounce(setter, delay = 350) {
-  const ref = useRef(null);
-  return (val) => {
-    clearTimeout(ref.current);
-    ref.current = setTimeout(() => setter(val), delay);
-  };
 }
 
 export function TableFooter({ totalElements, noun, page, totalPages, onPage }) {

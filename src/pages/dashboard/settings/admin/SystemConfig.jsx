@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   SlidersHorizontal,
@@ -11,6 +11,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useSystemConfigs } from "../../../../hooks/useSystemConfigs";
+import { useDebounce } from "../../../../hooks/useDebounce";
 import LoadingState from "../../../../components/common/LoadingState";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -216,16 +217,16 @@ export default function SystemConfig() {
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [page, setPage] = useState(0);
   const [editing, setEditing] = useState(null);
-  const debounceRef = useRef(null);
 
   // Debounce search to avoid firing a request on every keystroke
+  const debouncedSetSearch = useDebounce((val) => {
+    setDebouncedSearch(val);
+    setPage(0);
+  });
+
   function handleSearchChange(val) {
     setSearch(val);
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      setDebouncedSearch(val);
-      setPage(0);
-    }, 350);
+    debouncedSetSearch(val);
   }
 
   const params = {
