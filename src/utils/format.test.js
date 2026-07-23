@@ -4,8 +4,10 @@ import {
   formatNairaCompact,
   toTitleCase,
   formatDate,
+  formatDateShort,
   formatDateLong,
   formatRelativeDateTime,
+  dayLabel,
 } from "./format";
 
 describe("formatNaira", () => {
@@ -29,6 +31,18 @@ describe("formatNaira", () => {
 
   it("does not apply emptyDash to a real zero amount", () => {
     expect(formatNaira(0, { emptyDash: true })).toBe("₦0");
+  });
+
+  it("divides by 100 when minor is set (kobo -> naira)", () => {
+    expect(formatNaira(1_200_000, { minor: true })).toBe("₦12,000");
+  });
+
+  it("does not divide when minor is false (the default)", () => {
+    expect(formatNaira(1_200_000)).toBe("₦1,200,000");
+  });
+
+  it("combines minor with decimals for a fractional kobo remainder", () => {
+    expect(formatNaira(1_234_567, { minor: true, decimals: 2 })).toBe("₦12,345.67");
   });
 });
 
@@ -75,6 +89,17 @@ describe("formatDate", () => {
   });
 });
 
+describe("formatDateShort", () => {
+  it("formats with a short month name and no year", () => {
+    expect(formatDateShort("2026-07-11T00:00:00.000Z")).toMatch(/^\d{1,2} Jul$/);
+  });
+
+  it("returns a dash for a missing date", () => {
+    expect(formatDateShort(null)).toBe("—");
+    expect(formatDateShort(undefined)).toBe("—");
+  });
+});
+
 describe("formatDateLong", () => {
   it("formats with a full month name", () => {
     expect(formatDateLong("2026-07-11T00:00:00.000Z")).toMatch(/July/);
@@ -106,5 +131,35 @@ describe("formatRelativeDateTime", () => {
   it("returns an empty string for a missing date", () => {
     expect(formatRelativeDateTime(null)).toBe("");
     expect(formatRelativeDateTime(undefined)).toBe("");
+  });
+});
+
+describe("dayLabel", () => {
+  it("labels today as 'Today'", () => {
+    expect(dayLabel(new Date().toISOString())).toBe("Today");
+  });
+
+  it("labels yesterday as 'Yesterday'", () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    expect(dayLabel(yesterday.toISOString())).toBe("Yesterday");
+  });
+
+  it("labels a date within the last 7 days as 'This Week'", () => {
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    expect(dayLabel(threeDaysAgo.toISOString())).toBe("This Week");
+  });
+
+  it("falls back to a full weekday/date for anything older than a week", () => {
+    const lastMonth = new Date();
+    lastMonth.setDate(lastMonth.getDate() - 30);
+    const result = dayLabel(lastMonth.toISOString());
+    expect(result).not.toMatch(/^Today$|^Yesterday$|^This Week$/);
+  });
+
+  it("returns 'Earlier' for a missing date", () => {
+    expect(dayLabel(null)).toBe("Earlier");
+    expect(dayLabel(undefined)).toBe("Earlier");
   });
 });
