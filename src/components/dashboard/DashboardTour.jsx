@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useCallback } from "react";
+import { useState, useLayoutEffect, useCallback, useRef } from "react";
 import { LayoutDashboard, Building2, Search, Plus, ListChecks, Receipt, Settings, X } from "lucide-react";
 
 export const DASHBOARD_TOUR_SEEN_KEY = "glass_dashboard_tour_seen";
@@ -92,6 +92,15 @@ function findValidStep(from, direction) {
 export default function DashboardTour({ onClose, onNeedMobileNav }) {
   const [step, setStep] = useState(0);
   const [rect, setRect] = useState(null);
+  const cardRef = useRef(null);
+  // Real measured height of the rendered card -- on a narrow phone the card
+  // is narrower (see cardWidth below), so the same body text wraps onto
+  // more lines than on desktop and grows taller. A fixed estimate here
+  // under-shoots on mobile specifically, which threw off both the
+  // flip-above-if-no-room decision and the top clamp. Starts at the old
+  // constant so the very first paint (before this can measure anything)
+  // still has a sane guess.
+  const [cardHeight, setCardHeight] = useState(230);
   const nextStep = findValidStep(step, 1);
   const prevStep = findValidStep(step, -1);
   const isLast = nextStep === null;
@@ -155,21 +164,41 @@ export default function DashboardTour({ onClose, onNeedMobileNav }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- unmount-only cleanup
   }, []);
 
+  // Re-measure the card's real rendered height whenever the step (different
+  // body copy) or the available width changes -- runs before paint, so this
+  // settles before the user ever sees the stale height's positioning.
+  useLayoutEffect(() => {
+    if (cardRef.current) setCardHeight(cardRef.current.getBoundingClientRect().height);
+  });
+
   // Position the tooltip card next to the highlighted element (below it,
-  // or above if there's no room), clamped inside the viewport.
+  // or above if there's no room), clamped inside the viewport. cardWidth is
+  // derived the same way the card's own inline width is set below, so this
+  // math is always clamping against the width the card actually renders at
+  // -- previously it assumed the full CARD_WIDTH even on phones narrower
+  // than that (~412px, i.e. most phones), which pushed `left` negative and
+  // clipped the card off the left edge of the screen.
   function getCardStyle() {
-    if (!rect) {
-      return { position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
-    }
     const viewportW = window.innerWidth;
     const viewportH = window.innerHeight;
-    let top = rect.top + rect.height + CARD_MARGIN;
-    const estimatedCardHeight = 230;
-    if (top + estimatedCardHeight > viewportH) {
-      top = Math.max(rect.top - estimatedCardHeight - CARD_MARGIN, CARD_MARGIN);
+    const cardWidth = Math.min(CARD_WIDTH, viewportW - CARD_MARGIN * 2);
+
+    if (!rect) {
+      return {
+        position: "fixed",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: cardWidth,
+      };
     }
-    const left = Math.min(Math.max(rect.left, CARD_MARGIN), viewportW - CARD_WIDTH - CARD_MARGIN);
-    return { position: "fixed", top, left };
+    let top = rect.top + rect.height + CARD_MARGIN;
+    if (top + cardHeight > viewportH) {
+      top = Math.max(rect.top - cardHeight - CARD_MARGIN, CARD_MARGIN);
+    }
+    top = Math.min(top, Math.max(viewportH - cardHeight - CARD_MARGIN, CARD_MARGIN));
+    const left = Math.min(Math.max(rect.left, CARD_MARGIN), viewportW - cardWidth - CARD_MARGIN);
+    return { position: "fixed", top, left, width: cardWidth };
   }
 
   return (
@@ -211,7 +240,8 @@ export default function DashboardTour({ onClose, onNeedMobileNav }) {
       )}
 
       <div
-        className="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-[380px]"
+        ref={cardRef}
+        className="bg-white rounded-2xl shadow-2xl overflow-hidden"
         style={getCardStyle()}
       >
         <div className="flex items-start justify-between px-6 pt-6">
