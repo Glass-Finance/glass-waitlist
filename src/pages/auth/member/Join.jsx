@@ -23,9 +23,13 @@ import AuthLayout from "../../../layouts/AuthLayout";
 // Constants
 // ---------------------------------------------------------------------------
 const OTP_LENGTH = 6;
-const STEPS = { PROFILE: "profile", OTP: "otp" };
+// Three steps, mirroring the owner SignUp flow's EmailPhoneStep ->
+// RegisterStep -> OTPStep split, instead of collecting everything on one
+// screen the way this page used to.
+const STEPS = { CONTACT: "contact", PROFILE: "profile", OTP: "otp" };
 // Codes are valid for 15 minutes (see SignIn.jsx and the spam-notice copy below).
 const OTP_VALIDITY_SECONDS = 15 * 60;
+const PENDING_KEY = "glass_pending_member_verification";
 
 // ---------------------------------------------------------------------------
 // Shared primitives — light sheet style (matches Figma)
@@ -47,6 +51,7 @@ function TextInput({
   placeholder,
   value,
   onChange,
+  onBlur,
   autoComplete,
   inputMode,
   disabled,
@@ -60,6 +65,7 @@ function TextInput({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
         autoComplete={autoComplete}
         inputMode={inputMode}
         disabled={disabled}
@@ -106,10 +112,344 @@ function ErrorMessage({ message }) {
 }
 
 // ---------------------------------------------------------------------------
-// Step 2 — OTP  (6 boxes with dash in middle like Figma)
+// Step 1 — Contact (email + WhatsApp number) — no API call here, just like
+// SignUp's EmailPhoneStep; the fields are handed up to Join()'s local state
+// and combined with StepProfile's fields into one register() call once step
+// 2 completes, since the backend only sends a verification code after the
+// account actually exists.
 // ---------------------------------------------------------------------------
-const PENDING_KEY = "glass_pending_member_verification";
+function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasCommunity }) {
+  const { hasToken } = useInviteToken();
+  const [email, setEmail] = useState(initialEmail ?? "");
+  const [phone, setPhone] = useState(initialPhone ?? "");
+  const [agreed, setAgreed] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({ email: "", phone: "" });
+  const [error, setError] = useState("");
 
+  function validatePhone(value) {
+    if (!value.trim()) return "Phone number is required.";
+    if (!isPhoneValid(value)) return PHONE_FORMAT_HINT;
+    return "";
+  }
+
+  function handleFieldChange(field, setValue) {
+    return (e) => {
+      const value = e.target.value;
+      setValue(value);
+      setError("");
+      const validate = field === "email" ? getEmailError : validatePhone;
+      setFieldErrors((fe) => (fe[field] ? { ...fe, [field]: validate(value) } : fe));
+    };
+  }
+
+  function handleFieldBlur(field) {
+    const validate = field === "email" ? getEmailError : validatePhone;
+    return (e) => setFieldErrors((fe) => ({ ...fe, [field]: validate(e.target.value) }));
+  }
+
+  function handleSubmit() {
+    if (!agreed) {
+      setError("Please agree to the Terms of Service and Privacy Policy to continue.");
+      return;
+    }
+    const trimmedEmail = email.trim().toLowerCase();
+    const emailError = getEmailError(trimmedEmail);
+    const phoneError = validatePhone(phone);
+    if (emailError || phoneError) {
+      setFieldErrors({ email: emailError, phone: phoneError });
+      return;
+    }
+    setError("");
+    onNext({ email: trimmedEmail, phone: phone.trim() });
+  }
+
+  const isReady = email.trim() && phone.trim() && agreed;
+
+  return (
+    <div className="flex flex-col gap-5">
+      <div>
+        <h1 className="text-headline text-gray-900">
+          {hasToken ? "You've Been Invited" : "Create Your Account"}
+        </h1>
+        {hasToken ? (
+          <p className="text-sm text-gray-500 mt-1">
+            Complete your profile to accept the invite.
+          </p>
+        ) : !hasCommunity ? (
+          // Reached via the marketing site's contextless "Join A Community"
+          // CTA, not a specific invite -- says up front that browsing comes
+          // after account creation, not before, so the form doesn't read as
+          // a bait-and-switch into full registration with no explanation.
+          <p className="text-sm text-gray-500 mt-1">
+            Create an account, then choose which communities to join.
+          </p>
+        ) : null}
+      </div>
+
+      <div>
+        <Label htmlFor="email">Email Address</Label>
+        <TextInput
+          id="email"
+          type="email"
+          placeholder="e.g Bax**re@gmail.com"
+          value={email}
+          onChange={handleFieldChange("email", setEmail)}
+          onBlur={handleFieldBlur("email")}
+          autoComplete="email"
+          inputMode="email"
+        />
+        <ErrorMessage message={fieldErrors.email} />
+      </div>
+
+      <div>
+        <Label htmlFor="phone">WhatsApp Number</Label>
+        <TextInput
+          id="phone"
+          type="tel"
+          placeholder="e.g. 0803 123 4567"
+          value={phone}
+          onChange={handleFieldChange("phone", setPhone)}
+          onBlur={handleFieldBlur("phone")}
+          autoComplete="tel"
+          inputMode="tel"
+        />
+        <ErrorMessage message={fieldErrors.phone} />
+        <div className="flex items-start gap-1.5 mt-1.5">
+          <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-gray-500 leading-snug">
+            This number should be linked to an active WhatsApp account — we'll use it to send you updates.
+          </p>
+        </div>
+      </div>
+
+      <label className="flex items-start gap-2.5 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => setAgreed(e.target.checked)}
+          className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer accent-[#1C2B8A]"
+        />
+        <span className="text-xs text-gray-500 leading-snug">
+          I agree to the{" "}
+          <Link
+            to="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="font-medium text-[#1C2B8A]"
+          >
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link
+            to="/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="font-medium text-[#1C2B8A]"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </span>
+      </label>
+
+      <ErrorMessage message={error} />
+
+      <PrimaryButton onClick={handleSubmit} disabled={!isReady}>
+        Continue
+      </PrimaryButton>
+
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-px bg-gray-300" />
+        <span className="text-xs text-gray-400">or</span>
+        <div className="flex-1 h-px bg-gray-300" />
+      </div>
+
+      <div
+        className={!agreed ? "opacity-50 pointer-events-none" : ""}
+        title={!agreed ? "Agree to the Terms of Service and Privacy Policy first" : undefined}
+      >
+        <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
+      </div>
+
+      <p className="text-sm text-center text-gray-500 pb-2">
+        Already Have An Account?{" "}
+        <Link
+          to="/member/app-sign-in"
+          className="font-semibold text-[#1C2B8A]"
+        >
+          Sign In
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 2 — Profile (name + password) — email/phone already collected in
+// StepContact; register() fires here with all of it combined, since the
+// backend only issues a verification code once the account actually exists.
+// ---------------------------------------------------------------------------
+function StepProfile({ onSubmit }) {
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [showPw, setShowPw] = useState(false);
+  const [showCpw, setShowCpw] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [accountExists, setAccountExists] = useState(false);
+
+  function set(field) {
+    return (e) => {
+      setForm((f) => ({ ...f, [field]: e.target.value }));
+      setError("");
+      setAccountExists(false);
+    };
+  }
+
+  function handleSubmit() {
+    if (!form.firstName.trim() || !form.lastName.trim()) {
+      setError("First and last name are required.");
+      return;
+    }
+    if (!isPasswordValid(form.password)) {
+      setError(`Password must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`);
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords don't match.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    setAccountExists(false);
+    onSubmit({ ...form, loading: setLoading, setError, setAccountExists });
+  }
+
+  const isReady =
+    form.firstName.trim() &&
+    form.lastName.trim() &&
+    form.password &&
+    form.confirmPassword;
+
+  return (
+    <div className="flex flex-col gap-5">
+      <div>
+        <h1 className="text-headline text-gray-900">
+          Complete Your Profile
+        </h1>
+      </div>
+
+      <div className="flex gap-3">
+        <div className="flex-1">
+          <Label htmlFor="firstName">First Name</Label>
+          <TextInput
+            id="firstName"
+            placeholder="Enter First Name"
+            value={form.firstName}
+            onChange={set("firstName")}
+            autoComplete="given-name"
+            disabled={loading}
+          />
+        </div>
+        <div className="flex-1">
+          <Label htmlFor="lastName">Last Name</Label>
+          <TextInput
+            id="lastName"
+            placeholder="Enter Last Name"
+            value={form.lastName}
+            onChange={set("lastName")}
+            autoComplete="family-name"
+            disabled={loading}
+          />
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="password">Create Password</Label>
+        <TextInput
+          key={showPw ? "text" : "password"}
+          id="password"
+          type={showPw ? "text" : "password"}
+          placeholder="Enter Your Password"
+          value={form.password}
+          onChange={set("password")}
+          autoComplete="new-password"
+          disabled={loading}
+          rightElement={
+            <button
+              type="button"
+              onClick={() => setShowPw((v) => !v)}
+              className="text-gray-400 hover:text-gray-600"
+              tabIndex={-1}
+              aria-label={showPw ? "Hide password" : "Show password"}
+            >
+              {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          }
+        />
+        <PasswordChecklist password={form.password} />
+      </div>
+
+      <div>
+        <Label htmlFor="confirmPassword">Confirm Password</Label>
+        <TextInput
+          id="confirmPassword"
+          type={showCpw ? "text" : "password"}
+          placeholder="re-enter Password"
+          value={form.confirmPassword}
+          onChange={set("confirmPassword")}
+          autoComplete="new-password"
+          disabled={loading}
+          rightElement={
+            <button
+              type="button"
+              onClick={() => setShowCpw((v) => !v)}
+              className="text-gray-400 hover:text-gray-600"
+              tabIndex={-1}
+              aria-label={showCpw ? "Hide password" : "Show password"}
+            >
+              {showCpw ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          }
+        />
+      </div>
+
+      {accountExists && (
+        <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+          <p className="text-xs text-gray-700 leading-relaxed">
+            You already have a Glass account with this email. Sign in and your invite will be waiting for you.
+          </p>
+          <Link
+            to="/member/app-sign-in?return=/member/invites"
+            className="inline-block mt-2 text-xs font-semibold text-[#1C2B8A]"
+          >
+            Sign in to accept the invite
+          </Link>
+        </div>
+      )}
+
+      <ErrorMessage message={error} />
+
+      <PrimaryButton
+        onClick={handleSubmit}
+        loading={loading}
+        disabled={!isReady}
+      >
+        Create Account
+      </PrimaryButton>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 3 — OTP  (6 boxes with dash in middle like Figma)
+// ---------------------------------------------------------------------------
 function StepOTP({ email, onVerified, onBack }) {
   const [digits, setDigits] = useState(Array(OTP_LENGTH).fill(""));
   const [loading, setLoading] = useState(false);
@@ -281,300 +621,6 @@ function StepOTP({ email, onVerified, onBack }) {
 }
 
 // ---------------------------------------------------------------------------
-// Step 1 — Profile (email + name + phone + password) — collects everything
-// register() needs in one step, since the backend only sends a
-// verification code after the account actually exists, not before.
-// ---------------------------------------------------------------------------
-function StepProfile({ onSubmit, onGoogleAuth, hasCommunity }) {
-  const { hasToken } = useInviteToken();
-  const [form, setForm] = useState({
-    email: "",
-    firstName: "",
-    lastName: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [showPw, setShowPw] = useState(false);
-  const [showCpw, setShowCpw] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [accountExists, setAccountExists] = useState(false);
-  const [agreed, setAgreed] = useState(false);
-
-  function set(field) {
-    return (e) => {
-      setForm((f) => ({ ...f, [field]: e.target.value }));
-      setError("");
-      setAccountExists(false);
-    };
-  }
-
-  function handleSubmit() {
-    if (!agreed) {
-      setError("Please agree to the Terms of Service and Privacy Policy to continue.");
-      return;
-    }
-    const trimmedEmail = form.email.trim().toLowerCase();
-    const emailFormatError = getEmailError(trimmedEmail);
-    if (emailFormatError) {
-      setError(emailFormatError);
-      return;
-    }
-    if (!form.firstName.trim() || !form.lastName.trim()) {
-      setError("First and last name are required.");
-      return;
-    }
-    if (!form.phone.trim()) {
-      setError("Phone number is required.");
-      return;
-    }
-    if (!isPhoneValid(form.phone)) {
-      setError(PHONE_FORMAT_HINT);
-      return;
-    }
-    if (!isPasswordValid(form.password)) {
-      setError(`Password must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`);
-      return;
-    }
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords don't match.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    setAccountExists(false);
-    onSubmit({ ...form, email: trimmedEmail, loading: setLoading, setError, setAccountExists });
-  }
-
-  const isReady =
-    form.email.trim() &&
-    form.firstName.trim() &&
-    form.lastName.trim() &&
-    form.phone.trim() &&
-    form.password &&
-    form.confirmPassword &&
-    agreed;
-
-  return (
-    <div className="flex flex-col gap-5">
-      <div>
-        <h1 className="text-headline text-gray-900">
-          {hasToken ? "You've Been Invited" : "Create Your Account"}
-        </h1>
-        {hasToken ? (
-          <p className="text-sm text-gray-500 mt-1">
-            Complete your profile to accept the invite.
-          </p>
-        ) : !hasCommunity ? (
-          // Reached via the marketing site's contextless "Join A Community"
-          // CTA, not a specific invite -- says up front that browsing comes
-          // after account creation, not before, so the form doesn't read as
-          // a bait-and-switch into full registration with no explanation.
-          <p className="text-sm text-gray-500 mt-1">
-            Create an account, then choose which communities to join.
-          </p>
-        ) : null}
-      </div>
-
-      {/* Email */}
-      <div>
-        <Label htmlFor="email">Email Address</Label>
-        <TextInput
-          id="email"
-          type="email"
-          placeholder="e.g Bax**re@gmail.com"
-          value={form.email}
-          onChange={set("email")}
-          autoComplete="email"
-          inputMode="email"
-          disabled={loading}
-        />
-      </div>
-
-      {/* First + Last */}
-      <div className="flex gap-3">
-        <div className="flex-1">
-          <Label htmlFor="firstName">First Name</Label>
-          <TextInput
-            id="firstName"
-            placeholder="Enter First Name"
-            value={form.firstName}
-            onChange={set("firstName")}
-            autoComplete="given-name"
-            disabled={loading}
-          />
-        </div>
-        <div className="flex-1">
-          <Label htmlFor="lastName">Last Name</Label>
-          <TextInput
-            id="lastName"
-            placeholder="Enter Last Name"
-            value={form.lastName}
-            onChange={set("lastName")}
-            autoComplete="family-name"
-            disabled={loading}
-          />
-        </div>
-      </div>
-
-      {/* Phone */}
-      <div>
-        <Label htmlFor="phone">Phone Number</Label>
-        <TextInput
-          id="phone"
-          type="tel"
-          placeholder="e.g. 0803 123 4567"
-          value={form.phone}
-          onChange={set("phone")}
-          autoComplete="tel"
-          inputMode="tel"
-          disabled={loading}
-        />
-        <div className="flex items-start gap-1.5 mt-1.5">
-          <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-gray-500 leading-snug">
-            This number should be linked to an active WhatsApp account — we'll use it to send you updates.
-          </p>
-        </div>
-      </div>
-
-      {/* Password */}
-      <div>
-        <Label htmlFor="password">Create Password</Label>
-        <TextInput
-          key={showPw ? "text" : "password"}
-          id="password"
-          type={showPw ? "text" : "password"}
-          placeholder="Enter Your Password"
-          value={form.password}
-          onChange={set("password")}
-          autoComplete="new-password"
-          disabled={loading}
-          rightElement={
-            <button
-              type="button"
-              onClick={() => setShowPw((v) => !v)}
-              className="text-gray-400 hover:text-gray-600"
-              tabIndex={-1}
-              aria-label={showPw ? "Hide password" : "Show password"}
-            >
-              {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          }
-        />
-        <PasswordChecklist password={form.password} />
-      </div>
-
-      {/* Confirm password */}
-      <div>
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
-        <TextInput
-          id="confirmPassword"
-          type={showCpw ? "text" : "password"}
-          placeholder="re-enter Password"
-          value={form.confirmPassword}
-          onChange={set("confirmPassword")}
-          autoComplete="new-password"
-          disabled={loading}
-          rightElement={
-            <button
-              type="button"
-              onClick={() => setShowCpw((v) => !v)}
-              className="text-gray-400 hover:text-gray-600"
-              tabIndex={-1}
-              aria-label={showCpw ? "Hide password" : "Show password"}
-            >
-              {showCpw ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          }
-        />
-      </div>
-
-      {accountExists && (
-        <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
-          <p className="text-xs text-gray-700 leading-relaxed">
-            You already have a Glass account with this email. Sign in and your invite will be waiting for you.
-          </p>
-          <Link
-            to="/member/app-sign-in?return=/member/invites"
-            className="inline-block mt-2 text-xs font-semibold text-[#1C2B8A]"
-          >
-            Sign in to accept the invite
-          </Link>
-        </div>
-      )}
-
-      <label className="flex items-start gap-2.5 cursor-pointer select-none">
-        <input
-          type="checkbox"
-          checked={agreed}
-          onChange={(e) => setAgreed(e.target.checked)}
-          className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer accent-[#1C2B8A]"
-        />
-        <span className="text-xs text-gray-500 leading-snug">
-          I agree to the{" "}
-          <Link
-            to="/terms"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="font-medium text-[#1C2B8A]"
-          >
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link
-            to="/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="font-medium text-[#1C2B8A]"
-          >
-            Privacy Policy
-          </Link>
-          .
-        </span>
-      </label>
-
-      <ErrorMessage message={error} />
-
-      <PrimaryButton
-        onClick={handleSubmit}
-        loading={loading}
-        disabled={!isReady}
-      >
-        Create Account
-      </PrimaryButton>
-
-      {/* Divider */}
-      <div className="flex items-center gap-3">
-        <div className="flex-1 h-px bg-gray-300" />
-        <span className="text-xs text-gray-400">or</span>
-        <div className="flex-1 h-px bg-gray-300" />
-      </div>
-
-      <div
-        className={!agreed ? "opacity-50 pointer-events-none" : ""}
-        title={!agreed ? "Agree to the Terms of Service and Privacy Policy first" : undefined}
-      >
-        <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
-      </div>
-
-      <p className="text-sm text-center text-gray-500 pb-2">
-        Already Have An Account?{" "}
-        <Link
-          to="/member/app-sign-in"
-          className="font-semibold text-[#1C2B8A]"
-        >
-          Sign In
-        </Link>
-      </p>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
 // Join root
 // ---------------------------------------------------------------------------
 export default function Join() {
@@ -621,8 +667,11 @@ export default function Join() {
       return pending ? JSON.parse(pending).email : "";
     } catch { return ""; }
   });
+  // Email/phone collected in StepContact, carried forward into StepProfile's
+  // register() call.
+  const [contact, setContact] = useState({ email: "", phone: "" });
   const [step, setStep] = useState(() =>
-    email ? STEPS.OTP : STEPS.PROFILE
+    email ? STEPS.OTP : STEPS.CONTACT
   );
 
   // Some backends issue a session immediately on register, others only
@@ -703,10 +752,15 @@ export default function Join() {
     navigate("/member/communities/search", { replace: true });
   }
 
+  function handleContactNext({ email: enteredEmail, phone }) {
+    setContact({ email: enteredEmail, phone });
+    setStep(STEPS.PROFILE);
+  }
+
   function handleBack() {
     if (step === STEPS.OTP) {
       sessionStorage.removeItem(PENDING_KEY);
-      setStep(STEPS.PROFILE);
+      setStep(STEPS.CONTACT);
     }
   }
 
@@ -715,10 +769,8 @@ export default function Join() {
   // (collecting just an email and calling a nonexistent /api/auth/send-otp
   // before the account existed), which is why no code was ever delivered.
   async function handleProfileSubmit({
-    email: enteredEmail,
     firstName,
     lastName,
-    phone,
     password,
     confirmPassword,
     loading: setLoading,
@@ -727,18 +779,18 @@ export default function Join() {
   }) {
     try {
       const payload = {
-        email: enteredEmail,
+        email: contact.email,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        phoneNumber: phone.trim(),
+        phoneNumber: contact.phone,
         password,
         confirmPassword,
         ...(token && { inviteToken: token }),
       };
       const authData = await register(payload);
       maybeStoreSession(authData);
-      sessionStorage.setItem(PENDING_KEY, JSON.stringify({ email: enteredEmail }));
-      setEmail(enteredEmail);
+      sessionStorage.setItem(PENDING_KEY, JSON.stringify({ email: contact.email }));
+      setEmail(contact.email);
       setStep(STEPS.OTP);
     } catch (err) {
       // The invited email already belongs to a registered account (e.g.
@@ -785,8 +837,17 @@ export default function Join() {
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
       <div className="w-full max-w-sm flex flex-col my-auto gap-5">
+        {step === STEPS.CONTACT && (
+          <StepContact
+            initialEmail={contact.email}
+            initialPhone={contact.phone}
+            onNext={handleContactNext}
+            onGoogleAuth={handleGoogleAuth}
+            hasCommunity={Boolean(community)}
+          />
+        )}
         {step === STEPS.PROFILE && (
-          <StepProfile onSubmit={handleProfileSubmit} onGoogleAuth={handleGoogleAuth} hasCommunity={Boolean(community)} />
+          <StepProfile onSubmit={handleProfileSubmit} />
         )}
         {step === STEPS.OTP && (
           <StepOTP email={email} onVerified={handleVerified} onBack={handleBack} />
