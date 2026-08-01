@@ -22,6 +22,8 @@ import { resizeImageFile } from "../../utils/resizeImage";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
+import StepIndicator from "../../components/onboarding/StepIndicator";
+import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 
 const INVITE_HOST = APP_ORIGIN.replace(/^https?:\/\//, "");
 
@@ -223,26 +225,32 @@ export default function OrganizationProfile() {
   };
 
   return (
-    <div
-      className="flex flex-col overflow-hidden h-screen bg-contain bg-center bg-page-default"
-    >
+    <div className="relative flex flex-col min-h-screen lg:overflow-hidden lg:h-screen bg-contain bg-center lg:bg-page-default">
+      <div className="absolute inset-0 lg:hidden -z-10 bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
+      <GlassLogoGlow className="lg:hidden" />
+
       {/* Navbar */}
-      <header className="flex items-center justify-between px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
+      <header className="relative flex items-center justify-between px-4 lg:px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
         </div>
         <div className="flex items-center gap-4">
-          <Bell size={20} className="text-gray-400" />
+          <Bell size={20} className="text-gray-400 hidden lg:block" />
           <div className="text-right">
-            <p className="text-sm font-semibold text-gray-900">{email}</p>
+            <p className="text-sm font-semibold text-gray-900 truncate max-w-[160px] lg:max-w-none">{email}</p>
           </div>
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1 flex-col lg:flex-row lg:overflow-hidden">
+        {/* Mobile step pill — replaces the sidebar stepper below lg */}
+        <div className="lg:hidden px-4 pt-5">
+          <StepIndicator stepId="organization" />
+        </div>
+
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-surface-container border-r border-outline-on-surface flex flex-col pt-10 px-6">
+        <aside className="hidden lg:flex w-64 flex-shrink-0 bg-surface-container border-r border-outline-on-surface flex-col pt-10 px-6">
           {ONBOARDING_STEPS.map((step, i) => {
             const isActive    = step.id === "organization";
             const isCompleted = COMPLETED_STEP_IDS.includes(step.id);
@@ -274,7 +282,7 @@ export default function OrganizationProfile() {
         </aside>
 
         {/* Main */}
-        <main className="flex-1 overflow-y-auto py-10 px-12 flex flex-col items-center">
+        <main className="flex-1 lg:overflow-y-auto py-6 px-4 lg:py-10 lg:px-12 flex flex-col items-center">
           <form onSubmit={handleSubmit} className="w-full max-w-4xl">
             <div className="mb-8">
               <button
@@ -289,7 +297,7 @@ export default function OrganizationProfile() {
               <p className="text-sm text-gray-500">This is how your community will appear to members on Glass.</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-5 mb-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Community Name *</label>
                 <input type="text" name="communityName" value={form.communityName} onChange={handleChange}
@@ -306,7 +314,7 @@ export default function OrganizationProfile() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-5 mb-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Category *</label>
                 <select name="category" value={form.category} onChange={handleChange} onBlur={handleFieldBlur("category")} className={`${inputCls} ${fieldErrors.category ? "border-danger" : "border-gray-300"}`}>
@@ -340,7 +348,7 @@ export default function OrganizationProfile() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-5 mb-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Contact Email *</label>
                 <input type="email" name="contactEmail" value={form.contactEmail} onChange={handleChange}
@@ -381,10 +389,11 @@ export default function OrganizationProfile() {
             <button
               type="submit"
               disabled={loading || checking || available === false}
-              className="w-1/2 mx-auto block py-4 rounded-full text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-60 bg-brand"
+              className="w-full lg:w-1/2 mx-auto block py-4 rounded-full text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-60 bg-brand"
             >
               {loading ? "Creating community..." : "Next"}
             </button>
+            <div className="h-[env(safe-area-inset-bottom,20px)] lg:hidden" />
           </form>
         </main>
       </div>

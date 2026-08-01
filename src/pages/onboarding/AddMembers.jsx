@@ -23,6 +23,8 @@ import { useRoles } from "../../hooks/useCommunityMembers";
 import { bulkCreateCommunityInvites } from "../../api/invites";
 import { readOnboardingProgress, clearOnboardingProgress } from "../../utils/onboardingProgress";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
+import StepIndicator from "../../components/onboarding/StepIndicator";
+import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 
 // Confirmed against the live backend (GET /roles/community, 2026-07-12):
 // only these three roles actually exist -- COMMUNITY_OWNER, COMMUNITY_ADMIN,
@@ -94,15 +96,15 @@ function csvRowToMember(row, roles, defaultRoleId) {
 
 function SuccessModal({ communityName, onDashboard, onCopy }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 backdrop-blur-[2px]">
-      <div className="bg-white rounded-3xl flex flex-col items-center text-center px-10 py-20 w-full max-w-[550px] shadow-[0_24px_64px_rgba(0,0,0,0.15)]">
+    <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/35 backdrop-blur-[2px]">
+      <div className="bg-white rounded-t-[24px] lg:rounded-3xl flex flex-col items-center text-center px-8 py-12 lg:px-10 lg:py-20 w-full lg:max-w-[550px] shadow-[0_24px_64px_rgba(0,0,0,0.15)]">
         <div className="flex items-center justify-center rounded-full mb-6 w-[70px] h-[70px] bg-[radial-gradient(circle,#22c55e_60%,#16a34a_100%)] shadow-[0_0_0_12px_#dcfce7]">
           <Check size={40} color="white" strokeWidth={3} />
         </div>
         <h2 className="text-lg font-semibold text-gray-900 mb-2">Your Community Is Now Live</h2>
         <p className="text-xs text-gray-500 mb-8">{communityName ?? "Your community"} is all set up on Glass!</p>
         <button onClick={onDashboard}
-          className="w-4/5 py-3.5 rounded-full text-white font-medium text-xs bg-brand hover:opacity-90 transition-all border-none cursor-pointer mb-5">
+          className="w-full lg:w-4/5 py-3.5 rounded-full text-white font-medium text-xs bg-brand hover:opacity-90 transition-all border-none cursor-pointer mb-5">
           Go To Dashboard
         </button>
         <p className="text-xs text-gray-900 mb-1">Ready To Invite Members?</p>
@@ -110,6 +112,7 @@ function SuccessModal({ communityName, onDashboard, onCopy }) {
           className="text-xs font-medium text-brand hover:underline bg-transparent border-none cursor-pointer">
           Click here to copy your community link
         </button>
+        <div className="h-[env(safe-area-inset-bottom,0px)] lg:hidden" />
       </div>
     </div>
   );
@@ -324,23 +327,29 @@ export default function AddMembers() {
   };
 
   return (
-    <div
-      className="flex flex-col overflow-hidden h-screen bg-contain bg-center bg-page-default"
-    >
-      <header className="flex items-center justify-between px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
+    <div className="relative flex flex-col min-h-screen lg:overflow-hidden lg:h-screen bg-contain bg-center lg:bg-page-default">
+      <div className="absolute inset-0 lg:hidden -z-10 bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
+      <GlassLogoGlow className="lg:hidden" />
+
+      <header className="relative flex items-center justify-between px-4 lg:px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
         </div>
         <div className="flex items-center gap-4">
-          <Bell size={20} className="text-gray-400" />
-          <p className="text-sm text-gray-600">{email}</p>
+          <Bell size={20} className="text-gray-400 hidden lg:block" />
+          <p className="text-sm text-gray-600 truncate max-w-[160px] lg:max-w-none">{email}</p>
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1 flex-col lg:flex-row lg:overflow-hidden">
+        {/* Mobile step pill — replaces the sidebar stepper below lg */}
+        <div className="lg:hidden px-4 pt-5">
+          <StepIndicator stepId="members" />
+        </div>
+
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-surface-container border-r border-outline-on-surface flex flex-col pt-10 px-6">
+        <aside className="hidden lg:flex w-64 flex-shrink-0 bg-surface-container border-r border-outline-on-surface flex-col pt-10 px-6">
           {ONBOARDING_STEPS.map((step, i) => {
             const isActive    = step.id === "members";
             const isCompleted = COMPLETED_STEP_IDS.includes(step.id);
@@ -378,7 +387,7 @@ export default function AddMembers() {
         </aside>
 
         {/* Main */}
-        <main className="flex-1 overflow-y-auto py-10 px-12">
+        <main className="flex-1 lg:overflow-y-auto py-6 px-4 lg:py-10 lg:px-12">
           <div className="w-full max-w-4xl">
             <div className="mb-6">
               <button
@@ -394,19 +403,19 @@ export default function AddMembers() {
             </div>
 
             {/* Invite banner */}
-            <div className="flex items-center justify-between px-5 py-4 rounded-xl mb-6 bg-[#D7E2FF] border border-[#0E628C33]">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 px-5 py-4 rounded-xl mb-6 bg-[#D7E2FF] border border-[#0E628C33]">
               <div>
                 <p className="text-xs text-gray-900 mb-0.5">Your community is ready to grow.</p>
                 <p className="text-xs text-gray-500">Copy this link and share it with your members to get them on Glass.</p>
               </div>
               <button onClick={copyLink}
-                className="flex items-center gap-2 px-4 py-2 rounded-full border border-brand text-xs font-semibold text-brand hover:bg-gray-50 transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent">
+                className="flex items-center justify-center gap-2 w-full lg:w-auto px-4 py-2 rounded-full border border-brand text-xs font-semibold text-brand hover:bg-gray-50 transition-all flex-shrink-0 lg:ml-6 cursor-pointer bg-transparent">
                 <Copy size={12} />{copied ? "Copied!" : "Copy Link"}
               </button>
             </div>
 
             {/* Direct add card */}
-            <div className="bg-stacked-container rounded-lg p-6 border border-[#E5E7EB]">
+            <div className="bg-stacked-container rounded-lg p-4 lg:p-6 border border-[#E5E7EB]">
               <h3 className="text-base font-semibold text-gray-900 mb-4">Prefer To Add Members Directly?</h3>
 
               {/* Tabs */}
@@ -423,16 +432,18 @@ export default function AddMembers() {
               {tab === "upload" && (
                 <>
                   <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 mb-4">
                     <p className="text-sm text-gray-500">Upload a CSV file with following sample information</p>
                     <button onClick={downloadTemplate} className="flex items-center gap-1.5 text-xs font-medium text-brand hover:opacity-80 bg-transparent border-none cursor-pointer">
                       <Download size={12} />Download Template
                     </button>
                   </div>
 
-                  {/* Sample table */}
-                  <div className="rounded-md overflow-hidden mb-4 border border-[#E5E7EB]">
-                    <table className="w-full text-xs">
+                  {/* Sample table — wider than any phone viewport, so it
+                      scrolls in its own strip instead of squeezing columns
+                      down to illegible widths. */}
+                  <div className="rounded-md overflow-x-auto mb-4 border border-[#E5E7EB]">
+                    <table className="w-full text-xs min-w-[560px]">
                       <thead>
                         <tr className="bg-gray-50">
                           {HEADERS.map((h) => <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500">{h}</th>)}
@@ -599,11 +610,11 @@ export default function AddMembers() {
 
                   {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
 
-                  <div className="flex justify-end">
+                  <div className="flex lg:justify-end">
                     <button
                       onClick={handleSendInvite}
                       disabled={emails.length === 0 || loading || rolesLoading || !selectedRoleId}
-                      className="px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-brand hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
+                      className="w-full lg:w-auto px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-brand hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
                     >
                       {loading ? "Sending…" : "Send Invite"}
                     </button>
@@ -611,6 +622,7 @@ export default function AddMembers() {
                 </>
               )}
             </div>
+            <div className="h-[env(safe-area-inset-bottom,20px)] lg:hidden" />
           </div>
         </main>
       </div>

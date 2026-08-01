@@ -138,10 +138,3 @@ export function mobileRequiredPath(targetPath) {
   return `/member/mobile-required?to=${encodeURIComponent(targetPath)}`;
 }
 
-// Mirror of mobileRequiredPath, for the opposite direction: the owner-
-// onboarding flow (ChoosePath, OrganizationProfile, etc.) is desktop-only
-// and non-responsive, so a mobile visitor gets sent here instead of a
-// broken fixed-width layout.
-export function desktopRequiredPath(targetPath) {
-  return `/onboarding/desktop-required?to=${encodeURIComponent(targetPath)}`;
-}

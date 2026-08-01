@@ -21,6 +21,8 @@ import { useCommunityAccount } from "../../hooks/useCommunityAccount";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
 import BankSelect from "../../components/common/BankSelect";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
+import StepIndicator from "../../components/onboarding/StepIndicator";
+import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization"];
 
@@ -44,16 +46,17 @@ function StepIcon({ id, completed }) {
 
 function SuccessModal() {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(20,20,30,0.45)]">
-      <div className="bg-white rounded-2xl px-12 py-16 flex flex-col items-center shadow-2xl min-w-[480px]">
-        <div className="relative flex items-center justify-center mb-8 w-[110px] h-[110px]">
+    <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-[rgba(20,20,30,0.45)]">
+      <div className="w-full lg:w-auto lg:min-w-[480px] bg-white rounded-t-[24px] lg:rounded-2xl px-8 py-10 lg:px-12 lg:py-16 flex flex-col items-center shadow-2xl">
+        <div className="relative flex items-center justify-center mb-6 lg:mb-8 w-[90px] h-[90px] lg:w-[110px] lg:h-[110px]">
           <div className="absolute inset-0 rounded-full border border-gray-300" />
           <div className="absolute rounded-full border border-gray-300 inset-[10px]" />
-          <div className="w-20 h-20 rounded-full bg-[#16C147] flex items-center justify-center">
-            <Check size={36} color="white" strokeWidth={3} />
+          <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-[#16C147] flex items-center justify-center">
+            <Check size={30} color="white" strokeWidth={3} />
           </div>
         </div>
-        <p className="text-xl text-gray-900 text-center">Your Payment Account Is Now Set!</p>
+        <p className="text-lg lg:text-xl text-gray-900 text-center">Your Payment Account Is Now Set!</p>
+        <div className="h-[env(safe-area-inset-bottom,0px)] lg:hidden" />
       </div>
     </div>
   );
@@ -222,25 +225,31 @@ export default function PaymentProfile() {
   };
 
   return (
-    <div
-      className="flex flex-col overflow-hidden h-screen bg-contain bg-center bg-page-default"
-    >
+    <div className="relative flex flex-col min-h-screen lg:overflow-hidden lg:h-screen bg-contain bg-center lg:bg-page-default">
+      <div className="absolute inset-0 lg:hidden -z-10 bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
+      <GlassLogoGlow className="lg:hidden" />
+
       {showSuccess && <SuccessModal />}
 
-      <header className="flex items-center justify-between px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
+      <header className="relative flex items-center justify-between px-4 lg:px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
           <span className="font-semibold text-base text-gray-900">Glass</span>
         </div>
         <div className="flex items-center gap-4">
-          <Bell size={20} className="text-gray-400" />
-          <p className="text-sm text-gray-600">{email}</p>
+          <Bell size={20} className="text-gray-400 hidden lg:block" />
+          <p className="text-sm text-gray-600 truncate max-w-[160px] lg:max-w-none">{email}</p>
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative flex flex-1 flex-col lg:flex-row lg:overflow-hidden">
+        {/* Mobile step pill — replaces the sidebar stepper below lg */}
+        <div className="lg:hidden px-4 pt-5">
+          <StepIndicator stepId="payment" />
+        </div>
+
         {/* Sidebar */}
-        <aside className="w-64 flex-shrink-0 bg-surface-container border-r border-outline-on-surface flex flex-col pt-10 px-6">
+        <aside className="hidden lg:flex w-64 flex-shrink-0 bg-surface-container border-r border-outline-on-surface flex-col pt-10 px-6">
           {ONBOARDING_STEPS.map((step, i) => {
             const isActive    = step.id === "payment";
             const isCompleted = COMPLETED_STEP_IDS.includes(step.id);
@@ -273,9 +282,9 @@ export default function PaymentProfile() {
         </aside>
 
         {/* Main */}
-        <main className="flex-1 overflow-y-auto py-10 px-12">
+        <main className="flex-1 lg:overflow-y-auto py-6 px-4 lg:py-10 lg:px-12">
           <div className="w-full max-w-3xl">
-            <div className="bg-white rounded-lg px-8 py-7 border border-[#E5E7EB]">
+            <div className="bg-white rounded-lg px-5 py-6 lg:px-8 lg:py-7 border border-[#E5E7EB]">
               <div className="mb-6 pb-5 border-b border-[#E5E7EB]">
                 <button
                   type="button"
@@ -294,7 +303,7 @@ export default function PaymentProfile() {
               {/* Account number + bank */}
               <div className="mb-5">
                 <label className="text-sm text-gray-700 block mb-1.5">Community Bank Account Number</label>
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                   <input
                     type="text"
                     maxLength={10}
@@ -365,6 +374,7 @@ export default function PaymentProfile() {
             >
               Skip for now — set this up later
             </button>
+            <div className="h-[env(safe-area-inset-bottom,20px)] lg:hidden" />
           </div>
         </main>
       </div>

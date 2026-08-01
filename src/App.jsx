@@ -13,7 +13,6 @@ import { isAppHost, MARKETING_ORIGIN } from "./utils/deviceRedirect";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import MemberProtectedRoute from "./routes/MemberProtectedRoute";
 import MemberDeviceGuard from "./routes/MemberDeviceGuard";
-import DesktopDeviceGuard from "./routes/DesktopDeviceGuard";
 import PlatformAdminRoute from "./routes/PlatformAdminRoute";
 import CommunityAdminGuard from "./routes/CommunityAdminGuard";
 
@@ -44,9 +43,6 @@ const OrganizationProfile = lazy(
 );
 const PaymentProfile = lazy(() => import("./pages/onboarding/PaymentProfile"));
 const AddMembers = lazy(() => import("./pages/onboarding/AddMembers"));
-const DesktopRequired = lazy(
-  () => import("./pages/onboarding/DesktopRequired"),
-);
 
 // ── Admin dashboard layout + pages ───────────────────────────────────────────
 const DashboardLayout = lazy(() => import("./layouts/DashboardLayout"));
@@ -220,30 +216,21 @@ function App() {
           <Route path="/member/mobile-required" element={<MobileRequired />} />
           <Route path="/check-email" element={<CheckEmail />} />
 
-          {/* ── Onboarding — desktop-only, fixed-width layout never adapted
-            for mobile, so it's gated the same way the mobile-only member
-            app is gated in the opposite direction (see DesktopDeviceGuard /
-            MemberDeviceGuard). ── */}
+          {/* ── Onboarding — responsive at every step, so no device gate. ── */}
+          <Route path="/onboarding/choose-path" element={<ChoosePath />} />
           <Route
-            path="/onboarding/desktop-required"
-            element={<DesktopRequired />}
+            path="/onboarding/paying-member"
+            element={<PayingMember />}
           />
-          <Route element={<DesktopDeviceGuard />}>
-            <Route path="/onboarding/choose-path" element={<ChoosePath />} />
-            <Route
-              path="/onboarding/paying-member"
-              element={<PayingMember />}
-            />
-            <Route
-              path="/onboarding/organization-profile"
-              element={<OrganizationProfile />}
-            />
-            <Route
-              path="/onboarding/payment-profile"
-              element={<PaymentProfile />}
-            />
-            <Route path="/onboarding/members" element={<AddMembers />} />
-          </Route>
+          <Route
+            path="/onboarding/organization-profile"
+            element={<OrganizationProfile />}
+          />
+          <Route
+            path="/onboarding/payment-profile"
+            element={<PaymentProfile />}
+          />
+          <Route path="/onboarding/members" element={<AddMembers />} />
 
           {/* ── Admin dashboard ── */}
           <Route element={<ProtectedRoute requiredRole="admin" />}>
