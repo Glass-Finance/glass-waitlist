@@ -40,7 +40,16 @@ const INVALIDATION_RULES = [
   { match: /transaction|payment/i, keys: [["transactions"], ["obligations"], ["community"], ["notifications"]] },
   { match: /obligation/i, keys: [["obligations"], ["community"]] },
   { match: /invite/i, keys: [["invites"], ["communities"], ["notifications"]] },
-  { match: /member|join/i, keys: [["community"], ["join-requests"], ["notifications"]] },
+  // ["community", id] is the admin-side per-community cache (dashboard,
+  // members, join-requests list); ["communities"] (plural, no id) is the
+  // *member's own* membership list -- what Home/the join-approval watcher
+  // read to notice their pending request went ACTIVE. Only invalidating
+  // the singular key meant a live "member"/"join" event only ever refreshed
+  // the admin's view, never the requesting member's own Home. The backend
+  // doesn't yet emit a distinct event for "your request was approved" (see
+  // useJoinApproval.js) -- this is a no-op until it does, but is correct
+  // and ready for whenever it starts.
+  { match: /member|join/i, keys: [["community"], ["communities"], ["join-requests"], ["notifications"]] },
   { match: /notification/i, keys: [["notifications"]] },
 ];
 const FALLBACK_KEYS = [["notifications"]];
