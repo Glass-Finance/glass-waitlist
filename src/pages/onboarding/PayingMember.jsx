@@ -56,7 +56,11 @@ export default function PayingMember() {
                 onClick={() => setSelected(opt.id)}
                 className={`flex-1 relative flex flex-row lg:flex-col items-center text-left lg:text-center gap-4 lg:gap-0 px-5 lg:px-6 py-5 lg:py-8 rounded-2xl bg-white transition-all duration-200 cursor-pointer border-2 ${isSelected ? "border-brand" : "border-[#E5E5E5]"}`}
               >
-                <div className="absolute top-3 left-3">
+                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] lg:bg-transparent lg:rounded-none lg:w-12 lg:h-12 lg:mb-3 lg:mt-2">
+                  <img src={opt.icon} alt={opt.label} className="w-6 h-6 lg:w-12 lg:h-12 object-contain" />
+                </div>
+                <span className="flex-1 min-w-0 lg:flex-none text-sm font-medium text-gray-900">{opt.label}</span>
+                <div className="flex-shrink-0 lg:absolute lg:top-3 lg:left-3">
                   {isSelected ? (
                     <div className="w-6 h-6 rounded-full flex items-center justify-center bg-brand">
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -67,10 +71,6 @@ export default function PayingMember() {
                     <div className="w-6 h-6 rounded-full border-2 border-gray-300" />
                   )}
                 </div>
-                <div className="flex-shrink-0 ml-7 lg:ml-0 lg:mb-3 lg:mt-2">
-                  <img src={opt.icon} alt={opt.label} className="w-9 h-9 lg:w-12 lg:h-12 object-contain mx-auto" />
-                </div>
-                <span className="text-sm font-medium text-gray-900">{opt.label}</span>
               </button>
             );
           })}

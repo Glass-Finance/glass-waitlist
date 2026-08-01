@@ -65,7 +65,14 @@ export default function ChoosePath() {
                 onClick={() => setSelected(option.id)}
                 className={`relative flex flex-row lg:flex-col items-center text-left lg:text-center gap-4 lg:gap-0 px-5 lg:px-10 py-5 lg:py-8 rounded-2xl transition-all duration-200 cursor-pointer w-full lg:w-[380px] border-2 ${isSelected ? "border-brand bg-white" : "border-[#E5E5E5] bg-[#FAFAFA]"}`}
               >
-                <div className="absolute top-4 left-4 lg:left-4">
+                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] lg:bg-transparent lg:rounded-none lg:w-14 lg:h-14 lg:mt-6 lg:mb-5">
+                  <img src={option.icon} alt={option.title} className="w-6 h-6 lg:w-14 lg:h-14 object-contain" />
+                </div>
+                <div className="flex-1 min-w-0 lg:flex-none">
+                  <h3 className="font-semibold text-gray-900 text-base mb-1 lg:mb-2">{option.title}</h3>
+                  <p className="text-sm text-gray-500 leading-relaxed">{option.description}</p>
+                </div>
+                <div className="flex-shrink-0 lg:absolute lg:top-4 lg:left-4">
                   {isSelected ? (
                     <div className="w-6 h-6 rounded-full flex items-center justify-center bg-brand">
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -75,13 +82,6 @@ export default function ChoosePath() {
                   ) : (
                     <div className="w-6 h-6 rounded-full border-2 border-[#C2C2C2]" />
                   )}
-                </div>
-                <div className="flex-shrink-0 mt-0 ml-9 lg:ml-0 lg:mt-6 lg:mb-5">
-                  <img src={option.icon} alt={option.title} className="w-10 h-10 lg:w-14 lg:h-14 object-contain mx-auto" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-base mb-1 lg:mb-2">{option.title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{option.description}</p>
                 </div>
               </button>
             );
