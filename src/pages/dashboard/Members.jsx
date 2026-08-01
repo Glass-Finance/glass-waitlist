@@ -171,6 +171,15 @@ export default function Members() {
   const usingFallbackRoles = !filteredRoles.length;
   const roles = usingFallbackRoles ? FALLBACK_ROLES : filteredRoles;
 
+  // A standalone way to grab the invite link directly from this page --
+  // previously it only ever surfaced as a side effect of the Add Member
+  // modal's "this email isn't registered yet" state, so sharing the link
+  // broadly (e.g. posting it in a group chat) had no direct path.
+  const inviteLink = (community?.slug || communityId)
+    ? `${APP_ORIGIN}/member/join?community=${community?.slug || communityId}`
+    : null;
+  const [linkCopied, copyInviteLinkText] = useCopyToClipboard();
+
   const planOptions = useMemo(
     () => [...new Set(obligations.map((o) => o.paymentLink?.title).filter(Boolean))],
     [obligations]
@@ -247,9 +256,21 @@ export default function Members() {
           <h1 className="text-xl font-bold text-black">Members</h1>
           <p className="text-sm text-gray-400 mt-0.5">A full picture of the members of your community</p>
         </div>
-        <button onClick={() => setModalOpen(true)} className="flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-white bg-brand flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer">
-          <Plus size={13} /> Add Member
-        </button>
+        <div className="flex-shrink-0 flex items-center gap-2">
+          {inviteLink && (
+            <button
+              onClick={() => copyInviteLinkText(inviteLink)}
+              title={inviteLink}
+              className="px-4 py-2 rounded text-xs font-medium text-black bg-white border border-[#efeff1] flex items-center gap-1.5 hover:bg-gray-50 transition-all cursor-pointer"
+            >
+              {linkCopied ? <Check size={13} /> : <Copy size={13} />}
+              {linkCopied ? "Copied!" : "Copy Invite Link"}
+            </button>
+          )}
+          <button onClick={() => setModalOpen(true)} className="px-4 py-2 rounded text-xs font-medium text-white bg-brand flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer">
+            <Plus size={13} /> Add Member
+          </button>
+        </div>
       </div>
 
       {/* Pending join requests — compact summary; the full review flow
