@@ -17,10 +17,7 @@ import LoadingState from "../../../components/common/LoadingState";
 import PasswordChecklist from "../../../components/auth/PasswordChecklist";
 import OtpBoxes from "../../../components/common/OtpBoxes";
 import { useCountdown, formatCountdown } from "../../../hooks/useCountdown";
-
-// ── Import your actual assets ──────────────────────────────────────────────
-import glassLogo from "../../../assets/cta/ctalogo.webp";
-import authHeroBg from "../../../assets/auth/mobile-auth.webp";
+import AuthLayout from "../../../layouts/AuthLayout";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -109,57 +106,6 @@ function ErrorMessage({ message }) {
 }
 
 // ---------------------------------------------------------------------------
-// Shell — image top half, sheet bottom half
-// ---------------------------------------------------------------------------
-function MobileShell({ children, step }) {
-  return (
-    <div className="flex justify-center items-start min-h-screen bg-surface-bg">
-      <div
-        className="relative w-full max-w-[430px] min-h-screen overflow-hidden flex flex-col"
-      >
-        {/* ── Top image section (45% height) ── */}
-        <div
-          className={`relative flex-shrink-0 rounded-none transition-[height] duration-[450ms] ease-[ease] ${step === STEPS.PROFILE ? "h-[30vh] min-h-[180px]" : "h-[45vh] min-h-[220px]"}`}
-        >
-          <img
-            src={authHeroBg}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-            draggable={false}
-          />
-
-          {/* Logo */}
-          <img
-            src={glassLogo}
-            alt="Glass"
-            className="absolute top-10 left-5 h-9 w-auto object-contain"
-            draggable={false}
-          />
-          {step === STEPS.OTP && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <h1 className="text-white text-center font-normal text-[clamp(20px,5vw,24px)] leading-tight px-6">
-                Manage Your Community
-                <br />
-                Finance Effortlessly
-              </h1>
-            </div>
-          )}
-        </div>
-
-        {/* ── Bottom sheet (55% height) ── */}
-        <div
-          className="flex-1 flex flex-col px-6 pt-2 pb-safe z-30 bg-[#E5E5E5F2] rounded-t-[20px] -mt-7 overflow-y-auto overflow-x-hidden"
-        >
-          {children}
-          {/* iOS safe area */}
-          <div className="h-[env(safe-area-inset-bottom,20px)]" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
 // Step 2 — OTP  (6 boxes with dash in middle like Figma)
 // ---------------------------------------------------------------------------
 const PENDING_KEY = "glass_pending_member_verification";
@@ -230,7 +176,7 @@ function StepOTP({ email, onVerified, onBack }) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-headline text-gray-900 my-5">
+        <h1 className="text-headline text-gray-900 mb-5">
           Verification Code Sent
         </h1>
         <p className="text-sm text-gray-500 mb-1">
@@ -413,7 +359,7 @@ function StepProfile({ onSubmit, onGoogleAuth, hasCommunity }) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-headline text-gray-900 mt-5">
+        <h1 className="text-headline text-gray-900">
           {hasToken ? "You've Been Invited" : "Create Your Account"}
         </h1>
         {hasToken ? (
@@ -837,13 +783,15 @@ export default function Join() {
   }
 
   return (
-    <MobileShell step={step}>
-      {step === STEPS.PROFILE && (
-        <StepProfile onSubmit={handleProfileSubmit} onGoogleAuth={handleGoogleAuth} hasCommunity={Boolean(community)} />
-      )}
-      {step === STEPS.OTP && (
-        <StepOTP email={email} onVerified={handleVerified} onBack={handleBack} />
-      )}
-    </MobileShell>
+    <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
+      <div className="w-full max-w-sm flex flex-col my-auto gap-5">
+        {step === STEPS.PROFILE && (
+          <StepProfile onSubmit={handleProfileSubmit} onGoogleAuth={handleGoogleAuth} hasCommunity={Boolean(community)} />
+        )}
+        {step === STEPS.OTP && (
+          <StepOTP email={email} onVerified={handleVerified} onBack={handleBack} />
+        )}
+      </div>
+    </AuthLayout>
   );
 }
