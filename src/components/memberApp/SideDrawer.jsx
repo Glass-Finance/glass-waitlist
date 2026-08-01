@@ -92,7 +92,9 @@ export default function SideDrawer({ open, onClose }) {
   async function handleLogout() {
     onClose();
     await logout();
-    navigate("/member/app-sign-in", { replace: true });
+    // SignIn.jsx reads this to skip its "New to Glass?" copy -- someone who
+    // just logged out obviously already has an account.
+    navigate("/member/app-sign-in", { replace: true, state: { justLoggedOut: true } });
   }
 
   return (
