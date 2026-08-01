@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Copy, X, Download, UploadCloud, FileSpreadsheet, Check } from "lucide-react";
+import Papa from "papaparse";
 import { APP_ORIGIN } from "../../../utils/deviceRedirect";
 import { useCommunityMembers, useRoles } from "../../../hooks/useCommunityMembers";
 import { getEmailError } from "../../../utils/validators";
@@ -86,17 +87,28 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
     URL.revokeObjectURL(url);
   }
 
+  // Papa.parse (not a naive split(",")) so a comma inside a quoted field --
+  // e.g. a name like "Okafor, Jr." or a role title -- doesn't shift every
+  // later column in that row. Same tolerant header lookup as the onboarding
+  // AddMembers.jsx CSV path, since admins fill in the same template there.
   function parseCSV(text) {
-    const lines = text.trim().split("\n");
-    if (lines.length < 2) return [];
-    return lines
-      .slice(1)
-      .map((line) => {
-        const [firstName, lastName, email, phone, memberId, role] = line
-          .split(",")
-          .map((s) => s?.trim() ?? "");
-        return { firstName, lastName, email, phone, memberId, role };
-      })
+    const { data } = Papa.parse(text, { header: true, skipEmptyLines: true });
+    const get = (row, ...keys) => {
+      for (const k of keys) {
+        const v = row[k];
+        if (v != null && String(v).trim() !== "") return String(v).trim();
+      }
+      return "";
+    };
+    return data
+      .map((row) => ({
+        firstName: get(row, "First Name", "firstName"),
+        lastName: get(row, "Last Name", "lastName"),
+        email: get(row, "Email Address", "Email", "email"),
+        phone: get(row, "Phone Number", "Phone", "phone"),
+        memberId: get(row, "Member ID", "memberId"),
+        role: get(row, "Role/Title", "Role", "Title", "role"),
+      }))
       .filter((r) => r.email);
   }
 
@@ -170,10 +182,13 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
     setUploading(true);
     for (const row of csvRows) {
       if (!row.email) continue;
+      const matchedRole = finalRoles.find(
+        (r) => r.name?.toLowerCase() === row.role?.toLowerCase(),
+      );
       try {
         await inviteMember.mutateAsync({
           email: row.email,
-          roleId: finalRoles[0]?.id ?? "",
+          roleId: matchedRole?.id ?? defaultRole?.id ?? "",
           billingExempt: false,
         });
       } catch {

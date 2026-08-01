@@ -141,12 +141,18 @@ export default function SignIn() {
       return `/payment/callback?reference=${pendingRef}`;
     }
 
-    const inviteRes = await getMyInvites();
-    const inviteData = inviteRes?.data?.data;
-    const invites = Array.isArray(inviteData) ? inviteData : (inviteData?.content ?? []);
+    // login() has already succeeded by the time we get here -- a failure in
+    // either of these two lookups must not surface as "Incorrect email or
+    // password" (handleSignIn's catch would otherwise blame the wrong step).
+    let invites = [];
+    try {
+      const inviteRes = await getMyInvites();
+      const inviteData = inviteRes?.data?.data;
+      invites = Array.isArray(inviteData) ? inviteData : (inviteData?.content ?? []);
+    } catch {
+      // fall through with invites = []
+    }
 
-    // Untested against the live backend yet, unlike getMyInvites above —
-    // don't let a wrong/broken endpoint here block sign-in entirely.
     let joinRequests = [];
     try {
       const joinReqRes = await getMyCommunityJoinRequests();

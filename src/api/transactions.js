@@ -18,9 +18,8 @@ export const getCommunityObligations = (communityId) =>
 export const getCommunityObligation = (communityId, obligationId) =>
   client.get(`/communities/${communityId}/finance/obligations/${obligationId}`);
 
-// PATCH /api/v1/communities/{communityIdentifier}/finance/obligations/{obligationId}/waive
-export const waiveObligation = (communityId, obligationId) =>
-  client.patch(`/communities/${communityId}/finance/obligations/${obligationId}/waive`);
+// waiveObligation lives in api/communities.js (it also accepts an optional
+// { reason } payload) -- kept there as the single source of truth.
 
 // PATCH /api/v1/communities/{communityIdentifier}/finance/obligations/{obligationId}/extend-due-date
 export const extendObligationDueDate = (communityId, obligationId, dueAt) =>
