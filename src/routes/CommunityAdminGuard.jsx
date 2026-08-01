@@ -14,7 +14,7 @@ import LoadingScreen from "../components/LoadingScreen";
 // account, or role-management screens.
 export default function CommunityAdminGuard() {
   const communityId = useActiveCommunityId();
-  const { data, isLoading } = useCommunities();
+  const { data, isLoading, isFetching } = useCommunities();
 
   // No community resolved yet — nothing community-scoped to protect here;
   // the page itself is responsible for its own empty state.
@@ -26,6 +26,16 @@ export default function CommunityAdminGuard() {
   const active = communities.find(
     (c) => c.slug === communityId || String(c.id) === String(communityId),
   );
+
+  // Not found in the cached list isn't necessarily "not an admin here" —
+  // e.g. right after onboarding creates a community, this list was
+  // invalidated but is still serving its pre-creation snapshot while a
+  // background refetch is in flight (isLoading only covers the *first*
+  // fetch, not a stale-data refetch). Wait that out before concluding this
+  // user doesn't administer the community and bouncing them to
+  // /dashboard/home — otherwise a freshly-created community's own admin
+  // gets redirected away from the dashboard they were just sent to.
+  if (!active && isFetching) return <LoadingScreen />;
 
   if (!active || !isCommunityAdmin(active)) {
     return <Navigate to="/dashboard/home" replace />;
