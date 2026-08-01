@@ -13,8 +13,6 @@ import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import { formatRelativeDateTime as formatTime, dayLabel } from "../../utils/format";
 
-const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";
-
 // notificationCategory() maps the backend's exact notificationType enum to a
 // tab — precise for every documented type. This heuristic only runs for
 // notifications with a missing/unrecognized type (legacy data, or a type
@@ -482,9 +480,8 @@ function CommunityNotifications() {
 }
 
 export default function Notifications() {
-  const { user } = useAuth();
+  const { isPlatformAdmin } = useAuth();
   const activeCommunityId = useActiveCommunityId();
-  const isSuperAdmin = user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL;
 
   // The Platform Admin sidebar's own "Notifications" link (no community
   // context at all) is the only place the cross-platform view belongs.
@@ -493,11 +490,10 @@ export default function Notifications() {
   // destination, a notification row's own deep link -- carries or implies a
   // specific active community (via useActiveCommunityId's ?community= param
   // or its localStorage fallback, same convention Settings already uses
-  // since this route never puts ?community= in its own URL). A super admin
-  // is also a regular admin of their own real communities, so the email
-  // check alone was locking them into the all-communities view even while
-  // clearly inside one specific community's admin section.
-  return isSuperAdmin && !activeCommunityId
+  // since this route never puts ?community= in its own URL). A platform admin
+  // may also administer communities, so the global-role flag alone must not
+  // force the cross-platform view when a community context is active.
+  return isPlatformAdmin && !activeCommunityId
     ? <SuperAdminNotifications />
     : <CommunityNotifications />;
 }

@@ -14,7 +14,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import MemberProtectedRoute from "./routes/MemberProtectedRoute";
 import MemberDeviceGuard from "./routes/MemberDeviceGuard";
 import DesktopDeviceGuard from "./routes/DesktopDeviceGuard";
-import SuperAdminRoute from "./routes/SuperAdminRoute";
+import PlatformAdminRoute from "./routes/PlatformAdminRoute";
 import CommunityAdminGuard from "./routes/CommunityAdminGuard";
 
 // ── Landing pages ─────────────────────────────────────────────────────────────
@@ -265,7 +265,7 @@ function App() {
                 <Route path="join-requests" element={<JoinRequests />} />
               </Route>
 
-              <Route element={<SuperAdminRoute />}>
+              <Route element={<PlatformAdminRoute />}>
                 <Route path="system-config" element={<SystemConfig />} />
                 <Route path="admin-panel" element={<AdminPanel />} />
               </Route>

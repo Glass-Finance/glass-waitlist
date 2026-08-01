@@ -450,7 +450,7 @@ function GlobalOverview() {
 export default function CommunitiesHome() {
   usePageTitle("Your Communities");
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isPlatformAdmin } = useAuth();
   const { data, isLoading, error } = useCommunitiesWithMetrics();
   const {
     invites,
@@ -465,7 +465,7 @@ export default function CommunitiesHome() {
   const [sortOpen, setSortOpen] = useState(false);
   const [view, setView] = useState("grid");
 
-  if (user?.email?.toLowerCase() === "glasspayhq@gmail.com") {
+  if (isPlatformAdmin) {
     return <Navigate to="/dashboard/admin-panel" replace />;
   }
 
