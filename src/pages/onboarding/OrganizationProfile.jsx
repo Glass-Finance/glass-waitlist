@@ -21,6 +21,9 @@ import { getEmailError } from "../../utils/validators";
 import { resizeImageFile } from "../../utils/resizeImage";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
+import { APP_ORIGIN } from "../../utils/deviceRedirect";
+
+const INVITE_HOST = APP_ORIGIN.replace(/^https?:\/\//, "");
 
 const CATEGORIES = [
   "Alumni Association", "Faith Community", "Professional Association",
@@ -332,7 +335,7 @@ export default function OrganizationProfile() {
                   <span className="text-xs text-red-500">That URL is taken — try another.</span>
                 )}
                 {!fieldErrors.slug && available === true && !checking && (
-                  <span className="text-xs text-green-600">glasspay.app/member/join?community={slug}</span>
+                  <span className="text-xs text-green-600">{INVITE_HOST}/member/join?community={slug}</span>
                 )}
               </div>
             </div>

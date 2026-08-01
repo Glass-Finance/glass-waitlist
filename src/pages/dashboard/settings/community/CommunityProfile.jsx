@@ -7,6 +7,9 @@ import { getErrorMessage } from "../../../../utils/errorHandler";
 import { resizeImageFile } from "../../../../utils/resizeImage";
 import { deleteCommunity } from "../../../../api/communities";
 import { useAuth } from "../../../../store/AuthContext";
+import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
+
+const INVITE_HOST = APP_ORIGIN.replace(/^https?:\/\//, "");
 
 const CATEGORIES = [
   "Alumni Association",
@@ -139,7 +142,7 @@ export default function CommunityProfile() {
             </div>
             <div>
               <p className="text-sm text-gray-900">{isLoading ? "Loading…" : (community?.name ?? "Community")}</p>
-              <p className="text-xs text-gray-500">{community?.slug ? `glasspay.app/member/join?community=${community.slug}` : ""}</p>
+              <p className="text-xs text-gray-500">{community?.slug ? `${INVITE_HOST}/member/join?community=${community.slug}` : ""}</p>
             </div>
           </div>
           <input
