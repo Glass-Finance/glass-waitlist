@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Home as HomeIcon,
   CreditCard,
+  Mail,
   User,
   Settings,
   LogOut,
@@ -13,6 +14,7 @@ import { useAuth } from "../../store/AuthContext";
 const NAV_ITEMS = [
   { Icon: HomeIcon, label: "Home", to: "/member/home" },
   { Icon: CreditCard, label: "Manage Payments", to: "/member/manage-payments" },
+  { Icon: Mail, label: "Invitations", to: "/member/invites" },
   { Icon: User, label: "Profile", to: "/member/profile" },
   { Icon: Settings, label: "Settings", to: "/member/settings" },
 ];
