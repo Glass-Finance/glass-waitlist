@@ -25,7 +25,7 @@ export default function InviteLanding() {
     } else if (isAuthenticated && !isMember) {
       navigate("/dashboard/home", { replace: true });
     } else {
-      navigate("/member/app-sign-in?return=/member/invites", { replace: true });
+      navigate(`/member/join?inviteId=${inviteId ?? ""}`, { replace: true });
     }
   }, [loading, isAuthenticated, isMember, navigate, searchParams]);
 
