@@ -7,7 +7,7 @@ import { useNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { notificationTarget } from "../../utils/notificationRouting";
 import { isPaymentNotificationType, isSelfAccountType, notificationVisual } from "../../utils/notificationTypes";
-import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
+import { extractNotificationDetails, formatNairaAmount, resolveNotificationBody } from "../../utils/notificationContent";
 import { useAuth } from "../../store/AuthContext";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import { formatRelativeDateTime } from "../../utils/format";
@@ -102,7 +102,7 @@ function NotificationRow({ n, onTap, onNavigate }) {
   const communityMap = useCommunityMap();
   const details = extractNotificationDetails(n, { communityMap });
   const amount = formatNairaAmount(details.amount);
-  const messageText = n.message ?? n.description ?? n.bodyText ?? null;
+  const messageText = resolveNotificationBody(n, details, n.message ?? n.description ?? n.bodyText ?? null);
 
   return (
     <div

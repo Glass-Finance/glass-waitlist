@@ -8,7 +8,7 @@ import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { useAuth } from "../../store/AuthContext";
 import { notificationAction } from "../../utils/notificationRouting";
 import { notificationCategory, isSelfAccountType, notificationVisual } from "../../utils/notificationTypes";
-import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
+import { extractNotificationDetails, formatNairaAmount, resolveNotificationBody } from "../../utils/notificationContent";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import { formatRelativeDateTime as formatTime, dayLabel } from "../../utils/format";
@@ -96,9 +96,9 @@ function Avatar({ n }) {
 function NotificationRow({ n, onMarkRead, onOpen }) {
   const isRead = n.readFlag ?? false;
   const title = n.title ?? n.subject ?? "Notification";
-  const desc = n.description ?? n.message ?? n.bodyText ?? "";
   const communityMap = useCommunityMap();
   const details = extractNotificationDetails(n, { communityMap });
+  const desc = resolveNotificationBody(n, details, n.description ?? n.message ?? n.bodyText ?? "");
   const amount = formatNairaAmount(details.amount);
 
   return (
@@ -145,13 +145,13 @@ function NotificationDetailModal({ n, onClose }) {
   const cat = categorize(n);
   const { label: catLabel, badgeCls } = SECTION_CONFIG[cat];
   const title = n.title ?? n.subject ?? "Notification";
-  const desc = n.description ?? n.message ?? n.bodyText ?? n.body ?? "";
   const action = notificationAction(n);
 
   // Structured facts (#21): member, community, amount, plan, reference —
   // from real payload fields when present, best-effort text parsing otherwise.
   const communityMap = useCommunityMap();
   const details = extractNotificationDetails(n, { communityMap });
+  const desc = resolveNotificationBody(n, details, n.description ?? n.message ?? n.bodyText ?? n.body ?? "");
   const factRows = [
     { label: "Member", value: details.memberName },
     { label: "Community", value: details.communityName },

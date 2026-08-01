@@ -204,6 +204,29 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
   };
 }
 
+// For a small set of notification types, the backend's own title/message
+// text can name the actor by whatever identifier it had on hand at the
+// time (an email, if that's all that existed yet) even when a real name
+// is resolvable now via `details.memberName` (structured content, or a
+// fuller match parsed from the text itself). Where that's true, prefer a
+// synthesized, name-first sentence over the raw text; otherwise the
+// caller's own message/bodyText stands unchanged. Shared so the bell
+// dropdown, the dashboard notifications page, and its detail modal don't
+// each decide this differently.
+const DISPLAY_TEXT_BY_TYPE = {
+  JOIN_REQUEST_CREATED: (name, community) =>
+    `${name} requested to join ${community ?? "your community"}.`,
+};
+
+export function resolveNotificationBody(n, details, rawBody) {
+  const type = n.notificationType ?? n.type;
+  const template = DISPLAY_TEXT_BY_TYPE[type];
+  if (template && details.memberName) {
+    return template(details.memberName, details.communityName);
+  }
+  return rawBody;
+}
+
 // Callers rely on getting `null` back (not "—") for a missing amount, so
 // rows/fragments can be conditionally hidden via a plain truthiness check —
 // see NotificationsPanel.jsx and Notifications.jsx's factRows filter.

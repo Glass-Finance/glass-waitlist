@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Bell, User } from "lucide-react";
-import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity } from "../../utils/notificationContent";
+import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity, resolveNotificationBody } from "../../utils/notificationContent";
 import { isSelfAccountType, notificationVisual } from "../../utils/notificationTypes";
 import { useAuth } from "../../store/AuthContext";
 import LoadingState from "../common/LoadingState";
@@ -81,7 +81,8 @@ function NotifAvatar({ n }) {
 function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
   const isRead    = n.readFlag ?? n.isRead ?? false;
   const title     = n.title ?? n.subject ?? "Notification";
-  const body      = n.message ?? n.description ?? n.bodyText ?? n.body ?? null;
+  const details   = extractNotificationDetails(n, { communityMap });
+  const body      = resolveNotificationBody(n, details, n.message ?? n.description ?? n.bodyText ?? n.body ?? null);
   const time      = formatTimestamp(n.createdAt ?? n.timestamp);
   const community = resolveCommunity(n, communityMap);
   const commName  = community?.name ?? community?.communityName ?? n.communityName ?? null;
@@ -113,7 +114,7 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
         <p className="text-[10.5px] text-[#aaa] mt-[5px] mx-0 mb-0">
           {time}
           {(() => {
-            const amount = formatNairaAmount(extractNotificationDetails(n).amount);
+            const amount = formatNairaAmount(details.amount);
             return amount ? (
               <span className="text-[#111] font-semibold"> · {amount}</span>
             ) : null;
