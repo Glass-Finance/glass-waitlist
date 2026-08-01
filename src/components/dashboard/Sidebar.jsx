@@ -88,7 +88,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { logout, user } = useAuth();
+  const { logout, user, isPlatformAdmin } = useAuth();
   const userDisplayName = ([user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "")
     .replace(/\b\w/g, (c) => c.toUpperCase());
   const userInitials = (user?.firstName || user?.lastName)
@@ -151,8 +151,8 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
   const W = collapsed ? 0 : 220;
 
-  // ── Super-admin: stripped-down sidebar, no community nav ──────────────────
-  if (user?.email?.toLowerCase() === "glasspayhq@gmail.com") {
+  // ── Platform admin: stripped-down sidebar, no community nav ───────────────
+  if (isPlatformAdmin) {
     return (
       <>
         {mobileOpen && (
@@ -227,7 +227,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 Platform Admin
               </div>
               <span className="inline-block mt-[3px] text-[9px] font-bold text-[#7c3aed] bg-[#f5f3ff] rounded-full py-px px-[7px]">
-                Super Admin
+                Platform Admin
               </span>
             </div>
           </div>
@@ -422,8 +422,8 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           )}
         </div>
 
-        {/* Super-admin shortcut — only visible to glasspayhq@gmail.com */}
-        {user?.email?.toLowerCase() === "glasspayhq@gmail.com" && (
+        {/* Platform-admin shortcut */}
+        {isPlatformAdmin && (
           <button
             onClick={() => {
               navigate("/dashboard/admin-panel");

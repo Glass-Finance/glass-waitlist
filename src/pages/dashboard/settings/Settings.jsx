@@ -4,8 +4,6 @@ import { usePageTitle } from "../../../hooks/usePageTitle";
 import { Search, ChevronRight } from "lucide-react";
 import { useAuth } from "../../../store/AuthContext";
 
-const SUPER_ADMIN_EMAIL = "glasspayhq@gmail.com";
-
 const TABS = [
   { label: "Account",   defaultPath: "/dashboard/settings/account",                  match: "account"   },
   { label: "Finance",   defaultPath: "/dashboard/settings/finance",                  match: "finance"   },
@@ -95,14 +93,13 @@ export default function Settings() {
   const navigate = useNavigate();
   const location = useLocation();
   const path     = location.pathname;
-  const { user } = useAuth();
+  const { isPlatformAdmin } = useAuth();
 
   const titleKey = Object.keys(BREADCRUMB_MAP).find(k => path.includes(k));
   usePageTitle(titleKey ? BREADCRUMB_MAP[titleKey].child : "Settings");
-  const isSuperAdmin = user?.email?.toLowerCase() === SUPER_ADMIN_EMAIL;
 
-  // Super-admin only gets Security — redirect any other settings path there
-  if (isSuperAdmin && !path.includes("account/security")) {
+  // Platform admins only get Security — redirect other settings paths there.
+  if (isPlatformAdmin && !path.includes("account/security")) {
     return <Navigate to="/dashboard/settings/account/security" replace />;
   }
 
@@ -187,8 +184,8 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* Tab bar — hidden for super-admin */}
-      {!isSuperAdmin && (
+      {/* Tab bar — hidden for platform admins */}
+      {!isPlatformAdmin && (
         <div
           className="flex gap-1 mb-6 bg-stacked-container rounded-md p-1 w-fit border border-[#fafafa]"
         >
@@ -210,8 +207,8 @@ export default function Settings() {
         </div>
       )}
 
-      {/* Breadcrumb — only shown on sub-pages, hidden for super-admin */}
-      {breadcrumb && !isSuperAdmin && (
+      {/* Breadcrumb — only shown on sub-pages, hidden for platform admins */}
+      {breadcrumb && !isPlatformAdmin && (
         <p className="text-sm text-gray-500 mb-5">
           <BreadcrumbParent parent={breadcrumb.parent} />
           <span className="mx-2 text-gray-400">›</span>
@@ -219,13 +216,13 @@ export default function Settings() {
         </p>
       )}
 
-      {/* Menu lists — hidden for super-admin (redirected to security above) */}
-      {!isSuperAdmin && isAccountMenu   && <MenuList items={ACCOUNT_ITEMS}   />}
-      {!isSuperAdmin && isFinanceMenu   && <MenuList items={FINANCE_ITEMS}   />}
-      {!isSuperAdmin && isCommunityMenu && <MenuList items={COMMUNITY_ITEMS} />}
+      {/* Menu lists — platform admins are redirected to Security above */}
+      {!isPlatformAdmin && isAccountMenu   && <MenuList items={ACCOUNT_ITEMS}   />}
+      {!isPlatformAdmin && isFinanceMenu   && <MenuList items={FINANCE_ITEMS}   />}
+      {!isPlatformAdmin && isCommunityMenu && <MenuList items={COMMUNITY_ITEMS} />}
 
       {/* Sub-page content */}
-      {(isSuperAdmin || (!isAccountMenu && !isFinanceMenu && !isCommunityMenu)) && <Outlet />}
+      {(isPlatformAdmin || (!isAccountMenu && !isFinanceMenu && !isCommunityMenu)) && <Outlet />}
     </div>
   );
 }

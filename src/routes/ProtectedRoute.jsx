@@ -4,11 +4,9 @@ import LoadingScreen from "../components/LoadingScreen";
 
 /**
  * requiredRole: "admin" | "member" | undefined
- * Role check uses isAdmin/isMember from AuthContext (derived from
- * platformRole via .includes("OWNER"|"ADMIN"|"MANAGER")) instead of an
- * exact string match, since the backend's exact platformRole casing/enum
- * isn't guaranteed and isAdmin/isMember is the single source of truth
- * already used by SignInStep's post-login redirect.
+ * AuthContext grants admin dashboard access to either a global platform
+ * admin (platformRole other than USER) or an administrator of at least one
+ * community. Platform-only pages have an additional PlatformAdminRoute.
  */
 export default function ProtectedRoute({ requiredRole, signInPath = "/sign-in" }) {
   const location = useLocation();

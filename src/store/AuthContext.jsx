@@ -33,16 +33,12 @@ import { getMe } from "../api/members";
 import client from "../api/client";
 import { parseUserData } from "../utils/userData";
 import { isCommunityAdmin } from "../utils/communityRole";
+import { isPlatformAdminRole } from "../utils/platformRole";
 
-// "Admin" has no global flag on this backend — platformRole/the JWT's role
-// claim is a platform-wide value ("USER" for every account, even community
-// owners) and never reflects per-community standing. Whether someone is an
-// admin is only knowable from their communities list: owned, or an
-// admin-grade memberRole on at least one community. Delegates to
-// isCommunityAdmin, which matches role strings by keyword — the backend
-// returns "COMMUNITY_ADMIN"/"Community Admin" style values, not a bare
-// "ADMIN", so exact matching here previously locked promoted admins out
-// of the dashboard entirely.
+// Community-admin standing is separate from the backend's global
+// platformRole. A USER may still administer one or more communities, while
+// any other non-empty platformRole is a platform admin independently of
+// community ownership.
 function hasAdminCommunity(communities) {
   return (communities ?? []).some(isCommunityAdmin);
 }
@@ -82,18 +78,42 @@ function clearSession() {
 // separate async refresh that might not have landed yet. So the admin
 // check happens here, awaited, before login()/setSession() return.
 async function buildUser(authData) {
+  const responseUser = authData.user ?? {};
+  let id = authData.userId ?? responseUser.id;
+  let email = authData.email ?? responseUser.email;
+  let role = authData.platformRole ?? responseUser.platformRole;
+  let emailVerified = authData.emailVerified ?? responseUser.emailVerified;
+
+  // OAuth responses have not always matched the password-login response
+  // shape. Fill missing identity fields from the authenticated profile so
+  // role routing remains identical across both login methods.
+  if (!id || !email || !role) {
+    try {
+      const meRes = await getMe();
+      const profile = meRes.data?.data ?? meRes.data;
+      id ??= profile?.id;
+      email ??= profile?.email;
+      role ??= profile?.platformRole;
+      emailVerified ??= profile?.emailVerified;
+    } catch {
+      // Keep the auth response fields; missing roles fail closed below.
+    }
+  }
+
+  const isPlatformAdmin = isPlatformAdminRole(role);
   const user = {
-    id: authData.userId,
-    email: authData.email,
-    role: authData.platformRole,
-    emailVerified: authData.emailVerified,
-    isAdmin: false,
+    id,
+    email,
+    role,
+    emailVerified,
+    isPlatformAdmin,
+    isAdmin: isPlatformAdmin,
   };
   try {
     const res = await client.get("/communities/me");
-    user.isAdmin = hasAdminCommunity(res.data?.data?.content);
+    user.isAdmin = isPlatformAdmin || hasAdminCommunity(res.data?.data?.content);
   } catch {
-    // Network hiccup — fall back to non-admin rather than block login.
+    // Platform admins retain global access even if community lookup fails.
   }
   return user;
 }
@@ -256,13 +276,18 @@ export function AuthProvider({ children }) {
       const ud = parseUserData(profile);
       setUser((prev) => {
         if (!prev) return prev; // logged out while this was in flight
+        const role = profile.platformRole ?? prev.role;
+        const isPlatformAdmin = isPlatformAdminRole(role);
         const updated = {
           ...prev,
+          email: profile.email ?? prev.email,
+          role,
           firstName: ud.firstName,
           lastName: ud.lastName,
           phoneNumber: profile.phoneNumber ?? ud.phone,
           profileImage: ud.profileImage,
-          isAdmin: hasAdminCommunity(communities),
+          isPlatformAdmin,
+          isAdmin: isPlatformAdmin || hasAdminCommunity(communities),
         };
         writeUser(updated);
         return updated;
@@ -345,11 +370,10 @@ export function AuthProvider({ children }) {
   }, [token, refreshUser]);
 
   // ── Derive role helpers ────────────────────────────────────────────────────
-  // isAdmin lives on the user object itself now (set by buildUser/refreshUser
-  // from the communities list — see hasAdminCommunity above), not derived
-  // from platformRole, which is a platform-wide value with no per-community
-  // meaning.
-  const isAdmin = user?.isAdmin ?? false;
+  // Global platform admins and per-community admins both have desktop
+  // dashboard access. isPlatformAdmin remains separate for platform-only UI.
+  const isPlatformAdmin = user?.isPlatformAdmin ?? isPlatformAdminRole(user?.role);
+  const isAdmin = isPlatformAdmin || (user?.isAdmin ?? false);
   const isMember = !isAdmin;
 
   const value = {
@@ -357,6 +381,7 @@ export function AuthProvider({ children }) {
     token,
     loading,
     isAuthenticated: !!token,
+    isPlatformAdmin,
     isAdmin,
     isMember,
 
