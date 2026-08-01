@@ -1,13 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
-import { Bell, ChevronDown, Clock } from "lucide-react";
+import { Bell, ChevronDown, Clock, Mail } from "lucide-react";
 import joinCommunityIcon from "../../assets/auth/join-community.webp";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import AutoPayPrompt from "../../components/common/AutoPayPrompt";
 import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
 import { useNotifications } from "../../hooks/useNotifications";
+import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
 import SideDrawer from "../../components/memberApp/SideDrawer";
 import {
   formatNaira,
@@ -346,6 +347,14 @@ export default function Home() {
   // Unread count for the bell badge — without it members have no signal
   // that anything arrived unless they open the notifications page.
   const { unreadCount } = useNotifications();
+  // Badge for the top-bar Invitations icon — personal invites awaiting a
+  // response plus the member's own pending join-requests, the same two
+  // lists Invites.jsx renders together.
+  const { invites } = useInvites();
+  const { joinRequests } = useMyJoinRequests();
+  const pendingInviteCount =
+    invites.filter((i) => (i.status ?? "").toUpperCase() === "PENDING").length +
+    joinRequests.length;
 
   // Auto-Pay prompt handoff from PaymentSuccess.jsx's "Back to Home" --
   // read once on mount and consume immediately so a refresh/re-visit
@@ -478,19 +487,35 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Bell */}
-          <button
-            aria-label="Notifications"
-            onClick={() => navigate("/member/notifications")}
-            className="relative w-[38px] h-[38px] rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)] flex-shrink-0"
-          >
-            <Bell size={17} strokeWidth={1.8} className="text-[#333]" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
-            )}
-          </button>
+          <div className="flex items-center gap-2.5 flex-shrink-0">
+            {/* Invitations */}
+            <button
+              aria-label="Invitations"
+              onClick={() => navigate("/member/invites")}
+              className="relative w-[38px] h-[38px] rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)] flex-shrink-0"
+            >
+              <Mail size={17} strokeWidth={1.8} className="text-[#333]" />
+              {pendingInviteCount > 0 && (
+                <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
+                  {pendingInviteCount > 9 ? "9+" : pendingInviteCount}
+                </span>
+              )}
+            </button>
+
+            {/* Bell */}
+            <button
+              aria-label="Notifications"
+              onClick={() => navigate("/member/notifications")}
+              className="relative w-[38px] h-[38px] rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)] flex-shrink-0"
+            >
+              <Bell size={17} strokeWidth={1.8} className="text-[#333]" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* ── Greeting ────────────────────────────────────────────────────── */}
