@@ -10,6 +10,7 @@
  */
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Bell, Upload, Check, X as XIcon, Loader2, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
 import { createCommunity, updateCommunity } from "../../api/communities";
@@ -54,6 +55,7 @@ export default function OrganizationProfile() {
   const navigate   = useNavigate();
   const location   = useLocation();
   const fileRef    = useRef(null);
+  const queryClient = useQueryClient();
 
   // location.state doesn't survive a reload or a forced re-login mid-form
   // (see errorHandler.js/client.js's session-expiry redirect) -- fall back
@@ -203,6 +205,14 @@ export default function OrganizationProfile() {
       // straight to the member app, which then hits the device guard on
       // desktop and dead-ends at the QR handoff instead of the dashboard.
       updateUser({ isAdmin: true });
+
+      // Both the dashboard's community list (["communities", "me", ...] in
+      // useCommunities.js) and the member app's (["communities"] in
+      // useMyAccount.js) cache for up to 5 minutes -- without this, landing
+      // on Communities Home or My Communities within that window still
+      // shows the pre-creation snapshot instead of refetching. Invalidating
+      // the shared "communities" prefix covers both keys at once.
+      queryClient.invalidateQueries({ queryKey: ["communities"] });
 
       // From here on, this community exists on the backend whether or not
       // the rest of onboarding completes -- persist the link to it so a
