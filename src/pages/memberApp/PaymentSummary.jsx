@@ -246,8 +246,12 @@ export default function PaymentSummary() {
     );
   }
 
-  // Shows when in test/beta mode. Set VITE_TEST_MODE=false in deployment env to hide.
-  const isTestMode = import.meta.env.VITE_TEST_MODE !== "false";
+  // Opt-in only -- the Paystack account is live now, so real money is
+  // charged unless a deployment explicitly turns this back on for testing
+  // against Paystack test keys. Previously opt-out (shown unless a
+  // deployment set VITE_TEST_MODE=false), which meant this test-card banner
+  // stayed live for anyone whose env didn't set the flag at all.
+  const isTestMode = import.meta.env.VITE_TEST_MODE === "true";
 
   return (
     <div
