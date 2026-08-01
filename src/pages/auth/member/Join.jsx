@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { useInviteToken } from "../../../hooks/useInviteToken";
 import { useJoinCommunityParam } from "../../../hooks/useJoinCommunityParam";
+import { recordPendingJoinRequest } from "../../../hooks/useJoinApproval";
 import { register, verifyEmail, resendVerification } from "../../../services/authService";
 import { submitJoinRequest } from "../../../api/invites";
 import { notifyError } from "../../../utils/errorHandler";
@@ -638,7 +639,12 @@ export default function Join() {
     if (community) {
       consumeCommunity();
       submitJoinRequest(community)
-        .then(() => {
+        .then((res) => {
+          const data = res?.data?.data ?? res?.data;
+          const status = (data?.status ?? "").toUpperCase();
+          if (status !== "APPROVED") {
+            recordPendingJoinRequest({ id: null, slug: community, name: null });
+          }
           toastSuccess("Join request sent", { description: "The community admin will review it shortly." });
         })
         .catch((err) => notifyError(err, { context: "Join community" }))
@@ -682,7 +688,17 @@ export default function Join() {
   async function submitCommunityJoinAndRoute() {
     consumeCommunity();
     try {
-      await submitJoinRequest(community);
+      const res = await submitJoinRequest(community);
+      const data = res?.data?.data ?? res?.data;
+      const status = (data?.status ?? "").toUpperCase();
+      // An open community approves instantly -- nothing to watch for in
+      // that case. Otherwise, track it the same way DiscoverCommunities
+      // does so Home's approval watcher can pick it up later, since this
+      // link only carries a slug (no id/name yet -- the watcher fills
+      // those in from the live communities list once it actually matches).
+      if (status !== "APPROVED") {
+        recordPendingJoinRequest({ id: null, slug: community, name: null });
+      }
       toastSuccess("Join request sent", { description: "The community admin will review it shortly." });
     } catch (err) {
       notifyError(err, { context: "Join community" });

@@ -9,6 +9,8 @@ import AutoPayPrompt from "../../components/common/AutoPayPrompt";
 import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
+import { useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
+import JoinApprovedModal from "../../components/memberApp/JoinApprovedModal";
 import SideDrawer from "../../components/memberApp/SideDrawer";
 import {
   formatNaira,
@@ -356,6 +358,28 @@ export default function Home() {
     invites.filter((i) => (i.status ?? "").toUpperCase() === "PENDING").length +
     joinRequests.length;
 
+  // Backend sends no signal when a join request gets approved (see
+  // useJoinApproval.js) -- this watches the same shared communities query
+  // usePayments() below already keeps fresh via refetchOnMount, and surfaces
+  // a "you're in" popup the moment a tracked request flips to ACTIVE.
+  // Previously only mounted on DiscoverCommunities, so approvals for anyone
+  // who joined via a direct invite link (never visits that search page)
+  // went completely unnoticed.
+  const { approved: approvedJoins, dismiss: dismissJoin } = useJoinApprovalWatcher();
+  const activeApproval = approvedJoins[0] ?? null;
+
+  function openApprovedCommunity(entry) {
+    try {
+      localStorage.setItem(
+        "glass_member_community",
+        JSON.stringify({ id: entry.communityId, slug: entry.communitySlug, name: entry.name }),
+      );
+    } catch {
+      /* ignore */
+    }
+    dismissJoin(entry);
+  }
+
   // Auto-Pay prompt handoff from PaymentSuccess.jsx's "Back to Home" --
   // read once on mount and consume immediately so a refresh/re-visit
   // doesn't reopen it.
@@ -679,6 +703,12 @@ export default function Home() {
           onEnable={enableAutoPay}
         />
       )}
+
+      <JoinApprovedModal
+        entry={activeApproval}
+        onOpen={openApprovedCommunity}
+        onDismiss={dismissJoin}
+      />
     </>
   );
 }

@@ -19,6 +19,7 @@ import {
 } from "../../hooks/useJoinApproval";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import LoadingState from "../../components/common/LoadingState";
+import JoinApprovedModal from "../../components/memberApp/JoinApprovedModal";
 
 function unwrapList(res) {
   const d = res.data?.data;
@@ -351,38 +352,14 @@ export default function DiscoverCommunities() {
         )}
       </div>
 
-      {/* Join-request approved popup -- only shown here, while the member is
-          actively waiting on this page. If the approval lands after they've
-          already navigated away, this simply doesn't show; it's not
-          persisted/resurfaced elsewhere. */}
-      {activeApproval && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-5"
-          onClick={(e) => e.target === e.currentTarget && dismissJoin(activeApproval)}
-        >
-          <div className="border border-surface-container-border w-full max-w-[340px] bg-white rounded-[20px] py-7 px-6 text-center shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-            <span className="text-4xl leading-none block mb-3">🎉</span>
-            <p className="text-[17px] font-bold text-[#065F46] mb-1.5">
-              You're in!
-            </p>
-            <p className="text-[13.5px] text-[#374151] mb-[22px] leading-relaxed">
-              Your request to join <strong>{activeApproval.name}</strong> was approved — you're now a member.
-            </p>
-            <button
-              onClick={() => openApprovedCommunity(activeApproval)}
-              className="w-full py-[13px] rounded-[10px] border-none bg-[#059669] text-white text-sm font-semibold cursor-pointer mb-2.5"
-            >
-              Open Community
-            </button>
-            <button
-              onClick={() => dismissJoin(activeApproval)}
-              className="w-full py-2.5 rounded-[10px] border-none bg-transparent text-[#6B7280] text-[13px] font-medium cursor-pointer"
-            >
-              Dismiss
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Join-request approved popup -- also watched from Home now, so an
+          approval that lands after the member has already navigated away
+          from this page still surfaces there instead of going unnoticed. */}
+      <JoinApprovedModal
+        entry={activeApproval}
+        onOpen={openApprovedCommunity}
+        onDismiss={dismissJoin}
+      />
     </div>
   );
 }
