@@ -339,7 +339,7 @@ function StepOTP({ email, onVerified, onBack }) {
 // register() needs in one step, since the backend only sends a
 // verification code after the account actually exists, not before.
 // ---------------------------------------------------------------------------
-function StepProfile({ onSubmit, onGoogleAuth }) {
+function StepProfile({ onSubmit, onGoogleAuth, hasCommunity }) {
   const { hasToken } = useInviteToken();
   const [form, setForm] = useState({
     email: "",
@@ -416,11 +416,19 @@ function StepProfile({ onSubmit, onGoogleAuth }) {
         <h1 className="text-headline text-gray-900 mt-5">
           {hasToken ? "You've Been Invited" : "Create Your Account"}
         </h1>
-        {hasToken && (
+        {hasToken ? (
           <p className="text-sm text-gray-500 mt-1">
             Complete your profile to accept the invite.
           </p>
-        )}
+        ) : !hasCommunity ? (
+          // Reached via the marketing site's contextless "Join A Community"
+          // CTA, not a specific invite -- says up front that browsing comes
+          // after account creation, not before, so the form doesn't read as
+          // a bait-and-switch into full registration with no explanation.
+          <p className="text-sm text-gray-500 mt-1">
+            Create an account, then choose which communities to join.
+          </p>
+        ) : null}
       </div>
 
       {/* Email */}
@@ -716,8 +724,17 @@ export default function Join() {
     // join-request path above, which has its own confirmation toast) — say
     // so explicitly rather than silently dropping the new member onto Home
     // with no context for what just happened.
-    if (token) toastSuccess("You're in!", { description: "Welcome to the community." });
-    navigate(token ? "/member/home" : "/member/invites", { replace: true });
+    if (token) {
+      toastSuccess("You're in!", { description: "Welcome to the community." });
+      navigate("/member/home", { replace: true });
+      return;
+    }
+    // Neither a personal token nor a community slug -- this account was
+    // created via the marketing site's contextless "Join A Community" CTA,
+    // not a specific invite. /member/invites would just be empty; send them
+    // straight to browsing instead of a dead end they'd have to find their
+    // own way out of via Home's empty state.
+    navigate("/member/communities/search", { replace: true });
   }
 
   // Google already proves the user owns this email, so registration is
@@ -733,7 +750,11 @@ export default function Join() {
       submitCommunityJoinAndRoute();
       return;
     }
-    navigate(token ? "/member/invites" : "/member/home", { replace: true });
+    if (token) {
+      navigate("/member/invites", { replace: true });
+      return;
+    }
+    navigate("/member/communities/search", { replace: true });
   }
 
   function handleBack() {
@@ -818,7 +839,7 @@ export default function Join() {
   return (
     <MobileShell step={step}>
       {step === STEPS.PROFILE && (
-        <StepProfile onSubmit={handleProfileSubmit} onGoogleAuth={handleGoogleAuth} />
+        <StepProfile onSubmit={handleProfileSubmit} onGoogleAuth={handleGoogleAuth} hasCommunity={Boolean(community)} />
       )}
       {step === STEPS.OTP && (
         <StepOTP email={email} onVerified={handleVerified} onBack={handleBack} />
