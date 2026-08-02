@@ -310,9 +310,10 @@ export default function Members() {
         />
       )}
 
-      {/* Stats — only when there are members */}
+      {/* Stats — only when there are members. auto-fit/minmax rather than a
+          fixed 2/lg:4 breakpoint -- see DashboardStats.jsx for why. */}
       {members.length > 0 && (
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3 mb-5">
         <StatCard icon={Users} label="Total Members" value={String(stats.total)} iconCls="text-brand bg-brand-tint" />
         <StatCard icon={UserCheck} label="Active Members" value={String(stats.active)} iconCls="text-success bg-success-tint" />
         <StatCard icon={Clock} label="Inactive" value={String(stats.inactive)} iconCls="text-[#b45309] bg-[#FFF8E7]" />
@@ -390,8 +391,14 @@ export default function Members() {
                 <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Plans</th>
                 <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Status</th>
                 <th className="hidden md:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Date</th>
-                <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Email</th>
-                <th className="hidden lg:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Date Joined</th>
+                {/* xl, not lg -- lg (1024px) is exactly where the sidebar
+                    already leaves the least room, so revealing two more
+                    columns right there squeezed member names/dates onto two
+                    lines and pushed Actions out of the row instead of
+                    scrolling (cells wrap before the table ever grows wide
+                    enough to trigger the overflow-x-auto scroll above). */}
+                <th className="hidden xl:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Email</th>
+                <th className="hidden xl:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Date Joined</th>
                 <th className="hidden sm:table-cell px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">Actions</th>
               </tr>
             </thead>
@@ -422,8 +429,8 @@ export default function Members() {
                         </span>
                       </td>
                       <td className="hidden md:table-cell px-5 py-3 text-xs text-gray-500">{formatDate(m.lastPaymentDate)}</td>
-                      <td className="hidden lg:table-cell px-5 py-3 text-xs text-gray-500">{memberEmail(m)}</td>
-                      <td className="hidden lg:table-cell px-5 py-3 text-xs text-gray-500">{formatDate(m.joinedAt ?? m.createdAt)}</td>
+                      <td className="hidden xl:table-cell px-5 py-3 text-xs text-gray-500">{memberEmail(m)}</td>
+                      <td className="hidden xl:table-cell px-5 py-3 text-xs text-gray-500">{formatDate(m.joinedAt ?? m.createdAt)}</td>
                       <td className="hidden sm:table-cell px-5 py-3">
                         <div className="flex gap-1.5">
                           <button disabled title="Resend reminder — coming soon" aria-label="Resend reminder — coming soon" className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-300 cursor-not-allowed"><RotateCcw size={11} /></button>

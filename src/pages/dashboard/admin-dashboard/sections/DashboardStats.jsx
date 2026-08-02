@@ -3,7 +3,15 @@ import { Skeleton } from "../SkeletonUI";
 
 export default function DashboardStats({ stats, isLoading }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
+    // auto-fit/minmax instead of fixed breakpoints (was grid-cols-2
+    // sm:grid-cols-3 lg:grid-cols-5) -- that jumped straight from 3 to 5
+    // columns at the lg breakpoint, and 5-across didn't leave enough width
+    // for the longer labels ("Inactive Members", "Overdue Members") to fit
+    // on one line right around 1024px, while the shorter labels stayed
+    // single-line and threw the row out of alignment. This sizes each card
+    // to whatever the row actually has room for instead of a hardcoded
+    // column count.
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3 mb-5">
       {stats.map((s) => (
         <div
           key={s.label}
