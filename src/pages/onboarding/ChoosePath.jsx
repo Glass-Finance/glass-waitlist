@@ -10,11 +10,13 @@ import CreateCommunityIcon from "../../assets/auth/create-community.webp";
 import JoinCommunityIcon from "../../assets/auth/join-community.webp";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
-import { isMobileDevice } from "../../utils/deviceRedirect";
+import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
+import { useAuth } from "../../store/AuthContext";
 
 export default function ChoosePath() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const email    = location.state?.email ?? "";
   // Entry points that specifically mean "join" (e.g. Communities Home's
   // Join Community button) pass this so the option isn't stuck defaulting
@@ -33,6 +35,17 @@ export default function ChoosePath() {
   const handleContinue = () => {
     if (selected === "create") {
       navigate("/onboarding/paying-member", { state: { email } });
+    } else if (isAuthenticated) {
+      // Join.jsx (below) is a full account-registration form -- fine for a
+      // brand-new visitor, but an already-authenticated user (e.g. an admin
+      // clicking Join Community from Communities Home, or someone who just
+      // finished SignUp's own registration+OTP a moment ago) already has a
+      // real account. Routing them through registration again just gets a
+      // 409 "you already have an account" and dead-ends at sign-in instead
+      // of actually joining anything. Take them straight to browsing
+      // communities to request to join with the account they already have.
+      const target = "/member/communities/search";
+      navigate(isMobileDevice() ? target : mobileRequiredPath(target));
     } else if (isMobileDevice()) {
       // /check-email below is a desktop-only handoff (QR + "open the link
       // on your phone") for reaching /member/join, which is itself gated
