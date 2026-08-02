@@ -4,14 +4,17 @@
  */
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
 import PayingMemberIcon from "../../assets/auth/paying-dues.webp";
 import ExemptPaymentIcon from "../../assets/auth/exempt-payments.webp";
 import StepIndicator from "../../components/onboarding/StepIndicator";
+import { useAuth } from "../../store/AuthContext";
 
 export default function PayingMember() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const email    = location.state?.email;
   const [selected, setSelected] = useState("yes");
 
@@ -25,6 +28,16 @@ export default function PayingMember() {
       state: { email, isPaying: skip ? false : selected === "yes" },
     });
 
+  // Same escape hatch as OrganizationProfile.jsx's handleBack: an
+  // already-authenticated user (an existing admin creating another
+  // community, or one who lands here by accident -- stale bookmark,
+  // browser back/forward) goes straight to their dashboard instead of
+  // stepping back into the middle of onboarding. This page previously had
+  // no way back at all, not even to the previous step.
+  const handleBack = () => {
+    navigate(isAuthenticated ? "/dashboard/home" : "/onboarding/choose-path", { state: { email } });
+  };
+
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 py-14 lg:py-0 bg-contain bg-center lg:bg-page-default">
       <div className="absolute inset-0 lg:hidden -z-10 bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
@@ -35,6 +48,14 @@ export default function PayingMember() {
       </div>
 
       <div className="w-full max-w-lg flex flex-col items-center">
+        <button
+          type="button"
+          onClick={handleBack}
+          className="self-start flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer mb-4 -ml-1 p-0"
+        >
+          <ArrowLeft size={15} />
+          {isAuthenticated ? "Back to dashboard" : "Back"}
+        </button>
         <StepIndicator stepId="paying-member" />
         <div className="text-center mb-8">
           <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">

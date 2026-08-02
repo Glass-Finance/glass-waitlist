@@ -22,6 +22,7 @@ import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onbo
 import BankSelect from "../../components/common/BankSelect";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import StepIndicator from "../../components/onboarding/StepIndicator";
+import { useAuth } from "../../store/AuthContext";
 
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization"];
 
@@ -64,6 +65,7 @@ function SuccessModal() {
 export default function PaymentProfile() {
   const navigate  = useNavigate();
   const location  = useLocation();
+  const { isAuthenticated } = useAuth();
 
   // Falls back to whatever OrganizationProfile persisted right after
   // creating this community -- location.state alone doesn't survive a
@@ -180,7 +182,14 @@ export default function PaymentProfile() {
     });
   };
 
+  // Same escape hatch as OrganizationProfile.jsx's own handleBack: an
+  // already-authenticated user goes straight to their dashboard instead of
+  // stepping back into the middle of onboarding.
   const handleBack = () => {
+    if (isAuthenticated) {
+      navigate("/dashboard/home");
+      return;
+    }
     navigate("/onboarding/organization-profile", {
       state: { email, isPaying, communityId, communitySlug, communityName },
     });
@@ -290,7 +299,7 @@ export default function PaymentProfile() {
                   className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer mb-4 -ml-1 p-0"
                 >
                   <ArrowLeft size={15} />
-                  Back
+                  {isAuthenticated ? "Back to dashboard" : "Back"}
                 </button>
                 <h2 className="text-lg font-medium text-gray-900 mb-1">Set up your payment Account</h2>
                 <p className="text-sm text-gray-500">

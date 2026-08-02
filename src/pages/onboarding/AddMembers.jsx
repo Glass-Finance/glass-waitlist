@@ -24,6 +24,7 @@ import { bulkCreateCommunityInvites } from "../../api/invites";
 import { readOnboardingProgress, clearOnboardingProgress } from "../../utils/onboardingProgress";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import StepIndicator from "../../components/onboarding/StepIndicator";
+import { useAuth } from "../../store/AuthContext";
 
 // Confirmed against the live backend (GET /roles/community, 2026-07-12):
 // only these three roles actually exist -- COMMUNITY_OWNER, COMMUNITY_ADMIN,
@@ -120,6 +121,7 @@ function SuccessModal({ communityName, onDashboard, onCopy }) {
 export default function AddMembers() {
   const navigate  = useNavigate();
   const location  = useLocation();
+  const { isAuthenticated } = useAuth();
   const fileRef   = useRef(null);
   const { data: rolesData, isLoading: rolesLoading } = useRoles();
   const roles = rolesData ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name)) : [];
@@ -131,7 +133,14 @@ export default function AddMembers() {
   const { email, isPaying, communityId, communitySlug, communityName } =
     location.state ?? readOnboardingProgress();
 
+  // Same escape hatch as OrganizationProfile.jsx's own handleBack: an
+  // already-authenticated user goes straight to their dashboard instead of
+  // stepping back into the middle of onboarding.
   const handleBack = () => {
+    if (isAuthenticated) {
+      navigate("/dashboard/home");
+      return;
+    }
     navigate("/onboarding/payment-profile", {
       state: { email, isPaying, communityId, communitySlug, communityName },
     });
@@ -394,7 +403,7 @@ export default function AddMembers() {
                 className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer mb-4 -ml-1 p-0"
               >
                 <ArrowLeft size={15} />
-                Back
+                {isAuthenticated ? "Back to dashboard" : "Back"}
               </button>
               <h2 className="text-base font-medium text-gray-900 mb-1">Add your members</h2>
               <p className="text-sm text-gray-500">Add members now or invite them to join. You can always add more from your dashboard later.</p>
