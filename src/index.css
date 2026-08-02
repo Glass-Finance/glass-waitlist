@@ -200,6 +200,10 @@ body {
   background-image: url("./assets/problem-glow.webp");
 }
 
+.bg-solution-glow {
+  background-image: url("./assets/solution-glow.webp");
+}
+
 /* Keyframe Animations */
 @keyframes fadeIn {
   from {
