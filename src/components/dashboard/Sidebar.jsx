@@ -162,7 +162,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           />
         )}
         <div
-          className={`fixed md:sticky top-0 left-0 h-screen z-[60] flex-shrink-0 flex transition-transform duration-300 ${
+          className={`fixed md:sticky top-0 left-0 h-dvh z-[60] flex-shrink-0 flex transition-transform duration-300 ${
             mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           }`}
         >
@@ -289,8 +289,12 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           onClick={onCloseMobile}
         />
       )}
+      {/* h-dvh, not h-screen -- see DashboardLayout.jsx for why: 100vh on iOS
+          Safari sits behind the address bar, so this fixed drawer rendered
+          taller than the real visible viewport and cut off Member View /
+          the user info strip pinned to its bottom. */}
       <div
-        className={`fixed md:sticky top-0 left-0 h-screen z-[60] flex-shrink-0 flex transition-transform duration-300 ${
+        className={`fixed md:sticky top-0 left-0 h-dvh z-[60] flex-shrink-0 flex transition-transform duration-300 ${
           mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >

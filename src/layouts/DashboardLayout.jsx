@@ -63,7 +63,12 @@ export default function DashboardLayout() {
   }
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden bg-surface-bg">
+    // h-dvh, not h-screen -- 100vh on iOS Safari includes the space behind
+    // the address bar even while it's on screen, so h-screen renders taller
+    // than what's actually visible, cutting off whatever's pinned to the
+    // bottom (the sidebar's Member View link, the user info strip). Same
+    // fix MemberAppLayout.jsx already uses for the equivalent problem there.
+    <div className="h-dvh w-screen flex overflow-hidden bg-surface-bg">
       {/* ── Sidebar ── */}
       <Sidebar mobileOpen={mobileNavOpen} onCloseMobile={() => setMobileNavOpen(false)} />
 
