@@ -16,9 +16,9 @@ export default function MemberAppLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="flex justify-center items-start min-h-screen bg-surface-bg">
+    <div className="flex justify-center items-start min-h-dvh bg-surface-bg bg-cover bg-center bg-no-repeat bg-mobile-auth-default">
       <div
-        className="relative bg-surface-bg w-full max-w-[390px] min-h-screen bg-cover bg-center bg-no-repeat bg-mobile-auth-default"
+        className="relative w-full max-w-[390px] min-h-dvh"
       >
         {/* Content — window scrolls naturally; paddingBottom clears the fixed nav */}
         <main className="pb-[88px]">
