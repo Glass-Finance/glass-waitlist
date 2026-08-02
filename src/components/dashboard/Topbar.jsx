@@ -123,6 +123,7 @@ export default function Topbar({
     <header className="h-14 bg-surface-container border-b border-surface-container-border flex items-center gap-6 px-4 md:px-8 sticky top-0 z-50 flex-shrink-0">
       {/* Hamburger — mobile only */}
       <button
+        data-tour="mobile-menu-button"
         onClick={onMenuClick}
         className="md:hidden bg-transparent border-none cursor-pointer text-gray-600 hover:text-gray-900 transition-colors p-0 flex-shrink-0"
         aria-label="Open menu"

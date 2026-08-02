@@ -1,18 +1,29 @@
 import { useState, useLayoutEffect, useCallback, useRef } from "react";
-import { LayoutDashboard, Building2, Search, Plus, ListChecks, Receipt, Settings, X } from "lucide-react";
+import { LayoutDashboard, Building2, Search, Plus, ListChecks, Receipt, Settings, X, Menu } from "lucide-react";
 
 export const DASHBOARD_TOUR_SEEN_KEY = "glass_dashboard_tour_seen";
 
 // `target` is a data-tour selector on the real element being described —
 // see Sidebar.jsx, Topbar.jsx, AdminDashboard.jsx, and
 // MemberPaymentsSection.jsx for the matching data-tour attributes. Steps
-// without a target (intro/outro) just center.
+// without a target (intro/outro) just center. A step's target doesn't have
+// to exist on every screen size -- findValidStep/measure below both check
+// real visibility, not just DOM presence, so e.g. the mobile-menu-button
+// step (only rendered md:hidden) is automatically skipped on desktop, and
+// topbar-search (only rendered hidden md:block) is automatically skipped
+// on mobile, with no separate per-step viewport flag needed.
 const STEPS = [
   {
     icon: LayoutDashboard,
     title: "Welcome to your dashboard",
     body: "This is where you manage your community's dues, members, and payment plans. Let's take a quick look around.",
     target: null,
+  },
+  {
+    icon: Menu,
+    title: "Everything else lives behind this menu",
+    body: "On a phone, tap here any time to get back to your communities, dashboard, payments, members, and settings.",
+    target: '[data-tour="mobile-menu-button"]',
   },
   {
     icon: Building2,
@@ -74,16 +85,32 @@ const MOBILE_QUERY = "(max-width: 767px)";
 // Matches Sidebar.jsx's own `duration-300` slide transition.
 const SIDEBAR_TRANSITION_MS = 300;
 
+// display:none (topbar-search hidden below md, mobile-menu-button hidden
+// at md and up) means "not on this screen size at all" -- distinct from
+// the sidebar drawer's off-canvas state, which uses a transform (still
+// display:flex, just translated outside the viewport) precisely so this
+// check does NOT disqualify it; that's what the drawer-open effect below
+// is for. Checking real DOM presence alone (the old check) let a
+// display:none target still count as "valid," which highlighted a
+// zero-size phantom box for a UI element the current screen size doesn't
+// even render.
+function isRenderable(el) {
+  if (!el) return false;
+  const style = getComputedStyle(el);
+  return style.display !== "none" && style.visibility !== "hidden";
+}
+
 // A step with a non-null target only makes sense to show while its real
-// on-page element exists (e.g. the getting-started checklist disappears
-// once a community has both a plan and members) -- otherwise it renders as
-// an orphaned centered card highlighting nothing, which reads as a broken
-// or skipped step rather than an intentional intro/outro screen.
+// on-page element exists and is actually renderable at this screen size
+// (e.g. the getting-started checklist disappears once a community has
+// both a plan and members) -- otherwise it renders as an orphaned
+// centered card highlighting nothing, which reads as a broken or skipped
+// step rather than an intentional intro/outro screen.
 function findValidStep(from, direction) {
   let i = from + direction;
   while (i >= 0 && i < STEPS.length) {
     const t = STEPS[i].target;
-    if (!t || document.querySelector(t)) return i;
+    if (!t || isRenderable(document.querySelector(t))) return i;
     i += direction;
   }
   return null;
@@ -117,7 +144,12 @@ export default function DashboardTour({ onClose, onNeedMobileNav }) {
       return;
     }
     const el = document.querySelector(current.target);
-    if (!el) {
+    // Defensive, not load-bearing: findValidStep already keeps display:none
+    // targets from becoming the active step, but a live viewport resize
+    // (e.g. rotating the phone) while a step is already showing could still
+    // make its target display:none mid-view -- fall back to a centered
+    // card instead of measuring a box that isn't actually on screen.
+    if (!el || !isRenderable(el)) {
       setRect(null);
       return;
     }
