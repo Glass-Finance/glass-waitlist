@@ -24,7 +24,6 @@ import { bulkCreateCommunityInvites } from "../../api/invites";
 import { readOnboardingProgress, clearOnboardingProgress } from "../../utils/onboardingProgress";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import StepIndicator from "../../components/onboarding/StepIndicator";
-import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 
 // Confirmed against the live backend (GET /roles/community, 2026-07-12):
 // only these three roles actually exist -- COMMUNITY_OWNER, COMMUNITY_ADMIN,
@@ -329,7 +328,6 @@ export default function AddMembers() {
   return (
     <div className="relative flex flex-col min-h-screen lg:overflow-hidden lg:h-screen bg-contain bg-center lg:bg-page-default">
       <div className="absolute inset-0 lg:hidden -z-10 bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
-      <GlassLogoGlow className="lg:hidden" />
 
       <header className="relative flex items-center justify-between px-4 lg:px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
         <div className="flex items-center gap-2">

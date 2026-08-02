@@ -8,7 +8,6 @@ import GlassLogo from "../../assets/Glass.webp";
 import PayingMemberIcon from "../../assets/auth/paying-dues.webp";
 import ExemptPaymentIcon from "../../assets/auth/exempt-payments.webp";
 import StepIndicator from "../../components/onboarding/StepIndicator";
-import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 
 export default function PayingMember() {
   const navigate = useNavigate();
@@ -29,7 +28,6 @@ export default function PayingMember() {
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 py-14 lg:py-0 bg-contain bg-center lg:bg-page-default">
       <div className="absolute inset-0 lg:hidden -z-10 bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
-      <GlassLogoGlow className="lg:hidden" />
 
       <div className="absolute top-5 left-6 lg:left-8 flex items-center gap-2">
         <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />

@@ -22,7 +22,6 @@ import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onbo
 import BankSelect from "../../components/common/BankSelect";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import StepIndicator from "../../components/onboarding/StepIndicator";
-import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization"];
 
@@ -227,7 +226,6 @@ export default function PaymentProfile() {
   return (
     <div className="relative flex flex-col min-h-screen lg:overflow-hidden lg:h-screen bg-contain bg-center lg:bg-page-default">
       <div className="absolute inset-0 lg:hidden -z-10 bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
-      <GlassLogoGlow className="lg:hidden" />
 
       {showSuccess && <SuccessModal />}
 

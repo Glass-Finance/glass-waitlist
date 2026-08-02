@@ -9,7 +9,6 @@ import GlassLogo from "../../assets/Glass.webp";
 import CreateCommunityIcon from "../../assets/auth/create-community.webp";
 import JoinCommunityIcon from "../../assets/auth/join-community.webp";
 import StepIndicator from "../../components/onboarding/StepIndicator";
-import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { useAuth } from "../../store/AuthContext";
 
@@ -60,11 +59,12 @@ export default function ChoosePath() {
 
   return (
     <div className="relative min-h-screen w-full flex flex-col bg-contain bg-center lg:bg-page-default">
-      {/* Mobile-only backdrop — same two-layer background + ambient logo
-          glow the member app uses everywhere (AuthLayout, MemberAppLayout,
-          GlassLogoGlow). Desktop keeps bg-page-default via the class above. */}
+      {/* Mobile-only backdrop, matching AuthLayout's single-layer background --
+          no GlassLogoGlow stacked on top here: both it and this background
+          anchor their glow to the same bottom-left corner, and stacking them
+          compounded into a much more saturated blue than every other mobile
+          screen (auth pages, Communities Home) shows. */}
       <div className="absolute inset-0 lg:hidden -z-10 bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
-      <GlassLogoGlow className="lg:hidden" />
 
       <header className="relative flex items-center px-6 lg:px-8 py-5 flex-shrink-0">
         <div className="flex items-center gap-2">
