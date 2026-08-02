@@ -251,12 +251,17 @@ export default function Members() {
 
   return (
     <div className="px-4 md:px-6 py-6 overflow-y-auto h-full">
-      <div className="flex items-start justify-between gap-3 mb-5">
+      {/* flex-wrap -- matches AdminDashboard.jsx/Payments.jsx's same header
+          pattern. Without it, the heading+subtitle block and the two
+          action buttons were forced into one unbreakable row, which had
+          nowhere to go on a narrow screen (the buttons don't shrink, and
+          the subtitle has no truncation either). */}
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
         <div>
           <h1 className="text-xl font-bold text-black">Members</h1>
           <p className="text-sm text-gray-400 mt-0.5">A full picture of the members of your community</p>
         </div>
-        <div className="flex-shrink-0 flex items-center gap-2">
+        <div className="flex items-center gap-2">
           {inviteLink && (
             <button
               onClick={() => copyInviteLinkText(inviteLink)}
