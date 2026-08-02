@@ -183,23 +183,17 @@ body {
 }
 
 .bg-mobile-auth-default {
-  background-image: url("./assets/mobile-auth-background.webp");
-  /* The source asset (a soft glow blob, 393x833) fades naturally into the
-     background on its top/right/bottom edges but is cropped hard against
-     the image's own left boundary mid-fade, instead of finishing the
-     fade-out inside the frame. Since the asset is already almost exactly
-     the size of the container it fills, background-size: cover (set via
-     Tailwind's bg-cover utility everywhere this class is used) barely
-     crops it at all, so that raw edge renders close to as-is. Zooming in
-     and re-centering shifts the visible window away from that cut edge
-     into the part of the image that's already faded to near-white, so it
-     reads as the glow trailing off rather than the image visibly running
-     out. !important because Tailwind's bg-cover/bg-center utilities are
-     applied alongside this class everywhere, and their cascade order
-     relative to this file isn't guaranteed. The real fix is a re-exported
-     asset with the fade actually completed inside the frame. */
-  background-size: 150% auto !important;
-  background-position: 75% center !important;
+  /* Reuses the desktop hero background (a glow anchored to a corner, fully
+     organic on every edge) instead of the old mobile-specific asset, which
+     had its glow cropped hard against the image's own left edge mid-fade
+     with no room to fix that via cropping (see git history). This image's
+     glow originates from its bottom-left corner, so anchoring the crop
+     there keeps every visible edge a natural fade regardless of viewport
+     size -- verified across several background-position candidates via
+     screenshot before picking this one. !important overrides the
+     bg-center utility Tailwind applies alongside this class everywhere. */
+  background-image: url("./assets/auth-background.webp");
+  background-position: left bottom !important;
 }
 
 .bg-problem-glow {
