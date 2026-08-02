@@ -10,12 +10,16 @@ import CreateCommunityIcon from "../../assets/auth/create-community.webp";
 import JoinCommunityIcon from "../../assets/auth/join-community.webp";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
+import { isMobileDevice } from "../../utils/deviceRedirect";
 
 export default function ChoosePath() {
   const navigate = useNavigate();
   const location = useLocation();
   const email    = location.state?.email ?? "";
-  const [selected, setSelected] = useState("create");
+  // Entry points that specifically mean "join" (e.g. Communities Home's
+  // Join Community button) pass this so the option isn't stuck defaulting
+  // to Create -- see CommunitiesHome.jsx.
+  const [selected, setSelected] = useState(location.state?.intent === "join" ? "join" : "create");
 
   const options = [
     { id: "create", title: "Create Community",
@@ -29,6 +33,13 @@ export default function ChoosePath() {
   const handleContinue = () => {
     if (selected === "create") {
       navigate("/onboarding/paying-member", { state: { email } });
+    } else if (isMobileDevice()) {
+      // /check-email below is a desktop-only handoff (QR + "open the link
+      // on your phone") for reaching /member/join, which is itself gated
+      // to mobile only. Already being on mobile means that detour has
+      // nothing left to hand off to -- go straight to the real join flow,
+      // same as MembersHero.jsx/MembersCTA.jsx's isMobileDevice() check.
+      navigate("/member/join");
     } else {
       navigate("/check-email", { state: { email } });
     }

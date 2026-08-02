@@ -497,7 +497,7 @@ export default function CommunitiesHome() {
         </div>
         <div className="flex gap-2.5">
           <button
-            onClick={() => navigate("/onboarding/choose-path")}
+            onClick={() => navigate("/onboarding/choose-path", { state: { intent: "join" } })}
             className="px-4 py-2 rounded-lg border border-brand text-brand bg-white text-xs font-medium hover:bg-blue-50 transition-all"
           >
             Join Community
