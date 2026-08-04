@@ -90,10 +90,15 @@ export default function Footer() {
             <img src={logo} alt="Glass" className="w-7 h-7" />
             <span className="font-bold text-[20px] text-white">Glass</span>
           </a>
-          <p className="flex items-center gap-1.5 text-[13px] text-white/50">
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=1%2C+Onyemargwu+Street%2C+Abule+Egba%2C+Lagos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-[13px] text-white/50 hover:text-white no-underline transition-colors"
+          >
             <MapPin size={14} className="text-white/40 flex-shrink-0" />
             1, Onyemargwu Street, Abule Egba, Lagos
-          </p>
+          </a>
         </div>
 
         {/* Nav columns */}
