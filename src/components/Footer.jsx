@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { MapPin } from "lucide-react";
 import { goToApp } from "../utils/deviceRedirect";
 import logo from "../assets/cta/ctalogo.webp";
 import BlurText from "./ui/BlurText";
@@ -89,6 +90,10 @@ export default function Footer() {
             <img src={logo} alt="Glass" className="w-7 h-7" />
             <span className="font-bold text-[20px] text-white">Glass</span>
           </a>
+          <p className="flex items-center gap-1.5 text-[13px] text-white/50">
+            <MapPin size={14} className="text-white/40 flex-shrink-0" />
+            1, Onyemargwu Street, Abule Egba, Lagos
+          </p>
         </div>
 
         {/* Nav columns */}
