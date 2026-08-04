@@ -20,6 +20,16 @@ export const getAdminUser             = (userId)          => client.get(`/admin/
 export const suspendUser              = (userId, payload) => client.patch(`/admin/users/${userId}/suspend`, payload);
 export const unsuspendUser            = (userId)          => client.patch(`/admin/users/${userId}/unsuspend`);
 export const getAdminUserCommunities  = (userId, params)  => client.get(`/admin/users/${userId}/communities`, { params });
+// Mirrors the self-service flow in members.js (DELETE /user/me marks for
+// deletion, then anonymizes automatically after a grace period) -- these
+// let a platform admin trigger the same two phases manually. anonymize
+// requires the account to already be marked for deletion (and whatever
+// other deletion-eligibility checks mark-deletion itself enforces) --
+// the backend rejects otherwise, surfaced via the global mutation error
+// toast (see main.jsx), not replicated as client-side gating here since
+// the user list response has no field exposing that eligibility upfront.
+export const markUserForDeletion      = (userId, payload) => client.patch(`/admin/users/${userId}/mark-deletion`, payload);
+export const anonymizeUser            = (userId, payload) => client.patch(`/admin/users/${userId}/anonymize`, payload);
 
 // ─── Authorizations ───────────────────────────────────────────────────────────
 export const getAdminAuthorizations = (params)          => client.get("/admin/authorizations", { params });
