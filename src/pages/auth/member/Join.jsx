@@ -13,7 +13,7 @@ import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../utils/phone";
 import { getEmailError } from "../../../utils/validators";
 import { useAuth } from "../../../store/AuthContext";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
-import LoadingState from "../../../components/common/LoadingState";
+import PageLoadingState from "../../../components/memberApp/PageLoadingState";
 import PasswordChecklist from "../../../components/auth/PasswordChecklist";
 import OtpBoxes from "../../../components/common/OtpBoxes";
 import { useCountdown, formatCountdown } from "../../../hooks/useCountdown";
@@ -825,11 +825,16 @@ export default function Join() {
 
   // Still resolving the session, or an already-authenticated user is being
   // routed straight into the community — show a clean loading state rather
-  // than flashing the signup form first.
+  // than flashing the signup form first. PageLoadingState (the app's one
+  // branded full-page treatment), not the small generic LoadingState --
+  // this replaces the whole viewport right after the route-level Suspense
+  // fallback (LoadingScreen, also BrandedSpinner) resolves, so a plain
+  // Loader2 here was a visible downgrade mid-sequence, not a lesser variant
+  // of the same loading experience.
   if (authLoading || (isAuthenticated && (community || token))) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-surface-bg">
-        <LoadingState size={18} />
+      <div className="flex flex-col min-h-screen bg-surface-bg">
+        <PageLoadingState />
       </div>
     );
   }
