@@ -21,6 +21,7 @@ import { toTitleCase } from "../../utils/format";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 import AddMemberModal from "./admin-dashboard/AddMemberModal";
 import GettingStartedChecklist from "./admin-dashboard/sections/GettingStartedChecklist";
+import WelcomeEmptyState from "./admin-dashboard/sections/WelcomeEmptyState";
 import DashboardStats from "./admin-dashboard/sections/DashboardStats";
 import UnpaidObligationAlert from "./admin-dashboard/sections/UnpaidObligationAlert";
 import YourPaymentsSection from "./admin-dashboard/sections/YourPaymentsSection";
@@ -137,6 +138,10 @@ function DashboardContent({ isPaying, communityId }) {
     !payoutLoading &&
     !gsDismissed &&
     (!gsHasPlans || !gsHasMembers || !gsHasPayoutAccount);
+  // The very-first-load state -- nothing at all yet. Distinct from (and
+  // takes priority over) showGettingStarted's banner, which still shows
+  // stats/tables alongside it once at least one of plans/members exists.
+  const isFreshCommunity = !isLoading && !plansLoading && !gsHasPlans && !gsHasMembers;
 
   function dismissGs() {
     setGsDismissed(true);
@@ -341,6 +346,30 @@ function DashboardContent({ isPaying, communityId }) {
           Couldn't load dashboard data. Please refresh.
         </p>
       </div>
+    );
+  }
+
+  if (isFreshCommunity) {
+    return (
+      <>
+        <main className="flex-1 px-4 md:px-6 py-5 overflow-y-auto">
+          <WelcomeEmptyState
+            onCreatePlan={() =>
+              navigate(`/dashboard/payments?community=${communityId ?? ""}`)
+            }
+            onAddMember={() => setAddMemberOpen(true)}
+          />
+        </main>
+
+        {/* Add member modal */}
+        {addMemberOpen && (
+          <AddMemberModal
+            communityId={communityId}
+            communitySlug={community?.slug}
+            onClose={() => setAddMemberOpen(false)}
+          />
+        )}
+      </>
     );
   }
 

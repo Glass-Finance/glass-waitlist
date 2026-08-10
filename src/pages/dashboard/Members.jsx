@@ -1,7 +1,9 @@
 import { useMemo, useState, useEffect } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, Clock, ShieldCheck, Copy, Check, UserCheck, Building2, ChevronRight, DollarSign, Download } from "lucide-react";
+import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, Clock, ShieldCheck, Copy, Check, UserCheck, ChevronRight, Download } from "lucide-react";
+import EmptyState from "../../components/common/EmptyState";
+import inviteIllustration from "../../assets/dashboard/empty-states/invite-illustration.png";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunity } from "../../hooks/useCommunity";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
@@ -77,70 +79,6 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
         </div>
       </div>
     </>
-  );
-}
-
-function EmptyState({ onAddMember, onCreatePlan }) {
-  const steps = [
-    {
-      icon: <Check size={15} />,
-      iconStyle: { background: "#ecfdf5", color: "#059669" },
-      title: "Community Created",
-      subtitle: "Your community is live and ready",
-      done: true,
-      action: null,
-    },
-    {
-      icon: <Users size={15} />,
-      iconStyle: { background: "var(--color-brand)", color: "#ffffff" },
-      title: "Add Your First Members",
-      subtitle: "Invite Via Link, CSV Upload, or Manually",
-      done: false,
-      action: onAddMember,
-    },
-    {
-      icon: <DollarSign size={15} />,
-      iconStyle: { background: "var(--color-brand)", color: "#ffffff" },
-      title: "Create A Payment Plan",
-      subtitle: "Set Up Dues and Start Collecting",
-      done: false,
-      action: onCreatePlan,
-    },
-  ];
-
-  return (
-    <div className="flex flex-col items-center py-14 px-6">
-      <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 bg-brand-tint">
-        <Building2 size={38} className="text-brand" />
-      </div>
-      <h2 className="text-xl font-bold text-gray-900 text-center mb-2 max-w-sm">
-        Your Community Is Set Up. Let's Get It Moving.
-      </h2>
-      <p className="text-sm text-gray-400 text-center mb-8 max-w-sm">
-        Your dashboard will come alive once you add members and create payment plans. Start with the steps below.
-      </p>
-      <div className="w-full max-w-lg flex flex-col gap-2">
-        {steps.map((step, i) => (
-          <button
-            key={i}
-            onClick={step.action ?? undefined}
-            disabled={!step.action}
-            className={`w-full bg-white rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left transition-colors shadow-[0_1px_4px_rgba(0,47,167,0.05)]
-              ${step.action ? "cursor-pointer hover:bg-blue-50/30" : "cursor-default"}`}
-          >
-            <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
-              style={step.iconStyle}>
-              {step.icon}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className={`text-sm font-bold ${step.done ? "text-gray-400" : "text-gray-900"}`}>{step.title}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{step.subtitle}</p>
-            </div>
-            {!step.done && <ChevronRight size={16} className="text-gray-400 flex-shrink-0" />}
-          </button>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -310,8 +248,11 @@ export default function Members() {
       {/* Empty state — shown instead of stats + table when community has no members yet */}
       {!isLoading && !error && members.length === 0 && (
         <EmptyState
-          onAddMember={() => setModalOpen(true)}
-          onCreatePlan={() => navigate("/dashboard/payments")}
+          illustration={inviteIllustration}
+          title="No members yet."
+          subtitle="Invite your first members via link, CSV upload, or manually."
+          action={() => setModalOpen(true)}
+          actionLabel="Add Members"
         />
       )}
 

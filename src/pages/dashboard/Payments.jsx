@@ -7,6 +7,7 @@ import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
+import PaymentPlanIllustration from "./admin-dashboard/sections/PaymentPlanIllustration";
 import StatCard from "../../components/dashboard/StatCard";
 import { formatNaira } from "../../utils/format";
 import {
@@ -281,8 +282,17 @@ export default function Payments() {
       {/* Plan cards */}
       {plansLoading ? (
         <LoadingState className="py-10" />
+      ) : plans.length === 0 ? (
+        <EmptyState
+          illustrationNode={<PaymentPlanIllustration />}
+          title="No payment plans yet"
+          subtitle="Create your first payment plan to start collecting dues from your members."
+          action={() => setCreateOpen(true)}
+          actionLabel={<><Plus size={14} /> Create Collection</>}
+          className="py-10"
+        />
       ) : filtered.length === 0 ? (
-        <EmptyState icon={Wallet} title="No payment plans yet" className="py-10" />
+        <EmptyState icon={Wallet} title="No plans match this filter" className="py-10" />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {filtered.map((plan, i) => (
