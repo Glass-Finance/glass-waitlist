@@ -80,7 +80,7 @@ export default function ForgotPassword() {
   const otpComplete = otp.every((d) => d !== "");
 
   return (
-    <AuthLayout heroTitle="Manage Community" heroSubtitle="Finance Effortlessly">
+    <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
       <div className="w-full max-w-sm flex flex-col gap-6 md:my-auto">
         {step === "email" ? (
           <>
@@ -148,6 +148,7 @@ export default function ForgotPassword() {
                 e.preventDefault();
                 if (otpComplete) handleVerify();
               }}
+              className="flex flex-col gap-6"
             >
             <div>
               <Label>Verification Code</Label>
