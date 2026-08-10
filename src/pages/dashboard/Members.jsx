@@ -3,7 +3,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, Clock, ShieldCheck, Copy, Check, UserCheck, ChevronRight, Download } from "lucide-react";
 import EmptyState from "../../components/common/EmptyState";
-import inviteIllustration from "../../assets/dashboard/empty-states/invite-illustration.png";
+import addMembersIllustration from "../../assets/dashboard/empty-states/add-members-illustration.png";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunity } from "../../hooks/useCommunity";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
@@ -248,7 +248,7 @@ export default function Members() {
       {/* Empty state — shown instead of stats + table when community has no members yet */}
       {!isLoading && !error && members.length === 0 && (
         <EmptyState
-          illustration={inviteIllustration}
+          illustration={addMembersIllustration}
           title="No members yet."
           subtitle="Invite your first members via link, CSV upload, or manually."
           action={() => setModalOpen(true)}

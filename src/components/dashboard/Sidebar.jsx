@@ -361,7 +361,13 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         <div className="w-5 h-px bg-white/20 mb-3" />
 
         {/* Community avatar list */}
-        <div data-tour="community-switcher" className="flex flex-col gap-2 items-center flex-1 overflow-y-auto w-full px-2">
+        <div className="flex flex-col gap-2 items-center flex-1 overflow-y-auto w-full px-2">
+          {/* data-tour lives on this inner wrapper, not the scrollable outer
+              div -- the outer div is flex-1 so it stretches to fill whatever
+              space is left in the rail, which made the tour's spotlight
+              highlight that entire empty area instead of just the avatar
+              list. This wrapper shrinks to fit its actual content. */}
+          <div data-tour="community-switcher" className="flex flex-col gap-2 items-center w-full">
           {loading ? (
             // Skeleton
             [0, 1].map((i) => (
@@ -424,6 +430,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               );
             })
           )}
+          </div>
         </div>
 
         {/* Platform-admin shortcut */}
@@ -512,7 +519,13 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         </div>
 
         {/* Nav links */}
-        <nav data-tour="sidebar-nav" className="flex-1 py-2.5 px-2 overflow-y-auto">
+        <nav className="flex-1 py-2.5 px-2 overflow-y-auto">
+          {/* data-tour lives on this inner wrapper, not the scrollable <nav>
+              itself -- <nav> is flex-1 so it stretches to fill whatever
+              space is left in the sidebar, which made the tour's spotlight
+              highlight that entire empty area instead of just the nav
+              items. This wrapper shrinks to fit its actual content. */}
+          <div data-tour="sidebar-nav">
           {NAV.map(({ icon: Icon, label, segment, path }) => {
             const isActive = activeSegment === segment;
             // Every nav item except "Dashboard" (which points at the
@@ -555,6 +568,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               </button>
             );
           })}
+          </div>
         </nav>
 
         {/* Member View switch */}

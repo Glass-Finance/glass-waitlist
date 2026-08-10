@@ -14,8 +14,8 @@ export default function PaymentPlanIllustration({ className = "" }) {
       <img src={arcImg} alt="" draggable={false} style={{ position: "absolute", left: "50%", top: 58, width: 300, transform: "translateX(-50%)" }} />
       <img src={peopleImg} alt="" draggable={false} style={{ position: "absolute", left: "50%", top: 38, width: 38, transform: "translateX(-50%)" }} />
       <img src={documentImg} alt="" draggable={false} style={{ position: "absolute", left: "50%", top: 66, width: 200, transform: "translateX(-50%)" }} />
-      <img src={cardImg} alt="" draggable={false} style={{ position: "absolute", left: 12, top: 168, width: 38 }} />
-      <img src={houseImg} alt="" draggable={false} style={{ position: "absolute", right: 12, top: 160, width: 38 }} />
+      <img src={cardImg} alt="" draggable={false} style={{ position: "absolute", left: 12, top: 214, width: 38 }} />
+      <img src={houseImg} alt="" draggable={false} style={{ position: "absolute", right: 12, top: 210, width: 38 }} />
     </div>
   );
 }
