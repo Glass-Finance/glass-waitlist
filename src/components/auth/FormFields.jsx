@@ -60,7 +60,7 @@ export function PrimaryButton({ children, onClick, disabled, loading }) {
       type="button"
       onClick={onClick}
       disabled={disabled || loading}
-      className={`w-full rounded-full py-4 text-button font-semibold text-white transition-all duration-150 disabled:opacity-50 active:scale-[0.98] ${disabled || loading ? "bg-[#B0B8D8]" : "bg-[#1C2B8A]"}`}
+      className={`w-full rounded-full py-4 text-button font-semibold text-white transition-all duration-150 disabled:opacity-50 active:scale-[0.98] ${disabled || loading ? "bg-[#B0B8D8]" : "bg-brand"}`}
     >
       {children}
     </button>
