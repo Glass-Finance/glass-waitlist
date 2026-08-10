@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import BlurText from "./ui/BlurText";
+import GlowOrbs from "./common/GlowOrbs";
 
 const faqs = [
   {
@@ -92,7 +93,8 @@ export default function WhyGlass() {
 
   return (
     <section className="relative bg-white py-20 md:py-28 overflow-hidden">
-      <div className="max-w-[1140px] mx-auto px-6">
+      <GlowOrbs />
+      <div className="max-w-[1140px] mx-auto px-6 relative z-10">
 
         {/* ── Header ── */}
         <div className="text-center mb-14">
