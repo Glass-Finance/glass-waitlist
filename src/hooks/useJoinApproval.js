@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getMyCommunities } from "../api/members";
-import { getMyCommunityJoinRequests } from "../api/invites";
+import client from "../api/client";
 import { toastSuccess } from "../utils/toast";
 
 // The backend sends no reliable signal to the requesting member when an
@@ -60,6 +60,24 @@ function unwrapList(res) {
   return data?.content ?? [];
 }
 
+// GET /communities/join-requests/me was the obvious place to look for a
+// REJECTED outcome, but confirmed against the live backend it comes back
+// empty (totalElements: 0) even for an account with a real, confirmed
+// rejection sitting in the admin's own Join Requests list -- it apparently
+// only ever surfaces PENDING requests, not resolved ones. The notification
+// the backend already sends the member on rejection (JOIN_REQUEST_REJECTED,
+// same feed the bell badge polls) is the only signal that's actually been
+// observed to work.
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+async function fetchRecentNotifications() {
+  const res = await client.get("/notifications", { params: { pageSize: 50 } });
+  const data = res.data?.data;
+  return Array.isArray(data) ? data : (data?.content ?? []);
+}
+
 export function useJoinApprovalWatcher() {
   // Same key/queryFn as the rest of the app — shares the cached list, so
   // this adds no extra network traffic.
@@ -70,20 +88,20 @@ export function useJoinApprovalWatcher() {
   });
 
   // A rejected request never becomes a membership, so it can never show up
-  // in `communities` above — this is the only place a REJECTED outcome is
-  // visible at all, and it's what lets a rejected card flip back to
+  // in `communities` above — the JOIN_REQUEST_REJECTED notification the
+  // backend sends the member is what lets a rejected card flip back to
   // "Request to Join" instead of sitting on "Request sent" until the TTL.
-  const { data: joinRequests } = useQuery({
-    queryKey: ["join-requests", "me"],
-    queryFn: async () => unwrapList(await getMyCommunityJoinRequests()),
-    staleTime: 1000 * 60,
+  const { data: notifications } = useQuery({
+    queryKey: ["notifications", "all", "list"],
+    queryFn: fetchRecentNotifications,
+    staleTime: 1000 * 20,
   });
 
   const [approved, setApproved] = useState([]);
   const [pending, setPending] = useState(() => getPendingJoinRequests());
 
   useEffect(() => {
-    if (!communities?.length && !joinRequests?.length) return;
+    if (!communities?.length && !notifications?.length) return;
     const current = readPending();
     if (!current.length) return;
 
@@ -108,14 +126,28 @@ export function useJoinApprovalWatcher() {
         });
         continue;
       }
-      const rejected = joinRequests?.some((r) => {
-        const rid = r.community?.id ?? r.communityId ?? r.id;
-        const rslug = r.community?.slug ?? r.communitySlug ?? r.slug;
-        const status = (r.status ?? "PENDING").toUpperCase();
-        return (
-          status === "REJECTED" &&
-          ((p.id && rid === p.id) || (p.slug && rslug === p.slug))
-        );
+      const rejected = notifications?.some((n) => {
+        const type = (n.notificationType ?? n.type ?? "").toUpperCase();
+        if (type !== "JOIN_REQUEST_REJECTED") return false;
+        // Confirmed against a real payload: the top-level communityId comes
+        // back null on this notification type -- the real id lives in
+        // content.communityId, and again as relatedEntityId (paired with
+        // relatedEntityType "Community").
+        const nid =
+          n.communityId ??
+          n.content?.communityId ??
+          (n.relatedEntityType === "Community" ? n.relatedEntityId : null);
+        if (p.id && nid && nid === p.id) return true;
+        // Id still isn't guaranteed on every payload -- fall back to
+        // matching the tracked community's name (as a whole word, so a
+        // short name doesn't match unrelated text) against the
+        // notification's own title/message.
+        if (p.name && p.name !== "the community") {
+          const text = `${n.title ?? ""} ${n.message ?? n.bodyText ?? ""}`;
+          const re = new RegExp(`\\b${escapeRegex(p.name)}\\b`, "i");
+          if (re.test(text)) return true;
+        }
+        return false;
       });
       if (rejected) continue;
       remaining.push(p);
@@ -131,7 +163,7 @@ export function useJoinApprovalWatcher() {
         toastSuccess(`You're in! Your request to join ${m.name} was approved`);
       }
     }
-  }, [communities, joinRequests]);
+  }, [communities, notifications]);
 
   return {
     approved,
