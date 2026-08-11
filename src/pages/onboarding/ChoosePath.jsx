@@ -80,14 +80,14 @@ export default function ChoosePath() {
           <p className="text-sm text-gray-500">Are you setting up a community, or joining one you've been invited to?</p>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-3 lg:gap-5 mb-8 w-full max-w-[500px] lg:max-w-none items-stretch">
+        <div className="flex flex-col lg:flex-row lg:justify-center gap-3 lg:gap-5 mb-8 w-full max-w-[500px] lg:max-w-none items-stretch">
           {options.map((option) => {
             const isSelected = selected === option.id;
             return (
               <button
                 key={option.id}
                 onClick={() => setSelected(option.id)}
-                className={`relative flex flex-row lg:flex-col items-center text-left lg:text-center gap-4 lg:gap-0 px-5 lg:px-10 py-5 lg:py-8 rounded-2xl transition-all duration-200 cursor-pointer w-full lg:w-[380px] border-2 ${isSelected ? "border-brand bg-white" : "border-[#E5E5E5] bg-[#FAFAFA]"}`}
+                className={`relative flex flex-row lg:flex-col items-center text-left lg:text-center gap-4 lg:gap-0 px-5 lg:px-10 py-5 lg:py-8 rounded-2xl transition-all duration-200 cursor-pointer w-full lg:w-[380px] border-2 bg-white ${isSelected ? "border-brand" : "border-[#E5E5E5]"}`}
               >
                 <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] lg:bg-transparent lg:rounded-none lg:w-14 lg:h-14 lg:mt-6 lg:mb-5">
                   <img src={option.icon} alt={option.title} className="w-6 h-6 lg:w-14 lg:h-14 object-contain" />
