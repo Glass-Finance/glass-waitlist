@@ -27,7 +27,7 @@ export const Button = forwardRef(function Button(
       type={type}
       onClick={onClick}
       disabled={isDisabled}
-      className={`${fullWidth ? "w-full " : ""}rounded-2xl py-4 text-button font-semibold text-white transition-all duration-150 active:scale-[0.98] disabled:cursor-not-allowed ${isDisabled ? "bg-[#B0B8D8]" : "bg-brand hover:opacity-90"} ${className}`}
+      className={`${fullWidth ? "w-full " : ""}rounded-xl py-4 text-button font-semibold text-white transition-all duration-150 active:scale-[0.98] disabled:cursor-not-allowed ${isDisabled ? "bg-[#B0B8D8]" : "bg-brand hover:opacity-90"} ${className}`}
       {...rest}
     >
       {children}
