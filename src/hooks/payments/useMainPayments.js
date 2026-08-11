@@ -253,6 +253,7 @@ export function usePayments(preferredCommunityIdentifier) {
       paymentLinksQuery.isLoading,
     hasNoCommunity:
       !communitiesQuery.isLoading && activeCommunities.length === 0,
+    communityCount: activeCommunities.length,
     hasPendingCommunity:
       !communitiesQuery.isLoading &&
       activeCommunities.length === 0 &&

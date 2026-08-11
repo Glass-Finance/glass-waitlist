@@ -40,21 +40,6 @@ function usePublicSearch(query) {
   });
 }
 
-// ─── Category badge colours ───────────────────────────────────────────────────
-const CAT_CLASSES = {
-  education: "bg-[#E8F0FB] text-[#1C2B8A]",
-  professional: "bg-[#F3E8FF] text-[#7c3aed]",
-  religious: "bg-[#FFF8E7] text-[#d4a017]",
-  sports: "bg-[#ECFDF5] text-[#059669]",
-  social: "bg-[#FFF0F0] text-[#E53E3E]",
-};
-function catClassName(category) {
-  // category is an array of strings from the API (e.g. ["education"])
-  const cat = Array.isArray(category) ? category[0] : category;
-  const key = typeof cat === "string" ? cat.toLowerCase() : "";
-  return CAT_CLASSES[key] ?? "bg-[#F0F0F0] text-[#555]";
-}
-
 // ─── Single community card ────────────────────────────────────────────────────
 function CommunityCard({ community, derivedStatus, onRequest }) {
   // derivedStatus survives reloads (built from the member's own communities
@@ -65,10 +50,13 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
 
-  const categoryClassName = catClassName(community.category);
   const alreadyMember = status === "member";
   const alreadyPending = status === "pending";
   const logoUrl = community.logo?.url ?? null;
+  const categoryLabel =
+    (Array.isArray(community.category)
+      ? community.category[0]
+      : community.category) ?? "Community";
 
   async function handleRequest() {
     if (alreadyMember || alreadyPending || loading) return;
@@ -99,9 +87,9 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
     }
   }
   return (
-    <div className="bg-white rounded-2xl py-3.5 px-4 border border-outline-on-surface flex flex-col gap-2.5">
-      {/* Top row */}
-      <div className="flex items-start gap-3">
+    <div className="bg-white rounded-2xl border border-outline-on-surface overflow-hidden">
+      {/* Header row */}
+      <div className="flex items-center gap-3 px-4 pt-4 pb-3.5 border-b border-outline-on-surface">
         {/* Logo */}
         <div
           className={`w-11 h-11 rounded-[10px] flex-shrink-0 overflow-hidden flex items-center justify-center text-lg ${logoUrl ? "bg-transparent border-none" : "bg-[#F0F0F0] border border-[#E0E0E0]"}`}
@@ -119,67 +107,72 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
 
         {/* Name + category */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold text-[#111] mb-[3px] overflow-hidden text-ellipsis whitespace-nowrap">
+          <p className="text-base font-bold text-[#111] mb-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
             {community.name}
           </p>
-          <div className="flex items-center gap-1.5">
-            <span
-              className={`text-[11px] font-semibold py-0.5 px-2 rounded-full ${categoryClassName}`}
-            >
-              {(Array.isArray(community.category)
-                ? community.category[0]
-                : community.category) ?? "Community"}
-            </span>
+          <p className="text-sm text-[#888] overflow-hidden text-ellipsis whitespace-nowrap">
+            {categoryLabel}
+          </p>
+        </div>
+      </div>
+
+      <div className="px-4 pt-3 pb-4 flex flex-col gap-3">
+        {/* Description */}
+        {community.description && (
+          <p className="text-sm text-[#555] leading-[1.55]">
+            {community.description}
+          </p>
+        )}
+
+        {(community.memberCount != null ||
+          community.requiresMemberApproval === false) && (
+          <div className="flex items-center gap-3">
+            {community.memberCount != null && (
+              <span className="flex items-center gap-1.5 text-sm text-[#888]">
+                <Users size={15} className="text-[#111]" />
+                <span className="font-bold text-[#111]">
+                  {community.memberCount.toLocaleString()}
+                </span>
+                Members
+              </span>
+            )}
             {community.requiresMemberApproval === false && (
               <span className="text-[11px] text-[#059669] font-semibold">
                 Open — join instantly
               </span>
             )}
-            {community.memberCount != null && (
-              <span className="flex items-center gap-[3px] text-[11px] text-[#888]">
-                <Users size={11} />
-                {community.memberCount.toLocaleString()}
-              </span>
-            )}
           </div>
-        </div>
-      </div>
+        )}
 
-      {/* Description */}
-      {community.description && (
-        <p className="text-xs text-[#555] leading-[1.55] line-clamp-2">
-          {community.description}
-        </p>
-      )}
-
-      {/* Action button */}
-      <button
-        onClick={handleRequest}
-        disabled={alreadyMember || alreadyPending || loading}
-        className={`w-full py-2.5 rounded-lg text-[13px] font-semibold flex items-center justify-center gap-1.5 transition-opacity duration-150 ${loading ? "opacity-70" : "opacity-100"} ${alreadyPending || alreadyMember ? "border-[1.5px] border-[#E0E0E0] cursor-default" : "border-none cursor-pointer"} ${
-          alreadyMember
-            ? "bg-[#ECFDF5] text-[#059669]"
+        {/* Action button */}
+        <button
+          onClick={handleRequest}
+          disabled={alreadyMember || alreadyPending || loading}
+          className={`w-full py-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 transition-opacity duration-150 ${loading ? "opacity-70" : "opacity-100"} ${alreadyPending || alreadyMember ? "border-[1.5px] border-[#E0E0E0] cursor-default" : "border-none cursor-pointer"} ${
+            alreadyMember
+              ? "bg-[#ECFDF5] text-[#059669]"
+              : alreadyPending
+                ? "bg-white text-[#888]"
+                : "bg-[#1C2B8A] text-white"
+          }`}
+        >
+          {loading && <Loader2 size={13} className="animate-spin" />}
+          {alreadyMember && <CheckCircle2 size={13} />}
+          {alreadyPending && <Clock size={13} />}
+          {alreadyMember
+            ? "Already a member"
             : alreadyPending
-              ? "bg-white text-[#888]"
-              : "bg-[#1C2B8A] text-white"
-        }`}
-      >
-        {loading && <Loader2 size={13} className="animate-spin" />}
-        {alreadyMember && <CheckCircle2 size={13} />}
-        {alreadyPending && <Clock size={13} />}
-        {alreadyMember
-          ? "Already a member"
-          : alreadyPending
-            ? "Request sent"
-            : community.requiresMemberApproval === false
-              ? "Join"
-              : "Request to Join"}
-      </button>
-      {errorMsg && (
-        <p className="text-[11.5px] text-danger m-0 text-center">
-          {errorMsg}
-        </p>
-      )}
+              ? "Request sent"
+              : community.requiresMemberApproval === false
+                ? "Join"
+                : "Request To Join"}
+        </button>
+        {errorMsg && (
+          <p className="text-[11.5px] text-danger m-0 text-center">
+            {errorMsg}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -299,8 +292,8 @@ export default function DiscoverCommunities() {
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
-        <h1 className="text-lg font-semibold text-[#111] m-0">
-          Discover Communities
+        <h1 className="text-xl font-bold text-[#111] m-0">
+          Browse Communities
         </h1>
       </div>
 
@@ -318,7 +311,7 @@ export default function DiscoverCommunities() {
           <input
             autoFocus
             type="text"
-            placeholder="Search communities…"
+            placeholder="Search Community"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 border-none outline-none bg-transparent text-sm text-[#111]"

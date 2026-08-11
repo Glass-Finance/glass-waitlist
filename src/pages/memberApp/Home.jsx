@@ -265,7 +265,7 @@ function HistoryRow({ item, onOpen }) {
 // ---------------------------------------------------------------------------
 function NoCommunityState({ navigate }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-8 pt-[60px] pb-20 text-center">
+    <div className="flex-1 flex flex-col items-center justify-center px-6 pt-[60px] pb-20 text-center">
       {/* Icon */}
       <img
         src={noCommunityIcon}
@@ -273,10 +273,10 @@ function NoCommunityState({ navigate }) {
         className="w-28 h-28 object-contain mb-7 flex-shrink-0"
       />
 
-      <p className="text-xl font-bold text-[#111] mb-2.5 leading-snug">
+      <p className="text-lg font-semibold text-[#111] mb-2.5 leading-snug max-w-[300px]">
         You're not part of any community yet.
       </p>
-      <p className="text-sm text-[#888] mb-9 leading-relaxed max-w-[260px]">
+      <p className="text-sm text-[#888] mb-9 leading-relaxed max-w-[280px]">
         Join a community or check your invitations to get started.
       </p>
 
@@ -289,6 +289,47 @@ function NoCommunityState({ navigate }) {
       </button>
 
       {/* Secondary link */}
+      <button
+        onClick={() => navigate("/member/notifications")}
+        className="bg-transparent border-none text-brand text-sm font-semibold cursor-pointer"
+      >
+        Check Your Invites
+      </button>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Empty state — active community has zero activity (no next due, no
+// upcoming, no history), and the member belongs to at least one other
+// community. Only shown in that specific case -- someone whose one and
+// only community happens to be empty still gets the regular Hero/Upcoming/
+// History cards below, each with their own "nothing here" copy, since
+// "check your other communities" wouldn't make sense for them.
+// ---------------------------------------------------------------------------
+function NothingHappeningState({ navigate }) {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center px-6 pt-[60px] pb-20 text-center">
+      <img
+        src={noCommunityIcon}
+        alt=""
+        className="w-28 h-28 object-contain mb-7 flex-shrink-0"
+      />
+
+      <p className="text-lg font-semibold text-[#111] mb-2.5 leading-snug max-w-[300px]">
+        Nothing happening here yet.
+      </p>
+      <p className="text-sm text-[#888] mb-9 leading-relaxed max-w-[280px]">
+        Check out your other communities to see what's happening.
+      </p>
+
+      <button
+        onClick={() => navigate("/member/communities/search")}
+        className="w-full max-w-[300px] py-4 rounded-[10px] border-none bg-brand text-white text-[15px] font-semibold cursor-pointer mb-4"
+      >
+        Browse Communities
+      </button>
+
       <button
         onClick={() => navigate("/member/notifications")}
         className="bg-transparent border-none text-brand text-sm font-semibold cursor-pointer"
@@ -339,6 +380,7 @@ export default function Home() {
     hasNoCommunity,
     hasPendingCommunity,
     pendingCommunity,
+    communityCount,
   } = usePayments();
   // Catches payers who came back from Paystack without hitting the callback
   // page — verifies the stored pending reference so Paid shows immediately.
@@ -425,6 +467,19 @@ export default function Home() {
   const communityInitial = communityName.charAt(0).toUpperCase();
   const communityLogo = data?.community?.logo;
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Consolidated "nothing happening" empty state -- replaces the Hero/
+  // Upcoming/History cards (each of which would otherwise render its own
+  // "nothing here" copy back to back) when the active community truly has
+  // no activity at all, and only when there's somewhere else to point the
+  // member ("check your other communities" needs a 2nd community to exist).
+  const showNothingHappening =
+    !hasNoCommunity &&
+    !hasPendingCommunity &&
+    communityCount >= 2 &&
+    !nextDue &&
+    totalUpcomingCount === 0 &&
+    history.length === 0;
 
   // Seed active community in localStorage the first time the member lands here
   useEffect(() => {
@@ -514,10 +569,10 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-2.5 flex-shrink-0">
-            {/* Invitations -- the empty state's own "Check Your Invites"
-                CTA already covers this, so the header icon is redundant
-                there. */}
-            {!hasNoCommunity && (
+            {/* Invitations -- the no-community and nothing-happening empty
+                states each already offer their own "Check Your Invites"
+                CTA, so the header icon is redundant there. */}
+            {!hasNoCommunity && !showNothingHappening && (
               <button
                 aria-label="Invitations"
                 onClick={() => navigate("/member/invites")}
@@ -548,10 +603,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── Greeting -- skipped when there's no community, per the empty
-            state's own Figma (no "Here's Your Community At A Glance" when
-            there isn't one). ────────────────────────────────────────────── */}
-        {!hasNoCommunity && (
+        {/* ── Greeting -- skipped for the no-community and nothing-happening
+            empty states, per their own Figma (no "Here's Your Community At
+            A Glance" over an empty page). ─────────────────────────────── */}
+        {!hasNoCommunity && !showNothingHappening && (
           <div className="pt-1 px-5 pb-5">
             <h1 className="text-2xl font-medium text-[#111] m-0">
               Hi {firstName(data?.user)},
@@ -575,6 +630,8 @@ export default function Home() {
           />
         ) : hasNoCommunity ? (
           <NoCommunityState navigate={navigate} />
+        ) : showNothingHappening ? (
+          <NothingHappeningState navigate={navigate} />
         ) : (
           <>
             {/* ── Hero card ───────────────────────────────────────────────────── */}
