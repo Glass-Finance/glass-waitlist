@@ -8,6 +8,11 @@
 // alternatives to `icon` for the bigger, page-level empty states — existing
 // `icon`-based call sites are unaffected.
 export default function EmptyState({ icon: Icon, illustration, illustrationNode, title, subtitle, action, actionLabel, className = "" }) {
+  // The bigger page-level states (illustration/illustrationNode) use the
+  // design system's larger empty-state type scale (28px/36px line-height,
+  // regular weight, per the Figma spec) -- the small icon-based states used
+  // throughout the app for in-page sections keep their original compact size.
+  const isBig = !!(illustration || illustrationNode);
   return (
     <div className={`flex flex-col items-center text-center py-10 px-6 ${className}`}>
       {illustrationNode && <div className="mb-4">{illustrationNode}</div>}
@@ -21,12 +26,18 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
           <Icon size={20} className="text-brand" />
         </div>
       )}
-      <p className="text-sm font-semibold text-gray-900">{title}</p>
-      {subtitle && <p className="text-xs text-gray-400 mt-1 max-w-xs">{subtitle}</p>}
+      <p className={isBig ? "text-[28px] leading-9 font-normal text-gray-900" : "text-sm font-semibold text-gray-900"}>{title}</p>
+      {subtitle && (
+        <p className={isBig ? "text-base text-gray-400 mt-1.5 max-w-sm" : "text-xs text-gray-400 mt-1 max-w-xs"}>{subtitle}</p>
+      )}
       {action && (
         <button
           onClick={action}
-          className="mt-4 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer inline-flex items-center gap-1.5"
+          className={
+            isBig
+              ? "mt-6 px-6 py-4 rounded-full text-sm font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer inline-flex items-center gap-1.5"
+              : "mt-4 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer inline-flex items-center gap-1.5"
+          }
         >
           {actionLabel}
         </button>

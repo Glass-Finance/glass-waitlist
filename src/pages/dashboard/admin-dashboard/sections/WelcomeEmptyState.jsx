@@ -17,15 +17,15 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
         className="w-[220px] h-auto mb-6"
         draggable={false}
       />
-      <h1 className="text-2xl font-bold text-gray-900 text-center mb-2">
-        Welcome to <span className="text-brand">Glass</span>
+      <h1 className="text-[28px] leading-9 font-normal text-gray-900 text-center mb-1.5">
+        Welcome to <span style={{ color: "#6366F1" }}>Glass!</span>
       </h1>
-      <p className="text-sm text-gray-400 text-center mb-7 max-w-sm">
+      <p className="text-base text-gray-400 text-center mb-7 max-w-sm">
         Let's get your community ready to start collecting.
       </p>
       <button
         onClick={onCreatePlan}
-        className="px-6 py-3 rounded-full text-sm font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer mb-8"
+        className="px-6 py-4 rounded-full text-sm font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer mb-8"
       >
         Create Your First Collection
       </button>

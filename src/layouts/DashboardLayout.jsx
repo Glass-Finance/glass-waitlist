@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
-import DashboardTour, { DASHBOARD_TOUR_SEEN_KEY } from "../components/dashboard/DashboardTour";
+import DashboardTour, { DASHBOARD_TOUR_SEEN_KEY, COMMUNITIES_HOME_STEPS } from "../components/dashboard/DashboardTour";
 import AutoPayPrompt from "../components/common/AutoPayPrompt";
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
+  // Community Home (the cross-community overview) gets its own tour content
+  // -- the default tour is written in singular-community language ("this is
+  // where you manage your community's dues"), which doesn't fit this page.
+  const isCommunitiesHome = location.pathname === "/dashboard/home";
   // Sidebar is an off-canvas drawer below the md breakpoint (see
   // Sidebar.jsx) -- this state is lifted here since the hamburger that
   // opens it lives in the sibling Topbar, not Sidebar itself.
@@ -95,7 +100,11 @@ export default function DashboardLayout() {
       </div>
 
       {tourOpen && (
-        <DashboardTour onClose={closeTour} onNeedMobileNav={setMobileNavOpen} />
+        <DashboardTour
+          onClose={closeTour}
+          onNeedMobileNav={setMobileNavOpen}
+          steps={isCommunitiesHome ? COMMUNITIES_HOME_STEPS : undefined}
+        />
       )}
       {autoPayPrompt && (
         <AutoPayPrompt

@@ -259,7 +259,7 @@ function GlobalOverview() {
 
   return (
     <>
-    <div className="px-4 md:px-7 pb-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div data-tour="global-overview" className="px-4 md:px-7 pb-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {/* Upcoming payments across all communities */}
       <OverviewCard
         icon={<Clock size={14} className="text-brand" />}
@@ -495,7 +495,7 @@ export default function CommunitiesHome() {
             </p>
           )}
         </div>
-        <div className="flex gap-2.5">
+        <div data-tour="communities-home-actions" className="flex gap-2.5">
           <button
             onClick={() => navigate("/onboarding/choose-path", { state: { intent: "join" } })}
             className="px-4 py-2 rounded-lg border border-brand text-brand bg-white text-xs font-medium hover:bg-blue-50 transition-all"
@@ -564,7 +564,7 @@ export default function CommunitiesHome() {
       <GlobalOverview />
 
       {/* Filters */}
-      <div className="flex items-center gap-5 px-4 md:px-7 pb-5">
+      <div data-tour="communities-view-controls" className="flex items-center gap-5 px-4 md:px-7 pb-5">
         <div className="relative">
           <button
             onClick={() => setSortOpen((o) => !o)}
@@ -626,6 +626,7 @@ export default function CommunitiesHome() {
 
       {/* Grid / List */}
       <div
+        data-tour="communities-grid"
         className={`px-4 md:px-7 pb-10 grid gap-4 ${
           view === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
         }`}

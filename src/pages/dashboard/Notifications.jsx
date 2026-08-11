@@ -11,6 +11,7 @@ import { notificationCategory, isSelfAccountType, notificationVisual } from "../
 import { extractNotificationDetails, formatNairaAmount, resolveNotificationBody } from "../../utils/notificationContent";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
+import notificationsIllustration from "../../assets/dashboard/empty-states/notifications-illustration.png";
 import { formatRelativeDateTime as formatTime, dayLabel } from "../../utils/format";
 
 // notificationCategory() maps the backend's exact notificationType enum to a
@@ -346,9 +347,9 @@ function SuperAdminNotifications() {
           <LoadingState className="py-12" />
         ) : notifications.length === 0 ? (
           <EmptyState
-            icon={Bell}
-            title="No notifications yet"
-            subtitle="You'll see payment updates, member activity, and other alerts here as they happen."
+            illustration={notificationsIllustration}
+            title="You're all caught up."
+            subtitle="We'll let you know when something needs your attention."
             className="py-16"
           />
         ) : (
@@ -456,9 +457,9 @@ function CommunityNotifications() {
           <LoadingState className="py-12" />
         ) : notifications.length === 0 ? (
           <EmptyState
-            icon={Bell}
-            title="No notifications yet"
-            subtitle="You'll see payment updates, member activity, and other alerts here as they happen."
+            illustration={notificationsIllustration}
+            title="You're all caught up."
+            subtitle="We'll let you know when something needs your attention."
             className="py-16"
           />
         ) : tabItems.length === 0 ? (

@@ -1,5 +1,5 @@
 import { useState, useLayoutEffect, useCallback, useRef } from "react";
-import { LayoutDashboard, Building2, Search, Plus, ListChecks, Receipt, Settings, X, Menu } from "lucide-react";
+import { LayoutDashboard, Building2, Search, Plus, ListChecks, Receipt, Settings, X, Menu, Users, Clock, Grid, HelpCircle } from "lucide-react";
 
 export const DASHBOARD_TOUR_SEEN_KEY = "glass_dashboard_tour_seen";
 
@@ -69,6 +69,52 @@ const STEPS = [
   },
 ];
 
+// Shown instead of STEPS when the tour is opened from Community Home (the
+// cross-community overview, not a single community's dashboard) -- STEPS
+// above is written entirely in singular-community language ("this is where
+// you manage your community's dues"), which doesn't fit this page. Kept
+// deliberately non-overlapping with STEPS: the sidebar/community-switcher
+// steps stay owned by the dashboard tour since they matter most once you're
+// actually inside a community.
+export const COMMUNITIES_HOME_STEPS = [
+  {
+    icon: Users,
+    title: "Welcome to Your Communities",
+    body: "This is your home base across every community you help run or belong to — payments, activity, and notifications from all of them in one place.",
+    target: null,
+  },
+  {
+    icon: Plus,
+    title: "Start or join a community",
+    body: "Create a new community from scratch, or join one you've already been invited to.",
+    target: '[data-tour="communities-home-actions"]',
+  },
+  {
+    icon: Clock,
+    title: "Everything due, across every community",
+    body: "Upcoming payments, recent activity, and notifications from everywhere you're a member — no need to check each community separately.",
+    target: '[data-tour="global-overview"]',
+  },
+  {
+    icon: Grid,
+    title: "Sort and switch views",
+    body: "Reorder your communities or switch between grid and list view, whichever's easier to scan.",
+    target: '[data-tour="communities-view-controls"]',
+  },
+  {
+    icon: Building2,
+    title: "Tap a community to manage it",
+    body: "Click any card to jump straight into that community's dashboard, payments, and members.",
+    target: '[data-tour="communities-grid"]',
+  },
+  {
+    icon: HelpCircle,
+    title: "That's the overview",
+    body: "You can replay this any time from the help icon next to your notifications.",
+    target: null,
+  },
+];
+
 const SPOTLIGHT_PADDING = 8;
 const CARD_WIDTH = 380;
 const CARD_MARGIN = 16;
@@ -106,17 +152,17 @@ function isRenderable(el) {
 // both a plan and members) -- otherwise it renders as an orphaned
 // centered card highlighting nothing, which reads as a broken or skipped
 // step rather than an intentional intro/outro screen.
-function findValidStep(from, direction) {
+function findValidStep(steps, from, direction) {
   let i = from + direction;
-  while (i >= 0 && i < STEPS.length) {
-    const t = STEPS[i].target;
+  while (i >= 0 && i < steps.length) {
+    const t = steps[i].target;
     if (!t || isRenderable(document.querySelector(t))) return i;
     i += direction;
   }
   return null;
 }
 
-export default function DashboardTour({ onClose, onNeedMobileNav }) {
+export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS }) {
   const [step, setStep] = useState(0);
   const [rect, setRect] = useState(null);
   const cardRef = useRef(null);
@@ -128,10 +174,10 @@ export default function DashboardTour({ onClose, onNeedMobileNav }) {
   // constant so the very first paint (before this can measure anything)
   // still has a sane guess.
   const [cardHeight, setCardHeight] = useState(230);
-  const nextStep = findValidStep(step, 1);
-  const prevStep = findValidStep(step, -1);
+  const nextStep = findValidStep(steps, step, 1);
+  const prevStep = findValidStep(steps, step, -1);
   const isLast = nextStep === null;
-  const current = STEPS[step];
+  const current = steps[step];
   const Icon = current.icon;
 
   // Locate the real on-page element for this step and measure it. Falls
@@ -298,7 +344,7 @@ export default function DashboardTour({ onClose, onNeedMobileNav }) {
 
         <div className="flex items-center justify-between px-6 py-5">
           <div className="flex items-center gap-1.5">
-            {STEPS.map((_, i) => (
+            {steps.map((_, i) => (
               <span
                 key={i}
                 className={`rounded-full transition-all h-1.5 ${i === step ? "w-4 bg-brand" : "w-1.5 bg-surface-container-border"}`}
