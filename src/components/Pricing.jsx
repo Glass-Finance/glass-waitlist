@@ -60,8 +60,8 @@ export default function Pricing() {
   }, []);
 
   return (
-    <section className="bg-[#F7F8FC] py-20 md:py-28" id="pricing">
-      <div className="max-w-[1140px] mx-auto px-6">
+    <section className="relative isolate py-20 md:py-28" id="pricing">
+      <div className="max-w-[1140px] mx-auto px-6 relative z-10">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="mb-6">

@@ -269,7 +269,7 @@ export default function UseCases() {
 
       <section
         ref={containerRef}
-        className="bg-white py-20 md:py-28 relative overflow-hidden"
+        className="py-20 md:py-28 relative isolate overflow-hidden"
         id="use-cases"
       >
 

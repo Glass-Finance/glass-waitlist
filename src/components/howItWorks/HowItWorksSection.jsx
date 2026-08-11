@@ -63,20 +63,7 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
   }, []);
 
   return (
-    <section className="relative bg-[#F7F8FC] overflow-hidden py-24" id="how-it-works">
-      <div className="hidden sm:block absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div
-          className="absolute top-[8%] left-[4%] w-[360px] h-[360px] rounded-full bg-indigo-200/15 blur-[100px]"
-          animate={{ scale: [1, 1.12, 1], opacity: [0.15, 0.3, 0.15] }}
-          transition={{ duration: 11, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute bottom-[8%] right-[4%] w-[300px] h-[300px] rounded-full bg-purple-200/12 blur-[90px]"
-          animate={{ scale: [1.1, 1, 1.1], opacity: [0.1, 0.25, 0.1] }}
-          transition={{ duration: 13, repeat: Infinity, delay: 4 }}
-        />
-      </div>
-
+    <section className="relative isolate overflow-hidden py-24" id="how-it-works">
       <div className="relative z-10 max-w-[880px] mx-auto px-6">
         <div className="text-center mb-12 md:mb-20">
           <motion.span

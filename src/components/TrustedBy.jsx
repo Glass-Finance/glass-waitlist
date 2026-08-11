@@ -56,7 +56,7 @@ export default function TrustedBy() {
   }, []);
 
   return (
-    <section className="bg-[#F7F8FC] py-16 px-6 md:px-12 lg:px-24">
+    <section className="relative isolate py-16 px-6 md:px-12 lg:px-24">
       <div className="max-w-7xl mx-auto">
         <p
           ref={labelRef}

@@ -92,17 +92,9 @@ export default function ProblemSection({
 
   return (
     <section
-      className="relative z-0 bg-[#F7F8FC] overflow-hidden py-20 md:py-28"
+      className="relative isolate overflow-hidden py-20 md:py-28"
       id="problem"
     >
-      {/* Soft background glow, purely decorative. zIndex: -1 matters -- a
-          positioned element paints above normal-flow content regardless of
-          DOM order, so without it this would wash out the section's real
-          text content instead of sitting behind it. */}
-      <div
-        className="absolute inset-0 pointer-events-none -z-[1] bg-cover bg-left bg-no-repeat bg-problem-glow"
-        aria-hidden="true"
-      />
       <div className="max-w-[1140px] mx-auto px-6 relative">
         {/* ── Header — layout identical, text animated ── */}
         <div className="text-center mb-16">

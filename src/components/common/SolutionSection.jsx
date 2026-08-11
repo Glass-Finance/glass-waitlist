@@ -188,15 +188,7 @@ export default function SolutionSection({
       }
     `}</style>
 
-      <section className="py-20 md:py-28 relative isolate bg-white" id="solution">
-        {/* `isolate` matters here the same way it does in ProblemSection.jsx --
-            position:relative alone (z-index:auto) never actually forms a
-            stacking context, so this overlay was escaping to the section's
-            *parent* context instead of staying scoped behind this section's
-            own content, landing behind the section's own opaque bg-white
-            fill and disappearing entirely. */}
-        <div className="absolute inset-0 z-0 pointer-events-none bg-cover bg-center bg-no-repeat bg-solution-glow" />
-
+      <section className="py-20 md:py-28 relative isolate" id="solution">
         <div className="max-w-[1140px] mx-auto px-6 relative z-30">
           {/* ── Header — BlurText on all three elements ── */}
           <div className="text-center mb-12">

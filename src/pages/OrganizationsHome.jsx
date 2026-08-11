@@ -22,7 +22,16 @@ export default function OrganizationsHome() {
   useScrollReveal();
 
   return (
-    <div className="bg-[#F7F8FC]">
+    <div className="bg-white">
+      {/* One glow for the whole page instead of every section carrying its
+          own copy -- fixed positioning keeps it glued to the same spot on
+          screen for the entire scroll (Problem through WhyGlass) instead of
+          scrolling away. Every section between Hero and Footer needs a
+          transparent background of its own for this to show through. */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none bg-cover bg-center bg-no-repeat bg-solution-glow"
+        aria-hidden="true"
+      />
       <Navbar />
       <Hero />
       <ProblemSection />
