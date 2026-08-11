@@ -14,10 +14,10 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
       <img
         src={inviteIllustration}
         alt=""
-        className="w-[220px] h-auto mb-6"
+        className="w-[280px] h-auto mb-6"
         draggable={false}
       />
-      <h1 className="text-[28px] leading-9 font-normal text-gray-900 text-center mb-1.5">
+      <h1 className="text-xl leading-7 font-normal text-gray-900 text-center mb-1.5">
         Welcome to <span style={{ color: "#6366F1" }}>Glass!</span>
       </h1>
       <p className="text-base text-gray-400 text-center mb-7 max-w-sm">

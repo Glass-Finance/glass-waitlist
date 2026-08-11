@@ -8,16 +8,17 @@
 // alternatives to `icon` for the bigger, page-level empty states — existing
 // `icon`-based call sites are unaffected.
 export default function EmptyState({ icon: Icon, illustration, illustrationNode, title, subtitle, action, actionLabel, className = "" }) {
-  // The bigger page-level states (illustration/illustrationNode) use the
-  // design system's larger empty-state type scale (28px/36px line-height,
-  // regular weight, per the Figma spec) -- the small icon-based states used
-  // throughout the app for in-page sections keep their original compact size.
+  // The bigger page-level states (illustration/illustrationNode) use a
+  // larger illustration with a smaller, regular-weight title (per Figma --
+  // icon is the focal point, not the title) -- the small icon-based states
+  // used throughout the app for in-page sections keep their original
+  // compact size.
   const isBig = !!(illustration || illustrationNode);
   return (
     <div className={`flex flex-col items-center text-center py-10 px-6 ${className}`}>
       {illustrationNode && <div className="mb-4">{illustrationNode}</div>}
       {!illustrationNode && illustration && (
-        <img src={illustration} alt="" className="w-[180px] h-auto mb-4" draggable={false} />
+        <img src={illustration} alt="" className="w-[240px] h-auto mb-4" draggable={false} />
       )}
       {!illustrationNode && !illustration && Icon && (
         <div
@@ -26,7 +27,7 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
           <Icon size={20} className="text-brand" />
         </div>
       )}
-      <p className={isBig ? "text-[28px] leading-9 font-normal text-gray-900" : "text-sm font-semibold text-gray-900"}>{title}</p>
+      <p className={isBig ? "text-xl leading-7 font-normal text-gray-900" : "text-sm font-semibold text-gray-900"}>{title}</p>
       {subtitle && (
         <p className={isBig ? "text-base text-gray-400 mt-1.5 max-w-sm" : "text-xs text-gray-400 mt-1 max-w-xs"}>{subtitle}</p>
       )}
