@@ -178,6 +178,23 @@ body {
   background-image: url("./assets/background.webp");
 }
 
+/* Every onboarding page applies this as `lg:bg-page-default`, expecting
+   Tailwind to gate it behind the lg breakpoint. But `.bg-page-default` is
+   hand-written CSS, not a Tailwind utility (and can't be made one via
+   @utility -- Tailwind's built-in `bg-*` plugin claims that prefix first
+   and silently fails to resolve "page-default", swallowing the class
+   entirely, even the unprefixed case above). So `lg:bg-page-default` was
+   dead: Tailwind never generated `.lg\:bg-page-default`, and the artwork
+   never rendered on desktop on any page using it. Hand-writing the exact
+   selector Tailwind would have emitted (with its default lg breakpoint,
+   64rem/1024px -- no --breakpoint-* override in this file) fixes it
+   without touching any of the callers. */
+@media (min-width: 64rem) {
+  .lg\:bg-page-default {
+    background-image: url("./assets/background.webp");
+  }
+}
+
 .bg-admin-default {
   background-image: url("./assets/admin-background.webp");
 }
