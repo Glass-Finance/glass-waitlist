@@ -3,6 +3,13 @@
 
 import client from "../api/client";
 
+// Builds the { email } or { phoneNumber, phoneRegion } identifier shape the
+// backend's auth endpoints require -- callers pass whatever they collected
+// and this picks exactly one, since the backend rejects both/neither.
+function identifierPayload({ email, phoneNumber, phoneRegion }) {
+  return email ? { email } : { phoneNumber, phoneRegion };
+}
+
 /**
  * Register a new account.
  * @returns {Promise<{accessToken, refreshToken, userId, email, emailVerified, ...}>}
@@ -50,12 +57,41 @@ export async function resendVerification({ email }) {
 }
 
 /**
- * Log in with email + password.
+ * Log in with a password -- identifier is email or phone (phoneRegion goes
+ * with a national-format number).
  */
-export async function login({ email, password }) {
+export async function login({ email, phoneNumber, phoneRegion, password }) {
   const { data } = await client.post("/auth/login", {
-    email,
+    ...identifierPayload({ email, phoneNumber, phoneRegion }),
     password,
+    deviceInfo: navigator.userAgent,
+  });
+  return data.data;
+}
+
+/**
+ * Request a passwordless login OTP -- delivered by email or SMS depending
+ * on which identifier is supplied. Distinct from requestPhoneOtp/
+ * verifyPhoneOtp above: those verify a phone number during registration
+ * (/auth/phone/*, return a confirmToken for register()); these log into an
+ * account that already exists, with no confirmToken involved.
+ * @returns {Promise<{expiresAt}>}
+ */
+export async function requestLoginOtp({ email, phoneNumber, phoneRegion }) {
+  const { data } = await client.post(
+    "/auth/otp/request",
+    identifierPayload({ email, phoneNumber, phoneRegion }),
+  );
+  return data.data;
+}
+
+/**
+ * Exchange a passwordless login OTP for a session (or an MFA challenge).
+ */
+export async function verifyLoginOtp({ email, phoneNumber, phoneRegion, token }) {
+  const { data } = await client.post("/auth/otp/verify", {
+    ...identifierPayload({ email, phoneNumber, phoneRegion }),
+    token,
     deviceInfo: navigator.userAgent,
   });
   return data.data;
@@ -72,19 +108,27 @@ export async function logout() {
 }
 
 /**
- * Forgot password — sends reset email.
+ * Forgot password — sends a reset code to every eligible channel for the
+ * resolved user (email, and phone once verified). The identifier here only
+ * resolves *which* user, not which channel to use.
  */
-export async function forgotPassword({ email }) {
-  const { data } = await client.post("/auth/password/forgot", { email });
+export async function forgotPassword({ email, phoneNumber, phoneRegion }) {
+  const { data } = await client.post(
+    "/auth/password/forgot",
+    identifierPayload({ email, phoneNumber, phoneRegion }),
+  );
   return data;
 }
 
 /**
- * Reset password using the token from the reset email.
+ * Reset password using the code from forgotPassword(). The reset challenge
+ * is keyed to the resolved user, not the identifier originally used to
+ * request it -- so this can be completed with either the user's email or
+ * phone number, independent of which one requested the code.
  */
-export async function resetPassword({ email, token, newPassword, confirmPassword }) {
+export async function resetPassword({ email, phoneNumber, phoneRegion, token, newPassword, confirmPassword }) {
   const { data } = await client.post("/auth/password/reset", {
-    email,
+    ...identifierPayload({ email, phoneNumber, phoneRegion }),
     token,
     newPassword,
     confirmPassword,

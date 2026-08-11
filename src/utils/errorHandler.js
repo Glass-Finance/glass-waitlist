@@ -172,6 +172,21 @@ export function getErrorMessage(error, fallback = "Something went wrong. Please 
 }
 
 /**
+ * Read the Retry-After seconds off a 429 response, if present -- used to
+ * disable a submit/resend action for that duration instead of guessing a
+ * fixed cooldown. Pair with useCountdown(seconds, resetKey) to drive the
+ * disabled state. Returns null for anything that isn't a 429, or a 429
+ * with no (or non-numeric) Retry-After header.
+ */
+export function getRetryAfterSeconds(error) {
+  if (error?.response?.status !== 429) return null;
+  const header = error.response.headers?.["retry-after"];
+  if (!header) return null;
+  const seconds = parseInt(header, 10);
+  return Number.isFinite(seconds) ? seconds : null;
+}
+
+/**
  * Log (for debugging) + surface (toast) an error in one call.
  * Returns the message string so callers can still set inline form errors
  * with the exact same text the toast showed.
