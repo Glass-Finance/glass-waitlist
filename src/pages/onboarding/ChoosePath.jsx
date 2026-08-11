@@ -64,7 +64,7 @@ export default function ChoosePath() {
           anchor their glow to the same bottom-left corner, and stacking them
           compounded into a much more saturated blue than every other mobile
           screen (auth pages, Communities Home) shows. */}
-      <div className="absolute inset-0 lg:hidden -z-10 bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
+      <div className="fixed inset-0 lg:hidden -z-10 bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
 
       <header className="relative flex items-center px-6 lg:px-8 py-5 flex-shrink-0">
         <div className="flex items-center gap-2">
