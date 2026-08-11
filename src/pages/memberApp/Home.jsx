@@ -3,6 +3,7 @@ import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Bell, ChevronDown, Clock, Mail } from "lucide-react";
 import joinCommunityIcon from "../../assets/auth/join-community.webp";
+import noCommunityIcon from "../../assets/auth/no-community.png";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import AutoPayPrompt from "../../components/common/AutoPayPrompt";
@@ -266,21 +267,17 @@ function NoCommunityState({ navigate }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-8 pt-[60px] pb-20 text-center">
       {/* Icon */}
-      <div className="w-20 h-20 rounded-full bg-[#E4E4F0] flex items-center justify-center mb-7 flex-shrink-0">
-        <img
-          src={joinCommunityIcon}
-          alt=""
-          className="w-11 h-11 object-contain"
-        />
-      </div>
+      <img
+        src={noCommunityIcon}
+        alt=""
+        className="w-28 h-28 object-contain mb-7 flex-shrink-0"
+      />
 
       <p className="text-xl font-bold text-[#111] mb-2.5 leading-snug">
-        You Are Not In Any
-        <br />
-        Community Yet
+        You're not part of any community yet.
       </p>
       <p className="text-sm text-[#888] mb-9 leading-relaxed max-w-[260px]">
-        Join a community to start tracking your dues and payments.
+        Join a community or check your invitations to get started.
       </p>
 
       {/* Primary CTA */}
@@ -481,50 +478,59 @@ export default function Home() {
               <Menu size={28} strokeWidth={2} className="text-[#222]" />
             </button>
 
-            {/* Community pill — tapping navigates to communities list */}
-            <button
-              onClick={() => navigate("/member/communities")}
-              className="flex items-center gap-[7px] min-w-0 bg-transparent border-none cursor-pointer p-0"
-            >
-              <div
-                className={`w-7 h-7 rounded-md flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 overflow-hidden ${communityLogo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
+            {/* Community pill — tapping navigates to communities list.
+                Nothing to show or link to yet when the member isn't in any
+                community, so it's dropped for that state entirely rather
+                than rendering a pill with a placeholder name. */}
+            {!hasNoCommunity && (
+              <button
+                onClick={() => navigate("/member/communities")}
+                className="flex items-center gap-[7px] min-w-0 bg-transparent border-none cursor-pointer p-0"
               >
-                {communityLogo?.url ? (
-                  <img
-                    src={communityLogo.url}
-                    alt=""
-                    decoding="async"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  communityInitial
-                )}
-              </div>
-              <span className="text-sm font-medium text-[#111] whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
-                {communityName}
-              </span>
-              <ChevronDown
-                size={14}
-                strokeWidth={2}
-                className="text-[#666] flex-shrink-0"
-              />
-            </button>
+                <div
+                  className={`w-7 h-7 rounded-md flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 overflow-hidden ${communityLogo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
+                >
+                  {communityLogo?.url ? (
+                    <img
+                      src={communityLogo.url}
+                      alt=""
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    communityInitial
+                  )}
+                </div>
+                <span className="text-sm font-medium text-[#111] whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
+                  {communityName}
+                </span>
+                <ChevronDown
+                  size={14}
+                  strokeWidth={2}
+                  className="text-[#666] flex-shrink-0"
+                />
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-2.5 flex-shrink-0">
-            {/* Invitations */}
-            <button
-              aria-label="Invitations"
-              onClick={() => navigate("/member/invites")}
-              className="relative w-[38px] h-[38px] rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)] flex-shrink-0"
-            >
-              <Mail size={17} strokeWidth={1.8} className="text-[#333]" />
-              {pendingInviteCount > 0 && (
-                <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
-                  {pendingInviteCount > 9 ? "9+" : pendingInviteCount}
-                </span>
-              )}
-            </button>
+            {/* Invitations -- the empty state's own "Check Your Invites"
+                CTA already covers this, so the header icon is redundant
+                there. */}
+            {!hasNoCommunity && (
+              <button
+                aria-label="Invitations"
+                onClick={() => navigate("/member/invites")}
+                className="relative w-[38px] h-[38px] rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)] flex-shrink-0"
+              >
+                <Mail size={17} strokeWidth={1.8} className="text-[#333]" />
+                {pendingInviteCount > 0 && (
+                  <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
+                    {pendingInviteCount > 9 ? "9+" : pendingInviteCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             {/* Bell */}
             <button
@@ -542,15 +548,19 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── Greeting ────────────────────────────────────────────────────── */}
-        <div className="pt-1 px-5 pb-5">
-          <h1 className="text-2xl font-medium text-[#111] m-0">
-            Hi {firstName(data?.user)},
-          </h1>
-          <p className="text-[13px] text-[#888] mt-[3px] font-normal">
-            Here's Your Community At A Glance
-          </p>
-        </div>
+        {/* ── Greeting -- skipped when there's no community, per the empty
+            state's own Figma (no "Here's Your Community At A Glance" when
+            there isn't one). ────────────────────────────────────────────── */}
+        {!hasNoCommunity && (
+          <div className="pt-1 px-5 pb-5">
+            <h1 className="text-2xl font-medium text-[#111] m-0">
+              Hi {firstName(data?.user)},
+            </h1>
+            <p className="text-[13px] text-[#888] mt-[3px] font-normal">
+              Here's Your Community At A Glance
+            </p>
+          </div>
+        )}
 
         {/* Mirrors NoCommunityState/PendingApprovalState's layout (same
             icon-circle size, same centering/padding) so the page doesn't
