@@ -292,7 +292,7 @@ export default function DiscoverCommunities() {
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
-        <h1 className="text-xl font-bold text-[#111] m-0">
+        <h1 className="text-[18px] leading-6 font-medium text-[#111] m-0">
           Browse Communities
         </h1>
       </div>
