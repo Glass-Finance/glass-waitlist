@@ -85,7 +85,7 @@ export default function ForgotPassword() {
         {step === "email" ? (
           <>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900 mb-1">Reset Password</h1>
+              <h1 className="text-headline text-gray-900 mb-1">Reset Password</h1>
               <p className="text-sm text-gray-500">
                 Enter your email and we'll send you a code to reset it.
               </p>
@@ -128,7 +128,7 @@ export default function ForgotPassword() {
         ) : (
           <>
             <div>
-              <h1 className="text-xl font-semibold text-gray-900 mb-1">Enter Reset Code</h1>
+              <h1 className="text-headline text-gray-900 mb-1">Enter Reset Code</h1>
               <p className="text-sm text-gray-500">
                 We sent a 6-digit code to{" "}
                 <span className="font-medium text-gray-800">{email}</span>.
