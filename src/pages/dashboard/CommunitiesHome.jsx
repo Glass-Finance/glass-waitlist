@@ -564,7 +564,7 @@ export default function CommunitiesHome() {
       <GlobalOverview />
 
       {/* Filters */}
-      <div data-tour="communities-view-controls" className="flex items-center gap-5 px-4 md:px-7 pb-5">
+      <div data-tour="communities-view-controls" className="flex items-center gap-5 px-4 md:px-7 pb-5 w-fit">
         <div className="relative">
           <button
             onClick={() => setSortOpen((o) => !o)}

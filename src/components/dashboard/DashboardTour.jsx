@@ -249,13 +249,24 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
     if (cardRef.current) setCardHeight(cardRef.current.getBoundingClientRect().height);
   });
 
-  // Position the tooltip card next to the highlighted element (below it,
-  // or above if there's no room), clamped inside the viewport. cardWidth is
-  // derived the same way the card's own inline width is set below, so this
-  // math is always clamping against the width the card actually renders at
-  // -- previously it assumed the full CARD_WIDTH even on phones narrower
-  // than that (~412px, i.e. most phones), which pushed `left` negative and
-  // clipped the card off the left edge of the screen.
+  // Position the tooltip card next to the highlighted element -- below it,
+  // or above if there's more room that way. cardWidth is derived the same
+  // way the card's own inline width is set
+  // below, so this math is always clamping against the width the card
+  // actually renders at -- previously it assumed the full CARD_WIDTH even
+  // on phones narrower than that (~412px, i.e. most phones), which pushed
+  // `left` negative and clipped the card off the left edge of the screen.
+  //
+  // Picking "below" unconditionally (only falling back to "above" if below
+  // overflowed the viewport) worked for small targets, but a tall,
+  // full-width target near the top of the page -- e.g. the Getting Started
+  // checklist, or the communities grid -- could fail to fit on *either*
+  // side, and the old fallback then clamped straight into the spotlighted
+  // rect instead of just the viewport, so the card sat on top of the very
+  // thing it was pointing at. Comparing the real space on each side and
+  // clamping the card to its own side (never past the rect's near edge)
+  // guarantees the two never overlap, even if that means the card runs a
+  // little past the *opposite* viewport edge in a genuinely tight spot.
   function getCardStyle() {
     const viewportW = window.innerWidth;
     const viewportH = window.innerHeight;
@@ -270,11 +281,19 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
         width: cardWidth,
       };
     }
-    let top = rect.top + rect.height + CARD_MARGIN;
-    if (top + cardHeight > viewportH) {
-      top = Math.max(rect.top - cardHeight - CARD_MARGIN, CARD_MARGIN);
-    }
-    top = Math.min(top, Math.max(viewportH - cardHeight - CARD_MARGIN, CARD_MARGIN));
+
+    const rectBottom = rect.top + rect.height;
+    const spaceBelow = viewportH - rectBottom - CARD_MARGIN;
+    const spaceAbove = rect.top - CARD_MARGIN;
+
+    // Sitting flush against whichever side has more room is enough on its
+    // own to guarantee no overlap -- below never starts before rectBottom,
+    // above never ends after rect.top -- so there's deliberately no further
+    // viewport clamp here that could pull the card back toward the rect.
+    const top = spaceBelow >= spaceAbove
+      ? rectBottom + CARD_MARGIN
+      : rect.top - cardHeight - CARD_MARGIN;
+
     const left = Math.min(Math.max(rect.left, CARD_MARGIN), viewportW - cardWidth - CARD_MARGIN);
     return { position: "fixed", top, left, width: cardWidth };
   }

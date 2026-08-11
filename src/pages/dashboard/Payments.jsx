@@ -234,10 +234,12 @@ export default function Payments() {
         </button>
       </div>
 
-      {/* Stats -- auto-fit/minmax rather than a fixed 2/lg:4 breakpoint, so
+      {/* Stats -- only when there are plans (mirrors Members.jsx's same
+          fix). auto-fit/minmax rather than a fixed 2/lg:4 breakpoint, so
           "Total Amount Collected" (the longest label) doesn't wrap onto two
           lines the moment the row is squeezed to 4-across; see
           DashboardStats.jsx for the same fix on the Dashboard page's row. */}
+      {plans.length > 0 && (
       <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3 mb-5">
         <StatCard
           icon={Wallet}
@@ -264,6 +266,7 @@ export default function Payments() {
           iconCls="text-danger bg-danger-tint"
         />
       </div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 mb-5 bg-stacked-container rounded-md p-1 w-fit">
