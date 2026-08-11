@@ -23,6 +23,7 @@ import BankSelect from "../../components/common/BankSelect";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 import { useAuth } from "../../store/AuthContext";
+import { Button } from "../../components/ui/Button";
 
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization"];
 
@@ -367,13 +368,9 @@ export default function PaymentProfile() {
               )}
             </div>
 
-            <button
-              onClick={handleSave}
-              disabled={saving || resolving || !accName.trim()}
-              className="w-full mt-6 py-3.5 rounded-lg text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50 bg-brand"
-            >
+            <Button onClick={handleSave} disabled={resolving || !accName.trim()} loading={saving} className="mt-6">
               {saving ? "Setting up…" : "Set-Up Account"}
-            </button>
+            </Button>
             <button
               onClick={handleSkip}
               disabled={saving}
