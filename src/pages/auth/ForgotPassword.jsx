@@ -81,7 +81,7 @@ export default function ForgotPassword() {
 
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-      <div className="w-full max-w-sm flex flex-col gap-6 md:my-auto">
+      <div className="w-full max-w-md flex flex-col gap-6 md:my-auto">
         {step === "email" ? (
           <>
             <div>

@@ -75,7 +75,7 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
   };
 
   return (
-    <div className="w-full max-w-sm flex flex-col">
+    <div className="w-full max-w-md flex flex-col">
       <div className="mb-7">
         <h1 className="text-headline text-gray-900 mb-3 font-sans">
           Verification Code Sent

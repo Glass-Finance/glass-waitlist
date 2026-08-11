@@ -223,7 +223,7 @@ export default function SignIn() {
   if (mfaChallenge) {
     return (
       <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-        <div className="w-full max-w-sm flex flex-col my-auto gap-6">
+        <div className="w-full max-w-md flex flex-col my-auto gap-6">
           <div className="flex flex-col items-center gap-3 text-center">
             <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
               <ShieldCheck size={22} className="text-brand" />
@@ -275,7 +275,7 @@ export default function SignIn() {
 
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-      <div className="w-full max-w-sm flex flex-col my-auto gap-6">
+      <div className="w-full max-w-md flex flex-col my-auto gap-6">
         {pendingVerificationEmail && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
             <p className="text-xs font-semibold text-amber-800 mb-1">Email verification pending</p>
