@@ -5,6 +5,7 @@ import { useInviteToken } from "../../../hooks/useInviteToken";
 import { useJoinCommunityParam } from "../../../hooks/useJoinCommunityParam";
 import { recordPendingJoinRequest } from "../../../hooks/useJoinApproval";
 import { register, verifyEmail, resendVerification } from "../../../services/authService";
+import PhoneOTPStep from "../SignUp/PhoneOTPStep";
 import { submitJoinRequest } from "../../../api/invites";
 import { notifyError } from "../../../utils/errorHandler";
 import { toastSuccess } from "../../../utils/toast";
@@ -26,7 +27,7 @@ const OTP_LENGTH = 6;
 // Three steps, mirroring the owner SignUp flow's EmailPhoneStep ->
 // RegisterStep -> OTPStep split, instead of collecting everything on one
 // screen the way this page used to.
-const STEPS = { CONTACT: "contact", PROFILE: "profile", OTP: "otp" };
+const STEPS = { CONTACT: "contact", PHONE_OTP: "phoneOtp", PROFILE: "profile", OTP: "otp" };
 // Codes are valid for 15 minutes (see SignIn.jsx and the spam-notice copy below).
 const OTP_VALIDITY_SECONDS = 15 * 60;
 const PENDING_KEY = "glass_pending_member_verification";
@@ -670,6 +671,7 @@ export default function Join() {
   // Email/phone collected in StepContact, carried forward into StepProfile's
   // register() call.
   const [contact, setContact] = useState({ email: "", phone: "" });
+  const [phoneConfirmToken, setPhoneConfirmToken] = useState("");
   const [step, setStep] = useState(() =>
     email ? STEPS.OTP : STEPS.CONTACT
   );
@@ -754,6 +756,16 @@ export default function Join() {
 
   function handleContactNext({ email: enteredEmail, phone }) {
     setContact({ email: enteredEmail, phone });
+    // StepContact requires a phone number client-side (see its
+    // validatePhone), so this step always runs today -- the empty-phone
+    // fallback exists for symmetry with SignUp.jsx and in case that
+    // requirement is ever relaxed to match the backend's "phone stays
+    // optional" stance.
+    setStep(phone ? STEPS.PHONE_OTP : STEPS.PROFILE);
+  }
+
+  function handlePhoneVerified(confirmToken) {
+    setPhoneConfirmToken(confirmToken);
     setStep(STEPS.PROFILE);
   }
 
@@ -782,10 +794,14 @@ export default function Join() {
         email: contact.email,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        phoneNumber: contact.phone,
         password,
         confirmPassword,
         ...(token && { inviteToken: token }),
+        // phoneConfirmToken is required whenever phoneNumber is present --
+        // StepContact requires a phone client-side, so contact.phone is
+        // always set here today, but this stays conditional for symmetry
+        // with SignUp.jsx's genuinely-optional case.
+        ...(contact.phone && { phoneNumber: contact.phone, phoneConfirmToken }),
       };
       const authData = await register(payload);
       maybeStoreSession(authData);
@@ -849,6 +865,13 @@ export default function Join() {
             onNext={handleContactNext}
             onGoogleAuth={handleGoogleAuth}
             hasCommunity={Boolean(community)}
+          />
+        )}
+        {step === STEPS.PHONE_OTP && (
+          <PhoneOTPStep
+            phone={contact.phone}
+            onVerified={handlePhoneVerified}
+            onBack={() => setStep(STEPS.CONTACT)}
           />
         )}
         {step === STEPS.PROFILE && (

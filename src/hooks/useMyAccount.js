@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMe, updateProfile, updatePassword, updateEmail, getMyCommunities, getMyMemberRecord, leaveCommunity } from "../api/members";
+import { getMe, updateProfile, updatePassword, updateEmail, requestPhoneUpdate, updatePhone, getMyCommunities, getMyMemberRecord, leaveCommunity } from "../api/members";
 
 function unwrapList(res) {
   const data = res.data?.data;
@@ -23,7 +23,6 @@ export function useMe() {
 const PROFILE_FIELD_LABELS = {
   firstName: "first name",
   lastName: "last name",
-  phoneNumber: "phone number",
   profileImageFileId: "profile photo",
 };
 
@@ -70,6 +69,26 @@ export function useUpdateEmail() {
       if (variables?.emailVerificationOtp) {
         queryClient.invalidateQueries({ queryKey: ["me"] });
       }
+    },
+  });
+}
+
+// ─── Update phone ─────────────────────────────────────────────────────────────
+// Two calls against two different endpoints (unlike email, which reuses one
+// PATCH for both steps): requestPhoneUpdate sends the OTP, updatePhone
+// confirms it. Only invalidate ["me"] on the confirming call.
+export function useRequestPhoneUpdate() {
+  return useMutation({
+    mutationFn: (payload) => requestPhoneUpdate(payload),
+  });
+}
+
+export function useUpdatePhone() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload) => updatePhone(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["me"] });
     },
   });
 }

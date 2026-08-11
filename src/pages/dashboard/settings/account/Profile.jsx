@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
+import { useMe, useUpdateProfile, useRequestPhoneUpdate, useUpdatePhone } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { updateEmail, deleteAccount, requestAccountDeletionCode } from "../../../../api/members";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { getEmailError } from "../../../../utils/validators";
+import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../../utils/phone";
 import { useAuth } from "../../../../store/AuthContext";
 import { parseUserData } from "../../../../utils/userData";
 import EmailChangeModal from "../../../../components/common/EmailChangeModal";
+import PhoneChangeModal from "../../../../components/common/PhoneChangeModal";
 import OtpBoxes from "../../../../components/common/OtpBoxes";
 import { toTitleCase } from "../../../../utils/format";
 
@@ -23,10 +25,18 @@ export default function Profile() {
   const [savedForm, setSavedForm] = useState(form);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
-  const [fieldErrors, setFieldErrors] = useState({ firstName: "", lastName: "", email: "" });
+  const [fieldErrors, setFieldErrors] = useState({ firstName: "", lastName: "", email: "", phone: "" });
   const [photoPreview, setPhotoPreview] = useState(null);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [emailSaving, setEmailSaving] = useState(false);
+
+  // Phone changes go through OTP verification (POST /action-verification/request
+  // then PATCH /user/phone) — same "check on save, open a modal, return
+  // early" shape as email above, not bundled into the plain-field PATCH.
+  const requestPhoneUpdate = useRequestPhoneUpdate();
+  const updatePhone = useUpdatePhone();
+  const [phoneModalOpen, setPhoneModalOpen] = useState(false);
+  const [phoneSaving, setPhoneSaving] = useState(false);
 
   const [deleteModal, setDeleteModal] = useState(false);
   const [deleteStep, setDeleteStep] = useState("warn"); // "warn" | "code"
@@ -118,6 +128,7 @@ export default function Profile() {
     if (field === "firstName" && !value.trim()) return "First name is required.";
     if (field === "lastName" && !value.trim()) return "Last name is required.";
     if (field === "email") return getEmailError(value);
+    if (field === "phone" && value && !isPhoneValid(value)) return PHONE_FORMAT_HINT;
     return "";
   }
 
@@ -129,7 +140,7 @@ export default function Profile() {
 
   const handleFieldBlur = (e) => {
     const { name, value } = e.target;
-    if (!(name in fieldErrors)) return; // phone has no format rule
+    if (!(name in fieldErrors)) return;
     setFieldErrors((fe) => ({ ...fe, [name]: validateField(name, value) }));
   };
 
@@ -139,23 +150,36 @@ export default function Profile() {
     form.phone !== savedForm.phone ||
     form.email !== savedForm.email;
 
-  // Email changes go through OTP verification (handled by EmailChangeModal)
-  // before they actually take effect, so they're split out from the rest of
-  // the form here — name/phone save immediately as before, email only after
-  // the code sent to the new address is confirmed.
+  // Phone and email changes both go through OTP verification (handled by
+  // PhoneChangeModal/EmailChangeModal) before they actually take effect, so
+  // they're split out from the rest of the form here — name saves
+  // immediately as before; phone/email only after the code sent to the new
+  // value is confirmed. If more than one of the three changed at once, this
+  // handles them one at a time (phone, then name, then email) rather than
+  // all in a single call — pressing Save again after each OTP step picks up
+  // whatever's still unsaved.
   const handleSave = async () => {
     setError("");
     const nextFieldErrors = {
       firstName: validateField("firstName", form.firstName),
       lastName: validateField("lastName", form.lastName),
       email: validateField("email", form.email),
+      phone: validateField("phone", form.phone),
     };
     if (Object.values(nextFieldErrors).some(Boolean)) {
       setFieldErrors(nextFieldErrors);
       return;
     }
     try {
-      if (form.firstName !== savedForm.firstName || form.lastName !== savedForm.lastName || form.phone !== savedForm.phone) {
+      if (form.phone !== savedForm.phone) {
+        setPhoneSaving(true);
+        await requestPhoneUpdate.mutateAsync({ phoneNumber: form.phone.trim() });
+        setPhoneSaving(false);
+        setPhoneModalOpen(true);
+        return;
+      }
+
+      if (form.firstName !== savedForm.firstName || form.lastName !== savedForm.lastName) {
         // Only send what changed — the success toast names the updated
         // field(s), so sending everything would always read "Profile updated".
         const userData = {};
@@ -163,7 +187,6 @@ export default function Profile() {
         const lastName = toTitleCase(form.lastName.trim());
         if (form.firstName !== savedForm.firstName) userData.firstName = firstName;
         if (form.lastName !== savedForm.lastName) userData.lastName = lastName;
-        if (form.phone !== savedForm.phone) userData.phoneNumber = form.phone;
         await updateProfile.mutateAsync({
           username: user?.username,
           userData,
@@ -172,7 +195,7 @@ export default function Profile() {
         // Reflect the capitalised names in the inputs immediately, matching
         // what was actually saved.
         setForm((f) => ({ ...f, firstName, lastName }));
-        setSavedForm((sf) => ({ ...sf, firstName, lastName, phone: form.phone }));
+        setSavedForm((sf) => ({ ...sf, firstName, lastName }));
       }
 
       if (form.email !== savedForm.email) {
@@ -187,6 +210,7 @@ export default function Profile() {
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       setEmailSaving(false);
+      setPhoneSaving(false);
       const status = err?.response?.status;
       setError(
         status === 404
@@ -208,6 +232,24 @@ export default function Profile() {
     // Just closes the modal — the (mistyped) email stays in the field so
     // they can correct it rather than retyping the whole address.
     setEmailModalOpen(false);
+  }
+
+  async function handleConfirmPhoneOtp(otp) {
+    await updatePhone.mutateAsync({ phoneNumber: form.phone.trim(), phoneVerificationOtp: otp });
+  }
+
+  function handlePhoneVerified() {
+    setPhoneModalOpen(false);
+    setSavedForm((sf) => ({ ...sf, phone: form.phone }));
+    refreshUser();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  function handleWrongPhone() {
+    // Just closes the modal — the (mistyped) number stays in the field so
+    // they can correct it rather than retyping it.
+    setPhoneModalOpen(false);
   }
 
   const handlePhotoSelect = async (file) => {
@@ -297,7 +339,8 @@ export default function Profile() {
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-xs text-gray-600">Phone Number</label>
-            <input name="phone" value={form.phone} onChange={handleChange} className={`${inputCls} border-gray-300`} />
+            <input name="phone" type="tel" value={form.phone} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.phone ? "border-danger" : "border-gray-300"}`} />
+            {fieldErrors.phone && <p className="text-xs text-danger">{fieldErrors.phone}</p>}
           </div>
         </div>
 
@@ -306,10 +349,10 @@ export default function Profile() {
         <div className="flex justify-end">
           <button
             onClick={handleSave}
-            disabled={updateProfile.isPending || emailSaving || !isDirty}
+            disabled={updateProfile.isPending || emailSaving || phoneSaving || !isDirty}
             className="p-2 rounded-sm text-[11px] text-brand hover:bg-brand hover:text-white transition-all cursor-pointer border border-brand disabled:opacity-50"
           >
-            {saved ? "Saved!" : updateProfile.isPending || emailSaving ? "Saving…" : "Save Changes"}
+            {saved ? "Saved!" : updateProfile.isPending || emailSaving || phoneSaving ? "Saving…" : "Save Changes"}
           </button>
         </div>
       </div>
@@ -323,6 +366,17 @@ export default function Profile() {
           onVerified={handleEmailVerified}
           onWrongEmail={handleWrongEmail}
           onClose={handleWrongEmail}
+        />
+      )}
+
+      {phoneModalOpen && (
+        <PhoneChangeModal
+          newPhone={form.phone}
+          onSubmitOtp={handleConfirmPhoneOtp}
+          onVerified={handlePhoneVerified}
+          onWrongNumber={handleWrongPhone}
+          onResend={() => requestPhoneUpdate.mutateAsync({ phoneNumber: form.phone.trim() })}
+          onClose={handleWrongPhone}
         />
       )}
 

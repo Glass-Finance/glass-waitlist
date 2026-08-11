@@ -9,7 +9,10 @@ export const getMe = () =>
   client.get("/user/me");
 
 // PATCH /api/v1/user/profile
-// { userData: { firstName, lastName, phoneNumber, profileImageFileId, ... } }
+// { userData: { firstName, lastName, profileImageFileId, ... } } -- phoneNumber
+// is NOT accepted here anymore; go through requestPhoneUpdate/updatePhone
+// below instead (phone numbers require OTP verification before they're
+// stored).
 export const updateProfile = (payload) => client.patch("/user/profile", payload);
 
 // PATCH /api/v1/user/password — { oldPassword, newPassword, confirmPassword }
@@ -17,6 +20,20 @@ export const updatePassword = (payload) => client.patch("/user/password", payloa
 
 // PATCH /api/v1/user/email — { email, emailVerificationOtp }
 export const updateEmail = (payload) => client.patch("/user/email", payload);
+
+// POST /api/v1/action-verification/request — sends an OTP to a proposed new
+// phone number for a signed-in user. { phoneNumber, phoneRegion } plus the
+// fixed actionVerificationType this function exists to pin.
+export const requestPhoneUpdate = ({ phoneNumber, phoneRegion }) =>
+  client.post("/action-verification/request", {
+    actionVerificationType: "PHONE_UPDATE",
+    phoneNumber,
+    phoneRegion,
+  });
+
+// PATCH /api/v1/user/phone — confirms the OTP from requestPhoneUpdate above
+// and saves the number. { phoneNumber, phoneRegion, phoneVerificationOtp }
+export const updatePhone = (payload) => client.patch("/user/phone", payload);
 
 // POST /api/v1/user/me/deletion/request-code — sends a verification code
 // (by email) required to confirm account deletion below.

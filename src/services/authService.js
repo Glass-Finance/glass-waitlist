@@ -13,6 +13,25 @@ export async function register(payload) {
 }
 
 /**
+ * Request a registration OTP for an unclaimed phone number.
+ * @returns {Promise<{expiresAt}>}
+ */
+export async function requestPhoneOtp({ phoneNumber, phoneRegion }) {
+  const { data } = await client.post("/auth/phone/request-otp", { phoneNumber, phoneRegion });
+  return data.data;
+}
+
+/**
+ * Verify a registration phone OTP — returns a single-use confirmToken to
+ * pass to register().
+ * @returns {Promise<{confirmToken, expiresAt}>}
+ */
+export async function verifyPhoneOtp({ phoneNumber, phoneRegion, otp }) {
+  const { data } = await client.post("/auth/phone/verify-otp", { phoneNumber, phoneRegion, otp });
+  return data.data;
+}
+
+/**
  * Verify email with the code sent to the user's inbox.
  * @param {string} email
  * @param {string} token - the OTP/verification code

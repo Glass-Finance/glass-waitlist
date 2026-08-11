@@ -44,11 +44,22 @@ export const getCommunityMember = (communityId, memberId) =>
   client.get(`/communities/${communityId}/members/${memberId}`);
 
 // POST /api/v1/communities/{communityIdentifier}/members
-// payload: { email, roleId, billingExempt? }
+// payload: { email, roleId, billingExempt?, phoneNumber?, phoneRegion? }
+// Not currently called by any UI in this app — member creation goes through
+// the invites endpoints (src/api/invites.js) instead, which don't accept
+// phoneRegion. Kept phoneRegion-ready in case that changes.
 export const addCommunityMember = (communityId, payload) =>
   client.post(`/communities/${communityId}/members`, payload);
 
+// POST /api/v1/communities/{communityIdentifier}/members/bulk
+// payload: { members: [{ email, roleId, billingExempt?, phoneNumber?, phoneRegion? }] }
+// Same caveat as addCommunityMember above -- not called anywhere yet.
+export const bulkAddCommunityMembers = (communityId, payload) =>
+  client.post(`/communities/${communityId}/members/bulk`, payload);
+
 // PATCH /api/v1/communities/{communityIdentifier}/members/{memberId}
+// payload can include phoneNumber/phoneRegion -- only ever called with
+// { roleId } today (see MemberAccess.jsx's promote/demote).
 export const updateCommunityMember = (communityId, memberId, payload) =>
   client.patch(`/communities/${communityId}/members/${memberId}`, payload);
 

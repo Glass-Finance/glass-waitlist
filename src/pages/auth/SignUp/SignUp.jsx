@@ -3,10 +3,13 @@ import { usePageTitle } from "../../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../../../layouts/AuthLayout";
 import EmailPhoneStep from "./EmailPhoneStep";
+import PhoneOTPStep from "./PhoneOTPStep";
 import RegisterStep from "./RegisterStep";
 import OTPStep from "./OTPStep";
 import { useAuth } from "../../../store/AuthContext";
 
+// Steps: 1 email+phone -> 1.5 phone OTP (only when a phone was entered) ->
+// 2 name+password (register()) -> 3 email OTP.
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function SignUp() {
   usePageTitle("Create your account");
@@ -15,6 +18,7 @@ export default function SignUp() {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneConfirmToken, setPhoneConfirmToken] = useState("");
 
   // Some backends issue a session immediately on register, others only
   // after email verification — store it the moment either response
@@ -26,6 +30,14 @@ export default function SignUp() {
   const handleEmailPhone = ({ email: submittedEmail, phone: submittedPhone }) => {
     setEmail(submittedEmail);
     setPhone(submittedPhone);
+    // Phone is optional at registration -- skip straight to the register
+    // step when it's empty, same as the phone-verification spec requires
+    // (phoneConfirmToken is only meaningful when a number was provided).
+    setStep(submittedPhone ? 1.5 : 2);
+  };
+
+  const handlePhoneVerified = (confirmToken) => {
+    setPhoneConfirmToken(confirmToken);
     setStep(2);
   };
 
@@ -60,10 +72,18 @@ export default function SignUp() {
           onGoogleAuth={handleGoogleAuth}
         />
       )}
+      {step === 1.5 && (
+        <PhoneOTPStep
+          phone={phone}
+          onVerified={handlePhoneVerified}
+          onBack={() => setStep(1)}
+        />
+      )}
       {step === 2 && (
         <RegisterStep
           email={email}
           phone={phone}
+          phoneConfirmToken={phoneConfirmToken}
           onNext={handleRegistered}
         />
       )}

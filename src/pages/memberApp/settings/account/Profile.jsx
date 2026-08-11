@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Pencil } from "lucide-react";
-import { useMe, useUpdateProfile, useUpdateEmail } from "../../../../hooks/useMyAccount";
+import { useMe, useUpdateProfile, useUpdateEmail, useRequestPhoneUpdate, useUpdatePhone } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { useAuth } from "../../../../store/AuthContext";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { getEmailError } from "../../../../utils/validators";
+import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../../utils/phone";
 import { parseUserData } from "../../../../utils/userData";
 import EmailChangeModal from "../../../../components/common/EmailChangeModal";
+import PhoneChangeModal from "../../../../components/common/PhoneChangeModal";
 import { toTitleCase } from "../../../../utils/format";
 
 const inputCls = "w-full py-3 px-3.5 rounded-[10px] border-[1.5px] border-[#E0E0E0] text-sm text-[#111] outline-none bg-white box-border";
@@ -21,7 +23,7 @@ export default function Profile() {
   const { refreshUser } = useAuth();
   const photoInputRef = useRef(null);
 
-  const [form, setForm] = useState({ firstName: "", lastName: "", phone: "" });
+  const [form, setForm] = useState({ firstName: "", lastName: "" });
   const [savedForm, setSavedForm] = useState(form);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
@@ -33,13 +35,21 @@ export default function Profile() {
   const [emailError, setEmailError] = useState("");
   const [otpModalOpen, setOtpModalOpen] = useState(false);
 
+  // Phone changes go through OTP verification (POST /action-verification/request
+  // then PATCH /user/phone) — no longer part of the general profile PATCH.
+  const requestPhoneUpdate = useRequestPhoneUpdate();
+  const updatePhone = useUpdatePhone();
+  const [editingPhone, setEditingPhone] = useState(false);
+  const [newPhone, setNewPhone] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [phoneOtpModalOpen, setPhoneOtpModalOpen] = useState(false);
+
   useEffect(() => {
     if (!user) return;
     const ud = parseUserData(user);
     const loaded = {
       firstName: ud.firstName ?? "",
       lastName: ud.lastName ?? "",
-      phone: user.phoneNumber ?? ud.phone ?? "",
     };
     setForm(loaded);
     setSavedForm(loaded);
@@ -47,8 +57,7 @@ export default function Profile() {
 
   const isDirty =
     form.firstName !== savedForm.firstName ||
-    form.lastName !== savedForm.lastName ||
-    form.phone !== savedForm.phone;
+    form.lastName !== savedForm.lastName;
 
   async function handleSave() {
     setError("");
@@ -58,7 +67,6 @@ export default function Profile() {
       const userData = {};
       if (form.firstName !== savedForm.firstName) userData.firstName = toTitleCase(form.firstName.trim());
       if (form.lastName !== savedForm.lastName) userData.lastName = toTitleCase(form.lastName.trim());
-      if (form.phone !== savedForm.phone) userData.phoneNumber = form.phone;
       await updateProfile.mutateAsync({
         username: user?.username,
         userData,
@@ -139,6 +147,50 @@ export default function Profile() {
     setOtpModalOpen(false);
     setEditingEmail(false);
     setNewEmail("");
+  }
+
+  function startEditPhone() {
+    setNewPhone(user?.phoneNumber ?? "");
+    setPhoneError("");
+    setEditingPhone(true);
+  }
+
+  function cancelEditPhone() {
+    setEditingPhone(false);
+    setNewPhone("");
+    setPhoneError("");
+  }
+
+  async function handleRequestPhoneChange() {
+    const trimmed = newPhone.trim();
+    if (!isPhoneValid(trimmed)) {
+      setPhoneError(PHONE_FORMAT_HINT);
+      return;
+    }
+    if (trimmed === user?.phoneNumber) {
+      setPhoneError("That's already your current phone number.");
+      return;
+    }
+    setPhoneError("");
+    try {
+      // Send just the number — no OTP yet — triggers the backend to send a
+      // verification code before anything actually changes.
+      await requestPhoneUpdate.mutateAsync({ phoneNumber: trimmed });
+      setPhoneOtpModalOpen(true);
+    } catch (err) {
+      setPhoneError(getErrorMessage(err, "Couldn't start the phone change. Please try again."));
+    }
+  }
+
+  async function handleConfirmPhoneOtp(otp) {
+    await updatePhone.mutateAsync({ phoneNumber: newPhone.trim(), phoneVerificationOtp: otp });
+  }
+
+  async function handlePhoneVerified() {
+    await refreshUser();
+    setPhoneOtpModalOpen(false);
+    setEditingPhone(false);
+    setNewPhone("");
   }
 
   const ud = parseUserData(user);
@@ -241,7 +293,47 @@ export default function Profile() {
           </div>
           <div>
             <label className="text-xs text-[#888] block mb-1.5">Phone Number</label>
-            <input className={inputCls} value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
+            {editingPhone ? (
+              <>
+                <input
+                  className={inputCls}
+                  type="tel"
+                  value={newPhone}
+                  onChange={(e) => { setNewPhone(e.target.value); setPhoneError(""); }}
+                  placeholder="Enter new phone number"
+                  autoFocus
+                />
+                {phoneError && <p className="text-xs text-danger mt-1.5 mx-1 mb-0">{phoneError}</p>}
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={handleRequestPhoneChange}
+                    disabled={requestPhoneUpdate.isPending}
+                    className={`flex-1 py-2.5 px-0 rounded-lg border-none bg-brand text-white text-[13px] font-semibold cursor-pointer ${requestPhoneUpdate.isPending ? "opacity-70" : "opacity-100"}`}
+                  >
+                    {requestPhoneUpdate.isPending ? "Sending code…" : "Send Verification Code"}
+                  </button>
+                  <button
+                    onClick={cancelEditPhone}
+                    disabled={requestPhoneUpdate.isPending}
+                    className="py-2.5 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] bg-white text-[#666] text-[13px] font-semibold cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <input className={`${inputCls} bg-[#F5F5F5] text-[#999]`} value={user?.phoneNumber ?? ""} disabled />
+                <button
+                  onClick={startEditPhone}
+                  title="Change phone number"
+                  aria-label="Change phone number"
+                  className="flex-shrink-0 w-10 h-10 rounded-[10px] border-[1.5px] border-[#E0E0E0] bg-white text-brand cursor-pointer flex items-center justify-center"
+                >
+                  <Pencil size={15} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -263,6 +355,17 @@ export default function Profile() {
           onVerified={handleEmailVerified}
           onWrongEmail={() => setOtpModalOpen(false)}
           onClose={() => setOtpModalOpen(false)}
+        />
+      )}
+
+      {phoneOtpModalOpen && (
+        <PhoneChangeModal
+          newPhone={newPhone}
+          onSubmitOtp={handleConfirmPhoneOtp}
+          onVerified={handlePhoneVerified}
+          onWrongNumber={() => setPhoneOtpModalOpen(false)}
+          onResend={() => requestPhoneUpdate.mutateAsync({ phoneNumber: newPhone.trim() })}
+          onClose={() => setPhoneOtpModalOpen(false)}
         />
       )}
     </div>

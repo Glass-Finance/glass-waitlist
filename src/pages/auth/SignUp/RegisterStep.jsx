@@ -33,7 +33,7 @@ function validateField(field, value, otherValue) {
   return "";
 }
 
-export default function RegisterStep({ email, phone, onNext }) {
+export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -88,8 +88,13 @@ export default function RegisterStep({ email, phone, onNext }) {
         firstName: form.firstName,
         lastName: form.lastName,
         email,
-        phoneNumber: phone,
         password: form.password,
+        // Phone stays optional at registration -- phoneConfirmToken is only
+        // required (and only sent) when a number was actually verified in
+        // the phone OTP step. Omitting phoneRegion: numbers collected here
+        // are always entered in international format already (see
+        // PHONE_FORMAT_HINT), so there's no separate region field to send.
+        ...(phone && { phoneNumber: phone, phoneConfirmToken }),
       });
       onNext(email, result);
     } catch (err) {
