@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getMyCommunities } from "../api/members";
+import { getMyCommunityJoinRequests } from "../api/invites";
 import { toastSuccess } from "../utils/toast";
 
 // The backend sends no reliable signal to the requesting member when an
@@ -41,9 +42,10 @@ export function recordPendingJoinRequest({ id, slug, name }) {
 }
 
 // Pending requests younger than 14 days — Discover uses this to keep the
-// button on "Request sent" across reloads. There's no rejection signal, so
-// older entries drop out and the member can request again rather than being
-// locked out forever by a request an admin quietly rejected.
+// button on "Request sent" across reloads. useJoinApprovalWatcher below is
+// what actually clears an entry once the backend resolves it (approved or
+// rejected); the TTL here is just a last-resort backstop in case that watch
+// never runs for some reason, so the member isn't locked out forever.
 const PENDING_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
 export function getPendingJoinRequests() {
@@ -67,17 +69,28 @@ export function useJoinApprovalWatcher() {
     staleTime: 1000 * 60 * 5,
   });
 
+  // A rejected request never becomes a membership, so it can never show up
+  // in `communities` above — this is the only place a REJECTED outcome is
+  // visible at all, and it's what lets a rejected card flip back to
+  // "Request to Join" instead of sitting on "Request sent" until the TTL.
+  const { data: joinRequests } = useQuery({
+    queryKey: ["join-requests", "me"],
+    queryFn: async () => unwrapList(await getMyCommunityJoinRequests()),
+    staleTime: 1000 * 60,
+  });
+
   const [approved, setApproved] = useState([]);
+  const [pending, setPending] = useState(() => getPendingJoinRequests());
 
   useEffect(() => {
-    if (!communities?.length) return;
-    const pending = readPending();
-    if (!pending.length) return;
+    if (!communities?.length && !joinRequests?.length) return;
+    const current = readPending();
+    if (!current.length) return;
 
     const matched = [];
     const remaining = [];
-    for (const p of pending) {
-      const hit = communities.find((c) => {
+    for (const p of current) {
+      const activeHit = communities?.find((c) => {
         const cid = c.id ?? c.community?.id;
         const cslug = c.slug ?? c.community?.slug;
         const status = (c.memberStatus ?? "ACTIVE").toUpperCase();
@@ -86,30 +99,44 @@ export function useJoinApprovalWatcher() {
           ((p.id && cid === p.id) || (p.slug && cslug === p.slug))
         );
       });
-      if (hit) {
+      if (activeHit) {
         matched.push({
           ...p,
-          communitySlug: hit.slug ?? hit.community?.slug ?? p.slug,
-          communityId: hit.id ?? hit.community?.id ?? p.id,
-          name: hit.name ?? hit.community?.name ?? p.name,
+          communitySlug: activeHit.slug ?? activeHit.community?.slug ?? p.slug,
+          communityId: activeHit.id ?? activeHit.community?.id ?? p.id,
+          name: activeHit.name ?? activeHit.community?.name ?? p.name,
         });
-      } else {
-        remaining.push(p);
+        continue;
       }
+      const rejected = joinRequests?.some((r) => {
+        const rid = r.community?.id ?? r.communityId ?? r.id;
+        const rslug = r.community?.slug ?? r.communitySlug ?? r.slug;
+        const status = (r.status ?? "PENDING").toUpperCase();
+        return (
+          status === "REJECTED" &&
+          ((p.id && rid === p.id) || (p.slug && rslug === p.slug))
+        );
+      });
+      if (rejected) continue;
+      remaining.push(p);
     }
 
-    if (matched.length) {
+    if (remaining.length !== current.length) {
       writePending(remaining);
+      setPending(getPendingJoinRequests());
+    }
+    if (matched.length) {
       setApproved((prev) => [...prev, ...matched]);
       for (const m of matched) {
         toastSuccess(`You're in! Your request to join ${m.name} was approved`);
       }
     }
-  }, [communities]);
+  }, [communities, joinRequests]);
 
   return {
     approved,
     dismiss: (entry) =>
       setApproved((prev) => prev.filter((a) => a !== entry)),
+    pending,
   };
 }

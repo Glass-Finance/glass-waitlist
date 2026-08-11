@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -14,7 +14,6 @@ import { searchPublicCommunities } from "../../api/communities";
 import { submitJoinRequest } from "../../api/invites";
 import {
   recordPendingJoinRequest,
-  getPendingJoinRequests,
   useJoinApprovalWatcher,
 } from "../../hooks/useJoinApproval";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
@@ -220,13 +219,19 @@ export default function DiscoverCommunities() {
     queryFn: async () => unwrapList(await getMyCommunities()),
     staleTime: 1000 * 60 * 5,
   });
-  const pendingLocal = useMemo(() => getPendingJoinRequests(), []);
 
   // Only surfaced here -- this page is where a member is actively waiting
   // on a request, so it's the only place an approval landing mid-session
   // should interrupt with a popup. One at a time; dismissing (or opening
   // the community) reveals the next if more than one came through.
-  const { approved: approvedJoins, dismiss: dismissJoin } = useJoinApprovalWatcher();
+  // `pending` comes from the same watcher, so a rejection resolved by an
+  // admin mid-session flips the card back to "Request to Join" here too,
+  // instead of only after the next reload.
+  const {
+    approved: approvedJoins,
+    dismiss: dismissJoin,
+    pending: pendingLocal,
+  } = useJoinApprovalWatcher();
   const activeApproval = approvedJoins[0] ?? null;
 
   function openApprovedCommunity(entry) {
