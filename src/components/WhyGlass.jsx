@@ -108,7 +108,7 @@ export default function WhyGlass() {
           </div>
 
           {/* Headline — BlurText word-by-word */}
-          <h2 className="text-[clamp(32px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-4">
+          <h2 className="font-sans text-[clamp(32px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-4">
             <BlurText
               text="Frequently Asked Questions"
               animateBy="words"
