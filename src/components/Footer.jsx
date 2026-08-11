@@ -39,7 +39,7 @@ export default function Footer() {
   const navigate = useNavigate();
 
   return (
-    <footer className="bg-[#0d1a6e] text-white">
+    <footer className="relative isolate bg-[#0d1a6e] text-white">
       {/* ── CTA ── */}
       <div className="relative pt-20 md:pt-28 pb-20 overflow-hidden">
         <div
