@@ -91,7 +91,7 @@ export default function WhyGlass() {
   }, []);
 
   return (
-    <section className="relative isolate py-20 md:py-28 overflow-hidden">
+    <section className="relative isolate py-20 md:py-28 overflow-hidden font-urbanist">
       <div className="max-w-[1140px] mx-auto px-6 relative z-10">
 
         {/* ── Header ── */}
