@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
-import { motion } from "motion/react";
+import { motion, useScroll, useTransform } from "motion/react";
 import BlurText from "./ui/BlurText";
-import GlowOrbs from "./common/GlowOrbs";
 
 import icon1 from "../assets/security/icon1.webp";
 import icon2 from "../assets/security/icon2.webp";
@@ -33,6 +32,11 @@ const TILTS = [
 
 export default function SecurityFeatures() {
   const cardRefs = useRef([]);
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
+  const orb1Y = useTransform(scrollYProgress, [0, 1], ["-40px", "40px"]);
+  const orb2Y = useTransform(scrollYProgress, [0, 1], ["30px", "-50px"]);
+  const orb3Y = useTransform(scrollYProgress, [0, 1], ["-20px", "60px"]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -65,10 +69,25 @@ export default function SecurityFeatures() {
 
   return (
     <section
+      ref={sectionRef}
       className="relative bg-[#F7F8FC] overflow-hidden py-20 md:py-28"
       id="security"
     >
-      <GlowOrbs />
+      {/* ── Parallax glow orbs ── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <motion.div
+          className="absolute top-[10%] left-[5%] w-[340px] h-[340px] rounded-full bg-[radial-gradient(circle,rgba(28,43,138,0.08)_0%,transparent_70%)] blur-[60px] will-change-transform"
+          style={{ y: orb1Y }}
+        />
+        <motion.div
+          className="absolute bottom-[12%] right-[8%] w-[280px] h-[280px] rounded-full bg-[radial-gradient(circle,rgba(124,58,237,0.07)_0%,transparent_70%)] blur-[55px] will-change-transform"
+          style={{ y: orb2Y }}
+        />
+        <motion.div
+          className="absolute top-[40%] right-[20%] w-[200px] h-[200px] rounded-full bg-[radial-gradient(circle,rgba(28,43,138,0.05)_0%,transparent_70%)] blur-[45px] will-change-transform"
+          style={{ y: orb3Y }}
+        />
+      </div>
       <div className="relative z-10 max-w-[1140px] mx-auto px-6">
         {/* ── Header ── */}
         <div className="mb-8 md:mb-16 text-center">

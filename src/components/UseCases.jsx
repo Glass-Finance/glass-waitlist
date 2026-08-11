@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import BlurText from "./ui/BlurText";
-import GlowOrbs from "./common/GlowOrbs";
 // import case1 from "../assets/usecase/case1.webp";
 // import case2 from "../assets/usecase/case2.webp";
 // import case3 from "../assets/usecase/case3.webp";
@@ -273,7 +272,6 @@ export default function UseCases() {
         className="bg-white py-20 md:py-28 relative overflow-hidden"
         id="use-cases"
       >
-        <GlowOrbs />
 
         <div className="max-w-[1140px] mx-auto px-6 relative z-10">
           {/* ── Header ── */}

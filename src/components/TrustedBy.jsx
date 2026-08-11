@@ -1,5 +1,4 @@
 import { useRef, useEffect } from "react";
-import GlowOrbs from "./common/GlowOrbs";
 
 // Trimmed to just the confirmed partner. GDG Babcock is intentionally
 // left out for now -- the only GDG asset we ever had was a GDG *Lagos*
@@ -57,9 +56,8 @@ export default function TrustedBy() {
   }, []);
 
   return (
-    <section className="relative bg-[#F7F8FC] py-16 px-6 md:px-12 lg:px-24 overflow-hidden">
-      <GlowOrbs />
-      <div className="max-w-7xl mx-auto relative z-10">
+    <section className="bg-[#F7F8FC] py-16 px-6 md:px-12 lg:px-24">
+      <div className="max-w-7xl mx-auto">
         <p
           ref={labelRef}
           className="text-center text-[13px] font-semibold text-[#9099b2] uppercase tracking-widest mb-10"
