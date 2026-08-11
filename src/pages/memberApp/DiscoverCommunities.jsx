@@ -56,6 +56,17 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
     (Array.isArray(community.category)
       ? community.category[0]
       : community.category) ?? "Community";
+  // Field name unconfirmed against the public search response -- covers
+  // every variant used elsewhere in the app (metrics.totalMembers is the
+  // one the admin-scoped community endpoints use) so whichever one the
+  // public endpoint actually sends still renders.
+  const memberCount =
+    community.memberCount ??
+    community.membersCount ??
+    community.totalMembers ??
+    community.metrics?.totalMembers ??
+    community.metrics?.activeMembers ??
+    null;
 
   async function handleRequest() {
     if (alreadyMember || alreadyPending || loading) return;
@@ -86,7 +97,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
     }
   }
   return (
-    <div className="bg-white rounded-2xl border border-outline-on-surface overflow-hidden">
+    <div className="bg-white rounded-xl border border-outline-on-surface overflow-hidden">
       {/* Header row */}
       <div className="flex items-center gap-3 px-4 pt-4 pb-3.5 border-b border-outline-on-surface">
         {/* Logo */}
@@ -123,14 +134,14 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
           </p>
         )}
 
-        {(community.memberCount != null ||
+        {(memberCount != null ||
           community.requiresMemberApproval === false) && (
           <div className="flex items-center gap-3">
-            {community.memberCount != null && (
+            {memberCount != null && (
               <span className="flex items-center gap-1.5 text-sm text-[#888]">
                 <Users size={15} className="text-[#111]" />
                 <span className="font-bold text-[#111]">
-                  {community.memberCount.toLocaleString()}
+                  {memberCount.toLocaleString()}
                 </span>
                 Members
               </span>
