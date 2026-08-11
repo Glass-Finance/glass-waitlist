@@ -113,7 +113,7 @@ function ErrorMessage({ message }) {
 }
 
 // ---------------------------------------------------------------------------
-// Step 1 — Contact (email + WhatsApp number) — no API call here, just like
+// Step 1 — Contact (email + phone number) — no API call here, just like
 // SignUp's EmailPhoneStep; the fields are handed up to Join()'s local state
 // and combined with StepProfile's fields into one register() call once step
 // 2 completes, since the backend only sends a verification code after the
@@ -203,7 +203,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
       </div>
 
       <div>
-        <Label htmlFor="phone">WhatsApp Number</Label>
+        <Label htmlFor="phone">Phone Number</Label>
         <TextInput
           id="phone"
           type="tel"
@@ -218,7 +218,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
         <div className="flex items-start gap-1.5 mt-1.5">
           <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-gray-500 leading-snug">
-            This number should be linked to an active WhatsApp account — we'll use it to send you updates.
+            We'll use this number to send you updates.
           </p>
         </div>
       </div>
