@@ -8,10 +8,10 @@ import { SignUpTextInput, SignUpFieldError } from "./SignUpTextInput";
 import { Button as PrimaryBtn } from "../../../components/ui/Button";
 
 const Divider = () => (
-  <div className="flex items-center gap-3 my-2">
-    <div className="flex-1 h-px bg-gray-200" />
+  <div className="flex items-center gap-3 my-5">
+    <div className="flex-1 h-px bg-gray-300" />
     <span className="text-xs text-gray-400">or</span>
-    <div className="flex-1 h-px bg-gray-200" />
+    <div className="flex-1 h-px bg-gray-300" />
   </div>
 );
 

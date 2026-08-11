@@ -45,7 +45,7 @@ export default function PayingMember() {
 
       <div className="absolute top-5 left-6 lg:left-8 flex items-center gap-2">
         <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
-        <span className="font-semibold text-gray-900">Glass</span>
+        <span className="font-medium text-gray-900">Glass</span>
       </div>
 
       <div className="w-full max-w-lg flex flex-col items-center">

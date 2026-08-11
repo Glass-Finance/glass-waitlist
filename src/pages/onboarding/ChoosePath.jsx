@@ -70,7 +70,7 @@ export default function ChoosePath() {
       <header className="relative flex items-center px-6 lg:px-8 py-5 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
-          <span className="font-bold text-gray-900 text-base">Glass</span>
+          <span className="font-medium text-gray-900 text-base">Glass</span>
         </div>
       </header>
 

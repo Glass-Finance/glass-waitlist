@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { googleAuth } from "../../services/authService";
 import { useAuth } from "../../store/AuthContext";
@@ -17,6 +18,24 @@ import { notifyError } from "../../utils/errorHandler";
  */
 export default function GoogleAuthButton({ onAuthenticated, label = "continue_with" }) {
   const { setSession } = useAuth();
+  const containerRef = useRef(null);
+  // Google's widget takes a fixed pixel width, not a percentage -- was
+  // hardcoded to 320, so it rendered visibly narrower than the input
+  // fields/Continue button (both w-full) once the form column widened past
+  // 320px. Measuring the wrapper instead keeps it edge-to-edge with the
+  // rest of the form on any screen size.
+  const [width, setWidth] = useState(320);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const measured = entry?.contentRect.width;
+      if (measured) setWidth(Math.round(measured));
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   async function handleCredential(credentialResponse) {
     if (!credentialResponse?.credential) {
@@ -33,13 +52,13 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
   }
 
   return (
-    <div className="w-full flex justify-center">
+    <div ref={containerRef} className="w-full flex justify-center">
       <GoogleLogin
         onSuccess={handleCredential}
         onError={() => notifyError(new Error("Google sign-in was cancelled or failed."), { context: "Google auth" })}
         text={label}
         shape="pill"
-        width="320"
+        width={String(width)}
       />
     </div>
   );
