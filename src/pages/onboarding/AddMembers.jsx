@@ -104,7 +104,7 @@ function SuccessModal({ communityName, onDashboard, onCopy }) {
         </div>
         <h2 className="text-lg font-semibold text-gray-900 mb-2">Your Community Is Now Live</h2>
         <p className="text-xs text-gray-500 mb-8">{communityName ?? "Your community"} is all set up on Glass!</p>
-        <Button onClick={onDashboard} className="lg:w-4/5 mb-5">
+        <Button onClick={onDashboard} size="sm" className="lg:w-4/5 mb-5">
           Go To Dashboard
         </Button>
         <p className="text-xs text-gray-900 mb-1">Ready To Invite Members?</p>
@@ -541,6 +541,7 @@ export default function AddMembers() {
                     onClick={handleSubmit}
                     disabled={urlStage === "fetching"}
                     loading={loading}
+                    size="sm"
                     className="mt-6"
                   >
                     {loading ? "Adding members…" : "Create Your Community"}
@@ -623,6 +624,7 @@ export default function AddMembers() {
                       onClick={handleSendInvite}
                       disabled={emails.length === 0 || rolesLoading || !selectedRoleId}
                       loading={loading}
+                      size="sm"
                       className="lg:w-auto px-6"
                     >
                       {loading ? "Sending…" : "Send Invite"}

@@ -15,19 +15,26 @@ export const Button = forwardRef(function Button(
     disabled,
     loading,
     fullWidth = true,
+    // "lg" matches the taller auth-page inputs (Sign In, Sign Up, Join,
+    // Reset Password, Choose Path, Paying Member, Check Email, Mobile
+    // Required). "sm" matches the more compact card-form inputs used by
+    // the Organization/Payment/Members onboarding funnel -- a button that
+    // height-matches its own page's inputs, not a fixed size everywhere.
+    size = "lg",
     className = "",
     ...rest
   },
   ref,
 ) {
   const isDisabled = disabled || loading;
+  const sizeClasses = size === "sm" ? "py-2.5 text-sm" : "py-4 text-button";
   return (
     <button
       ref={ref}
       type={type}
       onClick={onClick}
       disabled={isDisabled}
-      className={`${fullWidth ? "w-full " : ""}rounded-xl py-4 text-button font-semibold text-white transition-all duration-150 active:scale-[0.98] disabled:cursor-not-allowed ${isDisabled ? "bg-[#B0B8D8]" : "bg-brand hover:opacity-90"} ${className}`}
+      className={`${fullWidth ? "w-full " : ""}rounded-xl ${sizeClasses} font-semibold text-white transition-all duration-150 active:scale-[0.98] disabled:cursor-not-allowed ${isDisabled ? "bg-[#B0B8D8]" : "bg-brand hover:opacity-90"} ${className}`}
       {...rest}
     >
       {children}
