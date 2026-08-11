@@ -24,6 +24,7 @@ import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onbo
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import StepIndicator from "../../components/onboarding/StepIndicator";
+import { Button } from "../../components/ui/Button";
 
 const INVITE_HOST = APP_ORIGIN.replace(/^https?:\/\//, "");
 
@@ -394,13 +395,9 @@ export default function OrganizationProfile() {
 
             {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
 
-            <button
-              type="submit"
-              disabled={loading || checking || available === false}
-              className="w-full lg:w-1/2 mx-auto block py-4 rounded-full text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-60 bg-brand"
-            >
+            <Button type="submit" disabled={checking || available === false} loading={loading} className="lg:w-1/2 mx-auto block">
               {loading ? "Creating community..." : "Next"}
-            </button>
+            </Button>
             <div className="h-[env(safe-area-inset-bottom,20px)] lg:hidden" />
           </form>
         </main>

@@ -13,6 +13,7 @@ import { getErrorMessage } from "../../utils/errorHandler";
 import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
 import Toggle from "../common/Toggle";
 import AutoPayPrompt from "../common/AutoPayPrompt";
+import { Button } from "../ui/Button";
 
 // This modal shows "—" for a null/undefined amount rather than "₦0" (the
 // prefetch-derived fee breakdown reads as genuinely unknown before it
@@ -333,10 +334,12 @@ export function AdminPaymentModal({ item, onClose }) {
         {/* ── Footer -- single action, matching the X close button for
             "never mind" instead of a redundant second Cancel button. ── */}
         <div className="px-7 pb-6 flex items-center justify-end">
-          <button
+          <Button
             onClick={handlePay}
-            disabled={initiatePayment.isPending || redirecting || isLinkInactive}
-            className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border-none transition-opacity flex items-center gap-2 bg-brand"
+            disabled={isLinkInactive}
+            loading={initiatePayment.isPending || redirecting}
+            fullWidth={false}
+            className="px-6 flex items-center gap-2"
           >
             {initiatePayment.isPending || redirecting ? (
               <>
@@ -348,7 +351,7 @@ export function AdminPaymentModal({ item, onClose }) {
             ) : (
               "Make Payment"
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

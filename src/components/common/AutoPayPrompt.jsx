@@ -1,5 +1,6 @@
 import { formatNaira } from "../../utils/format";
 import { frequencyAdverb } from "../../utils/recurring";
+import { Button } from "../ui/Button";
 
 // Auto-Pay prompt — shown once on returning to Home (member) or the
 // dashboard (admin paying their own dues) right after paying a recurring
@@ -31,12 +32,9 @@ export default function AutoPayPrompt({ prompt, onDismiss, onEnable }) {
           >
             No
           </button>
-          <button
-            onClick={onEnable}
-            className="py-[11px] px-[26px] rounded-lg border-none bg-brand text-white text-sm font-semibold cursor-pointer"
-          >
+          <Button onClick={onEnable} fullWidth={false} className="px-[26px]">
             Yes
-          </button>
+          </Button>
         </div>
       </div>
     </div>

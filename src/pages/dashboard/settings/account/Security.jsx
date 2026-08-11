@@ -7,6 +7,7 @@ import { getErrorMessage } from "../../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
 import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
 import LoadingState from "../../../../components/common/LoadingState";
+import { Button } from "../../../../components/ui/Button";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
 
@@ -116,12 +117,9 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 </p>
               </div>
               {error && <p className="text-xs text-red-500">{error}</p>}
-              <button
-                onClick={startSetup}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer bg-brand"
-              >
+              <Button onClick={startSetup}>
                 Begin Setup
-              </button>
+              </Button>
             </>
           )}
 
@@ -162,13 +160,13 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 className={inputCls}
               />
               {error && <p className="text-xs text-red-500">{error}</p>}
-              <button
+              <Button
                 onClick={confirmEnable}
-                disabled={code.length !== 6 || loading}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer disabled:opacity-50 bg-brand"
+                disabled={code.length !== 6}
+                loading={loading}
               >
                 {loading ? "Activating…" : "Activate MFA"}
-              </button>
+              </Button>
             </>
           )}
 
@@ -210,12 +208,9 @@ function MfaModal({ mode, onClose, onSuccess }) {
                   ))}
                 </div>
               )}
-              <button
-                onClick={onSuccess}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer bg-brand"
-              >
+              <Button onClick={onSuccess}>
                 Done
-              </button>
+              </Button>
             </div>
           )}
 

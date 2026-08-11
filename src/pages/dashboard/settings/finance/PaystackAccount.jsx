@@ -5,6 +5,7 @@ import { useCommunityAccount } from "../../../../hooks/useCommunityAccount";
 import { useCommunity } from "../../../../hooks/useCommunity";
 import AccountFormModal from "../../../../components/dashboard/AccountFormModal";
 import LoadingState from "../../../../components/common/LoadingState";
+import { Button } from "../../../../components/ui/Button";
 import { formatNairaCompact as formatNaira, formatDate } from "../../../../utils/format";
 import banksData from "nigerian-bank-icons/assets/banks.json";
 
@@ -362,12 +363,13 @@ export default function PaystackAccount() {
             Add a bank account so Glass can settle your community's collected
             payments.
           </p>
-          <button
+          <Button
             onClick={() => setShowModal(true)}
-            className="px-5 py-2.5 rounded-full text-sm text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer"
+            fullWidth={false}
+            className="px-5"
           >
             Add Payout Account
-          </button>
+          </Button>
         </div>
       )}
 

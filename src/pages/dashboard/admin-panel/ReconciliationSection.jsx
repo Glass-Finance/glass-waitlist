@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, Scale, ShieldCheck } from "lucide-react";
 import ModalShell from "../../../components/dashboard/ModalShell";
+import { Button } from "../../../components/ui/Button";
 import {
   getAdminReconciliationRuns,
   triggerReconciliationRun,
@@ -192,13 +193,14 @@ function FindingReviewModal({ finding, mode, onClose }) {
           >
             Cancel
           </button>
-          <button
+          <Button
             onClick={() => (isResolve ? resolve.mutate() : review.mutate())}
-            disabled={review.isPending || resolve.isPending}
-            className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50 bg-brand"
+            loading={review.isPending || resolve.isPending}
+            fullWidth={false}
+            className="flex-1"
           >
             {review.isPending || resolve.isPending ? "Saving…" : isResolve ? "Resolve" : "Mark Reviewed"}
-          </button>
+          </Button>
         </div>
       </div>
     </ModalShell>

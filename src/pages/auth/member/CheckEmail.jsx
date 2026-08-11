@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import GlassLogo from "../../../assets/Glass.webp";
 import QRCodeCanvas from "../../../components/common/QRCodeCanvas";
 import { buildMobileUrl } from "../../../utils/deviceRedirect";
+import { Button } from "../../../components/ui/Button";
 
 export default function CheckEmail() {
   const navigate  = useNavigate();
@@ -35,12 +36,9 @@ export default function CheckEmail() {
 
           <QRCodeCanvas value={joinUrl} size={170} color="#000000" />
 
-          <button
-            onClick={() => navigate("/dashboard/home")}
-            className="w-full max-w-xl mt-4 py-3 rounded-full text-white text-sm font-medium transition-all hover:opacity-90 active:scale-[0.98] border-none cursor-pointer bg-brand"
-          >
+          <Button onClick={() => navigate("/dashboard/home")} className="max-w-xl mt-4">
             Continue
-          </button>
+          </Button>
 
           {/* Divider */}
           <div className="flex items-center gap-4 w-full my-3">

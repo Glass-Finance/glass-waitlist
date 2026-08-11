@@ -19,6 +19,7 @@ import {
   formatDate as formatDateShort,
   toTitleCase,
 } from "../../utils/format";
+import { Button } from "../../components/ui/Button";
 
 function firstName(user) {
   try {
@@ -281,12 +282,12 @@ function NoCommunityState({ navigate }) {
       </p>
 
       {/* Primary CTA */}
-      <button
+      <Button
         onClick={() => navigate("/member/communities/search")}
-        className="w-full max-w-[300px] py-4 rounded-[10px] border-none bg-brand text-white text-[15px] font-semibold cursor-pointer mb-4"
+        className="max-w-[300px] mb-4"
       >
         Join A Community
-      </button>
+      </Button>
 
       {/* Secondary link */}
       <button
@@ -323,12 +324,12 @@ function NothingHappeningState({ navigate }) {
         Check out your other communities to see what's happening.
       </p>
 
-      <button
+      <Button
         onClick={() => navigate("/member/communities/search")}
-        className="w-full max-w-[300px] py-4 rounded-[10px] border-none bg-brand text-white text-[15px] font-semibold cursor-pointer mb-4"
+        className="max-w-[300px] mb-4"
       >
         Browse Communities
-      </button>
+      </Button>
 
       <button
         onClick={() => navigate("/member/notifications")}

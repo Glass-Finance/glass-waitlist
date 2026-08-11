@@ -5,6 +5,7 @@ import { APP_ORIGIN } from "../../../utils/deviceRedirect";
 import { useCommunityMembers, useRoles } from "../../../hooks/useCommunityMembers";
 import { getEmailError } from "../../../utils/validators";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
+import { Button } from "../../../components/ui/Button";
 
 const ALLOWED_ROLE_NAMES = new Set([
   "Community Member",
@@ -525,15 +526,15 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                 </div>
 
                 {csvRows.length > 0 && (
-                  <button
+                  <Button
                     onClick={handleUploadCSV}
-                    disabled={uploading}
-                    className="w-full py-3.5 rounded-full text-white font-semibold text-sm bg-brand hover:opacity-90 active:scale-[0.98] transition-all mt-5 border-none cursor-pointer disabled:opacity-60"
+                    loading={uploading}
+                    className="mt-5"
                   >
                     {uploading
                       ? "Sending invites…"
                       : `Send Invites to ${csvRows.length} Members`}
-                  </button>
+                  </Button>
                 )}
               </>
             )}
@@ -624,13 +625,15 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                 )}
 
                 <div className="flex justify-end">
-                  <button
+                  <Button
                     onClick={handleSendInvite}
-                    disabled={emails.length === 0 || manualLoading}
-                    className="px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-brand hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
+                    disabled={emails.length === 0}
+                    loading={manualLoading}
+                    fullWidth={false}
+                    className="px-6"
                   >
                     {manualLoading ? "Sending…" : "Send Invite"}
-                  </button>
+                  </Button>
                 </div>
               </>
             )}

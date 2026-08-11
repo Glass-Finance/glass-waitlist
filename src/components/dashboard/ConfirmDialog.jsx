@@ -1,5 +1,6 @@
 import { Loader2 } from "lucide-react";
 import ModalShell from "./ModalShell";
+import { Button } from "../ui/Button";
 
 // Generic branded confirm dialog for dashboard destructive/state-changing
 // actions (remove member, promote/demote, remove payment method, turn off
@@ -32,15 +33,28 @@ export default function ConfirmDialog({
           >
             Cancel
           </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={confirming}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none ${danger ? "bg-danger" : "bg-brand"}`}
-          >
-            {confirming && <Loader2 size={12} className="animate-spin" />}
-            {confirming ? (confirmingLabel ?? "Please wait…") : confirmLabel}
-          </button>
+          {danger ? (
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={confirming}
+              className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-danger"
+            >
+              {confirming && <Loader2 size={12} className="animate-spin" />}
+              {confirming ? (confirmingLabel ?? "Please wait…") : confirmLabel}
+            </button>
+          ) : (
+            <Button
+              type="button"
+              onClick={onConfirm}
+              loading={confirming}
+              fullWidth={false}
+              className="flex-1 flex items-center justify-center gap-1.5"
+            >
+              {confirming && <Loader2 size={12} className="animate-spin" />}
+              {confirming ? (confirmingLabel ?? "Please wait…") : confirmLabel}
+            </Button>
+          )}
         </div>
       </div>
     </ModalShell>

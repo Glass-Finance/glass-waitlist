@@ -3,6 +3,7 @@ import GlassLogo from "../../../assets/Glass.webp";
 import QRCodeCanvas from "../../../components/common/QRCodeCanvas";
 import { buildMobileUrl } from "../../../utils/deviceRedirect";
 import { useAuth } from "../../../store/AuthContext";
+import { Button } from "../../../components/ui/Button";
 
 export default function MobileRequired() {
   const navigate = useNavigate();
@@ -45,12 +46,9 @@ export default function MobileRequired() {
 
           <QRCodeCanvas value={url} size={200} color="#000000" />
 
-          <button
-            onClick={() => navigate(continueTo)}
-            className="w-full max-w-md mt-4 py-3 rounded-full text-white text-sm font-medium transition-all hover:opacity-90 active:scale-[0.98] border-none cursor-pointer bg-brand"
-          >
+          <Button onClick={() => navigate(continueTo)} className="max-w-md mt-4">
             Continue
-          </button>
+          </Button>
         </div>
       </main>
     </div>

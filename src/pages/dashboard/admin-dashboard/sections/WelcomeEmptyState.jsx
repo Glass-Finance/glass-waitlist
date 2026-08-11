@@ -1,5 +1,6 @@
 import { Check, ChevronRight, Users } from "lucide-react";
 import inviteIllustration from "../../../../assets/dashboard/empty-states/invite-illustration.png";
+import { Button } from "../../../../components/ui/Button";
 
 // The very first thing an admin sees on a brand-new community — before a
 // single member or payment plan exists. Replaces the whole dashboard body
@@ -23,12 +24,13 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
       <p className="text-base text-gray-400 text-center mb-7 max-w-sm">
         Let's get your community ready to start collecting.
       </p>
-      <button
+      <Button
         onClick={onCreatePlan}
-        className="px-6 py-4 rounded-full text-sm font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer mb-8"
+        fullWidth={false}
+        className="px-6 mb-8"
       >
         Create Your First Collection
-      </button>
+      </Button>
 
       <div className="w-full max-w-lg flex flex-col gap-2.5">
         <div className="w-full bg-white rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left shadow-[0_1px_4px_rgba(0,47,167,0.05)]">

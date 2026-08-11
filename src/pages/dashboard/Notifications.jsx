@@ -11,6 +11,7 @@ import { notificationCategory, isSelfAccountType, notificationVisual } from "../
 import { extractNotificationDetails, formatNairaAmount, resolveNotificationBody } from "../../utils/notificationContent";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
+import { Button } from "../../components/ui/Button";
 import notificationsIllustration from "../../assets/dashboard/empty-states/notifications-illustration.png";
 import { formatRelativeDateTime as formatTime, dayLabel } from "../../utils/format";
 
@@ -225,12 +226,13 @@ function NotificationDetailModal({ n, onClose }) {
             Close
           </button>
           {action && (
-            <button
+            <Button
               onClick={() => navigate(action.to)}
-              className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 cursor-pointer border-none transition-opacity"
+              fullWidth={false}
+              className="px-4 flex items-center gap-1"
             >
               {action.label} <ChevronRight size={13} />
-            </button>
+            </Button>
           )}
         </div>
       </div>

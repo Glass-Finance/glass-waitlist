@@ -11,6 +11,7 @@ import JoinCommunityIcon from "../../assets/auth/join-community.webp";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { useAuth } from "../../store/AuthContext";
+import { Button } from "../../components/ui/Button";
 
 export default function ChoosePath() {
   const navigate = useNavigate();
@@ -120,12 +121,9 @@ export default function ChoosePath() {
         </div>
 
         <div className="flex flex-col items-center gap-4 w-full max-w-[500px]">
-          <button
-            onClick={handleContinue}
-            className="w-full py-4 rounded-3xl text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer bg-brand"
-          >
+          <Button onClick={handleContinue}>
             Continue
-          </button>
+          </Button>
           <button
             onClick={() => navigate("/dashboard/home")}
             className="text-sm font-medium hover:underline bg-transparent border-none cursor-pointer text-brand"

@@ -1,5 +1,6 @@
 import { useState, useLayoutEffect, useCallback, useRef } from "react";
 import { LayoutDashboard, Building2, Search, Plus, ListChecks, Receipt, Settings, X, Menu, Users, Clock, Grid, HelpCircle } from "lucide-react";
+import { Button } from "../ui/Button";
 
 export const DASHBOARD_TOUR_SEEN_KEY = "glass_dashboard_tour_seen";
 
@@ -380,12 +381,13 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
                 Back
               </button>
             )}
-            <button
+            <Button
               onClick={() => (isLast ? onClose() : setStep(nextStep))}
-              className="px-4 py-2 rounded-lg text-xs font-semibold text-white cursor-pointer border-none hover:opacity-90 transition-opacity bg-brand"
+              fullWidth={false}
+              className="px-4"
             >
               {isLast ? "Done" : "Next"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

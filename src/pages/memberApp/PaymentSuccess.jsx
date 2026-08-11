@@ -10,6 +10,7 @@ import { useAuth } from "../../store/AuthContext";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import ReceiptModal from "../../components/common/ReceiptModal";
 import { formatNaira, toTitleCase } from "../../utils/format";
+import { Button } from "../../components/ui/Button";
 
 const POLL_INTERVAL_MS = 1500;
 const MAX_POLLS = 20;
@@ -311,12 +312,9 @@ export default function PaymentSuccess() {
 
         {state === "success" ? (
           <div className="flex-1 w-full flex flex-col justify-end gap-3 pb-10 max-w-[340px]">
-            <button
-              onClick={goHome}
-              className="w-full px-8 py-3.5 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none bg-brand"
-            >
+            <Button onClick={goHome}>
               Back to Home
-            </button>
+            </Button>
             <button
               onClick={() => setShareOpen(true)}
               disabled={!tx}
@@ -330,12 +328,13 @@ export default function PaymentSuccess() {
           </div>
         ) : (
           content.action && (
-            <button
+            <Button
               onClick={() => goTo(content.action.to)}
-              className="mt-3 px-8 py-3 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer border-none bg-brand"
+              fullWidth={false}
+              className="mt-3 px-8"
             >
               {content.action.label}
-            </button>
+            </Button>
           )
         )}
       </div>

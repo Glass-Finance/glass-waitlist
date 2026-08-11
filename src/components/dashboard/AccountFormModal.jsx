@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 import { getBanks, resolveAccount } from "../../api/members";
 import { notifyError } from "../../utils/errorHandler";
 import BankSelect from "../common/BankSelect";
+import { Button } from "../ui/Button";
 
 const inputCls =
   "w-full border border-gray-300 px-3.5 py-2.5 rounded-lg text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-brand focus:ring-1 focus:ring-brand/20 transition-all bg-white";
@@ -223,13 +224,15 @@ export default function AccountFormModal({
 
           {/* Footer */}
           <div className="flex justify-end mt-4">
-            <button
+            <Button
               onClick={handleSave}
-              disabled={isSaving || resolving || !accName.trim()}
-              className="px-6 py-2.5 rounded-full text-sm font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
+              disabled={resolving || !accName.trim()}
+              loading={isSaving}
+              fullWidth={false}
+              className="px-6"
             >
               {isSaving ? "Saving…" : "Save Changes"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

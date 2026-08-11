@@ -12,6 +12,7 @@ import { parseUserData } from "../../../../utils/userData";
 import EmailChangeModal from "../../../../components/common/EmailChangeModal";
 import PhoneChangeModal from "../../../../components/common/PhoneChangeModal";
 import { toTitleCase } from "../../../../utils/format";
+import { Button } from "../../../../components/ui/Button";
 
 const inputCls = "w-full py-3 px-3.5 rounded-[10px] border-[1.5px] border-[#E0E0E0] text-sm text-[#111] outline-none bg-white box-border";
 
@@ -261,13 +262,13 @@ export default function Profile() {
                 />
                 {emailError && <p className="text-xs text-danger mt-1.5 mx-1 mb-0">{emailError}</p>}
                 <div className="flex gap-2 mt-2">
-                  <button
+                  <Button
                     onClick={handleRequestEmailChange}
-                    disabled={updateEmail.isPending}
-                    className={`flex-1 py-2.5 px-0 rounded-lg border-none bg-brand text-white text-[13px] font-semibold cursor-pointer ${updateEmail.isPending ? "opacity-70" : "opacity-100"}`}
+                    loading={updateEmail.isPending}
+                    className="flex-1"
                   >
                     {updateEmail.isPending ? "Sending code…" : "Send Verification Code"}
-                  </button>
+                  </Button>
                   <button
                     onClick={cancelEditEmail}
                     disabled={updateEmail.isPending}
@@ -305,13 +306,13 @@ export default function Profile() {
                 />
                 {phoneError && <p className="text-xs text-danger mt-1.5 mx-1 mb-0">{phoneError}</p>}
                 <div className="flex gap-2 mt-2">
-                  <button
+                  <Button
                     onClick={handleRequestPhoneChange}
-                    disabled={requestPhoneUpdate.isPending}
-                    className={`flex-1 py-2.5 px-0 rounded-lg border-none bg-brand text-white text-[13px] font-semibold cursor-pointer ${requestPhoneUpdate.isPending ? "opacity-70" : "opacity-100"}`}
+                    loading={requestPhoneUpdate.isPending}
+                    className="flex-1"
                   >
                     {requestPhoneUpdate.isPending ? "Sending code…" : "Send Verification Code"}
-                  </button>
+                  </Button>
                   <button
                     onClick={cancelEditPhone}
                     disabled={requestPhoneUpdate.isPending}
@@ -339,13 +340,14 @@ export default function Profile() {
 
         {error && <p className="text-[13px] text-danger mt-3 mx-1 mb-0">{error}</p>}
 
-        <button
+        <Button
           onClick={handleSave}
-          disabled={updateProfile.isPending || !isDirty}
-          className={`w-full mt-4 py-3.5 px-0 rounded-[10px] border-none bg-brand text-white text-[15px] font-semibold cursor-pointer ${updateProfile.isPending || !isDirty ? "opacity-70" : "opacity-100"}`}
+          disabled={!isDirty}
+          loading={updateProfile.isPending}
+          className="mt-4"
         >
           {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
-        </button>
+        </Button>
       </div>
 
       {otpModalOpen && (

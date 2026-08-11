@@ -5,16 +5,7 @@ import { notifyError } from "../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import PasswordChecklist from "../../../components/auth/PasswordChecklist";
 import { SignUpTextInput, SignUpFieldError } from "./SignUpTextInput";
-
-const PrimaryBtn = ({ loading, disabled, children, ...props }) => (
-  <button
-    {...props}
-    disabled={loading || disabled}
-    className="mt-2 w-full py-3.5 rounded-3xl text-white font-semibold text-button transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 bg-[#2535c3]"
-  >
-    {children}
-  </button>
-);
+import { Button as PrimaryBtn } from "../../../components/ui/Button";
 
 // ── Step 2: Complete Profile (Name + Password) ────────────────────────────────
 // Fires the single register() call with email/phone carried over from
@@ -206,7 +197,7 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
 
         {error && <p className="text-sm text-red-500 -mt-1">{error}</p>}
 
-        <PrimaryBtn loading={loading}>
+        <PrimaryBtn className="mt-2" loading={loading}>
           {loading ? "Creating Account..." : "Create Your Account"}
         </PrimaryBtn>
       </form>

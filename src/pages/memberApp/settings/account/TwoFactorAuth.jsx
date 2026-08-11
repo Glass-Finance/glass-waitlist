@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { setupMfaTotp, enableMfaTotp, disableMfaTotp } from "../../../../services/authService";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
+import { Button } from "../../../../components/ui/Button";
 
 // ── OTP digit input ───────────────────────────────────────────────────────────
 function CodeInput({ value, onChange, disabled }) {
@@ -85,12 +86,9 @@ function SetupFlow({ onSuccess, onCancel }) {
           </p>
         </div>
 
-        <button
-          onClick={startSetup}
-          className="p-3.5 rounded-xl border-none cursor-pointer bg-brand text-white text-[15px] font-semibold"
-        >
+        <Button onClick={startSetup}>
           Set Up MFA
-        </button>
+        </Button>
         <button
           onClick={onCancel}
           className="p-3 rounded-xl border-[1.5px] border-[#D0D0D0] bg-white text-[#555] text-sm cursor-pointer"
@@ -154,13 +152,13 @@ function SetupFlow({ onSuccess, onCancel }) {
         <CodeInput value={code} onChange={setCode} disabled={stage === "verifying"} />
         {error && <p className="text-[13px] text-danger m-0">{error}</p>}
 
-        <button
+        <Button
           onClick={verifySetup}
-          disabled={code.length !== 6 || stage === "verifying"}
-          className={`p-3.5 rounded-xl border-none text-white text-[15px] font-semibold ${code.length === 6 ? "cursor-pointer bg-brand" : "cursor-not-allowed bg-[#E0E0E0]"} ${stage === "verifying" ? "opacity-70" : "opacity-100"}`}
+          disabled={code.length !== 6}
+          loading={stage === "verifying"}
         >
           {stage === "verifying" ? "Activating…" : "Activate MFA"}
-        </button>
+        </Button>
         <button
           onClick={onCancel}
           className="p-3 rounded-xl border-[1.5px] border-[#D0D0D0] bg-white text-[#555] text-sm cursor-pointer"
@@ -297,12 +295,9 @@ export default function TwoFactorAuth() {
                 Disable MFA
               </button>
             ) : (
-              <button
-                onClick={() => setFlow("setup")}
-                className="w-full p-3.5 rounded-xl border-none bg-brand text-white text-[15px] font-semibold cursor-pointer"
-              >
+              <Button onClick={() => setFlow("setup")}>
                 Set Up MFA
-              </button>
+              </Button>
             )}
 
             {/* Info note */}

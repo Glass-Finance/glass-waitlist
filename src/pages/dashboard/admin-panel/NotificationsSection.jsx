@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, Bell } from "lucide-react";
 import ModalShell from "../../../components/dashboard/ModalShell";
+import { Button } from "../../../components/ui/Button";
 import { createAdminNotification, getAdminNotificationJobs } from "../../../api/admin";
 import { fmtDate, unwrap, pageParams } from "./shared";
 import { SectionHeader, TableShell, TableFooter } from "./SharedUI";
@@ -193,10 +194,12 @@ function SendNotificationModal({ onClose }) {
           >
             Cancel
           </button>
-          <button
+          <Button
             type="submit"
-            disabled={mutation.isPending || channels.length === 0}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-brand"
+            disabled={channels.length === 0}
+            loading={mutation.isPending}
+            fullWidth={false}
+            className="flex-1 flex items-center justify-center gap-1.5"
           >
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -204,7 +207,7 @@ function SendNotificationModal({ onClose }) {
               <Bell size={12} />
             )}
             {mutation.isPending ? "Sending…" : "Send"}
-          </button>
+          </Button>
         </div>
       </form>
     </ModalShell>

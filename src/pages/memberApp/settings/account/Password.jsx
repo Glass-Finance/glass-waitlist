@@ -6,6 +6,7 @@ import { useUpdatePassword } from "../../../../hooks/useMyAccount";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
 import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
+import { Button } from "../../../../components/ui/Button";
 
 const inputCls = "w-full py-3 pl-3.5 pr-10 rounded-[10px] border-[1.5px] border-[#E0E0E0] text-sm text-[#111] outline-none bg-white box-border";
 
@@ -113,13 +114,13 @@ export default function Password() {
         {error && <p className="text-[13px] text-danger mt-3 mx-1 mb-0">{error}</p>}
         {success && <p className="text-[13px] text-[#059669] mt-3 mx-1 mb-0">Password updated.</p>}
 
-        <button
+        <Button
           onClick={handleSubmit}
-          disabled={updatePassword.isPending}
-          className={`w-full mt-4 py-3.5 px-0 rounded-[10px] border-none bg-brand text-white text-[15px] font-semibold cursor-pointer ${updatePassword.isPending ? "opacity-70" : "opacity-100"}`}
+          loading={updatePassword.isPending}
+          className="mt-4"
         >
           {updatePassword.isPending ? "Updating…" : "Update Password"}
-        </button>
+        </Button>
       </div>
     </div>
   );

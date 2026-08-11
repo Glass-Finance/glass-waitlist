@@ -19,6 +19,7 @@ import PasswordChecklist from "../../../components/auth/PasswordChecklist";
 import OtpBoxes from "../../../components/common/OtpBoxes";
 import { useCountdown, formatCountdown } from "../../../hooks/useCountdown";
 import AuthLayout from "../../../layouts/AuthLayout";
+import { Button as PrimaryButton } from "../../../components/ui/Button";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -78,25 +79,6 @@ function TextInput({
         </div>
       )}
     </div>
-  );
-}
-
-function PrimaryButton({
-  children,
-  onClick,
-  disabled,
-  loading,
-  type = "button",
-}) {
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled || loading}
-      className="w-full py-4 rounded-full bg-brand text-white font-semibold text-button transition-all hover:opacity-90 disabled:cursor-not-allowed cursor-pointer"
-    >
-      {loading ? "Loading..." : children}
-    </button>
   );
 }
 
@@ -442,7 +424,7 @@ function StepProfile({ onSubmit }) {
         loading={loading}
         disabled={!isReady}
       >
-        Create Account
+        {loading ? "Creating Account..." : "Create Account"}
       </PrimaryButton>
     </div>
   );
@@ -599,7 +581,7 @@ function StepOTP({ email, onVerified, onBack }) {
       <ErrorMessage message={error} />
 
       <PrimaryButton onClick={handleVerify} loading={loading} disabled={!allFilled || codeExpired}>
-        Continue
+        {loading ? "Verifying..." : "Continue"}
       </PrimaryButton>
       </form>
 

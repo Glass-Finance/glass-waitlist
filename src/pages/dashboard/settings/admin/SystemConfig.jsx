@@ -13,6 +13,7 @@ import {
 import { useSystemConfigs } from "../../../../hooks/useSystemConfigs";
 import { useDebounce } from "../../../../hooks/useDebounce";
 import LoadingState from "../../../../components/common/LoadingState";
+import { Button } from "../../../../components/ui/Button";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -188,10 +189,11 @@ function EditModal({ config, onClose, onSave, isSaving }) {
             >
               Cancel
             </button>
-            <button
+            <Button
               type="submit"
-              disabled={isSaving}
-              className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white transition-all cursor-pointer border-none flex items-center justify-center gap-1.5 disabled:opacity-60 bg-brand"
+              loading={isSaving}
+              fullWidth={false}
+              className="flex-1 flex items-center justify-center gap-1.5"
             >
               {isSaving ? (
                 <Loader2 size={12} className="animate-spin" />
@@ -199,7 +201,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
                 <Check size={12} />
               )}
               {isSaving ? "Saving…" : "Save Changes"}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

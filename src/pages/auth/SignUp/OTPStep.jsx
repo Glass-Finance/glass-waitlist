@@ -3,6 +3,7 @@ import { verifyEmail, resendVerification } from "../../../services/authService";
 import { notifyError } from "../../../utils/errorHandler";
 import { useCountdown, formatCountdown } from "../../../hooks/useCountdown";
 import OtpBoxes from "../../../components/common/OtpBoxes";
+import { Button } from "../../../components/ui/Button";
 
 // Codes are valid for 15 minutes (see the same figure quoted to users in
 // SignIn.jsx and member/Join.jsx).
@@ -127,13 +128,13 @@ export default function OTPStep({ email, onVerified, onBack }) {
           <p className="text-sm text-red-500 text-center -mt-2">{error}</p>
         )}
 
-        <button
+        <Button
           type="submit"
-          disabled={loading || codeExpired || otp.some((d) => !d)}
-          className="w-full py-3.5 rounded-3xl text-white font-semibold text-button transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60 bg-[#2535c3]"
+          disabled={codeExpired || otp.some((d) => !d)}
+          loading={loading}
         >
           {loading ? "Verifying..." : "Continue"}
-        </button>
+        </Button>
       </form>
 
       <p

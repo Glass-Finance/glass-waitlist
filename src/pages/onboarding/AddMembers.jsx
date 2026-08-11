@@ -25,6 +25,7 @@ import { readOnboardingProgress, clearOnboardingProgress } from "../../utils/onb
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 import { useAuth } from "../../store/AuthContext";
+import { Button } from "../../components/ui/Button";
 
 // Confirmed against the live backend (GET /roles/community, 2026-07-12):
 // only these three roles actually exist -- COMMUNITY_OWNER, COMMUNITY_ADMIN,
@@ -103,10 +104,9 @@ function SuccessModal({ communityName, onDashboard, onCopy }) {
         </div>
         <h2 className="text-lg font-semibold text-gray-900 mb-2">Your Community Is Now Live</h2>
         <p className="text-xs text-gray-500 mb-8">{communityName ?? "Your community"} is all set up on Glass!</p>
-        <button onClick={onDashboard}
-          className="w-full lg:w-4/5 py-3.5 rounded-full text-white font-medium text-xs bg-brand hover:opacity-90 transition-all border-none cursor-pointer mb-5">
+        <Button onClick={onDashboard} className="lg:w-4/5 mb-5">
           Go To Dashboard
-        </button>
+        </Button>
         <p className="text-xs text-gray-900 mb-1">Ready To Invite Members?</p>
         <button onClick={onCopy}
           className="text-xs font-medium text-brand hover:underline bg-transparent border-none cursor-pointer">
@@ -537,13 +537,14 @@ export default function AddMembers() {
 
                   {error && <p className="text-sm text-red-500 mt-3">{error}</p>}
 
-                  <button
+                  <Button
                     onClick={handleSubmit}
-                    disabled={loading || urlStage === "fetching"}
-                    className="w-full py-4 rounded-full text-white font-semibold text-sm bg-brand hover:opacity-90 active:scale-[0.98] transition-all mt-6 border-none cursor-pointer disabled:opacity-60"
+                    disabled={urlStage === "fetching"}
+                    loading={loading}
+                    className="mt-6"
                   >
                     {loading ? "Adding members…" : "Create Your Community"}
-                  </button>
+                  </Button>
                 </>
               )}
 
@@ -618,13 +619,14 @@ export default function AddMembers() {
                   {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
 
                   <div className="flex lg:justify-end">
-                    <button
+                    <Button
                       onClick={handleSendInvite}
-                      disabled={emails.length === 0 || loading || rolesLoading || !selectedRoleId}
-                      className="w-full lg:w-auto px-6 py-3.5 rounded-full text-white font-semibold text-sm bg-brand hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer disabled:opacity-50"
+                      disabled={emails.length === 0 || rolesLoading || !selectedRoleId}
+                      loading={loading}
+                      className="lg:w-auto px-6"
                     >
                       {loading ? "Sending…" : "Send Invite"}
-                    </button>
+                    </Button>
                   </div>
                 </>
               )}

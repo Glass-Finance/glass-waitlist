@@ -1,3 +1,5 @@
+import { Button } from "../ui/Button";
+
 // Standardized "this list/section has nothing in it yet" state — an icon,
 // a clear title, an optional explanatory subtitle, and an optional CTA.
 // Replaces the plain one-line gray text ("No X yet.") that used to appear
@@ -31,14 +33,15 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
       {subtitle && (
         <p className={isBig ? "text-base text-gray-400 mt-1.5 max-w-sm" : "text-xs text-gray-400 mt-1 max-w-xs"}>{subtitle}</p>
       )}
-      {action && (
+      {action && isBig && (
+        <Button onClick={action} fullWidth={false} className="mt-6 inline-flex items-center gap-1.5">
+          {actionLabel}
+        </Button>
+      )}
+      {action && !isBig && (
         <button
           onClick={action}
-          className={
-            isBig
-              ? "mt-6 px-6 py-4 rounded-full text-sm font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer inline-flex items-center gap-1.5"
-              : "mt-4 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer inline-flex items-center gap-1.5"
-          }
+          className="mt-4 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer inline-flex items-center gap-1.5"
         >
           {actionLabel}
         </button>

@@ -15,6 +15,7 @@ import { getErrorMessage } from "../../utils/errorHandler";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import Toggle from "../../components/common/Toggle";
+import { Button } from "../../components/ui/Button";
 import { toastSuccess } from "../../utils/toast";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import { toTitleCase, formatNaira as fmt, formatDate } from "../../utils/format";
@@ -236,12 +237,13 @@ export default function PaymentSummary() {
         <p className="text-sm text-gray-600">
           {getErrorMessage(loadError, "Couldn't load this payment. It may no longer be available.")}
         </p>
-        <button
+        <Button
           onClick={() => navigate(-1)}
-          className="px-4 py-2 rounded-lg text-sm font-semibold text-white cursor-pointer bg-brand"
+          fullWidth={false}
+          className="px-4"
         >
           Go back
-        </button>
+        </Button>
       </div>
     );
   }
@@ -452,10 +454,11 @@ export default function PaymentSummary() {
             wall every time. Without this the button stayed fully enabled
             after that error, inviting an endless retry loop against a link
             that will never succeed. */}
-        <button
+        <Button
           onClick={handlePay}
-          disabled={initiatePayment.isPending || redirecting || !obligation || isLinkInactive}
-          className="w-full rounded-md py-4 text-[15px] font-semibold text-white mt-1 cursor-pointer active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 bg-brand"
+          disabled={!obligation || isLinkInactive}
+          loading={initiatePayment.isPending || redirecting}
+          className="mt-1 flex items-center justify-center gap-2"
         >
           {initiatePayment.isPending || redirecting ? (
             <>
@@ -467,7 +470,7 @@ export default function PaymentSummary() {
           ) : (
             "Make Payment"
           )}
-        </button>
+        </Button>
       </div>
     </div>
   );

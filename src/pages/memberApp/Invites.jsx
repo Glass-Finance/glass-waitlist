@@ -7,6 +7,7 @@ import { getInvite } from "../../api/invites";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import { PENDING_INVITE_KEY } from "../InviteLanding";
+import { Button } from "../../components/ui/Button";
 
 function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
@@ -126,13 +127,14 @@ export default function Invites() {
             <p className="text-[13px] text-[#888] m-0 max-w-[260px] leading-[1.5]">
               If your admin has already added you, you're good to go — head to your home screen.
             </p>
-            <button
+            <Button
               onClick={() => navigate("/member/home", { replace: true })}
-              className="mt-1.5 flex items-center gap-1.5 py-2.5 px-5 rounded-lg border-none bg-brand text-white text-[13px] font-semibold cursor-pointer"
+              fullWidth={false}
+              className="mt-1.5 flex items-center gap-1.5 px-5"
             >
               <Home size={14} />
               Go to Home
-            </button>
+            </Button>
             <button
               onClick={refresh}
               disabled={isLoading}

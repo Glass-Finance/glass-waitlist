@@ -10,6 +10,7 @@ import PayingMemberIcon from "../../assets/auth/paying-dues.webp";
 import ExemptPaymentIcon from "../../assets/auth/exempt-payments.webp";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 import { useAuth } from "../../store/AuthContext";
+import { Button } from "../../components/ui/Button";
 
 export default function PayingMember() {
   const navigate = useNavigate();
@@ -95,12 +96,9 @@ export default function PayingMember() {
           })}
         </div>
 
-        <button
-          onClick={() => go()}
-          className="w-full max-w-sm py-4 rounded-3xl text-white font-semibold text-sm hover:opacity-90 active:scale-[0.98] transition-all border-none cursor-pointer bg-brand"
-        >
+        <Button onClick={() => go()} className="max-w-sm">
           Continue
-        </button>
+        </Button>
         <button
           onClick={() => go(true)}
           className="mt-4 text-sm font-medium hover:underline bg-transparent border-none cursor-pointer text-brand"

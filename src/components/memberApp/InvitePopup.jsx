@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useInvites } from "../../hooks/useInvites";
 import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/Button";
 
 const SESSION_KEY = "glass_popup_dismissed_invites";
 
@@ -104,13 +105,14 @@ export default function InvitePopup() {
         </p>
 
         {/* Accept button */}
-        <button
+        <Button
           onClick={handleAccept}
-          disabled={isBusy}
-          className={`block w-full py-[15px] px-0 rounded-[10px] border-none bg-brand text-white text-[15px] font-semibold mb-3.5 ${isBusy ? "cursor-not-allowed opacity-70" : "cursor-pointer opacity-100"}`}
+          disabled={isRejecting}
+          loading={isAccepting}
+          className="mb-3.5"
         >
           {isAccepting ? "Accepting…" : "Accept Invite"}
-        </button>
+        </Button>
 
         {/* Decline link */}
         <button

@@ -1,4 +1,5 @@
 import { forwardRef } from "react";
+import { Button } from "../ui/Button";
 
 // Shared input primitives for the unified auth pages (SignIn,
 // ForgotPassword, ResetPassword) — used identically inside AuthLayout's
@@ -54,18 +55,10 @@ export const TextInput = forwardRef(function TextInput({
   );
 });
 
-export function PrimaryButton({ children, onClick, disabled, loading }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled || loading}
-      className={`w-full rounded-full py-4 text-button font-semibold text-white transition-all duration-150 disabled:opacity-50 active:scale-[0.98] ${disabled || loading ? "bg-[#B0B8D8]" : "bg-brand"}`}
-    >
-      {children}
-    </button>
-  );
-}
+// Re-exported under this name so SignIn/ForgotPassword/ResetPassword don't
+// need their import paths touched -- the actual implementation lives in
+// components/ui/Button.jsx, the one shared primary CTA for the whole app.
+export const PrimaryButton = Button;
 
 export function ErrorMessage({ message }) {
   if (!message) return null;

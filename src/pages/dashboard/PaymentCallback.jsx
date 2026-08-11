@@ -13,6 +13,7 @@ import {
 import { useAuth } from "../../store/AuthContext";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingScreen from "../../components/LoadingScreen";
+import { Button } from "../../components/ui/Button";
 import MemberPaymentConfirm from "../memberApp/PaymentSuccess";
 
 // The backend's verify endpoint is async: it queues a verification job and
@@ -299,12 +300,13 @@ function AdminPaymentCallback() {
           )}
 
           {config.buttonLabel && (
-            <button
+            <Button
               onClick={() => { beginAuthGrace(); navigate(buttonDest, { replace: true }); }}
-              className="mt-4 px-8 py-3 rounded-full text-button font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer bg-brand"
+              fullWidth={false}
+              className="mt-4 px-8"
             >
               {config.buttonLabel}
-            </button>
+            </Button>
           )}
         </div>
       </div>
