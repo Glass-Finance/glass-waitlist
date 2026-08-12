@@ -50,13 +50,20 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
   }, []);
 
   // Google's rendered height for a given `size` is independent of the width
-  // passed in, so this only ever needs to measure once.
+  // passed in, so this only ever needs to measure once -- disconnecting
+  // right after the first reading is load-bearing, not just tidy cleanup:
+  // setting naturalHeight changes googleWidth below, which re-renders
+  // GoogleLogin at a new width and re-fires this same observer, which
+  // would set naturalHeight again and loop forever if left connected.
   useEffect(() => {
     const el = scaleRef.current;
     if (!el || naturalHeight != null) return;
     const observer = new ResizeObserver(([entry]) => {
       const measured = entry?.contentRect.height;
-      if (measured > 0) setNaturalHeight(measured);
+      if (measured > 0) {
+        setNaturalHeight(measured);
+        observer.disconnect();
+      }
     });
     observer.observe(el);
     return () => observer.disconnect();
