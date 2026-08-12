@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, X, Loader2, ArrowLeft, Clock } from "lucide-react";
+import { X, Loader2, ArrowLeft, Clock } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 import { beginAuthGrace } from "../../api/client";
 import {
@@ -15,6 +15,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingScreen from "../../components/LoadingScreen";
 import { Button } from "../../components/ui/Button";
 import MemberPaymentConfirm from "../memberApp/PaymentSuccess";
+import successIcon from "../../assets/auth/community-live-success.png";
 
 // The backend's verify endpoint is async: it queues a verification job and
 // returns the current DB status (often still "INITIATED"). The job updates the
@@ -193,10 +194,10 @@ function AdminPaymentCallback() {
 
   const backLabel = "Back to Dashboard";
 
-  // Two-layer soft-tint-outer / solid-inner circle, matching the mobile
-  // success treatment in PaymentSuccess.jsx — a single flat circle
-  // (solid-color for success/failed, light-tint for the rest) used to read
-  // as visually inconsistent with the rest of Glass's payment-outcome UI.
+  // Two-layer soft-tint-outer / solid-inner circle for every non-success
+  // state -- "success" itself now uses the shared success badge
+  // illustration (see the render below) instead of icon/outerBgCls/
+  // innerBgCls, which is why those are absent from its entry here.
   const config = {
     checking: {
       icon: <Loader2 size={28} className="animate-spin" color="#fff" />,
@@ -207,9 +208,6 @@ function AdminPaymentCallback() {
       buttonLabel: null,
     },
     success: {
-      icon: <Check size={28} strokeWidth={3} color="#fff" />,
-      outerBgCls: "bg-success-tint",
-      innerBgCls: "bg-success",
       title: "Payment Successful",
       subtitle: autoRedirectIn != null
         ? `Redirecting you in ${autoRedirectIn}s…`
@@ -280,15 +278,19 @@ function AdminPaymentCallback() {
         <div
           className="w-full bg-surface-container border border-surface-container-border rounded-2xl shadow-sm flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center max-w-[560px]"
         >
-          <div
-            className={`w-[110px] h-[110px] rounded-full flex items-center justify-center mb-6 flex-shrink-0 ${config.outerBgCls}`}
-          >
+          {state === "success" ? (
+            <img src={successIcon} alt="" className="w-[110px] h-auto mb-6 flex-shrink-0" />
+          ) : (
             <div
-              className={`w-16 h-16 rounded-full flex items-center justify-center ${config.innerBgCls}`}
+              className={`w-[110px] h-[110px] rounded-full flex items-center justify-center mb-6 flex-shrink-0 ${config.outerBgCls}`}
             >
-              {config.icon}
+              <div
+                className={`w-16 h-16 rounded-full flex items-center justify-center ${config.innerBgCls}`}
+              >
+                {config.icon}
+              </div>
             </div>
-          </div>
+          )}
 
           <h1 className="text-headline text-gray-900 mb-2">{config.title}</h1>
           <p className="text-title-sm text-gray-500 leading-relaxed mb-2">{config.subtitle}</p>

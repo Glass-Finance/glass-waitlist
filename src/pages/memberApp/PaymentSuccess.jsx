@@ -11,6 +11,7 @@ import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import ReceiptModal from "../../components/common/ReceiptModal";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { Button } from "../../components/ui/Button";
+import successIcon from "../../assets/auth/community-live-success.png";
 
 const POLL_INTERVAL_MS = 1500;
 const MAX_POLLS = 20;
@@ -281,11 +282,7 @@ export default function PaymentSuccess() {
         }`}
       >
         {state === "success" ? (
-          <div className="w-[110px] h-[110px] rounded-full bg-[var(--color-success-tint)] flex items-center justify-center flex-shrink-0">
-            <div className="w-16 h-16 rounded-full bg-[var(--color-success)] flex items-center justify-center">
-              <Check size={28} color="white" strokeWidth={3} />
-            </div>
-          </div>
+          <img src={successIcon} alt="" className="w-[110px] h-auto flex-shrink-0" />
         ) : (
           <div
             className={`w-[100px] h-[100px] rounded-full flex items-center justify-center flex-shrink-0 ${content.bgCls}`}

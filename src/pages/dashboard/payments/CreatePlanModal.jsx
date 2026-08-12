@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { X, Check, ArrowLeft } from "lucide-react";
+import { X, ArrowLeft } from "lucide-react";
 import { useSlug } from "../../../hooks/useSlug";
 import { useCommunityAccount } from "../../../hooks/useCommunityAccount";
 import { dateInputToIso } from "../../../utils/date";
 import { validatePlanField } from "./helpers";
 import PlanStepIndicator from "./PlanStepIndicator";
 import { Step1, Step2, Step3 } from "./PlanFormSteps";
+import successIcon from "../../../assets/auth/community-live-success.png";
 
 // ── Create plan modal ─────────────────────────────────────────────────────────
 export default function CreatePlanModal({ communityId, onClose, onCreate, creating, createError }) {
@@ -163,9 +164,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
         <div className="px-6 py-4 flex-1 overflow-hidden flex flex-col">
           {success ? (
             <div className="text-center py-10">
-              <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <Check size={24} className="text-green-600" strokeWidth={2.5} />
-              </div>
+              <img src={successIcon} alt="" className="w-16 h-auto mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-black mb-2">
                 Plan Created!
               </h3>
