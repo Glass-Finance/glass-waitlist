@@ -472,7 +472,7 @@ export default function AddMembers() {
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                     onDragLeave={() => setDragOver(false)}
                     onDrop={handleDrop}
-                    className={`w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-5 min-h-[140px] border-2 border-dashed ${dragOver ? "bg-[#EEF2FF] border-brand" : "bg-[#FAFAFA] border-[#D1D5DB]"}`}
+                    className={`w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-5 min-h-[140px] border-dashed ${dragOver ? "border-2 bg-[#EEF2FF] border-brand" : "border bg-[#FAFAFA] border-gray-200"}`}
                   >
                     <input ref={fileRef} type="file" accept=".csv" className="hidden"
                       onChange={(e) => handleFile(e.target.files[0])} />
