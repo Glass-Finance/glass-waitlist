@@ -95,14 +95,7 @@ export default function Hero() {
             style={{ fontSize: "clamp(44px,7vw,70px)" }}
           >
             Community Finance{" "}
-            <span
-              style={{
-                background: "linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
+            <span className="text-[#a5b4fc]">
               Crystal Clear
             </span>
           </h1>
