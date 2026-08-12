@@ -52,7 +52,13 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
   }
 
   return (
-    <div ref={containerRef} className="w-full flex justify-center">
+    // Google's widget only offers a "large"/"medium"/"small" size enum, not
+    // an arbitrary pixel height -- "large" still renders ~40px, visibly
+    // shorter than this form's 54-56px inputs/primary button. Scaling or
+    // otherwise distorting Google's own button is against their branding
+    // guidelines, so instead this gives it a taller centered slot to sit
+    // in, matching the surrounding rhythm without touching the button itself.
+    <div ref={containerRef} className="w-full min-h-[56px] flex items-center justify-center">
       <GoogleLogin
         onSuccess={handleCredential}
         onError={() => notifyError(new Error("Google sign-in was cancelled or failed."), { context: "Google auth" })}
