@@ -143,7 +143,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
 
         {error && <p className="text-sm text-red-500 -mt-1">{error}</p>}
 
-        <PrimaryBtn className="mt-2" disabled={!agreed} size="xs">Continue</PrimaryBtn>
+        <PrimaryBtn className="mt-2" disabled={!agreed} size="sm">Continue</PrimaryBtn>
       </form>
 
       <Divider />

@@ -15,13 +15,11 @@ export const Button = forwardRef(function Button(
     disabled,
     loading,
     fullWidth = true,
-    // "lg" matches the taller auth-page inputs (Sign In, Reset Password,
-    // Choose Path, Paying Member, Check Email, Mobile Required). "sm"
-    // matches the more compact card-form inputs used by the
-    // Organization/Payment/Members onboarding funnel. "xs" matches the
-    // Sign Up flow's own inputs, sized down further to sit closer to
-    // Google's rendered sign-up button next to it. A button height-matches
-    // its own page's inputs, not a fixed size everywhere.
+    // "lg" matches the taller auth-page inputs (Sign In, Sign Up, Join,
+    // Reset Password, Choose Path, Paying Member, Check Email, Mobile
+    // Required). "sm" matches the more compact card-form inputs used by
+    // the Organization/Payment/Members onboarding funnel -- a button that
+    // height-matches its own page's inputs, not a fixed size everywhere.
     size = "lg",
     className = "",
     ...rest
@@ -29,8 +27,7 @@ export const Button = forwardRef(function Button(
   ref,
 ) {
   const isDisabled = disabled || loading;
-  const sizeClasses =
-    size === "xs" ? "py-2.5 text-sm" : size === "sm" ? "py-3 text-sm" : "py-4 text-button";
+  const sizeClasses = size === "sm" ? "py-3 text-sm" : "py-4 text-button";
   return (
     <button
       ref={ref}
