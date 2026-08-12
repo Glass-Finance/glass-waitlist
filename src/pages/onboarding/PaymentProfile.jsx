@@ -368,7 +368,7 @@ export default function PaymentProfile() {
               )}
             </div>
 
-            <Button onClick={handleSave} disabled={resolving || !accName.trim()} loading={saving} size="sm" className="lg:w-1/2 mx-auto block mt-6">
+            <Button onClick={handleSave} disabled={resolving || !accName.trim()} loading={saving} className="lg:w-1/2 mx-auto block mt-6">
               {saving ? "Setting up…" : "Set-Up Account"}
             </Button>
             <button

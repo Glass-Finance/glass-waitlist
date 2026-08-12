@@ -395,7 +395,7 @@ export default function OrganizationProfile() {
 
             {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
 
-            <Button type="submit" disabled={checking || available === false} loading={loading} size="sm" className="lg:w-1/2 mx-auto block">
+            <Button type="submit" disabled={checking || available === false} loading={loading} className="lg:w-1/2 mx-auto block">
               {loading ? "Creating community..." : "Next"}
             </Button>
             <div className="h-[env(safe-area-inset-bottom,20px)] lg:hidden" />
