@@ -403,7 +403,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
           <button
             onClick={handleSave}
             disabled={!isReady || saving}
-            className="px-6 py-2 rounded text-xs font-normal text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 rounded-lg text-xs font-normal text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? "Saving…" : "Save Changes"}
           </button>

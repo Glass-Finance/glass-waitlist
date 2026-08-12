@@ -499,7 +499,14 @@ export default function SignIn() {
 
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-      <div className="w-full max-w-md flex flex-col my-auto gap-6">
+      {/* mt-* + mb-auto (not my-auto) -- the Password tab has noticeably
+          more content than One-Time Code (an extra field, a Forgot-password
+          link), so pure vertical centering gave the two tabs different top
+          spacing: Password ended up cramped against the panel's top edge
+          while One-Time Code centered comfortably. Pinning a fixed top
+          offset keeps that gap identical on both tabs; any leftover space
+          from the shorter tab collects at the bottom instead. */}
+      <div className="w-full max-w-md flex flex-col mt-8 md:mt-14 mb-auto gap-6">
         {pendingVerificationEmail && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
             <p className="text-xs font-semibold text-amber-800 mb-1">Email verification pending</p>

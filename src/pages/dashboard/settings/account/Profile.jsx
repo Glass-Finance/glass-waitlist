@@ -306,7 +306,7 @@ export default function Profile() {
           <button
             onClick={() => photoInputRef.current?.click()}
             disabled={uploadFile.isPending}
-            className="flex-shrink-0 px-2 py-2 rounded-sm text-xs bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-gray-700"
+            className="flex-shrink-0 px-2 py-2 rounded-lg text-xs bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-gray-700"
           >
             {uploadFile.isPending ? "Uploading…" : "Change Photo"}
           </button>
@@ -350,7 +350,7 @@ export default function Profile() {
           <button
             onClick={handleSave}
             disabled={updateProfile.isPending || emailSaving || phoneSaving || !isDirty}
-            className="p-2 rounded-sm text-[11px] text-brand hover:bg-brand hover:text-white transition-all cursor-pointer border border-brand disabled:opacity-50"
+            className="p-2 rounded-lg text-[11px] text-brand hover:bg-brand hover:text-white transition-all cursor-pointer border border-brand disabled:opacity-50"
           >
             {saved ? "Saved!" : updateProfile.isPending || emailSaving || phoneSaving ? "Saving…" : "Save Changes"}
           </button>

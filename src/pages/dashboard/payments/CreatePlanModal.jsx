@@ -173,7 +173,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
               </p>
               <button
                 onClick={onClose}
-                className="px-6 py-2 rounded bg-brand text-white font-medium text-xs cursor-pointer border-none"
+                className="px-6 py-2 rounded-lg bg-brand text-white font-medium text-xs cursor-pointer border-none"
               >
                 Done
               </button>
@@ -230,7 +230,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
                 slugState.checking ||
                 slugState.available === false
               }
-              className={`px-6 py-2 rounded text-xs font-medium border-none cursor-pointer ${canContinue ? "bg-brand text-white hover:opacity-90" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+              className={`px-6 py-2 rounded-lg text-xs font-medium border-none cursor-pointer ${canContinue ? "bg-brand text-white hover:opacity-90" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
             >
               {creating ? "Creating…" : step === 3 ? "Create Plan" : "Continue"}
             </button>

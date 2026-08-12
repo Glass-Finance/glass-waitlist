@@ -98,7 +98,7 @@ export default function SendReminderModal({ plan, onClose, onSend, sending }) {
         <div className="px-6 py-4 flex items-center justify-end gap-3 border-t border-gray-200">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 cursor-pointer"
+            className="px-5 py-2 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 cursor-pointer"
           >
             Cancel
           </button>
@@ -110,7 +110,7 @@ export default function SendReminderModal({ plan, onClose, onSend, sending }) {
               })
             }
             disabled={!canSend || sending}
-            className="px-6 py-2 rounded text-xs font-normal text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 rounded-lg text-xs font-normal text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {sending ? "Sending…" : "Send Reminder"}
           </button>

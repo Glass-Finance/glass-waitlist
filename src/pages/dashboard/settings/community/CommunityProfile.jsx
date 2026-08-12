@@ -155,7 +155,7 @@ export default function CommunityProfile() {
           <button
             onClick={() => logoInputRef.current?.click()}
             disabled={uploadFile.isPending}
-            className="px-3 py-2 rounded-sm text-xs text-gray-700 hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-gray-700"
+            className="px-3 py-2 rounded-lg text-xs text-gray-700 hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-gray-700"
           >
             {uploadFile.isPending ? "Uploading…" : "Change Logo"}
           </button>
@@ -196,7 +196,7 @@ export default function CommunityProfile() {
           <button
             onClick={handleSave}
             disabled={updateCommunity.isPending}
-            className="px-2 py-2 rounded-sm text-xs text-brand hover:bg-brand/10 transition-all border border-brand cursor-pointer disabled:opacity-50"
+            className="px-2 py-2 rounded-lg text-xs text-brand hover:bg-brand/10 transition-all border border-brand cursor-pointer disabled:opacity-50"
           >
             {saved ? "Saved!" : updateCommunity.isPending ? "Saving…" : "Save Changes"}
           </button>
@@ -224,7 +224,7 @@ export default function CommunityProfile() {
           </p>
           <button
             onClick={() => setDeleteModal(true)}
-            className="ml-4 px-3 py-1.5 rounded-md text-xs text-red-600 bg-white hover:bg-red-50 transition-all flex-shrink-0 cursor-pointer border border-[#FECACA]"
+            className="ml-4 px-3 py-1.5 rounded-lg text-xs text-red-600 bg-white hover:bg-red-50 transition-all flex-shrink-0 cursor-pointer border border-[#FECACA]"
           >
             Delete
           </button>

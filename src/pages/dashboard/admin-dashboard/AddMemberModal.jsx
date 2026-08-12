@@ -442,7 +442,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                       disabled={
                         !fileUrl.trim() || urlStage === "fetching" || uploading
                       }
-                      className="px-5 py-2 rounded-sm bg-brand/20 text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50"
+                      className="px-5 py-2 rounded-lg bg-brand/20 text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50"
                     >
                       Upload
                     </button>
@@ -487,7 +487,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                       </p>
                       <button
                         onClick={clearUrlUpload}
-                        className="px-4 py-1.5 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-50 transition-all bg-white border border-gray-300 cursor-pointer"
+                        className="px-4 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-all bg-white border border-gray-300 cursor-pointer"
                       >
                         Cancel
                       </button>

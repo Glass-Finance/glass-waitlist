@@ -494,7 +494,7 @@ export default function AddMembers() {
                         placeholder="Add File URL" className={inputCls}
                         disabled={urlStage === "fetching"} />
                       <button onClick={handleUrlUpload} disabled={!fileUrl.trim() || urlStage === "fetching" || loading}
-                        className="px-5 py-2 rounded-sm bg-[#002FA733] text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50">
+                        className="px-5 py-2 rounded-lg bg-[#002FA733] text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50">
                         Upload
                       </button>
                     </div>

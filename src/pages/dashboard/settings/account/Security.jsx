@@ -365,7 +365,7 @@ export default function Security() {
 
           <div className="flex justify-end">
             <button onClick={handleUpdatePassword} disabled={updatePassword.isPending}
-              className="px-4 py-2 rounded-sm font-small text-xs text-brand border border-brand hover:opacity-90 transition-all disabled:opacity-50">
+              className="px-4 py-2 rounded-lg font-small text-xs text-brand border border-brand hover:opacity-90 transition-all disabled:opacity-50">
               {updatePassword.isPending ? "Updating…" : "Update Password"}
             </button>
           </div>
