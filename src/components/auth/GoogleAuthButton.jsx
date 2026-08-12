@@ -24,9 +24,25 @@ const LABELS = {
 // without ever needing to read anything out of Google's iframe.
 const IDENTITY_KEY = "glass_last_google_identity";
 
+// Nothing tells us when the browser's actual Google session changes (that
+// data lives behind the same cross-origin wall as everything else here) --
+// so an entry from a since-abandoned or switched-away-from account would
+// otherwise sit here forever, permanently showing the wrong email/photo
+// instead of the plain G logo + generic label a first-time/unrecognized
+// visitor should see. A week is long enough to still feel like "remembers
+// me" for a genuinely returning visitor, short enough that a one-off or
+// switched-account sign-in doesn't linger indefinitely.
+const IDENTITY_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
 function readCachedIdentity() {
   try {
-    return JSON.parse(localStorage.getItem(IDENTITY_KEY));
+    const stored = JSON.parse(localStorage.getItem(IDENTITY_KEY));
+    if (!stored) return null;
+    if (!stored.cachedAt || Date.now() - stored.cachedAt > IDENTITY_TTL_MS) {
+      localStorage.removeItem(IDENTITY_KEY);
+      return null;
+    }
+    return stored;
   } catch {
     return null;
   }
@@ -34,8 +50,11 @@ function readCachedIdentity() {
 
 function writeCachedIdentity(identity) {
   try {
-    if (identity) localStorage.setItem(IDENTITY_KEY, JSON.stringify(identity));
-    else localStorage.removeItem(IDENTITY_KEY);
+    if (identity) {
+      localStorage.setItem(IDENTITY_KEY, JSON.stringify({ ...identity, cachedAt: Date.now() }));
+    } else {
+      localStorage.removeItem(IDENTITY_KEY);
+    }
   } catch {
     /* ignore */
   }
