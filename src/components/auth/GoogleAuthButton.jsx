@@ -1,109 +1,94 @@
-import { useEffect, useRef, useState } from "react";
-import { GoogleLogin } from "@react-oauth/google";
+import { useEffect, useRef } from "react";
+import { useGoogleOAuth } from "@react-oauth/google";
 import { googleAuth } from "../../services/authService";
 import { useAuth } from "../../store/AuthContext";
 import { notifyError } from "../../utils/errorHandler";
 
-/**
- * Shared "Continue with Google" button used by RegisterStep, MobileSignUp,
- * and MobileSignIn — was duplicated three times as a purely decorative SVG
- * button with no onClick at all. Google's identity flow gives us an ID
- * token (the `credential` field), which already proves the user owns that
- * email, so there's no separate register-vs-sign-in distinction here: the
- * backend's /auth/google endpoint creates-or-finds the account in one call.
- *
- * onAuthenticated(user) is called after the session is stored, so each
- * page can decide its own post-auth navigation (role-based redirect,
- * resume an invite, etc.) without this component knowing about routing.
- */
-// Google's widget only offers a "large"/"medium"/"small" size enum, not an
-// arbitrary pixel height -- "large" still renders ~40-44px, visibly shorter
-// than this form's 54-56px inputs/primary button. There's no prop for this,
-// so instead this renders the widget at a smaller width, measures its own
-// natural (pre-scale) height, then CSS-scales the whole thing up uniformly
-// (not stretched) until it's TARGET_HEIGHT tall -- proportional, so the G
-// logo/text don't distort, and the pre-scale width is chosen so the
-// post-scale result exactly fills the container again. 46 (not the full
-// 56px of the inputs/primary button) is deliberate: scaling all the way to
-// 56 also blows up the G logo/text proportionally, since Google renders
-// icon+text+background as one atomic unit -- 46 keeps them at a natural,
-// non-oversized size while still reading as intentionally bigger than
-// Google's raw default.
-const TARGET_HEIGHT = 46;
+const LABELS = {
+  signin_with: "Sign in with Google",
+  signup_with: "Sign up with Google",
+  continue_with: "Continue with Google",
+};
 
+// Google's own rendered button (the old <GoogleLogin/> widget) lives inside
+// a cross-origin iframe from accounts.google.com -- no CSS can ever reach
+// inside it, only Google's own fixed shape/size presets ("rectangular" /
+// "pill" / "circle", "large" / "medium" / "small"). That's why it could
+// never be made to match this form's own rounded-xl inputs. Initializing
+// Google Identity Services directly and triggering its One Tap prompt from
+// a completely ordinary <button> keeps the button 100% ours while the
+// `callback` below still hands the backend the exact same ID-token
+// `credential` shape /auth/google already expects -- no backend change.
 export default function GoogleAuthButton({ onAuthenticated, label = "continue_with" }) {
   const { setSession } = useAuth();
-  const containerRef = useRef(null);
-  const scaleRef = useRef(null);
-  // Google's widget takes a fixed pixel width, not a percentage -- was
-  // hardcoded to 320, so it rendered visibly narrower than the input
-  // fields/Continue button (both w-full) once the form column widened past
-  // 320px. Measuring the wrapper instead keeps it edge-to-edge with the
-  // rest of the form on any screen size.
-  const [containerWidth, setContainerWidth] = useState(320);
-  const [naturalHeight, setNaturalHeight] = useState(null);
+  const { clientId, scriptLoadedSuccessfully } = useGoogleOAuth();
+  const initializedRef = useRef(false);
+  const onAuthenticatedRef = useRef(onAuthenticated);
+  onAuthenticatedRef.current = onAuthenticated;
 
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver(([entry]) => {
-      const measured = entry?.contentRect.width;
-      if (measured) setContainerWidth(Math.round(measured));
+    if (!scriptLoadedSuccessfully || initializedRef.current) return;
+    window.google?.accounts?.id?.initialize({
+      client_id: clientId,
+      callback: async (credentialResponse) => {
+        if (!credentialResponse?.credential) {
+          notifyError(new Error("Google didn't return a credential."), { context: "Google auth" });
+          return;
+        }
+        try {
+          const authData = await googleAuth({ clientToken: credentialResponse.credential });
+          const user = await setSession(authData);
+          onAuthenticatedRef.current?.(user);
+        } catch (err) {
+          notifyError(err, { context: "Google auth" });
+        }
+      },
+      // Chrome is phasing out third-party cookies, which the classic One
+      // Tap prompt relied on -- FedCM is Google's replacement transport and
+      // is what keeps this working going forward instead of silently
+      // failing to display.
+      use_fedcm_for_prompt: true,
     });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+    initializedRef.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- init once when the script/clientId are ready
+  }, [clientId, scriptLoadedSuccessfully]);
 
-  // Google's rendered height for a given `size` is independent of the width
-  // passed in, so this only ever needs to measure once -- disconnecting
-  // right after the first reading is load-bearing, not just tidy cleanup:
-  // setting naturalHeight changes googleWidth below, which re-renders
-  // GoogleLogin at a new width and re-fires this same observer, which
-  // would set naturalHeight again and loop forever if left connected.
-  useEffect(() => {
-    const el = scaleRef.current;
-    if (!el || naturalHeight != null) return;
-    const observer = new ResizeObserver(([entry]) => {
-      const measured = entry?.contentRect.height;
-      if (measured > 0) {
-        setNaturalHeight(measured);
-        observer.disconnect();
+  function handleClick() {
+    if (!scriptLoadedSuccessfully) return;
+    window.google?.accounts?.id?.prompt((notification) => {
+      // FedCM fails closed (no callback, no error) when the prompt can't
+      // display at all -- e.g. the user dismissed it recently, or third-
+      // party sign-in is blocked. Without this the button would look
+      // broken (click, nothing happens) with no explanation.
+      if (notification.isNotDisplayed?.() || notification.isSkippedMoment?.()) {
+        notifyError(
+          new Error("Google sign-in didn't open. Please try again or use another sign-in method."),
+          { context: "Google auth" },
+        );
       }
     });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [naturalHeight]);
-
-  const scale = naturalHeight ? TARGET_HEIGHT / naturalHeight : 1;
-  const googleWidth = naturalHeight ? Math.round(containerWidth / scale) : containerWidth;
-
-  async function handleCredential(credentialResponse) {
-    if (!credentialResponse?.credential) {
-      notifyError(new Error("Google didn't return a credential."), { context: "Google auth" });
-      return;
-    }
-    try {
-      const authData = await googleAuth({ clientToken: credentialResponse.credential });
-      const user = await setSession(authData);
-      onAuthenticated?.(user);
-    } catch (err) {
-      notifyError(err, { context: "Google auth" });
-    }
   }
 
   return (
-    <div ref={containerRef} className="w-full flex items-center justify-center" style={{ height: TARGET_HEIGHT }}>
-      <div ref={scaleRef} style={{ transform: `scale(${scale})` }}>
-        <GoogleLogin
-          onSuccess={handleCredential}
-          onError={() => notifyError(new Error("Google sign-in was cancelled or failed."), { context: "Google auth" })}
-          text={label}
-          shape="pill"
-          logo_alignment="center"
-          size="large"
-          width={String(googleWidth)}
-        />
-      </div>
-    </div>
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={!scriptLoadedSuccessfully}
+      className="w-full flex items-center justify-center gap-2.5 rounded-xl px-4 py-3.5 border-[1.5px] border-[#E0E0E6] bg-white text-button font-semibold text-gray-700 transition-colors duration-150 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <GoogleGlyph />
+      {LABELS[label] ?? LABELS.continue_with}
+    </button>
+  );
+}
+
+function GoogleGlyph() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" className="flex-shrink-0">
+      <path d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7018-1.5668 2.6836-3.874 2.6836-6.615z" fill="#4285F4"/>
+      <path d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9087-2.2581c-.8059.5397-1.8368.8582-3.0477.8582-2.3436 0-4.3282-1.5827-5.0359-3.7104H.9573v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"/>
+      <path d="M3.9641 10.71c-.18-.5397-.2822-1.1159-.2822-1.71 0-.5941.1023-1.1705.2822-1.71V4.9582H.9573A8.9965 8.9965 0 000 9c0 1.4523.3477 2.8268.9573 4.0418L3.9641 10.71z" fill="#FBBC05"/>
+      <path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4632.8918 11.426 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.9641 7.29C4.6718 5.1623 6.6564 3.5795 9 3.5795z" fill="#EA4335"/>
+    </svg>
   );
 }
