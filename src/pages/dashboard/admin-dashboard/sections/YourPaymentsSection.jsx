@@ -14,7 +14,7 @@ export default function YourPaymentsSection({
   onPayNow,
 }) {
   return (
-    <div className="bg-surface-container rounded-xl border border-surface-container-border p-5 mb-5 shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
+    <div className="bg-surface-container rounded-xl border border-surface-container-border p-5 mb-5">
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-black">Your Payments</span>
         <div className="flex items-center gap-2">

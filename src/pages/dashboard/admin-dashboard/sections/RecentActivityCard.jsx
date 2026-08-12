@@ -6,7 +6,7 @@ import { timeAgo } from "../helpers";
 
 export default function RecentActivityCard({ isLoading, items }) {
   return (
-    <div className="bg-surface-container rounded-xl border border-surface-container-border p-4 shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
+    <div className="bg-surface-container rounded-xl border border-surface-container-border p-4">
       <span className="text-sm font-medium text-black block mb-4">
         Recent Activity
       </span>

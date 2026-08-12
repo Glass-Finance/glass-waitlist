@@ -113,7 +113,7 @@ export default function RecentActivityPanel() {
             <ActivityIcon type={a.type} color={a.aColor} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: 11, color: "#374151", margin: 0, lineHeight: 1.45 }}>
+            <p style={{ fontSize: 10.5, color: "#374151", margin: 0, lineHeight: 1.5 }}>
               {a.name && (
                 <strong style={{ color: "#002FA7", fontWeight: 700 }}>{a.name} </strong>
               )}

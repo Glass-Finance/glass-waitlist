@@ -4,7 +4,7 @@
 export default function StatCard({ icon: Icon, label, value, iconCls }) {
   return (
     <div
-      className={`bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 shadow-[0_1px_4px_rgba(0,47,167,0.05)] ${Icon ? "flex items-center justify-between" : ""}`}
+      className={`bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 ${Icon ? "flex items-center justify-between" : ""}`}
     >
       <div>
         <p className="text-xs text-gray-400 mb-1">{label}</p>

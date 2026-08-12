@@ -33,7 +33,7 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
       </Button>
 
       <div className="w-full max-w-lg flex flex-col gap-2.5">
-        <div className="w-full bg-white rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
+        <div className="w-full bg-white rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left">
           <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-emerald-100">
             <Check size={16} className="text-emerald-600" strokeWidth={2.5} />
           </div>
@@ -45,7 +45,7 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
 
         <button
           onClick={onAddMember}
-          className="w-full bg-white rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left cursor-pointer transition-colors hover:bg-blue-50/30 shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
+          className="w-full bg-white rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left cursor-pointer transition-colors hover:bg-blue-50/30"
         >
           <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-brand">
             <Users size={16} className="text-white" />

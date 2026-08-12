@@ -20,7 +20,7 @@ export default function DashboardStats({ stats, isLoading }) {
           // than its siblings), 24px padding, 8px radius, space-between so
           // the icon+value row stays pinned to the bottom of the card
           // instead of drifting up under a short single-line label.
-          className="min-h-[152px] flex flex-col justify-between bg-surface-container rounded-lg p-6 border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
+          className="min-h-[152px] flex flex-col justify-between bg-surface-container rounded-lg p-6 border border-surface-container-border"
         >
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500 font-medium">

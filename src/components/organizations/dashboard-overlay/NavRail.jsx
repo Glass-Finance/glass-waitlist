@@ -28,22 +28,10 @@ export default function NavRail() {
           }}
         />
       </div>
-      {/* Home / communities-overview -- translucent (inactive) here since a
-          specific community's Dashboard is the active view, matching the
-          real rail's inactive-state treatment. */}
-      <div
-        style={{
-          width: 30,
-          height: 30,
-          borderRadius: 8,
-          background: "rgba(255,255,255,0.15)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 12,
-        }}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      {/* Home / communities-overview -- a bare icon, no background box, per
+          the real rail's treatment. */}
+      <div style={{ marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path
             d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"
             stroke="#fff"
@@ -68,10 +56,10 @@ export default function NavRail() {
           marginBottom: 12,
         }}
       />
-      {/* Active community: a pill riding the rail's outer edge marks it,
-          not a filled/differently-shaded tile -- matches the real Sidebar's
-          indicator treatment. */}
-      <div style={{ position: "relative", marginBottom: 7 }}>
+      {/* Community tiles -- always solid white (logo or initials), never
+          translucent. Active community: a pill riding the rail's outer edge
+          marks it, not a filled/differently-shaded tile. */}
+      <div style={{ position: "relative", marginBottom: 8 }}>
         <div
           style={{
             position: "absolute",
@@ -86,11 +74,11 @@ export default function NavRail() {
         />
         <div
           style={{
-            width: 30,
-            height: 30,
-            borderRadius: 8,
-            background: "rgba(255,255,255,0.18)",
-            color: "#fff",
+            width: 32,
+            height: 32,
+            borderRadius: 9,
+            background: "#fff",
+            color: "#002FA7",
             fontSize: 10,
             fontWeight: 800,
             display: "flex",
@@ -103,11 +91,11 @@ export default function NavRail() {
       </div>
       <div
         style={{
-          width: 30,
-          height: 30,
-          borderRadius: 8,
-          background: "rgba(255,255,255,0.18)",
-          color: "#fff",
+          width: 32,
+          height: 32,
+          borderRadius: 9,
+          background: "#fff",
+          color: "#002FA7",
           fontSize: 10,
           fontWeight: 800,
           display: "flex",

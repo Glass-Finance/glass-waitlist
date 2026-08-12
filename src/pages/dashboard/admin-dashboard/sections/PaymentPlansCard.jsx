@@ -21,7 +21,7 @@ export default function PaymentPlansCard({
   onManageAll,
 }) {
   return (
-    <div className="rounded-xl border border-surface-container-border p-4 bg-[#D7E2FF] shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
+    <div className="rounded-xl border border-surface-container-border p-4 bg-[#D7E2FF]">
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-black">Payment Plans</span>
         <button

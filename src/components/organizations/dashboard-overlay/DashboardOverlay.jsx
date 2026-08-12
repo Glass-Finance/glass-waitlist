@@ -215,20 +215,46 @@ export default function DashboardOverlay() {
                   className="flex items-start justify-between mb-3.5"
                 >
                   <div>
-                    <div className="text-base font-extrabold text-black">
+                    <div className="text-[15px] font-bold text-black">
                       Dashboard
                     </div>
-                    <div className="text-[11px] text-[#9ca3af] mt-0.5">
+                    <div className="text-[10.5px] text-[#9ca3af] mt-[3px]">
                       A full picture of your community's financial activity.
                     </div>
                   </div>
                   <div className="flex gap-[7px]">
-                    <button className="py-1.5 px-3 rounded-lg border-[1.5px] border-[#E0E0EB] bg-white text-black text-[11px] font-semibold">
+                    <button className="py-1.5 px-3 rounded-lg border-[1.5px] border-[#E0E0EB] bg-white text-black text-[10.5px] font-semibold">
                       Create Payment Plan
                     </button>
-                    <button className="py-1.5 px-3 rounded-lg border-none bg-brand text-white text-[11px] font-semibold">
+                    <button className="py-1.5 px-3 rounded-lg border-none bg-brand text-white text-[10.5px] font-semibold">
                       + Add Member
                     </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 px-3.5 py-3 rounded-lg mb-3 bg-[#D7E2FF] border border-[#BFD3FF]">
+                  <div className="flex items-start gap-2.5">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 mt-px">
+                      <path d="M12 3l10 18H2L12 3z" stroke="#002FA7" strokeWidth="1.6" strokeLinejoin="round" />
+                      <path d="M12 10v4" stroke="#002FA7" strokeWidth="1.6" strokeLinecap="round" />
+                      <circle cx="12" cy="17" r="0.9" fill="#002FA7" />
+                    </svg>
+                    <div>
+                      <div className="text-[11.5px] font-semibold text-slate-800">
+                        Your School Fees Support payment is due in 3 days
+                      </div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">
+                        ₦5,000 due Apr 1, 2025 · <span className="text-brand font-semibold">Auto-Pay is off</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2.5 flex-shrink-0">
+                    <span className="py-1.5 px-3 rounded-md border border-brand text-brand text-[10.5px] font-semibold">
+                      Pay Now
+                    </span>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                      <path d="M18 6L6 18M6 6l12 12" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round" />
+                    </svg>
                   </div>
                 </div>
 

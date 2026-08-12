@@ -276,7 +276,7 @@ function AdminPaymentCallback() {
       {/* Centered card */}
       <div className="flex-1 flex items-center justify-center px-4 pb-16">
         <div
-          className="w-full bg-surface-container border border-surface-container-border rounded-2xl shadow-sm flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center max-w-[560px]"
+          className="w-full bg-surface-container border border-surface-container-border rounded-2xl flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center max-w-[560px]"
         >
           {state === "success" ? (
             <img src={successIcon} alt="" className="w-[110px] h-auto mb-6 flex-shrink-0" />

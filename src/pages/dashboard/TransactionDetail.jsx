@@ -82,7 +82,7 @@ export default function TransactionDetail() {
       </div>
 
       {isLoading ? (
-        <div className="bg-surface-container rounded-xl border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
+        <div className="bg-surface-container rounded-xl border border-surface-container-border">
           <LoadingState className="py-16" />
         </div>
       ) : error || !tx ? (
@@ -91,7 +91,7 @@ export default function TransactionDetail() {
         <div className="max-w-xl flex flex-col gap-4">
           {/* Amount card */}
           <div
-            className="bg-surface-container rounded-xl border border-surface-container-border px-8 py-9 flex flex-col items-center gap-3 shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
+            className="bg-surface-container rounded-xl border border-surface-container-border px-8 py-9 flex flex-col items-center gap-3"
           >
             <p className="text-4xl font-bold text-gray-900 tracking-[-0.5px]">
               {formatNaira(tx.amount, { decimals: 2 })}
@@ -108,7 +108,7 @@ export default function TransactionDetail() {
 
           {/* Details card */}
           <div
-            className="bg-surface-container rounded-xl border border-surface-container-border px-6 py-4 shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
+            className="bg-surface-container rounded-xl border border-surface-container-border px-6 py-4"
           >
             <p className="text-sm font-semibold text-black mb-1">Transaction Details</p>
 

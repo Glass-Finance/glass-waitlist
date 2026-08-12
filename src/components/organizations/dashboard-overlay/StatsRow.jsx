@@ -99,19 +99,18 @@ export default function StatsRow() {
           style={{
             ...REVEAL_STYLE,
             background: "#fff",
-            borderRadius: 12,
-            padding: "11px 12px",
+            borderRadius: 8,
+            padding: "12px",
             border: "1px solid #E0E0EB",
-            boxShadow: "0 1px 4px rgba(0,47,167,0.05)",
             minWidth: 0,
           }}
         >
           <div
             style={{
-              fontSize: 9,
+              fontSize: 8.5,
               color: "#6b7280",
               fontWeight: 500,
-              marginBottom: 8,
+              marginBottom: 10,
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -129,7 +128,7 @@ export default function StatsRow() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {s.icon}
-            <span style={{ fontSize: s.small ? 12 : 16, fontWeight: 800, color: "#000" }}>
+            <span style={{ fontSize: s.small ? 11 : 15, fontWeight: 700, color: "#000" }}>
               {s.value}
             </span>
           </div>

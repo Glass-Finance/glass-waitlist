@@ -29,7 +29,7 @@ function PlanCard({ plan, successfulLinkIds }) {
     s === "SUCCESSFUL" ||
     (!!plan.paymentLink?.id && successfulLinkIds?.has(plan.paymentLink.id));
   return (
-    <div className="bg-surface-container rounded-md border border-surface-container-border p-4 shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
+    <div className="bg-surface-container rounded-md border border-surface-container-border p-4">
       <div className="flex items-start justify-between mb-2">
         <p className="text-sm font-medium text-black pt-0.5">{plan.paymentLink?.title ?? "Plan"}</p>
         <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${isPaid ? "text-[#059669] bg-[#ecfdf5]" : "text-[#e11d48] bg-[#fff1f2]"}`}>
@@ -183,7 +183,7 @@ export default function MemberDetail() {
       )}
 
       {tab === "Payment History" && (
-        <div className="bg-surface-container rounded-xl border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
+        <div className="bg-surface-container rounded-xl border border-surface-container-border">
           <div className="flex items-center justify-between px-5 py-4">
             <span className="text-sm font-medium text-black">Member Payments</span>
           </div>
@@ -260,7 +260,7 @@ export default function MemberDetail() {
       )}
 
       {tab === "Contact Details" && (
-        <div className="bg-surface-container rounded-xl border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
+        <div className="bg-surface-container rounded-xl border border-surface-container-border">
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>

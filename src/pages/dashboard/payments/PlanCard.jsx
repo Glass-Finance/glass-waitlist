@@ -37,7 +37,7 @@ export default function PlanCard({
 
   return (
     <div
-      className="bg-surface-container rounded-2xl border border-surface-container-border p-5 flex flex-col gap-4 shadow-[0_1px_6px_rgba(0,47,167,0.07)]"
+      className="bg-surface-container rounded-2xl border border-surface-container-border p-5 flex flex-col gap-4"
     >
       {/* Status + overflow */}
       <div className="flex items-center justify-between">

@@ -60,12 +60,12 @@ export default function PaymentPlansPanel() {
             border: "1px solid rgba(204,219,255,0.6)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 3 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#000" }}>{p.name}</span>
+              <span style={{ fontSize: 10.5, fontWeight: 700, color: "#000" }}>{p.name}</span>
               <span
                 style={{
-                  fontSize: 9,
+                  fontSize: 8.5,
                   fontWeight: 700,
                   color: "#7c3aed",
                   background: "#f3eeff",
@@ -76,16 +76,16 @@ export default function PaymentPlansPanel() {
                 {p.freq}
               </span>
             </div>
-            <span style={{ fontSize: 11, fontWeight: 800, color: "#000" }}>{p.amt}</span>
+            <span style={{ fontSize: 10.5, fontWeight: 700, color: "#000" }}>{p.amt}</span>
           </div>
-          <div style={{ fontSize: 9, color: "#9ca3af", marginBottom: 4 }}>{p.paid} members paid</div>
+          <div style={{ fontSize: 8.5, color: "#9ca3af", marginBottom: 5 }}>{p.paid} members paid</div>
           <div style={{ height: 4, borderRadius: 99, background: "#E0E0EB", overflow: "hidden" }}>
             <div
               id={"dbo-" + p.pb}
               style={{ height: "100%", borderRadius: 99, background: BAR_COLORS[i % BAR_COLORS.length], width: 0 }}
             />
           </div>
-          <div style={{ fontSize: 9, color: "#9ca3af", textAlign: "right", marginTop: 2 }}>
+          <div style={{ fontSize: 8.5, color: "#9ca3af", textAlign: "right", marginTop: 3 }}>
             {p.pct} Collected
           </div>
         </div>
