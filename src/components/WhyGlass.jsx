@@ -29,27 +29,10 @@ export default function WhyGlass() {
   const [open, setOpen] = useState(0);
 
   /* Refs for scroll-triggered animations */
-  const badgeRef   = useRef(null);
   const itemRefs   = useRef([]);
   const btnRef     = useRef(null);
 
   useEffect(() => {
-    /* ── Badge: clip-path wipe left→right ── */
-    const io1 = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          e.target.style.clipPath = "inset(0% 0% 0% 0%)";
-          io1.disconnect();
-        }
-      },
-      { threshold: 0.5 }
-    );
-    if (badgeRef.current) {
-      badgeRef.current.style.clipPath   = "inset(0% 100% 0% 0%)";
-      badgeRef.current.style.transition = "clip-path 0.55s cubic-bezier(0.22,1,0.36,1)";
-      io1.observe(badgeRef.current);
-    }
-
     /* ── Accordion rows: slide up from below, staggered ── */
     const io2 = new IntersectionObserver(
       (entries) => {
@@ -87,7 +70,7 @@ export default function WhyGlass() {
       io3.observe(btnRef.current);
     }
 
-    return () => { io1.disconnect(); io2.disconnect(); io3.disconnect(); };
+    return () => { io2.disconnect(); io3.disconnect(); };
   }, []);
 
   return (
@@ -97,10 +80,9 @@ export default function WhyGlass() {
         {/* ── Header ── */}
         <div className="text-center mb-14">
 
-          {/* Badge — clip-path wipe */}
+          {/* Badge */}
           <div className="mb-6">
             <span
-              ref={badgeRef}
               className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full"
             >
               FAQ
