@@ -94,7 +94,7 @@ export default function Invites() {
         <button
           onClick={() => navigate("/member/home")}
           aria-label="Go back"
-          className="w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
+          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#333]" />
         </button>
@@ -149,7 +149,7 @@ export default function Invites() {
               <div
                 key={invite.id}
                 ref={(el) => (cardRefs.current[invite.id] = el)}
-                className={`border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3 transition-shadow duration-300 ease-in-out ${invite.id === highlightId ? "shadow-[0_0_0_2px_#002FA7,0_1px_6px_rgba(0,0,0,0.06)]" : "shadow-[0_1px_6px_rgba(0,0,0,0.06)]"}`}
+                className={`border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3 transition-shadow duration-300 ease-in-out ${invite.id === highlightId ? "shadow-[0_0_0_2px_#002FA7]" : ""}`}
               >
                 <div className="flex items-center gap-3 mb-3.5">
                   <Avatar name={invite.community?.name} logo={invite.community?.logo} />
@@ -188,7 +188,7 @@ export default function Invites() {
             {joinRequests.map((req) => (
               <div
                 key={req.id}
-                className="border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex items-center gap-3"
+                className="border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3 flex items-center gap-3"
               >
                 <Avatar name={req.community?.name} logo={req.community?.logo} />
                 <div className="min-w-0 flex-1">

@@ -264,7 +264,7 @@ export default function PaymentSummary() {
       <div className="flex items-center px-4 pt-5 pb-4 relative">
         <button
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-white flex items-center justify-center shadow-sm cursor-pointer"
+          className="w-9 h-9 rounded-full bg-white border border-surface-container-border flex items-center justify-center cursor-pointer"
         >
           <ChevronLeft size={18} className="text-gray-700" />
         </button>

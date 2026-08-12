@@ -124,7 +124,7 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   const isOverdue = new Date(nextDue.dueDate) < new Date();
 
   return (
-    <div className="border border-surface-container-border mx-4 rounded-2xl overflow-hidden bg-white shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
+    <div className="border border-surface-container-border mx-4 rounded-2xl overflow-hidden bg-white">
       {/* Top block carries the accent border on 3 sides. Structural, not an
           absolutely-positioned overlay sized with height:50% — that relied
           on a percentage height resolving against this card's height, but
@@ -577,7 +577,7 @@ export default function Home() {
               <button
                 aria-label="Invitations"
                 onClick={() => navigate("/member/invites")}
-                className="relative w-[38px] h-[38px] rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)] flex-shrink-0"
+                className="relative w-[38px] h-[38px] rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
               >
                 <Mail size={17} strokeWidth={1.8} className="text-[#333]" />
                 {pendingInviteCount > 0 && (
@@ -592,7 +592,7 @@ export default function Home() {
             <button
               aria-label="Notifications"
               onClick={() => navigate("/member/notifications")}
-              className="relative w-[38px] h-[38px] rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)] flex-shrink-0"
+              className="relative w-[38px] h-[38px] rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
             >
               <Bell size={17} strokeWidth={1.8} className="text-[#333]" />
               {unreadCount > 0 && (
@@ -645,7 +645,7 @@ export default function Home() {
             />
 
             {/* ── Upcoming Payments ────────────────────────────────────────────── */}
-            <div className="mx-4 mt-4 bg-surface-container rounded-2xl px-4 pt-4 pb-1 shadow-[0_1px_6px_rgba(0,0,0,0.06)]">
+            <div className="mx-4 mt-4 bg-surface-container rounded-2xl px-4 pt-4 pb-1 border border-surface-container-border">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm font-semibold text-[#111]">
@@ -710,7 +710,7 @@ export default function Home() {
             </div>
 
             {/* ── Payment History ──────────────────────────────────────────────── */}
-            <div className="mx-4 mt-4 bg-surface-container rounded-2xl px-4 pt-4 pb-1 shadow-[0_1px_6px_rgba(0,0,0,0.06)]">
+            <div className="mx-4 mt-4 bg-surface-container rounded-2xl px-4 pt-4 pb-1 border border-surface-container-border">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-semibold text-[#111]">
                   Payment History

@@ -304,7 +304,7 @@ export default function DiscoverCommunities() {
       <div className="flex items-center justify-center relative pt-[35px] px-5 pb-4">
         <button
           onClick={() => navigate(-1)}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
+          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>

@@ -245,7 +245,7 @@ export default function Notifications() {
       <div className="flex items-center justify-center relative pt-6 px-5 pb-5">
         <button
           onClick={() => navigate(-1)}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
+          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
@@ -253,7 +253,7 @@ export default function Notifications() {
       </div>
 
       {/* Tab bar */}
-      <div className="mx-4 mb-3 bg-white rounded-xl p-1 flex shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+      <div className="mx-4 mb-3 bg-white rounded-xl p-1 flex border border-surface-container-border">
         {TABS.map((tab) => (
           <button
             key={tab}

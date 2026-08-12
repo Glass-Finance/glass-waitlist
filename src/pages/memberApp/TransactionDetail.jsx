@@ -61,7 +61,7 @@ export default function TransactionDetail() {
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)] flex-shrink-0"
+          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
         >
           <ChevronLeft size={18} color="#374151" />
         </button>
@@ -79,7 +79,7 @@ export default function TransactionDetail() {
       ) : (
         <div className="py-0 px-4 flex flex-col gap-3">
           {/* Amount card */}
-          <div className="bg-white rounded-2xl pt-7 px-5 pb-7 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex flex-col items-center gap-3">
+          <div className="bg-white rounded-2xl pt-7 px-5 pb-7 border border-surface-container-border flex flex-col items-center gap-3">
             <p className="text-[34px] font-bold text-[#111827] m-0 tracking-[-0.5px]">
               {formatNaira(tx.amount, { decimals: 2 })}
             </p>
@@ -94,7 +94,7 @@ export default function TransactionDetail() {
           </div>
 
           {/* Details card */}
-          <div className="bg-white rounded-2xl pt-[18px] px-5 pb-[18px] shadow-[0_1px_6px_rgba(0,0,0,0.06)]">
+          <div className="bg-white rounded-2xl pt-[18px] px-5 pb-[18px] border border-surface-container-border">
             <p className="text-[15px] font-semibold text-[#111] mt-0 mx-0 mb-1.5">
               Transaction Details
             </p>

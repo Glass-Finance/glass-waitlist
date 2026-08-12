@@ -44,7 +44,7 @@ export default function Settings() {
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
+          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
@@ -57,7 +57,7 @@ export default function Settings() {
             <p className="text-xs font-semibold text-[#999] mt-0 mx-1 mb-2 uppercase [letter-spacing:0.4px]">
               {section.label}
             </p>
-            <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
+            <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden">
               {section.items.map(({ Icon, label, desc, to }, i) => (
                 <button
                   key={label}
@@ -80,7 +80,7 @@ export default function Settings() {
 
         <button
           onClick={handleLogout}
-          className="border border-surface-container-border flex items-center gap-2.5 w-full text-left py-3.5 px-4 bg-white rounded-2xl cursor-pointer shadow-[0_1px_6px_rgba(0,0,0,0.05)]"
+          className="border border-surface-container-border flex items-center gap-2.5 w-full text-left py-3.5 px-4 bg-white rounded-2xl cursor-pointer"
         >
           <LogOut size={16} className="text-brand" />
           <span className="text-sm font-medium text-brand">Log Out</span>

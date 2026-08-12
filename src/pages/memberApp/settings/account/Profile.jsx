@@ -206,7 +206,7 @@ export default function Profile() {
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
+          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
@@ -239,7 +239,7 @@ export default function Profile() {
           <p className="text-[13px] text-[#999] m-0">{isLoading ? "Loading…" : user?.email}</p>
         </div>
 
-        <div className="border border-surface-container-border bg-white rounded-2xl p-4 flex flex-col gap-3.5 shadow-[0_1px_6px_rgba(0,0,0,0.05)]">
+        <div className="border border-surface-container-border bg-white rounded-2xl p-4 flex flex-col gap-3.5">
           <div>
             <label className="text-xs text-[#888] block mb-1.5">First Name</label>
             <input className={inputCls} value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />

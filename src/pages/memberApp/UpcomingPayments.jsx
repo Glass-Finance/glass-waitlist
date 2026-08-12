@@ -52,7 +52,7 @@ function PaymentRow({ item, onPay, paying }) {
     : { label: "One-time", cls: "text-danger", dotCls: "bg-danger" };
 
   return (
-    <div className="border border-surface-container-border py-[18px] px-4 bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex items-center justify-between gap-3">
+    <div className="border border-surface-container-border py-[18px] px-4 bg-white rounded-2xl flex items-center justify-between gap-3">
       <div className="min-w-0">
         <div className="flex items-baseline gap-1.5 mb-1.5">
           <span className="text-xl font-bold text-[#111]">
@@ -114,7 +114,7 @@ export default function UpcomingPayments() {
       <div className="relative flex items-center justify-center pt-6 px-5 pb-5">
         <button
           onClick={() => navigate(-1)}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
+          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
@@ -131,11 +131,11 @@ export default function UpcomingPayments() {
       {/* List */}
       <div className="mx-4 flex flex-col gap-3">
         {isLoading ? (
-          <div className="border border-surface-container-border bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.06)]">
+          <div className="border border-surface-container-border bg-white rounded-2xl">
             <PageLoadingState label="Loading your payments…" size={56} padding="36px 24px" />
           </div>
         ) : loadError ? (
-          <div className="border border-surface-container-border bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.06)] text-center py-5">
+          <div className="border border-surface-container-border bg-white rounded-2xl text-center py-5">
             <p className="text-danger text-sm mt-0 mx-0 mb-2">
               Couldn't load upcoming payments.
             </p>
@@ -147,7 +147,7 @@ export default function UpcomingPayments() {
             </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="border border-surface-container-border bg-white rounded-2xl shadow-[0_1px_6px_rgba(0,0,0,0.06)] py-12 px-6 text-center flex flex-col items-center gap-2">
+          <div className="border border-surface-container-border bg-white rounded-2xl py-12 px-6 text-center flex flex-col items-center gap-2">
             <div className="w-[52px] h-[52px] rounded-full bg-[#D7E2FF] flex items-center justify-center mb-1">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12l5 5 9-9"/>

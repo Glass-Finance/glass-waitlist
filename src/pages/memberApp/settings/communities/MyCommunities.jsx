@@ -128,7 +128,7 @@ export default function MyCommunities() {
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
+          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
@@ -157,7 +157,7 @@ export default function MyCommunities() {
                 key={c.id}
                 onClick={() => handleSelect(c)}
                 disabled={navigatingId === c.id}
-                className={`flex items-center gap-3 bg-white rounded-2xl p-3.5 shadow-[0_1px_6px_rgba(0,0,0,0.05)] border-none text-left w-full ${navigatingId === c.id ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
+                className={`flex items-center gap-3 bg-white rounded-2xl p-3.5 border border-surface-container-border text-left w-full ${navigatingId === c.id ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
               >
                 <div
                   className={`w-11 h-11 rounded-xl text-white flex items-center justify-center font-bold text-[13px] flex-shrink-0 overflow-hidden ${c.logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}

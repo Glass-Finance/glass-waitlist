@@ -76,7 +76,7 @@ function PlanCard({ plan, auth, onToggle }) {
     : null;
 
   return (
-    <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden shadow-[0_1px_6px_rgba(0,0,0,0.07)]">
+    <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden">
       {/* Main body */}
       <div className="pt-4 px-4 pb-3.5">
         {/* Row 1: logo + Recurring badge */}
@@ -212,7 +212,7 @@ export default function ManagePayments() {
       <div className="relative flex items-center justify-center pt-[22px] px-5 pb-5">
         <button
           onClick={() => navigate(-1)}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
+          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>

@@ -244,7 +244,7 @@ export default function TwoFactorAuth() {
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
           onClick={() => flow ? setFlow(null) : navigate(-1)}
-          className="w-9 h-9 rounded-full bg-white border-none cursor-pointer flex items-center justify-center shadow-[0_1px_4px_rgba(0,0,0,0.1)]"
+          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
@@ -263,7 +263,7 @@ export default function TwoFactorAuth() {
         ) : (
           <>
             {/* Status card */}
-            <div className="bg-white rounded-2xl py-5 px-4 shadow-[0_1px_6px_rgba(0,0,0,0.06)] mb-5 flex items-center gap-3.5">
+            <div className="bg-white rounded-2xl py-5 px-4 border border-surface-container-border mb-5 flex items-center gap-3.5">
               <div
                 className={`w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center ${mfaEnabled ? "bg-success-tint" : "bg-stacked-container"}`}
               >
