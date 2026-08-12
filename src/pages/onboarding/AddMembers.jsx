@@ -472,11 +472,11 @@ export default function AddMembers() {
                     onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
                     onDragLeave={() => setDragOver(false)}
                     onDrop={handleDrop}
-                    className={`w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-5 min-h-[140px] border-dashed ${dragOver ? "border-2 bg-[#EEF2FF] border-brand" : "border bg-[#FAFAFA] border-gray-200"}`}
+                    className={`w-full rounded-lg flex flex-col items-center justify-center py-8 cursor-pointer transition-all mb-5 min-h-[100px] border-dashed ${dragOver ? "border-2 bg-[#EEF2FF] border-brand" : "border bg-[#FAFAFA] border-gray-200"}`}
                   >
                     <input ref={fileRef} type="file" accept=".csv" className="hidden"
                       onChange={(e) => handleFile(e.target.files[0])} />
-                    <CloudUpload size={30} className="text-gray-400 mb-3" />
+                    <CloudUpload size={24} className="text-gray-400 mb-2" />
                     {uploadedFile
                       ? <p className="text-xs text-brand font-medium">{uploadedFile.name}</p>
                       : <p className="text-xs text-gray-500">Drag and Drop CSV here or <span className="text-brand font-medium underline">Browse</span></p>}
@@ -627,7 +627,6 @@ export default function AddMembers() {
                 onClick={handleSubmit}
                 disabled={urlStage === "fetching"}
                 loading={loading}
-                size="sm"
                 className="lg:w-1/2 mx-auto block mt-6"
               >
                 {loading ? "Adding members…" : "Create Your Community"}
