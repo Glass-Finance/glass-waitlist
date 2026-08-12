@@ -20,7 +20,7 @@ export const SignUpTextInput = forwardRef(function SignUpTextInput({
       aria-invalid={invalid || undefined}
       onFocus={onFocus}
       onBlur={onBlur}
-      className={`w-full px-4 py-3 rounded-xl bg-white text-gray-900 placeholder-gray-400 text-placeholder outline-none transition-all border-[1.5px] ${invalid ? "border-danger" : "border-[#C2C2C2] focus:border-[#2535c3]"} ${className}`}
+      className={`w-full px-4 py-2 rounded-xl bg-white text-gray-900 placeholder-gray-400 text-placeholder outline-none transition-all border-[1.5px] ${invalid ? "border-danger" : "border-[#C2C2C2] focus:border-[#2535c3]"} ${className}`}
       {...rest}
     />
   );

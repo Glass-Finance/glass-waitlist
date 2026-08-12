@@ -197,7 +197,7 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
 
         {error && <p className="text-sm text-red-500 -mt-1">{error}</p>}
 
-        <PrimaryBtn className="mt-2" loading={loading}>
+        <PrimaryBtn className="mt-2" loading={loading} size="xs">
           {loading ? "Creating Account..." : "Create Your Account"}
         </PrimaryBtn>
       </form>
