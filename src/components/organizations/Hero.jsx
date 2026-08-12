@@ -94,10 +94,7 @@ export default function Hero() {
             className="font-bold text-white leading-[1.05] tracking-tight mb-5 text-center max-w-[480px] lg:max-w-[720px] mx-auto"
             style={{ fontSize: "clamp(44px,7vw,70px)" }}
           >
-            Community Finance{" "}
-            <span className="text-[#a5b4fc]">
-              Crystal Clear
-            </span>
+            Community Finance Crystal Clear
           </h1>
         </Reveal>
         <Reveal variant="up" delay={160}>
