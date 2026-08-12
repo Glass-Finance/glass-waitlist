@@ -521,7 +521,7 @@ export default function SignIn() {
         <div>
           <h1 className="text-headline text-gray-900 mb-1">Sign in To Your Account</h1>
           <p className="text-sm text-gray-500">
-            {mode === "otp" ? "We'll email or text you a one-time code — no password needed." : "Enter your credentials to continue."}
+            {mode === "otp" ? "We'll email or text you a one-time code, no password needed." : "Enter your credentials to continue."}
           </p>
         </div>
 
