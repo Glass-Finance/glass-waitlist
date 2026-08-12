@@ -395,3 +395,20 @@ section {
   color: #002FA7;
   text-decoration: underline;
 }
+
+/* Scoped one-notch downscale for the admin dashboard (Sidebar/Topbar/every
+   dashboard page) -- DashboardLayout toggles this class on <html> only
+   while it's mounted. Every Tailwind text-* and rem-based spacing/sizing
+   utility (p-4, gap-4, w-8 h-8 icon bubbles, etc.) is relative to the root
+   font-size, so this shrinks all of them together in one place -- was
+   tried first as `zoom` on the dashboard's own root div, but that div is
+   sized with vw/dvh (h-dvh w-screen), and non-standard `zoom` doesn't
+   recompute what 100vw/100dvh mean, so the zoomed box just rendered
+   smaller than the viewport and left a bare gap on the right/bottom edge.
+   font-size has no such interaction with viewport units, so there's no
+   equivalent gap here. Doesn't shrink icons sized via lucide's `size={n}`
+   prop (a literal px SVG attribute, not rem-based) -- Sidebar/Topbar's own
+   icon sizes are trimmed directly instead. */
+html.dashboard-compact {
+  font-size: 93.75%; /* 16px -> 15px */
+}

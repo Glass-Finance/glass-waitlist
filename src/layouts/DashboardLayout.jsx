@@ -18,6 +18,17 @@ export default function DashboardLayout() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [tourOpen, setTourOpen] = useState(false);
 
+  // Scoped one-notch text/spacing downscale for just the dashboard -- see
+  // the html.dashboard-compact rule in index.css for why this is a root
+  // font-size class instead of `zoom` on this layout's own div. Toggled on
+  // <html> (not this component's own root) since font-size has to be set
+  // above every rem-based Tailwind utility to cascade into them; removed on
+  // unmount so navigating to auth/marketing/member routes isn't affected.
+  useEffect(() => {
+    document.documentElement.classList.add("dashboard-compact");
+    return () => document.documentElement.classList.remove("dashboard-compact");
+  }, []);
+
   // Auto-show the first-launch walkthrough once per browser; the help icon
   // in Topbar lets it be replayed on demand afterward.
   useEffect(() => {

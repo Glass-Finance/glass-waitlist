@@ -128,16 +128,16 @@ export default function Topbar({
         className="md:hidden bg-transparent border-none cursor-pointer text-gray-600 hover:text-gray-900 transition-colors p-0 flex-shrink-0"
         aria-label="Open menu"
       >
-        <Menu size={20} />
+        <Menu size={19} />
       </button>
 
       {/* Search */}
       <div data-tour="topbar-search" className="relative flex-1 max-w-[420px] hidden md:block" ref={searchRef}>
         <div className="flex items-center gap-2 bg-white rounded-md px-3.5 py-2.5 border border-surface-container-border focus-within:ring-1 focus-within:ring-[var(--color-brand)]">
           {searching ? (
-            <Loader2 size={14} className="text-gray-400 flex-shrink-0 animate-spin" />
+            <Loader2 size={13} className="text-gray-400 flex-shrink-0 animate-spin" />
           ) : (
-            <Search size={14} className="text-gray-400 flex-shrink-0" />
+            <Search size={13} className="text-gray-400 flex-shrink-0" />
           )}
           <input
             value={query}
@@ -225,7 +225,7 @@ export default function Topbar({
           aria-label="Take the dashboard tour"
           title="Take the dashboard tour"
         >
-          <HelpCircle size={18} />
+          <HelpCircle size={17} />
         </button>
 
         {/* Bell */}
@@ -235,7 +235,7 @@ export default function Topbar({
             className="relative bg-transparent border-none cursor-pointer text-gray-500 hover:text-gray-700 transition-colors p-0"
             aria-label={`Notifications${unreadCount ? ` (${unreadCount} unread)` : ""}`}
           >
-            <Bell size={18} />
+            <Bell size={17} />
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 min-w-[16px] h-4 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-[9px] font-bold px-0.5">
                 {unreadCount > 99 ? "99+" : unreadCount}

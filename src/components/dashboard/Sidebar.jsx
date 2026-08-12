@@ -202,7 +202,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             title="Platform Admin"
             className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/20 text-white transition-all hover:bg-white/30"
           >
-            <ShieldCheck size={16} />
+            <ShieldCheck size={15} />
           </button>
 
           <div className="flex-1" />
@@ -213,7 +213,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             title="Log out"
             className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/60 hover:bg-red-500/20 hover:text-red-300 transition-all disabled:opacity-50"
           >
-            <LogOut size={15} />
+            <LogOut size={14} />
           </button>
         </div>
 
@@ -253,7 +253,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                       : "bg-transparent text-[#6b7280] font-medium hover:bg-[#f9fafb]"
                   }`}
                 >
-                  <Icon size={14} className="flex-shrink-0" />
+                  <Icon size={13} className="flex-shrink-0" />
                   <span className="flex-1 text-left">{label}</span>
                   {badge > 0 && (
                     <span className="min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
@@ -443,7 +443,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             title="Platform Admin"
             className="mt-2 w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/50 hover:bg-white/20 hover:text-white transition-all"
           >
-            <ShieldCheck size={15} />
+            <ShieldCheck size={14} />
           </button>
         )}
 
@@ -454,7 +454,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           title="Log out"
           className="mt-2 w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/60 hover:bg-red-500/20 hover:text-red-300 transition-all disabled:opacity-50"
         >
-          <LogOut size={15} />
+          <LogOut size={14} />
         </button>
       </div>
 
@@ -511,9 +511,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             }
           >
             {collapsed ? (
-              <PanelLeftOpen size={15} />
+              <PanelLeftOpen size={14} />
             ) : (
-              <PanelLeftClose size={15} />
+              <PanelLeftClose size={14} />
             )}
           </button> */}
         </div>
@@ -558,7 +558,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                       : "bg-transparent text-[#6b7280] font-medium hover:bg-[#f9fafb]"
                 }`}
               >
-                <Icon size={14} className="flex-shrink-0" />
+                <Icon size={13} className="flex-shrink-0" />
                 <span className="flex-1 text-left">{label}</span>
                 {badge > 0 && (
                   <span className="min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
@@ -618,7 +618,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             }}
             className="w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer bg-transparent text-[#6b7280] font-medium text-xs transition-all duration-150 whitespace-nowrap hover:bg-[#f9fafb] hover:text-brand"
           >
-            <Smartphone size={14} className="flex-shrink-0" />
+            <Smartphone size={13} className="flex-shrink-0" />
             <span className="flex-1 text-left">Member View</span>
           </button>
 
