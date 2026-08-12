@@ -1,6 +1,5 @@
-// Static per-item transition style — DashboardOverlay's reveal-in/out loop
-// toggles opacity/transform on these elements imperatively via
-// document.getElementById("dbo-" + id), keyed off ELEM_IDS in constants.js.
+// Reveal-in/out ids (dbo-e1..dbo-e4) are driven imperatively by
+// DashboardOverlay's animation loop — see constants.js's ELEM_IDS.
 const REVEAL_STYLE = {
   opacity: 0,
   transform: "translateY(10px)",
@@ -38,18 +37,30 @@ const STATS = [
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
         <path
           d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
-          stroke="#e85d04"
+          stroke="#b45309"
           strokeWidth="1.8"
           strokeLinecap="round"
         />
-        <circle cx="9" cy="7" r="4" stroke="#e85d04" strokeWidth="1.8" />
-        <line x1="17" y1="11" x2="23" y2="17" stroke="#e85d04" strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="23" y1="11" x2="17" y2="17" stroke="#e85d04" strokeWidth="1.8" strokeLinecap="round" />
+        <circle cx="9" cy="7" r="4" stroke="#b45309" strokeWidth="1.8" />
+        <line x1="17" y1="11" x2="23" y2="17" stroke="#b45309" strokeWidth="1.8" strokeLinecap="round" />
+        <line x1="23" y1="11" x2="17" y2="17" stroke="#b45309" strokeWidth="1.8" strokeLinecap="round" />
       </svg>
     ),
   },
   {
     id: "e3",
+    label: "Overdue Members",
+    value: "07",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="#DC2626" strokeWidth="1.8" />
+        <path d="M12 7v6" stroke="#DC2626" strokeWidth="1.8" strokeLinecap="round" />
+        <circle cx="12" cy="16.5" r="1" fill="#DC2626" />
+      </svg>
+    ),
+  },
+  {
+    id: "e4",
     label: "Total Contributions",
     value: "₦ 2,002,490",
     small: true,
@@ -66,7 +77,7 @@ const STATS = [
     ),
   },
   {
-    id: "e4",
+    id: "e5",
     label: "Active Plans",
     value: "05",
     icon: (
@@ -80,24 +91,45 @@ const STATS = [
 
 export default function StatsRow() {
   return (
-    <div className="grid grid-cols-4 gap-2 mb-3">
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8, marginBottom: 12 }}>
       {STATS.map((s) => (
         <div
           key={s.id}
           id={"dbo-" + s.id}
-          className="shadow-[0_1px_4px_rgba(0,47,167,0.05)] bg-white rounded-[10px] py-3 px-3.5 border border-[#eef0f8]"
-          style={REVEAL_STYLE}
+          style={{
+            ...REVEAL_STYLE,
+            background: "#fff",
+            borderRadius: 12,
+            padding: "11px 12px",
+            border: "1px solid #E0E0EB",
+            boxShadow: "0 1px 4px rgba(0,47,167,0.05)",
+            minWidth: 0,
+          }}
         >
-          <div className="text-[10px] text-[#6b7280] font-medium mb-2 flex justify-between items-center">
+          <div
+            style={{
+              fontSize: 9,
+              color: "#6b7280",
+              fontWeight: 500,
+              marginBottom: 8,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 4,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
             {s.label}
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
               <circle cx="12" cy="12" r="10" stroke="#c4c9e0" strokeWidth="1.8" />
               <path d="M12 8v4M12 16h.01" stroke="#c4c9e0" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {s.icon}
-            <span className={`font-extrabold text-[#0f1d6e] ${s.small ? "text-xs" : "text-base"}`}>
+            <span style={{ fontSize: s.small ? 12 : 16, fontWeight: 800, color: "#000" }}>
               {s.value}
             </span>
           </div>

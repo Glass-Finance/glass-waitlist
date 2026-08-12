@@ -6,80 +6,88 @@ const REVEAL_STYLE = {
   transition: "opacity .5s ease, transform .5s ease",
 };
 
+// Frequency pill is always purple in the real app (PaymentPlansCard.jsx) --
+// it doesn't vary by frequency. Progress-bar color does vary, cycling
+// through the real app's BAR_COLOR_CLASSES palette by position, not by
+// frequency either.
+const BAR_COLORS = ["#d4a017", "#7c3aed", "#002FA7"];
+
 const PLANS = [
   {
-    id: "e5",
+    id: "e6",
     pb: "pb0",
     name: "Association Dues",
     freq: "Monthly",
-    fColor: "#d4a017",
-    fBg: "#fff8e7",
     amt: "₦1.2M",
     paid: "24 / 120",
-    bar: "#d4a017",
     pct: "60%",
   },
   {
-    id: "e6",
+    id: "e7",
     pb: "pb1",
     name: "Infrastructure Development",
     freq: "One-Time",
-    fColor: "#7c3aed",
-    fBg: "#f3eeff",
     amt: "₦300,000",
     paid: "24 / 120",
-    bar: "#7c3aed",
     pct: "74%",
-  },
-  {
-    id: "e7",
-    pb: "pb2",
-    name: "End Of The Year Party",
-    freq: "Weekly",
-    fColor: "#059669",
-    fBg: "#ecfdf5",
-    amt: "₦400,500",
-    paid: "24 / 120",
-    bar: "#059669",
-    pct: "20%",
   },
 ];
 
 export default function PaymentPlansPanel() {
   return (
-    <div className="bg-[rgba(204,219,255,0.4)] rounded-[10px] border border-[#eef0f8] p-3">
-      <div className="flex items-center justify-between mb-2.5">
-        <span className="text-xs font-bold text-[#0f1d6e]">Payment Plans</span>
-        <span className="text-[11px] text-brand font-semibold">Manage All</span>
+    <div
+      style={{
+        background: "#D7E2FF",
+        borderRadius: 12,
+        border: "1px solid #E0E0EB",
+        padding: "10px",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "#000" }}>Payment Plans</span>
+        <span style={{ fontSize: 11, color: "#002FA7", fontWeight: 600 }}>Manage All</span>
       </div>
-      {PLANS.map((p) => (
+      {PLANS.map((p, i) => (
         <div
           key={p.id}
           id={"dbo-" + p.id}
-          className="bg-white rounded-lg py-2.5 px-3 mb-1.5 border border-[rgba(204,219,255,0.6)]"
-          style={REVEAL_STYLE}
+          style={{
+            ...REVEAL_STYLE,
+            background: "#fff",
+            borderRadius: 10,
+            padding: "8px 10px",
+            marginBottom: 5,
+            border: "1px solid rgba(204,219,255,0.6)",
+          }}
         >
-          <div className="flex items-center justify-between mb-[3px]">
-            <div className="flex items-center gap-[5px]">
-              <span className="text-[11px] font-bold text-[#0f1d6e]">{p.name}</span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 3 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#000" }}>{p.name}</span>
               <span
-                style={{ color: p.fColor, background: p.fBg }}
-                className="text-[9px] font-bold rounded-full py-px px-1.5"
+                style={{
+                  fontSize: 9,
+                  fontWeight: 700,
+                  color: "#7c3aed",
+                  background: "#f3eeff",
+                  borderRadius: 99,
+                  padding: "1px 6px",
+                }}
               >
                 {p.freq}
               </span>
             </div>
-            <span className="text-[11px] font-extrabold text-[#0f1d6e]">{p.amt}</span>
+            <span style={{ fontSize: 11, fontWeight: 800, color: "#000" }}>{p.amt}</span>
           </div>
-          <div className="text-[9px] text-[#9ca3af] mb-[5px]">{p.paid} members paid</div>
-          <div className="h-1 rounded-full bg-[#eef0f8] overflow-hidden">
+          <div style={{ fontSize: 9, color: "#9ca3af", marginBottom: 4 }}>{p.paid} members paid</div>
+          <div style={{ height: 4, borderRadius: 99, background: "#E0E0EB", overflow: "hidden" }}>
             <div
               id={"dbo-" + p.pb}
-              className="h-full rounded-full"
-              style={{ background: p.bar, width: 0 }}
+              style={{ height: "100%", borderRadius: 99, background: BAR_COLORS[i % BAR_COLORS.length], width: 0 }}
             />
           </div>
-          <div className="text-[9px] text-[#9ca3af] text-right mt-0.5">{p.pct} Collected</div>
+          <div style={{ fontSize: 9, color: "#9ca3af", textAlign: "right", marginTop: 2 }}>
+            {p.pct} Collected
+          </div>
         </div>
       ))}
     </div>

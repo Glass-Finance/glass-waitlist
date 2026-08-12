@@ -44,8 +44,15 @@ export const ELEM_IDS = [
 export const PBARS = [
   { id: "pb0", w: "60%" },
   { id: "pb1", w: "74%" },
-  { id: "pb2", w: "20%" },
 ];
+
+// Sidebar nav-item click targets, in the mockup's 960px natural space —
+// where the guided-tour cursor lands before each screen switch.
+export const NAV_POINTS = {
+  dashboard: { x: 138, y: 94 },
+  payments: { x: 138, y: 129 },
+  members: { x: 138, y: 164 },
+};
 
 // DashboardOverlay's internals are all fixed-pixel (960px-wide layout,
 // fixed sidebar/grid widths) — retrofitting every value to be fluid would

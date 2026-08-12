@@ -74,12 +74,12 @@ export default function DashboardOverlay() {
         el.style.transition =
           "opacity .5s cubic-bezier(.22,1,.36,1), transform .5s cubic-bezier(.22,1,.36,1)";
         setRi(el, true);
-        if (i >= 5 && i <= 7) {
-          const bar = $(PBARS[i - 5].id);
+        if (i >= 6 && i <= 7) {
+          const bar = $(PBARS[i - 6].id);
           if (bar) {
             await sw(60);
             bar.style.transition = "width 1.1s ease";
-            bar.style.width = PBARS[i - 5].w;
+            bar.style.width = PBARS[i - 6].w;
           }
         }
       }
@@ -101,7 +101,7 @@ export default function DashboardOverlay() {
       const el = document.createElement("div");
       el.style.cssText = `
         background:#fff;border-radius:10px;padding:11px 14px;
-        box-shadow:0 4px 22px rgba(0,20,80,0.22);border:1px solid #eef0f8;
+        box-shadow:0 4px 22px rgba(0,20,80,0.22);border:1px solid #E0E0EB;
         display:flex;align-items:flex-start;gap:9px;width:220px;
         opacity:0;transform:translateX(14px);
         transition:opacity .4s ease,transform .4s ease;
@@ -110,7 +110,7 @@ export default function DashboardOverlay() {
       el.innerHTML = `
         <div style="width:7px;height:7px;border-radius:50%;background:${d.color};flex-shrink:0;margin-top:4px"></div>
         <div>
-          <div style="font-size:11px;font-weight:700;color:#0f1d6e;margin-bottom:2px">${d.title}</div>
+          <div style="font-size:11px;font-weight:700;color:#000;margin-bottom:2px">${d.title}</div>
           <div style="font-size:10px;color:#6b7280;line-height:1.35">${d.sub}</div>
         </div>`;
       return el;
@@ -200,7 +200,7 @@ export default function DashboardOverlay() {
         <div className="bg-[#3a3a3a] rounded-2xl pt-3.5 px-3.5 pb-0 shadow-[0_32px_100px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.06)] border border-white/[0.08]">
           <div className="flex bg-[#F7F8FC] overflow-hidden min-h-[480px] rounded-t">
             <NavRail />
-            <SidebarNav />
+            <SidebarNav nav="dashboard" />
 
             <div className="flex-1 flex flex-col min-w-0">
               <TopBar />
@@ -215,7 +215,7 @@ export default function DashboardOverlay() {
                   className="flex items-start justify-between mb-3.5"
                 >
                   <div>
-                    <div className="text-base font-extrabold text-[#0f1d6e]">
+                    <div className="text-base font-extrabold text-black">
                       Dashboard
                     </div>
                     <div className="text-[11px] text-[#9ca3af] mt-0.5">
@@ -223,7 +223,7 @@ export default function DashboardOverlay() {
                     </div>
                   </div>
                   <div className="flex gap-[7px]">
-                    <button className="py-1.5 px-3 rounded-lg border-[1.5px] border-[#e0e3f0] bg-white text-[#0f1d6e] text-[11px] font-semibold">
+                    <button className="py-1.5 px-3 rounded-lg border-[1.5px] border-[#E0E0EB] bg-white text-black text-[11px] font-semibold">
                       Create Payment Plan
                     </button>
                     <button className="py-1.5 px-3 rounded-lg border-none bg-brand text-white text-[11px] font-semibold">
