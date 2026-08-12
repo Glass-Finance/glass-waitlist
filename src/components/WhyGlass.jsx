@@ -112,9 +112,7 @@ export default function WhyGlass() {
             <div
               key={faq.q}
               ref={(el) => (itemRefs.current[i] = el)}
-              className={`bg-[#F0F2F8] rounded-2xl mb-3 overflow-hidden border shadow-[0_2px_10px_rgba(15,29,110,0.06)] transition-all duration-300 ${
-                open === i ? "border-[#e0e4f5]" : "border-transparent"
-              }`}
+              className="bg-surface-container border-surface-container-border rounded-xl mb-3 overflow-hidden border shadow-[0_2px_10px_rgba(15,29,110,0.06)] transition-all duration-300"
             >
               <button
                 className="w-full flex items-center gap-4 px-6 py-5 text-left bg-transparent border-none cursor-pointer"
