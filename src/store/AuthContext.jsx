@@ -143,15 +143,16 @@ export function AuthProvider({ children }) {
   // ── login ──────────────────────────────────────────────────────────────────
   /**
    * Calls authService.login() → stores tokens → updates state.
+   * Identifier is email OR phoneNumber(+phoneRegion) -- never both.
    * Returns:
    *   { mfaRequired: true, mfaChallengeToken } — if MFA is needed (no session yet)
    *   user object                              — on success
    *
    * Throws on bad credentials / network error.
    */
-  const login = useCallback(async (email, password) => {
+  const login = useCallback(async ({ email, phoneNumber, phoneRegion, password }) => {
     // authService.login returns data.data (already unwrapped)
-    const authData = await apiLogin({ email, password });
+    const authData = await apiLogin({ email, phoneNumber, phoneRegion, password });
     // {
     //   accessToken, refreshToken, userId, email,
     //   platformRole, emailVerified, mfaRequired, mfaChallengeToken

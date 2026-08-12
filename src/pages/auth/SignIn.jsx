@@ -1,18 +1,68 @@
 import { useEffect, useRef, useState } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Loader2, ShieldCheck, Lock, KeyRound } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
-import { verifyMfaLogin } from "../../services/authService";
+import { verifyMfaLogin, requestLoginOtp, verifyLoginOtp } from "../../services/authService";
 import { getMyInvites, getMyCommunityJoinRequests, submitJoinRequest } from "../../api/invites";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
-import { notifyError } from "../../utils/errorHandler";
+import { notifyError, getErrorMessage, getRetryAfterSeconds } from "../../utils/errorHandler";
 import { getEmailError } from "../../utils/validators";
+import { isPhoneValid, PHONE_FORMAT_HINT } from "../../utils/phone";
 import { toastInfo, toastSuccess } from "../../utils/toast";
 import { JOIN_COMMUNITY_KEY } from "../../hooks/useJoinCommunityParam";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
+import OtpBoxes from "../../components/common/OtpBoxes";
+import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
+
+// A single field doubles as email-or-phone -- the backend rejects both/
+// neither, so there's exactly one identifier to resolve, not two fields to
+// reconcile. "@" is the one unambiguous signal between the two formats.
+function parseIdentifier(value) {
+  const trimmed = value.trim();
+  return trimmed.includes("@")
+    ? { email: trimmed.toLowerCase() }
+    : { phoneNumber: trimmed };
+}
+
+function validateIdentifier(value) {
+  const trimmed = value.trim();
+  if (!trimmed) return "Enter your email or phone number.";
+  return trimmed.includes("@") ? getEmailError(trimmed) : (isPhoneValid(trimmed) ? "" : PHONE_FORMAT_HINT);
+}
+
+// Tab switcher between password and passwordless sign-in -- both are
+// first-class here (the backend built OTP login as a parallel flow, not a
+// "forgot your password" fallback), so equal-weight tabs rather than a
+// single primary form with a secondary link underneath.
+function ModeTabs({ mode, setMode, disabled }) {
+  return (
+    <div className="flex gap-1 bg-[#F2F3F7] rounded-xl p-1">
+      <button
+        type="button"
+        onClick={() => setMode("password")}
+        disabled={disabled}
+        className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
+          mode === "password" ? "bg-white text-[#111] shadow-sm" : "bg-transparent text-gray-500"
+        }`}
+      >
+        <Lock size={14} /> Password
+      </button>
+      <button
+        type="button"
+        onClick={() => setMode("otp")}
+        disabled={disabled}
+        className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
+          mode === "otp" ? "bg-white text-[#111] shadow-sm" : "bg-transparent text-gray-500"
+        }`}
+      >
+        <KeyRound size={14} /> One-Time Code
+      </button>
+    </div>
+  );
+}
 
 // One sign-in page reachable from two routes (/sign-in and
 // /member/app-sign-in) — neither the page nor the login call itself knows
@@ -28,8 +78,8 @@ export default function SignIn() {
   const location = useLocation();
   const { login, setSession } = useAuth();
   const isMemberSignIn = location.pathname === "/member/app-sign-in";
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [fieldErrors, setFieldErrors] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ identifier: "", password: "" });
+  const [fieldErrors, setFieldErrors] = useState({ identifier: "", password: "" });
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -38,6 +88,34 @@ export default function SignIn() {
   const [mfaChallenge, setMfaChallenge] = useState(null); // { mfaChallengeToken }
   const [mfaCode, setMfaCode] = useState("");
   const mfaInputRef = useRef(null);
+
+  // ── Passwordless (OTP) sign-in ────────────────────────────────────────────
+  const [mode, setMode] = useState("password"); // "password" | "otp"
+  const [otpStep, setOtpStep] = useState("request"); // "request" | "verify"
+  const [otpIdentifier, setOtpIdentifier] = useState("");
+  const [otpIdentifierError, setOtpIdentifierError] = useState("");
+  const [otpSending, setOtpSending] = useState(false);
+  const [otpVerifying, setOtpVerifying] = useState(false);
+  const [otpError, setOtpError] = useState("");
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  // Seconds-left for the code itself, driven by the server's expiresAt (not
+  // a hardcoded TTL) -- resendCount as the reset key restarts it on resend.
+  const [otpInitialSeconds, setOtpInitialSeconds] = useState(0);
+  const [resendCount, setResendCount] = useState(0);
+  // Separate cooldown for the resend button itself, driven by a 429's
+  // Retry-After when one comes back -- 0 whenever there's no active cooldown.
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendCooldownKey, setResendCooldownKey] = useState(0);
+  const otpSecondsLeft = useCountdown(otpInitialSeconds, resendCount);
+  const resendSecondsLeft = useCountdown(resendCooldown, resendCooldownKey);
+  const otpCodeExpired = otpStep === "verify" && otpSecondsLeft <= 0;
+
+  function switchMode(next) {
+    setMode(next);
+    setOtpStep("request");
+    setOtpError("");
+    setError("");
+  }
 
   // Show a banner if the user was mid-verification (registered but not yet
   // confirmed email) and then refreshed or navigated away.
@@ -75,7 +153,7 @@ export default function SignIn() {
   }, []);
 
   function validateField(field, value) {
-    if (field === "email") return getEmailError(value);
+    if (field === "identifier") return validateIdentifier(value);
     if (field === "password" && !value) return "Password is required.";
     return "";
   }
@@ -166,16 +244,16 @@ export default function SignIn() {
   }
 
   async function handleSignIn() {
-    const emailError = validateField("email", form.email);
+    const identifierError = validateField("identifier", form.identifier);
     const passwordError = validateField("password", form.password);
-    if (emailError || passwordError) {
-      setFieldErrors({ email: emailError, password: passwordError });
+    if (identifierError || passwordError) {
+      setFieldErrors({ identifier: identifierError, password: passwordError });
       return;
     }
     setLoading(true);
     setError("");
     try {
-      const result = await login(form.email.trim().toLowerCase(), form.password);
+      const result = await login({ ...parseIdentifier(form.identifier), password: form.password });
       if (result?.mfaRequired) {
         setMfaChallenge({ mfaChallengeToken: result.mfaChallengeToken });
         setTimeout(() => mfaInputRef.current?.focus(), 50);
@@ -186,6 +264,73 @@ export default function SignIn() {
       setError(notifyError(err, { context: "Sign in", fallback: "Incorrect email or password." }));
     } finally {
       setLoading(false);
+    }
+  }
+
+  // ── Passwordless (OTP) handlers ───────────────────────────────────────────
+  async function handleSendOtp() {
+    const identifierError = validateIdentifier(otpIdentifier);
+    if (identifierError) {
+      setOtpIdentifierError(identifierError);
+      return;
+    }
+    setOtpSending(true);
+    setOtpIdentifierError("");
+    try {
+      const result = await requestLoginOtp(parseIdentifier(otpIdentifier));
+      const seconds = Math.max(0, Math.round((new Date(result.expiresAt) - Date.now()) / 1000));
+      setOtpInitialSeconds(seconds);
+      setResendCount((c) => c + 1);
+      setOtp(["", "", "", "", "", ""]);
+      setOtpError("");
+      setOtpStep("verify");
+    } catch (err) {
+      setOtpIdentifierError(notifyError(err, { context: "Send login code" }));
+    } finally {
+      setOtpSending(false);
+    }
+  }
+
+  async function handleVerifyOtp() {
+    if (otp.some((d) => !d) || otpCodeExpired) return;
+    setOtpVerifying(true);
+    setOtpError("");
+    try {
+      const result = await verifyLoginOtp({ ...parseIdentifier(otpIdentifier), token: otp.join("") });
+      if (result?.mfaRequired) {
+        setMfaChallenge({ mfaChallengeToken: result.mfaChallengeToken });
+        setTimeout(() => mfaInputRef.current?.focus(), 50);
+        return;
+      }
+      const user = await setSession(result);
+      navigate(await resolveDestination(user), { replace: true });
+    } catch (err) {
+      setOtpError(notifyError(err, { context: "Verify login code", fallback: "Invalid or expired code." }));
+    } finally {
+      setOtpVerifying(false);
+    }
+  }
+
+  async function handleResendOtp() {
+    setOtpSending(true);
+    setOtpError("");
+    try {
+      const result = await requestLoginOtp(parseIdentifier(otpIdentifier));
+      const seconds = Math.max(0, Math.round((new Date(result.expiresAt) - Date.now()) / 1000));
+      setOtpInitialSeconds(seconds);
+      setResendCount((c) => c + 1);
+      setOtp(["", "", "", "", "", ""]);
+    } catch (err) {
+      const retryAfter = getRetryAfterSeconds(err);
+      if (retryAfter) {
+        setResendCooldown(retryAfter);
+        setResendCooldownKey((k) => k + 1);
+        setOtpError(`Too many attempts — try again in ${formatCountdown(retryAfter)}.`);
+      } else {
+        setOtpError(getErrorMessage(err, "Couldn't resend. Please try again."));
+      }
+    } finally {
+      setOtpSending(false);
     }
   }
 
@@ -217,7 +362,7 @@ export default function SignIn() {
     }
   }
 
-  const isReady = form.email.trim() && form.password;
+  const isReady = form.identifier.trim() && form.password;
 
   // ── MFA challenge screen ──────────────────────────────────────────────────────
   if (mfaChallenge) {
@@ -263,11 +408,90 @@ export default function SignIn() {
           </PrimaryButton>
 
           <button
-            onClick={() => { setMfaChallenge(null); setMfaCode(""); setError(""); }}
+            onClick={() => {
+              setMfaChallenge(null);
+              setMfaCode("");
+              setError("");
+              // The OTP that got here has already been consumed -- land back
+              // on a clean identifier screen, not a stale code-entry one.
+              if (mode === "otp") setOtpStep("request");
+            }}
             className="text-sm text-center text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer"
           >
             ← Back to sign in
           </button>
+        </div>
+      </AuthLayout>
+    );
+  }
+
+  // ── OTP verify screen — focused, no tabs, mirrors OTPStep.jsx's registration
+  // pattern ──────────────────────────────────────────────────────────────────
+  if (mode === "otp" && otpStep === "verify") {
+    return (
+      <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
+        <div className="w-full max-w-md flex flex-col my-auto">
+          <div className="mb-7">
+            <h1 className="text-headline text-gray-900 mb-3 font-sans">Enter Your Code</h1>
+            <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code sent to</p>
+            <p className="text-sm font-semibold text-gray-900">{otpIdentifier}</p>
+            <button
+              onClick={() => { setOtpStep("request"); setOtp(["", "", "", "", "", ""]); setOtpError(""); }}
+              className="text-sm font-medium mt-1 hover:underline text-[#1B2FE8] bg-transparent border-none cursor-pointer p-0"
+            >
+              Use a different email or number
+            </button>
+            <p className={`text-xs mt-2 ${otpCodeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
+              {otpCodeExpired
+                ? "Your code has expired — request a new one below."
+                : `Code expires in ${formatCountdown(otpSecondsLeft)}`}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <OtpBoxes
+              value={otp}
+              onChange={(next) => { setOtp(next); setOtpError(""); }}
+              length={6}
+              autoFocus
+              disabled={otpVerifying}
+              renderBoxes={(digits, activeIndex) => (
+                <div className="flex items-center gap-2 justify-center pointer-events-none">
+                  {digits.slice(0, 3).map((d, i) => (
+                    <div key={i} className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
+                      {d}
+                    </div>
+                  ))}
+                  <span className="text-gray-400 text-lg font-medium px-1">—</span>
+                  {digits.slice(3, 6).map((d, i) => {
+                    const idx = i + 3;
+                    return (
+                      <div key={idx} className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
+                        {d}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            />
+
+            {otpError && <p className="text-sm text-red-500 text-center -mt-2">{otpError}</p>}
+
+            <PrimaryButton onClick={handleVerifyOtp} loading={otpVerifying} disabled={otpCodeExpired || otp.some((d) => !d)}>
+              {otpVerifying ? "Verifying…" : "Verify & Sign In"}
+            </PrimaryButton>
+          </div>
+
+          <p className="text-center text-sm mt-5 text-gray-text">
+            Didn't get a code?{" "}
+            <button
+              onClick={handleResendOtp}
+              disabled={otpSending || resendSecondsLeft > 0}
+              className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8] bg-transparent border-none cursor-pointer p-0"
+            >
+              {otpSending ? "Resending…" : resendSecondsLeft > 0 ? `Resend in ${formatCountdown(resendSecondsLeft)}` : "Resend"}
+            </button>
+          </p>
         </div>
       </AuthLayout>
     );
@@ -296,68 +520,104 @@ export default function SignIn() {
         )}
         <div>
           <h1 className="text-headline text-gray-900 mb-1">Sign in To Your Account</h1>
-          <p className="text-sm text-gray-500">Enter your credentials to continue.</p>
+          <p className="text-sm text-gray-500">
+            {mode === "otp" ? "We'll email or text you a one-time code — no password needed." : "Enter your credentials to continue."}
+          </p>
         </div>
 
-        <div>
-          <Label htmlFor="email">Email Address</Label>
-          <TextInput
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            value={form.email}
-            onChange={set("email")}
-            onBlur={handleBlur("email")}
-            autoComplete="email"
-            inputMode="email"
-            disabled={loading}
-            error={fieldErrors.email}
-          />
-          <ErrorMessage message={fieldErrors.email} />
-        </div>
+        <ModeTabs mode={mode} setMode={switchMode} disabled={loading || otpSending} />
 
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <Label htmlFor="password">Password</Label>
-            <Link to="/forgot-password" className="text-xs font-medium text-[#1C2B8A]">
-              Forgot password?
-            </Link>
-          </div>
-          <TextInput
-            id="password"
-            type={showPw ? "text" : "password"}
-            placeholder="Enter your password"
-            value={form.password}
-            onChange={set("password")}
-            onBlur={handleBlur("password")}
-            autoComplete="current-password"
-            disabled={loading}
-            error={fieldErrors.password}
-            rightElement={
-              <button
-                type="button"
-                onClick={() => setShowPw((v) => !v)}
-                className="text-gray-400 hover:text-gray-600"
-                tabIndex={-1}
-                aria-label={showPw ? "Hide password" : "Show password"}
-              >
-                {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            }
-          />
-          <ErrorMessage message={fieldErrors.password || error} />
-        </div>
+        {mode === "password" ? (
+          <>
+            <div>
+              <Label htmlFor="identifier">Email or Phone Number</Label>
+              <TextInput
+                id="identifier"
+                type="text"
+                placeholder="you@example.com or 0803 123 4567"
+                value={form.identifier}
+                onChange={set("identifier")}
+                onBlur={handleBlur("identifier")}
+                autoComplete="username"
+                disabled={loading}
+                error={fieldErrors.identifier}
+              />
+              <ErrorMessage message={fieldErrors.identifier} />
+            </div>
 
-        <PrimaryButton onClick={handleSignIn} loading={loading} disabled={!isReady}>
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <Loader2 size={16} className="animate-spin" />
-              <span>Signing in…</span>
-            </span>
-          ) : (
-            "Sign In"
-          )}
-        </PrimaryButton>
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <Label htmlFor="password">Password</Label>
+                <Link to="/forgot-password" className="text-xs font-medium text-[#1C2B8A]">
+                  Forgot password?
+                </Link>
+              </div>
+              <TextInput
+                id="password"
+                type={showPw ? "text" : "password"}
+                placeholder="Enter your password"
+                value={form.password}
+                onChange={set("password")}
+                onBlur={handleBlur("password")}
+                autoComplete="current-password"
+                disabled={loading}
+                error={fieldErrors.password}
+                rightElement={
+                  <button
+                    type="button"
+                    onClick={() => setShowPw((v) => !v)}
+                    className="text-gray-400 hover:text-gray-600"
+                    tabIndex={-1}
+                    aria-label={showPw ? "Hide password" : "Show password"}
+                  >
+                    {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                }
+              />
+              <ErrorMessage message={fieldErrors.password || error} />
+            </div>
+
+            <PrimaryButton onClick={handleSignIn} loading={loading} disabled={!isReady}>
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  <span>Signing in…</span>
+                </span>
+              ) : (
+                "Sign In"
+              )}
+            </PrimaryButton>
+          </>
+        ) : (
+          <>
+            <div>
+              <Label htmlFor="otp-identifier">Email or Phone Number</Label>
+              <TextInput
+                id="otp-identifier"
+                type="text"
+                placeholder="you@example.com or 0803 123 4567"
+                value={otpIdentifier}
+                onChange={(e) => { setOtpIdentifier(e.target.value); setOtpIdentifierError(""); }}
+                onBlur={() => setOtpIdentifierError(validateIdentifier(otpIdentifier))}
+                autoComplete="username"
+                disabled={otpSending}
+                error={otpIdentifierError}
+              />
+              <ErrorMessage message={otpIdentifierError} />
+            </div>
+
+            <PrimaryButton onClick={handleSendOtp} loading={otpSending} disabled={!otpIdentifier.trim()}>
+              {otpSending ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  <span>Sending code…</span>
+                </span>
+              ) : (
+                "Send Code"
+              )}
+            </PrimaryButton>
+          </>
+        )}
 
         <div className="flex items-center gap-3">
           <div className="flex-1 h-px bg-gray-300" />
