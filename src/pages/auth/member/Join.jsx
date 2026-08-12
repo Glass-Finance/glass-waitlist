@@ -20,6 +20,7 @@ import OtpBoxes from "../../../components/common/OtpBoxes";
 import { useCountdown, formatCountdown } from "../../../hooks/useCountdown";
 import AuthLayout from "../../../layouts/AuthLayout";
 import { Button as PrimaryButton } from "../../../components/ui/Button";
+import { TextInput } from "../../../components/ui/TextInput";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -44,41 +45,6 @@ function Label({ htmlFor, children }) {
     >
       {children}
     </label>
-  );
-}
-
-function TextInput({
-  id,
-  type = "text",
-  placeholder,
-  value,
-  onChange,
-  onBlur,
-  autoComplete,
-  inputMode,
-  disabled,
-  rightElement,
-}) {
-  return (
-    <div className="relative">
-      <input
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        onBlur={onBlur}
-        autoComplete={autoComplete}
-        inputMode={inputMode}
-        disabled={disabled}
-        className="w-full rounded-md px-4 py-3.5 text-placeholder text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 bg-white focus:bg-white disabled:opacity-50 autofill:text-gray-900 border-[1.5px] border-[#E0E0E6] focus:border-[#797D86]"
-      />
-      {rightElement && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          {rightElement}
-        </div>
-      )}
-    </div>
   );
 }
 

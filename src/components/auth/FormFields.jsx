@@ -1,5 +1,5 @@
-import { forwardRef } from "react";
 import { Button } from "../ui/Button";
+import { TextInput } from "../ui/TextInput";
 
 // Shared input primitives for the unified auth pages (SignIn,
 // ForgotPassword, ResetPassword) — used identically inside AuthLayout's
@@ -14,46 +14,10 @@ export function Label({ htmlFor, children }) {
   );
 }
 
-// forwardRef so callers (e.g. SignIn's MFA code field) can focus() the
-// underlying <input> directly — a plain function component here would
-// silently swallow the ref instead of erroring, which is what happened
-// before this existed.
-export const TextInput = forwardRef(function TextInput({
-  id,
-  type = "text",
-  placeholder,
-  value,
-  onChange,
-  onBlur,
-  autoComplete,
-  inputMode,
-  disabled,
-  rightElement,
-  error,
-  ...rest
-}, ref) {
-  const invalid = Boolean(error);
-  return (
-    <div className="relative">
-      <input
-        ref={ref}
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        autoComplete={autoComplete}
-        inputMode={inputMode}
-        disabled={disabled}
-        aria-invalid={invalid || undefined}
-        onBlur={onBlur}
-        className={`w-full rounded-xl px-4 py-3.5 text-placeholder text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 bg-white disabled:opacity-50 border-[1.5px] ${invalid ? "border-danger" : "border-[#E0E0E6] focus:border-[#1C2B8A]"}`}
-        {...rest}
-      />
-      {rightElement && <div className="absolute right-3 top-1/2 -translate-y-1/2">{rightElement}</div>}
-    </div>
-  );
-});
+// Re-exported under this name so SignIn/ForgotPassword/ResetPassword don't
+// need their import paths touched -- the actual implementation lives in
+// components/ui/TextInput.jsx, the one shared text input for the whole app.
+export { TextInput };
 
 // Re-exported under this name so SignIn/ForgotPassword/ResetPassword don't
 // need their import paths touched -- the actual implementation lives in

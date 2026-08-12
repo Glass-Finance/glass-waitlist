@@ -73,4 +73,4 @@ export const TABS = ["All Plans", "Recurring", "One Time"];
 export const BAR_COLOR_CLASSES = ["bg-[#d4a017]", "bg-[#7c3aed]", "bg-brand", "bg-[#059669]"];
 
 export const inputCls =
-  "w-full px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 bg-white outline-none transition-all focus:border-brand";
+  "w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-gray-200 text-xs text-gray-700 bg-white outline-none transition-all focus:border-[#002FA7]";

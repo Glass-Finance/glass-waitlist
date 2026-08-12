@@ -72,7 +72,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
   const [roleId, setRoleId] = useState(defaultRole?.id ?? "");
 
   const inputCls =
-    "w-full border border-[#797D86] p-3 rounded-sm text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-brand transition-all";
+    "w-full h-16 min-h-8 border border-[#797D86] px-6 py-1 rounded-lg text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
 
   function copyLink() {
     copyLinkText(inviteLink);

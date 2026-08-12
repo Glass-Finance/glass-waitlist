@@ -226,7 +226,7 @@ export default function Members() {
         return (
           <button
             onClick={() => navigate("/dashboard/join-requests")}
-            className="w-full flex items-center justify-between gap-4 px-5 py-3.5 rounded-xl border border-amber-100 mb-5 text-left cursor-pointer transition-shadow hover:shadow-md bg-[#FFFBEB] shadow-[0_1px_4px_rgba(180,83,9,0.07)]"
+            className="w-full flex items-center justify-between gap-4 px-5 py-3.5 rounded-xl border border-amber-100 mb-5 text-left cursor-pointer bg-[#FFFBEB]"
           >
             <div className="flex items-center gap-3 min-w-0">
               <Clock size={15} className="flex-shrink-0 text-[#b45309]" />
@@ -267,7 +267,7 @@ export default function Members() {
       </div>
       )}
 
-      {members.length > 0 && <div className="bg-surface-container rounded-xl border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]">
+      {members.length > 0 && <div className="bg-surface-container rounded-xl border border-surface-container-border">
         <div className="flex items-center justify-between px-5 py-4">
           <span className="text-sm font-medium text-black">Member Payments</span>
           <button onClick={exportCsv} disabled={isExporting} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 transition-all bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
@@ -473,7 +473,7 @@ function QuickAddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavai
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="member@email.com"
-              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs outline-none focus:border-brand"
+              className="w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-gray-200 text-xs outline-none focus:border-[#002FA7]"
             />
           </div>
           <div>

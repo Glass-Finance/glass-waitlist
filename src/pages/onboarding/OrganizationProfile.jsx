@@ -36,7 +36,7 @@ const CATEGORIES = [
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member"];
 
 const inputCls =
-  "w-full border bg-stacked-container p-3 rounded-xl text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all";
+  "w-full h-16 min-h-8 border bg-stacked-container px-6 py-1 rounded-lg text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
 
 function StepIcon({ id }) {
   const icons = {

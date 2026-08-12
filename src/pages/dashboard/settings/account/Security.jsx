@@ -88,7 +88,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
       .catch(() => setQrSrc(null));
   }, [otpauthUri]);
 
-  const inputCls = "w-full px-4 py-2.5 rounded-md border border-gray-300 text-gray-900 text-sm outline-none text-center tracking-widest font-mono text-lg transition-all focus:border-brand";
+  const inputCls = "w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-gray-300 text-gray-900 text-sm outline-none text-center tracking-widest font-mono text-lg transition-all focus:border-[#002FA7]";
 
   return (
     <div
@@ -243,7 +243,7 @@ export default function Security() {
   const [success, setSuccess] = useState(false);
   const [mfaModal, setMfaModal] = useState(null); // "setup" | "disable" | null
 
-  const inputCls = "w-full px-4 py-2.5 rounded-md border border-gray-300 text-gray-900 text-xs outline-none transition-all pr-11 focus:border-brand";
+  const inputCls = "w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-gray-300 text-gray-900 text-xs outline-none transition-all pr-11 focus:border-[#002FA7]";
 
   function validatePasswordField(field, value, otherValue) {
     if (field === "current" && !value) return "Current password is required.";

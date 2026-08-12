@@ -49,8 +49,6 @@ function CommissionModal({ community, onClose }) {
     );
   }
 
-  const f = { border: "1px solid #D0D0D0" };
-  const ff = { borderColor: "var(--color-brand)" };
 
   return (
     <ModalShell
@@ -86,10 +84,7 @@ function CommissionModal({ community, onClose }) {
                 max="10000"
                 value={rate}
                 onChange={(e) => setRate(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none transition-colors"
-                style={f}
-                onFocus={(e) => Object.assign(e.target.style, ff)}
-                onBlur={(e) => Object.assign(e.target.style, f)}
+                className="w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-[#D0D0D0] text-xs text-gray-800 outline-none transition-colors focus:border-[#002FA7]"
                 placeholder="e.g. 150 for 1.5%"
               />
               {Number(rate) > 0 && (
@@ -110,10 +105,7 @@ function CommissionModal({ community, onClose }) {
                 min="0"
                 value={cap}
                 onChange={(e) => setCap(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none transition-colors"
-                style={f}
-                onFocus={(e) => Object.assign(e.target.style, ff)}
-                onBlur={(e) => Object.assign(e.target.style, f)}
+                className="w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-[#D0D0D0] text-xs text-gray-800 outline-none transition-colors focus:border-[#002FA7]"
                 placeholder="e.g. 500"
               />
             </div>
