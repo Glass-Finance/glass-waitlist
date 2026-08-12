@@ -17,7 +17,7 @@ export default function CheckEmail() {
       <header className="px-8 py-3 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain" />
-          <span className="font-semibold text-gray-900 text-base font-sans">
+          <span className="font-medium text-gray-900 text-base font-sans">
             Glass
           </span>
         </div>

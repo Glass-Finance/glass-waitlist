@@ -26,7 +26,7 @@ export default function MobileRequired() {
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain" />
           <span
-            className="font-semibold text-gray-900 text-base font-sans"
+            className="font-medium text-gray-900 text-base font-sans"
           >
             Glass
           </span>

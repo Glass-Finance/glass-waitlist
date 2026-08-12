@@ -242,7 +242,7 @@ export default function PaymentProfile() {
       <header className="relative flex items-center justify-between px-4 lg:px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
-          <span className="font-semibold text-base text-gray-900">Glass</span>
+          <span className="font-medium text-base text-gray-900">Glass</span>
         </div>
         <div className="flex items-center gap-4">
           <Bell size={20} className="text-gray-400 hidden lg:block" />

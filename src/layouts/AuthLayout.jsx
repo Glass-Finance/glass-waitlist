@@ -31,7 +31,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
           onClick={() => navigate("/")}
         >
           <img src={glassIcon} alt="" className="h-7 w-7 object-contain" />
-          <span className="text-lg font-semibold text-gray-900">Glass</span>
+          <span className="text-lg font-medium text-gray-900">Glass</span>
         </div>
         <div className="h-px bg-gray-200" />
       </div>

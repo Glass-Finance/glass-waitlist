@@ -341,7 +341,7 @@ export default function AddMembers() {
       <header className="relative flex items-center justify-between px-4 lg:px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
-          <span className="font-semibold text-base text-gray-900">Glass</span>
+          <span className="font-medium text-base text-gray-900">Glass</span>
         </div>
         <div className="flex items-center gap-4">
           <Bell size={20} className="text-gray-400 hidden lg:block" />
@@ -422,7 +422,7 @@ export default function AddMembers() {
             </div>
 
             {/* Direct add card */}
-            <div className="bg-stacked-container rounded-lg p-4 lg:p-6 border border-[#E5E7EB]">
+            <div className="bg-white rounded-lg p-4 lg:p-6 border border-[#E5E7EB]">
               <h3 className="text-base font-semibold text-gray-900 mb-4">Prefer To Add Members Directly?</h3>
 
               {/* Tabs */}
@@ -497,23 +497,21 @@ export default function AddMembers() {
                     </div>
 
                     {urlStage === "fetching" && (
-                      <div className="mt-3 rounded-lg flex flex-col items-center justify-center py-10 border-2 border-dashed border-brand bg-[#EEF2FF]">
-                        <div className="relative w-16 h-16 mb-3">
-                          <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90">
-                            <circle cx="32" cy="32" r="28" fill="none" stroke="#E0E3F0" strokeWidth="6" />
-                            <circle cx="32" cy="32" r="28" fill="none" stroke="#002FA7" strokeWidth="6"
-                              strokeDasharray={2 * Math.PI * 28}
-                              strokeDashoffset={2 * Math.PI * 28 * (1 - urlProgress / 100)}
-                              strokeLinecap="round" className="transition-[stroke-dashoffset] duration-200 ease-linear" />
-                          </svg>
-                          <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-gray-900">
-                            {Math.round(urlProgress)}%
-                          </span>
+                      <div className="mt-3 flex items-center gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
+                        <FileSpreadsheet size={20} className="text-gray-400 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-gray-900 truncate">{fileUrl.split("/").pop() || "file.csv"}</p>
+                          <div className="mt-1.5 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-brand transition-[width] duration-200 ease-linear"
+                              style={{ width: `${urlProgress}%` }}
+                            />
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-700 mb-3">Uploading File...</p>
-                        <button onClick={clearUrlUpload}
-                          className="px-4 py-1.5 rounded-md text-xs font-medium text-gray-600 hover:bg-gray-50 transition-all bg-white border border-gray-300 cursor-pointer">
-                          Cancel
+                        <span className="text-xs text-gray-500 flex-shrink-0">{Math.round(urlProgress)}%</span>
+                        <button onClick={clearUrlUpload} aria-label="Cancel upload"
+                          className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0">
+                          <X size={16} />
                         </button>
                       </div>
                     )}
@@ -536,16 +534,6 @@ export default function AddMembers() {
                   </div>
 
                   {error && <p className="text-sm text-red-500 mt-3">{error}</p>}
-
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={urlStage === "fetching"}
-                    loading={loading}
-                    size="sm"
-                    className="mt-6"
-                  >
-                    {loading ? "Adding members…" : "Create Your Community"}
-                  </Button>
                 </>
               )}
 
@@ -633,6 +621,18 @@ export default function AddMembers() {
                 </>
               )}
             </div>
+
+            {tab === "upload" && (
+              <Button
+                onClick={handleSubmit}
+                disabled={urlStage === "fetching"}
+                loading={loading}
+                size="sm"
+                className="lg:w-1/2 mx-auto block mt-6"
+              >
+                {loading ? "Adding members…" : "Create Your Community"}
+              </Button>
+            )}
             <div className="h-[env(safe-area-inset-bottom,20px)] lg:hidden" />
           </div>
         </main>
