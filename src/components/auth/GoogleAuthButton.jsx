@@ -16,26 +16,54 @@ import { notifyError } from "../../utils/errorHandler";
  * page can decide its own post-auth navigation (role-based redirect,
  * resume an invite, etc.) without this component knowing about routing.
  */
+// Google's widget only offers a "large"/"medium"/"small" size enum, not an
+// arbitrary pixel height -- "large" still renders ~40-44px, visibly shorter
+// than this form's 54-56px inputs/primary button. There's no prop for this,
+// so instead this renders the widget at a smaller width, measures its own
+// natural (pre-scale) height, then CSS-scales the whole thing up uniformly
+// (not stretched) until it's TARGET_HEIGHT tall -- proportional, so the G
+// logo/text don't distort, and the pre-scale width is chosen so the
+// post-scale result exactly fills the container again.
+const TARGET_HEIGHT = 56;
+
 export default function GoogleAuthButton({ onAuthenticated, label = "continue_with" }) {
   const { setSession } = useAuth();
   const containerRef = useRef(null);
+  const scaleRef = useRef(null);
   // Google's widget takes a fixed pixel width, not a percentage -- was
   // hardcoded to 320, so it rendered visibly narrower than the input
   // fields/Continue button (both w-full) once the form column widened past
   // 320px. Measuring the wrapper instead keeps it edge-to-edge with the
   // rest of the form on any screen size.
-  const [width, setWidth] = useState(320);
+  const [containerWidth, setContainerWidth] = useState(320);
+  const [naturalHeight, setNaturalHeight] = useState(null);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const observer = new ResizeObserver(([entry]) => {
       const measured = entry?.contentRect.width;
-      if (measured) setWidth(Math.round(measured));
+      if (measured) setContainerWidth(Math.round(measured));
     });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  // Google's rendered height for a given `size` is independent of the width
+  // passed in, so this only ever needs to measure once.
+  useEffect(() => {
+    const el = scaleRef.current;
+    if (!el || naturalHeight != null) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const measured = entry?.contentRect.height;
+      if (measured > 0) setNaturalHeight(measured);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [naturalHeight]);
+
+  const scale = naturalHeight ? TARGET_HEIGHT / naturalHeight : 1;
+  const googleWidth = naturalHeight ? Math.round(containerWidth / scale) : containerWidth;
 
   async function handleCredential(credentialResponse) {
     if (!credentialResponse?.credential) {
@@ -52,21 +80,17 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
   }
 
   return (
-    // Google's widget only offers a "large"/"medium"/"small" size enum, not
-    // an arbitrary pixel height -- "large" still renders ~40px, visibly
-    // shorter than this form's 54-56px inputs/primary button. Scaling or
-    // otherwise distorting Google's own button is against their branding
-    // guidelines, so instead this gives it a taller centered slot to sit
-    // in, matching the surrounding rhythm without touching the button itself.
-    <div ref={containerRef} className="w-full min-h-[56px] flex items-center justify-center">
-      <GoogleLogin
-        onSuccess={handleCredential}
-        onError={() => notifyError(new Error("Google sign-in was cancelled or failed."), { context: "Google auth" })}
-        text={label}
-        shape="rectangular"
-        size="large"
-        width={String(width)}
-      />
+    <div ref={containerRef} className="w-full flex items-center justify-center" style={{ height: TARGET_HEIGHT }}>
+      <div ref={scaleRef} style={{ transform: `scale(${scale})` }}>
+        <GoogleLogin
+          onSuccess={handleCredential}
+          onError={() => notifyError(new Error("Google sign-in was cancelled or failed."), { context: "Google auth" })}
+          text={label}
+          shape="rectangular"
+          size="large"
+          width={String(googleWidth)}
+        />
+      </div>
     </div>
   );
 }
