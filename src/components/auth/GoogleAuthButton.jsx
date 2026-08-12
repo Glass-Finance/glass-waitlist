@@ -23,8 +23,13 @@ import { notifyError } from "../../utils/errorHandler";
 // natural (pre-scale) height, then CSS-scales the whole thing up uniformly
 // (not stretched) until it's TARGET_HEIGHT tall -- proportional, so the G
 // logo/text don't distort, and the pre-scale width is chosen so the
-// post-scale result exactly fills the container again.
-const TARGET_HEIGHT = 56;
+// post-scale result exactly fills the container again. 46 (not the full
+// 56px of the inputs/primary button) is deliberate: scaling all the way to
+// 56 also blows up the G logo/text proportionally, since Google renders
+// icon+text+background as one atomic unit -- 46 keeps them at a natural,
+// non-oversized size while still reading as intentionally bigger than
+// Google's raw default.
+const TARGET_HEIGHT = 46;
 
 export default function GoogleAuthButton({ onAuthenticated, label = "continue_with" }) {
   const { setSession } = useAuth();
