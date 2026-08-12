@@ -93,7 +93,8 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
           onSuccess={handleCredential}
           onError={() => notifyError(new Error("Google sign-in was cancelled or failed."), { context: "Google auth" })}
           text={label}
-          shape="rectangular"
+          shape="pill"
+          logo_alignment="center"
           size="large"
           width={String(googleWidth)}
         />
