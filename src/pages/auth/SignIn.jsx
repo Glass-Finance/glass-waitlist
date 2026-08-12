@@ -39,13 +39,13 @@ function validateIdentifier(value) {
 // single primary form with a secondary link underneath.
 function ModeTabs({ mode, setMode, disabled }) {
   return (
-    <div className="flex gap-1 bg-[#F2F3F7] rounded-xl p-1">
+    <div className="flex gap-1 bg-stacked-container rounded-xl p-1">
       <button
         type="button"
         onClick={() => setMode("password")}
         disabled={disabled}
         className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
-          mode === "password" ? "bg-white text-[#111] shadow-sm" : "bg-transparent text-gray-500"
+          mode === "password" ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-800"
         }`}
       >
         <Lock size={14} /> Password
@@ -55,7 +55,7 @@ function ModeTabs({ mode, setMode, disabled }) {
         onClick={() => setMode("otp")}
         disabled={disabled}
         className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
-          mode === "otp" ? "bg-white text-[#111] shadow-sm" : "bg-transparent text-gray-500"
+          mode === "otp" ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-800"
         }`}
       >
         <KeyRound size={14} /> One-Time Code
