@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { X } from "lucide-react";
 import { useGoogleOAuth } from "@react-oauth/google";
 import { googleAuth } from "../../services/authService";
 import { useAuth } from "../../store/AuthContext";
@@ -10,30 +11,109 @@ const LABELS = {
   continue_with: "Continue with Google",
 };
 
+// Google's own personalized state ("Sign in as David, name@gmail.com" with
+// a photo) lives entirely inside its cross-origin iframe -- it's never
+// exposed to the host page in advance, only ever visible if Google's own
+// rendered element is what's shown, which is exactly the sizing/shape
+// tradeoff this custom button exists to avoid. This reconstructs the same
+// *feeling* on our own terms instead: the `credential` JWT we already get
+// back on a successful sign-in carries the account's name/picture as plain
+// (unverified, display-only -- the backend independently verifies the real
+// credential) claims, cached here so a *returning* visitor sees "Continue
+// as David" with their photo on our own pixel-matched button, without ever
+// needing to read anything out of Google's iframe.
+const IDENTITY_KEY = "glass_last_google_identity";
+
+function readCachedIdentity() {
+  try {
+    return JSON.parse(localStorage.getItem(IDENTITY_KEY));
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedIdentity(identity) {
+  try {
+    if (identity) localStorage.setItem(IDENTITY_KEY, JSON.stringify(identity));
+    else localStorage.removeItem(IDENTITY_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+// Display-only decode -- the backend independently verifies the real
+// credential in googleAuth() below, so no signature check is needed here.
+function decodeJwtPayload(token) {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const json = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + c.charCodeAt(0).toString(16).padStart(2, "0"))
+        .join(""),
+    );
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
+
 // Google's own rendered button (the old <GoogleLogin/> widget) lives inside
-// a cross-origin iframe from accounts.google.com -- no CSS can ever reach
-// inside it, only Google's own fixed shape/size presets ("rectangular" /
-// "pill" / "circle", "large" / "medium" / "small"). That's why it could
-// never be made to match this form's own rounded-xl inputs. Initializing
-// Google Identity Services directly and triggering its One Tap prompt from
-// a completely ordinary <button> keeps the button 100% ours while the
-// `callback` below still hands the backend the exact same ID-token
-// `credential` shape /auth/google already expects -- no backend change.
+// a cross-origin iframe -- no CSS reaches inside it, only fixed shape/size
+// presets. Calling google.accounts.id.prompt() from our own button instead
+// (the first version of this file) got the sizing exactly right but wasn't
+// reliable: Chrome's FedCM treats an unprompted prompt() call as a
+// synthetic request and silently blocks it after the first dismissal
+// ("FedCM was disabled... based on previous user action") -- confirmed
+// live, not a theoretical risk. Google only grants the reliable, ungated
+// path to a genuine click on ITS OWN rendered element.
+//
+// This keeps both: Google's real button is rendered into `hiddenBtnRef`,
+// sized to match and stacked exactly over the visible custom-styled div
+// below via position:absolute + opacity:0, so the click a user sees land
+// on our design is actually landing on Google's real button underneath --
+// same ID-token `credential` callback, same backend contract, no gating.
 export default function GoogleAuthButton({ onAuthenticated, label = "continue_with" }) {
   const { setSession } = useAuth();
   const { clientId, scriptLoadedSuccessfully } = useGoogleOAuth();
-  const initializedRef = useRef(false);
+  const wrapRef = useRef(null);
+  const hiddenBtnRef = useRef(null);
   const onAuthenticatedRef = useRef(onAuthenticated);
   onAuthenticatedRef.current = onAuthenticated;
+  const [width, setWidth] = useState(320);
+  const [identity, setIdentity] = useState(() => readCachedIdentity());
+  const [avatarFailed, setAvatarFailed] = useState(false);
 
   useEffect(() => {
-    if (!scriptLoadedSuccessfully || initializedRef.current) return;
+    const el = wrapRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const measured = entry?.contentRect.width;
+      if (measured) setWidth(Math.round(measured));
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!scriptLoadedSuccessfully || !hiddenBtnRef.current) return;
     window.google?.accounts?.id?.initialize({
       client_id: clientId,
       callback: async (credentialResponse) => {
         if (!credentialResponse?.credential) {
           notifyError(new Error("Google didn't return a credential."), { context: "Google auth" });
           return;
+        }
+        const claims = decodeJwtPayload(credentialResponse.credential);
+        if (claims) {
+          const next = {
+            name: claims.given_name || claims.name?.split(" ")[0] || null,
+            picture: claims.picture ?? null,
+          };
+          writeCachedIdentity(next);
+          setIdentity(next);
+          setAvatarFailed(false);
         }
         try {
           const authData = await googleAuth({ clientToken: credentialResponse.credential });
@@ -43,42 +123,64 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
           notifyError(err, { context: "Google auth" });
         }
       },
-      // Chrome is phasing out third-party cookies, which the classic One
-      // Tap prompt relied on -- FedCM is Google's replacement transport and
-      // is what keeps this working going forward instead of silently
-      // failing to display.
-      use_fedcm_for_prompt: true,
     });
-    initializedRef.current = true;
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- init once when the script/clientId are ready
-  }, [clientId, scriptLoadedSuccessfully]);
+    // Re-rendered whenever `width` changes (matches the visible button's
+    // measured width) -- Google's SDK replaces the container's contents in
+    // place, same as the old <GoogleLogin/> widget did.
+    window.google.accounts.id.renderButton(hiddenBtnRef.current, {
+      type: "standard",
+      theme: "outline",
+      size: "large",
+      width: String(width),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-render on script-ready/width only
+  }, [clientId, scriptLoadedSuccessfully, width]);
 
-  function handleClick() {
-    if (!scriptLoadedSuccessfully) return;
-    window.google?.accounts?.id?.prompt((notification) => {
-      // FedCM fails closed (no callback, no error) when the prompt can't
-      // display at all -- e.g. the user dismissed it recently, or third-
-      // party sign-in is blocked. Without this the button would look
-      // broken (click, nothing happens) with no explanation.
-      if (notification.isNotDisplayed?.() || notification.isSkippedMoment?.()) {
-        notifyError(
-          new Error("Google sign-in didn't open. Please try again or use another sign-in method."),
-          { context: "Google auth" },
-        );
-      }
-    });
+  function handleForget(e) {
+    e.stopPropagation();
+    writeCachedIdentity(null);
+    setIdentity(null);
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      disabled={!scriptLoadedSuccessfully}
-      className="w-full flex items-center justify-center gap-2.5 rounded-xl px-4 py-3.5 border-[1.5px] border-[#E0E0E6] bg-white text-button font-semibold text-gray-700 transition-colors duration-150 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-    >
-      <GoogleGlyph />
-      {LABELS[label] ?? LABELS.continue_with}
-    </button>
+    <div ref={wrapRef} className="relative w-full group">
+      {/* Visible button -- purely decorative, never receives the click itself. */}
+      <div
+        aria-hidden="true"
+        className={`w-full flex items-center justify-center gap-2.5 rounded-xl px-4 py-3.5 border-[1.5px] border-[#E0E0E6] bg-white text-button font-semibold text-gray-700 transition-colors duration-150 group-hover:bg-gray-50 ${identity ? "pr-9" : ""}`}
+      >
+        {identity?.picture && !avatarFailed ? (
+          <img
+            src={identity.picture}
+            alt=""
+            className="w-[18px] h-[18px] rounded-full flex-shrink-0"
+            onError={() => setAvatarFailed(true)}
+          />
+        ) : (
+          <GoogleGlyph />
+        )}
+        {identity?.name ? `Continue as ${identity.name}` : (LABELS[label] ?? LABELS.continue_with)}
+      </div>
+      {/* Google's real button -- invisible, stacked exactly over the div
+          above, so it's what actually receives the click/tap. */}
+      <div
+        ref={hiddenBtnRef}
+        className="absolute inset-0 overflow-hidden opacity-0"
+      />
+      {/* "Not you?" -- comes after the invisible Google button above (later
+          in DOM = higher paint order), so it intercepts clicks in its own
+          small area instead of falling through to Google's click target. */}
+      {identity && (
+        <button
+          type="button"
+          onClick={handleForget}
+          aria-label="Not you? Use a different Google account"
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+        >
+          <X size={14} />
+        </button>
+      )}
+    </div>
   );
 }
 
