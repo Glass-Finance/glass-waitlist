@@ -15,9 +15,14 @@ export default function DashboardStats({ stats, isLoading }) {
       {stats.map((s) => (
         <div
           key={s.label}
-          className="bg-surface-container rounded-xl px-4 py-3 border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
+          // Figma: min-height 152px (not a fixed height -- a wrapped label
+          // like "Overdue Members" shouldn't clip or force the card taller
+          // than its siblings), 24px padding, 8px radius, space-between so
+          // the icon+value row stays pinned to the bottom of the card
+          // instead of drifting up under a short single-line label.
+          className="min-h-[152px] flex flex-col justify-between bg-surface-container rounded-lg p-6 border border-surface-container-border shadow-[0_1px_4px_rgba(0,47,167,0.05)]"
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500 font-medium">
               {s.label}
             </span>
