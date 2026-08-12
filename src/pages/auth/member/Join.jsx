@@ -239,7 +239,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
 
       <ErrorMessage message={error} />
 
-      <PrimaryButton onClick={handleSubmit} disabled={!isReady}>
+      <PrimaryButton onClick={handleSubmit} disabled={!isReady} size="sm">
         Continue
       </PrimaryButton>
 

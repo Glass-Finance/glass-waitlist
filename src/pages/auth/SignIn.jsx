@@ -348,7 +348,7 @@ export default function SignIn() {
           <ErrorMessage message={fieldErrors.password || error} />
         </div>
 
-        <PrimaryButton onClick={handleSignIn} loading={loading} disabled={!isReady}>
+        <PrimaryButton onClick={handleSignIn} loading={loading} disabled={!isReady} size="sm">
           {loading ? (
             <span className="flex items-center justify-center gap-2">
               <Loader2 size={16} className="animate-spin" />

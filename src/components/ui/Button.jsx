@@ -27,7 +27,7 @@ export const Button = forwardRef(function Button(
   ref,
 ) {
   const isDisabled = disabled || loading;
-  const sizeClasses = size === "sm" ? "py-2.5 text-sm" : "py-4 text-button";
+  const sizeClasses = size === "sm" ? "py-3 text-sm" : "py-4 text-button";
   return (
     <button
       ref={ref}
