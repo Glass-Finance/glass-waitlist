@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useGoogleOAuth } from "@react-oauth/google";
 import { googleAuth } from "../../services/authService";
 import { useAuth } from "../../store/AuthContext";
@@ -17,11 +17,11 @@ const LABELS = {
 // rendered element is what's shown, which is exactly the sizing/shape
 // tradeoff this custom button exists to avoid. This reconstructs the same
 // *feeling* on our own terms instead: the `credential` JWT we already get
-// back on a successful sign-in carries the account's name/picture as plain
+// back on a successful sign-in carries the account's email/picture as plain
 // (unverified, display-only -- the backend independently verifies the real
 // credential) claims, cached here so a *returning* visitor sees "Continue
-// as David" with their photo on our own pixel-matched button, without ever
-// needing to read anything out of Google's iframe.
+// as name@gmail.com" with their photo on our own pixel-matched button,
+// without ever needing to read anything out of Google's iframe.
 const IDENTITY_KEY = "glass_last_google_identity";
 
 function readCachedIdentity() {
@@ -106,11 +106,8 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
           return;
         }
         const claims = decodeJwtPayload(credentialResponse.credential);
-        if (claims) {
-          const next = {
-            name: claims.given_name || claims.name?.split(" ")[0] || null,
-            picture: claims.picture ?? null,
-          };
+        if (claims?.email) {
+          const next = { email: claims.email, picture: claims.picture ?? null };
           writeCachedIdentity(next);
           setIdentity(next);
           setAvatarFailed(false);
@@ -136,30 +133,29 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
     // eslint-disable-next-line react-hooks/exhaustive-deps -- re-render on script-ready/width only
   }, [clientId, scriptLoadedSuccessfully, width]);
 
-  function handleForget(e) {
-    e.stopPropagation();
-    writeCachedIdentity(null);
-    setIdentity(null);
-  }
-
   return (
     <div ref={wrapRef} className="relative w-full group">
       {/* Visible button -- purely decorative, never receives the click itself. */}
       <div
         aria-hidden="true"
-        className={`w-full flex items-center justify-center gap-2.5 rounded-xl px-4 py-3.5 border-[1.5px] border-[#E0E0E6] bg-white text-button font-semibold text-gray-700 transition-colors duration-150 group-hover:bg-gray-50 ${identity ? "pr-9" : ""}`}
+        className={`w-full flex items-center gap-2.5 rounded-xl px-4 py-3.5 border-[1.5px] border-[#E0E0E6] bg-white text-button font-semibold text-gray-700 transition-colors duration-150 group-hover:bg-gray-50 ${identity ? "justify-between" : "justify-center"}`}
       >
-        {identity?.picture && !avatarFailed ? (
-          <img
-            src={identity.picture}
-            alt=""
-            className="w-[18px] h-[18px] rounded-full flex-shrink-0"
-            onError={() => setAvatarFailed(true)}
-          />
-        ) : (
-          <GoogleGlyph />
-        )}
-        {identity?.name ? `Continue as ${identity.name}` : (LABELS[label] ?? LABELS.continue_with)}
+        <span className="flex items-center gap-2.5 min-w-0 flex-1 justify-center">
+          {identity?.picture && !avatarFailed ? (
+            <img
+              src={identity.picture}
+              alt=""
+              className="w-[18px] h-[18px] rounded-full flex-shrink-0"
+              onError={() => setAvatarFailed(true)}
+            />
+          ) : (
+            <GoogleGlyph />
+          )}
+          <span className="truncate min-w-0">
+            {identity?.email ? `Continue as ${identity.email}` : (LABELS[label] ?? LABELS.continue_with)}
+          </span>
+        </span>
+        {identity && <ChevronRight size={16} className="flex-shrink-0 text-gray-400" />}
       </div>
       {/* Google's real button -- invisible, stacked exactly over the div
           above, so it's what actually receives the click/tap. */}
@@ -167,19 +163,6 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
         ref={hiddenBtnRef}
         className="absolute inset-0 overflow-hidden opacity-0"
       />
-      {/* "Not you?" -- comes after the invisible Google button above (later
-          in DOM = higher paint order), so it intercepts clicks in its own
-          small area instead of falling through to Google's click target. */}
-      {identity && (
-        <button
-          type="button"
-          onClick={handleForget}
-          aria-label="Not you? Use a different Google account"
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-        >
-          <X size={14} />
-        </button>
-      )}
     </div>
   );
 }
