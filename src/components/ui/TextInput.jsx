@@ -6,7 +6,9 @@ import { forwardRef } from "react";
 // border color is still allowed to vary a little per flow (literal class
 // strings, not template-interpolated, so Tailwind's scanner picks them up).
 const VARIANTS = {
-  default: "border-[#E0E0E6] focus:border-[#002FA7]",
+  // Glass/OutlineVariant per Figma dev-mode spec (#797D86 @ 40%) -- #E0E0E6
+  // was too close to the page background to read as a stroke at all.
+  default: "border-[#797D86]/40 focus:border-[#002FA7]",
   signup: "border-[#C2C2C2] focus:border-[#002FA7]",
 };
 
@@ -58,7 +60,7 @@ export const TextInput = forwardRef(function TextInput(
         disabled={disabled}
         maxLength={maxLength}
         aria-invalid={invalid || undefined}
-        className={`w-full h-16 min-h-8 rounded-lg border-[1.5px] px-6 py-1 text-placeholder text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${invalid ? "border-danger" : VARIANTS[variant]} ${className}`}
+        className={`w-full h-16 min-h-8 rounded-lg border px-6 py-1 text-placeholder text-gray-900 placeholder:text-gray-400 outline-none shadow-sm transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${invalid ? "border-danger" : VARIANTS[variant]} ${className}`}
         {...rest}
       />
       {rightElement && <div className="absolute right-4 top-1/2 -translate-y-1/2">{rightElement}</div>}
