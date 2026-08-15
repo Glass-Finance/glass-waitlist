@@ -60,7 +60,10 @@ export const TextInput = forwardRef(function TextInput(
         disabled={disabled}
         maxLength={maxLength}
         aria-invalid={invalid || undefined}
-        className={`w-full h-16 min-h-8 rounded-lg border px-6 py-1 text-placeholder text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${invalid ? "border-danger focus:border-[#002FA7]" : VARIANTS[variant]} ${className}`}
+        // Pinned to text-base (16px/24px) rather than the text-placeholder
+        // token -- that token is being sized down for the dashboard/onboarding
+        // inputs, but auth's fields were already tuned separately and stay put.
+        className={`w-full h-16 min-h-8 rounded-lg border px-6 py-1 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${invalid ? "border-danger focus:border-[#002FA7]" : VARIANTS[variant]} ${className}`}
         {...rest}
       />
       {rightElement && <div className="absolute right-4 top-1/2 -translate-y-1/2">{rightElement}</div>}
