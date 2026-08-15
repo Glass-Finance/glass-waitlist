@@ -43,7 +43,7 @@ function FilterDropdown({ value, onChange }) {
     <div className="relative inline-block">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 py-2 px-3.5 rounded-lg border-[1.5px] border-[#D0D0D0] bg-white text-[#111] text-sm font-medium cursor-pointer"
+        className="flex items-center gap-1.5 py-2 px-3.5 rounded-lg border border-surface-container-border bg-white text-[#111] text-sm font-medium cursor-pointer"
       >
         {value} <ChevronDown size={14} strokeWidth={2} />
       </button>
