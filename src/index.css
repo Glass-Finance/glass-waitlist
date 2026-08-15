@@ -205,14 +205,18 @@ body {
 }
 
 .bg-mobile-auth-default {
-  /* Reuses the desktop hero background (a glow anchored to a corner, fully
-     organic on every edge) instead of the old mobile-specific asset, which
-     had its glow cropped hard against the image's own left edge mid-fade
-     with no room to fix that via cropping (see git history). Positioned at
-     left center (not left bottom, which is where this glow used to be
-     anchored) per design -- !important overrides the bg-center utility
-     Tailwind applies alongside this class everywhere. */
-  background-image: url("./assets/auth-background.webp");
+  /* Dedicated mobile crop (393x861, near phone aspect ratio) -- NOT the same
+     file as the desktop hero background. That file (auth-background.webp,
+     a wide 1728x982 landscape crop) was reused here for a while, but its
+     glow's peak sits below the frame entirely: under background-size:cover
+     in a portrait viewport, height always drives the scale and leaves zero
+     vertical slack, so background-position could never move it (see git
+     history). This asset is pre-cropped close to a phone's own aspect ratio
+     with the glow's full peak inside the frame, so there's actual vertical
+     room for positioning. Positioned at left center per design --
+     !important overrides the bg-center utility Tailwind applies alongside
+     this class everywhere. */
+  background-image: url("./assets/auth-background-mobile.webp");
   background-position: left center !important;
 }
 
