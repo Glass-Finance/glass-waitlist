@@ -110,7 +110,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
   const isReady = email.trim() && phone.trim() && agreed;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-3">
       <div>
         <h1 className="text-headline text-gray-900">
           {hasToken ? "You've Been Invited" : "Create Your Account"}
