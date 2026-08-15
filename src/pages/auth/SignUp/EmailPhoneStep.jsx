@@ -45,11 +45,6 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
     };
   }
 
-  function handleFieldBlur(field) {
-    const validate = field === "email" ? getEmailError : validatePhone;
-    return (e) => setFieldErrors((fe) => ({ ...fe, [field]: validate(e.target.value) }));
-  }
-
   // Sends the phone OTP right here (instead of waiting for PhoneOTPStep to
   // do it on mount) so a duplicate/rejected phone number is caught and
   // shown inline on this form -- the user should never land on an OTP
@@ -100,7 +95,6 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
             type="email"
             value={email}
             onChange={handleFieldChange("email", setEmail)}
-            onBlur={handleFieldBlur("email")}
             placeholder="e.g Bax**re@gmail.com"
             required
             error={fieldErrors.email}
@@ -117,10 +111,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
             value={phone}
             onChange={handleFieldChange("phone", setPhone)}
             onFocus={() => setPhoneFocused(true)}
-            onBlur={(e) => {
-              setPhoneFocused(false);
-              handleFieldBlur("phone")(e);
-            }}
+            onBlur={() => setPhoneFocused(false)}
             placeholder="e.g. 0803 123 4567"
             required
             error={fieldErrors.phone}
@@ -170,7 +161,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
 
         {error && <p className="text-sm text-red-500 -mt-1">{error}</p>}
 
-        <PrimaryBtn type="submit" className="mt-2 !py-3.5" disabled={!agreed} loading={submitting} size="sm">
+        <PrimaryBtn type="submit" className="mt-2 !py-3.5" disabled={!email.trim() || !phone.trim() || !agreed} loading={submitting} size="sm">
           {submitting ? "Sending Code..." : "Continue"}
         </PrimaryBtn>
       </form>

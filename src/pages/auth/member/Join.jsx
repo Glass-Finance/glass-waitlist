@@ -91,11 +91,6 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
     };
   }
 
-  function handleFieldBlur(field) {
-    const validate = field === "email" ? getEmailError : validatePhone;
-    return (e) => setFieldErrors((fe) => ({ ...fe, [field]: validate(e.target.value) }));
-  }
-
   function handleSubmit() {
     if (!agreed) {
       setError("Please agree to the Terms of Service and Privacy Policy to continue.");
@@ -143,7 +138,6 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
           placeholder="e.g Bax**re@gmail.com"
           value={email}
           onChange={handleFieldChange("email", setEmail)}
-          onBlur={handleFieldBlur("email")}
           autoComplete="email"
           inputMode="email"
         />
@@ -158,7 +152,6 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
           placeholder="e.g. 0803 123 4567"
           value={phone}
           onChange={handleFieldChange("phone", setPhone)}
-          onBlur={handleFieldBlur("phone")}
           autoComplete="tel"
           inputMode="tel"
         />
