@@ -30,6 +30,7 @@ function validatePhone(value) {
 export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onSwitch, onGoogleAuth }) {
   const [email, setEmail] = useState(initialEmail ?? "");
   const [phone, setPhone] = useState(initialPhone ?? "");
+  const [phoneFocused, setPhoneFocused] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({ email: "", phone: "" });
   const [error, setError] = useState("");
@@ -115,18 +116,24 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
             type="tel"
             value={phone}
             onChange={handleFieldChange("phone", setPhone)}
-            onBlur={handleFieldBlur("phone")}
+            onFocus={() => setPhoneFocused(true)}
+            onBlur={(e) => {
+              setPhoneFocused(false);
+              handleFieldBlur("phone")(e);
+            }}
             placeholder="e.g. 0803 123 4567"
             required
             error={fieldErrors.phone}
           />
           <SignUpFieldError message={fieldErrors.phone} />
-          <div className="flex items-start gap-1.5 mt-0.5 px-0.5">
-            <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-gray-500 leading-snug">
-              We'll send updates to this number.
-            </p>
-          </div>
+          {phoneFocused && (
+            <div className="flex items-start gap-1.5 mt-0.5 px-0.5">
+              <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-gray-500 leading-snug">
+                We'll send updates to this number.
+              </p>
+            </div>
+          )}
         </div>
 
         <label className="flex items-start gap-2.5 cursor-pointer select-none -mt-1">

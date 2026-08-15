@@ -252,13 +252,16 @@ export default function Notifications() {
         <h1 className="text-lg font-medium text-[#111] m-0">Notifications</h1>
       </div>
 
-      {/* Tab bar */}
-      <div className="mx-4 mb-3 bg-white rounded-xl p-1 flex border border-surface-container-border">
+      {/* Tab bar — plain text tabs per Figma, not a segmented pill control:
+          no container background/border, left-aligned rather than
+          stretched to fill the width, active tab distinguished by weight
+          and color alone. */}
+      <div className="flex items-center gap-6 mb-4 px-5">
         {TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-[9px] rounded-[9px] border-none cursor-pointer text-[13px] transition-all duration-200 ${activeTab === tab ? "font-semibold bg-stacked-container text-[#111]" : "font-normal bg-transparent text-[#888]"}`}
+            className={`py-1 bg-transparent border-none cursor-pointer text-[15px] transition-colors duration-200 ${activeTab === tab ? "font-semibold text-[#111]" : "font-normal text-[#888]"}`}
           >
             {tab}
           </button>
