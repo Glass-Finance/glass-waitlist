@@ -137,20 +137,6 @@ export default function SignIn() {
     } catch { return null; }
   });
 
-  // "New to Glass?" below is wrong for anyone who obviously already has an
-  // account — read once up front (before the session-expiry effect below
-  // clears its flag) so both known "definitely returning" paths suppress
-  // it: SideDrawer's logout (router state) and client.js's session-expiry
-  // hard-redirect (sessionStorage flag, since that's a full page reload).
-  const [isReturningVisitor] = useState(() => {
-    if (location.state?.justLoggedOut) return true;
-    try {
-      return sessionStorage.getItem("glass_session_expired") === "1";
-    } catch {
-      return false;
-    }
-  });
-
   // client.js's 401 interceptor hard-redirects here on session expiry — a
   // toast shown right before that navigation gets wiped along with
   // everything else, so it leaves this flag for the destination to read.
@@ -652,16 +638,7 @@ export default function SignIn() {
 
         <GoogleAuthButton onAuthenticated={handleGoogleAuth} label="signin_with" />
 
-        {isMemberSignIn ? (
-          !isReturningVisitor && (
-            <p className="text-sm text-center text-gray-500 pb-2">
-              New to Glass?{" "}
-              <span className="font-semibold text-[#1C2B8A]">
-                Use the invite link your admin shared with you.
-              </span>
-            </p>
-          )
-        ) : (
+        {!isMemberSignIn && (
           <p className="text-sm text-center text-gray-500 pb-2">
             New User?{" "}
             <Link to="/sign-up" className="font-semibold text-[#1C2B8A]">
