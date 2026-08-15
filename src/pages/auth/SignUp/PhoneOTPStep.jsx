@@ -59,8 +59,8 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
   };
 
   return (
-    <div className="w-full max-w-xl flex flex-col md:mt-14 mb-auto">
-      <div className="mb-7">
+    <div className="w-full max-w-xl flex flex-col md:mt-14 mb-auto gap-12">
+      <div>
         <h1 className="text-headline text-gray-900 mb-3 font-sans">
           Verification Code Sent
         </h1>
@@ -122,13 +122,15 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
         </Button>
       </form>
 
-      <p className="text-center text-sm mt-5 text-gray-text">
-        Didn't get OTP?{" "}
-        <button onClick={handleResend} disabled={resending} className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]">
-          {resending ? "Resending..." : "Resend"}
-        </button>
-      </p>
-      {resendMessage && <p className="text-center text-xs text-gray-400 mt-1">{resendMessage}</p>}
+      <div>
+        <p className="text-center text-sm text-gray-text">
+          Didn't get OTP?{" "}
+          <button onClick={handleResend} disabled={resending} className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]">
+            {resending ? "Resending..." : "Resend"}
+          </button>
+        </p>
+        {resendMessage && <p className="text-center text-xs text-gray-400 mt-1">{resendMessage}</p>}
+      </div>
     </div>
   );
 }

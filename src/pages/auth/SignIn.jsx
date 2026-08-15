@@ -424,8 +424,8 @@ export default function SignIn() {
   if (mode === "otp" && otpStep === "verify") {
     return (
       <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-        <div className="w-full max-w-xl flex flex-col md:mt-14 mb-auto">
-          <div className="mb-7">
+        <div className="w-full max-w-xl flex flex-col md:mt-14 mb-auto gap-12">
+          <div>
             <h1 className="text-headline text-gray-900 mb-3 font-sans">Enter Your Code</h1>
             <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code sent to</p>
             <p className="text-sm font-semibold text-gray-900">{otpIdentifier}</p>
@@ -476,7 +476,7 @@ export default function SignIn() {
             </PrimaryButton>
           </div>
 
-          <p className="text-center text-sm mt-5 text-gray-text">
+          <p className="text-center text-sm text-gray-text">
             Didn't get a code?{" "}
             <button
               onClick={handleResendOtp}

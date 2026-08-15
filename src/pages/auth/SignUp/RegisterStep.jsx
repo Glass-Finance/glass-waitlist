@@ -103,7 +103,7 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-12">
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
             <label className="text-label font-medium text-gray-700">

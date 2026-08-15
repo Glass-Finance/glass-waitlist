@@ -95,7 +95,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
           pattern. */}
       <div
         className="flex-1 flex flex-col items-center justify-start md:justify-center px-6 md:px-12
-                   py-8 md:py-10 overflow-y-auto min-h-0 relative z-20"
+                   pt-12 pb-8 md:py-10 overflow-y-auto min-h-0 relative z-20"
       >
         {children}
         <div className="h-[env(safe-area-inset-bottom,20px)]" />

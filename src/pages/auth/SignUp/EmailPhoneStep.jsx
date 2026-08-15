@@ -86,7 +86,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="flex flex-col gap-1.5">
           <label className="text-label font-medium text-gray-700">
             Email Address
