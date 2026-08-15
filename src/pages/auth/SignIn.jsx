@@ -592,12 +592,12 @@ export default function SignIn() {
                   </button>
                 }
               />
+              <ErrorMessage message={(activeField === "password" ? fieldErrors.password : "") || error} />
               <div className="flex justify-end mt-1.5">
                 <Link to="/forgot-password" className="text-label font-medium text-[#1C2B8A]">
                   Forgot password?
                 </Link>
               </div>
-              <ErrorMessage message={(activeField === "password" ? fieldErrors.password : "") || error} />
             </div>
 
             <PrimaryButton onClick={handleSignIn} loading={loading} disabled={!isReady}>
