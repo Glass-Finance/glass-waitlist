@@ -84,11 +84,13 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Which field's error is actually shown — the one currently (or most
-  // recently) focused, never both identifier and password red at once.
-  // Set on focus and left alone on blur, so tapping Sign In (a button, not
-  // a field) doesn't clear it -- whichever field the user was last in stays
-  // the one displaying feedback.
+  // Which field gets the red *border* — the one currently (or most
+  // recently) focused, never both identifier and password bordered red at
+  // once. Error *messages* still show for every invalid field regardless
+  // (nothing's hidden), this just keeps the "which field am I in" signal
+  // to one field. Set on focus and left alone on blur, so tapping Sign In
+  // (a button, not a field) doesn't clear it -- whichever field the user
+  // was last in keeps the border.
   const [activeField, setActiveField] = useState(null);
   const identifierRef = useRef(null);
   const passwordRef = useRef(null);
@@ -563,7 +565,7 @@ export default function SignIn() {
                 disabled={loading}
                 error={activeField === "identifier" ? fieldErrors.identifier : ""}
               />
-              <ErrorMessage message={activeField === "identifier" ? fieldErrors.identifier : ""} />
+              <ErrorMessage message={fieldErrors.identifier} />
             </div>
 
             <div>
@@ -592,7 +594,7 @@ export default function SignIn() {
                   </button>
                 }
               />
-              <ErrorMessage message={(activeField === "password" ? fieldErrors.password : "") || error} />
+              <ErrorMessage message={fieldErrors.password || error} />
               <div className="flex justify-end mt-1.5">
                 <Link to="/forgot-password" className="text-label font-medium text-[#1C2B8A]">
                   Forgot password?
