@@ -84,7 +84,7 @@ function CommissionModal({ community, onClose }) {
                 max="10000"
                 value={rate}
                 onChange={(e) => setRate(e.target.value)}
-                className="w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-[#D0D0D0] text-xs text-gray-800 outline-none transition-colors focus:border-[#002FA7]"
+                className="w-full h-16 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-800 outline-none transition-colors focus:border-[#002FA7]"
                 placeholder="e.g. 150 for 1.5%"
               />
               {Number(rate) > 0 && (
@@ -105,7 +105,7 @@ function CommissionModal({ community, onClose }) {
                 min="0"
                 value={cap}
                 onChange={(e) => setCap(e.target.value)}
-                className="w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-[#D0D0D0] text-xs text-gray-800 outline-none transition-colors focus:border-[#002FA7]"
+                className="w-full h-16 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-800 outline-none transition-colors focus:border-[#002FA7]"
                 placeholder="e.g. 500"
               />
             </div>

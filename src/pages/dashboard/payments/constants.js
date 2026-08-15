@@ -73,4 +73,12 @@ export const TABS = ["All Plans", "Recurring", "One Time"];
 export const BAR_COLOR_CLASSES = ["bg-[#d4a017]", "bg-[#7c3aed]", "bg-brand", "bg-[#059669]"];
 
 export const inputCls =
-  "w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-gray-200 text-xs text-gray-700 bg-white outline-none transition-all focus:border-[#002FA7]";
+  "w-full h-16 min-h-8 px-4 py-1 rounded-lg border border-gray-200 text-placeholder text-gray-700 bg-white outline-none transition-all focus:border-[#002FA7]";
+
+// Description field is taller (128px, per Figma) with real top padding
+// instead of reusing the single-line field's vertically-centered py-1 --
+// a textarea needs the text to start at the top, not float mid-box.
+// Padding and radius are deliberately asymmetric to match the Figma spec
+// exactly (top 24 / right 24 / bottom 4 / left 16, radius 16).
+export const textareaCls =
+  "w-full h-32 pt-6 pr-6 pb-1 pl-4 rounded-2xl border border-gray-200 text-placeholder text-gray-700 bg-white outline-none transition-all resize-none focus:border-[#002FA7]";

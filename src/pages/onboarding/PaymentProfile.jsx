@@ -29,7 +29,7 @@ import { Button } from "../../components/ui/Button";
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization"];
 
 const inputCls =
-  "w-full h-16 min-h-8 border border-gray-200 bg-white px-6 py-1 rounded-lg text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+  "w-full h-16 min-h-8 border border-gray-200 bg-white px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
 
 function StepIcon({ id, completed }) {
   if (completed) return (

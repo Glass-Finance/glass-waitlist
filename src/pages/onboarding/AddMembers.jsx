@@ -42,7 +42,7 @@ const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization", "pay
 const HEADERS = ["First Name", "Last Name", "Email Address", "Phone Number", "Member ID", "Role/Title"];
 const SAMPLE_ROW = ["Muhammed", "Dorachinma", "Muha***med@**.com", "0812990293", "A23434", "Student"];
 
-const inputCls = "w-full h-16 min-h-8 border border-[#797D86] px-6 py-1 rounded-lg text-xs text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+const inputCls = "w-full h-16 min-h-8 border border-[#797D86] px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
 
 function downloadTemplate() {
   const sample = ["Ada", "Okafor", "ada@example.com", "08031234567", "M001", "Member"];

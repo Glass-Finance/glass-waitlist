@@ -4,6 +4,7 @@ import { daysInMonth } from "../../../utils/date";
 import { formatNaira, formatDate } from "../../../utils/format";
 import {
   inputCls,
+  textareaCls,
   FREQUENCIES,
   RETRY_POLICIES,
   REMINDER_FREQUENCIES,
@@ -136,7 +137,7 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
           Description
         </label>
         <textarea
-          className={`${inputCls} resize-y`}
+          className={textareaCls}
           value={form.description || ""}
           rows={3}
           onChange={(e) => onChange("description", e.target.value)}

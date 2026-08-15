@@ -95,7 +95,7 @@ function SendNotificationModal({ onClose }) {
             onChange={(e) => setTargets(e.target.value)}
             rows={3}
             required
-            className="w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-[#D0D0D0] text-xs text-gray-800 outline-none resize-none font-mono transition-colors focus:border-[#002FA7]"
+            className="w-full h-16 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-800 outline-none resize-none font-mono transition-colors focus:border-[#002FA7]"
             placeholder={
               targetMode === "emails"
                 ? "user@example.com, another@example.com"
@@ -112,7 +112,7 @@ function SendNotificationModal({ onClose }) {
           <select
             value={notificationType}
             onChange={(e) => setNotificationType(e.target.value)}
-            className="w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-[#D0D0D0] text-xs text-gray-700 outline-none focus:border-[#002FA7]"
+            className="w-full h-16 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-700 outline-none focus:border-[#002FA7]"
           >
             {NOTIF_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -154,7 +154,7 @@ function SendNotificationModal({ onClose }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-[#D0D0D0] text-xs text-gray-800 outline-none transition-colors focus:border-[#002FA7]"
+            className="w-full h-16 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-800 outline-none transition-colors focus:border-[#002FA7]"
             placeholder="Notification title"
           />
         </div>
@@ -169,7 +169,7 @@ function SendNotificationModal({ onClose }) {
             onChange={(e) => setMessage(e.target.value)}
             rows={4}
             required
-            className="w-full h-16 min-h-8 px-6 py-1 rounded-lg border border-[#D0D0D0] text-xs text-gray-800 outline-none resize-none transition-colors focus:border-[#002FA7]"
+            className="w-full h-16 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-800 outline-none resize-none transition-colors focus:border-[#002FA7]"
             placeholder="Notification body…"
           />
         </div>
