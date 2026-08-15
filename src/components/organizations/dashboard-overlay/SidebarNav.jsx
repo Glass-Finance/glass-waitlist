@@ -91,7 +91,7 @@ export default function SidebarNav({ nav }) {
     >
       <div
         style={{
-          padding: "11px 12px",
+          padding: "17px 12px 14px",
           borderBottom: "1px solid #E0E0EB",
         }}
       >

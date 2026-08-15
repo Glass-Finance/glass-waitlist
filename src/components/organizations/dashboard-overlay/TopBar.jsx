@@ -6,7 +6,7 @@ export default function TopBar() {
       style={{
         background: "#fff",
         borderBottom: "1px solid #E0E0EB",
-        padding: "8px 16px",
+        padding: "12px 16px",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",

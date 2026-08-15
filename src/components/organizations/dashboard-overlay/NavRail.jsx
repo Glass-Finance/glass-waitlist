@@ -8,8 +8,8 @@ export default function NavRail() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        paddingTop: 12,
-        paddingBottom: 12,
+        paddingTop: 18,
+        paddingBottom: 16,
         flexShrink: 0,
       }}
     >

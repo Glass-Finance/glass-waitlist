@@ -54,8 +54,13 @@ export const NAV_POINTS = {
   members: { x: 138, y: 164 },
 };
 
-// DashboardOverlay's internals are all fixed-pixel (960px-wide layout,
-// fixed sidebar/grid widths) — retrofitting every value to be fluid would
-// mean rebuilding it. ScaledDashboard renders it at this natural size and
-// scales the whole thing down to fit whatever width it's given instead.
-export const DASHBOARD_NATURAL_WIDTH = 960;
+// DashboardOverlay's internals are all fixed-pixel (rendered at this
+// natural width, fixed sidebar/grid widths) — retrofitting every value to
+// be fluid would mean rebuilding it. ScaledDashboard renders it at this
+// size and scales the whole thing down (via CSS transform, so every text/
+// icon/spacing value shrinks together) to fit whatever width it's given.
+// Deliberately wider than the Hero's own ~960px column: at 1080 the demo
+// renders ~11% smaller than its natural size, reading calmer/less "zoomed
+// in" than a literal 1:1 scale (was 960, the case that showed everything
+// at full size).
+export const DASHBOARD_NATURAL_WIDTH = 1080;
