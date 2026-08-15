@@ -167,11 +167,11 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
             <img
               src={identity.picture}
               alt=""
-              className="w-10 h-10 rounded-full flex-shrink-0"
+              className="w-5 h-5 rounded-full flex-shrink-0"
               onError={() => setAvatarFailed(true)}
             />
           ) : (
-            <div className="w-10 h-10 rounded-full flex-shrink-0 bg-[#F0F4FF] flex items-center justify-center text-sm font-semibold text-brand">
+            <div className="w-5 h-5 rounded-full flex-shrink-0 bg-[#F0F4FF] flex items-center justify-center text-[10px] font-semibold text-brand">
               {(identity.name ?? identity.email)[0].toUpperCase()}
             </div>
           )}

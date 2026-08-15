@@ -14,7 +14,7 @@ import PhoneChangeModal from "../../../../components/common/PhoneChangeModal";
 import { toTitleCase } from "../../../../utils/format";
 import { Button } from "../../../../components/ui/Button";
 
-const inputCls = "w-full h-16 min-h-8 py-1 px-4 rounded-lg border border-[#E0E0E0] text-placeholder text-[#111] outline-none bg-white box-border transition-all focus:border-[#002FA7]";
+const inputCls = "w-full h-12 min-h-8 py-1 px-4 rounded-lg border border-[#E0E0E0] text-placeholder text-[#111] outline-none bg-white box-border transition-all focus:border-[#002FA7]";
 
 export default function Profile() {
   const navigate = useNavigate();

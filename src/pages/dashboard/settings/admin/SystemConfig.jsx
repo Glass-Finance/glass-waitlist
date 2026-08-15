@@ -147,7 +147,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
                 type={config.valueType === "NUMBER" ? "number" : "text"}
                 value={form.value}
                 onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
-                className="w-full h-16 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors border border-[#D0D0D0] focus:border-[#002FA7]"
+                className="w-full h-12 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors border border-[#D0D0D0] focus:border-[#002FA7]"
                 placeholder={`Enter ${(config.valueType ?? "value").toLowerCase()}…`}
               />
             )}
@@ -161,7 +161,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
             <input
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="w-full h-16 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors border border-[#D0D0D0] focus:border-[#002FA7]"
+              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors border border-[#D0D0D0] focus:border-[#002FA7]"
               placeholder="Human-readable label"
             />
           </div>
@@ -175,7 +175,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               rows={3}
-              className="w-full h-16 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors resize-none border border-[#D0D0D0] focus:border-[#002FA7]"
+              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors resize-none border border-[#D0D0D0] focus:border-[#002FA7]"
               placeholder="What does this configuration control?"
             />
           </div>

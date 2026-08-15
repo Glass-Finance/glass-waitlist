@@ -473,7 +473,7 @@ function QuickAddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavai
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="member@email.com"
-              className="w-full h-16 min-h-8 px-4 py-1 rounded-lg border border-gray-200 text-placeholder outline-none focus:border-[#002FA7]"
+              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-gray-200 text-placeholder outline-none focus:border-[#002FA7]"
             />
           </div>
           <div>
