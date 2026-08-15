@@ -141,7 +141,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
             type="checkbox"
             checked={agreed}
             onChange={(e) => setAgreed(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer accent-[#2535c3]"
+            className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer bg-white border border-gray-300 accent-[#2535c3]"
           />
           <span className="text-xs text-gray-500 leading-snug">
             I agree to the{" "}

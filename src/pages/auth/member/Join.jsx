@@ -176,7 +176,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
           type="checkbox"
           checked={agreed}
           onChange={(e) => setAgreed(e.target.checked)}
-          className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer accent-[#1C2B8A]"
+          className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer bg-white border border-gray-300 accent-[#1C2B8A]"
         />
         <span className="text-xs text-gray-500 leading-snug">
           I agree to the{" "}
