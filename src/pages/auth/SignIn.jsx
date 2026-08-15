@@ -553,12 +553,7 @@ export default function SignIn() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <Label htmlFor="password">Password</Label>
-                <Link to="/forgot-password" className="text-xs font-medium text-[#1C2B8A]">
-                  Forgot password?
-                </Link>
-              </div>
+              <Label htmlFor="password">Password</Label>
               <TextInput
                 id="password"
                 type={showPw ? "text" : "password"}
@@ -581,6 +576,11 @@ export default function SignIn() {
                   </button>
                 }
               />
+              <div className="flex justify-end mt-1.5">
+                <Link to="/forgot-password" className="text-label font-medium text-[#1C2B8A]">
+                  Forgot password?
+                </Link>
+              </div>
               <ErrorMessage message={fieldErrors.password || error} />
             </div>
 
