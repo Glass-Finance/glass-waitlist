@@ -66,7 +66,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
   };
 
   return (
-    <div className="w-full max-w-xl flex flex-col mt-8 md:mt-14 mb-auto">
+    <div className="w-full max-w-xl flex flex-col md:mt-14 mb-auto">
       <div className="mb-7">
         <h1
           className="text-headline text-gray-900 mb-3 font-sans"

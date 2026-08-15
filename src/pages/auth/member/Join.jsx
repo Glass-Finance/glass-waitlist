@@ -809,7 +809,7 @@ export default function Join() {
 
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-      <div className="w-full max-w-md flex flex-col mt-8 md:mt-14 mb-auto gap-5">
+      <div className="w-full max-w-md flex flex-col md:mt-14 mb-auto gap-5">
         {step === STEPS.CONTACT && (
           <StepContact
             initialEmail={contact.email}
