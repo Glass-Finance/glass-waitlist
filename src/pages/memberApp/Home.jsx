@@ -1,13 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Bell, ChevronDown, Clock, Mail } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Bell, Check, ChevronDown, Clock, Mail } from "lucide-react";
 import joinCommunityIcon from "../../assets/auth/join-community.webp";
 import noCommunityIcon from "../../assets/auth/no-community.png";
+import paymentsDueIcon from "../../assets/memberApp/icon-payments-due.png";
+import upcomingPaymentsIcon from "../../assets/memberApp/icon-upcoming-payments.png";
+import paymentHistoryIcon from "../../assets/memberApp/icon-payment-history.png";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import AutoPayPrompt from "../../components/common/AutoPayPrompt";
 import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
+import { useMyCommunities } from "../../hooks/useMyAccount";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
 import { useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
@@ -35,83 +39,176 @@ function firstName(user) {
 }
 
 // ---------------------------------------------------------------------------
+// Community switcher — the same dropdown whether the member is in one
+// community or several: the list always renders (even a list of one), with
+// "Browse Your Communities" underneath either way, rather than branching
+// into separate single/multi layouts.
+// ---------------------------------------------------------------------------
+function CommunitySwitcher({
+  communities,
+  activeIdentifier,
+  communityName,
+  communityInitial,
+  communityLogo,
+  onSelect,
+  navigate,
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onOutsideClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onOutsideClick);
+    return () => document.removeEventListener("mousedown", onOutsideClick);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative min-w-0">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-[7px] min-w-0 bg-transparent border-none cursor-pointer p-0"
+      >
+        <div
+          className={`w-7 h-7 rounded-md flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 overflow-hidden ${communityLogo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
+        >
+          {communityLogo?.url ? (
+            <img
+              src={communityLogo.url}
+              alt=""
+              decoding="async"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            communityInitial
+          )}
+        </div>
+        <span className="text-sm font-medium text-[#111] whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
+          {communityName}
+        </span>
+        <ChevronDown
+          size={14}
+          strokeWidth={2}
+          className={`text-[#666] flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-[calc(100%+8px)] z-30 w-[240px] bg-white rounded-xl border border-surface-container-border shadow-lg py-1.5">
+          {communities.map((c) => {
+            const id = c.slug ?? c.id;
+            const isActive = id === activeIdentifier;
+            return (
+              <button
+                key={id}
+                onClick={() => {
+                  onSelect(c);
+                  setOpen(false);
+                }}
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left bg-transparent border-none cursor-pointer hover:bg-[#F7F8FB]"
+              >
+                <div
+                  className={`w-6 h-6 rounded-md flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 overflow-hidden ${c.logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
+                >
+                  {c.logo?.url ? (
+                    <img src={c.logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
+                  ) : (
+                    (c.name ?? "?").charAt(0).toUpperCase()
+                  )}
+                </div>
+                <span className="flex-1 min-w-0 text-sm text-[#111] truncate">{c.name}</span>
+                {isActive && <Check size={15} strokeWidth={2.5} className="text-brand flex-shrink-0" />}
+              </button>
+            );
+          })}
+
+          <div className="h-px bg-surface-container-border my-1.5" />
+
+          <button
+            onClick={() => {
+              setOpen(false);
+              navigate("/member/communities");
+            }}
+            className="w-full px-3 py-2.5 text-center bg-transparent border-none cursor-pointer text-sm font-normal text-brand"
+          >
+            Browse Your Communities
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Hero card
 // ---------------------------------------------------------------------------
 function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   if (!nextDue) {
     const isError = Boolean(error);
     return (
-      <div
-        className={`mx-4 rounded-2xl text-center flex flex-col items-center gap-0 px-6 pt-10 pb-11 ${isError ? "bg-[#FFF7F7]" : "bg-brand"}`}
-      >
-        {/* Icon bubble */}
+      <div className="border border-surface-container-border mx-4 rounded-2xl overflow-hidden bg-white">
+        {/* Top block carries the accent border on 3 sides, same split-block
+            technique as the funded card below -- a border on a single
+            normally-flowing block, not a full ring around an auto-height
+            container (see that card's comment for why). */}
         <div
-          className={`w-14 h-14 rounded-full flex items-center justify-center mb-5 ${isError ? "bg-danger-tint" : "bg-white/15"}`}
+          className={`border-t-[1.5px] border-x-[1.5px] rounded-t-2xl pt-10 px-6 pb-5 flex flex-col items-center ${isError ? "border-danger" : "border-brand"}`}
         >
-          {isError ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <circle
-                cx="12"
-                cy="12"
-                r="9"
-                stroke="#EF4444"
-                strokeWidth="1.8"
-              />
-              <path
-                d="M12 8v4M12 16h.01"
-                stroke="#EF4444"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-          ) : (
-            /* Envelope icon */
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-              <rect
-                x="2"
-                y="4"
-                width="20"
-                height="16"
-                rx="2"
-                stroke="rgba(255,255,255,0.9)"
-                strokeWidth="1.8"
-              />
-              <path
-                d="M2 7l10 7 10-7"
-                stroke="rgba(255,255,255,0.9)"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          )}
+          <div
+            className={`w-14 h-14 rounded-full flex items-center justify-center ${isError ? "bg-danger-tint" : "bg-[#D7E2FF]"}`}
+          >
+            {isError ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="9"
+                  stroke="#EF4444"
+                  strokeWidth="1.8"
+                />
+                <path
+                  d="M12 8v4M12 16h.01"
+                  stroke="#EF4444"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            ) : (
+              <img src={paymentsDueIcon} alt="" className="w-6 h-6 object-contain" />
+            )}
+          </div>
         </div>
 
-        {isError ? (
-          <>
-            <p className="text-lg text-[#111] font-bold mb-1.5">
-              Couldn't load payments
-            </p>
-            <p className="text-[13px] text-[#9CA3AF] m-0 leading-normal">
-              Check your connection and try again.
-            </p>
-            <button
-              onClick={onRefresh}
-              className="mt-4 bg-transparent border border-[#FCA5A5] rounded-[20px] text-[#EF4444] text-xs font-semibold cursor-pointer py-1.5 px-[18px]"
-            >
-              Try again
-            </button>
-          </>
-        ) : (
-          <>
-            <p className="text-xl text-white font-semibold mb-2 tracking-[-0.2px]">
-              No Payments Due
-            </p>
-            <p className="text-[13px] text-white/60 m-0 leading-normal">
-              New dues Will Appear Here
-            </p>
-          </>
-        )}
+        {/* Bottom block — no border */}
+        <div className="text-center flex flex-col items-center px-6 pt-2 pb-8">
+          {isError ? (
+            <>
+              <p className="text-lg text-[#111] font-bold mb-1.5">
+                Couldn't load payments
+              </p>
+              <p className="text-[13px] text-[#9CA3AF] m-0 leading-normal">
+                Check your connection and try again.
+              </p>
+              <button
+                onClick={onRefresh}
+                className="mt-4 bg-transparent border border-[#FCA5A5] rounded-[20px] text-[#EF4444] text-xs font-semibold cursor-pointer py-1.5 px-[18px]"
+              >
+                Try again
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="text-lg text-[#111] font-normal mb-2 tracking-[-0.2px]">
+                No Payments Due
+              </p>
+              <p className="text-[13px] text-[#9CA3AF] m-0 leading-normal">
+                New dues Will Appear Here
+              </p>
+            </>
+          )}
+        </div>
       </div>
     );
   }
@@ -467,7 +564,42 @@ export default function Home() {
   const communityName = data?.community?.name ?? "Your Community";
   const communityInitial = communityName.charAt(0).toUpperCase();
   const communityLogo = data?.community?.logo;
+  const activeCommunityIdentifier = data?.community?.slug ?? data?.community?.id ?? null;
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Member's full community list for the switcher dropdown -- shares the
+  // ["communities"] query key with usePayments() internally, so this reuses
+  // the same cached fetch rather than firing a second request. Only ACTIVE
+  // memberships are switchable, same rule usePayments applies -- a pending
+  // join request isn't a community the member can view yet.
+  const { data: rawMyCommunities = [] } = useMyCommunities();
+  const myCommunities = rawMyCommunities
+    .filter((c) => (c.memberStatus ?? "ACTIVE").toUpperCase() === "ACTIVE")
+    .map((c) => ({
+      ...c,
+      name: c.name ?? c.community?.name,
+      slug: c.slug ?? c.community?.slug,
+      logo: c.logo ?? c.community?.logo,
+      id: c.id ?? c.community?.id,
+    }));
+
+  // usePayments() re-derives its active community from localStorage
+  // synchronously on every render rather than via React state, so switching
+  // just needs to write the new selection and force a re-render -- no
+  // separate refetch call, the payment-links query key already includes the
+  // community identifier and picks up the change on its own.
+  const [, forceRerender] = useState(0);
+  function handleSwitchCommunity(c) {
+    try {
+      localStorage.setItem(
+        "glass_member_community",
+        JSON.stringify({ id: c.id, slug: c.slug, name: c.name }),
+      );
+    } catch {
+      /* ignore */
+    }
+    forceRerender((n) => n + 1);
+  }
 
   // Consolidated "nothing happening" empty state -- replaces the Hero/
   // Upcoming/History cards (each of which would otherwise render its own
@@ -534,38 +666,20 @@ export default function Home() {
               <Menu size={28} strokeWidth={2} className="text-[#222]" />
             </button>
 
-            {/* Community pill — tapping navigates to communities list.
-                Nothing to show or link to yet when the member isn't in any
-                community, so it's dropped for that state entirely rather
-                than rendering a pill with a placeholder name. */}
+            {/* Community switcher — same dropdown component whether the
+                member has one community or several. Nothing to show or
+                switch between yet when the member isn't in any community,
+                so it's dropped for that state entirely. */}
             {!hasNoCommunity && (
-              <button
-                onClick={() => navigate("/member/communities")}
-                className="flex items-center gap-[7px] min-w-0 bg-transparent border-none cursor-pointer p-0"
-              >
-                <div
-                  className={`w-7 h-7 rounded-md flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 overflow-hidden ${communityLogo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
-                >
-                  {communityLogo?.url ? (
-                    <img
-                      src={communityLogo.url}
-                      alt=""
-                      decoding="async"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    communityInitial
-                  )}
-                </div>
-                <span className="text-sm font-medium text-[#111] whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
-                  {communityName}
-                </span>
-                <ChevronDown
-                  size={14}
-                  strokeWidth={2}
-                  className="text-[#666] flex-shrink-0"
-                />
-              </button>
+              <CommunitySwitcher
+                communities={myCommunities}
+                activeIdentifier={activeCommunityIdentifier}
+                communityName={communityName}
+                communityInitial={communityInitial}
+                communityLogo={communityLogo}
+                onSelect={handleSwitchCommunity}
+                navigate={navigate}
+              />
             )}
           </div>
 
@@ -648,7 +762,7 @@ export default function Home() {
             <div className="mx-4 mt-4 bg-surface-container rounded-2xl px-4 pt-4 pb-1 border border-surface-container-border">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-semibold text-[#111]">
+                  <span className="text-sm font-normal text-[#111]">
                     Upcoming Payments
                   </span>
                   {/* The true total -- not upcoming.length, which is capped
@@ -665,31 +779,13 @@ export default function Home() {
 
               {upcoming.length === 0 && totalUpcomingCount === 0 ? (
                 <div className="flex flex-col items-center px-4 pt-7 pb-5 text-center gap-0">
-                  <div className="w-[52px] h-[52px] rounded-full bg-[#EBEBEB] flex items-center justify-center mb-3.5">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                      <rect
-                        x="2"
-                        y="5"
-                        width="20"
-                        height="14"
-                        rx="2"
-                        fill="#B0B4C0"
-                      />
-                      <path d="M2 10h20" stroke="#fff" strokeWidth="1.5" />
-                      <rect
-                        x="5"
-                        y="14"
-                        width="4"
-                        height="2"
-                        rx="0.5"
-                        fill="#fff"
-                      />
-                    </svg>
+                  <div className="w-[52px] h-[52px] rounded-full bg-[#D7E2FF] flex items-center justify-center mb-3.5">
+                    <img src={upcomingPaymentsIcon} alt="" className="w-6 h-6 object-contain" />
                   </div>
-                  <p className="text-[17px] font-semibold text-[#111] mb-1.5">
+                  <p className="text-[17px] font-normal text-[#111] mb-1.5">
                     No Upcoming Payments
                   </p>
-                  <p className="text-[13px] text-[#9CA3AF] m-0 leading-[1.55] max-w-[220px]">
+                  <p className="text-[13px] text-[#9CA3AF] m-0 leading-[1.55] max-w-[270px]">
                     New Dues from community will show up here once scheduled
                   </p>
                 </div>
@@ -712,7 +808,7 @@ export default function Home() {
             {/* ── Payment History ──────────────────────────────────────────────── */}
             <div className="mx-4 mt-4 bg-surface-container rounded-2xl px-4 pt-4 pb-1 border border-surface-container-border">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-semibold text-[#111]">
+                <span className="text-sm font-normal text-[#111]">
                   Payment History
                 </span>
                 <button
@@ -725,25 +821,10 @@ export default function Home() {
 
               {history.length === 0 ? (
                 <div className="flex flex-col items-center px-4 pt-7 pb-5 text-center gap-0">
-                  <div className="w-[52px] h-[52px] rounded-full bg-[#EBEBEB] flex items-center justify-center mb-3.5">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                      <rect
-                        x="4"
-                        y="3"
-                        width="16"
-                        height="18"
-                        rx="2"
-                        fill="#B0B4C0"
-                      />
-                      <path
-                        d="M8 8h8M8 12h8M8 16h5"
-                        stroke="#fff"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                      />
-                    </svg>
+                  <div className="w-[52px] h-[52px] rounded-full bg-[#D7E2FF] flex items-center justify-center mb-3.5">
+                    <img src={paymentHistoryIcon} alt="" className="w-6 h-6 object-contain" />
                   </div>
-                  <p className="text-[17px] font-semibold text-[#111] mb-1.5">
+                  <p className="text-[17px] font-normal text-[#111] mb-1.5">
                     No Payment History
                   </p>
                   <p className="text-[13px] text-[#9CA3AF] m-0 leading-[1.55] max-w-[230px]">
