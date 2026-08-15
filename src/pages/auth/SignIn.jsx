@@ -166,12 +166,6 @@ export default function SignIn() {
     };
   }
 
-  function handleBlur(field) {
-    return (e) => {
-      setFieldErrors((fe) => ({ ...fe, [field]: validateField(field, e.target.value) }));
-    };
-  }
-
   // Shared by password sign-in and Google sign-in: resolves the destination
   // by the *resulting* role/device, since neither knows in advance whether
   // this is a community owner or a mobile-only member.
@@ -546,7 +540,6 @@ export default function SignIn() {
                 value={form.identifier}
                 onChange={set("identifier")}
                 onFocus={() => setActiveField("identifier")}
-                onBlur={handleBlur("identifier")}
                 autoComplete="username"
                 disabled={loading}
                 error={activeField === "identifier" ? fieldErrors.identifier : ""}
@@ -564,7 +557,6 @@ export default function SignIn() {
                 value={form.password}
                 onChange={set("password")}
                 onFocus={() => setActiveField("password")}
-                onBlur={handleBlur("password")}
                 autoComplete="current-password"
                 disabled={loading}
                 error={activeField === "password" ? fieldErrors.password : ""}
@@ -609,7 +601,6 @@ export default function SignIn() {
                 placeholder="you@example.com or 0803 123 4567"
                 value={otpIdentifier}
                 onChange={(e) => { setOtpIdentifier(e.target.value); setOtpIdentifierError(""); }}
-                onBlur={() => setOtpIdentifierError(validateIdentifier(otpIdentifier))}
                 autoComplete="username"
                 disabled={otpSending}
                 error={otpIdentifierError}
