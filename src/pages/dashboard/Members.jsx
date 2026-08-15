@@ -481,7 +481,7 @@ function QuickAddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavai
             <select
               value={roleId}
               onChange={(e) => setRoleId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-xs outline-none focus:border-brand bg-white"
+              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-xs outline-none focus:border-brand"
             >
               {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>

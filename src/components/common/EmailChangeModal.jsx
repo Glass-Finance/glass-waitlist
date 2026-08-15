@@ -118,7 +118,7 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
               {digits.slice(0, 3).map((d, i) => (
                 <div
                   key={i}
-                  className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-lg transition-all border ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
+                  className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
                 >
                   {d}
                 </div>
@@ -129,7 +129,7 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
                 return (
                   <div
                     key={idx}
-                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-lg transition-all border ${d || idx === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
+                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border ${d || idx === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
                   >
                     {d}
                   </div>

@@ -458,7 +458,7 @@ export default function SignIn() {
               renderBoxes={(digits, activeIndex) => (
                 <div className="flex items-center gap-4 justify-center pointer-events-none">
                   {digits.slice(0, 3).map((d, i) => (
-                    <div key={i} className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-lg transition-all border ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
+                    <div key={i} className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
                       {d}
                     </div>
                   ))}
@@ -466,7 +466,7 @@ export default function SignIn() {
                   {digits.slice(3, 6).map((d, i) => {
                     const idx = i + 3;
                     return (
-                      <div key={idx} className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-lg transition-all border ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
+                      <div key={idx} className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
                         {d}
                       </div>
                     );

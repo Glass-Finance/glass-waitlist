@@ -58,7 +58,7 @@ export const TextInput = forwardRef(function TextInput(
         disabled={disabled}
         maxLength={maxLength}
         aria-invalid={invalid || undefined}
-        className={`w-full h-16 min-h-8 rounded-lg border px-6 py-1 text-placeholder text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 bg-white disabled:opacity-50 disabled:cursor-not-allowed ${invalid ? "border-danger" : VARIANTS[variant]} ${className}`}
+        className={`w-full h-16 min-h-8 rounded-lg border px-6 py-1 text-placeholder text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${invalid ? "border-danger" : VARIANTS[variant]} ${className}`}
         {...rest}
       />
       {rightElement && <div className="absolute right-4 top-1/2 -translate-y-1/2">{rightElement}</div>}

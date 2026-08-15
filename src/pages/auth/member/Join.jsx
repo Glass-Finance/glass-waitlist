@@ -523,7 +523,7 @@ function StepOTP({ email, onVerified, onBack }) {
                 <div
                   key={i}
                   aria-label={`Digit ${i + 1} of ${OTP_LENGTH}`}
-                  className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150 min-w-0 max-w-16 text-[22px] border ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#D0D5E8]"}`}
+                  className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 transition-all duration-150 min-w-0 max-w-16 text-[22px] border ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#D0D5E8]"}`}
                 >
                   {d}
                 </div>
@@ -537,7 +537,7 @@ function StepOTP({ email, onVerified, onBack }) {
                   <div
                     key={idx}
                     aria-label={`Digit ${idx + 1} of ${OTP_LENGTH}`}
-                    className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150 min-w-0 max-w-16 text-[22px] border ${d || idx === activeIndex ? "border-[#1C2B8A]" : "border-[#D0D5E8]"}`}
+                    className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 transition-all duration-150 min-w-0 max-w-16 text-[22px] border ${d || idx === activeIndex ? "border-[#1C2B8A]" : "border-[#D0D5E8]"}`}
                   >
                     {d}
                   </div>

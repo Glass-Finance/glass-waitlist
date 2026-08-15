@@ -164,7 +164,7 @@ export default function ForgotPassword() {
                       {digits.map((d, i) => (
                         <div
                           key={i}
-                          className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-[22px] font-bold rounded-lg bg-white text-[#111827] transition-[border-color] duration-150 border ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-surface-container-border"}`}
+                          className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-[22px] font-bold rounded-lg text-[#111827] transition-[border-color] duration-150 border ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-surface-container-border"}`}
                         >
                           {d}
                         </div>
