@@ -473,7 +473,7 @@ function QuickAddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavai
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="member@email.com"
-              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-gray-200 text-placeholder outline-none focus:border-[#002FA7]"
+              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border-[1.5px] border-gray-200 text-placeholder outline-none focus:border-[#002FA7]"
             />
           </div>
           <div>
@@ -481,7 +481,7 @@ function QuickAddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavai
             <select
               value={roleId}
               onChange={(e) => setRoleId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-xs outline-none focus:border-brand"
+              className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-gray-200 text-xs outline-none focus:border-brand"
             >
               {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>

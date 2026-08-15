@@ -44,7 +44,7 @@ function ModeTabs({ mode, setMode, disabled }) {
         type="button"
         onClick={() => setMode("password")}
         disabled={disabled}
-        className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
+        className={`appearance-none flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
           mode === "password" ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-800"
         }`}
       >
@@ -54,7 +54,7 @@ function ModeTabs({ mode, setMode, disabled }) {
         type="button"
         onClick={() => setMode("otp")}
         disabled={disabled}
-        className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
+        className={`appearance-none flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
           mode === "otp" ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-800"
         }`}
       >
@@ -458,7 +458,7 @@ export default function SignIn() {
               renderBoxes={(digits, activeIndex) => (
                 <div className="flex items-center gap-4 justify-center pointer-events-none">
                   {digits.slice(0, 3).map((d, i) => (
-                    <div key={i} className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
+                    <div key={i} className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
                       {d}
                     </div>
                   ))}
@@ -466,7 +466,7 @@ export default function SignIn() {
                   {digits.slice(3, 6).map((d, i) => {
                     const idx = i + 3;
                     return (
-                      <div key={idx} className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
+                      <div key={idx} className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
                         {d}
                       </div>
                     );

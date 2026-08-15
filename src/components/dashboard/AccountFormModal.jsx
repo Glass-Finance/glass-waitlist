@@ -6,7 +6,7 @@ import BankSelect from "../common/BankSelect";
 import { Button } from "../ui/Button";
 
 const inputCls =
-  "w-full h-12 min-h-8 border border-gray-300 px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+  "w-full h-12 min-h-8 border-[1.5px] border-gray-300 px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
 
 // Bank account entry form — number + bank select, auto-resolves the account
 // name via Paystack, falls back to manual entry if resolution fails.

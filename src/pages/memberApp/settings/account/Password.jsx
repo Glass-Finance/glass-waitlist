@@ -8,7 +8,7 @@ import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/p
 import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
 import { Button } from "../../../../components/ui/Button";
 
-const inputCls = "w-full h-12 min-h-8 py-1 pl-4 pr-10 rounded-lg border border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all focus:border-[#002FA7]";
+const inputCls = "w-full h-12 min-h-8 py-1 pl-4 pr-10 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all focus:border-[#002FA7]";
 
 function PasswordField({ label, value, onChange, show, onToggleShow }) {
   return (

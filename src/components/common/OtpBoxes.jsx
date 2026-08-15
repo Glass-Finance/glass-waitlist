@@ -106,7 +106,7 @@ export default function OtpBoxes({
           {digits.map((d, i) => (
             <div
               key={i}
-              className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg border transition-all ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#D0D5E8]"}`}
+              className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg border-[1.5px] transition-all ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#D0D5E8]"}`}
             >
               {d}
             </div>

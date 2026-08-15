@@ -103,7 +103,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
               {digits.slice(0, 3).map((d, i) => (
                 <div
                   key={i}
-                  className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
+                  className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
                 >
                   {d}
                 </div>
@@ -114,7 +114,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
                 return (
                   <div
                     key={idx}
-                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
+                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
                   >
                     {d}
                   </div>
