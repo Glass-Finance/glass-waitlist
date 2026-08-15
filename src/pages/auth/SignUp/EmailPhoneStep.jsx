@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { Info } from "lucide-react";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../utils/phone";
 import { getEmailError } from "../../../utils/validators";
+import { requestPhoneOtp } from "../../../services/authService";
+import { getErrorMessage } from "../../../utils/errorHandler";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 import { SignUpTextInput, SignUpFieldError } from "./SignUpTextInput";
 import { Button as PrimaryBtn } from "../../../components/ui/Button";
@@ -31,6 +33,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
   const [agreed, setAgreed] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({ email: "", phone: "" });
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   function handleFieldChange(field, setValue) {
     return (e) => {
@@ -46,7 +49,11 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
     return (e) => setFieldErrors((fe) => ({ ...fe, [field]: validate(e.target.value) }));
   }
 
-  const handleSubmit = (e) => {
+  // Sends the phone OTP right here (instead of waiting for PhoneOTPStep to
+  // do it on mount) so a duplicate/rejected phone number is caught and
+  // shown inline on this form -- the user should never land on an OTP
+  // screen only to find out the number they entered can't be used.
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     if (!agreed) {
@@ -59,7 +66,20 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
       setFieldErrors({ email: emailError, phone: phoneError });
       return;
     }
-    onNext({ email: email.trim().toLowerCase(), phone: phone.trim() });
+    const trimmedEmail = email.trim().toLowerCase();
+    const trimmedPhone = phone.trim();
+    setSubmitting(true);
+    try {
+      await requestPhoneOtp({ phoneNumber: trimmedPhone });
+      onNext({ email: trimmedEmail, phone: trimmedPhone });
+    } catch (err) {
+      setFieldErrors((fe) => ({
+        ...fe,
+        phone: getErrorMessage(err, "Couldn't send a code to that number. Please try again."),
+      }));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -143,7 +163,9 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
 
         {error && <p className="text-sm text-red-500 -mt-1">{error}</p>}
 
-        <PrimaryBtn type="submit" className="mt-2 !py-3.5" disabled={!agreed} size="sm">Continue</PrimaryBtn>
+        <PrimaryBtn type="submit" className="mt-2 !py-3.5" disabled={!agreed} loading={submitting} size="sm">
+          {submitting ? "Sending Code..." : "Continue"}
+        </PrimaryBtn>
       </form>
 
       <Divider />

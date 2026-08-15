@@ -4,12 +4,15 @@ import { useNavigate } from "react-router-dom";
 import AuthLayout from "../../../layouts/AuthLayout";
 import EmailPhoneStep from "./EmailPhoneStep";
 import PhoneOTPStep from "./PhoneOTPStep";
+import PhoneOnlyStep from "./PhoneOnlyStep";
 import RegisterStep from "./RegisterStep";
 import OTPStep from "./OTPStep";
 import { useAuth } from "../../../store/AuthContext";
 
-// Steps: 1 email+phone -> 1.5 phone OTP (only when a phone was entered) ->
-// 2 name+password (register()) -> 3 email OTP.
+// Steps: 1 email+phone -> 1.5 phone OTP (only when a phone was entered,
+// with 1.6 as its "wrong number" correction screen, phone-only so a
+// correct email typed at step 1 isn't put back in play too) -> 2 name+
+// password (register()) -> 3 email OTP.
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function SignUp() {
   usePageTitle("Create your account");
@@ -76,7 +79,14 @@ export default function SignUp() {
         <PhoneOTPStep
           phone={phone}
           onVerified={handlePhoneVerified}
-          onBack={() => setStep(1)}
+          onBack={() => setStep(1.6)}
+        />
+      )}
+      {step === 1.6 && (
+        <PhoneOnlyStep
+          initialPhone={phone}
+          onNext={(newPhone) => { setPhone(newPhone); setStep(1.5); }}
+          onCancel={() => setStep(1.5)}
         />
       )}
       {step === 2 && (
