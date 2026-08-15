@@ -96,7 +96,7 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
   };
 
   return (
-    <div className="w-full max-w-md flex flex-col">
+    <div className="w-full max-w-md flex flex-col mt-8 md:mt-14 mb-auto">
       <div className="mb-3">
         <h1 className="text-headline text-gray-900 mb-1.5">
           Complete Your Profile

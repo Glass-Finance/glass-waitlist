@@ -20,7 +20,7 @@ function maskPhone(phone) {
 function ModalShell({ children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="relative bg-surface-container rounded-xl p-8 w-full max-w-md shadow-xl border border-[#E5E7EB]">{children}</div>
+      <div className="relative bg-surface-container rounded-xl px-6 py-8 w-full max-w-xl shadow-xl border border-[#E5E7EB]">{children}</div>
     </div>
   );
 }
@@ -112,22 +112,22 @@ export default function PhoneChangeModal({ newPhone, onSubmitOtp, onVerified, on
           length={6}
           autoFocus
           renderBoxes={(digits, activeIndex) => (
-            <div className="flex items-center gap-2 justify-center pointer-events-none">
+            <div className="flex items-center gap-4 justify-center pointer-events-none">
               {digits.slice(0, 3).map((d, i) => (
                 <div
                   key={i}
-                  className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
+                  className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-lg transition-all border ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
                 >
                   {d}
                 </div>
               ))}
-              <span className="text-gray-400 text-lg font-medium px-1">—</span>
+              <span className="text-gray-400 text-lg font-medium px-1 flex-shrink-0">—</span>
               {digits.slice(3, 6).map((d, i) => {
                 const idx = i + 3;
                 return (
                   <div
                     key={idx}
-                    className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || idx === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
+                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-lg transition-all border ${d || idx === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
                   >
                     {d}
                   </div>

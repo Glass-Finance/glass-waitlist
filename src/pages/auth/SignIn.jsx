@@ -368,7 +368,7 @@ export default function SignIn() {
   if (mfaChallenge) {
     return (
       <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-        <div className="w-full max-w-md flex flex-col my-auto gap-6">
+        <div className="w-full max-w-md flex flex-col mt-8 md:mt-14 mb-auto gap-6">
           <div className="flex flex-col items-center gap-3 text-center">
             <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
               <ShieldCheck size={22} className="text-brand" />
@@ -430,7 +430,7 @@ export default function SignIn() {
   if (mode === "otp" && otpStep === "verify") {
     return (
       <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-        <div className="w-full max-w-md flex flex-col my-auto">
+        <div className="w-full max-w-xl flex flex-col mt-8 md:mt-14 mb-auto">
           <div className="mb-7">
             <h1 className="text-headline text-gray-900 mb-3 font-sans">Enter Your Code</h1>
             <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code sent to</p>
@@ -456,17 +456,17 @@ export default function SignIn() {
               autoFocus
               disabled={otpVerifying}
               renderBoxes={(digits, activeIndex) => (
-                <div className="flex items-center gap-2 justify-center pointer-events-none">
+                <div className="flex items-center gap-4 justify-center pointer-events-none">
                   {digits.slice(0, 3).map((d, i) => (
-                    <div key={i} className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
+                    <div key={i} className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-lg transition-all border ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
                       {d}
                     </div>
                   ))}
-                  <span className="text-gray-400 text-lg font-medium px-1">—</span>
+                  <span className="text-gray-400 text-lg font-medium px-1 flex-shrink-0">—</span>
                   {digits.slice(3, 6).map((d, i) => {
                     const idx = i + 3;
                     return (
-                      <div key={idx} className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
+                      <div key={idx} className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-lg transition-all border ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}>
                         {d}
                       </div>
                     );

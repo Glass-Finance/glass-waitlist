@@ -84,7 +84,15 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
       {/* ── Form sheet ──
           Mobile: top-aligned directly below the header, flush, no card
           treatment (there's no hero panel left to pull up over).
-          Desktop: unchanged, vertically centered right column. */}
+          Desktop: vertical position is actually controlled per-screen (see
+          each step's own `mt-8 md:mt-14 mb-auto` wrapper, not my-auto/
+          m-auto/justify-center) -- a fixed top offset with the leftover
+          space collected at the bottom via the auto margin, so every screen
+          gets the same gap above its heading regardless of how much content
+          it has below, instead of true centering pushing shorter screens
+          further down and taller ones further up. justify-center here is
+          just the harmless fallback for anything that doesn't opt into that
+          pattern. */}
       <div
         className="flex-1 flex flex-col items-center justify-start md:justify-center px-6 md:px-12
                    py-8 md:py-10 overflow-y-auto min-h-0 relative z-20"

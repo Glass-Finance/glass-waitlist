@@ -503,9 +503,13 @@ function StepOTP({ email, onVerified, onBack }) {
         }}
         className="flex flex-col gap-6"
       >
-      {/* OTP boxes — split with dash. Boxes are flex-1 (not a fixed pixel
-          width) so all 6 shrink together to fit narrow screens (e.g.
-          iPhone SE / 360px Android) instead of overflowing the viewport. */}
+      {/* OTP boxes — split with dash. Figma spec is a fixed 64px box, but
+          this screen is hard mobile-gated (member join is mobile-only) and
+          has to fit down to a 360px Android/iPhone SE, where 6×64px+gaps
+          (~460px) simply doesn't fit -- boxes stay flex-1 (shrink together
+          to fit the real viewport) but the cap is raised to 64px so on any
+          screen with room, they render at full spec size instead of
+          settling for the old 48px cap. */}
       <OtpBoxes
         key={otpAttempt}
         value={digits}
@@ -513,27 +517,27 @@ function StepOTP({ email, onVerified, onBack }) {
         length={OTP_LENGTH}
         autoFocus
         renderBoxes={(boxDigits, activeIndex) => (
-          <div className="flex items-center justify-between gap-1.5 pointer-events-none">
-            <div className="flex gap-1.5 flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-2 pointer-events-none">
+            <div className="flex gap-2 flex-1 min-w-0">
               {boxDigits.slice(0, 3).map((d, i) => (
                 <div
                   key={i}
                   aria-label={`Digit ${i + 1} of ${OTP_LENGTH}`}
-                  className={`flex-1 h-14 rounded-xl flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150 min-w-0 max-w-[48px] text-[22px] ${d || i === activeIndex ? "border-2 border-[#1C2B8A]" : "border-[1.5px] border-[#D0D5E8]"}`}
+                  className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150 min-w-0 max-w-16 text-[22px] border ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#D0D5E8]"}`}
                 >
                   {d}
                 </div>
               ))}
             </div>
             <span className="text-gray-400 text-xl font-light flex-shrink-0">—</span>
-            <div className="flex gap-1.5 flex-1 min-w-0">
+            <div className="flex gap-2 flex-1 min-w-0">
               {boxDigits.slice(3, 6).map((d, i) => {
                 const idx = i + 3;
                 return (
                   <div
                     key={idx}
                     aria-label={`Digit ${idx + 1} of ${OTP_LENGTH}`}
-                    className={`flex-1 h-14 rounded-xl flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150 min-w-0 max-w-[48px] text-[22px] ${d || idx === activeIndex ? "border-2 border-[#1C2B8A]" : "border-[1.5px] border-[#D0D5E8]"}`}
+                    className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 bg-white transition-all duration-150 min-w-0 max-w-16 text-[22px] border ${d || idx === activeIndex ? "border-[#1C2B8A]" : "border-[#D0D5E8]"}`}
                   >
                     {d}
                   </div>
@@ -805,7 +809,7 @@ export default function Join() {
 
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-      <div className="w-full max-w-md flex flex-col my-auto gap-5">
+      <div className="w-full max-w-md flex flex-col mt-8 md:mt-14 mb-auto gap-5">
         {step === STEPS.CONTACT && (
           <StepContact
             initialEmail={contact.email}

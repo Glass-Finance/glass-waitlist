@@ -81,7 +81,7 @@ export default function ForgotPassword() {
 
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-      <div className="w-full max-w-md flex flex-col gap-6 md:my-auto">
+      <div className={`w-full ${step === "otp" ? "max-w-lg" : "max-w-md"} flex flex-col gap-6 mt-8 md:mt-14 mb-auto`}>
         {step === "email" ? (
           <>
             <div>
@@ -160,11 +160,11 @@ export default function ForgotPassword() {
                   length={6}
                   autoFocus
                   renderBoxes={(digits, activeIndex) => (
-                    <div className="flex gap-2 pointer-events-none">
+                    <div className="flex gap-4 justify-center pointer-events-none">
                       {digits.map((d, i) => (
                         <div
                           key={i}
-                          className={`flex-1 h-[52px] min-w-0 flex items-center justify-center text-[22px] font-bold rounded-xl bg-white text-[#111827] transition-[border-color] duration-150 border-2 ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-surface-container-border"}`}
+                          className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-[22px] font-bold rounded-lg bg-white text-[#111827] transition-[border-color] duration-150 border ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-surface-container-border"}`}
                         >
                           {d}
                         </div>

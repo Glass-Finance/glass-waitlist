@@ -75,7 +75,7 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
   };
 
   return (
-    <div className="w-full max-w-md flex flex-col">
+    <div className="w-full max-w-xl flex flex-col mt-8 md:mt-14 mb-auto">
       <div className="mb-7">
         <h1 className="text-headline text-gray-900 mb-3 font-sans">
           Verification Code Sent
@@ -105,22 +105,22 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
           disabled={sending}
           autoFocus
           renderBoxes={(digits, activeIndex) => (
-            <div className="flex items-center gap-2 justify-center pointer-events-none">
+            <div className="flex items-center gap-4 justify-center pointer-events-none">
               {digits.slice(0, 3).map((d, i) => (
                 <div
                   key={i}
-                  className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
+                  className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-lg transition-all border ${d || i === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
                 >
                   {d}
                 </div>
               ))}
-              <span className="text-gray-400 text-lg font-medium px-1">—</span>
+              <span className="text-gray-400 text-lg font-medium px-1 flex-shrink-0">—</span>
               {digits.slice(3, 6).map((d, i) => {
                 const idx = i + 3;
                 return (
                   <div
                     key={idx}
-                    className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all border-[1.5px] ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
+                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-lg transition-all border ${d || idx === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
                   >
                     {d}
                   </div>

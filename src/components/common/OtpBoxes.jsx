@@ -102,11 +102,11 @@ export default function OtpBoxes({
       {renderBoxes ? (
         renderBoxes(digits, activeIndex)
       ) : (
-        <div className="flex items-center gap-2 justify-center pointer-events-none">
+        <div className="flex items-center gap-4 justify-center pointer-events-none">
           {digits.map((d, i) => (
             <div
               key={i}
-              className={`w-11 h-12 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-xl transition-all ${d || i === activeIndex ? "border-2 border-[#1C2B8A]" : "border-[1.5px] border-[#D0D5E8]"}`}
+              className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 bg-white rounded-lg border transition-all ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#D0D5E8]"}`}
             >
               {d}
             </div>
