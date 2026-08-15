@@ -39,12 +39,12 @@ function validateIdentifier(value) {
 // single primary form with a secondary link underneath.
 function ModeTabs({ mode, setMode, disabled }) {
   return (
-    <div className="flex gap-1 bg-stacked-container rounded-lg overflow-hidden">
+    <div className="flex gap-1 bg-stacked-container rounded-xl p-1">
       <button
         type="button"
         onClick={() => setMode("password")}
         disabled={disabled}
-        className={`appearance-none flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
+        className={`appearance-none flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
           mode === "password" ? "bg-white text-gray-900" : "bg-transparent text-gray-500 hover:text-gray-800"
         }`}
       >
@@ -54,7 +54,7 @@ function ModeTabs({ mode, setMode, disabled }) {
         type="button"
         onClick={() => setMode("otp")}
         disabled={disabled}
-        className={`appearance-none flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
+        className={`appearance-none flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
           mode === "otp" ? "bg-white text-gray-900" : "bg-transparent text-gray-500 hover:text-gray-800"
         }`}
       >
@@ -83,6 +83,15 @@ export default function SignIn() {
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Which field's error is actually shown — the one currently (or most
+  // recently) focused, never both identifier and password red at once.
+  // Set on focus and left alone on blur, so tapping Sign In (a button, not
+  // a field) doesn't clear it -- whichever field the user was last in stays
+  // the one displaying feedback.
+  const [activeField, setActiveField] = useState(null);
+  const identifierRef = useRef(null);
+  const passwordRef = useRef(null);
 
   // MFA challenge state — set after login() returns mfaRequired: true
   const [mfaChallenge, setMfaChallenge] = useState(null); // { mfaChallengeToken }
@@ -248,6 +257,9 @@ export default function SignIn() {
     const passwordError = validateField("password", form.password);
     if (identifierError || passwordError) {
       setFieldErrors({ identifier: identifierError, password: passwordError });
+      // Focusing the first invalid field is what makes it "the one you're
+      // focused on" -- its own onFocus handler picks up activeField from here.
+      (identifierError ? identifierRef : passwordRef).current?.focus();
       return;
     }
     setLoading(true);
@@ -539,31 +551,35 @@ export default function SignIn() {
             <div>
               <Label htmlFor="identifier">Email or Phone Number</Label>
               <TextInput
+                ref={identifierRef}
                 id="identifier"
                 type="text"
                 placeholder="you@example.com or 0803 123 4567"
                 value={form.identifier}
                 onChange={set("identifier")}
+                onFocus={() => setActiveField("identifier")}
                 onBlur={handleBlur("identifier")}
                 autoComplete="username"
                 disabled={loading}
-                error={fieldErrors.identifier}
+                error={activeField === "identifier" ? fieldErrors.identifier : ""}
               />
-              <ErrorMessage message={fieldErrors.identifier} />
+              <ErrorMessage message={activeField === "identifier" ? fieldErrors.identifier : ""} />
             </div>
 
             <div>
               <Label htmlFor="password">Password</Label>
               <TextInput
+                ref={passwordRef}
                 id="password"
                 type={showPw ? "text" : "password"}
                 placeholder="Enter your password"
                 value={form.password}
                 onChange={set("password")}
+                onFocus={() => setActiveField("password")}
                 onBlur={handleBlur("password")}
                 autoComplete="current-password"
                 disabled={loading}
-                error={fieldErrors.password}
+                error={activeField === "password" ? fieldErrors.password : ""}
                 rightElement={
                   <button
                     type="button"
@@ -581,7 +597,7 @@ export default function SignIn() {
                   Forgot password?
                 </Link>
               </div>
-              <ErrorMessage message={fieldErrors.password || error} />
+              <ErrorMessage message={(activeField === "password" ? fieldErrors.password : "") || error} />
             </div>
 
             <PrimaryButton onClick={handleSignIn} loading={loading} disabled={!isReady}>
