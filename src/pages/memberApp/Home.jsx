@@ -274,17 +274,17 @@ function NoCommunityState({ navigate }) {
         className="w-28 h-28 object-contain mb-7 flex-shrink-0"
       />
 
-      <p className="text-lg font-semibold text-[#111] mb-2.5 leading-snug max-w-[300px]">
+      <p className="text-lg font-semibold text-[#111] mb-2.5 leading-snug">
         You're not part of any community yet.
       </p>
-      <p className="text-sm text-[#888] mb-9 leading-relaxed max-w-[280px]">
+      <p className="text-sm text-[#888] mb-9 leading-relaxed">
         Join a community or check your invitations to get started.
       </p>
 
       {/* Primary CTA */}
       <Button
         onClick={() => navigate("/member/communities/search")}
-        className="max-w-[300px] mb-4"
+        className="mb-4"
       >
         Join A Community
       </Button>
@@ -317,16 +317,16 @@ function NothingHappeningState({ navigate }) {
         className="w-28 h-28 object-contain mb-7 flex-shrink-0"
       />
 
-      <p className="text-lg font-semibold text-[#111] mb-2.5 leading-snug max-w-[300px]">
+      <p className="text-lg font-semibold text-[#111] mb-2.5 leading-snug">
         Nothing happening here yet.
       </p>
-      <p className="text-sm text-[#888] mb-9 leading-relaxed max-w-[280px]">
+      <p className="text-sm text-[#888] mb-9 leading-relaxed">
         Check out your other communities to see what's happening.
       </p>
 
       <Button
         onClick={() => navigate("/member/communities/search")}
-        className="max-w-[300px] mb-4"
+        className="mb-4"
       >
         Browse Communities
       </Button>

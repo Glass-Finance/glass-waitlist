@@ -208,14 +208,12 @@ body {
   /* Reuses the desktop hero background (a glow anchored to a corner, fully
      organic on every edge) instead of the old mobile-specific asset, which
      had its glow cropped hard against the image's own left edge mid-fade
-     with no room to fix that via cropping (see git history). This image's
-     glow originates from its bottom-left corner, so anchoring the crop
-     there keeps every visible edge a natural fade regardless of viewport
-     size -- verified across several background-position candidates via
-     screenshot before picking this one. !important overrides the
-     bg-center utility Tailwind applies alongside this class everywhere. */
+     with no room to fix that via cropping (see git history). Positioned at
+     left center (not left bottom, which is where this glow used to be
+     anchored) per design -- !important overrides the bg-center utility
+     Tailwind applies alongside this class everywhere. */
   background-image: url("./assets/auth-background.webp");
-  background-position: left bottom !important;
+  background-position: left center !important;
 }
 
 .bg-problem-glow {
