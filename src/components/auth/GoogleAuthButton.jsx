@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronRight } from "lucide-react";
 import { useGoogleOAuth } from "@react-oauth/google";
 import { googleAuth } from "../../services/authService";
 import { useAuth } from "../../store/AuthContext";
@@ -126,7 +125,11 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
         }
         const claims = decodeJwtPayload(credentialResponse.credential);
         if (claims?.email) {
-          const next = { email: claims.email, picture: claims.picture ?? null };
+          const next = {
+            email: claims.email,
+            picture: claims.picture ?? null,
+            name: claims.name ?? claims.given_name ?? null,
+          };
           writeCachedIdentity(next);
           setIdentity(next);
           setAvatarFailed(false);
@@ -155,27 +158,40 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
   return (
     <div ref={wrapRef} className="relative w-full group">
       {/* Visible button -- purely decorative, never receives the click itself. */}
-      <div
-        aria-hidden="true"
-        className={`w-full flex items-center gap-2.5 rounded-xl px-4 py-3.5 border-[1.5px] border-[#E0E0E6] bg-white text-button font-semibold text-gray-700 transition-colors duration-150 group-hover:bg-gray-50 ${identity ? "justify-between" : "justify-center"}`}
-      >
-        <span className="flex items-center gap-2.5 min-w-0 flex-1 justify-center">
-          {identity?.picture && !avatarFailed ? (
+      {identity ? (
+        <div
+          aria-hidden="true"
+          className="w-full flex items-center gap-3 rounded-xl px-4 py-3 border-[1.5px] border-[#E0E0E6] bg-white transition-colors duration-150 group-hover:bg-gray-50"
+        >
+          {identity.picture && !avatarFailed ? (
             <img
               src={identity.picture}
               alt=""
-              className="w-8 h-8 rounded-full flex-shrink-0"
+              className="w-10 h-10 rounded-full flex-shrink-0"
               onError={() => setAvatarFailed(true)}
             />
           ) : (
-            <GoogleGlyph />
+            <div className="w-10 h-10 rounded-full flex-shrink-0 bg-[#F0F4FF] flex items-center justify-center text-sm font-semibold text-brand">
+              {(identity.name ?? identity.email)[0].toUpperCase()}
+            </div>
           )}
-          <span className="truncate min-w-0">
-            {identity?.email ? `Continue as ${identity.email}` : (LABELS[label] ?? LABELS.continue_with)}
+          <span className="flex flex-col min-w-0 flex-1 text-left">
+            <span className="text-sm font-semibold text-gray-900 truncate">
+              Sign in as {identity.name ?? identity.email}
+            </span>
+            <span className="text-xs text-gray-500 truncate">{identity.email}</span>
           </span>
-        </span>
-        {identity && <ChevronRight size={16} className="flex-shrink-0 text-gray-400" />}
-      </div>
+          <GoogleGlyph />
+        </div>
+      ) : (
+        <div
+          aria-hidden="true"
+          className="w-full flex items-center justify-center gap-2.5 rounded-xl px-4 py-3.5 border-[1.5px] border-[#E0E0E6] bg-white text-button font-semibold text-gray-700 transition-colors duration-150 group-hover:bg-gray-50"
+        >
+          <GoogleGlyph />
+          <span className="truncate min-w-0">{LABELS[label] ?? LABELS.continue_with}</span>
+        </div>
+      )}
       {/* Google's real button -- invisible, stacked exactly over the div
           above, so it's what actually receives the click/tap. */}
       <div
