@@ -638,14 +638,15 @@ export default function SignIn() {
 
         <GoogleAuthButton onAuthenticated={handleGoogleAuth} label="signin_with" />
 
-        {!isMemberSignIn && (
-          <p className="text-sm text-center text-gray-500 pb-2">
-            New User?{" "}
-            <Link to="/sign-up" className="font-semibold text-[#1C2B8A]">
-              Create Account
-            </Link>
-          </p>
-        )}
+        <p className="text-sm text-center text-gray-500 pb-2">
+          New User?{" "}
+          {/* /sign-up is the community-owner entry point, /member/join is
+              the member one -- same distinction App.jsx's route comment
+              draws, so this can't just always point to /sign-up. */}
+          <Link to={isMemberSignIn ? "/member/join" : "/sign-up"} className="font-semibold text-[#1C2B8A]">
+            Create Account
+          </Link>
+        </p>
       </div>
     </AuthLayout>
   );
