@@ -11,10 +11,9 @@ import { Button } from "../ui/Button";
 // `icon`-based call sites are unaffected.
 export default function EmptyState({ icon: Icon, illustration, illustrationNode, illustrationClassName, title, subtitle, action, actionLabel, className = "" }) {
   // The bigger page-level states (illustration/illustrationNode) use a
-  // larger illustration with a smaller, regular-weight title (per Figma --
-  // icon is the focal point, not the title) -- the small icon-based states
-  // used throughout the app for in-page sections keep their original
-  // compact size.
+  // larger illustration with a larger, semibold title and a pill action
+  // button, per Figma -- the small icon-based states used throughout the
+  // app for in-page sections keep their original compact size/shape.
   const isBig = !!(illustration || illustrationNode);
   return (
     <div className={`flex flex-col items-center text-center py-10 px-6 ${className}`}>
@@ -29,12 +28,12 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
           <Icon size={20} className="text-brand" />
         </div>
       )}
-      <p className={isBig ? "text-xl leading-7 font-normal text-gray-900" : "text-sm font-semibold text-gray-900"}>{title}</p>
+      <p className={isBig ? "text-xl leading-7 font-semibold text-gray-900" : "text-sm font-semibold text-gray-900"}>{title}</p>
       {subtitle && (
         <p className={isBig ? "text-base text-gray-400 mt-1.5 max-w-sm" : "text-xs text-gray-400 mt-1 max-w-xs"}>{subtitle}</p>
       )}
       {action && isBig && (
-        <Button onClick={action} fullWidth={false} className="mt-6 px-6 inline-flex items-center gap-1.5">
+        <Button onClick={action} fullWidth={false} className="mt-6 px-6 inline-flex items-center gap-1.5 !rounded-full">
           {actionLabel}
         </Button>
       )}

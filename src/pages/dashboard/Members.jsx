@@ -255,7 +255,7 @@ export default function Members() {
           title="No members yet."
           subtitle="Invite your first members via link, CSV upload, or manually."
           action={() => setModalOpen(true)}
-          actionLabel="Add Members"
+          actionLabel={<><Plus size={14} /> Add Members</>}
         />
       )}
 
