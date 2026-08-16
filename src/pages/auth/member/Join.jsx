@@ -71,7 +71,6 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
   const { hasToken } = useInviteToken();
   const [email, setEmail] = useState(initialEmail ?? "");
   const [phone, setPhone] = useState(initialPhone ?? "");
-  const [agreed, setAgreed] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({ email: "", phone: "" });
   const [error, setError] = useState("");
 
@@ -92,10 +91,6 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
   }
 
   function handleSubmit() {
-    if (!agreed) {
-      setError("Please agree to the Terms of Service and Privacy Policy to continue.");
-      return;
-    }
     const trimmedEmail = email.trim().toLowerCase();
     const emailError = getEmailError(trimmedEmail);
     const phoneError = validatePhone(phone);
@@ -107,7 +102,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
     onNext({ email: trimmedEmail, phone: phone.trim() });
   }
 
-  const isReady = email.trim() && phone.trim() && agreed;
+  const isReady = email.trim() && phone.trim();
 
   return (
     <div className="flex flex-col gap-3">
@@ -164,43 +159,33 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
         </div>
       </div>
 
-      <label className="flex items-start gap-2.5 cursor-pointer select-none">
-        <input
-          type="checkbox"
-          checked={agreed}
-          onChange={(e) => setAgreed(e.target.checked)}
-          className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer bg-white border border-gray-300 accent-[#1C2B8A]"
-        />
-        <span className="text-xs text-gray-500 leading-snug">
-          I agree to the{" "}
-          <Link
-            to="/terms"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="font-medium text-[#1C2B8A]"
-          >
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link
-            to="/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="font-medium text-[#1C2B8A]"
-          >
-            Privacy Policy
-          </Link>
-          .
-        </span>
-      </label>
-
       <ErrorMessage message={error} />
 
       <PrimaryButton onClick={handleSubmit} disabled={!isReady} size="sm">
         Continue
       </PrimaryButton>
+
+      <p className="text-xs text-center text-gray-500 leading-snug">
+        By continuing, you agree to our{" "}
+        <Link
+          to="/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-[#1C2B8A]"
+        >
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link
+          to="/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-[#1C2B8A]"
+        >
+          Privacy Policy
+        </Link>
+        .
+      </p>
 
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-gray-300" />
@@ -208,12 +193,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
         <div className="flex-1 h-px bg-gray-300" />
       </div>
 
-      <div
-        className={!agreed ? "opacity-50 pointer-events-none" : ""}
-        title={!agreed ? "Agree to the Terms of Service and Privacy Policy first" : undefined}
-      >
-        <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
-      </div>
+      <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
 
       <p className="text-sm text-center text-gray-500 pb-2">
         Already Have An Account?{" "}

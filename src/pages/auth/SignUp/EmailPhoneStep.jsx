@@ -31,7 +31,6 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
   const [email, setEmail] = useState(initialEmail ?? "");
   const [phone, setPhone] = useState(initialPhone ?? "");
   const [phoneFocused, setPhoneFocused] = useState(false);
-  const [agreed, setAgreed] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({ email: "", phone: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -52,10 +51,6 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (!agreed) {
-      setError("Please agree to the Terms of Service and Privacy Policy to continue.");
-      return;
-    }
     const emailError = getEmailError(email);
     const phoneError = validatePhone(phone);
     if (emailError || phoneError) {
@@ -127,52 +122,37 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
           )}
         </div>
 
-        <label className="flex items-start gap-2.5 cursor-pointer select-none -mt-1">
-          <input
-            type="checkbox"
-            checked={agreed}
-            onChange={(e) => setAgreed(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer bg-white border border-gray-300 accent-[#2535c3]"
-          />
-          <span className="text-xs text-gray-500 leading-snug">
-            I agree to the{" "}
-            <Link
-              to="/terms"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="font-medium hover:underline text-brand"
-            >
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              to="/privacy"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="font-medium hover:underline text-brand"
-            >
-              Privacy Policy
-            </Link>
-            .
-          </span>
-        </label>
-
         {error && <p className="text-sm text-red-500 -mt-1">{error}</p>}
 
-        <PrimaryBtn type="submit" className="mt-2 !py-3.5" disabled={!email.trim() || !phone.trim() || !agreed} loading={submitting} size="sm">
+        <PrimaryBtn type="submit" className="mt-2 !py-3.5" disabled={!email.trim() || !phone.trim()} loading={submitting} size="sm">
           {submitting ? "Sending Code..." : "Continue"}
         </PrimaryBtn>
+
+        <p className="text-xs text-center text-gray-500 leading-snug">
+          By continuing, you agree to our{" "}
+          <Link
+            to="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium hover:underline text-brand"
+          >
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link
+            to="/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium hover:underline text-brand"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
       </form>
 
       <Divider />
-      <div
-        className={!agreed ? "opacity-50 pointer-events-none" : ""}
-        title={!agreed ? "Agree to the Terms of Service and Privacy Policy first" : undefined}
-      >
-        <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
-      </div>
+      <GoogleAuthButton onAuthenticated={onGoogleAuth} label="signup_with" />
 
       <p className="text-center text-sm mt-5 text-gray-500">
         Already Have An Account?{" "}
