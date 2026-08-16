@@ -15,30 +15,33 @@ export default function DashboardStats({ stats, isLoading }) {
       {stats.map((s) => (
         <div
           key={s.label}
-          // Same single-row shape as the shared StatCard.jsx (label+value
-          // stacked as one text block, icon beside it) instead of two full
-          // rows stacked (label+info, then icon+value) -- the two-row
-          // version was inherently taller regardless of padding, most
-          // visible on mobile where each card is full-width with no
-          // grid-stretch from a taller sibling to mask the difference.
-          className="flex items-center justify-between gap-3 bg-surface-container rounded-lg p-4 border border-surface-container-border"
+          // Figma: min-height 152px (not a fixed height -- a wrapped label
+          // like "Overdue Members" shouldn't clip or force the card taller
+          // than its siblings), 24px padding, 8px radius, space-between so
+          // the icon+value row stays pinned to the bottom of the card
+          // instead of drifting up under a short single-line label.
+          className="min-h-[152px] flex flex-col justify-between bg-surface-container rounded-lg p-6 border border-surface-container-border"
         >
-          <div>
-            <p className="flex items-center gap-1 text-sm text-gray-500 font-medium mb-1">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-500 font-medium">
               {s.label}
-              <Info size={13} className="text-brand" />
-            </p>
+            </span>
+            <Info size={15} className="text-brand" />
+          </div>
+          <div className="flex items-center gap-3">
+            <img
+              src={s.icon}
+              alt={s.label}
+              className="w-9 h-9 object-contain flex-shrink-0"
+            />
             {isLoading ? (
               <Skeleton className="h-6 w-16" />
             ) : (
-              <p className="text-2xl font-bold text-black">{s.value}</p>
+              <span className="text-2xl font-bold text-black">
+                {s.value}
+              </span>
             )}
           </div>
-          <img
-            src={s.icon}
-            alt={s.label}
-            className="w-9 h-9 object-contain flex-shrink-0"
-          />
         </div>
       ))}
     </div>

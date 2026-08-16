@@ -1,22 +1,23 @@
 // Shared stat tile used across dashboard list pages (Payments, Members,
 // MemberDetail). icon/iconCls are optional — MemberDetail's usage omits
-// the icon block entirely.
+// the icon block entirely. Sized to match the Dashboard page's own stat
+// card (min-h-152px, p-6, label pinned to the top and icon+value pinned
+// to the bottom via flex-col justify-between) so the two don't drift
+// apart in height/proportions again.
 export default function StatCard({ icon: Icon, label, value, iconCls }) {
   return (
-    <div
-      className={`bg-surface-container rounded-xl border border-surface-container-border px-4 py-3 ${Icon ? "flex items-center justify-between" : ""}`}
-    >
-      <div>
-        <p className="text-xs text-gray-400 mb-1">{label}</p>
-        <p className="text-[13px] font-semibold text-black">{value}</p>
+    <div className="min-h-[152px] flex flex-col justify-between bg-surface-container rounded-lg border border-surface-container-border p-6">
+      <p className="text-sm text-gray-500 font-medium">{label}</p>
+      <div className="flex items-center gap-3">
+        {Icon && (
+          <div
+            className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${iconCls}`}
+          >
+            <Icon size={16} />
+          </div>
+        )}
+        <span className="text-2xl font-bold text-black">{value}</span>
       </div>
-      {Icon && (
-        <div
-          className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${iconCls}`}
-        >
-          <Icon size={14} />
-        </div>
-      )}
     </div>
   );
 }
