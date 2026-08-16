@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunity, useUpdateCommunity } from "../../../../hooks/useCommunity";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { resizeImageFile } from "../../../../utils/resizeImage";
 import { deleteCommunity } from "../../../../api/communities";
-import { useAuth } from "../../../../store/AuthContext";
 import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
 
 const INVITE_HOST = APP_ORIGIN.replace(/^https?:\/\//, "");
@@ -33,7 +33,7 @@ export default function CommunityProfile() {
   const updateCommunity = useUpdateCommunity(communityId);
   const uploadFile = useFileUpload();
   const logoInputRef = useRef(null);
-  const { logout } = useAuth();
+  const queryClient = useQueryClient();
 
   const [form, setForm] = useState({ name: "", category: "", description: "" });
   const [saved, setSaved] = useState(false);
@@ -58,8 +58,14 @@ export default function CommunityProfile() {
     setDeleteError("");
     try {
       await deleteCommunity(communityId);
-      await logout();
-      navigate("/sign-in");
+      // The user's own account/session is untouched by deleting a
+      // community -- no need to force a re-login. Just drop the stale
+      // "active community" snapshot (it'd otherwise keep pointing at a
+      // now-nonexistent community) and refresh the communities list before
+      // heading back to the overview.
+      localStorage.removeItem("glass_community");
+      queryClient.invalidateQueries({ queryKey: ["communities"] });
+      navigate("/dashboard/home");
     } catch (err) {
       setDeleteError(getErrorMessage(err, "Failed to delete community."));
       setDeleteLoading(false);
