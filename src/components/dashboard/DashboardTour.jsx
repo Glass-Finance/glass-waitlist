@@ -1,5 +1,5 @@
 import { useState, useLayoutEffect, useCallback, useRef } from "react";
-import { LayoutDashboard, Building2, Search, Plus, ListChecks, Receipt, Settings, X, Menu, Users, Clock, Grid, HelpCircle } from "lucide-react";
+import { LayoutDashboard, Building2, Search, Plus, ListChecks, Receipt, Settings, X, Menu, Users, Clock, Grid, HelpCircle, UserPlus } from "lucide-react";
 import { Button } from "../ui/Button";
 
 export const DASHBOARD_TOUR_SEEN_KEY = "glass_dashboard_tour_seen";
@@ -49,6 +49,25 @@ const STEPS = [
     title: "Create a plan or add a member in one click",
     body: "These two buttons set up a new payment plan or invite a member without leaving this page.",
     target: '[data-tour="dashboard-header-actions"]',
+  },
+  // These two only exist on a brand-new community's WelcomeEmptyState,
+  // which replaces the header-actions/checklist/table above entirely
+  // (see AdminDashboard.jsx's isFreshCommunity branch) -- like every other
+  // step here, a missing target just gets skipped by findValidStep, so the
+  // two groups never both show for the same community, but whichever one
+  // actually rendered gets its own steps instead of silently skipping past
+  // the most important thing a new admin can do.
+  {
+    icon: Plus,
+    title: "Start with your first payment plan",
+    body: "Every collection begins here — set up dues, a one-time fee, or an event payment in a few clicks.",
+    target: '[data-tour="welcome-create-plan"]',
+  },
+  {
+    icon: UserPlus,
+    title: "Bring your members in",
+    body: "Invite everyone with a shareable link, a CSV upload, or one at a time.",
+    target: '[data-tour="welcome-add-members"]',
   },
   {
     icon: ListChecks,
@@ -384,6 +403,7 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
             <Button
               onClick={() => (isLast ? onClose() : setStep(nextStep))}
               fullWidth={false}
+              size="sm"
               className="px-4"
             >
               {isLast ? "Done" : "Next"}

@@ -27,7 +27,8 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
       <Button
         onClick={onCreatePlan}
         fullWidth={false}
-        className="px-6 mb-8"
+        className="px-6 mb-8 !rounded-full"
+        data-tour="welcome-create-plan"
       >
         Create Your First Collection
       </Button>
@@ -45,7 +46,8 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
 
         <button
           onClick={onAddMember}
-          className="w-full bg-white rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left cursor-pointer transition-colors hover:bg-blue-50/30"
+          data-tour="welcome-add-members"
+          className="w-full bg-white rounded-full border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left cursor-pointer transition-colors hover:bg-blue-50/30"
         >
           <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-brand">
             <Users size={16} className="text-white" />
