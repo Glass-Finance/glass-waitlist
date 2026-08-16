@@ -1,5 +1,6 @@
-import { Check, ChevronRight, Users } from "lucide-react";
+import { ChevronRight, Users } from "lucide-react";
 import inviteIllustration from "../../../../assets/dashboard/empty-states/invite-illustration.png";
+import tickIcon from "../../../../assets/dashboard/empty-states/tick-icon.png";
 import { Button } from "../../../../components/ui/Button";
 
 // The very first thing an admin sees on a brand-new community — before a
@@ -27,19 +28,17 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
       <Button
         onClick={onCreatePlan}
         fullWidth={false}
-        className="px-6 mb-8 !rounded-full"
+        className="px-6 mb-8 !rounded-full !font-normal"
         data-tour="welcome-create-plan"
       >
         Create Your First Collection
       </Button>
 
       <div className="w-full max-w-lg flex flex-col gap-2.5">
-        <div className="w-full bg-white rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left">
-          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-emerald-100">
-            <Check size={16} className="text-emerald-600" strokeWidth={2.5} />
-          </div>
+        <div className="w-full bg-gray-50 rounded-xl border border-transparent px-5 py-4 flex items-center gap-4 text-left">
+          <img src={tickIcon} alt="" className="w-9 h-9 flex-shrink-0" draggable={false} />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-gray-900">Community Created</p>
+            <p className="text-sm font-bold text-gray-500">Community Created</p>
             <p className="text-xs text-gray-400 mt-0.5">Your community is live and ready</p>
           </div>
         </div>
