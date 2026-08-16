@@ -34,7 +34,7 @@ export const Button = forwardRef(function Button(
       type={type}
       onClick={onClick}
       disabled={isDisabled}
-      className={`${fullWidth ? "w-full " : ""}rounded-lg ${sizeClasses} font-medium text-white transition-all duration-150 active:scale-[0.98] disabled:cursor-not-allowed ${isDisabled ? "bg-[#B0B8D8]" : "bg-brand hover:opacity-90"} ${className}`}
+      className={`${fullWidth ? "w-full " : ""}rounded-lg ${sizeClasses} font-normal text-white transition-all duration-150 active:scale-[0.98] disabled:cursor-not-allowed ${isDisabled ? "bg-[#B0B8D8]" : "bg-brand hover:opacity-90"} ${className}`}
       {...rest}
     >
       {children}
