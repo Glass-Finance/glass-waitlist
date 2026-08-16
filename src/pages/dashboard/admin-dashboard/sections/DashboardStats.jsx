@@ -15,13 +15,13 @@ export default function DashboardStats({ stats, isLoading }) {
       {stats.map((s) => (
         <div
           key={s.label}
-          // min-height 128px (not a fixed height -- a wrapped label like
+          // min-height 108px (not a fixed height -- a wrapped label like
           // "Overdue Members" shouldn't clip or force the card taller than
-          // its siblings), 20px padding, 8px radius, space-between so the
+          // its siblings), 16px padding, 8px radius, space-between so the
           // icon+value row stays pinned to the bottom of the card instead
           // of drifting up under a short single-line label. Matches the
           // shared StatCard.jsx used by Members/Payments/MemberDetail.
-          className="min-h-[128px] flex flex-col justify-between bg-surface-container rounded-lg p-5 border border-surface-container-border"
+          className="min-h-[108px] flex flex-col justify-between bg-surface-container rounded-lg p-4 border border-surface-container-border"
         >
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500 font-medium">
@@ -33,12 +33,12 @@ export default function DashboardStats({ stats, isLoading }) {
             <img
               src={s.icon}
               alt={s.label}
-              className="w-9 h-9 object-contain flex-shrink-0"
+              className="w-8 h-8 object-contain flex-shrink-0"
             />
             {isLoading ? (
               <Skeleton className="h-6 w-16" />
             ) : (
-              <span className="text-2xl font-bold text-black">
+              <span className="text-xl font-bold text-black">
                 {s.value}
               </span>
             )}
