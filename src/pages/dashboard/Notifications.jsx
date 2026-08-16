@@ -350,6 +350,7 @@ function SuperAdminNotifications() {
         ) : notifications.length === 0 ? (
           <EmptyState
             illustration={notificationsIllustration}
+            illustrationClassName="w-[200px] h-auto mb-4"
             title="You're all caught up."
             subtitle="We'll let you know when something needs your attention."
             className="py-16"
@@ -460,6 +461,7 @@ function CommunityNotifications() {
         ) : notifications.length === 0 ? (
           <EmptyState
             illustration={notificationsIllustration}
+            illustrationClassName="w-[200px] h-auto mb-4"
             title="You're all caught up."
             subtitle="We'll let you know when something needs your attention."
             className="py-16"
