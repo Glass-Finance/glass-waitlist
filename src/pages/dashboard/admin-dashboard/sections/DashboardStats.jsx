@@ -15,13 +15,16 @@ export default function DashboardStats({ stats, isLoading }) {
       {stats.map((s) => (
         <div
           key={s.label}
-          // min-height 108px (not a fixed height -- a wrapped label like
-          // "Overdue Members" shouldn't clip or force the card taller than
-          // its siblings), 16px padding, 8px radius, space-between so the
-          // icon+value row stays pinned to the bottom of the card instead
-          // of drifting up under a short single-line label. Matches the
-          // shared StatCard.jsx used by Members/Payments/MemberDetail.
-          className="min-h-[108px] flex flex-col justify-between bg-surface-container rounded-lg p-4 border border-surface-container-border"
+          // min-height 108px on desktop (not a fixed height -- a wrapped
+          // label like "Overdue Members" shouldn't clip or force the card
+          // taller than its siblings), 16px padding, 8px radius,
+          // space-between so the icon+value row stays pinned to the bottom
+          // of the card instead of drifting up under a short single-line
+          // label. Matches the shared StatCard.jsx used by
+          // Members/Payments/MemberDetail, including its taller mobile-only
+          // min-height (132px) -- the grid is one full-width column below
+          // md, and 108px reads as a flat strip at that width.
+          className="min-h-[132px] md:min-h-[108px] flex flex-col justify-between bg-surface-container rounded-lg p-4 border border-surface-container-border"
         >
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500 font-medium">
