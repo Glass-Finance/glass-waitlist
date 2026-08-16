@@ -124,10 +124,6 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
 
         {error && <p className="text-sm text-red-500 -mt-1">{error}</p>}
 
-        <PrimaryBtn type="submit" className="mt-2 !py-3.5" disabled={!email.trim() || !phone.trim()} loading={submitting} size="sm">
-          {submitting ? "Sending Code..." : "Continue"}
-        </PrimaryBtn>
-
         <p className="text-xs text-center text-gray-500 leading-snug">
           By continuing, you agree to our{" "}
           <Link
@@ -149,6 +145,10 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
           </Link>
           .
         </p>
+
+        <PrimaryBtn type="submit" className="mt-2 !py-3.5" disabled={!email.trim() || !phone.trim()} loading={submitting} size="sm">
+          {submitting ? "Sending Code..." : "Continue"}
+        </PrimaryBtn>
       </form>
 
       <Divider />

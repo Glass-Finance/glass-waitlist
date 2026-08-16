@@ -161,10 +161,6 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
 
       <ErrorMessage message={error} />
 
-      <PrimaryButton onClick={handleSubmit} disabled={!isReady} size="sm">
-        Continue
-      </PrimaryButton>
-
       <p className="text-xs text-center text-gray-500 leading-snug">
         By continuing, you agree to our{" "}
         <Link
@@ -186,6 +182,10 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
         </Link>
         .
       </p>
+
+      <PrimaryButton onClick={handleSubmit} disabled={!isReady} size="sm">
+        Continue
+      </PrimaryButton>
 
       <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-gray-300" />
