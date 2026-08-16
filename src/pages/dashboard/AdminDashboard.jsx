@@ -119,7 +119,15 @@ function DashboardContent({ isPaying, communityId }) {
   const { account: payoutAccount, isLoading: payoutLoading } =
     useCommunityAccount(communityId);
   const gsHasPlans = plans.length > 0;
-  const gsHasMembers = (members?.total ?? 0) > 0;
+  // members.total counts everyone, including the owner -- who is auto-added
+  // as a member (roleCode OWNER, per Members.jsx's isAdminRole) the moment
+  // the community is created. Counting them made this true before any real
+  // member was ever added, so WelcomeEmptyState/the checklist's "Add Your
+  // First Members" step could never actually trigger. Exclude the owner's
+  // own row so this reflects real members only.
+  const gsHasMembers = (members?.list ?? []).some(
+    (m) => (m.roleCode ?? "").toUpperCase() !== "OWNER",
+  );
   // A submitted account isn't necessarily a *usable* one -- it still needs
   // to clear ACTIVE/VERIFIED on our side (see errorHandler.js's rewrite of
   // "community account is not active" for the other end of this same gap).
