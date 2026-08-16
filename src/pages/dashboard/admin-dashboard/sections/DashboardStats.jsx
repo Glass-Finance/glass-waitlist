@@ -15,12 +15,13 @@ export default function DashboardStats({ stats, isLoading }) {
       {stats.map((s) => (
         <div
           key={s.label}
-          // Figma: min-height 152px (not a fixed height -- a wrapped label
-          // like "Overdue Members" shouldn't clip or force the card taller
-          // than its siblings), 24px padding, 8px radius, space-between so
-          // the icon+value row stays pinned to the bottom of the card
-          // instead of drifting up under a short single-line label.
-          className="min-h-[152px] flex flex-col justify-between bg-surface-container rounded-lg p-6 border border-surface-container-border"
+          // min-height 128px (not a fixed height -- a wrapped label like
+          // "Overdue Members" shouldn't clip or force the card taller than
+          // its siblings), 20px padding, 8px radius, space-between so the
+          // icon+value row stays pinned to the bottom of the card instead
+          // of drifting up under a short single-line label. Matches the
+          // shared StatCard.jsx used by Members/Payments/MemberDetail.
+          className="min-h-[128px] flex flex-col justify-between bg-surface-container rounded-lg p-5 border border-surface-container-border"
         >
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-500 font-medium">

@@ -91,10 +91,10 @@ export default function Hero() {
       >
         <Reveal variant="up" delay={80}>
           <h1
-            className="font-bold text-white leading-[1.05] tracking-tight mb-5 text-center max-w-[480px] lg:max-w-[720px] mx-auto"
-            style={{ fontSize: "clamp(44px,7vw,70px)" }}
+            className="font-semibold text-white leading-[1.05] tracking-tight mb-5 text-center max-w-[480px] lg:max-w-[720px] mx-auto"
+            style={{ fontSize: "clamp(34px,8.5vw,70px)" }}
           >
-            Community Finance Crystal Clear
+            Community Finance<br className="lg:hidden" /> Crystal Clear
           </h1>
         </Reveal>
         <Reveal variant="up" delay={160}>
