@@ -38,7 +38,7 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
         <div className="w-full bg-gray-50 rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left">
           <img src={tickIcon} alt="" className="w-9 h-9 flex-shrink-0" draggable={false} />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-gray-500">Community Created</p>
+            <p className="text-sm font-normal text-gray-500">Community Created</p>
             <p className="text-xs text-gray-400 mt-0.5">Your community is live and ready</p>
           </div>
         </div>
@@ -52,7 +52,7 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
             <Users size={16} className="text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-gray-900">Add Your First Members</p>
+            <p className="text-sm font-normal text-gray-900">Add Your First Members</p>
             <p className="text-xs text-gray-400 mt-0.5">Invite Via Link, CSV Upload, or Manually</p>
           </div>
           <ChevronRight size={16} className="text-gray-400 flex-shrink-0" />
