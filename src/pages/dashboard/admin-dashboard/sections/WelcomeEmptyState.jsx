@@ -18,8 +18,8 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
         className="w-[280px] h-auto mb-6"
         draggable={false}
       />
-      <h1 className="text-xl leading-7 font-normal text-gray-900 text-center mb-1.5">
-        Welcome to <span style={{ color: "#6366F1" }}>Glass!</span>
+      <h1 className="text-xl leading-7 font-semibold text-gray-900 text-center mb-1.5">
+        Welcome to Glass!
       </h1>
       <p className="text-base text-gray-400 text-center mb-7 max-w-sm">
         Let's get your community ready to start collecting.
@@ -39,7 +39,7 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
             <Check size={16} className="text-emerald-600" strokeWidth={2.5} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-gray-400">Community Created</p>
+            <p className="text-sm font-bold text-gray-900">Community Created</p>
             <p className="text-xs text-gray-400 mt-0.5">Your community is live and ready</p>
           </div>
         </div>
