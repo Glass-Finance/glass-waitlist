@@ -18,6 +18,7 @@ import totalContribIcon from "../../assets/dashboard/tcontributions.webp";
 import activePlansIcon from "../../assets/dashboard/active-plans.webp";
 import { formatNaira } from "./admin-dashboard/helpers";
 import { toTitleCase } from "../../utils/format";
+import { roleKeyword } from "../../utils/communityRole";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 import AddMemberModal from "./admin-dashboard/AddMemberModal";
 import GettingStartedChecklist from "./admin-dashboard/sections/GettingStartedChecklist";
@@ -120,13 +121,15 @@ function DashboardContent({ isPaying, communityId }) {
     useCommunityAccount(communityId);
   const gsHasPlans = plans.length > 0;
   // members.total counts everyone, including the owner -- who is auto-added
-  // as a member (roleCode OWNER, per Members.jsx's isAdminRole) the moment
-  // the community is created. Counting them made this true before any real
-  // member was ever added, so WelcomeEmptyState/the checklist's "Add Your
-  // First Members" step could never actually trigger. Exclude the owner's
-  // own row so this reflects real members only.
+  // as a member (roleCode "COMMUNITY_OWNER", confirmed against the live
+  // /communities/{id}/members response) the moment the community is
+  // created. Counting them made this true before any real member was ever
+  // added, so WelcomeEmptyState/the checklist's "Add Your First Members"
+  // step could never actually trigger. roleKeyword (not a raw === check --
+  // see communityRole.js) excludes the owner's own row so this reflects
+  // real members only.
   const gsHasMembers = (members?.list ?? []).some(
-    (m) => (m.roleCode ?? "").toUpperCase() !== "OWNER",
+    (m) => roleKeyword(m.roleCode, m.role) !== "OWNER",
   );
   // A submitted account isn't necessarily a *usable* one -- it still needs
   // to clear ACTIVE/VERIFIED on our side (see errorHandler.js's rewrite of

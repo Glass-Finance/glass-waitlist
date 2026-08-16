@@ -19,6 +19,7 @@ import StatCard from "../../components/dashboard/StatCard";
 import { formatDate } from "../../utils/format";
 import { resolveDisplayName, resolveEmail } from "../../utils/memberName";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
+import { roleKeyword } from "../../utils/communityRole";
 
 // Only these three roles should be assignable when inviting members.
 const ALLOWED_ROLE_NAMES = new Set(["Community Owner", "Community Admin", "Community Member"]);
@@ -34,9 +35,11 @@ const SORT_OPTIONS = ["Recently Paid", "Name A-Z", "Date Joined"];
 const memberName = (m) => resolveDisplayName(m);
 const memberEmail = (m) => resolveEmail(m);
 const memberRole = (m) => m.roleCode ?? m.role?.name ?? m.roleName ?? m.role ?? "Member";
-// Matches AuthContext's hasAdminCommunity check — roleCode is the stable
-// enum value (OWNER/ADMIN/MANAGER/MEMBER/...), not a free-text display name.
-const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes((m.roleCode ?? "").toUpperCase());
+// Matches AuthContext's hasAdminCommunity check, which goes through
+// roleKeyword rather than comparing roleCode directly -- the live API
+// returns "COMMUNITY_OWNER"/"COMMUNITY_ADMIN", not bare "OWNER"/"ADMIN",
+// so a raw === here silently undercounted admins.
+const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes(roleKeyword(m.roleCode, m.role));
 const memberInitials = (m) => memberName(m).split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
 
 function statusStyle(paid, total) {
