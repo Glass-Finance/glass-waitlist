@@ -35,7 +35,7 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
       </Button>
 
       <div className="w-full max-w-lg flex flex-col gap-2.5">
-        <div className="w-full bg-gray-50 rounded-xl border border-transparent px-5 py-4 flex items-center gap-4 text-left">
+        <div className="w-full bg-gray-50 rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left">
           <img src={tickIcon} alt="" className="w-9 h-9 flex-shrink-0" draggable={false} />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-gray-500">Community Created</p>
@@ -46,7 +46,7 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
         <button
           onClick={onAddMember}
           data-tour="welcome-add-members"
-          className="w-full bg-white rounded-full border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left cursor-pointer transition-colors hover:bg-blue-50/30"
+          className="w-full bg-white rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left cursor-pointer transition-colors hover:bg-blue-50/30"
         >
           <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-brand">
             <Users size={16} className="text-white" />
