@@ -536,7 +536,7 @@ export default function SignIn() {
                 ref={identifierRef}
                 id="identifier"
                 type="text"
-                placeholder="you@example.com or 0803 123 4567"
+                placeholder="Enter your email or number"
                 value={form.identifier}
                 onChange={set("identifier")}
                 onFocus={() => setActiveField("identifier")}
@@ -598,7 +598,7 @@ export default function SignIn() {
               <TextInput
                 id="otp-identifier"
                 type="text"
-                placeholder="you@example.com or 0803 123 4567"
+                placeholder="Enter your email or number"
                 value={otpIdentifier}
                 onChange={(e) => { setOtpIdentifier(e.target.value); setOtpIdentifierError(""); }}
                 autoComplete="username"
@@ -630,7 +630,7 @@ export default function SignIn() {
         <GoogleAuthButton onAuthenticated={handleGoogleAuth} label="signin_with" />
 
         <p className="text-sm text-center text-gray-500 pb-2">
-          New User?{" "}
+          New to Glass?{" "}
           {/* /sign-up is the community-owner entry point, /member/join is
               the member one -- same distinction App.jsx's route comment
               draws, so this can't just always point to /sign-up. */}
