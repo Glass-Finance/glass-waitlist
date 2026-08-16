@@ -35,7 +35,7 @@ export default function Hero() {
         .hero-blur-blobs { display: none !important; }
       }
     `}</style>
-    <section className="relative overflow-hidden pt-[96px]">
+    <section className="relative overflow-hidden pt-[120px]">
       <div
         className="hero-wave-bg absolute inset-0 w-full h-full"
         style={{
