@@ -156,10 +156,8 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
         <div
           className={`border-t-[1.5px] border-x-[1.5px] rounded-t-2xl pt-10 px-6 pb-5 flex flex-col items-center ${isError ? "border-danger" : "border-brand"}`}
         >
-          <div
-            className={`w-14 h-14 rounded-full flex items-center justify-center ${isError ? "bg-danger-tint" : "bg-[#D7E2FF]"}`}
-          >
-            {isError ? (
+          {isError ? (
+            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-danger-tint">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                 <circle
                   cx="12"
@@ -175,10 +173,15 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
                   strokeLinecap="round"
                 />
               </svg>
-            ) : (
-              <img src={paymentsDueIcon} alt="" className="w-6 h-6 object-contain" />
-            )}
-          </div>
+            </div>
+          ) : (
+            // The icon asset already carries its own rounded badge
+            // background baked in -- an additional wrapping circle here
+            // just duplicated it. Sized to the same footprint that circle
+            // used to occupy (w-14 = 56px) instead of the tiny w-6 it was
+            // shrunk to inside that circle.
+            <img src={paymentsDueIcon} alt="" className="w-14 h-14 object-contain" />
+          )}
         </div>
 
         {/* Bottom block — no border */}
@@ -779,9 +782,7 @@ export default function Home() {
 
               {upcoming.length === 0 && totalUpcomingCount === 0 ? (
                 <div className="flex flex-col items-center px-4 pt-7 pb-5 text-center gap-0">
-                  <div className="w-[52px] h-[52px] rounded-full bg-[#D7E2FF] flex items-center justify-center mb-3.5">
-                    <img src={upcomingPaymentsIcon} alt="" className="w-6 h-6 object-contain" />
-                  </div>
+                  <img src={upcomingPaymentsIcon} alt="" className="w-[52px] h-[52px] object-contain mb-3.5" />
                   <p className="text-[17px] font-normal text-[#111] mb-1.5">
                     No Upcoming Payments
                   </p>
@@ -821,9 +822,7 @@ export default function Home() {
 
               {history.length === 0 ? (
                 <div className="flex flex-col items-center px-4 pt-7 pb-5 text-center gap-0">
-                  <div className="w-[52px] h-[52px] rounded-full bg-[#D7E2FF] flex items-center justify-center mb-3.5">
-                    <img src={paymentHistoryIcon} alt="" className="w-6 h-6 object-contain" />
-                  </div>
+                  <img src={paymentHistoryIcon} alt="" className="w-[52px] h-[52px] object-contain mb-3.5" />
                   <p className="text-[17px] font-normal text-[#111] mb-1.5">
                     No Payment History
                   </p>
