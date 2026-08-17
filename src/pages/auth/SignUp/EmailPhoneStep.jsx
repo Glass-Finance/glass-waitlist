@@ -74,7 +74,8 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
   };
 
   return (
-    <div className="w-full max-w-md flex flex-col md:mt-14 mb-auto">
+    <>
+    <div className="w-full max-w-md flex flex-col md:mt-14">
       <div className="mb-3">
         <h1 className="text-headline text-gray-900 mb-1.5">
           Create Your Account
@@ -141,28 +142,33 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
           Sign In
         </button>
       </p>
-
-      <p className="text-xs text-center text-gray-500 leading-snug mt-5">
-        By continuing, you agree to our{" "}
-        <Link
-          to="/terms"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium hover:underline text-brand"
-        >
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link
-          to="/privacy"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium hover:underline text-brand"
-        >
-          Privacy Policy
-        </Link>
-        .
-      </p>
     </div>
+
+    {/* Pinned to the bottom of the page (mt-auto, not just spaced below the
+        card above) -- per the Figma treatment, this sits at the very bottom
+        of the screen with the leftover space collecting above it, not
+        immediately under the Sign In link. */}
+    <p className="w-full max-w-md mx-auto text-xs text-center text-gray-500 leading-snug mt-auto pt-5">
+      By continuing, you agree to our{" "}
+      <Link
+        to="/terms"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-medium hover:underline text-brand"
+      >
+        Terms of Service
+      </Link>{" "}
+      and{" "}
+      <Link
+        to="/privacy"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-medium hover:underline text-brand"
+      >
+        Privacy Policy
+      </Link>
+      .
+    </p>
+    </>
   );
 }

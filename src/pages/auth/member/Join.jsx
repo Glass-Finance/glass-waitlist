@@ -105,7 +105,8 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
   const isReady = email.trim() && phone.trim();
 
   return (
-    <div className="flex flex-col gap-3">
+    <>
+    <div className="w-full max-w-md flex flex-col md:mt-14 gap-3">
       <div>
         <h1 className="text-headline text-gray-900">
           {hasToken ? "You've Been Invited" : "Create Your Account"}
@@ -182,29 +183,33 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
           Sign In
         </Link>
       </p>
-
-      <p className="text-xs text-center text-gray-500 leading-snug">
-        By continuing, you agree to our{" "}
-        <Link
-          to="/terms"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-[#1C2B8A]"
-        >
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link
-          to="/privacy"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-[#1C2B8A]"
-        >
-          Privacy Policy
-        </Link>
-        .
-      </p>
     </div>
+
+    {/* Pinned to the bottom of the page (mt-auto, not just spaced below the
+        block above) -- per the Figma treatment, this sits at the very
+        bottom of the screen with the leftover space collecting above it. */}
+    <p className="w-full max-w-md mx-auto text-xs text-center text-gray-500 leading-snug mt-auto pt-5">
+      By continuing, you agree to our{" "}
+      <Link
+        to="/terms"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-medium text-[#1C2B8A]"
+      >
+        Terms of Service
+      </Link>{" "}
+      and{" "}
+      <Link
+        to="/privacy"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-medium text-[#1C2B8A]"
+      >
+        Privacy Policy
+      </Link>
+      .
+    </p>
+    </>
   );
 }
 
@@ -782,30 +787,36 @@ export default function Join() {
 
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-      <div className="w-full max-w-md flex flex-col md:mt-14 mb-auto gap-5">
-        {step === STEPS.CONTACT && (
-          <StepContact
-            initialEmail={contact.email}
-            initialPhone={contact.phone}
-            onNext={handleContactNext}
-            onGoogleAuth={handleGoogleAuth}
-            hasCommunity={Boolean(community)}
-          />
-        )}
-        {step === STEPS.PHONE_OTP && (
-          <PhoneOTPStep
-            phone={contact.phone}
-            onVerified={handlePhoneVerified}
-            onBack={() => setStep(STEPS.CONTACT)}
-          />
-        )}
-        {step === STEPS.PROFILE && (
-          <StepProfile onSubmit={handleProfileSubmit} />
-        )}
-        {step === STEPS.OTP && (
-          <StepOTP email={email} onVerified={handleVerified} onBack={handleBack} />
-        )}
-      </div>
+      {step === STEPS.CONTACT ? (
+        // StepContact renders its own top-level Fragment (content block +
+        // a separately-pinned consent line) rather than sitting inside the
+        // shared wrapper below -- that wrapper's mb-auto only pushes free
+        // space below itself as a whole, which isn't enough to pin just the
+        // consent text to the bottom the way the Figma treatment shows it.
+        <StepContact
+          initialEmail={contact.email}
+          initialPhone={contact.phone}
+          onNext={handleContactNext}
+          onGoogleAuth={handleGoogleAuth}
+          hasCommunity={Boolean(community)}
+        />
+      ) : (
+        <div className="w-full max-w-md flex flex-col md:mt-14 mb-auto gap-5">
+          {step === STEPS.PHONE_OTP && (
+            <PhoneOTPStep
+              phone={contact.phone}
+              onVerified={handlePhoneVerified}
+              onBack={() => setStep(STEPS.CONTACT)}
+            />
+          )}
+          {step === STEPS.PROFILE && (
+            <StepProfile onSubmit={handleProfileSubmit} />
+          )}
+          {step === STEPS.OTP && (
+            <StepOTP email={email} onVerified={handleVerified} onBack={handleBack} />
+          )}
+        </div>
+      )}
     </AuthLayout>
   );
 }
