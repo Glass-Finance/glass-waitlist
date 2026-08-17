@@ -183,15 +183,17 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
 
 // ── Empty state ───────────────────────────────────────────────────────────────
 // `illustration` (an image src, per Figma) takes priority over `icon` (a
-// Lucide component) when both are passed.
+// Lucide component) when both are passed. No card/border per Figma -- floats
+// directly on the page background, centered in the remaining vertical space
+// below the tab bar (not pinned to the top of it).
 function EmptyState({ icon: Icon, illustration, label, hint, onAction, actionLabel }) {
   return (
-    <div className="border border-surface-container-border bg-white rounded-2xl p-8 flex flex-col items-center gap-2.5 text-center">
+    <div className="min-h-[55vh] flex flex-col items-center justify-center gap-2.5 text-center px-6">
       {illustration
         ? <img src={illustration} alt="" className="w-20 h-20 object-contain" draggable={false} />
         : <Icon size={22} strokeWidth={1.6} className="text-[#bbb]" />}
-      <p className="text-[#999] text-[13px] m-0">{label}</p>
-      {hint && <p className="text-[#aaa] text-xs m-0 max-w-[240px] leading-relaxed">{hint}</p>}
+      <p className="text-sm font-semibold text-[#111] m-0">{label}</p>
+      {hint && <p className="text-xs text-[#999] m-0 max-w-[240px] leading-relaxed">{hint}</p>}
       {onAction && (
         <button onClick={onAction}
           className="mt-1 py-2 px-4 rounded-lg border-[1.5px] border-brand bg-white text-brand text-[13px] font-semibold cursor-pointer">
