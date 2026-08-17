@@ -50,11 +50,14 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
           {/* Logo — no wrapping card per design; the backdrop-blur overlay
               this used to sit in was also a likely cause of the slow first
               paint reported on Brave (120px backdrop-filter is expensive to
-              composite). Still clickable back to the landing page. */}
+              composite). Still clickable back to the landing page.
+              top-2/left-2 (8px) per Figma -- top-8/left-8 looks like the
+              same number but is Tailwind's spacing-scale 8 (32px), not a
+              literal 8px inset. */}
           <img
             src={glassLogo}
             alt="Glass Logo"
-            className="absolute top-8 left-8 z-10 h-10 w-auto object-contain cursor-pointer"
+            className="absolute top-2 left-2 z-10 h-10 w-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}
           />
 
