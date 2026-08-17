@@ -130,7 +130,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
         <TextInput
           id="email"
           type="email"
-          placeholder="e.g Bax**re@gmail.com"
+          placeholder="Enter Your Email Address"
           value={email}
           onChange={handleFieldChange("email", setEmail)}
           autoComplete="email"
@@ -144,7 +144,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
         <TextInput
           id="phone"
           type="tel"
-          placeholder="e.g. 0803 123 4567"
+          placeholder="Enter Your Phone Number"
           value={phone}
           onChange={handleFieldChange("phone", setPhone)}
           autoComplete="tel"
@@ -160,28 +160,6 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
       </div>
 
       <ErrorMessage message={error} />
-
-      <p className="text-xs text-center text-gray-500 leading-snug">
-        By continuing, you agree to our{" "}
-        <Link
-          to="/terms"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-[#1C2B8A]"
-        >
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link
-          to="/privacy"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium text-[#1C2B8A]"
-        >
-          Privacy Policy
-        </Link>
-        .
-      </p>
 
       <PrimaryButton onClick={handleSubmit} disabled={!isReady} size="sm">
         Continue
@@ -203,6 +181,28 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
         >
           Sign In
         </Link>
+      </p>
+
+      <p className="text-xs text-center text-gray-500 leading-snug">
+        By continuing, you agree to our{" "}
+        <Link
+          to="/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-[#1C2B8A]"
+        >
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link
+          to="/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-[#1C2B8A]"
+        >
+          Privacy Policy
+        </Link>
+        .
       </p>
     </div>
   );

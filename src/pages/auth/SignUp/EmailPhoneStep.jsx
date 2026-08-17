@@ -90,7 +90,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
             type="email"
             value={email}
             onChange={handleFieldChange("email", setEmail)}
-            placeholder="e.g Bax**re@gmail.com"
+            placeholder="Enter Your Email Address"
             required
             error={fieldErrors.email}
           />
@@ -107,7 +107,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
             onChange={handleFieldChange("phone", setPhone)}
             onFocus={() => setPhoneFocused(true)}
             onBlur={() => setPhoneFocused(false)}
-            placeholder="e.g. 0803 123 4567"
+            placeholder="Enter Your Phone Number"
             required
             error={fieldErrors.phone}
           />
@@ -123,28 +123,6 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
         </div>
 
         {error && <p className="text-sm text-red-500 -mt-1">{error}</p>}
-
-        <p className="text-xs text-center text-gray-500 leading-snug">
-          By continuing, you agree to our{" "}
-          <Link
-            to="/terms"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium hover:underline text-brand"
-          >
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link
-            to="/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium hover:underline text-brand"
-          >
-            Privacy Policy
-          </Link>
-          .
-        </p>
 
         <PrimaryBtn type="submit" className="mt-2 !py-3.5" disabled={!email.trim() || !phone.trim()} loading={submitting} size="sm">
           {submitting ? "Sending Code..." : "Continue"}
@@ -162,6 +140,28 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
         >
           Sign In
         </button>
+      </p>
+
+      <p className="text-xs text-center text-gray-500 leading-snug mt-5">
+        By continuing, you agree to our{" "}
+        <Link
+          to="/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium hover:underline text-brand"
+        >
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link
+          to="/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium hover:underline text-brand"
+        >
+          Privacy Policy
+        </Link>
+        .
       </p>
     </div>
   );
