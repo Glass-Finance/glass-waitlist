@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Bell, Mail, User } from "lucide-react";
+import { ChevronLeft, Bell, User } from "lucide-react";
 import { useInvites } from "../../hooks/useInvites";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
@@ -11,6 +11,9 @@ import { extractNotificationDetails, formatNairaAmount, resolveNotificationBody 
 import { useAuth } from "../../store/AuthContext";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import { formatRelativeDateTime } from "../../utils/format";
+import paymentsEmptyIllustration from "../../assets/memberApp/empty-states/notifications-payments-empty.png";
+import communityEmptyIllustration from "../../assets/memberApp/empty-states/notifications-community-empty.png";
+import invitesEmptyIllustration from "../../assets/memberApp/empty-states/notifications-invites-empty.png";
 
 const TABS = ["Payments", "Community", "Invites"];
 
@@ -179,10 +182,14 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
 }
 
 // ── Empty state ───────────────────────────────────────────────────────────────
-function EmptyState({ icon: Icon, label, hint, onAction, actionLabel }) {
+// `illustration` (an image src, per Figma) takes priority over `icon` (a
+// Lucide component) when both are passed.
+function EmptyState({ icon: Icon, illustration, label, hint, onAction, actionLabel }) {
   return (
     <div className="border border-surface-container-border bg-white rounded-2xl p-8 flex flex-col items-center gap-2.5 text-center">
-      <Icon size={22} strokeWidth={1.6} className="text-[#bbb]" />
+      {illustration
+        ? <img src={illustration} alt="" className="w-20 h-20 object-contain" draggable={false} />
+        : <Icon size={22} strokeWidth={1.6} className="text-[#bbb]" />}
       <p className="text-[#999] text-[13px] m-0">{label}</p>
       {hint && <p className="text-[#aaa] text-xs m-0 max-w-[240px] leading-relaxed">{hint}</p>}
       {onAction && (
@@ -252,16 +259,16 @@ export default function Notifications() {
         <h1 className="text-lg font-medium text-[#111] m-0">Notifications</h1>
       </div>
 
-      {/* Tab bar — plain text tabs per Figma, not a segmented pill control:
-          no container background/border, left-aligned rather than
-          stretched to fill the width, active tab distinguished by weight
-          and color alone. */}
-      <div className="flex items-center gap-6 mb-4 px-5">
+      {/* Tab bar — segmented pill per Figma dev-mode spec (Frame 2121455025):
+          bg-stacked-container (#F3F4F6), 4px radius, 4px padding, 11px gap,
+          stretched to fill the width; active tab is a plain white segment
+          (no shadow, matching the toggle pattern used elsewhere). */}
+      <div className="flex items-center gap-[11px] mb-4 mx-5 p-1 bg-stacked-container rounded">
         {TABS.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`py-1 bg-transparent border-none cursor-pointer text-[15px] transition-colors duration-200 ${activeTab === tab ? "font-semibold text-[#111]" : "font-normal text-[#888]"}`}
+            className={`flex-1 py-2 rounded border-none cursor-pointer text-[13px] transition-colors duration-200 ${activeTab === tab ? "bg-white font-semibold text-[#111]" : "bg-transparent font-normal text-[#888]"}`}
           >
             {tab}
           </button>
@@ -297,7 +304,7 @@ export default function Notifications() {
           notifsLoading
             ? <PageLoadingState size={56} padding="36px 24px" />
             : paymentNotifs.length === 0
-              ? <EmptyState icon={Bell} label="No payment notifications." />
+              ? <EmptyState illustration={paymentsEmptyIllustration} label="No payment notifications." />
               : <GroupedNotifications items={paymentNotifs} onTap={markRead} onNavigate={navigate} />
         )}
 
@@ -305,7 +312,7 @@ export default function Notifications() {
           notifsLoading
             ? <PageLoadingState size={56} padding="36px 24px" />
             : communityNotifs.length === 0
-              ? <EmptyState icon={Bell} label="No community notifications." />
+              ? <EmptyState illustration={communityEmptyIllustration} label="No community notifications." />
               : <GroupedNotifications items={communityNotifs} onTap={markRead} onNavigate={navigate} />
         )}
 
@@ -314,7 +321,7 @@ export default function Notifications() {
             ? <PageLoadingState size={56} padding="36px 24px" />
             : invites.length === 0
               ? <EmptyState
-                  icon={Mail}
+                  illustration={invitesEmptyIllustration}
                   label="No invitations yet"
                   hint="Ask a community admin to send you an invite link, or have them add you directly by your email."
                   onAction={refresh}
