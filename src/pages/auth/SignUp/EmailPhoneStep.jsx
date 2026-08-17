@@ -148,7 +148,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
         card above) -- per the Figma treatment, this sits at the very bottom
         of the screen with the leftover space collecting above it, not
         immediately under the Sign In link. */}
-    <p className="w-full max-w-md mx-auto text-xs text-center text-gray-500 leading-snug mt-auto pt-5">
+    <p className="w-full max-w-md mx-auto text-sm text-center text-gray-500 leading-snug mt-auto pt-5">
       By continuing, you agree to our{" "}
       <Link
         to="/terms"

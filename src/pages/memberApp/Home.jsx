@@ -96,7 +96,7 @@ function CommunitySwitcher({
       </button>
 
       {open && (
-        <div className="absolute left-0 top-[calc(100%+8px)] z-30 w-[240px] bg-white rounded-xl border border-surface-container-border shadow-lg py-1.5">
+        <div className="absolute left-0 top-[calc(100%+8px)] z-30 w-[280px] bg-surface-container backdrop-blur-md rounded-xl border border-surface-container-border shadow-lg py-1.5">
           {communities.map((c) => {
             const id = c.slug ?? c.id;
             const isActive = id === activeIdentifier;
@@ -124,7 +124,7 @@ function CommunitySwitcher({
             );
           })}
 
-          <div className="h-px bg-surface-container-border my-1.5" />
+          <div className="h-px bg-surface-container-border/50 my-1.5" />
 
           <button
             onClick={() => {

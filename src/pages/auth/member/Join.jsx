@@ -188,7 +188,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
     {/* Pinned to the bottom of the page (mt-auto, not just spaced below the
         block above) -- per the Figma treatment, this sits at the very
         bottom of the screen with the leftover space collecting above it. */}
-    <p className="w-full max-w-md mx-auto text-xs text-center text-gray-500 leading-snug mt-auto pt-5">
+    <p className="w-full max-w-md mx-auto text-sm text-center text-gray-500 leading-snug mt-auto pt-5">
       By continuing, you agree to our{" "}
       <Link
         to="/terms"
