@@ -306,7 +306,13 @@ export default function Notifications() {
           notifsLoading
             ? <PageLoadingState size={56} padding="36px 24px" />
             : paymentNotifs.length === 0
-              ? <EmptyState illustration={paymentsEmptyIllustration} label="No payment notifications." />
+              ? (
+                  <EmptyState
+                    illustration={paymentsEmptyIllustration}
+                    label="No Payment History"
+                    hint="Once you make payment, your transaction history will appear here."
+                  />
+                )
               : <GroupedNotifications items={paymentNotifs} onTap={markRead} onNavigate={navigate} />
         )}
 
@@ -314,7 +320,13 @@ export default function Notifications() {
           notifsLoading
             ? <PageLoadingState size={56} padding="36px 24px" />
             : communityNotifs.length === 0
-              ? <EmptyState illustration={communityEmptyIllustration} label="No community notifications." />
+              ? (
+                  <EmptyState
+                    illustration={communityEmptyIllustration}
+                    label="No community updates yet."
+                    hint="Plans, changes, and activity will appear here."
+                  />
+                )
               : <GroupedNotifications items={communityNotifs} onTap={markRead} onNavigate={navigate} />
         )}
 
@@ -324,8 +336,8 @@ export default function Notifications() {
             : invites.length === 0
               ? <EmptyState
                   illustration={invitesEmptyIllustration}
-                  label="No invitations yet"
-                  hint="Ask a community admin to send you an invite link, or have them add you directly by your email."
+                  label="No pending invites."
+                  hint="When an admin invites you to join a community, it'll appear here."
                   onAction={refresh}
                   actionLabel="Check Again"
                 />
