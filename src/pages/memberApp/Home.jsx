@@ -148,14 +148,21 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   if (!nextDue) {
     const isError = Boolean(error);
     return (
-      <div className={`border-[1.5px] mx-4 rounded-2xl overflow-hidden bg-white ${isError ? "border-danger" : "border-brand"}`}>
-        {/* A real border on this outer flowing block, not an
-            absolutely-positioned ring -- a % height on an abs-positioned
-            child of an auto-height container is undefined by spec and
-            previously rendered inconsistently across browsers when tried
-            that way. One border around the whole card, not split between
-            an outer gray one and an inner 3-sided accent (see the funded
-            card below for the same fix). */}
+      <div className="relative mx-4 rounded-2xl overflow-hidden bg-white">
+        {/* Base ring — always visible, all four sides. */}
+        <div className="absolute inset-0 rounded-2xl border-[1.5px] border-surface-container-border pointer-events-none" />
+        {/* Accent glow — same shape/position as the base ring (inset-0, not
+            a % height, so this doesn't hit the abs-positioned-child-of-an-
+            auto-height-container bug a previous version of this card ran
+            into), faded out via mask-image instead of stopping abruptly, so
+            it reads as merging into the base ring rather than a hard cut. */}
+        <div
+          className={`absolute inset-0 rounded-2xl border-[1.5px] pointer-events-none ${isError ? "border-danger" : "border-brand"}`}
+          style={{
+            maskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
+          }}
+        />
         <div className="pt-10 px-6 pb-5 flex flex-col items-center">
           {isError ? (
             <div className="w-14 h-14 rounded-full flex items-center justify-center bg-danger-tint">
@@ -225,18 +232,22 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   const isOverdue = new Date(nextDue.dueDate) < new Date();
 
   return (
-    <div className={`border-[1.5px] mx-4 rounded-2xl overflow-hidden bg-white ${isOverdue ? "border-danger" : "border-brand"}`}>
-      {/* A real border on this outer flowing block, not an
-          absolutely-positioned overlay sized with height:50% — that relied
-          on a percentage height resolving against this card's height, but
-          the card is auto-height (sized by its own content), and a
-          percentage height on an abs-positioned child of an auto-height
-          container is undefined by spec. Browsers disagreed on how to
-          resolve it, which is why the border intermittently rendered around
-          the whole card instead of just the top. One border around the
-          whole card here (not split between an outer gray one and an inner
-          3-sided accent) also matches the reference design's uniform
-          border, which the split version never did. */}
+    <div className="relative mx-4 rounded-2xl overflow-hidden bg-white">
+      {/* Base ring — always visible, all four sides. */}
+      <div className="absolute inset-0 rounded-2xl border-[1.5px] border-surface-container-border pointer-events-none" />
+      {/* Accent glow — same shape/position as the base ring (inset-0, not a
+          % height, so this doesn't hit the abs-positioned-child-of-an-
+          auto-height-container bug a previous version of this card ran
+          into -- see git history), faded out via mask-image instead of
+          stopping abruptly, so it reads as merging into the base ring
+          rather than a hard cut. */}
+      <div
+        className={`absolute inset-0 rounded-2xl border-[1.5px] pointer-events-none ${isOverdue ? "border-danger" : "border-brand"}`}
+        style={{
+          maskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
+        }}
+      />
       <div className="pt-5 px-5 flex flex-col items-center">
         {/* Recurring pill */}
         <div className="border border-surface-container-border mb-3.5 py-1.5 px-[18px] rounded-full text-[#374151] text-xs font-medium flex items-center gap-1.5">
