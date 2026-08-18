@@ -153,6 +153,11 @@ export default function Members() {
   // counting it made this page show the stats+table view for a
   // brand-new community with zero real members instead of the empty state.
   const hasRealMembers = members.some((m) => roleKeyword(m.roleCode, m.role) !== "OWNER");
+  // Per the Figma empty state, the page header (title + Copy Invite
+  // Link/Add Member) doesn't show at all when there are no real members --
+  // EmptyState is a self-contained full screen with its own action button,
+  // not a strip below a normal page header.
+  const isEmpty = !isLoading && !error && !hasRealMembers;
 
   const stats = {
     total: members.length,
@@ -203,6 +208,7 @@ export default function Members() {
           action buttons were forced into one unbreakable row, which had
           nowhere to go on a narrow screen (the buttons don't shrink, and
           the subtitle has no truncation either). */}
+      {!isEmpty && (
       <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
         <div>
           <h1 className="text-xl font-bold text-black">Members</h1>
@@ -224,6 +230,7 @@ export default function Members() {
           </button>
         </div>
       </div>
+      )}
 
       {/* Pending join requests — compact summary; the full review flow
           (requester details, approve/reject) lives on the Join Requests page. */}
@@ -255,7 +262,7 @@ export default function Members() {
       })()}
 
       {/* Empty state — shown instead of stats + table when community has no members yet */}
-      {!isLoading && !error && !hasRealMembers && (
+      {isEmpty && (
         <EmptyState
           illustration={addMembersIllustration}
           title="No members yet."
