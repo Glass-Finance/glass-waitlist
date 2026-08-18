@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { useInviteToken } from "../../../hooks/useInviteToken";
 import { useJoinCommunityParam } from "../../../hooks/useJoinCommunityParam";
 import { useJoinEmailParam } from "../../../hooks/useJoinEmailParam";
 import { recordPendingJoinRequest } from "../../../hooks/useJoinApproval";
-import { register, verifyEmail, resendVerification } from "../../../services/authService";
+import { register, verifyEmail, resendVerification, requestLoginOtp, verifyLoginOtp } from "../../../services/authService";
 import PhoneOTPStep from "../SignUp/PhoneOTPStep";
 import { submitJoinRequest } from "../../../api/invites";
 import { notifyError } from "../../../utils/errorHandler";
@@ -29,8 +29,10 @@ import { TextInput } from "../../../components/ui/TextInput";
 const OTP_LENGTH = 6;
 // Three steps, mirroring the owner SignUp flow's EmailPhoneStep ->
 // RegisterStep -> OTPStep split, instead of collecting everything on one
-// screen the way this page used to.
-const STEPS = { CONTACT: "contact", PHONE_OTP: "phoneOtp", PROFILE: "profile", OTP: "otp" };
+// screen the way this page used to. SIGNIN_OTP isn't part of that linear
+// flow -- it's entered directly, bypassing CONTACT/PROFILE, when arriving
+// via CheckEmail.jsx's QR (see StepSignInOtp below).
+const STEPS = { CONTACT: "contact", PHONE_OTP: "phoneOtp", PROFILE: "profile", OTP: "otp", SIGNIN_OTP: "signinOtp" };
 // Codes are valid for 15 minutes (see SignIn.jsx and the spam-notice copy below).
 const OTP_VALIDITY_SECONDS = 15 * 60;
 const PENDING_KEY = "glass_pending_member_verification";
@@ -563,6 +565,199 @@ function StepOTP({ email, onVerified, onBack }) {
 }
 
 // ---------------------------------------------------------------------------
+// Step — Sign in via code. Not part of the linear CONTACT -> PHONE_OTP ->
+// PROFILE -> OTP flow above -- entered directly (see Join()'s initial step
+// selection) when arriving via CheckEmail.jsx's QR (?email=, no invite
+// token). That person already has a full, verified account from SignUp.jsx's
+// own register+OTP a moment earlier, just no client-side session yet.
+// Routing them through registration again would only earn a 409 after
+// they've already typed a name and password for nothing (see StepProfile's
+// accountExists handling below) -- passwordless login OTP, the same
+// requestLoginOtp/verifyLoginOtp SignIn.jsx already uses, signs them in
+// directly instead.
+// ---------------------------------------------------------------------------
+function StepSignInOtp({ email, onVerified, onUseDifferentEmail }) {
+  const [digits, setDigits] = useState(Array(OTP_LENGTH).fill(""));
+  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(true);
+  const [error, setError] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(30);
+  const [resendCount, setResendCount] = useState(0);
+  const [expirySeconds, setExpirySeconds] = useState(0);
+  const [otpAttempt, setOtpAttempt] = useState(0);
+  // StrictMode double-invokes effects in dev, which would otherwise fire two
+  // real OTP sends off a single mount -- same guard shape as
+  // useInviteToken/useJoinCommunityParam use for their own once-per-mount work.
+  const didAutoSend = useRef(false);
+
+  const secondsLeft = useCountdown(expirySeconds, `${email}-${resendCount}`);
+  // Guarded on resendCount so this doesn't read as "expired" before the
+  // very first send (expirySeconds/secondsLeft both start at 0).
+  const codeExpired = resendCount > 0 && secondsLeft <= 0;
+
+  async function sendCode() {
+    setSending(true);
+    setError("");
+    try {
+      const result = await requestLoginOtp({ email });
+      const seconds = Math.max(0, Math.round((new Date(result.expiresAt) - Date.now()) / 1000));
+      setExpirySeconds(seconds);
+      setResendCount((c) => c + 1);
+      setDigits(Array(OTP_LENGTH).fill(""));
+      setOtpAttempt((a) => a + 1);
+    } catch (err) {
+      setError(notifyError(err, { context: "Send login code", silent: true }));
+    } finally {
+      setSending(false);
+    }
+  }
+
+  useEffect(() => {
+    if (didAutoSend.current) return;
+    didAutoSend.current = true;
+    sendCode();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const id = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(id);
+  }, [resendCooldown]);
+
+  function handleDigitChange(next) {
+    setDigits(next);
+    setError("");
+  }
+
+  async function handleVerify() {
+    const code = digits.join("");
+    if (code.length < OTP_LENGTH) {
+      setError("Please enter the full 6-digit code.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const result = await verifyLoginOtp({ email, token: code });
+      if (result?.mfaRequired) {
+        // This step's only audience is a brand-new account (see the
+        // component comment above), which can't have MFA configured yet in
+        // practice -- a defensive message instead of a built-out challenge
+        // screen, pointing at the one place that already handles it.
+        setError("This account has extra security enabled. Please use the full sign-in page to continue.");
+        return;
+      }
+      onVerified(result);
+    } catch (err) {
+      setError(notifyError(err, { context: "Verify login code", fallback: "That code didn't work. Please try again.", silent: true }));
+      setDigits(Array(OTP_LENGTH).fill(""));
+      setOtpAttempt((a) => a + 1);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleResend() {
+    if (resendCooldown > 0) return;
+    setResendCooldown(60);
+    sendCode();
+  }
+
+  const allFilled = digits.every(Boolean);
+
+  return (
+    <div className="flex flex-col gap-12">
+      <div>
+        <h1 className="text-headline text-gray-900 mb-5">
+          You Already Have An Account
+        </h1>
+        <p className="text-sm text-gray-500 mb-1">
+          {sending ? "Sending a sign-in code to" : "Enter the 6-digit code sent to"}
+        </p>
+        <p className="font-semibold text-sm text-gray-900 mb-1">{email}</p>
+        <button
+          onClick={onUseDifferentEmail}
+          className="text-sm font-medium mt-1 text-[#1C2B8A]"
+        >
+          Not you?
+        </button>
+        {resendCount > 0 && (
+          <p className={`text-xs mt-2 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
+            {codeExpired
+              ? "Your code has expired — request a new one below."
+              : `Code expires in ${formatCountdown(secondsLeft)}`}
+          </p>
+        )}
+      </div>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (allFilled && !codeExpired && !sending) handleVerify();
+        }}
+        className="flex flex-col gap-6"
+      >
+        <OtpBoxes
+          key={otpAttempt}
+          value={digits}
+          onChange={handleDigitChange}
+          length={OTP_LENGTH}
+          autoFocus
+          renderBoxes={(boxDigits, activeIndex) => (
+            <div className="flex items-center justify-between gap-2 pointer-events-none">
+              <div className="flex gap-2 flex-1 min-w-0">
+                {boxDigits.slice(0, 3).map((d, i) => (
+                  <div
+                    key={i}
+                    aria-label={`Digit ${i + 1} of ${OTP_LENGTH}`}
+                    className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 transition-all duration-150 min-w-0 max-w-16 text-[22px] border-[1.5px] ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#D0D5E8]"}`}
+                  >
+                    {d}
+                  </div>
+                ))}
+              </div>
+              <span className="text-gray-400 text-xl font-light flex-shrink-0">—</span>
+              <div className="flex gap-2 flex-1 min-w-0">
+                {boxDigits.slice(3, 6).map((d, i) => {
+                  const idx = i + 3;
+                  return (
+                    <div
+                      key={idx}
+                      aria-label={`Digit ${idx + 1} of ${OTP_LENGTH}`}
+                      className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 transition-all duration-150 min-w-0 max-w-16 text-[22px] border-[1.5px] ${d || idx === activeIndex ? "border-[#1C2B8A]" : "border-[#D0D5E8]"}`}
+                    >
+                      {d}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        />
+
+        <ErrorMessage message={error} />
+
+        <PrimaryButton onClick={handleVerify} loading={loading} disabled={!allFilled || codeExpired || sending}>
+          {loading ? "Verifying..." : "Continue"}
+        </PrimaryButton>
+      </form>
+
+      <p className="text-sm text-center text-gray-500 pb-2">
+        Didn't get a code?{" "}
+        <button
+          onClick={handleResend}
+          disabled={resendCooldown > 0 || sending}
+          className="font-semibold disabled:opacity-40 text-[#1C2B8A]"
+        >
+          {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend"}
+        </button>
+      </p>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Join root
 // ---------------------------------------------------------------------------
 export default function Join() {
@@ -618,9 +813,16 @@ export default function Join() {
   // re-render (with the param gone) doesn't clobber this.
   const [contact, setContact] = useState({ email: joinEmail, phone: "" });
   const [phoneConfirmToken, setPhoneConfirmToken] = useState("");
-  const [step, setStep] = useState(() =>
-    email ? STEPS.OTP : STEPS.CONTACT
-  );
+  const [step, setStep] = useState(() => {
+    if (email) return STEPS.OTP; // resuming a pending registration verification
+    // Arrived via CheckEmail.jsx's QR with just an email, no personal
+    // invite -- skip CONTACT/PROFILE entirely and go straight to signing
+    // them in (see StepSignInOtp). A real invite token always takes the
+    // normal registration path regardless, even if this combination could
+    // somehow occur.
+    if (joinEmail && !token) return STEPS.SIGNIN_OTP;
+    return STEPS.CONTACT;
+  });
 
   // Some backends issue a session immediately on register, others only
   // after email verification — store it the moment either response
@@ -713,6 +915,14 @@ export default function Join() {
   function handlePhoneVerified(confirmToken) {
     setPhoneConfirmToken(confirmToken);
     setStep(STEPS.PROFILE);
+  }
+
+  // "Not you?" on StepSignInOtp -- the QR's email guess was wrong (or this
+  // is someone else's device); drop back to a normal CONTACT step instead
+  // of insisting they sign in as whoever CheckEmail.jsx assumed.
+  function handleUseDifferentEmail() {
+    setContact((c) => ({ ...c, email: "" }));
+    setStep(STEPS.CONTACT);
   }
 
   function handleBack() {
@@ -830,6 +1040,13 @@ export default function Join() {
           )}
           {step === STEPS.OTP && (
             <StepOTP email={email} onVerified={handleVerified} onBack={handleBack} />
+          )}
+          {step === STEPS.SIGNIN_OTP && (
+            <StepSignInOtp
+              email={contact.email}
+              onVerified={handleVerified}
+              onUseDifferentEmail={handleUseDifferentEmail}
+            />
           )}
         </div>
       )}
