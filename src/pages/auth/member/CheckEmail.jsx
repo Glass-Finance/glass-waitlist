@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import GlassLogo from "../../../assets/Glass.webp";
 import QRCodeCanvas from "../../../components/common/QRCodeCanvas";
 import { buildMobileUrl } from "../../../utils/deviceRedirect";
@@ -7,7 +7,15 @@ import GlassLogoGlow from "../../../components/memberApp/GlassLogoGlow";
 
 export default function CheckEmail() {
   const navigate  = useNavigate();
-  const joinUrl   = buildMobileUrl("/member/join");
+  const location  = useLocation();
+  const email     = location.state?.email || "";
+  // Carries the email into the QR so scanning it pre-fills Join's contact
+  // step instead of dropping the person on a blank form -- see
+  // useJoinEmailParam. There's no backend endpoint to actually send a
+  // continuation link, so this is the only context this handoff can carry.
+  const joinUrl   = buildMobileUrl(
+    email ? `/member/join?email=${encodeURIComponent(email)}` : "/member/join"
+  );
 
   return (
     <div className="relative z-0 h-screen w-screen flex flex-col overflow-hidden bg-[#E5E5E5]">

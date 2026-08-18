@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Info } from "lucide-react";
 import { useInviteToken } from "../../../hooks/useInviteToken";
 import { useJoinCommunityParam } from "../../../hooks/useJoinCommunityParam";
+import { useJoinEmailParam } from "../../../hooks/useJoinEmailParam";
 import { recordPendingJoinRequest } from "../../../hooks/useJoinApproval";
 import { register, verifyEmail, resendVerification } from "../../../services/authService";
 import PhoneOTPStep from "../SignUp/PhoneOTPStep";
@@ -558,6 +559,7 @@ export default function Join() {
   const navigate = useNavigate();
   const { token, consumeToken } = useInviteToken();
   const { community, consumeCommunity } = useJoinCommunityParam();
+  const joinEmail = useJoinEmailParam();
   const { setSession, isAuthenticated, loading: authLoading } = useAuth();
 
   // A user who already has a session (e.g. they're a member of another
@@ -599,8 +601,12 @@ export default function Join() {
     } catch { return ""; }
   });
   // Email/phone collected in StepContact, carried forward into StepProfile's
-  // register() call.
-  const [contact, setContact] = useState({ email: "", phone: "" });
+  // register() call. Seeded from joinEmail when arriving via CheckEmail.jsx's
+  // QR (?email=) so scanning it doesn't drop what was already typed on
+  // desktop -- useJoinEmailParam strips the param right after this first
+  // read, but useState only consults its argument on mount, so the later
+  // re-render (with the param gone) doesn't clobber this.
+  const [contact, setContact] = useState({ email: joinEmail, phone: "" });
   const [phoneConfirmToken, setPhoneConfirmToken] = useState("");
   const [step, setStep] = useState(() =>
     email ? STEPS.OTP : STEPS.CONTACT
