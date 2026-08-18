@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import Invites from "./Invites";
-import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
+import Invites from "../../../pages/memberApp/Invites";
+import { useInvites, useMyJoinRequests } from "../../../hooks/useInvites";
 
-vi.mock("../../hooks/useInvites");
-vi.mock("../../api/invites", () => ({ getInvite: vi.fn() }));
+vi.mock("../../../hooks/useInvites");
+vi.mock("../../../api/invites", () => ({ getInvite: vi.fn() }));
 
 const navigateSpy = vi.fn();
 vi.mock("react-router-dom", async (importOriginal) => {

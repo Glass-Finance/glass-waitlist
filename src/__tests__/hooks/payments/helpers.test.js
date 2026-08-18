@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { unwrapList, deriveStatus } from "./helpers";
+import { unwrapList, deriveStatus } from "../../../hooks/payments/helpers";
 
 describe("unwrapList", () => {
   it("returns a bare array response as-is", () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseRecipientList } from "./parseRecipientList";
+import { parseRecipientList } from "../../utils/parseRecipientList";
 
 describe("parseRecipientList", () => {
   it("returns an empty list for empty/nullish input", () => {

@@ -5,7 +5,7 @@ import {
   shapeTransaction,
   shapeAuthorisation,
   normalizeCommunity,
-} from "./shape";
+} from "../../../hooks/payments/shape";
 
 describe("shapeObligation", () => {
   it("maps the common fields through from the raw response", () => {

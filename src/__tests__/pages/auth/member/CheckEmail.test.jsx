@@ -1,20 +1,20 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import CheckEmail from "./CheckEmail";
+import CheckEmail from "../../../../pages/auth/member/CheckEmail";
 
 // Isolates this test to exactly the logic CheckEmail.jsx itself owns (the
 // email ? ... : ... branch) rather than coupling it to buildMobileUrl's own
 // separate concern of resolving APP_ORIGIN, which depends on env config
 // this test shouldn't need to know about.
-vi.mock("../../../utils/deviceRedirect", () => ({
+vi.mock("../../../../utils/deviceRedirect", () => ({
   buildMobileUrl: (path) => `MOCKED_ORIGIN${path}`,
 }));
 
 // QRCodeCanvas draws to an actual <canvas> asynchronously -- not something
 // worth asserting pixels against here. Stubbed to just expose the `value`
 // it was given, which is the only thing this test cares about.
-vi.mock("../../../components/common/QRCodeCanvas", () => ({
+vi.mock("../../../../components/common/QRCodeCanvas", () => ({
   default: ({ value }) => <div data-testid="qr-value">{value}</div>,
 }));
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getEmailError, isValidEmail } from "./validators";
+import { getEmailError, isValidEmail } from "../../utils/validators";
 
 describe("getEmailError", () => {
   it("requires a value", () => {

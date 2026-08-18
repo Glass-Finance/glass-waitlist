@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { roleKeyword, isCommunityAdmin } from "./communityRole";
+import { roleKeyword, isCommunityAdmin } from "../../utils/communityRole";
 
 describe("roleKeyword", () => {
   it("matches a plain role string", () => {

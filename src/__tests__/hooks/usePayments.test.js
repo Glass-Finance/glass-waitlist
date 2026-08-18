@@ -3,7 +3,7 @@ import {
   isObligationSettled,
   isPaidForCurrentCycle,
   recordLocalPayment,
-} from "./usePayments";
+} from "../../hooks/usePayments";
 
 // This logic was the subject of two independent bug fixes in the same
 // sprint (a backend obligation.status lag hiding already-paid dues as

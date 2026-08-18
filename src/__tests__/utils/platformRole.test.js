@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isPlatformAdminRole, normalizePlatformRole } from "./platformRole";
+import { isPlatformAdminRole, normalizePlatformRole } from "../../utils/platformRole";
 
 describe("normalizePlatformRole", () => {
   it("normalizes casing and surrounding whitespace", () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useRef } from "react";
-import { useClickOutside } from "./useClickOutside";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 function fireMouseDown(target) {
   target.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));

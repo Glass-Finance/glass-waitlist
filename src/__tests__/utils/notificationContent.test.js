@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveNotificationBody } from "./notificationContent";
+import { resolveNotificationBody } from "../../utils/notificationContent";
 
 describe("resolveNotificationBody", () => {
   it("replaces the raw text with a name-first sentence for JOIN_REQUEST_CREATED when a name resolved", () => {

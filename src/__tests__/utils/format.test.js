@@ -8,7 +8,7 @@ import {
   formatDateLong,
   formatRelativeDateTime,
   dayLabel,
-} from "./format";
+} from "../../utils/format";
 
 describe("formatNaira", () => {
   it("formats a whole number with the naira sign and no decimals by default", () => {

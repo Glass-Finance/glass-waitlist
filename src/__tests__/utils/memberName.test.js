@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveDisplayName, resolveEmail, resolvePhone } from "./memberName";
+import { resolveDisplayName, resolveEmail, resolvePhone } from "../../utils/memberName";
 
 describe("resolveDisplayName", () => {
   it("returns the fallback for a missing record", () => {

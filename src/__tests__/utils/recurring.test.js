@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ordinal, scheduleCopy, estimateNextCharge } from "./recurring";
+import { ordinal, scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 
 describe("ordinal", () => {
   it("suffixes common numbers correctly", () => {

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { useState } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, useSearchParams } from "react-router-dom";
-import { useJoinEmailParam } from "./useJoinEmailParam";
+import { useJoinEmailParam } from "../../hooks/useJoinEmailParam";
 
 // Mirrors exactly how Join.jsx consumes this hook: seed a plain (non-lazy)
 // useState argument from it on first render. React only ever consults that
