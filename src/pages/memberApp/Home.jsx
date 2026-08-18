@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Bell, Check, ChevronDown, ChevronRight, Clock, Mail } from "lucide-react";
-import joinCommunityIcon from "../../assets/auth/join-community.webp";
 import noCommunityIcon from "../../assets/auth/no-community.png";
 import paymentsDueIcon from "../../assets/memberApp/icon-payments-due.png";
 import upcomingPaymentsIcon from "../../assets/memberApp/icon-upcoming-payments.png";

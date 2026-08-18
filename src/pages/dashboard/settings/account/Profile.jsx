@@ -22,7 +22,7 @@ const inputCls =
 export default function Profile() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data: user, isLoading } = useMe();
+  const { data: user } = useMe();
   const { refreshUser, logout } = useAuth();
   const updateProfile = useUpdateProfile();
   const uploadFile = useFileUpload();
@@ -31,8 +31,9 @@ export default function Profile() {
   // "profile" (normal view) | "email" | "phone" — the latter two swap the
   // Personal Information card for a dedicated Update/Verify sub-card,
   // mirroring the member app's full-page equivalents but inline since this
-  // is desktop.
-  const [view, setView] = useState("profile");
+  // is desktop. Seeded straight from ?verify=phone (the Dashboard banner's
+  // deep link) so there's no flash of the normal profile view first.
+  const [view, setView] = useState(() => (searchParams.get("verify") === "phone" ? "phone" : "profile"));
 
   const [form, setForm] = useState({ firstName: "", lastName: "" });
   const [savedForm, setSavedForm] = useState(form);
@@ -138,19 +139,15 @@ export default function Profile() {
     setPhoneDraft(user.phoneNumber ?? ud.phone ?? "");
   }, [user]);
 
-  // Deep link from the Dashboard's "Verify Your Phone Number" banner
-  // (?verify=phone) — jumps straight into the phone sub-card instead of
-  // requiring the pencil click first.
+  // ?verify=phone only needs to seed the initial view (above) — strip it
+  // from the URL once so a later refresh doesn't re-trigger the deep link.
   useEffect(() => {
-    if (!user) return;
-    if (searchParams.get("verify") === "phone") {
-      setView("phone");
-      const next = new URLSearchParams(searchParams);
-      next.delete("verify");
-      setSearchParams(next, { replace: true });
-    }
+    if (searchParams.get("verify") !== "phone") return;
+    const next = new URLSearchParams(searchParams);
+    next.delete("verify");
+    setSearchParams(next, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, []);
 
   function validateField(field, value) {
     if (field === "firstName" && !value.trim()) return "First name is required.";
