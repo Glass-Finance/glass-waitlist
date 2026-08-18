@@ -1,17 +1,17 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import GlassLogo from "../../../assets/Glass.webp";
 import QRCodeCanvas from "../../../components/common/QRCodeCanvas";
 import { buildMobileUrl } from "../../../utils/deviceRedirect";
 import { Button } from "../../../components/ui/Button";
+import GlassLogoGlow from "../../../components/memberApp/GlassLogoGlow";
 
 export default function CheckEmail() {
   const navigate  = useNavigate();
-  const location  = useLocation();
-  const email     = location.state?.email || "";
   const joinUrl   = buildMobileUrl("/member/join");
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden bg-[#E5E5E5]">
+    <div className="relative z-0 h-screen w-screen flex flex-col overflow-hidden bg-[#E5E5E5]">
+      <GlassLogoGlow />
 
       {/* Glass logo top left */}
       <header className="px-8 py-3 flex-shrink-0">
@@ -36,32 +36,13 @@ export default function CheckEmail() {
 
           <QRCodeCanvas value={joinUrl} size={170} color="#000000" />
 
-          <Button onClick={() => navigate("/dashboard/home")} className="max-w-xl mt-4">
+          <Button
+            onClick={() => navigate("/")}
+            fullWidth={false}
+            className="w-[170px] mt-4"
+          >
             Continue
           </Button>
-
-          {/* Divider */}
-          <div className="flex items-center gap-4 w-full my-3">
-            <div className="flex-1 h-px bg-gray-300" />
-            <span className="text-xs text-gray-400 flex-shrink-0">Or Use Email</span>
-            <div className="flex-1 h-px bg-gray-300" />
-          </div>
-
-          {/* Email fallback */}
-          <p className="text-sm text-gray-500 text-center mb-1.5">
-            We've also sent a link{" "}
-            {email && <span className="font-medium text-gray-900">{email}.</span>}
-            {" "}Open it on your phone to join your community on Glass.
-          </p>
-
-          <p className="text-sm text-gray-900 text-center">
-            Didn't get it?{" "}
-            <button
-              className="font-medium hover:underline bg-transparent border-none cursor-pointer p-0 text-brand"
-            >
-              Resend Email
-            </button>
-          </p>
 
         </div>
       </main>
