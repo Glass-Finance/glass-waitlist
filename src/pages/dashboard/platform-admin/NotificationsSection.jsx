@@ -28,6 +28,7 @@ function SendNotificationModal({ onClose }) {
   const [channels, setChannels] = useState(["IN_APP"]);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [confirming, setConfirming] = useState(false);
 
   const mutation = useMutation({
     mutationFn: (payload) => createAdminNotification(payload),
@@ -44,26 +45,92 @@ function SendNotificationModal({ onClose }) {
     );
   }
 
-  function submit(e) {
+  // Recipients are free-typed, not picked from a list -- surfacing the
+  // parsed count is the only way to catch a pasted-in wrong list or a
+  // stray delimiter before it goes out as real email/SMS/push.
+  const recipientList = targets
+    .split(/[,\n]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  function requestSend(e) {
     e.preventDefault();
-    const list = targets
-      .split(/[,\n]+/)
-      .map((s) => s.trim())
-      .filter(Boolean);
+    setConfirming(true);
+  }
+
+  function confirmSend() {
     mutation.mutate({
       notificationType,
       channels,
       title,
       message,
-      ...(targetMode === "emails" ? { emails: list } : { userIds: list }),
+      ...(targetMode === "emails" ? { emails: recipientList } : { userIds: recipientList }),
     });
   }
 
 
+  if (confirming) {
+    return (
+      <ModalShell title="Confirm Send" onClose={onClose}>
+        <div className="px-6 py-5 flex flex-col gap-4">
+          <p className="text-xs text-gray-600 leading-relaxed">
+            This sends a real notification now — there's no undo once it's queued.
+          </p>
+          <div className="bg-stacked-container rounded-xl p-3 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-gray-500">Recipients</span>
+              <span className="text-xs font-semibold text-gray-900">
+                {recipientList.length} {targetMode === "emails" ? "email" : "user ID"}
+                {recipientList.length === 1 ? "" : "s"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-gray-500">Channels</span>
+              <span className="text-xs font-semibold text-gray-900">{channels.join(", ")}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-gray-500">Type</span>
+              <span className="text-xs font-semibold text-gray-900">{notificationType.replace(/_/g, " ")}</span>
+            </div>
+            <div className="pt-1 border-t border-white">
+              <p className="text-[11px] text-gray-500 mb-0.5">{title}</p>
+              <p className="text-xs text-gray-700">{message}</p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-1">
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              disabled={mutation.isPending}
+              className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none disabled:opacity-60"
+            >
+              Back
+            </button>
+            <Button
+              type="button"
+              onClick={confirmSend}
+              loading={mutation.isPending}
+              fullWidth={false}
+              className="flex-1 flex items-center justify-center gap-1.5"
+            >
+              {mutation.isPending ? (
+                <Loader2 size={12} className="animate-spin" />
+              ) : (
+                <Bell size={12} />
+              )}
+              {mutation.isPending ? "Sending…" : "Confirm & Send"}
+            </Button>
+          </div>
+        </div>
+      </ModalShell>
+    );
+  }
+
   return (
     <ModalShell title="Send Notification" onClose={onClose}>
       <form
-        onSubmit={submit}
+        onSubmit={requestSend}
         className="px-6 py-5 flex flex-col gap-4 max-h-[70vh] overflow-y-auto"
       >
         {/* Target mode */}
@@ -102,6 +169,9 @@ function SendNotificationModal({ onClose }) {
                 : "uuid1, uuid2"
             }
           />
+          <p className="text-[11px] text-gray-400 mt-1">
+            {recipientList.length} recipient{recipientList.length === 1 ? "" : "s"} parsed
+          </p>
         </div>
 
         {/* Type */}
@@ -184,17 +254,12 @@ function SendNotificationModal({ onClose }) {
           </button>
           <Button
             type="submit"
-            disabled={channels.length === 0}
-            loading={mutation.isPending}
+            disabled={channels.length === 0 || recipientList.length === 0}
             fullWidth={false}
             className="flex-1 flex items-center justify-center gap-1.5"
           >
-            {mutation.isPending ? (
-              <Loader2 size={12} className="animate-spin" />
-            ) : (
-              <Bell size={12} />
-            )}
-            {mutation.isPending ? "Sending…" : "Send"}
+            <Bell size={12} />
+            Review &amp; Send
           </Button>
         </div>
       </form>

@@ -173,7 +173,15 @@ function FindingReviewModal({ finding, mode, onClose }) {
           </div>
         </div>
 
-        {!isResolve && (
+        {isResolve ? (
+          <p className="text-xs text-gray-600 leading-relaxed mb-4">
+            Marks this finding as closed and removes it from the New/Reviewed
+            queues — it won't be surfaced again by future reconciliation
+            runs. Use this once the discrepancy is actually accounted for
+            (matched manually, refunded, or confirmed as expected); it
+            doesn't touch the underlying ledger or settlement records.
+          </p>
+        ) : (
           <>
             <label className="block text-xs font-medium text-gray-700 mb-1.5">Annotation (optional)</label>
             <textarea

@@ -19,6 +19,7 @@ function MenuItem({ icon, label, onClick, disabled, danger }) {
 export default function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendReminder, onDuplicate }) {
   const [open, setOpen] = useState(false);
   const [confirmingEnd, setConfirmingEnd] = useState(false);
+  const [confirmingArchive, setConfirmingArchive] = useState(false);
   const status = plan.status;
   const isActive = status === "ACTIVE";
   const isPaused = status === "PAUSED";
@@ -112,8 +113,9 @@ export default function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMember
                 <div className="h-px bg-gray-100 my-1" />
                 <MenuItem
                   label="Archive"
+                  danger
                   onClick={() => {
-                    planPlans.archive.mutate(plan.id);
+                    setConfirmingArchive(true);
                     close();
                   }}
                 />
@@ -141,6 +143,21 @@ export default function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMember
           onClose={() => setConfirmingEnd(false)}
           onConfirm={() =>
             planPlans.expire.mutate(plan.id, { onSuccess: () => setConfirmingEnd(false) })
+          }
+        />
+      )}
+
+      {confirmingArchive && (
+        <ConfirmDialog
+          title="Archive Plan"
+          subtitle={plan.name}
+          description="This hides the plan from the active list and stops any further collection on it. There's no way to unarchive it afterward -- only duplicate it as a new plan."
+          confirmLabel="Archive"
+          confirmingLabel="Archiving…"
+          confirming={planPlans.archive.isPending}
+          onClose={() => setConfirmingArchive(false)}
+          onConfirm={() =>
+            planPlans.archive.mutate(plan.id, { onSuccess: () => setConfirmingArchive(false) })
           }
         />
       )}
