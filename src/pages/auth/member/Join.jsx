@@ -72,6 +72,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
   const { hasToken } = useInviteToken();
   const [email, setEmail] = useState(initialEmail ?? "");
   const [phone, setPhone] = useState(initialPhone ?? "");
+  const [agreed, setAgreed] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({ email: "", phone: "" });
   const [error, setError] = useState("");
 
@@ -92,6 +93,13 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
   }
 
   function handleSubmit() {
+    // Explicit over implicit per CEO direction: the button stays clickable
+    // regardless of the checkbox, and tells you exactly why it didn't go
+    // through instead of just sitting disabled with no explanation.
+    if (!agreed) {
+      setError("Please Accept Our Terms to Continue");
+      return;
+    }
     const trimmedEmail = email.trim().toLowerCase();
     const emailError = getEmailError(trimmedEmail);
     const phoneError = validatePhone(phone);
@@ -103,10 +111,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
     onNext({ email: trimmedEmail, phone: phone.trim() });
   }
 
-  const isReady = email.trim() && phone.trim();
-
   return (
-    <>
     <div className="w-full max-w-md flex flex-col md:mt-14 gap-3">
       <div>
         <h1 className="text-headline text-gray-900">
@@ -161,9 +166,40 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
         </div>
       </div>
 
+      <label className="flex items-start gap-2 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => { setAgreed(e.target.checked); setError(""); }}
+          className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer bg-white border border-gray-300 accent-[#1C2B8A]"
+        />
+        <span className="text-sm text-gray-700">
+          I accept the{" "}
+          <Link
+            to="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="font-medium underline text-[#1C2B8A]"
+          >
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link
+            to="/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="font-medium underline text-[#1C2B8A]"
+          >
+            Privacy Policy
+          </Link>
+        </span>
+      </label>
+
       <ErrorMessage message={error} />
 
-      <PrimaryButton onClick={handleSubmit} disabled={!isReady} size="sm">
+      <PrimaryButton onClick={handleSubmit} size="sm">
         Continue
       </PrimaryButton>
 
@@ -185,32 +221,6 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
         </Link>
       </p>
     </div>
-
-    {/* Pinned to the bottom of the page (mt-auto, not just spaced below the
-        block above) -- per the Figma treatment, this sits at the very
-        bottom of the screen with the leftover space collecting above it. */}
-    <p className="w-full max-w-md mx-auto text-sm text-center text-gray-500 leading-snug mt-auto pt-5">
-      By continuing, you agree to our{" "}
-      <Link
-        to="/terms"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-medium text-[#1C2B8A]"
-      >
-        Terms of Service
-      </Link>{" "}
-      and{" "}
-      <Link
-        to="/privacy"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-medium text-[#1C2B8A]"
-      >
-        Privacy Policy
-      </Link>
-      .
-    </p>
-    </>
   );
 }
 

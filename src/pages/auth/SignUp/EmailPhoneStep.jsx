@@ -31,6 +31,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
   const [email, setEmail] = useState(initialEmail ?? "");
   const [phone, setPhone] = useState(initialPhone ?? "");
   const [phoneFocused, setPhoneFocused] = useState(false);
+  const [agreed, setAgreed] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({ email: "", phone: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -51,6 +52,13 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    // Explicit over implicit per CEO direction: the button stays clickable
+    // regardless of the checkbox, and tells you exactly why it didn't go
+    // through instead of just sitting disabled with no explanation.
+    if (!agreed) {
+      setError("Please Accept Our Terms to Continue");
+      return;
+    }
     const emailError = getEmailError(email);
     const phoneError = validatePhone(phone);
     if (emailError || phoneError) {
@@ -74,7 +82,6 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
   };
 
   return (
-    <>
     <div className="w-full max-w-md flex flex-col md:mt-14">
       <div className="mb-3">
         <h1 className="text-headline text-gray-900 mb-1.5">
@@ -82,7 +89,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
         <div className="flex flex-col gap-1.5">
           <label className="text-label font-medium text-gray-700">
             Email Address
@@ -123,9 +130,40 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
           )}
         </div>
 
+        <label className="flex items-start gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => { setAgreed(e.target.checked); setError(""); }}
+            className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer bg-white border border-gray-300 accent-[#2535c3]"
+          />
+          <span className="text-sm text-gray-700">
+            I accept the{" "}
+            <Link
+              to="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="font-medium underline text-brand"
+            >
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link
+              to="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="font-medium underline text-brand"
+            >
+              Privacy Policy
+            </Link>
+          </span>
+        </label>
+
         {error && <p className="text-sm text-red-500 -mt-1">{error}</p>}
 
-        <PrimaryBtn type="submit" className="mt-2 !py-3.5" disabled={!email.trim() || !phone.trim()} loading={submitting} size="sm">
+        <PrimaryBtn type="submit" className="mt-2 !py-3.5" loading={submitting} size="sm">
           {submitting ? "Sending Code..." : "Continue"}
         </PrimaryBtn>
       </form>
@@ -143,32 +181,5 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
         </button>
       </p>
     </div>
-
-    {/* Pinned to the bottom of the page (mt-auto, not just spaced below the
-        card above) -- per the Figma treatment, this sits at the very bottom
-        of the screen with the leftover space collecting above it, not
-        immediately under the Sign In link. */}
-    <p className="w-full max-w-md mx-auto text-sm text-center text-gray-500 leading-snug mt-auto pt-5">
-      By continuing, you agree to our{" "}
-      <Link
-        to="/terms"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-medium hover:underline text-brand"
-      >
-        Terms of Service
-      </Link>{" "}
-      and{" "}
-      <Link
-        to="/privacy"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-medium hover:underline text-brand"
-      >
-        Privacy Policy
-      </Link>
-      .
-    </p>
-    </>
   );
 }
