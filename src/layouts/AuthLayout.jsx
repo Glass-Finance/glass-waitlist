@@ -50,15 +50,14 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
           {/* Logo — no wrapping card per design; the backdrop-blur overlay
               this used to sit in was also a likely cause of the slow first
               paint reported on Brave (120px backdrop-filter is expensive to
-              composite). Still clickable back to the landing page. Exact
-              px values from Figma dev-mode inspection (Top 42.5, Left 32,
-              logo footprint 72x62.73) -- neither matches a clean Tailwind
-              spacing-scale step, so arbitrary values instead of guessing
-              the nearest one. */}
+              composite). Still clickable back to the landing page. The
+              Figma dev-mode footprint (72x62.73) read too large at 100%
+              zoom on a real screen, so sized down from that -- h-11 (44px)
+              instead. */}
           <img
             src={glassLogo}
             alt="Glass Logo"
-            className="absolute top-[42.5px] left-8 z-10 h-[62.73px] w-auto object-contain cursor-pointer"
+            className="absolute top-[42.5px] left-8 z-10 h-11 w-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}
           />
 
@@ -67,14 +66,14 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
               <div className="text-center">
                 {heroTitle && (
                   <h1
-                    className="text-white font-normal leading-tight text-[clamp(2rem,2vw,2rem)]"
+                    className="text-white font-normal leading-tight text-[clamp(1.75rem,2vw,1.75rem)]"
                   >
                     {heroTitle}
                   </h1>
                 )}
                 {heroSubtitle && (
                   <h2
-                    className="text-white font-normal leading-tight mt-2 text-[clamp(2rem,2vw,2rem)]"
+                    className="text-white font-normal leading-tight mt-2 text-[clamp(1.75rem,2vw,1.75rem)]"
                   >
                     {heroSubtitle}
                   </h2>
