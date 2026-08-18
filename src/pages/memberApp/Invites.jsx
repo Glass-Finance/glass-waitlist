@@ -7,12 +7,8 @@ import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import { PENDING_INVITE_KEY } from "../InviteLanding";
 import { Button } from "../../components/ui/Button";
-// Same icon + color the notification feed uses for a sent invite
-// (COMMUNITY_INVITE_SENT) -- reused here so this page's empty state matches
-// rather than duplicating the color pair by hand.
-import { notificationVisual } from "../../utils/notificationTypes";
-
-const INVITE_ICON = notificationVisual("COMMUNITY_INVITE_SENT");
+// Same empty-state illustration the Notifications page's Invites tab uses.
+import invitesEmptyIllustration from "../../assets/memberApp/empty-states/notifications-invites-empty.png";
 
 function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
@@ -111,12 +107,12 @@ export default function Invites() {
           </p>
         ) : invites.length === 0 && joinRequests.length === 0 ? (
           <div className="flex flex-col items-center gap-2.5 py-[60px] px-5 text-center">
-            <div
-              style={{ background: INVITE_ICON.bg }}
-              className="w-[52px] h-[52px] rounded-full flex items-center justify-center"
-            >
-              <INVITE_ICON.icon size={22} strokeWidth={1.6} color={INVITE_ICON.fg} />
-            </div>
+            <img
+              src={invitesEmptyIllustration}
+              alt=""
+              className="w-20 h-20 object-contain"
+              draggable={false}
+            />
             <p className="text-sm font-semibold text-[#333] m-0">
               No invitations yet
             </p>
