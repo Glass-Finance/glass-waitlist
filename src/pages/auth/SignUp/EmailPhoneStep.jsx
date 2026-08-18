@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Info } from "lucide-react";
+import { Check, Info } from "lucide-react";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../utils/phone";
 import { getEmailError } from "../../../utils/validators";
 import { requestPhoneOtp } from "../../../services/authService";
@@ -131,12 +131,22 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
         </div>
 
         <label className="flex items-start gap-2 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={agreed}
-            onChange={(e) => { setAgreed(e.target.checked); setError(""); }}
-            className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer border border-[#797D86]/40 accent-[#2535c3]"
-          />
+          {/* appearance-none takes over rendering entirely -- the browser's
+              native checkbox is filled white by the OS/browser UA style
+              regardless of our own bg classes, which is why removing
+              bg-white alone never changed anything. Checkmark is drawn by
+              hand since appearance-none also kills the native tick. */}
+          <span className="relative mt-0.5 w-4 h-4 flex-shrink-0">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => { setAgreed(e.target.checked); setError(""); }}
+              className="appearance-none w-4 h-4 rounded border border-[#797D86]/40 checked:bg-[#2535c3] checked:border-[#2535c3] cursor-pointer"
+            />
+            {agreed && (
+              <Check size={12} strokeWidth={3} className="absolute inset-0 m-auto text-white pointer-events-none" />
+            )}
+          </span>
           <span className="text-xs md:text-sm text-gray-700">
             I accept the{" "}
             <Link
