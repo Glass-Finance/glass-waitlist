@@ -130,7 +130,7 @@ export default function StepContact({ initialEmail, initialPhone, onNext, onGoog
             type="checkbox"
             checked={agreed}
             onChange={(e) => { setAgreed(e.target.checked); setError(""); }}
-            className="appearance-none w-4 h-4 rounded border border-[#797D86]/40 checked:bg-[#1C2B8A] checked:border-[#1C2B8A] cursor-pointer"
+            className="appearance-none w-4 h-4 rounded-sm border border-[#797D86]/40 checked:bg-[#1C2B8A] checked:border-[#1C2B8A] cursor-pointer"
           />
           {agreed && (
             <Check size={12} strokeWidth={3} className="absolute inset-0 m-auto text-white pointer-events-none" />

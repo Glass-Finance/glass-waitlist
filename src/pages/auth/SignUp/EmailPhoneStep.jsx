@@ -141,7 +141,7 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
               type="checkbox"
               checked={agreed}
               onChange={(e) => { setAgreed(e.target.checked); setError(""); }}
-              className="appearance-none w-4 h-4 rounded border border-[#797D86]/40 checked:bg-[#2535c3] checked:border-[#2535c3] cursor-pointer"
+              className="appearance-none w-4 h-4 rounded-sm border border-[#797D86]/40 checked:bg-[#2535c3] checked:border-[#2535c3] cursor-pointer"
             />
             {agreed && (
               <Check size={12} strokeWidth={3} className="absolute inset-0 m-auto text-white pointer-events-none" />
