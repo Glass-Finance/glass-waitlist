@@ -574,7 +574,6 @@ export default function Home() {
   // fits. This is what actually tells a member "there's more than what
   // you're looking at" before they tap into the full list.
   const totalUpcomingCount = (data?.upcoming ?? []).length;
-  const hiddenUpcomingCount = totalUpcomingCount - upcoming.length;
   const history = (data?.history ?? []).slice(0, 3);
   const communityName = data?.community?.name ?? "Your Community";
   const communityInitial = communityName.charAt(0).toUpperCase();
@@ -790,6 +789,14 @@ export default function Home() {
                     </span>
                   )}
                 </div>
+                {totalUpcomingCount > 0 && (
+                  <button
+                    onClick={() => navigate("/member/upcoming")}
+                    className="bg-transparent border-none cursor-pointer text-[13px] font-semibold text-[#9CA3AF] p-0"
+                  >
+                    See All
+                  </button>
+                )}
               </div>
 
               {upcoming.length === 0 && totalUpcomingCount === 0 ? (
@@ -807,15 +814,6 @@ export default function Home() {
                   <UpcomingRow key={p.id} payment={p} onPay={handlePay} />
                 ))
               )}
-
-              <button
-                onClick={() => navigate("/member/upcoming")}
-                className="block w-full pt-1 pb-2.5 bg-transparent border-none cursor-pointer text-[13px] font-semibold text-[#1C2B8A] text-center"
-              >
-                {hiddenUpcomingCount > 0
-                  ? `View All — ${hiddenUpcomingCount} more`
-                  : "View All"}
-              </button>
             </div>
 
             {/* ── Payment History ──────────────────────────────────────────────── */}
@@ -824,12 +822,14 @@ export default function Home() {
                 <span className="text-sm font-normal text-[#111]">
                   Payment History
                 </span>
-                <button
-                  onClick={() => navigate("/member/transactions")}
-                  className="bg-transparent border-none cursor-pointer text-[13px] font-semibold text-brand p-0"
-                >
-                  See All
-                </button>
+                {history.length > 0 && (
+                  <button
+                    onClick={() => navigate("/member/transactions")}
+                    className="bg-transparent border-none cursor-pointer text-[13px] font-semibold text-[#9CA3AF] p-0"
+                  >
+                    See All
+                  </button>
+                )}
               </div>
 
               {history.length === 0 ? (
