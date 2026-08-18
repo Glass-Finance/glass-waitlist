@@ -30,7 +30,6 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
   const [urlStage, setUrlStage] = useState("idle"); // idle | fetching | complete
   const [urlProgress, setUrlProgress] = useState(0);
   const [urlFileInfo, setUrlFileInfo] = useState(null);
-  const [urlCsvText, setUrlCsvText] = useState(null);
 
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
@@ -157,7 +156,6 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
             ? `${(sizeKb / 1024).toFixed(1)} MB`
             : `${Math.max(1, Math.round(sizeKb))} KB`,
       });
-      setUrlCsvText(text);
       setCsvRows(parseCSV(text));
       setUrlStage("complete");
     } catch {
@@ -173,7 +171,6 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
     setUrlStage("idle");
     setUrlProgress(0);
     setUrlFileInfo(null);
-    setUrlCsvText(null);
     setFileUrl("");
     setCsvRows([]);
   }

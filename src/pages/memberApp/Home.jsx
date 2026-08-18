@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Bell, Check, ChevronDown, Clock, Mail } from "lucide-react";
-import joinCommunityIcon from "../../assets/auth/join-community.webp";
 import noCommunityIcon from "../../assets/auth/no-community.png";
 import paymentsDueIcon from "../../assets/memberApp/icon-payments-due.png";
 import upcomingPaymentsIcon from "../../assets/memberApp/icon-upcoming-payments.png";
@@ -144,7 +143,7 @@ function CommunitySwitcher({
 // ---------------------------------------------------------------------------
 // Hero card
 // ---------------------------------------------------------------------------
-function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
+function HeroCard({ nextDue, onPay, error, onRefresh }) {
   if (!nextDue) {
     const isError = Boolean(error);
     return (
@@ -767,7 +766,6 @@ export default function Home() {
             <HeroCard
               nextDue={nextDue}
               onPay={handlePay}
-              communityName={communityName}
               error={error}
               onRefresh={refresh}
             />

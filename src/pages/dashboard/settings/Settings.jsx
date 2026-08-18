@@ -98,14 +98,16 @@ export default function Settings() {
   const titleKey = Object.keys(BREADCRUMB_MAP).find(k => path.includes(k));
   usePageTitle(titleKey ? BREADCRUMB_MAP[titleKey].child : "Settings");
 
-  // Platform admins only get Security — redirect other settings paths there.
-  if (isPlatformAdmin && !path.includes("account/security")) {
-    return <Navigate to="/dashboard/settings/account/security" replace />;
-  }
-
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const searchRef = useRef(null);
+
+  // Platform admins only get Security — redirect other settings paths there.
+  // Must come after every hook above: hooks can't be called conditionally,
+  // and this early return would otherwise skip them on some renders.
+  if (isPlatformAdmin && !path.includes("account/security")) {
+    return <Navigate to="/dashboard/settings/account/security" replace />;
+  }
 
   const activeTab = TABS.find(t => path.includes(t.match))?.label || "Account";
 

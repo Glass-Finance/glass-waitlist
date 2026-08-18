@@ -41,7 +41,7 @@ export default function DashboardLayout() {
 
   function closeTour() {
     setTourOpen(false);
-    try { localStorage.setItem(DASHBOARD_TOUR_SEEN_KEY, "1"); } catch {}
+    try { localStorage.setItem(DASHBOARD_TOUR_SEEN_KEY, "1"); } catch { /* ignore */ }
   }
 
   // Auto-Pay prompt handoff for the redirect-based (Paystack-hosted) admin

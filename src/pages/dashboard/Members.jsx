@@ -34,13 +34,11 @@ const SORT_OPTIONS = ["Recently Paid", "Name A-Z", "Date Joined"];
 
 const memberName = (m) => resolveDisplayName(m);
 const memberEmail = (m) => resolveEmail(m);
-const memberRole = (m) => m.roleCode ?? m.role?.name ?? m.roleName ?? m.role ?? "Member";
 // Matches AuthContext's hasAdminCommunity check, which goes through
 // roleKeyword rather than comparing roleCode directly -- the live API
 // returns "COMMUNITY_OWNER"/"COMMUNITY_ADMIN", not bare "OWNER"/"ADMIN",
 // so a raw === here silently undercounted admins.
 const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes(roleKeyword(m.roleCode, m.role));
-const memberInitials = (m) => memberName(m).split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
 
 function statusStyle(paid, total) {
   if (total === 0) return "bg-[#f5f6fa] text-[#6b7280]";

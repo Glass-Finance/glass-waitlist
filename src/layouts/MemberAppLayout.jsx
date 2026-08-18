@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { Home, ArrowLeftRight, CalendarClock, Bell, Menu } from "lucide-react";
-import SideDrawer from "../components/memberApp/SideDrawer";
+import { Home, ArrowLeftRight, CalendarClock, Bell } from "lucide-react";
 import InvitePopup from "../components/memberApp/InvitePopup";
 
 const TABS = [
@@ -13,7 +11,6 @@ const TABS = [
 
 export default function MemberAppLayout() {
   const location = useLocation();
-  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="flex justify-center items-start min-h-dvh bg-surface-bg bg-cover bg-center bg-no-repeat bg-mobile-auth-default">

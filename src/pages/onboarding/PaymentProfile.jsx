@@ -19,7 +19,7 @@ import successIcon from "../../assets/auth/community-live-success.png";
 import { getBanks, resolveAccount } from "../../api/members";
 import { notifyError, getErrorMessage } from "../../utils/errorHandler";
 import { useCommunityAccount } from "../../hooks/useCommunityAccount";
-import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
+import { readOnboardingProgress } from "../../utils/onboardingProgress";
 import BankSelect from "../../components/common/BankSelect";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import StepIndicator from "../../components/onboarding/StepIndicator";

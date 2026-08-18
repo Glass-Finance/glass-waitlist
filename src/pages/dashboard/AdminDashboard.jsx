@@ -154,7 +154,7 @@ function DashboardContent({ isPaying, communityId }) {
     setGsDismissed(true);
     try {
       localStorage.setItem(`gs_done_${communityId}`, "1");
-    } catch {}
+    } catch { /* ignore */ }
   }
 
   // ── Derived stats ─────────────────────────────────────────────────────────

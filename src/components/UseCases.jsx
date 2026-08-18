@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
 import BlurText from "./ui/BlurText";
 import iconSchools from "../assets/usecase/icon-schools.webp";
 import iconProfessional from "../assets/usecase/icon-professional.webp";
