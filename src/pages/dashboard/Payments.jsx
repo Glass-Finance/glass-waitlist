@@ -33,7 +33,12 @@ export default function Payments() {
   const [tab, setTab] = useState("All Plans");
 
   const planPlans = usePaymentPlans(communityId);
-  const { plans, isLoading: plansLoading } = planPlans;
+  const { plans, isLoading: plansLoading, error: plansError } = planPlans;
+  // Per the Figma empty state (mirrors Members.jsx's same fix): the page
+  // header and tabs don't show at all when there are no plans yet at all --
+  // distinct from filtered.length === 0 below, which is just the current
+  // tab filter matching nothing and still needs the header/tabs to change it.
+  const isEmpty = !plansLoading && !plansError && plans.length === 0;
 
   // Obligations — who is enrolled in each plan and whether they've paid
   const { data: obligations = [] } = useQuery({
@@ -219,6 +224,7 @@ export default function Payments() {
   return (
     <div className="px-4 md:px-6 py-6 overflow-y-auto h-full">
       {/* Header */}
+      {!isEmpty && (
       <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
         <div>
           <h1 className="text-xl font-bold text-black">Payments</h1>
@@ -233,6 +239,7 @@ export default function Payments() {
           <Plus size={13} /> Create Payment Plan
         </button>
       </div>
+      )}
 
       {/* Stats -- only when there are plans (mirrors Members.jsx's same
           fix). auto-fit/minmax rather than a fixed 2/lg:4 breakpoint, so
@@ -269,6 +276,7 @@ export default function Payments() {
       )}
 
       {/* Tabs */}
+      {!isEmpty && (
       <div className="flex gap-1 mb-5 bg-stacked-container rounded-md p-1 w-fit">
         {TABS.map((t) => (
           <button
@@ -281,6 +289,7 @@ export default function Payments() {
           </button>
         ))}
       </div>
+      )}
 
       {/* Plan cards */}
       {plansLoading ? (
