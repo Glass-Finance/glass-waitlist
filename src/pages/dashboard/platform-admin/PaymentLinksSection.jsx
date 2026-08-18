@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Wallet } from "lucide-react";
 import { getAdminPaymentLinks } from "../../../api/admin";
 import { unwrap, pageParams, fmt, fmtDate } from "./shared";
+import { useDebounce } from "../../../hooks/useDebounce";
 import {
   StatusBadge,
   SectionHeader,
@@ -10,7 +11,6 @@ import {
   FilterSelect,
   TableShell,
   TableFooter,
-  useDebounce,
 } from "./SharedUI";
 
 export default function PaymentLinksSection() {

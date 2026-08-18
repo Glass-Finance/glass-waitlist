@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
-import DashboardTour, { DASHBOARD_TOUR_SEEN_KEY, COMMUNITIES_HOME_STEPS } from "../components/dashboard/DashboardTour";
+import DashboardTour from "../components/dashboard/DashboardTour";
+import { DASHBOARD_TOUR_SEEN_KEY, COMMUNITIES_HOME_STEPS } from "../components/dashboard/dashboardTourSteps";
 import AutoPayPrompt from "../components/common/AutoPayPrompt";
 
 export default function DashboardLayout() {
@@ -33,6 +34,9 @@ export default function DashboardLayout() {
   // in Topbar lets it be replayed on demand afterward.
   useEffect(() => {
     try {
+      // Reads localStorage, an external system -- genuinely needs an
+      // effect, not a render-time value.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (!localStorage.getItem(DASHBOARD_TOUR_SEEN_KEY)) setTourOpen(true);
     } catch {
       // localStorage unavailable (e.g. private browsing) — just skip the tour

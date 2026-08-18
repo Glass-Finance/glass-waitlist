@@ -129,6 +129,9 @@ export default function PaymentProfile() {
   // effect below doesn't immediately overwrite the restored account name.
   useEffect(() => {
     if (!existingAccount) return;
+    // Prefills from the async-loaded existing account -- every field here
+    // stays user-editable afterward, so this has to be an effect.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBankCode(existingAccount.settlementBankCode ?? "");
     setBankName(existingAccount.settlementBank ?? "");
     setBankSlug(existingAccount.settlementBankSlug ?? "");
@@ -140,6 +143,8 @@ export default function PaymentProfile() {
   // Auto-resolve when both bank + 10-digit account are set
   useEffect(() => {
     if (!bankCode || accNumber.length !== 10) {
+      // Reset branch of the same resolve-account effect below.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (!manualMode) setAccName("");
       setError("");
       return;

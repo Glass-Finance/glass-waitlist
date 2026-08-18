@@ -49,7 +49,7 @@ export default function Notifications() {
 
   // When preferences failed to load, the values shown are just defaults —
   // letting the user flip them would save against unknown server state.
-  const Row = (props) => <PrefRow disabled={!!error} {...props} />;
+  const rowDisabled = !!error;
 
   return (
     <div
@@ -93,19 +93,22 @@ export default function Notifications() {
             </>
           ) : (
             <>
-              <Row
+              <PrefRow
+                disabled={rowDisabled}
                 label="In-app"
                 desc="Show notifications inside the app"
                 value={get("inAppEnabled")}
                 onChange={(v) => update("inAppEnabled", v)}
               />
-              <Row
+              <PrefRow
+                disabled={rowDisabled}
                 label="Email"
                 desc="Send updates to your email address"
                 value={get("emailEnabled")}
                 onChange={(v) => update("emailEnabled", v)}
               />
-              <Row
+              <PrefRow
+                disabled={rowDisabled}
                 label="WhatsApp"
                 desc="Send updates to your WhatsApp number"
                 value={get("whatsappEnabled")}
@@ -127,25 +130,29 @@ export default function Notifications() {
             </>
           ) : (
             <>
-              <Row
+              <PrefRow
+                disabled={rowDisabled}
                 label="Payment reminders"
                 desc="Get reminded before a payment is due"
                 value={get("paymentReminderEnabled")}
                 onChange={(v) => update("paymentReminderEnabled", v)}
               />
-              <Row
+              <PrefRow
+                disabled={rowDisabled}
                 label="Payment receipts"
                 desc="Confirmation when a payment goes through"
                 value={get("paymentReceiptEnabled")}
                 onChange={(v) => update("paymentReceiptEnabled", v)}
               />
-              <Row
+              <PrefRow
+                disabled={rowDisabled}
                 label="Failed payments"
                 desc="Alert when one of your payments fails or is declined"
                 value={get("paymentFailureEnabled")}
                 onChange={(v) => update("paymentFailureEnabled", v)}
               />
-              <Row
+              <PrefRow
+                disabled={rowDisabled}
                 label="Auto-Pay alerts"
                 desc="Notified 3 days before an auto-pay charge"
                 value={get("autoPayAlertEnabled")}
@@ -165,13 +172,15 @@ export default function Notifications() {
             </>
           ) : (
             <>
-              <Row
+              <PrefRow
+                disabled={rowDisabled}
                 label="Community updates"
                 desc="Announcements from community admins"
                 value={get("communityUpdateEnabled")}
                 onChange={(v) => update("communityUpdateEnabled", v)}
               />
-              <Row
+              <PrefRow
+                disabled={rowDisabled}
                 label="Invitations"
                 desc="When you're invited to join a community"
                 value={get("inviteNotificationEnabled")}

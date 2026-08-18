@@ -74,6 +74,9 @@ export default function CommunityProfile() {
 
   useEffect(() => {
     if (!community) return;
+    // Syncs the editable form from the async-loaded community -- form stays
+    // user-editable afterward, so this has to be an effect.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm({
       name: community.name ?? "",
       category: Array.isArray(community.category) ? community.category[0] ?? "" : community.category ?? "",

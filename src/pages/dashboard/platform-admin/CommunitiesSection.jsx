@@ -7,6 +7,7 @@ import { Button } from "../../../components/ui/Button";
 import { getAdminCommunities, setCommissionOverride } from "../../../api/admin";
 import { updateCommunitySettings } from "../../../api/communities";
 import { fmt, fmtDate, unwrap, pageParams } from "./shared";
+import { useDebounce } from "../../../hooks/useDebounce";
 import {
   StatusBadge,
   SectionHeader,
@@ -14,7 +15,6 @@ import {
   FilterSelect,
   TableShell,
   TableFooter,
-  useDebounce,
 } from "./SharedUI";
 
 function CommissionModal({ community, onClose }) {

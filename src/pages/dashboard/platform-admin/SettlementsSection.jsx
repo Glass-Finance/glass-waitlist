@@ -12,6 +12,7 @@ import {
   exportAdminSettlements,
 } from "../../../api/admin";
 import { fmt, fmtDateTime, unwrap, pageParams } from "./shared";
+import { useDebounce } from "../../../hooks/useDebounce";
 import {
   StatusBadge,
   SectionHeader,
@@ -19,7 +20,6 @@ import {
   FilterSelect,
   TableShell,
   TableFooter,
-  useDebounce,
 } from "./SharedUI";
 
 function SettlementDetailModal({ settlementId, onClose }) {

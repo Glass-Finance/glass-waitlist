@@ -258,6 +258,10 @@ function useNotificationDetail(notifications, markRead) {
       notifications.find((x) => String(x.id) === openId) ??
       allNotifications.find((x) => String(x.id) === openId);
     if (n) {
+      // Opens the detail modal for a deep-linked (?open=) notification once
+      // the list has loaded -- genuinely a one-time reaction to a URL param,
+      // not a value derivable from render.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setOpenNotif(n);
       if (!(n.readFlag ?? false)) markRead(n.id);
     }

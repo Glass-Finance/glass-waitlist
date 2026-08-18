@@ -134,6 +134,9 @@ export default function Transactions() {
   useEffect(() => {
     if (monthOptions.length === 0) return;
     if (!selectedMonth || !monthOptions.includes(selectedMonth)) {
+      // selectedMonth is also user-editable via the month picker, so this
+      // reset-when-stale branch can't be a pure render-time derivation.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedMonth(monthOptions[0]);
     }
   }, [monthOptions, selectedMonth]);

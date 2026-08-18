@@ -398,6 +398,14 @@ export function AuthProvider({ children }) {
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
+// react-refresh/only-export-components wants this in its own file so Fast
+// Refresh doesn't reset AuthProvider's state on every edit here -- true, but
+// useAuth is imported in 31 files across the app, all touching auth. Moving
+// it isn't a safe mechanical change to make without visually verifying every
+// call site, and the downside of leaving it is a dev-server-only HMR
+// nicety, not a production bug. Deliberately left as the standard
+// context+hook-in-one-file pattern.
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");

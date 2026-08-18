@@ -58,7 +58,14 @@ function useTilt(strength = 14) {
       Math.abs(cur.current.rotX - tgt.current.rotX) > 0.01 ||
       Math.abs(cur.current.rotY - tgt.current.rotY) > 0.01;
 
+    // Self-referencing rAF loop: `animate` calls itself via the closure it
+    // captures, only actually invoked after this const finishes assigning
+    // (by the time a real frame fires) -- a standard pattern for a
+    // rAF-driven animation, not an actual TDZ bug. Rewriting this as a
+    // ref-indirected self-call to satisfy the compiler's static ordering
+    // check isn't worth the risk of a visual regression I can't check here.
     if (moving || hovering.current)
+      // eslint-disable-next-line react-hooks/immutability
       rafRef.current = requestAnimationFrame(animate);
     else rafRef.current = null;
   }, [strength]);

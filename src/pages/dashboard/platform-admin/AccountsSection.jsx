@@ -13,6 +13,7 @@ import {
 } from "../../../api/admin";
 import { createCommunityAccount } from "../../../api/communities";
 import { unwrap, pageParams } from "./shared";
+import { useDebounce } from "../../../hooks/useDebounce";
 import {
   StatusBadge,
   SectionHeader,
@@ -20,7 +21,6 @@ import {
   FilterSelect,
   TableShell,
   TableFooter,
-  useDebounce,
 } from "./SharedUI";
 
 function CreateCommunityAccountModal({ onClose }) {

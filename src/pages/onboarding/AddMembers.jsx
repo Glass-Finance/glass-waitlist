@@ -157,6 +157,9 @@ export default function AddMembers() {
     if (finalRoles.length && !selectedRoleId) {
       const memberRole =
         finalRoles.find((r) => r.name === "Community Member") ?? finalRoles[0];
+      // Defaults once roles resolve; selectedRoleId is also user-editable
+      // via the role picker afterward.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (memberRole?.id) setSelectedRoleId(memberRole.id);
     }
   }, [finalRoles]); // eslint-disable-line react-hooks/exhaustive-deps

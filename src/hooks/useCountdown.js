@@ -9,6 +9,7 @@ export function useCountdown(seconds, resetKey) {
   // Only the reset key should restart the timer — not every re-render
   // where `seconds` happens to be passed as a fresh literal.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSecondsLeft(seconds);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetKey]);

@@ -63,6 +63,10 @@ export default function AccountFormModal({
   // Auto-resolve account name once we have a full 10-digit number + bank
   useEffect(() => {
     if (!bankCode || accNumber.length !== 10) {
+      // Clearing the resolved name/error when the input becomes incomplete
+      // is the effect's own reset branch, not a derived-during-render value
+      // -- accName/resolveError are edited directly elsewhere below too.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (!manualMode) setAccName("");
       setResolveError("");
       return;

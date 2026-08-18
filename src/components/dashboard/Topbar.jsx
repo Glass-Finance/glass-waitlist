@@ -87,6 +87,9 @@ export default function Topbar({
   useEffect(() => {
     const q = query.trim();
     if (!communityId || q.length < 2) {
+      // Reset branch of the same debounced-search effect below, not a
+      // derived-during-render value.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResults(null);
       setSearching(false);
       return;

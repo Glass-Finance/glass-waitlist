@@ -39,6 +39,8 @@ export function useSlug(type) {
   // Re-verify availability whenever slug changes (debounced)
   useEffect(() => {
     if (!slug?.trim()) {
+      // Reset branch of the same debounced-verification effect below.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAvailable(null);
       return;
     }

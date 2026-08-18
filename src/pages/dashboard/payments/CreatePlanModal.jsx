@@ -53,6 +53,9 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
   useEffect(() => {
     if (form.communityAccountId || accounts.length === 0) return;
     const def = accounts.find((a) => a.defaultAccount) ?? accounts[0];
+    // Defaults the field once accounts (loaded async) arrive -- form.communityAccountId
+    // stays user-editable after that, so this can't be a derived render value.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (def) setForm((f) => ({ ...f, communityAccountId: def.id }));
   }, [accounts]); // eslint-disable-line react-hooks/exhaustive-deps
   const canContinue =

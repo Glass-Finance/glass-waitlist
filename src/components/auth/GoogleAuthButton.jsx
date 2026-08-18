@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useGoogleOAuth } from "@react-oauth/google";
 import { googleAuth } from "../../services/authService";
 import { useAuth } from "../../store/AuthContext";
@@ -98,7 +98,13 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
   const wrapRef = useRef(null);
   const hiddenBtnRef = useRef(null);
   const onAuthenticatedRef = useRef(onAuthenticated);
-  onAuthenticatedRef.current = onAuthenticated;
+  // Keep the ref pointing at the latest callback without mutating it during
+  // render -- useLayoutEffect runs synchronously right after this render
+  // commits, so Google's callback (which fires from outside React's render
+  // cycle) always sees the current `onAuthenticated`, not a stale closure.
+  useLayoutEffect(() => {
+    onAuthenticatedRef.current = onAuthenticated;
+  });
   const [width, setWidth] = useState(320);
   const [identity, setIdentity] = useState(() => readCachedIdentity());
   const [avatarFailed, setAvatarFailed] = useState(false);

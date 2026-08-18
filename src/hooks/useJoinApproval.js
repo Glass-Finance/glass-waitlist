@@ -155,6 +155,10 @@ export function useJoinApprovalWatcher() {
 
     if (remaining.length !== current.length) {
       writePending(remaining);
+      // Mirrors localStorage (writePending) into state right after writing
+      // it, so this effect is the source of truth for both -- not a value
+      // derivable from props/state alone.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPending(getPendingJoinRequests());
     }
     if (matched.length) {

@@ -120,6 +120,10 @@ export default function Profile() {
       phone: user.phoneNumber ?? ud.phone ?? "",
       email: user.email ?? "",
     };
+    // Syncs the editable form from the async-loaded `user` -- form/savedForm
+    // are user-editable afterward, so this has to be an effect, not a
+    // render-time derivation.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm(loaded);
     setSavedForm(loaded);
   }, [user]);

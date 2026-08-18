@@ -52,6 +52,11 @@ export default function InvitePopup() {
   );
 
   useEffect(() => {
+    // `visible` isn't purely derived -- it can also be set false by a
+    // dismiss/accept action below and must stay false after that even if
+    // unseenInvites briefly stays non-empty, so this can't collapse into a
+    // render-time expression.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!isLoading && unseenInvites.length > 0) setVisible(true);
   }, [isLoading, unseenInvites.length]);
 

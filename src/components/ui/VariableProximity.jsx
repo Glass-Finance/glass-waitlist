@@ -152,6 +152,14 @@ const VariableProximity = forwardRef((props, ref) => {
       style={style}
       {...restProps}
     >
+      {/* Vendored animation component (reactbits.dev-style): each letter's
+          initial fontVariationSettings reads interpolatedSettingsRef.current
+          during render, then the rAF loop in useAnimationFrame above updates
+          it imperatively via direct DOM mutation, bypassing React entirely
+          -- deliberate for this kind of per-frame animation. Rewriting the
+          ref architecture to satisfy the compiler risks a real regression
+          in the hover effect that I can't visually verify here. */}
+      {/* eslint-disable-next-line react-hooks/refs */}
       {words.map((word, wordIndex) => (
         <span key={wordIndex} className="inline-block whitespace-nowrap">
           {word.split('').map(letter => {

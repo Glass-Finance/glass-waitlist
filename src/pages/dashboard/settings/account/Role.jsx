@@ -32,6 +32,10 @@ export default function Role() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
+    // Syncs from the async-loaded memberRecord -- `role` is also driven by
+    // local toggle clicks and a mutation-failure rollback below, so it's
+    // genuinely stateful, not a pure render-time derivation.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (memberRecord) setRole(memberRecord.billingExempt ? "exempt" : "pays");
   }, [memberRecord]);
 

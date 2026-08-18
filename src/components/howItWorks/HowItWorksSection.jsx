@@ -111,6 +111,14 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
             className="hidden md:block pointer-events-none absolute inset-0 w-full h-full overflow-visible z-0"
             fill="none"
           >
+            {/* stepRefs/badgeRefs hold ref OBJECTS built once via
+                useRef(...).current at the top (the standard workaround for
+                an array of refs, since useRef can't be called in a loop) --
+                only the objects themselves are read here and passed down as
+                props, never their .current value. The compiler's ref-safety
+                check doesn't recognize this array-of-refs idiom and treats
+                every read from stepRefs/badgeRefs as an unsafe ref access. */}
+            {/* eslint-disable-next-line react-hooks/refs */}
             {steps.slice(0, -1).map((step, i) => {
               const p1 = badgePoints[i];
               const p2 = badgePoints[i + 1];
@@ -127,6 +135,8 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
             })}
           </svg>
 
+          {/* Same ref-objects-only situation as above. */}
+          {/* eslint-disable-next-line react-hooks/refs */}
           {steps.map((step, i) => (
             <div key={step.num} className="relative z-10">
               <StepRow step={step} index={i} innerRef={stepRefs[i]} badgeRef={badgeRefs[i]} />

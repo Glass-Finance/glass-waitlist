@@ -60,7 +60,11 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
   })();
 
   useEffect(() => {
+    // Clamps billingDay when a startDate change shrinks the valid range
+    // (e.g. picking February after typing "31") -- billingDay stays
+    // otherwise freely user-editable, so this can't be a derived value.
     if (form.billingDay && Number(form.billingDay) > editBillingDayMax) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm((f) => ({ ...f, billingDay: String(editBillingDayMax) }));
     }
   }, [editBillingDayMax, form.billingDay]);

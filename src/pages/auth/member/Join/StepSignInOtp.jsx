@@ -4,7 +4,8 @@ import { notifyError } from "../../../../utils/errorHandler";
 import OtpBoxes from "../../../../components/common/OtpBoxes";
 import { useCountdown, formatCountdown } from "../../../../hooks/useCountdown";
 import { Button as PrimaryButton } from "../../../../components/ui/Button";
-import { ErrorMessage, renderDashedOtpBoxes } from "./shared";
+import { ErrorMessage } from "./shared";
+import { renderDashedOtpBoxes } from "./otpBoxes";
 import { OTP_LENGTH } from "./constants";
 
 // ---------------------------------------------------------------------------

@@ -11,13 +11,13 @@ import {
   anonymizeUser,
 } from "../../../api/admin";
 import { unwrap, pageParams, fmtDateTime } from "./shared";
+import { useDebounce } from "../../../hooks/useDebounce";
 import {
   SectionHeader,
   SearchBar,
   FilterSelect,
   TableShell,
   TableFooter,
-  useDebounce,
 } from "./SharedUI";
 
 function SuspendModal({ user, onClose }) {

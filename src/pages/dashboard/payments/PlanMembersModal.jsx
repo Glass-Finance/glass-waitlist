@@ -164,6 +164,14 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
   // Obligations use ob.member.userId (flat) not ob.member.user.id (nested).
   // Plan members carry communityMemberId, so we bridge via communityMembersData:
   //   communityMemberId → userId → obligation info
+  //
+  // Deps are deliberately narrowed to plan.id/plan.amount rather than the
+  // whole `plan` object, so this doesn't recompute every time an unrelated
+  // field on `plan` changes identity. React Compiler isn't wired into this
+  // build (no babel-plugin-react-compiler in vite.config.js), so it can't
+  // actually apply its own memoization here regardless -- this warning is
+  // purely about compiler-readiness, and the manual deps are correct today.
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const obligationByMemberId = useMemo(() => {
     // Step 1: communityMemberId → userId (cm.userId is flat, not cm.user.id)
     const cmToUser = {};

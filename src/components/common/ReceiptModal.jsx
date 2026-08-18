@@ -598,7 +598,13 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
         {/* Action bar */}
         <div className="bg-white border-t border-[#E2E8F0] flex gap-px flex-shrink-0">
           {canShare &&
+            // actionBtn only ever wires this into a <button onClick>, never
+            // calls it during render -- handleShare (which reads cardRef via
+            // captureCard) only actually runs from that click handler. The
+            // compiler can't see through the local actionBtn helper to
+            // confirm that.
             actionBtn(
+              // eslint-disable-next-line react-hooks/refs
               handleShare,
               saving === "share",
               <>
