@@ -2,7 +2,6 @@ import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, Mail, Clock, Home, Info } from "lucide-react";
-import { useCommunities } from "../../hooks/useCommunities";
 import { getInvite } from "../../api/invites";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
@@ -29,10 +28,6 @@ export default function Invites() {
   const { invites, isLoading, error, accept, reject, isAccepting, isRejecting, refresh } =
     useInvites();
   const { joinRequests, isLoading: joinRequestsLoading } = useMyJoinRequests();
-  const { data: communitiesData } = useCommunities();
-
-  const isEmpty = !isLoading && !joinRequestsLoading && invites.length === 0 && joinRequests.length === 0;
-  const isAlreadyMember = (communitiesData?.communities?.length ?? 0) > 0;
 
   // A "Review Invite" email link lands on /invite?inviteId=... which stashes
   // the id here before redirecting to this (unfiltered) list — resolve it
@@ -66,14 +61,6 @@ export default function Invites() {
     if (!highlightId) return;
     cardRefs.current[highlightId]?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [highlightId, invites]);
-
-  // Member was added directly by an admin (no pending invite needed) — send
-  // them straight to home instead of leaving them on an empty invite page.
-  useEffect(() => {
-    if (isEmpty && isAlreadyMember) {
-      navigate("/member/home", { replace: true });
-    }
-  }, [isEmpty, isAlreadyMember, navigate]);
 
   async function handleAccept(invite) {
     await accept(invite.id);
