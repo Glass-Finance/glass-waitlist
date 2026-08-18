@@ -148,6 +148,12 @@ export default function Members() {
     return sorted;
   }, [members, search, filters, sort]);
 
+  // The owner's own membership row already exists the moment the community
+  // is created (see AdminDashboard.jsx's gsHasMembers, same reasoning) --
+  // counting it made this page show the stats+table view for a
+  // brand-new community with zero real members instead of the empty state.
+  const hasRealMembers = members.some((m) => roleKeyword(m.roleCode, m.role) !== "OWNER");
+
   const stats = {
     total: members.length,
     active: members.filter((m) => (m.status ?? "ACTIVE").toUpperCase() === "ACTIVE").length,
@@ -249,7 +255,7 @@ export default function Members() {
       })()}
 
       {/* Empty state — shown instead of stats + table when community has no members yet */}
-      {!isLoading && !error && members.length === 0 && (
+      {!isLoading && !error && !hasRealMembers && (
         <EmptyState
           illustration={addMembersIllustration}
           title="No members yet."
@@ -261,7 +267,7 @@ export default function Members() {
 
       {/* Stats — only when there are members. auto-fit/minmax rather than a
           fixed 2/lg:4 breakpoint -- see DashboardStats.jsx for why. */}
-      {members.length > 0 && (
+      {hasRealMembers && (
       <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3 mb-5">
         <StatCard icon={Users} label="Total Members" value={String(stats.total)} iconCls="text-brand bg-brand-tint" />
         <StatCard icon={UserCheck} label="Active Members" value={String(stats.active)} iconCls="text-success bg-success-tint" />
@@ -270,7 +276,7 @@ export default function Members() {
       </div>
       )}
 
-      {members.length > 0 && <div className="bg-surface-container rounded-xl border border-surface-container-border">
+      {hasRealMembers && <div className="bg-surface-container rounded-xl border border-surface-container-border">
         <div className="flex items-center justify-between px-5 py-4">
           <span className="text-sm font-medium text-black">Member Payments</span>
           <button onClick={exportCsv} disabled={isExporting} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 transition-all bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
