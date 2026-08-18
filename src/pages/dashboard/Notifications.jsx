@@ -388,11 +388,19 @@ function CommunityNotifications() {
     return notifications.filter((n) => cats.includes(categorize(n)));
   }, [notifications, tab]);
 
+  // Per the Figma empty state (mirrors Members.jsx/Payments.jsx's same fix):
+  // the page header and tabs don't show at all when there are no
+  // notifications at all -- distinct from tabItems.length === 0 below,
+  // which is just the current tab matching nothing and still needs the
+  // header/tabs to switch away from it.
+  const isEmpty = !isLoading && notifications.length === 0;
+
   return (
     <div
       className="flex flex-col h-full px-4 md:px-6 py-6 min-h-0"
     >
       {/* Header */}
+      {!isEmpty && (
       <div className="mb-5 flex-shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
           <div>
@@ -419,8 +427,10 @@ function CommunityNotifications() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Tabs — matches Settings' Account/Finance/Community segmented style */}
+      {!isEmpty && (
       <div className="overflow-x-auto flex-shrink-0 mb-5">
       <div
         className="flex gap-1 bg-stacked-container rounded-md p-1 w-fit border border-[#fafafa]"
@@ -453,6 +463,7 @@ function CommunityNotifications() {
         })}
       </div>
       </div>
+      )}
 
       {/* Notification list — independently scrollable */}
       <div className="flex-1 overflow-y-auto min-h-0">
