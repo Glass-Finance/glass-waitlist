@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "motion/react";
 
 function buildPath(p1, p2, offset, bendY) {
   const dir = p2.x >= p1.x ? 1 : -1;
