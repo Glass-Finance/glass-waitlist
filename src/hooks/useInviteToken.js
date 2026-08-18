@@ -57,8 +57,20 @@ export function useInviteToken() {
   /**
    * Read the current invite token.
    * Returns null if no invite token is present (i.e. organic signup).
+   *
+   * Checks the URL param first, sessionStorage second: on the very first
+   * render of a mount that just arrived with ?token=, the effect above
+   * (which persists it to sessionStorage) hasn't run yet -- effects always
+   * fire after the render that scheduled them, never during it. A caller
+   * that only reads sessionStorage here would see an empty token on that
+   * first render. That's invisible to anything that re-renders on its own
+   * (the persist effect's setSearchParams triggers one, so a plain re-render
+   * self-corrects) but breaks any caller that captures this value once and
+   * never re-derives it -- e.g. a `useState(() => ...)` lazy initializer,
+   * which only ever runs on that first, still-stale render (see Join/index.jsx's
+   * `step` initializer, which hit exactly this).
    */
-  const token = sessionStorage.getItem(INVITE_TOKEN_KEY);
+  const token = searchParams.get("token") ?? sessionStorage.getItem(INVITE_TOKEN_KEY);
 
   /**
    * Call this after a successful registration API call.
