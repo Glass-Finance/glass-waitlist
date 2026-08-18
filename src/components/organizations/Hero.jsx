@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { goToApp } from "../../utils/deviceRedirect";
 import { ArrowRight } from "lucide-react";
-import { Reveal } from "../Reveal";
+import { Reveal } from "./Reveal";
 import { motion } from "motion/react";
 import { useEffect } from "react";
 import { ScaledDashboard } from "./dashboard-overlay";

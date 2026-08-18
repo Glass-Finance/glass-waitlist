@@ -2,14 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { goToApp } from "../../utils/deviceRedirect";
 import HowItWorksSection from "../howItWorks/HowItWorksSection";
 
-import work1 from "../../assets/work/work1.png";
-import work2 from "../../assets/work/work2.png";
-import work3 from "../../assets/work/work3.png";
-import work4 from "../../assets/work/work4.png";
-import stepIcon1 from "../../assets/icon/step1.webp";
-import stepIcon2 from "../../assets/icon/step2.webp";
-import stepIcon3 from "../../assets/icon/step3.webp";
-import stepIcon4 from "../../assets/icon/step4.webp";
+import work1 from "../../assets/work/org-create-community.png";
+import work2 from "../../assets/work/org-add-members.png";
+import work3 from "../../assets/work/org-set-payment-schedule.png";
+import work4 from "../../assets/work/org-go-live.png";
+import stepIcon1 from "../../assets/icon/step-1.webp";
+import stepIcon2 from "../../assets/icon/step-2.webp";
+import stepIcon3 from "../../assets/icon/step-3.webp";
+import stepIcon4 from "../../assets/icon/step-4.webp";
 
 const steps = [
   {

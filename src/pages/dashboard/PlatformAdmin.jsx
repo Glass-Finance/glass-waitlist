@@ -12,14 +12,14 @@ import {
   Scale,
 } from "lucide-react";
 import SystemConfig from "./settings/admin/SystemConfig";
-import CommunitiesSection from "./admin-panel/CommunitiesSection";
-import AccountsSection from "./admin-panel/AccountsSection";
-import UsersSection from "./admin-panel/UsersSection";
-import PaymentLinksSection from "./admin-panel/PaymentLinksSection";
-import BalancesSection from "./admin-panel/BalancesSection";
-import SettlementsSection from "./admin-panel/SettlementsSection";
-import ReconciliationSection from "./admin-panel/ReconciliationSection";
-import NotificationsSection from "./admin-panel/NotificationsSection";
+import CommunitiesSection from "./platform-admin/CommunitiesSection";
+import AccountsSection from "./platform-admin/AccountsSection";
+import UsersSection from "./platform-admin/UsersSection";
+import PaymentLinksSection from "./platform-admin/PaymentLinksSection";
+import BalancesSection from "./platform-admin/BalancesSection";
+import SettlementsSection from "./platform-admin/SettlementsSection";
+import ReconciliationSection from "./platform-admin/ReconciliationSection";
+import NotificationsSection from "./platform-admin/NotificationsSection";
 
 const TABS = [
   { id: "communities", label: "Communities", Icon: Building2 },
@@ -33,7 +33,7 @@ const TABS = [
   { id: "system-config", label: "System Config", Icon: SlidersHorizontal },
 ];
 
-export default function AdminPanel() {
+export default function PlatformAdmin() {
   usePageTitle("Admin Panel");
   const [activeTab, setActiveTab] = useState("communities");
 

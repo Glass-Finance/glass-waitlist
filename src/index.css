@@ -201,7 +201,7 @@ body {
 }
 
 .bg-admin-default {
-  background-image: url("./assets/admin-background.webp");
+  background-image: url("./assets/dashboard/admin-background.webp");
 }
 
 .bg-mobile-auth-default {
@@ -216,16 +216,16 @@ body {
      room for positioning. Positioned at left center per design --
      !important overrides the bg-center utility Tailwind applies alongside
      this class everywhere. */
-  background-image: url("./assets/auth-background-mobile.webp");
+  background-image: url("./assets/auth/auth-background-mobile.webp");
   background-position: left center !important;
 }
 
 .bg-problem-glow {
-  background-image: url("./assets/problem-glow.webp");
+  background-image: url("./assets/problem/problem-glow.webp");
 }
 
 .bg-solution-glow {
-  background-image: url("./assets/solution-glow.webp");
+  background-image: url("./assets/solution/solution-glow.webp");
 }
 
 /* Keyframe Animations */

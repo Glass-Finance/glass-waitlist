@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
 
-// Shared dashboard modal chrome — extracted out of AdminPanel.jsx so other
+// Shared dashboard modal chrome — extracted out of PlatformAdmin.jsx so other
 // dashboard pages (Members, MemberDetail, MemberAccess, Payments, finance
 // settings) can build confirm dialogs on the same visual language instead
 // of falling back to window.confirm().

@@ -12,9 +12,9 @@ import {
 } from "../../hooks/usePayments";
 import { useExportJob } from "../../hooks/useExportJob";
 import { exportCommunityTransactions } from "../../api/exports";
-import totalMembersIcon from "../../assets/dashboard/tdesign-member.webp";
+import totalMembersIcon from "../../assets/dashboard/total-members.webp";
 import inactiveMembersIcon from "../../assets/dashboard/inactive-members.webp";
-import totalContribIcon from "../../assets/dashboard/tcontributions.webp";
+import totalContribIcon from "../../assets/dashboard/total-contributions.webp";
 import activePlansIcon from "../../assets/dashboard/active-plans.webp";
 import { formatNaira } from "./admin-dashboard/helpers";
 import { toTitleCase } from "../../utils/format";

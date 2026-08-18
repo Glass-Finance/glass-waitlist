@@ -1,13 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import BlurText from "./ui/BlurText";
-// import case1 from "../assets/usecase/case1.webp";
-// import case2 from "../assets/usecase/case2.webp";
-// import case3 from "../assets/usecase/case3.webp";
-// import case4 from "../assets/usecase/case4.webp";
-
-// ── Import your real icons ──────────────────────────────────────────────────
-// Place your 4 card icons in src/assets/usecase/
 import iconSchools from "../assets/usecase/icon-schools.webp";
 import iconProfessional from "../assets/usecase/icon-professional.webp";
 import iconClubs from "../assets/usecase/icon-clubs.webp";

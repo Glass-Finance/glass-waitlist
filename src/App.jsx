@@ -95,7 +95,7 @@ const MemberAccess = lazy(
 const SystemConfig = lazy(
   () => import("./pages/dashboard/settings/admin/SystemConfig"),
 );
-const AdminPanel = lazy(() => import("./pages/dashboard/AdminPanel"));
+const PlatformAdmin = lazy(() => import("./pages/dashboard/PlatformAdmin"));
 
 // ── Member app layout + pages ─────────────────────────────────────────────────
 const MemberAppLayout = lazy(() => import("./layouts/MemberAppLayout"));
@@ -254,7 +254,7 @@ function App() {
 
               <Route element={<PlatformAdminRoute />}>
                 <Route path="system-config" element={<SystemConfig />} />
-                <Route path="admin-panel" element={<AdminPanel />} />
+                <Route path="admin-panel" element={<PlatformAdmin />} />
               </Route>
 
               <Route path="settings" element={<Settings />}>

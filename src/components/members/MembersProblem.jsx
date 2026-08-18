@@ -1,5 +1,5 @@
 import { Clock, CreditCard, Eye } from "lucide-react";
-import Problem from "../../assets/problem2.webp";
+import Problem from "../../assets/problem/problem2.webp";
 import SharedProblemSection from "../common/ProblemSection";
 
 const problems = [

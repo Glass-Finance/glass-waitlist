@@ -2,9 +2,9 @@ import { useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import BlurText from "./ui/BlurText";
 
-import icon1 from "../assets/security/icon1.webp";
-import icon2 from "../assets/security/icon2.webp";
-import icon3 from "../assets/security/icon3.webp";
+import icon1 from "../assets/security/transparency.webp";
+import icon2 from "../assets/security/ndpr-compliant.webp";
+import icon3 from "../assets/security/encryption.webp";
 
 const cards = [
   {

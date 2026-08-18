@@ -12,12 +12,12 @@ import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import BlurText from "../ui/BlurText";
 
-import icon1 from "../../assets/cta/icon1.webp";
-import icon2 from "../../assets/cta/icon2.webp";
-import icon3 from "../../assets/cta/icon3.webp";
-import icon4 from "../../assets/cta/icon4.webp";
-import icon5 from "../../assets/cta/icon5.webp";
-import icon6 from "../../assets/cta/icon6.webp";
+import icon1 from "../../assets/cta/soccer.webp";
+import icon2 from "../../assets/cta/basketball-hoop.webp";
+import icon3 from "../../assets/cta/people.webp";
+import icon4 from "../../assets/cta/bible.webp";
+import icon5 from "../../assets/cta/runner.webp";
+import icon6 from "../../assets/cta/graduation-cap.webp";
 import logo from "../../assets/cta/ctalogo.webp";
 
 /* ─── Icon layout config ───────────────────────────────────────────── */

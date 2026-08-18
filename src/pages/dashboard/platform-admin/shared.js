@@ -1,5 +1,5 @@
 // Shared formatters, pagination helpers, and the status-color lookup used
-// across every AdminPanel section.
+// across every PlatformAdmin section.
 
 import { formatNaira } from "../../../utils/format";
 
