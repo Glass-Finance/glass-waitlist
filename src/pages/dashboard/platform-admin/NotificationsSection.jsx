@@ -4,6 +4,7 @@ import { Loader2, Bell } from "lucide-react";
 import ModalShell from "../../../components/dashboard/ModalShell";
 import { Button } from "../../../components/ui/Button";
 import { createAdminNotification, getAdminNotificationJobs } from "../../../api/admin";
+import { parseRecipientList } from "../../../utils/parseRecipientList";
 import { fmtDate, unwrap, pageParams } from "./shared";
 import { SectionHeader, TableShell, TableFooter } from "./SharedUI";
 
@@ -48,10 +49,7 @@ function SendNotificationModal({ onClose }) {
   // Recipients are free-typed, not picked from a list -- surfacing the
   // parsed count is the only way to catch a pasted-in wrong list or a
   // stray delimiter before it goes out as real email/SMS/push.
-  const recipientList = targets
-    .split(/[,\n]+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
+  const recipientList = parseRecipientList(targets);
 
   function requestSend(e) {
     e.preventDefault();
