@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { X, ArrowLeft } from "lucide-react";
 import { useSlug } from "../../../hooks/useSlug";
 import { useCommunityAccount } from "../../../hooks/useCommunityAccount";
@@ -38,10 +38,10 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
   });
   const slugState = useSlug("PAYMENT_LINK");
   const [fieldErrors, setFieldErrors] = useState({ name: "", amount: "" });
-  const update = (k, v) => {
+  const update = useCallback((k, v) => {
     setForm((f) => ({ ...f, [k]: v }));
     setFieldErrors((fe) => (fe[k] ? { ...fe, [k]: validatePlanField(k, v) } : fe));
-  };
+  }, []);
   const handleFieldBlur = (field) => (e) =>
     setFieldErrors((fe) => ({ ...fe, [field]: validatePlanField(field, e.target.value) }));
 

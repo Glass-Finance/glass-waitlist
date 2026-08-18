@@ -53,7 +53,6 @@ export default function InvitePopup() {
 
   useEffect(() => {
     if (!isLoading && unseenInvites.length > 0) setVisible(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, unseenInvites.length]);
 
   if (!visible || unseenInvites.length === 0) return null;

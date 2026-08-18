@@ -142,6 +142,10 @@ function FloatingIcon({ icon, inView }) {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       startRef.current = null;
     };
+    // `icon` is a stable object from the static `icons` config array (see
+    // below) -- it's the same reference for this component's whole
+    // lifetime, so its sub-fields never actually change after mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView]);
 
   /* Build position style without transform (handled by JS) */

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Plus, AlertCircle } from "lucide-react";
 import { usePageTitle } from "../../hooks/usePageTitle";
@@ -29,6 +29,12 @@ import YourPaymentsSection from "./admin-dashboard/sections/YourPaymentsSection"
 import PaymentPlansCard from "./admin-dashboard/sections/PaymentPlansCard";
 import RecentActivityCard from "./admin-dashboard/sections/RecentActivityCard";
 import MemberPaymentsSection from "./admin-dashboard/sections/MemberPaymentsSection";
+
+// Stable reference for the "no upcoming dues yet" fallback below -- `?? []`
+// inline would create a brand-new array every render, which defeats the
+// myUpcomingFiltered useMemo's dependency check (it'd see a "changed" input
+// and recompute every render even though there's nothing to recompute).
+const EMPTY_UPCOMING = [];
 
 function DashboardContent({ isPaying, communityId }) {
   usePageTitle("Community Dashboard");
@@ -70,7 +76,7 @@ function DashboardContent({ isPaying, communityId }) {
   // whichever community this dashboard is currently showing, not whatever
   // community the admin last visited as a member (see usePayments.js).
   const { data: myPayments } = usePayments(communityId);
-  const myUpcoming = myPayments?.upcoming ?? [];
+  const myUpcoming = myPayments?.upcoming ?? EMPTY_UPCOMING;
   const { data: myAuthorisations } = useManagePayments();
   // Catches payers who came back from Paystack without hitting the callback
   // page — verifies the stored pending reference so Paid shows immediately.
@@ -208,7 +214,7 @@ function DashboardContent({ isPaying, communityId }) {
     return { byMemberId, byUserId };
   }, [members.list]);
 
-  function resolveMemberName(tx) {
+  const resolveMemberName = useCallback((tx) => {
     // 1. Try the members list (most reliable — has proper first/last name)
     const mid = tx.member?.id ?? tx.memberId;
     if (mid && memberNameMap.byMemberId[String(mid)])
@@ -222,7 +228,7 @@ function DashboardContent({ isPaying, communityId }) {
     const l = u.lastName ?? tx.lastName ?? "";
     const full = `${f} ${l}`.trim();
     return full ? toTitleCase(full) : null;
-  }
+  }, [memberNameMap]);
 
   // ── Per-plan metrics computed from obligations + transactions ────────────────
   const planMetrics = useMemo(() => {
@@ -340,7 +346,7 @@ function DashboardContent({ isPaying, communityId }) {
       const tb = new Date(b.createdAt ?? b.date ?? 0).getTime();
       return sortDir === "desc" ? tb - ta : ta - tb;
     });
-  }, [transactions, search, sortDir, memberNameMap]);
+  }, [transactions, search, sortDir, resolveMemberName]);
 
   // ── Recent activity — real audit-log feed (event/description/actor/result) ──
   const recentActivity = activity.list;

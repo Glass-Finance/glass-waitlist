@@ -14,6 +14,12 @@ import { resolveCommunity, buildCommunityMap } from "../utils/notificationConten
 const POLL_STREAM_UP = 1000 * 60 * 5;
 const POLL_STREAM_DOWN = 1000 * 30;
 
+// Stable reference for the "no communities yet" fallback below -- `?? []`
+// inline would create a brand-new array every render, which defeats the
+// communityMap useMemo's dependency check (it'd see a "changed" input and
+// recompute every render even though there's nothing to recompute).
+const EMPTY_COMMUNITIES = [];
+
 // GET /api/v1/notifications — paginated envelope: { content, pageNumber, ... }
 async function fetchNotifications(communityId) {
   const params = { pageSize: 50 };
@@ -43,7 +49,7 @@ function clearedAtKey(communityId) {
 export function useNotifications() {
   const activeSlugOrId = useActiveCommunityId();
   const { data: communitiesData } = useCommunities();
-  const communities = communitiesData?.communities ?? [];
+  const communities = communitiesData?.communities ?? EMPTY_COMMUNITIES;
   // Every "active community" source in the app (Sidebar's ?community= links,
   // the glass_community localStorage snapshot) stores the community's slug,
   // not its id -- but a notification's own communityId field is a uuid (the

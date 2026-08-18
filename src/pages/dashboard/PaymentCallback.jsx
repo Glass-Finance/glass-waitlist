@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { X, Loader2, ArrowLeft, Clock } from "lucide-react";
@@ -75,13 +75,13 @@ function AdminPaymentCallback() {
   const attemptsRef = useRef(0);
   const wasQueuedRef = useRef(false);
 
-  function invalidateCaches() {
+  const invalidateCaches = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["obligations"] });
     queryClient.invalidateQueries({ queryKey: ["transactions"] });
     queryClient.invalidateQueries({ queryKey: ["payment-links"] });
     queryClient.invalidateQueries({ queryKey: ["authorisations"] });
     queryClient.invalidateQueries({ queryKey: ["community"] });
-  }
+  }, [queryClient]);
 
   useEffect(() => {
     if (!reference) return;
@@ -179,7 +179,7 @@ function AdminPaymentCallback() {
 
     poll();
     return () => { cancelled = true; };
-  }, [reference]);
+  }, [reference, invalidateCaches]);
 
   // Auto-redirect countdown after confirmed success. beginAuthGrace: the
   // destination's own first data fetches can hit a stale-token 401 right

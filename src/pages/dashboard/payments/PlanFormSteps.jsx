@@ -83,7 +83,7 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
     if (form.billingDay && Number(form.billingDay) > billingDayMax) {
       onChange("billingDay", String(billingDayMax));
     }
-  }, [billingDayMax]);
+  }, [billingDayMax, form.billingDay, onChange]);
 
   return (
     <div className="pr-1 space-y-3.5">

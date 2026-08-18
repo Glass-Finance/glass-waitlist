@@ -265,6 +265,13 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
   // Re-measure the card's real rendered height whenever the step (different
   // body copy) or the available width changes -- runs before paint, so this
   // settles before the user ever sees the stale height's positioning.
+  // Deliberately no dependency array: both triggers only ever reach this
+  // component as *some* re-render (there's no single reactive value to
+  // depend on), so it needs to re-measure after every render rather than a
+  // specific subset. Self-limiting, not actually infinite: once the
+  // measured height matches state, setCardHeight(sameValue) is a no-op via
+  // React's same-value bail-out, so it settles within a render or two.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
     if (cardRef.current) setCardHeight(cardRef.current.getBoundingClientRect().height);
   });

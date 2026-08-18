@@ -63,7 +63,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
     if (form.billingDay && Number(form.billingDay) > editBillingDayMax) {
       setForm((f) => ({ ...f, billingDay: String(editBillingDayMax) }));
     }
-  }, [editBillingDayMax]);
+  }, [editBillingDayMax, form.billingDay]);
 
   function handleFieldBlur(field) {
     return (e) => setFieldErrors((fe) => ({ ...fe, [field]: validatePlanField(field, e.target.value) }));

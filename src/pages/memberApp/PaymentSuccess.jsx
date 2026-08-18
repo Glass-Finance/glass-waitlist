@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Check, X, Loader2, Clock, Share2 } from "lucide-react";
@@ -89,7 +89,7 @@ export default function PaymentSuccess() {
   // Auto-Pay on would get prompted again.
   const shouldOfferAutoPay = !!(tx?.isRecurring && tx?.paymentLinkId && !authsLoading && !hasAutoPayConsent);
 
-  function invalidateCaches() {
+  const invalidateCaches = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["obligations"] });
     queryClient.invalidateQueries({ queryKey: ["transactions"] });
     queryClient.invalidateQueries({ queryKey: ["payment-links"] });
@@ -99,7 +99,7 @@ export default function PaymentSuccess() {
       queryClient.invalidateQueries({ queryKey: ["obligation", paymentId] });
       queryClient.invalidateQueries({ queryKey: ["payment-link", paymentId] });
     }
-  }
+  }, [queryClient, paymentId]);
 
   useEffect(() => {
     if (!reference) return;
@@ -163,7 +163,7 @@ export default function PaymentSuccess() {
 
     poll();
     return () => { cancelled = true; };
-  }, [reference]);
+  }, [reference, invalidateCaches]);
 
   const dest = returnTo ?? "/member/home";
   const backLabel = returnTo ? "Back to Dashboard" : "Go to Home";

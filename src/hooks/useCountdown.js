@@ -10,6 +10,7 @@ export function useCountdown(seconds, resetKey) {
   // where `seconds` happens to be passed as a fresh literal.
   useEffect(() => {
     setSecondsLeft(seconds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetKey]);
 
   useEffect(() => {
