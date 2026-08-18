@@ -18,7 +18,7 @@ import totalContribIcon from "../../assets/dashboard/total-contributions.webp";
 import activePlansIcon from "../../assets/dashboard/active-plans.webp";
 import { formatNaira } from "./admin-dashboard/helpers";
 import { toTitleCase } from "../../utils/format";
-import { roleKeyword } from "../../utils/communityRole";
+import { isMemberRoleOwner } from "../../utils/communityRole";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 import AddMemberModal from "./admin-dashboard/AddMemberModal";
 import GettingStartedChecklist from "./admin-dashboard/sections/GettingStartedChecklist";
@@ -121,16 +121,12 @@ function DashboardContent({ isPaying, communityId }) {
     useCommunityAccount(communityId);
   const gsHasPlans = plans.length > 0;
   // members.total counts everyone, including the owner -- who is auto-added
-  // as a member (roleCode "COMMUNITY_OWNER", confirmed against the live
-  // /communities/{id}/members response) the moment the community is
-  // created. Counting them made this true before any real member was ever
-  // added, so WelcomeEmptyState/the checklist's "Add Your First Members"
-  // step could never actually trigger. roleKeyword (not a raw === check --
-  // see communityRole.js) excludes the owner's own row so this reflects
-  // real members only.
-  const gsHasMembers = (members?.list ?? []).some(
-    (m) => roleKeyword(m.roleCode, m.role) !== "OWNER",
-  );
+  // as a member the moment the community is created. Counting them made
+  // this true before any real member was ever added, so WelcomeEmptyState/
+  // the checklist's "Add Your First Members" step could never actually
+  // trigger. isMemberRoleOwner (see communityRole.js, and its tests) filters
+  // the owner's own row out so this reflects real members only.
+  const gsHasMembers = (members?.list ?? []).some((m) => !isMemberRoleOwner(m));
   // A submitted account isn't necessarily a *usable* one -- it still needs
   // to clear ACTIVE/VERIFIED on our side (see errorHandler.js's rewrite of
   // "community account is not active" for the other end of this same gap).

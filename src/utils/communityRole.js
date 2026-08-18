@@ -21,6 +21,18 @@ export function roleKeyword(...values) {
   return null;
 }
 
+// Whether a /communities/{id}/members row is the community's owner --
+// that record's roleCode is "COMMUNITY_OWNER" (confirmed against the live
+// API response, not "OWNER"), so this has to go through roleKeyword like
+// everything else here, not a direct === check. Used to exclude the
+// owner's own auto-created member row when deciding whether *any real*
+// member has been added yet (AdminDashboard.jsx's gsHasMembers) -- without
+// it, a brand-new community with nobody but its owner reads as already
+// having a member, and the fresh-community welcome state never shows.
+export function isMemberRoleOwner(m) {
+  return roleKeyword(m?.roleCode, m?.role) === "OWNER";
+}
+
 // Whether this membership grants dashboard (admin-side) access. Ownership
 // isn't the only path — members promoted to ADMIN/MANAGER administer the
 // community without owning it, and must route to the dashboard, not the
