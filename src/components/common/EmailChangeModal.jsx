@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
 import { resendVerification } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
 import OtpBoxes from "./OtpBoxes";
 import { Button } from "../ui/Button";
+import verifiedBadge from "../../assets/icons/verified-badge.png";
 
 // Codes are valid for 15 minutes (see the same figure quoted in SignIn.jsx).
 const OTP_VALIDITY_SECONDS = 15 * 60;
@@ -80,10 +80,8 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
     return (
       <ModalShell>
         <div className="flex flex-col items-center text-center gap-4 py-4">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center bg-[#ECFDF5]">
-            <CheckCircle2 size={36} className="text-[#059669]" />
-          </div>
-          <p className="text-lg font-semibold text-gray-900">Your Email Has Been Changed Successfully!</p>
+          <img src={verifiedBadge} alt="" className="w-16 h-16 object-contain" />
+          <p className="text-lg font-semibold text-gray-900">Your Email Has Been Updated!</p>
         </div>
       </ModalShell>
     );
@@ -94,7 +92,7 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
       <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600" aria-label="Close">
         ✕
       </button>
-      <h1 className="text-headline text-gray-900 mb-3">Enter Confirmation Code</h1>
+      <h1 className="text-headline text-gray-900 mb-3">Enter the Code we Sent</h1>
       <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code that was sent to</p>
       <p className="text-sm font-semibold text-gray-900 mb-2">{maskEmail(newEmail)}</p>
       <button onClick={onWrongEmail} className="text-sm font-medium hover:underline text-[#1B2FE8]">

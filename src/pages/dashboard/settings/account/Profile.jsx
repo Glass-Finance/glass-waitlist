@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Pencil, ShieldCheck } from "lucide-react";
 import { useMe, useUpdateProfile, useRequestPhoneUpdate, useUpdatePhone } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { updateEmail, deleteAccount, requestAccountDeletionCode } from "../../../../api/members";
@@ -12,31 +13,46 @@ import EmailChangeModal from "../../../../components/common/EmailChangeModal";
 import PhoneChangeModal from "../../../../components/common/PhoneChangeModal";
 import OtpBoxes from "../../../../components/common/OtpBoxes";
 import { toTitleCase } from "../../../../utils/format";
+import { Button } from "../../../../components/ui/Button";
+import verifiedBadge from "../../../../assets/icons/verified-badge.png";
+
+const inputCls =
+  "w-full h-12 min-h-8 px-4 py-1 rounded-lg text-gray-900 text-placeholder outline-none transition-all border-[1.5px] focus:border-[#002FA7]";
 
 export default function Profile() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { data: user, isLoading } = useMe();
   const { refreshUser, logout } = useAuth();
   const updateProfile = useUpdateProfile();
   const uploadFile = useFileUpload();
   const photoInputRef = useRef(null);
 
-  const [form, setForm] = useState({ firstName: "", lastName: "", phone: "", email: "" });
+  // "profile" (normal view) | "email" | "phone" — the latter two swap the
+  // Personal Information card for a dedicated Update/Verify sub-card,
+  // mirroring the member app's full-page equivalents but inline since this
+  // is desktop.
+  const [view, setView] = useState("profile");
+
+  const [form, setForm] = useState({ firstName: "", lastName: "" });
   const [savedForm, setSavedForm] = useState(form);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
-  const [fieldErrors, setFieldErrors] = useState({ firstName: "", lastName: "", email: "", phone: "" });
+  const [fieldErrors, setFieldErrors] = useState({ firstName: "", lastName: "" });
   const [photoPreview, setPhotoPreview] = useState(null);
-  const [emailModalOpen, setEmailModalOpen] = useState(false);
-  const [emailSaving, setEmailSaving] = useState(false);
 
-  // Phone changes go through OTP verification (POST /action-verification/request
-  // then PATCH /user/phone) — same "check on save, open a modal, return
-  // early" shape as email above, not bundled into the plain-field PATCH.
+  const [emailDraft, setEmailDraft] = useState("");
+  const [emailFieldError, setEmailFieldError] = useState("");
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+
   const requestPhoneUpdate = useRequestPhoneUpdate();
   const updatePhone = useUpdatePhone();
+  const [phoneDraft, setPhoneDraft] = useState("");
+  const [phoneFieldError, setPhoneFieldError] = useState("");
+  const [phoneSending, setPhoneSending] = useState(false);
   const [phoneModalOpen, setPhoneModalOpen] = useState(false);
-  const [phoneSaving, setPhoneSaving] = useState(false);
+  const isPhoneUpdate = Boolean(user?.phoneVerified);
 
   const [deleteModal, setDeleteModal] = useState(false);
   const [deleteStep, setDeleteStep] = useState("warn"); // "warn" | "code"
@@ -63,9 +79,6 @@ export default function Profile() {
     setResendMessage("");
   }
 
-  // Account deletion requires a verification code (emailed by the backend)
-  // before the actual DELETE — the "type DELETE" step above is just an extra
-  // guardrail before that email even gets sent.
   async function handleRequestDeletionCode() {
     setDeleteLoading(true);
     setDeleteError("");
@@ -106,9 +119,6 @@ export default function Profile() {
     }
   }
 
-  // user here is from useMe() (raw GET /user/me response). profileImage is
-  // nested inside the userData blob, so parseUserData is the correct extractor.
-  // The AuthContext user is separate — it has profileImage flat after refreshUser.
   const profileImageUrl = parseUserData(user).profileImage?.url ?? user?.profileImage?.url ?? null;
 
   useEffect(() => {
@@ -117,8 +127,6 @@ export default function Profile() {
     const loaded = {
       firstName: ud.firstName ?? user?.firstName ?? "",
       lastName: ud.lastName ?? user?.lastName ?? "",
-      phone: user.phoneNumber ?? ud.phone ?? "",
-      email: user.email ?? "",
     };
     // Syncs the editable form from the async-loaded `user` -- form/savedForm
     // are user-editable afterward, so this has to be an effect, not a
@@ -126,13 +134,27 @@ export default function Profile() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm(loaded);
     setSavedForm(loaded);
+    setEmailDraft(user.email ?? "");
+    setPhoneDraft(user.phoneNumber ?? ud.phone ?? "");
+  }, [user]);
+
+  // Deep link from the Dashboard's "Verify Your Phone Number" banner
+  // (?verify=phone) — jumps straight into the phone sub-card instead of
+  // requiring the pencil click first.
+  useEffect(() => {
+    if (!user) return;
+    if (searchParams.get("verify") === "phone") {
+      setView("phone");
+      const next = new URLSearchParams(searchParams);
+      next.delete("verify");
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   function validateField(field, value) {
     if (field === "firstName" && !value.trim()) return "First name is required.";
     if (field === "lastName" && !value.trim()) return "Last name is required.";
-    if (field === "email") return getEmailError(value);
-    if (field === "phone" && value && !isPhoneValid(value)) return PHONE_FORMAT_HINT;
     return "";
   }
 
@@ -148,73 +170,31 @@ export default function Profile() {
     setFieldErrors((fe) => ({ ...fe, [name]: validateField(name, value) }));
   };
 
-  const isDirty =
-    form.firstName !== savedForm.firstName ||
-    form.lastName !== savedForm.lastName ||
-    form.phone !== savedForm.phone ||
-    form.email !== savedForm.email;
+  const isDirty = form.firstName !== savedForm.firstName || form.lastName !== savedForm.lastName;
 
-  // Phone and email changes both go through OTP verification (handled by
-  // PhoneChangeModal/EmailChangeModal) before they actually take effect, so
-  // they're split out from the rest of the form here — name saves
-  // immediately as before; phone/email only after the code sent to the new
-  // value is confirmed. If more than one of the three changed at once, this
-  // handles them one at a time (phone, then name, then email) rather than
-  // all in a single call — pressing Save again after each OTP step picks up
-  // whatever's still unsaved.
   const handleSave = async () => {
     setError("");
     const nextFieldErrors = {
       firstName: validateField("firstName", form.firstName),
       lastName: validateField("lastName", form.lastName),
-      email: validateField("email", form.email),
-      phone: validateField("phone", form.phone),
     };
     if (Object.values(nextFieldErrors).some(Boolean)) {
       setFieldErrors(nextFieldErrors);
       return;
     }
     try {
-      if (form.phone !== savedForm.phone) {
-        setPhoneSaving(true);
-        await requestPhoneUpdate.mutateAsync({ phoneNumber: form.phone.trim() });
-        setPhoneSaving(false);
-        setPhoneModalOpen(true);
-        return;
-      }
-
-      if (form.firstName !== savedForm.firstName || form.lastName !== savedForm.lastName) {
-        // Only send what changed — the success toast names the updated
-        // field(s), so sending everything would always read "Profile updated".
-        const userData = {};
-        const firstName = toTitleCase(form.firstName.trim());
-        const lastName = toTitleCase(form.lastName.trim());
-        if (form.firstName !== savedForm.firstName) userData.firstName = firstName;
-        if (form.lastName !== savedForm.lastName) userData.lastName = lastName;
-        await updateProfile.mutateAsync({
-          username: user?.username,
-          userData,
-        });
-        await refreshUser();
-        // Reflect the capitalised names in the inputs immediately, matching
-        // what was actually saved.
-        setForm((f) => ({ ...f, firstName, lastName }));
-        setSavedForm((sf) => ({ ...sf, firstName, lastName }));
-      }
-
-      if (form.email !== savedForm.email) {
-        setEmailSaving(true);
-        await updateEmail({ email: form.email.trim().toLowerCase() });
-        setEmailSaving(false);
-        setEmailModalOpen(true);
-        return;
-      }
-
+      const userData = {};
+      const firstName = toTitleCase(form.firstName.trim());
+      const lastName = toTitleCase(form.lastName.trim());
+      if (form.firstName !== savedForm.firstName) userData.firstName = firstName;
+      if (form.lastName !== savedForm.lastName) userData.lastName = lastName;
+      await updateProfile.mutateAsync({ username: user?.username, userData });
+      await refreshUser();
+      setForm((f) => ({ ...f, firstName, lastName }));
+      setSavedForm((sf) => ({ ...sf, firstName, lastName }));
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
-      setEmailSaving(false);
-      setPhoneSaving(false);
       const status = err?.response?.status;
       setError(
         status === 404
@@ -224,35 +204,66 @@ export default function Profile() {
     }
   };
 
+  async function handleStartEmailUpdate() {
+    const trimmed = emailDraft.trim();
+    const fieldErr = getEmailError(trimmed);
+    if (fieldErr) { setEmailFieldError(fieldErr); return; }
+    if (trimmed.toLowerCase() === user?.email?.toLowerCase()) {
+      setEmailFieldError("That's already your current email address.");
+      return;
+    }
+    setEmailFieldError("");
+    setEmailSending(true);
+    try {
+      await updateEmail({ email: trimmed.toLowerCase() });
+      setEmailModalOpen(true);
+    } catch (err) {
+      setEmailFieldError(getErrorMessage(err, "Couldn't send a code to that address. Please try again."));
+    } finally {
+      setEmailSending(false);
+    }
+  }
+
   function handleEmailVerified() {
     setEmailModalOpen(false);
-    setSavedForm((sf) => ({ ...sf, email: form.email }));
+    setView("profile");
     refreshUser();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
   }
 
   function handleWrongEmail() {
-    // Just closes the modal — the (mistyped) email stays in the field so
-    // they can correct it rather than retyping the whole address.
     setEmailModalOpen(false);
   }
 
+  async function handleStartPhoneUpdate() {
+    const trimmed = phoneDraft.trim();
+    if (!isPhoneValid(trimmed)) { setPhoneFieldError(PHONE_FORMAT_HINT); return; }
+    if (isPhoneUpdate && trimmed === user?.phoneNumber) {
+      setPhoneFieldError("That's already your current phone number.");
+      return;
+    }
+    setPhoneFieldError("");
+    setPhoneSending(true);
+    try {
+      await requestPhoneUpdate.mutateAsync({ phoneNumber: trimmed });
+      setPhoneModalOpen(true);
+    } catch (err) {
+      setPhoneFieldError(getErrorMessage(err, "Couldn't send a code to that number. Please try again."));
+    } finally {
+      setPhoneSending(false);
+    }
+  }
+
   async function handleConfirmPhoneOtp(otp) {
-    await updatePhone.mutateAsync({ phoneNumber: form.phone.trim(), phoneVerificationOtp: otp });
+    await updatePhone.mutateAsync({ phoneNumber: phoneDraft.trim(), phoneVerificationOtp: otp });
   }
 
   function handlePhoneVerified() {
     setPhoneModalOpen(false);
-    setSavedForm((sf) => ({ ...sf, phone: form.phone }));
+    setView("profile");
     refreshUser();
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
   }
 
   function handleWrongPhone() {
-    // Just closes the modal — the (mistyped) number stays in the field so
-    // they can correct it rather than retyping it.
     setPhoneModalOpen(false);
   }
 
@@ -276,97 +287,196 @@ export default function Profile() {
     }
   };
 
-  const inputCls =
-    "w-full h-12 min-h-8 px-4 py-1 rounded-lg text-gray-900 text-placeholder outline-none transition-all border-[1.5px] focus:border-[#002FA7]";
-
   const displayName = `${form.firstName} ${form.lastName}`.trim() || user?.email || "—";
   const initials = displayName.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
 
   return (
     <div className="flex flex-col gap-5 max-w-3xl w-full">
 
-      {/* Profile card */}
-      <div>
-        <p className="text-sm font-semibold text-gray-900 mb-0.5">Profile</p>
-        <p className="text-xs text-gray-500">Manage your personal information</p>
-      </div>
-      <div className="bg-surface-container rounded-lg p-4 border border-surface-container-border">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-11 h-11 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
-              {photoPreview || profileImageUrl ? (
-                <img src={photoPreview ?? profileImageUrl} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-sm text-brand">{initials}</span>
-              )}
+      {view === "profile" && (
+        <>
+          <div>
+            <p className="text-sm font-semibold text-gray-900 mb-0.5">Profile</p>
+            <p className="text-xs text-gray-500">Manage your personal information</p>
+          </div>
+
+          <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-14 h-14 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
+                {photoPreview || profileImageUrl ? (
+                  <img src={photoPreview ?? profileImageUrl} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-base text-brand">{initials}</span>
+                )}
+              </div>
+              <input ref={photoInputRef} type="file" accept="image/png,image/jpeg" className="hidden"
+                onChange={(e) => handlePhotoSelect(e.target.files[0])} />
+              <button
+                onClick={() => photoInputRef.current?.click()}
+                disabled={uploadFile.isPending}
+                className="px-3 py-2 rounded-lg text-xs bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-gray-300"
+              >
+                {uploadFile.isPending ? "Uploading…" : "Upload Photo"}
+              </button>
             </div>
-            <div className="min-w-0">
-              <p className="text-sm text-gray-900 truncate">{isLoading ? "Loading…" : displayName}</p>
-              <p className="text-xs text-gray-500 truncate">{user?.email ?? ""}</p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs text-gray-600">First Name</label>
+                <input name="firstName" value={form.firstName} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.firstName ? "border-danger" : "border-gray-300"}`} />
+                {fieldErrors.firstName && <p className="text-xs text-danger">{fieldErrors.firstName}</p>}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs text-gray-600">Last Name</label>
+                <input name="lastName" value={form.lastName} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.lastName ? "border-danger" : "border-gray-300"}`} />
+                {fieldErrors.lastName && <p className="text-xs text-danger">{fieldErrors.lastName}</p>}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs text-gray-600">Email Address</label>
+                <div className="flex items-center gap-2">
+                  <div className={`${inputCls} bg-gray-50 text-gray-500 border-gray-300 flex items-center justify-between gap-2`}>
+                    <span className="truncate">{user?.email ?? ""}</span>
+                    {user?.emailVerified && <img src={verifiedBadge} alt="Verified" className="w-[18px] h-[18px] flex-shrink-0" />}
+                  </div>
+                  <button
+                    onClick={() => { setEmailFieldError(""); setView("email"); }}
+                    title="Update email"
+                    aria-label="Update email"
+                    className="flex-shrink-0 w-12 h-12 rounded-lg border-[1.5px] border-gray-300 bg-white text-brand cursor-pointer flex items-center justify-center"
+                  >
+                    <Pencil size={15} />
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs text-gray-600">Phone Number</label>
+                <div className="flex items-center gap-2">
+                  <div className={`${inputCls} bg-gray-50 text-gray-500 border-gray-300 flex items-center justify-between gap-2`}>
+                    <span className="truncate">{user?.phoneNumber ?? ""}</span>
+                    {user?.phoneVerified && <img src={verifiedBadge} alt="Verified" className="w-[18px] h-[18px] flex-shrink-0" />}
+                  </div>
+                  <button
+                    onClick={() => { setPhoneFieldError(""); setView("phone"); }}
+                    title={isPhoneUpdate ? "Update phone number" : "Verify phone number"}
+                    aria-label={isPhoneUpdate ? "Update phone number" : "Verify phone number"}
+                    className="flex-shrink-0 w-12 h-12 rounded-lg border-[1.5px] border-gray-300 bg-white text-brand cursor-pointer flex items-center justify-center"
+                  >
+                    <Pencil size={15} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {error && <p className="text-xs text-red-500 mb-3">{error}</p>}
+
+            <div className="flex justify-end">
+              <button
+                onClick={handleSave}
+                disabled={updateProfile.isPending || !isDirty}
+                className="p-2 rounded-lg text-[11px] text-brand hover:bg-brand hover:text-white transition-all cursor-pointer border border-brand disabled:opacity-50"
+              >
+                {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
+              </button>
             </div>
           </div>
-          <input ref={photoInputRef} type="file" accept="image/png,image/jpeg" className="hidden"
-            onChange={(e) => handlePhotoSelect(e.target.files[0])} />
-          <button
-            onClick={() => photoInputRef.current?.click()}
-            disabled={uploadFile.isPending}
-            className="flex-shrink-0 px-2 py-2 rounded-lg text-xs bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-gray-700"
-          >
-            {uploadFile.isPending ? "Uploading…" : "Change Photo"}
-          </button>
-        </div>
-      </div>
+        </>
+      )}
 
-      {/* Personal Information */}
-      <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
-        <p className="text-sm font-medium text-gray-900 mb-0.5">Personal Information</p>
-        <p className="text-xs text-gray-500 mb-5">This is how your information will appear across glass</p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-gray-600">First Name</label>
-            <input name="firstName" value={form.firstName} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.firstName ? "border-danger" : "border-gray-300"}`} />
-            {fieldErrors.firstName && <p className="text-xs text-danger">{fieldErrors.firstName}</p>}
+      {view === "email" && (
+        <>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-gray-900 mb-0.5">Update Your Email</p>
+            </div>
+            <button
+              onClick={() => setView("profile")}
+              className="text-xs font-medium text-gray-500 hover:text-gray-800 bg-transparent border-none cursor-pointer"
+            >
+              Cancel
+            </button>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-gray-600">Last Name</label>
-            <input name="lastName" value={form.lastName} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.lastName ? "border-danger" : "border-gray-300"}`} />
-            {fieldErrors.lastName && <p className="text-xs text-danger">{fieldErrors.lastName}</p>}
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-gray-600">Email Address</label>
-            <input name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.email ? "border-danger" : "border-gray-300"}`} />
-            {fieldErrors.email && <p className="text-xs text-danger">{fieldErrors.email}</p>}
+          <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border max-w-md">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-gray-600">Email Address</label>
+              <input
+                type="email"
+                value={emailDraft}
+                onChange={(e) => { setEmailDraft(e.target.value); setEmailFieldError(""); }}
+                className={`${inputCls} ${emailFieldError ? "border-danger" : "border-gray-300"}`}
+                autoFocus
+              />
+              {emailFieldError && <p className="text-xs text-danger mt-1">{emailFieldError}</p>}
+            </div>
           </div>
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs text-gray-600">Phone Number</label>
-            <input name="phone" type="tel" value={form.phone} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.phone ? "border-danger" : "border-gray-300"}`} />
-            {fieldErrors.phone && <p className="text-xs text-danger">{fieldErrors.phone}</p>}
+
+          <div className="max-w-md">
+            <Button onClick={handleStartEmailUpdate} loading={emailSending}>
+              {emailSending ? "Sending Code…" : "Update"}
+            </Button>
           </div>
-        </div>
+        </>
+      )}
 
-        {error && <p className="text-xs text-red-500 mb-3">{error}</p>}
+      {view === "phone" && (
+        <>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-gray-900 mb-0.5">
+                {isPhoneUpdate ? "Update Your Phone Number" : "Verify Your Phone Number"}
+              </p>
+            </div>
+            <button
+              onClick={() => setView("profile")}
+              className="text-xs font-medium text-gray-500 hover:text-gray-800 bg-transparent border-none cursor-pointer"
+            >
+              Cancel
+            </button>
+          </div>
 
-        <div className="flex justify-end">
-          <button
-            onClick={handleSave}
-            disabled={updateProfile.isPending || emailSaving || phoneSaving || !isDirty}
-            className="p-2 rounded-lg text-[11px] text-brand hover:bg-brand hover:text-white transition-all cursor-pointer border border-brand disabled:opacity-50"
-          >
-            {saved ? "Saved!" : updateProfile.isPending || emailSaving || phoneSaving ? "Saving…" : "Save Changes"}
-          </button>
-        </div>
-      </div>
+          <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border max-w-md">
+            {!isPhoneUpdate && (
+              <p className="text-xs text-gray-500 mb-4">
+                We will use this number to send payments reminders and updates via WhatsApp or SMS.
+              </p>
+            )}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-gray-600">Phone Number</label>
+              <input
+                type="tel"
+                value={phoneDraft}
+                onChange={(e) => { setPhoneDraft(e.target.value); setPhoneFieldError(""); }}
+                className={`${inputCls} ${phoneFieldError ? "border-danger" : "border-gray-300"}`}
+                autoFocus
+              />
+              {phoneFieldError && <p className="text-xs text-danger mt-1">{phoneFieldError}</p>}
+            </div>
+          </div>
+
+          {!isPhoneUpdate && (
+            <div className="flex items-start gap-2.5 px-4 py-3.5 rounded-xl bg-[#D7E2FF] max-w-md">
+              <ShieldCheck size={18} className="text-brand flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-brand leading-snug m-0">
+                Your number is only used for payment reminders and account recovery. We will never share it.
+              </p>
+            </div>
+          )}
+
+          <div className="max-w-md">
+            <Button onClick={handleStartPhoneUpdate} loading={phoneSending}>
+              {phoneSending ? "Sending Code…" : isPhoneUpdate ? "Update Phone Number" : "Verify"}
+            </Button>
+          </div>
+        </>
+      )}
 
       {emailModalOpen && (
         <EmailChangeModal
-          newEmail={form.email}
-          onSubmitOtp={(code) =>
-            updateEmail({ email: form.email.trim().toLowerCase(), emailVerificationOtp: code })
-          }
+          newEmail={emailDraft}
+          onSubmitOtp={(code) => updateEmail({ email: emailDraft.trim().toLowerCase(), emailVerificationOtp: code })}
           onVerified={handleEmailVerified}
           onWrongEmail={handleWrongEmail}
           onClose={handleWrongEmail}
@@ -375,11 +485,12 @@ export default function Profile() {
 
       {phoneModalOpen && (
         <PhoneChangeModal
-          newPhone={form.phone}
+          newPhone={phoneDraft}
+          isUpdate={isPhoneUpdate}
           onSubmitOtp={handleConfirmPhoneOtp}
           onVerified={handlePhoneVerified}
           onWrongNumber={handleWrongPhone}
-          onResend={() => requestPhoneUpdate.mutateAsync({ phoneNumber: form.phone.trim() })}
+          onResend={() => requestPhoneUpdate.mutateAsync({ phoneNumber: phoneDraft.trim() })}
           onClose={handleWrongPhone}
         />
       )}
@@ -479,24 +590,25 @@ export default function Profile() {
         </div>
       )}
 
-      {/* Delete Account */}
-      <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
-        <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Account</p>
-        <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
-        <div
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 rounded-lg border border-[#FECACA] bg-[#FFF5F5]"
-        >
-          <p className="text-xs text-gray-700">
-            Permanently remove your account and all associated data from Glass.
-          </p>
-          <button
-            onClick={() => setDeleteModal(true)}
-            className="self-start sm:self-auto flex-shrink-0 px-4 py-1.5 rounded-md text-xs font-medium text-red-500 hover:bg-red-50 transition-all cursor-pointer bg-transparent border border-[#FECACA]"
+      {view === "profile" && (
+        <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
+          <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Account</p>
+          <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
+          <div
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 rounded-lg border border-[#FECACA] bg-[#FFF5F5]"
           >
-            Delete
-          </button>
+            <p className="text-xs text-gray-700">
+              Permanently remove your account and all associated data from Glass.
+            </p>
+            <button
+              onClick={() => setDeleteModal(true)}
+              className="self-start sm:self-auto flex-shrink-0 px-4 py-1.5 rounded-md text-xs font-medium text-red-500 hover:bg-red-50 transition-all cursor-pointer bg-transparent border border-[#FECACA]"
+            >
+              Delete
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

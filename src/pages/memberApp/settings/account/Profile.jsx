@@ -2,17 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Pencil } from "lucide-react";
-import { useMe, useUpdateProfile, useUpdateEmail, useRequestPhoneUpdate, useUpdatePhone } from "../../../../hooks/useMyAccount";
+import { useMe, useUpdateProfile } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { useAuth } from "../../../../store/AuthContext";
 import { getErrorMessage } from "../../../../utils/errorHandler";
-import { getEmailError } from "../../../../utils/validators";
-import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../../utils/phone";
 import { parseUserData } from "../../../../utils/userData";
-import EmailChangeModal from "../../../../components/common/EmailChangeModal";
-import PhoneChangeModal from "../../../../components/common/PhoneChangeModal";
 import { toTitleCase } from "../../../../utils/format";
 import { Button } from "../../../../components/ui/Button";
+import verifiedBadge from "../../../../assets/icons/verified-badge.png";
 
 const inputCls = "w-full h-12 min-h-8 py-1 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all focus:border-[#002FA7]";
 
@@ -29,21 +26,6 @@ export default function Profile() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
   const [photoPreview, setPhotoPreview] = useState(null);
-
-  const updateEmail = useUpdateEmail();
-  const [editingEmail, setEditingEmail] = useState(false);
-  const [newEmail, setNewEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [otpModalOpen, setOtpModalOpen] = useState(false);
-
-  // Phone changes go through OTP verification (POST /action-verification/request
-  // then PATCH /user/phone) — no longer part of the general profile PATCH.
-  const requestPhoneUpdate = useRequestPhoneUpdate();
-  const updatePhone = useUpdatePhone();
-  const [editingPhone, setEditingPhone] = useState(false);
-  const [newPhone, setNewPhone] = useState("");
-  const [phoneError, setPhoneError] = useState("");
-  const [phoneOtpModalOpen, setPhoneOtpModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -107,96 +89,6 @@ export default function Profile() {
     }
   }
 
-  function startEditEmail() {
-    setNewEmail(user?.email ?? "");
-    setEmailError("");
-    setEditingEmail(true);
-  }
-
-  function cancelEditEmail() {
-    setEditingEmail(false);
-    setNewEmail("");
-    setEmailError("");
-  }
-
-  async function handleRequestEmailChange() {
-    const trimmed = newEmail.trim().toLowerCase();
-    const emailFormatError = getEmailError(trimmed);
-    if (emailFormatError) {
-      setEmailError(emailFormatError);
-      return;
-    }
-    if (trimmed === user?.email?.toLowerCase()) {
-      setEmailError("That's already your current email.");
-      return;
-    }
-    setEmailError("");
-    try {
-      // First call with just { email } — no OTP yet — triggers the backend
-      // to send a verification code to the new address before anything
-      // actually changes.
-      await updateEmail.mutateAsync({ email: trimmed });
-      setOtpModalOpen(true);
-    } catch (err) {
-      setEmailError(getErrorMessage(err, "Couldn't start the email change. Please try again."));
-    }
-  }
-
-  async function handleConfirmEmailOtp(otp) {
-    await updateEmail.mutateAsync({ email: newEmail.trim().toLowerCase(), emailVerificationOtp: otp });
-  }
-
-  async function handleEmailVerified() {
-    await refreshUser();
-    setOtpModalOpen(false);
-    setEditingEmail(false);
-    setNewEmail("");
-  }
-
-  function startEditPhone() {
-    setNewPhone(user?.phoneNumber ?? "");
-    setPhoneError("");
-    setEditingPhone(true);
-  }
-
-  function cancelEditPhone() {
-    setEditingPhone(false);
-    setNewPhone("");
-    setPhoneError("");
-  }
-
-  async function handleRequestPhoneChange() {
-    const trimmed = newPhone.trim();
-    if (!isPhoneValid(trimmed)) {
-      setPhoneError(PHONE_FORMAT_HINT);
-      return;
-    }
-    if (trimmed === user?.phoneNumber) {
-      setPhoneError("That's already your current phone number.");
-      return;
-    }
-    setPhoneError("");
-    try {
-      // Send just the number — no OTP yet — triggers the backend to send a
-      // verification code before anything actually changes.
-      await requestPhoneUpdate.mutateAsync({ phoneNumber: trimmed });
-      setPhoneOtpModalOpen(true);
-    } catch (err) {
-      setPhoneError(getErrorMessage(err, "Couldn't start the phone change. Please try again."));
-    }
-  }
-
-  async function handleConfirmPhoneOtp(otp) {
-    await updatePhone.mutateAsync({ phoneNumber: newPhone.trim(), phoneVerificationOtp: otp });
-  }
-
-  async function handlePhoneVerified() {
-    await refreshUser();
-    setPhoneOtpModalOpen(false);
-    setEditingPhone(false);
-    setNewPhone("");
-  }
-
   const ud = parseUserData(user);
   const photoUrl = ud.profileImage?.url ?? null;
   const initials = `${form.firstName} ${form.lastName}`.trim().split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
@@ -253,91 +145,37 @@ export default function Profile() {
           </div>
           <div>
             <label className="text-xs text-[#888] block mb-1.5">Email Address</label>
-            {editingEmail ? (
-              <>
-                <input
-                  className={inputCls}
-                  type="email"
-                  value={newEmail}
-                  onChange={(e) => { setNewEmail(e.target.value); setEmailError(""); }}
-                  placeholder="Enter new email address"
-                  autoFocus
-                />
-                {emailError && <p className="text-xs text-danger mt-1.5 mx-1 mb-0">{emailError}</p>}
-                <div className="flex gap-2 mt-2">
-                  <Button
-                    onClick={handleRequestEmailChange}
-                    loading={updateEmail.isPending}
-                    className="flex-1"
-                  >
-                    {updateEmail.isPending ? "Sending code…" : "Send Verification Code"}
-                  </Button>
-                  <button
-                    onClick={cancelEditEmail}
-                    disabled={updateEmail.isPending}
-                    className="py-2.5 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] bg-white text-[#666] text-[13px] font-semibold cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="flex items-center gap-2">
-                <input className={`${inputCls} bg-[#F5F5F5] text-[#999]`} value={user?.email ?? ""} disabled />
-                <button
-                  onClick={startEditEmail}
-                  title="Change email"
-                  aria-label="Change email"
-                  className="flex-shrink-0 w-10 h-10 rounded-[10px] border-[1.5px] border-[#E0E0E0] bg-white text-brand cursor-pointer flex items-center justify-center"
-                >
-                  <Pencil size={15} />
-                </button>
+            <div className="flex items-center gap-2">
+              <div className={`${inputCls} bg-[#F5F5F5] text-[#999] flex items-center justify-between gap-2`}>
+                <span className="truncate">{user?.email ?? ""}</span>
+                {user?.emailVerified && <img src={verifiedBadge} alt="Verified" className="w-[18px] h-[18px] flex-shrink-0" />}
               </div>
-            )}
+              <button
+                onClick={() => navigate("/member/update-email")}
+                title="Update email"
+                aria-label="Update email"
+                className="flex-shrink-0 w-10 h-10 rounded-[10px] border-[1.5px] border-[#E0E0E0] bg-white text-brand cursor-pointer flex items-center justify-center"
+              >
+                <Pencil size={15} />
+              </button>
+            </div>
           </div>
           <div>
             <label className="text-xs text-[#888] block mb-1.5">Phone Number</label>
-            {editingPhone ? (
-              <>
-                <input
-                  className={inputCls}
-                  type="tel"
-                  value={newPhone}
-                  onChange={(e) => { setNewPhone(e.target.value); setPhoneError(""); }}
-                  placeholder="Enter new phone number"
-                  autoFocus
-                />
-                {phoneError && <p className="text-xs text-danger mt-1.5 mx-1 mb-0">{phoneError}</p>}
-                <div className="flex gap-2 mt-2">
-                  <Button
-                    onClick={handleRequestPhoneChange}
-                    loading={requestPhoneUpdate.isPending}
-                    className="flex-1"
-                  >
-                    {requestPhoneUpdate.isPending ? "Sending code…" : "Send Verification Code"}
-                  </Button>
-                  <button
-                    onClick={cancelEditPhone}
-                    disabled={requestPhoneUpdate.isPending}
-                    className="py-2.5 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] bg-white text-[#666] text-[13px] font-semibold cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="flex items-center gap-2">
-                <input className={`${inputCls} bg-[#F5F5F5] text-[#999]`} value={user?.phoneNumber ?? ""} disabled />
-                <button
-                  onClick={startEditPhone}
-                  title="Change phone number"
-                  aria-label="Change phone number"
-                  className="flex-shrink-0 w-10 h-10 rounded-[10px] border-[1.5px] border-[#E0E0E0] bg-white text-brand cursor-pointer flex items-center justify-center"
-                >
-                  <Pencil size={15} />
-                </button>
+            <div className="flex items-center gap-2">
+              <div className={`${inputCls} bg-[#F5F5F5] text-[#999] flex items-center justify-between gap-2`}>
+                <span className="truncate">{user?.phoneNumber ?? ""}</span>
+                {user?.phoneVerified && <img src={verifiedBadge} alt="Verified" className="w-[18px] h-[18px] flex-shrink-0" />}
               </div>
-            )}
+              <button
+                onClick={() => navigate("/member/verify-phone")}
+                title={user?.phoneVerified ? "Update phone number" : "Verify phone number"}
+                aria-label={user?.phoneVerified ? "Update phone number" : "Verify phone number"}
+                className="flex-shrink-0 w-10 h-10 rounded-[10px] border-[1.5px] border-[#E0E0E0] bg-white text-brand cursor-pointer flex items-center justify-center"
+              >
+                <Pencil size={15} />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -352,27 +190,6 @@ export default function Profile() {
           {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
         </Button>
       </div>
-
-      {otpModalOpen && (
-        <EmailChangeModal
-          newEmail={newEmail}
-          onSubmitOtp={handleConfirmEmailOtp}
-          onVerified={handleEmailVerified}
-          onWrongEmail={() => setOtpModalOpen(false)}
-          onClose={() => setOtpModalOpen(false)}
-        />
-      )}
-
-      {phoneOtpModalOpen && (
-        <PhoneChangeModal
-          newPhone={newPhone}
-          onSubmitOtp={handleConfirmPhoneOtp}
-          onVerified={handlePhoneVerified}
-          onWrongNumber={() => setPhoneOtpModalOpen(false)}
-          onResend={() => requestPhoneUpdate.mutateAsync({ phoneNumber: newPhone.trim() })}
-          onClose={() => setPhoneOtpModalOpen(false)}
-        />
-      )}
     </div>
   );
 }

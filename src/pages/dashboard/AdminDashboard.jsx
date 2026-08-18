@@ -1,7 +1,8 @@
 import { useState, useMemo, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Plus, AlertCircle } from "lucide-react";
+import { Plus, AlertCircle, ChevronRight } from "lucide-react";
 import { usePageTitle } from "../../hooks/usePageTitle";
+import { useMe } from "../../hooks/useMyAccount";
 import { useCommunityDashboard } from "../../hooks/useCommunityDashboard";
 import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { useCommunityAccount } from "../../hooks/useCommunityAccount";
@@ -63,6 +64,7 @@ function DashboardContent({ isPaying, communityId }) {
     isLoading,
     error,
   } = useCommunityDashboard(communityId);
+  const { data: currentUser } = useMe();
   const { plans, isLoading: plansLoading } = usePaymentPlans(communityId);
   // The Payment Plans widget below is an at-a-glance preview, not the full
   // list (that's Payments.jsx, which has its own status filters/badges) --
@@ -414,6 +416,21 @@ function DashboardContent({ isPaying, communityId }) {
             </button>
           </div>
         </div>
+
+        {/* "Verify Your Phone Number" nudge — only once the admin has left the
+            empty state (real members/plans exist), not on first login. */}
+        {currentUser && !currentUser.phoneVerified && (
+          <button
+            onClick={() => navigate(`/dashboard/settings/account/profile?verify=phone`)}
+            className="w-full flex items-center justify-between gap-3 text-left bg-[#D7E2FF] rounded px-6 py-3 mb-5 border border-[#E0E0EB] cursor-pointer"
+          >
+            <div>
+              <p className="text-sm font-semibold text-brand m-0">Verify Your Phone Number</p>
+              <p className="text-xs text-brand/80 mt-0.5 mb-0">We will use it for payment reminders and account security.</p>
+            </div>
+            <ChevronRight size={18} className="text-brand flex-shrink-0" />
+          </button>
+        )}
 
         {/* Getting started checklist — shown until both a plan and members exist */}
         {showGettingStarted && (

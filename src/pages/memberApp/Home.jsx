@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { Bell, Check, ChevronDown, Clock, Mail } from "lucide-react";
+import { Bell, Check, ChevronDown, ChevronRight, Clock, Mail } from "lucide-react";
+import joinCommunityIcon from "../../assets/auth/join-community.webp";
 import noCommunityIcon from "../../assets/auth/no-community.png";
 import paymentsDueIcon from "../../assets/memberApp/icon-payments-due.png";
 import upcomingPaymentsIcon from "../../assets/memberApp/icon-upcoming-payments.png";
@@ -743,6 +744,27 @@ export default function Home() {
               Here's Your Community At A Glance
             </p>
           </div>
+        )}
+
+        {/* "Complete Your Profile" nudge — Cowrywise/Spotify-style, shown
+            until the phone number (collected but unverified at signup, see
+            the registration flow) is actually confirmed. Disappears the
+            moment user.phoneVerified flips true; data.user is the same
+            ["me"] query Profile.jsx reads, so this and the verified badge
+            there update together. */}
+        {!hasNoCommunity && !showNothingHappening && data?.user && !data.user.phoneVerified && (
+          <button
+            onClick={() => navigate("/member/verify-phone")}
+            className="w-[calc(100%-40px)] mx-5 mb-4 flex items-center gap-3 text-left bg-[#D7E2FF] rounded-2xl px-4 py-3.5 border-none cursor-pointer"
+          >
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-brand m-0">Verify Your Phone Number</p>
+              <p className="text-[13px] text-brand/80 mt-0.5 mb-0 leading-snug">
+                We will use it for payment reminders and account security.
+              </p>
+            </div>
+            <ChevronRight size={18} className="text-brand flex-shrink-0" />
+          </button>
         )}
 
         {/* Mirrors NoCommunityState/PendingApprovalState's layout (same

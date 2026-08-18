@@ -121,6 +121,12 @@ const MemberSettings = lazy(
 const MemberProfile = lazy(
   () => import("./pages/memberApp/settings/account/Profile"),
 );
+const MemberUpdateEmail = lazy(
+  () => import("./pages/memberApp/settings/account/UpdateEmail"),
+);
+const MemberVerifyPhone = lazy(
+  () => import("./pages/memberApp/settings/account/VerifyPhone"),
+);
 const MyCommunities = lazy(
   () => import("./pages/memberApp/settings/communities/MyCommunities"),
 );
@@ -329,6 +335,8 @@ function App() {
 
                 <Route path="settings" element={<MemberSettings />} />
                 <Route path="profile" element={<MemberProfile />} />
+                <Route path="update-email" element={<MemberUpdateEmail />} />
+                <Route path="verify-phone" element={<MemberVerifyPhone />} />
                 <Route path="communities" element={<MyCommunities />} />
                 <Route path="security" element={<MemberSecurity />} />
                 <Route path="security/password" element={<MemberPassword />} />
