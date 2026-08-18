@@ -28,7 +28,7 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
       <Button
         onClick={onCreatePlan}
         fullWidth={false}
-        className="px-6 mb-8 !rounded-full !font-normal"
+        className="w-64 mb-8 !rounded-full !font-normal"
         data-tour="welcome-create-plan"
       >
         Create Your First Collection
