@@ -148,16 +148,16 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   if (!nextDue) {
     const isError = Boolean(error);
     return (
-      <div className="relative mx-4 rounded-2xl overflow-hidden bg-white">
+      <div className="relative mx-4 rounded-lg overflow-hidden bg-white">
         {/* Base ring — always visible, all four sides. */}
-        <div className="absolute inset-0 rounded-2xl border-[1.5px] border-surface-container-border pointer-events-none" />
+        <div className="absolute inset-0 rounded-lg border-[1.5px] border-surface-container-border pointer-events-none" />
         {/* Accent glow — same shape/position as the base ring (inset-0, not
             a % height, so this doesn't hit the abs-positioned-child-of-an-
             auto-height-container bug a previous version of this card ran
             into), faded out via mask-image instead of stopping abruptly, so
             it reads as merging into the base ring rather than a hard cut. */}
         <div
-          className={`absolute inset-0 rounded-2xl border-[1.5px] pointer-events-none ${isError ? "border-danger" : "border-brand"}`}
+          className={`absolute inset-0 rounded-lg border-[1.5px] pointer-events-none ${isError ? "border-danger" : "border-brand"}`}
           style={{
             maskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
             WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
@@ -232,9 +232,9 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   const isOverdue = new Date(nextDue.dueDate) < new Date();
 
   return (
-    <div className="relative mx-4 rounded-2xl overflow-hidden bg-white">
+    <div className="relative mx-4 rounded-lg overflow-hidden bg-white">
       {/* Base ring — always visible, all four sides. */}
-      <div className="absolute inset-0 rounded-2xl border-[1.5px] border-surface-container-border pointer-events-none" />
+      <div className="absolute inset-0 rounded-lg border-[1.5px] border-surface-container-border pointer-events-none" />
       {/* Accent glow — same shape/position as the base ring (inset-0, not a
           % height, so this doesn't hit the abs-positioned-child-of-an-
           auto-height-container bug a previous version of this card ran
@@ -242,7 +242,7 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
           stopping abruptly, so it reads as merging into the base ring
           rather than a hard cut. */}
       <div
-        className={`absolute inset-0 rounded-2xl border-[1.5px] pointer-events-none ${isOverdue ? "border-danger" : "border-brand"}`}
+        className={`absolute inset-0 rounded-lg border-[1.5px] pointer-events-none ${isOverdue ? "border-danger" : "border-brand"}`}
         style={{
           maskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
           WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
@@ -773,7 +773,7 @@ export default function Home() {
             />
 
             {/* ── Upcoming Payments ────────────────────────────────────────────── */}
-            <div className="mx-4 mt-4 bg-surface-container rounded-2xl px-4 pt-4 pb-1 border border-surface-container-border">
+            <div className="mx-4 mt-4 bg-surface-container rounded-lg px-4 pt-4 pb-1 border border-surface-container-border">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm font-normal text-[#111]">
@@ -817,7 +817,7 @@ export default function Home() {
             </div>
 
             {/* ── Payment History ──────────────────────────────────────────────── */}
-            <div className="mx-4 mt-4 bg-surface-container rounded-2xl px-4 pt-4 pb-1 border border-surface-container-border">
+            <div className="mx-4 mt-4 bg-surface-container rounded-lg px-4 pt-4 pb-1 border border-surface-container-border">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-normal text-[#111]">
                   Payment History
