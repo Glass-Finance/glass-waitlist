@@ -25,8 +25,6 @@ import {
   Users,
   Bell,
   Settings,
-  PanelLeftClose,
-  PanelLeftOpen,
   LogOut,
   ShieldCheck,
   Smartphone,
@@ -99,7 +97,6 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   const communities = communitiesData?.communities ?? [];
   const { unreadCount } = useNotifications();
   const { invites } = useInvites();
-  const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [memberViewHint, setMemberViewHint] = useState(false);
 
@@ -148,8 +145,6 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       setLoggingOut(false);
     }
   };
-
-  const W = collapsed ? 0 : 220;
 
   // ── Platform admin: stripped-down sidebar, no community nav ───────────────
   if (isPlatformAdmin) {
@@ -487,35 +482,6 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               </div>
             </div>
           )}
-
-          {/* Collapse toggle */}
-          {/* <button
-            onClick={() => setCollapsed((c) => !c)}
-            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: "#9ca3af",
-              flexShrink: 0,
-              padding: 4,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 6,
-              transition: "background .15s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f4f6")}
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "transparent")
-            }
-          >
-            {collapsed ? (
-              <PanelLeftOpen size={14} />
-            ) : (
-              <PanelLeftClose size={14} />
-            )}
-          </button> */}
         </div>
 
         {/* Nav links */}
@@ -631,22 +597,20 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         </div>
 
         {/* Bottom — user info strip */}
-        {!collapsed && (
-          <div className="py-2.5 px-3 border-t border-[var(--color-hairline)] flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--color-brand),#4f46e5)] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 overflow-hidden">
-              {user?.profileImage?.url ? (
-                <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                userInitials
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-semibold m-0 whitespace-nowrap overflow-hidden text-ellipsis">
-                {userDisplayName}
-              </p>
-            </div>
+        <div className="py-2.5 px-3 border-t border-[var(--color-hairline)] flex items-center gap-2">
+          <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--color-brand),#4f46e5)] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 overflow-hidden">
+            {user?.profileImage?.url ? (
+              <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              userInitials
+            )}
           </div>
-        )}
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-semibold m-0 whitespace-nowrap overflow-hidden text-ellipsis">
+              {userDisplayName}
+            </p>
+          </div>
+        </div>
       </div>
       )}
       </div>

@@ -19,7 +19,7 @@ import successIcon from "../../assets/auth/community-live-success.png";
 import { getBanks, resolveAccount } from "../../api/members";
 import { notifyError, getErrorMessage } from "../../utils/errorHandler";
 import { useCommunityAccount } from "../../hooks/useCommunityAccount";
-import { readOnboardingProgress } from "../../utils/onboardingProgress";
+import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
 import BankSelect from "../../components/common/BankSelect";
 import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import StepIndicator from "../../components/onboarding/StepIndicator";
@@ -75,11 +75,15 @@ export default function PaymentProfile() {
     useCommunityAccount(communityId);
 
   const [banks,       setBanks]       = useState([]);
-  const [bankCode,    setBankCode]    = useState("");
-  const [bankName,    setBankName]    = useState("");
-  const [bankSlug,    setBankSlug]    = useState("");
-  const [accNumber,   setAccNumber]   = useState("");
-  const [accName,     setAccName]     = useState("");
+  // Restores whatever was typed here before a reload/forced re-login wiped
+  // React state -- the existingAccount prefill effect below still wins once
+  // it loads, since it unconditionally overwrites these once the backend
+  // confirms an actually-saved account.
+  const [bankCode,    setBankCode]    = useState(savedProgress.bankCode ?? "");
+  const [bankName,    setBankName]    = useState(savedProgress.bankName ?? "");
+  const [bankSlug,    setBankSlug]    = useState(savedProgress.bankSlug ?? "");
+  const [accNumber,   setAccNumber]   = useState(savedProgress.accNumber ?? "");
+  const [accName,     setAccName]     = useState(savedProgress.accName ?? "");
   const [resolving,   setResolving]   = useState(false);
   const [manualMode,  setManualMode]  = useState(false);
   const [saving,      setSaving]      = useState(false);
@@ -111,6 +115,13 @@ export default function PaymentProfile() {
       })
       .catch((err) => notifyError(err, { context: "Load banks", fallback: "Couldn't load the bank list. Please refresh." }));
   }, []);
+
+  // Persist as the admin types, so a dropped session before Save loses at
+  // most the last few keystrokes instead of the whole step (mirrors
+  // OrganizationProfile.jsx's same pattern for its own fields).
+  useEffect(() => {
+    saveOnboardingProgress({ bankCode, bankName, bankSlug, accNumber, accName });
+  }, [bankCode, bankName, bankSlug, accNumber, accName]);
 
   // Prefill from an already-saved payout account -- e.g. the admin came back
   // here via AddMembers' Back button after already completing this step.
