@@ -147,7 +147,7 @@ export default function StepContact({ initialEmail, initialPhone, onNext, onGoog
 
       <ErrorMessage message={error} />
 
-      <PrimaryButton onClick={handleSubmit} size="sm">
+      <PrimaryButton onClick={handleSubmit} disabled={!email.trim() || !phone.trim()} size="sm">
         Continue
       </PrimaryButton>
 
