@@ -8,7 +8,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen w-screen flex flex-col md:flex-row overflow-hidden bg-surface-bg md:p-2 relative">
+    <div className="h-screen w-screen flex flex-col md:flex-row overflow-hidden bg-surface-bg md:p-1 relative">
       {/* Background — separate mobile/desktop images (different aspect
           ratios), swapped by breakpoint visibility rather than one shared
           background-image, since the two assets aren't the same crop. */}
@@ -38,7 +38,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
 
       {/* ── Hero panel — desktop only ── */}
       <div className="hidden md:block md:w-[46%] md:h-full flex-shrink-0 relative z-10">
-        <div className="relative w-full h-full md:rounded-3xl overflow-hidden">
+        <div className="relative w-full h-full md:rounded-xl overflow-hidden">
           <img
             src={AuthPanel}
             alt="Glass Finance"
@@ -50,14 +50,15 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
           {/* Logo — no wrapping card per design; the backdrop-blur overlay
               this used to sit in was also a likely cause of the slow first
               paint reported on Brave (120px backdrop-filter is expensive to
-              composite). Still clickable back to the landing page.
-              top-2/left-2 (8px) per Figma -- top-8/left-8 looks like the
-              same number but is Tailwind's spacing-scale 8 (32px), not a
-              literal 8px inset. */}
+              composite). Still clickable back to the landing page. Exact
+              px values from Figma dev-mode inspection (Top 42.5, Left 32,
+              logo footprint 72x62.73) -- neither matches a clean Tailwind
+              spacing-scale step, so arbitrary values instead of guessing
+              the nearest one. */}
           <img
             src={glassLogo}
             alt="Glass Logo"
-            className="absolute top-2 left-2 z-10 h-10 w-auto object-contain cursor-pointer"
+            className="absolute top-[42.5px] left-8 z-10 h-[62.73px] w-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}
           />
 
