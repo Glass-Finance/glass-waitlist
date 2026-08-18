@@ -74,6 +74,7 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
   const { hasToken } = useInviteToken();
   const [email, setEmail] = useState(initialEmail ?? "");
   const [phone, setPhone] = useState(initialPhone ?? "");
+  const [phoneFocused, setPhoneFocused] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({ email: "", phone: "" });
   const [error, setError] = useState("");
@@ -156,16 +157,20 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
           placeholder="Enter Your Phone Number"
           value={phone}
           onChange={handleFieldChange("phone", setPhone)}
+          onFocus={() => setPhoneFocused(true)}
+          onBlur={() => setPhoneFocused(false)}
           autoComplete="tel"
           inputMode="tel"
         />
         <ErrorMessage message={fieldErrors.phone} />
-        <div className="flex items-start gap-1.5 mt-1.5">
-          <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-gray-500 leading-snug">
-            We'll use this number to send you updates.
-          </p>
-        </div>
+        {phoneFocused && (
+          <div className="flex items-start gap-1.5 mt-1.5">
+            <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-gray-500 leading-snug">
+              We'll use this number to send you updates.
+            </p>
+          </div>
+        )}
       </div>
 
       <label className="flex items-start gap-2 cursor-pointer select-none">
@@ -173,9 +178,9 @@ function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasComm
           type="checkbox"
           checked={agreed}
           onChange={(e) => { setAgreed(e.target.checked); setError(""); }}
-          className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer bg-white border border-gray-300 accent-[#1C2B8A]"
+          className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer border border-[#797D86]/40 accent-[#1C2B8A]"
         />
-        <span className="text-sm text-gray-700">
+        <span className="text-xs md:text-sm text-gray-700">
           I accept the{" "}
           <Link
             to="/terms"

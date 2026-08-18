@@ -135,9 +135,9 @@ export default function EmailPhoneStep({ initialEmail, initialPhone, onNext, onS
             type="checkbox"
             checked={agreed}
             onChange={(e) => { setAgreed(e.target.checked); setError(""); }}
-            className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer bg-white border border-gray-300 accent-[#2535c3]"
+            className="mt-0.5 w-4 h-4 rounded flex-shrink-0 cursor-pointer border border-[#797D86]/40 accent-[#2535c3]"
           />
-          <span className="text-sm text-gray-700">
+          <span className="text-xs md:text-sm text-gray-700">
             I accept the{" "}
             <Link
               to="/terms"
