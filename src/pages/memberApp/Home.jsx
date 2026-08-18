@@ -148,14 +148,15 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   if (!nextDue) {
     const isError = Boolean(error);
     return (
-      <div className="border border-surface-container-border mx-4 rounded-2xl overflow-hidden bg-white">
-        {/* Top block carries the accent border on 3 sides, same split-block
-            technique as the funded card below -- a border on a single
-            normally-flowing block, not a full ring around an auto-height
-            container (see that card's comment for why). */}
-        <div
-          className={`border-t-[1.5px] border-x-[1.5px] rounded-t-2xl pt-10 px-6 pb-5 flex flex-col items-center ${isError ? "border-danger" : "border-brand"}`}
-        >
+      <div className={`border-[1.5px] mx-4 rounded-2xl overflow-hidden bg-white ${isError ? "border-danger" : "border-brand"}`}>
+        {/* A real border on this outer flowing block, not an
+            absolutely-positioned ring -- a % height on an abs-positioned
+            child of an auto-height container is undefined by spec and
+            previously rendered inconsistently across browsers when tried
+            that way. One border around the whole card, not split between
+            an outer gray one and an inner 3-sided accent (see the funded
+            card below for the same fix). */}
+        <div className="pt-10 px-6 pb-5 flex flex-col items-center">
           {isError ? (
             <div className="w-14 h-14 rounded-full flex items-center justify-center bg-danger-tint">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -224,19 +225,19 @@ function HeroCard({ nextDue, onPay, communityName, error, onRefresh }) {
   const isOverdue = new Date(nextDue.dueDate) < new Date();
 
   return (
-    <div className="border border-surface-container-border mx-4 rounded-2xl overflow-hidden bg-white">
-      {/* Top block carries the accent border on 3 sides. Structural, not an
+    <div className={`border-[1.5px] mx-4 rounded-2xl overflow-hidden bg-white ${isOverdue ? "border-danger" : "border-brand"}`}>
+      {/* A real border on this outer flowing block, not an
           absolutely-positioned overlay sized with height:50% — that relied
           on a percentage height resolving against this card's height, but
           the card is auto-height (sized by its own content), and a
           percentage height on an abs-positioned child of an auto-height
           container is undefined by spec. Browsers disagreed on how to
           resolve it, which is why the border intermittently rendered around
-          the whole card instead of just the top. Two stacked, normally-
-          flowing blocks can't have that ambiguity. */}
-      <div
-        className={`border-t-[1.5px] border-x-[1.5px] rounded-t-2xl pt-5 px-5 flex flex-col items-center ${isOverdue ? "border-danger" : "border-brand"}`}
-      >
+          the whole card instead of just the top. One border around the
+          whole card here (not split between an outer gray one and an inner
+          3-sided accent) also matches the reference design's uniform
+          border, which the split version never did. */}
+      <div className="pt-5 px-5 flex flex-col items-center">
         {/* Recurring pill */}
         <div className="border border-surface-container-border mb-3.5 py-1.5 px-[18px] rounded-full text-[#374151] text-xs font-medium flex items-center gap-1.5">
           <span
