@@ -6,7 +6,7 @@ import { dateInputToIso } from "../../../utils/date";
 import { validatePlanField } from "./helpers";
 import PlanStepIndicator from "./PlanStepIndicator";
 import { Step1, Step2, Step3 } from "./PlanFormSteps";
-import successIcon from "../../../assets/auth/community-live-success.png";
+import SuccessBadge from "../../../components/common/SuccessBadge";
 
 // ── Create plan modal ─────────────────────────────────────────────────────────
 export default function CreatePlanModal({ communityId, onClose, onCreate, creating, createError }) {
@@ -167,13 +167,8 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
         <div className="px-6 py-4 flex-1 overflow-hidden flex flex-col">
           {success ? (
             <div className="text-center py-10">
-              <img src={successIcon} alt="" className="w-16 h-auto mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-black mb-2">
-                Plan Created!
-              </h3>
-              <p className="text-sm text-gray-500 mb-6">
-                Members have been notified.
-              </p>
+              <SuccessBadge message="Plan Created!" subMessage="Members have been notified." className="mb-6" />
+
               <button
                 onClick={onClose}
                 className="px-6 py-2 rounded-lg bg-brand text-white font-medium text-xs cursor-pointer border-none"

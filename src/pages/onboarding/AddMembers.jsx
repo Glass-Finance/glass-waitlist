@@ -16,7 +16,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Papa from "papaparse";
 import { Bell, Download, CloudUpload, Copy, Check, X, FileSpreadsheet, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
-import communityLiveSuccessIcon from "../../assets/auth/community-live-success.png";
+import SuccessBadge from "../../components/common/SuccessBadge";
 import { notifyError } from "../../utils/errorHandler";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { toastProgress, toastSuccess } from "../../utils/toast";
@@ -100,13 +100,11 @@ function SuccessModal({ communityName, onDashboard, onCopy }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/35 backdrop-blur-[2px]">
       <div className="bg-white rounded-t-[24px] lg:rounded-3xl flex flex-col items-center text-center px-8 py-12 lg:px-10 lg:py-20 w-full lg:max-w-[550px] shadow-[0_24px_64px_rgba(0,0,0,0.15)]">
-        <img
-          src={communityLiveSuccessIcon}
-          alt=""
-          className="w-[100px] h-auto mb-6"
+        <SuccessBadge
+          message="Your Community Is Now Live"
+          subMessage={`${communityName ?? "Your community"} is all set up on Glass!`}
+          className="mb-8"
         />
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Your Community Is Now Live</h2>
-        <p className="text-xs text-gray-500 mb-8">{communityName ?? "Your community"} is all set up on Glass!</p>
         <Button onClick={onDashboard} size="sm" className="lg:w-4/5 mb-5">
           Go To Dashboard
         </Button>

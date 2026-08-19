@@ -9,7 +9,7 @@ import { useCountdown, formatCountdown } from "../../../../hooks/useCountdown";
 import { notifyError, getErrorMessage } from "../../../../utils/errorHandler";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../../utils/phone";
 import { Button } from "../../../../components/ui/Button";
-import verifiedBadge from "../../../../assets/icons/verified-badge.png";
+import SuccessBadge from "../../../../components/common/SuccessBadge";
 
 const inputCls = "w-full h-12 min-h-8 py-1 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all focus:border-[#002FA7]";
 
@@ -123,11 +123,10 @@ export default function VerifyPhone() {
 
   if (step === "success") {
     return (
-      <div className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center gap-4 px-6 text-center">
-        <img src={verifiedBadge} alt="" className="w-20 h-20 object-contain" />
-        <p className="text-lg font-semibold text-[#111] m-0">
-          {isUpdate ? "Your Phone Number Has Been Updated!" : "Your Phone Number Has Been Verified!"}
-        </p>
+      <div className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center px-6">
+        <SuccessBadge
+          message={isUpdate ? "Your Phone Number Has Been Updated!" : "Your Phone Number Has Been Verified!"}
+        />
       </div>
     );
   }

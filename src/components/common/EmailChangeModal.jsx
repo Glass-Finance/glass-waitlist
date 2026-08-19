@@ -4,7 +4,7 @@ import { notifyError } from "../../utils/errorHandler";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
 import OtpBoxes from "./OtpBoxes";
 import { Button } from "../ui/Button";
-import verifiedBadge from "../../assets/icons/verified-badge.png";
+import SuccessBadge from "./SuccessBadge";
 
 // Codes are valid for 15 minutes (see the same figure quoted in SignIn.jsx).
 const OTP_VALIDITY_SECONDS = 15 * 60;
@@ -79,10 +79,7 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
   if (step === "success") {
     return (
       <ModalShell>
-        <div className="flex flex-col items-center text-center gap-4 py-4">
-          <img src={verifiedBadge} alt="" className="w-16 h-16 object-contain" />
-          <p className="text-lg font-semibold text-gray-900">Your Email Has Been Updated!</p>
-        </div>
+        <SuccessBadge message="Your Email Has Been Updated!" />
       </ModalShell>
     );
   }

@@ -3,7 +3,7 @@ import { notifyError } from "../../utils/errorHandler";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
 import OtpBoxes from "./OtpBoxes";
 import { Button } from "../ui/Button";
-import verifiedBadge from "../../assets/icons/verified-badge.png";
+import SuccessBadge from "./SuccessBadge";
 
 // Codes are valid for 15 minutes (see the same figure quoted in SignIn.jsx
 // and EmailChangeModal.jsx).
@@ -77,12 +77,9 @@ export default function PhoneChangeModal({ newPhone, isUpdate, onSubmitOtp, onVe
   if (step === "success") {
     return (
       <ModalShell>
-        <div className="flex flex-col items-center text-center gap-4 py-4">
-          <img src={verifiedBadge} alt="" className="w-16 h-16 object-contain" />
-          <p className="text-lg font-semibold text-gray-900">
-            {isUpdate ? "Your Phone Number Has Been Updated!" : "Your Phone Number Has Been Verified!"}
-          </p>
-        </div>
+        <SuccessBadge
+          message={isUpdate ? "Your Phone Number Has Been Updated!" : "Your Phone Number Has Been Verified!"}
+        />
       </ModalShell>
     );
   }

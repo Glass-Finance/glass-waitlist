@@ -11,7 +11,7 @@ import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import ReceiptModal from "../../components/common/ReceiptModal";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { Button } from "../../components/ui/Button";
-import successIcon from "../../assets/auth/community-live-success.png";
+import SuccessBadge from "../../components/common/SuccessBadge";
 
 const POLL_INTERVAL_MS = 1500;
 const MAX_POLLS = 20;
@@ -278,33 +278,29 @@ export default function PaymentSuccess() {
       {/* Status */}
       <div
         className={`flex-1 flex flex-col items-center px-8 ${
-          state === "success" ? "pt-16 gap-3" : "mt-10 gap-4"
+          state === "success" ? "pt-10 gap-3" : "mt-10 gap-4"
         }`}
       >
         {state === "success" ? (
-          <img src={successIcon} alt="" className="w-[110px] h-auto flex-shrink-0" />
+          <SuccessBadge message={content.text} subMessage={content.sub} />
         ) : (
-          <div
-            className={`w-[100px] h-[100px] rounded-full flex items-center justify-center flex-shrink-0 ${content.bgCls}`}
-          >
-            {content.icon}
-          </div>
-        )}
+          <>
+            <div
+              className={`w-[100px] h-[100px] rounded-full flex items-center justify-center flex-shrink-0 ${content.bgCls}`}
+            >
+              {content.icon}
+            </div>
 
-        <p
-          className={
-            state === "success"
-              ? "text-headline text-gray-900 mt-1 text-center"
-              : "text-headline text-gray-800 mt-1 text-center"
-          }
-        >
-          {content.text}
-        </p>
+            <p className="text-headline text-gray-800 mt-1 text-center">
+              {content.text}
+            </p>
 
-        {content.sub && (
-          <p className="text-title-sm text-gray-500 text-center -mt-1 max-w-[280px]">
-            {content.sub}
-          </p>
+            {content.sub && (
+              <p className="text-title-sm text-gray-500 text-center -mt-1 max-w-[280px]">
+                {content.sub}
+              </p>
+            )}
+          </>
         )}
 
         {state === "success" ? (

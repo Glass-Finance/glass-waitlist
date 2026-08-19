@@ -228,6 +228,31 @@ body {
   background-image: url("./assets/solution/solution-glow.webp");
 }
 
+/* ── Success badge animation ──────────────────────────────────────────────
+   Used by SuccessBadge.jsx (email/phone verified, email updated,
+   transaction successful, etc.) -- see
+   design_handoff_checkmark_animation/README.md for the exact timing/easing
+   spec these are ported from. */
+@keyframes successBadgePop {
+  0% { transform: translate(-50%, -50%) translateY(50px) scale(0.3); opacity: 0; }
+  60% { transform: translate(-50%, -50%) translateY(-6px) scale(1.1); opacity: 1; }
+  80% { transform: translate(-50%, -50%) translateY(2px) scale(0.96); opacity: 1; }
+  100% { transform: translate(-50%, -50%) translateY(0) scale(1); opacity: 1; }
+}
+@keyframes successAccentPop {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  55% { transform: scale(1.25) rotate(4deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes successRingPulse {
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+@keyframes successTextFade {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
 /* Keyframe Animations */
 @keyframes fadeIn {
   from {

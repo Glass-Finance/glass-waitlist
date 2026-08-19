@@ -10,7 +10,7 @@ import { notifyError } from "../../../../utils/errorHandler";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { getEmailError } from "../../../../utils/validators";
 import { Button } from "../../../../components/ui/Button";
-import verifiedBadge from "../../../../assets/icons/verified-badge.png";
+import SuccessBadge from "../../../../components/common/SuccessBadge";
 
 const inputCls = "w-full h-12 min-h-8 py-1 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all focus:border-[#002FA7]";
 
@@ -124,9 +124,8 @@ export default function UpdateEmail() {
 
   if (step === "success") {
     return (
-      <div className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center gap-4 px-6 text-center">
-        <img src={verifiedBadge} alt="" className="w-20 h-20 object-contain" />
-        <p className="text-lg font-semibold text-[#111] m-0">Your Email Has Been Updated!</p>
+      <div className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center px-6">
+        <SuccessBadge message="Your Email Has Been Updated!" />
       </div>
     );
   }

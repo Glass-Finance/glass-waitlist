@@ -15,7 +15,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingScreen from "../../components/LoadingScreen";
 import { Button } from "../../components/ui/Button";
 import MemberPaymentConfirm from "../memberApp/PaymentSuccess";
-import successIcon from "../../assets/auth/community-live-success.png";
+import SuccessBadge from "../../components/common/SuccessBadge";
 
 // The backend's verify endpoint is async: it queues a verification job and
 // returns the current DB status (often still "INITIATED"). The job updates the
@@ -279,21 +279,23 @@ function AdminPaymentCallback() {
           className="w-full bg-surface-container border border-surface-container-border rounded-2xl flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center max-w-[560px]"
         >
           {state === "success" ? (
-            <img src={successIcon} alt="" className="w-[110px] h-auto mb-6 flex-shrink-0" />
+            <SuccessBadge message={config.title} subMessage={config.subtitle} className="mb-2" />
           ) : (
-            <div
-              className={`w-[110px] h-[110px] rounded-full flex items-center justify-center mb-6 flex-shrink-0 ${config.outerBgCls}`}
-            >
+            <>
               <div
-                className={`w-16 h-16 rounded-full flex items-center justify-center ${config.innerBgCls}`}
+                className={`w-[110px] h-[110px] rounded-full flex items-center justify-center mb-6 flex-shrink-0 ${config.outerBgCls}`}
               >
-                {config.icon}
+                <div
+                  className={`w-16 h-16 rounded-full flex items-center justify-center ${config.innerBgCls}`}
+                >
+                  {config.icon}
+                </div>
               </div>
-            </div>
-          )}
 
-          <h1 className="text-headline text-gray-900 mb-2">{config.title}</h1>
-          <p className="text-title-sm text-gray-500 leading-relaxed mb-2">{config.subtitle}</p>
+              <h1 className="text-headline text-gray-900 mb-2">{config.title}</h1>
+              <p className="text-title-sm text-gray-500 leading-relaxed mb-2">{config.subtitle}</p>
+            </>
+          )}
 
           {reference && state !== "checking" && (
             <p className="text-xs text-gray-400 mt-1 mb-6 font-mono break-all">

@@ -15,7 +15,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bell, Check, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
-import successIcon from "../../assets/auth/community-live-success.png";
+import SuccessBadge from "../../components/common/SuccessBadge";
 import { getBanks, resolveAccount } from "../../api/members";
 import { notifyError, getErrorMessage } from "../../utils/errorHandler";
 import { useCommunityAccount } from "../../hooks/useCommunityAccount";
@@ -50,8 +50,7 @@ function SuccessModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-[rgba(20,20,30,0.45)]">
       <div className="w-full lg:w-auto lg:min-w-[480px] bg-white rounded-t-[24px] lg:rounded-2xl px-8 py-10 lg:px-12 lg:py-16 flex flex-col items-center shadow-2xl">
-        <img src={successIcon} alt="" className="w-[90px] lg:w-[110px] h-auto mb-6 lg:mb-8 flex-shrink-0" />
-        <p className="text-lg lg:text-xl text-gray-900 text-center">Your Payment Account Is Now Set!</p>
+        <SuccessBadge message="Your Payment Account Is Now Set!" />
         <div className="h-[env(safe-area-inset-bottom,0px)] lg:hidden" />
       </div>
     </div>
