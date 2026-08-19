@@ -23,7 +23,7 @@ function CodeInput({ value, onChange, disabled }) {
       value={value}
       disabled={disabled}
       onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, 6))}
-      className="w-full py-3 px-4 text-[22px] font-bold tracking-[8px] text-center rounded-xl border-[1.5px] border-[#D0D0D0] bg-[#FAFAFA] outline-none text-[#111]"
+      className="w-full py-3 px-4 text-[22px] font-bold tracking-[8px] text-center rounded-xl border-[1.5px] border-[#D0D0D0] bg-[#FAFAFA] outline-none text-[#111] focus:border-[#002FA7]"
     />
   );
 }

@@ -386,7 +386,7 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
 
         {/* Controls */}
         <div className="px-6 py-3 flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-surface-container-border flex-1 max-w-xs">
+          <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-surface-container-border flex-1 max-w-xs focus-within:ring-1 focus-within:ring-[var(--color-brand)]">
             <Search size={12} className="text-gray-400 flex-shrink-0" />
             <input
               value={search}

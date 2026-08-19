@@ -109,7 +109,7 @@ export default function SideDrawer({ open, onClose }) {
         {/* Log out — pinned to bottom */}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 pt-5 px-6 border-none bg-transparent cursor-pointer text-left outline-none pb-[max(env(safe-area-inset-bottom,0px)_+_32px,56px)]"
+          className="flex items-center gap-3 pt-5 px-6 border-none bg-transparent cursor-pointer text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#D32F2F] pb-[max(env(safe-area-inset-bottom,0px)_+_32px,56px)]"
         >
           <LogOut size={18} strokeWidth={1.8} className="text-[#D32F2F]" />
           <span className="text-[15px] font-medium text-[#D32F2F]">

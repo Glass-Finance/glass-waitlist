@@ -543,7 +543,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                   Enter Email(s):
                 </p>
                 <div
-                  className={`rounded-lg p-3 flex flex-wrap items-center gap-2 mb-1 border min-h-[60px] bg-white ${emailChipError ? "border-danger" : "border-surface-container-border"}`}
+                  className={`rounded-lg p-3 flex flex-wrap items-center gap-2 mb-1 border min-h-[60px] bg-white focus-within:ring-1 focus-within:ring-[var(--color-brand)] ${emailChipError ? "border-danger" : "border-surface-container-border"}`}
                 >
                   {emails.map((em, i) => (
                     <span

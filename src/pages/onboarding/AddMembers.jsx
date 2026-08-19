@@ -545,7 +545,7 @@ export default function AddMembers() {
               {tab === "manual" && (
                 <>
                   <p className="text-sm font-medium text-gray-900 mb-2">Enter Email(s):</p>
-                  <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5 min-h-[60px] border border-[#E5E7EB] bg-white">
+                  <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5 min-h-[60px] border border-[#E5E7EB] bg-white focus-within:border-[#002FA7]">
                     {emails.map((em, i) => (
                       <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800 bg-stacked-container">
                         <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-brand text-[10px] font-semibold flex items-center justify-center flex-shrink-0">

@@ -80,7 +80,7 @@ export default function BankSelect({ banks, value, onChange, placeholder = "Choo
 
       {open && (
         <div className="absolute left-0 top-full mt-1.5 w-full min-w-[240px] bg-white rounded-xl border border-gray-100 shadow-lg z-30 overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100">
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-100 focus-within:bg-gray-50">
             <Search size={13} className="text-gray-400 flex-shrink-0" />
             <input
               ref={searchRef}

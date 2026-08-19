@@ -315,7 +315,7 @@ export default function DiscoverCommunities() {
 
       {/* Search input */}
       <div className="px-4 pb-4">
-        <div className="flex items-center gap-2.5 bg-white rounded-xl py-3 px-3.5 border-[1.5px] border-[#E0E0E0]">
+        <div className="flex items-center gap-2.5 bg-white rounded-xl py-3 px-3.5 border-[1.5px] border-[#E0E0E0] focus-within:border-[#002FA7]">
           {isFetching ? (
             <Loader2
               size={15}
