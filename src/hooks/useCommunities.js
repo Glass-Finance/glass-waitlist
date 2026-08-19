@@ -99,13 +99,31 @@ export function useCommunitiesWithMetrics(params = {}) {
   // the backend's metrics.collectedAmount only tracks settlements (transfers
   // to the community's account) and returns 0 even when members have paid.
   // Shares the ["community", id, "transactions"] cache key with useMembersWithPayments.
+  //
+  // getCommunityTransactions requests up to 1000 per page, which covers most
+  // communities in one call — but for one with more than that, silently
+  // treating the first 1000 as the whole list would understate
+  // collectedAmount below, which is displayed as an authoritative total, not
+  // an estimate. Page through until the envelope says there's nothing left
+  // (`last`, falling back to a short-page check for a plain-array response
+  // shape) rather than trust a single capped fetch.
   const txListQueries = useQueries({
     queries: communities.map((c) => ({
       queryKey: ["community", c.slug ?? c.id, "transactions"],
       queryFn: async () => {
-        const res = await getCommunityTransactions(c.slug ?? c.id);
-        const data = res.data?.data;
-        return Array.isArray(data) ? data : (data?.content ?? []);
+        const id = c.slug ?? c.id;
+        let all = [];
+        let pageNumber = 0;
+        while (true) {
+          const res = await getCommunityTransactions(id, { pageNumber });
+          const data = res.data?.data;
+          const items = Array.isArray(data) ? data : (data?.content ?? []);
+          all = all.concat(items);
+          const isLast = Array.isArray(data) ? true : (data?.last ?? items.length < 1000);
+          if (isLast || items.length === 0) break;
+          pageNumber += 1;
+        }
+        return all;
       },
       enabled: !!listQuery.data,
       staleTime: 1000 * 60 * 2,

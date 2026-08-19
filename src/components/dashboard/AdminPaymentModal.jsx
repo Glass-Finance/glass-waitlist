@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Info, X, Landmark, Loader2 } from "lucide-react";
 import {
@@ -8,16 +8,14 @@ import {
   stashPendingPaymentCtx,
   findAuthorisationForPlan,
 } from "../../hooks/usePayments";
-import { initiatePayment as initiatePaymentApi } from "../../api/members";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
 import Toggle from "../common/Toggle";
 import AutoPayPrompt from "../common/AutoPayPrompt";
 import { Button } from "../ui/Button";
 
-// This modal shows "—" for a null/undefined amount rather than "₦0" (the
-// prefetch-derived fee breakdown reads as genuinely unknown before it
-// loads, not zero).
+// This modal shows "—" for a null/undefined amount rather than "₦0" --
+// genuinely unknown reads differently than zero.
 function formatNaira(amount) {
   return sharedFormatNaira(amount, { emptyDash: true });
 }
@@ -49,24 +47,17 @@ export function AdminPaymentModal({ item, onClose }) {
     return () => window.removeEventListener("keydown", handler);
   }, [onClose, autoPayPrompt]);
 
-  // Pre-fetch the initiate-payment response as soon as the modal opens so
-  // the real billedAmount (amount + platform fee) can be shown before the
-  // admin confirms -- same pattern as PaymentSummary.jsx's member checkout.
-  // Silent failure -- falls back to item.amount with no fee breakdown.
-  const [prefetch, setPrefetch] = useState(null);
-  useEffect(() => {
-    if (!item.paymentLinkId || prefetch) return;
-    let cancelled = false;
-    initiatePaymentApi(item.paymentLinkId, {
-      idempotencyKey: crypto.randomUUID(),
-      amount: item.amount,
-      savePaymentMethod: true,
-      ...(item.obligationId ? { obligationId: item.obligationId } : {}),
-    })
-      .then((res) => { if (!cancelled) setPrefetch(res.data?.data ?? null); })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, [item.paymentLinkId]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Deliberately no pre-fetch here. initiatePayment is the real charge
+  // endpoint -- for a member with an existing saved/authorised method it
+  // charges immediately with no redirect, so calling it before the admin
+  // has actually pressed "Make Payment" would charge the member without
+  // anyone asking. The billed-amount (fee) breakdown is only shown once
+  // it's known, i.e. after the real charge -- see handlePay.
+  //
+  // Stable idempotency key for this modal's lifetime -- reused across a
+  // retry after a failed attempt so the backend treats them as the same
+  // intent, not a second charge.
+  const idempotencyKeyRef = useRef(crypto.randomUUID());
 
   // Confirmed with backend: a consent is scoped per recurring plan -- the
   // card saved on a plan's first payment is what auto-charges that plan
@@ -108,7 +99,7 @@ export function AdminPaymentModal({ item, onClose }) {
       const res = await initiatePayment.mutateAsync({
         paymentLinkId: item.paymentLinkId,
         payload: {
-          idempotencyKey: crypto.randomUUID(),
+          idempotencyKey: idempotencyKeyRef.current,
           amount: item.amount,
           savePaymentMethod: effectiveSaveMethod,
           ...(item.obligationId ? { obligationId: item.obligationId } : {}),
@@ -297,35 +288,14 @@ export function AdminPaymentModal({ item, onClose }) {
                 {isRecurring ? toTitleCase((item.frequency ?? "Recurring").toLowerCase()) : "One-Time"}
               </span>
             </div>
-            {prefetch?.billedAmount != null && prefetch.billedAmount !== item.amount ? (
-              <>
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-sm text-gray-500">Amount</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formatNaira(item.amount)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">Charge</span>
-                  <span className="text-sm text-gray-600">
-                    {formatNaira(prefetch.billedAmount - item.amount)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                  <span className="text-sm font-semibold text-gray-700">Total</span>
-                  <span className="text-[17px] font-bold text-gray-900">
-                    {formatNaira(prefetch.billedAmount)}
-                  </span>
-                </div>
-              </>
-            ) : (
-              <div className="flex items-center justify-between pt-1">
-                <span className="text-sm text-gray-500">Amount</span>
-                <span className="text-sm font-medium text-gray-900">
-                  {formatNaira(item.amount)}
-                </span>
-              </div>
-            )}
+            {/* The platform fee isn't known until the real charge happens
+                (see handlePay) -- no fee breakdown to show ahead of that. */}
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-sm text-gray-500">Amount</span>
+              <span className="text-sm font-medium text-gray-900">
+                {formatNaira(item.amount)}
+              </span>
+            </div>
           </div>
         </div>
 

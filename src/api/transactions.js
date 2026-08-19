@@ -29,8 +29,11 @@ export const extendObligationDueDate = (communityId, obligationId, dueAt) =>
   );
 
 // GET /api/v1/communities/{communityIdentifier}/finance/transactions
-export const getCommunityTransactions = (communityId) =>
-  client.get(`/communities/${communityId}/finance/transactions`, { params: { pageSize: 1000 } });
+// pageSize:1000 is a default, not a hard cap -- params can override page/
+// pageSize for a caller that needs to page through a community with more
+// transactions than that (see useCommunities.js's collectedAmount fetch).
+export const getCommunityTransactions = (communityId, params = {}) =>
+  client.get(`/communities/${communityId}/finance/transactions`, { params: { pageSize: 1000, ...params } });
 
 // GET /api/v1/communities/{communityIdentifier}/finance/transactions/{transactionId}
 export const getCommunityTransaction = (communityId, transactionId) =>

@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, useParams, useSearchParams, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, Landmark, Loader2, Info } from "lucide-react";
-import { getObligation, getPaymentLink, initiatePayment as initiatePaymentApi } from "../../api/members";
+import { getObligation, getPaymentLink } from "../../api/members";
 import {
   useManagePayments,
   useInitiatePayment,
@@ -93,32 +93,23 @@ export default function PaymentSummary() {
   const { data: authorisations } = useManagePayments();
   const initiatePayment = useInitiatePayment();
 
-  // Stable idempotency key for this payment session — same key used for both
-  // the pre-fetch and the actual pay button so the backend treats them as one.
+  // Stable idempotency key for this payment session — reused across a retry
+  // after a failed attempt so the backend treats them as the same intent,
+  // not a second charge.
   const idempotencyKeyRef = useRef(crypto.randomUUID());
-  const [prefetch, setPrefetch] = useState(null);
   // Separate from initiatePayment.isPending: the mutation resolves as soon
   // as the API responds with an authorizationUrl, but window.location.href
   // still takes a beat to actually leave the page. Without this, the button
   // flashes back to "Make Payment" during that gap.
   const [redirecting, setRedirecting] = useState(false);
 
-  // Pre-fetch the initiate-payment response as soon as the obligation loads
-  // so we can show the real billedAmount (obligation + platform fee) before
-  // the member confirms. Silent failure — falls back to obligation.amount.
-  useEffect(() => {
-    if (!obligation?.paymentLink?.id || prefetch) return;
-    let cancelled = false;
-    initiatePaymentApi(obligation.paymentLink.id, {
-      idempotencyKey: idempotencyKeyRef.current,
-      amount: obligation.amount,
-      savePaymentMethod: true,
-      ...(obligation.id ? { obligationId: obligation.id } : {}),
-    })
-      .then((res) => { if (!cancelled) setPrefetch(res.data?.data ?? null); })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, [obligation?.paymentLink?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Deliberately no pre-fetch here. initiatePayment is the real charge
+  // endpoint (POST /payments/pay/payment-links/{id}) -- for a payer with an
+  // existing saved/authorised method it charges immediately with no
+  // redirect, so calling it before the member has actually pressed
+  // "Make Payment" would charge them without ever asking. The billed-amount
+  // (fee) breakdown below is only shown once it's known, i.e. after the
+  // real charge -- see handlePay.
 
   // Fall back to whatever Home/UpcomingPayments already knew about this
   // community — the fresh obligation/payment-link fetch above isn't
@@ -157,23 +148,6 @@ export default function PaymentSummary() {
     if (!obligation?.paymentLink?.id) return;
     setError("");
 
-    // For direct charges (saved card, no Paystack redirect) the pre-fetched
-    // reference is still valid — the charge already went through on the backend.
-    if (prefetch?.reference && !prefetch?.authorizationUrl) {
-      recordLocalPayment({
-        paymentLinkId: obligation.paymentLink.id,
-        obligationId: obligation.id,
-      });
-      toastSuccess("Payment sent", { reference: prefetch.reference });
-      navigate(`/member/pay/${paymentId}/success?reference=${prefetch.reference}`, { replace: true });
-      return;
-    }
-
-    // For Paystack-hosted payments we always generate a fresh authorization
-    // URL on button click. The pre-fetched URL is only used to display the
-    // billed amount; reusing it for the redirect risks a "could not start
-    // this transaction" error from Paystack if the user lingered on this
-    // screen and the URL expired.
     try {
       const res = await initiatePayment.mutateAsync({
         paymentLinkId: obligation.paymentLink.id,
@@ -189,10 +163,9 @@ export default function PaymentSummary() {
       // The completed transaction record fetched later often comes back
       // with no fee field populated at all, losing the number the payer
       // already saw here as "Platform Fee" -- billedAmount is confirmed
-      // present on this same initiatePayment response (it's what feeds the
-      // prefetch display above), so cache the fee now while it's known
-      // rather than let the receipt fall back to a bare "—".
-      const billedAmount = res.data?.data?.billedAmount ?? prefetch?.billedAmount;
+      // present on this same initiatePayment response, so cache the fee now
+      // while it's known rather than let the receipt fall back to a bare "—".
+      const billedAmount = res.data?.data?.billedAmount;
       const feeMinor = billedAmount != null ? billedAmount - (obligation?.amount ?? 0) : null;
       if (url) {
         setRedirecting(true);
@@ -414,27 +387,12 @@ export default function PaymentSummary() {
             );
           })()}
 
-          {prefetch?.billedAmount != null && prefetch.billedAmount !== obligation?.amount ? (
-            <>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[13px] text-gray-500">Amount:</span>
-                <span className="text-[14px] text-gray-900">{fmt(obligation?.amount)}</span>
-              </div>
-              <div className="flex items-center justify-between mb-2.5 pb-3 border-b border-gray-100">
-                <span className="text-[13px] text-gray-500">Charge:</span>
-                <span className="text-[13px] text-gray-600">{fmt(prefetch.billedAmount - (obligation?.amount ?? 0))}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-[13px] text-gray-500">Total:</span>
-                <span className="text-[15px] font-bold text-gray-900">{fmt(prefetch.billedAmount)}</span>
-              </div>
-            </>
-          ) : (
-            <div className="flex items-center justify-between">
-              <span className="text-[13px] text-gray-500">Total:</span>
-              <span className="text-[15px] font-bold text-gray-900">{fmt(obligation?.amount)}</span>
-            </div>
-          )}
+          {/* The platform fee isn't known until the real charge happens
+              (see handlePay) -- no fee breakdown to show ahead of that. */}
+          <div className="flex items-center justify-between">
+            <span className="text-[13px] text-gray-500">Total:</span>
+            <span className="text-[15px] font-bold text-gray-900">{fmt(obligation?.amount)}</span>
+          </div>
 
           {isRecurring && (
             <p className="text-[12px] text-gray-400 mt-3 pt-3 border-t border-gray-100 leading-relaxed">
