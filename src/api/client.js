@@ -62,6 +62,10 @@ function clearSessionAndRedirect() {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("glass_user");
   localStorage.removeItem("refreshToken");
+  // Same reasoning as AuthContext.jsx's clearSession -- don't leave a stale
+  // last-selected-community pointer for whoever uses this device next.
+  localStorage.removeItem("glass_community");
+  localStorage.removeItem("glass_member_community");
 
   // window.location.href below is a hard navigation — it wipes any toast
   // shown right before it along with all other JS state. sessionStorage

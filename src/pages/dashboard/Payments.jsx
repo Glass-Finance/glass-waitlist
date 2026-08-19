@@ -11,8 +11,8 @@ import PaymentPlanIllustration from "./admin-dashboard/sections/PaymentPlanIllus
 import StatCard from "../../components/dashboard/StatCard";
 import { formatNaira } from "../../utils/format";
 import {
-  getCommunityObligations,
-  getCommunityTransactions,
+  fetchAllCommunityObligations,
+  fetchAllCommunityTransactions,
 } from "../../api/transactions";
 import { TABS, BAR_COLOR_CLASSES } from "./payments/constants";
 import CreatePlanModal from "./payments/CreatePlanModal";
@@ -43,11 +43,7 @@ export default function Payments() {
   // Obligations — who is enrolled in each plan and whether they've paid
   const { data: obligations = [] } = useQuery({
     queryKey: ["community", communityId, "obligations"],
-    queryFn: async () => {
-      const res = await getCommunityObligations(communityId);
-      const data = res.data?.data;
-      return Array.isArray(data) ? data : (data?.content ?? []);
-    },
+    queryFn: () => fetchAllCommunityObligations(communityId),
     enabled: !!communityId,
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 30,
@@ -57,11 +53,7 @@ export default function Payments() {
   // Transactions — actual amounts collected per plan
   const { data: transactions = [] } = useQuery({
     queryKey: ["community", communityId, "transactions"],
-    queryFn: async () => {
-      const res = await getCommunityTransactions(communityId);
-      const data = res.data?.data;
-      return Array.isArray(data) ? data : (data?.content ?? []);
-    },
+    queryFn: () => fetchAllCommunityTransactions(communityId),
     enabled: !!communityId,
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 30,

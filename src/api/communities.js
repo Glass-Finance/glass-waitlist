@@ -1,4 +1,5 @@
 import client from "./client";
+import { fetchAllPages } from "./pagination";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COMMUNITIES — admin-scoped CRUD + members + payout account
@@ -33,11 +34,21 @@ export const deleteCommunity = (communityId) =>
 // Removing a member is a soft-delete on the backend (status flips off
 // ACTIVE, exitedAt gets set — the row isn't dropped), so an unfiltered
 // fetch keeps returning removed members forever. Default to status=ACTIVE
-// unless the caller explicitly asks for something else.
+// unless the caller explicitly asks for something else. pageSize:1000 is a
+// default, not a hard cap -- params can override page/pageSize for a caller
+// that needs to page through a community with more members than that (see
+// fetchAllCommunityMembers below).
 export const getCommunityMembers = (communityId, params = {}) =>
   client.get(`/communities/${communityId}/members`, {
-    params: { status: "ACTIVE", ...params },
+    params: { status: "ACTIVE", pageSize: 1000, ...params },
   });
+
+// Pages through every member rather than trusting a single capped fetch --
+// a community with more members than one page's worth would otherwise have
+// its roster, headcount, and CSV-adjacent aggregates silently truncated at
+// whatever the first page happened to return.
+export const fetchAllCommunityMembers = (communityId, params = {}) =>
+  fetchAllPages((pageNumber) => getCommunityMembers(communityId, { ...params, pageNumber }));
 
 // GET /api/v1/communities/{communityIdentifier}/members/{memberId}
 export const getCommunityMember = (communityId, memberId) =>

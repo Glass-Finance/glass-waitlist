@@ -1,7 +1,7 @@
 import { useQuery, useQueries } from "@tanstack/react-query";
 import client from "../api/client";
-import { getCommunity, getCommunityMembers } from "../api/communities";
-import { getCommunityTransactions } from "../api/transactions";
+import { getCommunity, fetchAllCommunityMembers } from "../api/communities";
+import { fetchAllCommunityTransactions } from "../api/transactions";
 import { searchPublicCommunities } from "../api/communities";
 
 // GET /api/v1/communities/me
@@ -12,28 +12,6 @@ import { searchPublicCommunities } from "../api/communities";
 async function fetchMyCommunities(params = {}) {
   const res = await client.get("/communities/me", { params });
   return res.data.data; // { content, pageNumber, pageSize, totalElements, totalPages, last }
-}
-
-// getCommunityTransactions requests up to 1000 per page, which covers most
-// communities in one call — but for one with more than that, silently
-// treating the first 1000 as the whole list would understate collectedAmount
-// (see useCommunitiesWithMetrics below), which is displayed as an
-// authoritative total, not an estimate. Page through until the envelope
-// says there's nothing left (`last`, falling back to a short-page check for
-// a plain-array response shape) rather than trust a single capped fetch.
-export async function fetchAllCommunityTransactions(communityId) {
-  let all = [];
-  let pageNumber = 0;
-  while (true) {
-    const res = await getCommunityTransactions(communityId, { pageNumber });
-    const data = res.data?.data;
-    const items = Array.isArray(data) ? data : (data?.content ?? []);
-    all = all.concat(items);
-    const isLast = Array.isArray(data) ? true : (data?.last ?? items.length < 1000);
-    if (isLast || items.length === 0) break;
-    pageNumber += 1;
-  }
-  return all;
 }
 
 export function useCommunities(params = {}) {
@@ -105,11 +83,7 @@ export function useCommunitiesWithMetrics(params = {}) {
   const memberListQueries = useQueries({
     queries: communities.map((c) => ({
       queryKey: ["community", c.slug ?? c.id, "members"],
-      queryFn: async () => {
-        const res = await getCommunityMembers(c.slug ?? c.id);
-        const data = res.data?.data;
-        return Array.isArray(data) ? data : (data?.content ?? []);
-      },
+      queryFn: () => fetchAllCommunityMembers(c.slug ?? c.id),
       // Only fetch the full member list for communities where the user is an
       // admin/owner — non-admin members get 403 on this endpoint.
       enabled: !!listQuery.data && !!c.owned,

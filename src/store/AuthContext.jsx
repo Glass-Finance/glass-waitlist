@@ -71,6 +71,11 @@ function clearSession() {
   localStorage.removeItem(KEY_USER);
   localStorage.removeItem("userId");
   localStorage.removeItem("userEmail");
+  // Last-selected-community pointers -- without this, the next person to
+  // sign in on this device (a shared/handed-back one) has their first data
+  // fetch guided by whoever was logged in before them.
+  localStorage.removeItem("glass_community");
+  localStorage.removeItem("glass_member_community");
 }
 
 // Callers (SignIn pages' routeAfterAuth) need an accurate isAdmin on the

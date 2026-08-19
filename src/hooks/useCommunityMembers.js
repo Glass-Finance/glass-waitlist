@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  getCommunityMembers,
+  fetchAllCommunityMembers,
   updateCommunityMember,
   removeCommunityMember,
 } from "../api/communities";
@@ -19,10 +19,7 @@ export function useCommunityMembers(communityId) {
 
   const query = useQuery({
     queryKey: ["community", communityId, "members"],
-    queryFn: async () => {
-      const res = await getCommunityMembers(communityId);
-      return unwrapList(res);
-    },
+    queryFn: () => fetchAllCommunityMembers(communityId),
     enabled,
     staleTime: 1000 * 60 * 2,
   });

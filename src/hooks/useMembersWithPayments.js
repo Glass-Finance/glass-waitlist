@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getCommunityMembers } from "../api/communities";
-import { getCommunityObligations, getCommunityTransactions } from "../api/transactions";
+import { fetchAllCommunityMembers } from "../api/communities";
+import { fetchAllCommunityObligations, fetchAllCommunityTransactions } from "../api/transactions";
 import { getCommunityPaymentLinks } from "../api/payments";
 
 function unwrapList(res) {
@@ -33,21 +33,21 @@ export function useMembersWithPayments(communityId) {
 
   const membersQuery = useQuery({
     queryKey: ["community", communityId, "members"],
-    queryFn: async () => unwrapList(await getCommunityMembers(communityId)),
+    queryFn: () => fetchAllCommunityMembers(communityId),
     enabled,
     staleTime: 1000 * 60 * 2,
   });
 
   const obligationsQuery = useQuery({
     queryKey: ["community", communityId, "obligations"],
-    queryFn: async () => unwrapList(await getCommunityObligations(communityId)),
+    queryFn: () => fetchAllCommunityObligations(communityId),
     enabled,
     staleTime: 1000 * 60 * 2,
   });
 
   const transactionsQuery = useQuery({
     queryKey: ["community", communityId, "transactions"],
-    queryFn: async () => unwrapList(await getCommunityTransactions(communityId)),
+    queryFn: () => fetchAllCommunityTransactions(communityId),
     enabled,
     staleTime: 1000 * 60 * 2,
   });

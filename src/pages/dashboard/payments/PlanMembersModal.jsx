@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { X, Search, Filter, Users } from "lucide-react";
 import { getPaymentLinkMembers } from "../../../api/payments";
-import { getCommunityMembers } from "../../../api/communities";
-import { getCommunityObligations, getCommunityTransactions } from "../../../api/transactions";
+import { fetchAllCommunityMembers } from "../../../api/communities";
+import { fetchAllCommunityObligations, fetchAllCommunityTransactions } from "../../../api/transactions";
 import { exportCommunityObligations } from "../../../api/exports";
 import { useExportJob } from "../../../hooks/useExportJob";
 import { formatNaira, toTitleCase, formatDate } from "../../../utils/format";
@@ -43,11 +43,7 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
   // here was why they silently disappeared from the paid/unpaid list.
   const { data: communityMembersData } = useQuery({
     queryKey: ["community", communityId, "members", "all-statuses"],
-    queryFn: async () => {
-      const res = await getCommunityMembers(communityId, { status: undefined });
-      const data = res.data?.data;
-      return Array.isArray(data) ? data : (data?.content ?? []);
-    },
+    queryFn: () => fetchAllCommunityMembers(communityId, { status: undefined }),
     enabled: !!communityId,
     staleTime: 1000 * 60 * 5,
   });
@@ -56,11 +52,7 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
   // Uses the same cache key as the main Payments page so no extra request.
   const { data: allObligations = [] } = useQuery({
     queryKey: ["community", communityId, "obligations"],
-    queryFn: async () => {
-      const res = await getCommunityObligations(communityId);
-      const data = res.data?.data;
-      return Array.isArray(data) ? data : (data?.content ?? []);
-    },
+    queryFn: () => fetchAllCommunityObligations(communityId),
     enabled: !!communityId,
     staleTime: 1000 * 60 * 2,
   });
@@ -68,11 +60,7 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
   // Transactions — same cache key as the main page, so no extra request.
   const { data: allTransactions = [] } = useQuery({
     queryKey: ["community", communityId, "transactions"],
-    queryFn: async () => {
-      const res = await getCommunityTransactions(communityId);
-      const data = res.data?.data;
-      return Array.isArray(data) ? data : (data?.content ?? []);
-    },
+    queryFn: () => fetchAllCommunityTransactions(communityId),
     enabled: !!communityId,
     staleTime: 1000 * 60 * 2,
   });

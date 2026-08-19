@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import client from "../api/client";
-import { getCommunityMembers } from "../api/communities";
-import { getCommunityObligations } from "../api/transactions";
+import { fetchAllCommunityMembers } from "../api/communities";
+import { fetchAllCommunityObligations } from "../api/transactions";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/v1/communities/{communityIdentifier}
@@ -20,11 +20,11 @@ async function fetchCommunity(id) {
 // count in the Create Payment Plan modal.
 // ─────────────────────────────────────────────────────────────────────────────
 async function fetchMembers(id) {
-  // Use getCommunityMembers so we get status=ACTIVE by default —
-  // the raw endpoint includes soft-deleted members and inflates the count.
-  const res = await getCommunityMembers(id);
-  const data = res.data?.data;
-  return Array.isArray(data) ? data : (data?.content ?? []);
+  // fetchAllCommunityMembers defaults to status=ACTIVE and pages through
+  // every member rather than trusting a single capped fetch — the raw
+  // endpoint includes soft-deleted members and inflates the count, and a
+  // single page would silently truncate a large community's roster.
+  return fetchAllCommunityMembers(id);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -111,11 +111,7 @@ export function useCommunityDashboard(communityId) {
   // useMembersWithPayments so the cache is reused when Members page was visited.
   const obligationsQuery = useQuery({
     queryKey: ["community", communityId, "obligations"],
-    queryFn: async () => {
-      const res = await getCommunityObligations(communityId);
-      const data = res.data?.data;
-      return Array.isArray(data) ? data : (data?.content ?? []);
-    },
+    queryFn: () => fetchAllCommunityObligations(communityId),
     enabled,
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 10,
