@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, User, Shield, Bell, CreditCard, RefreshCw, Users, LogOut } from "lucide-react";
 import { useAuth } from "../../../store/AuthContext";
 import GlassLogoGlow from "../../../components/memberApp/GlassLogoGlow";
+import { toastSuccess } from "../../../utils/toast";
 
 const SECTIONS = [
   {
@@ -33,7 +34,11 @@ export default function Settings() {
 
   async function handleLogout() {
     await logout();
-    navigate("/sign-in");
+    toastSuccess("Signed out");
+    // Not /sign-in -- that's the org/admin sign-in page. This is the member
+    // app's own Settings, so the sign-up link there needs to point back at
+    // /member/join, not /sign-up (see SignIn.jsx's isMemberSignIn check).
+    navigate("/member/app-sign-in");
   }
 
   return (

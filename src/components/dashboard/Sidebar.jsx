@@ -34,6 +34,7 @@ import { useAuth } from "../../store/AuthContext";
 import { useCommunities } from "../../hooks/useCommunities";
 import { useMyMemberRecord } from "../../hooks/useMyAccount";
 import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
+import { toastSuccess } from "../../utils/toast";
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
 // `path` is the route under /dashboard; "home" maps to the per-community
@@ -140,6 +141,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
     setLoggingOut(true);
     try {
       await logout();
+      toastSuccess("Signed out");
       navigate("/sign-in", { replace: true });
     } finally {
       setLoggingOut(false);

@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { resetPassword } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
+import { toastSuccess } from "../../utils/toast";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../utils/password";
 import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
@@ -72,6 +73,7 @@ export default function ResetPassword() {
     setError("");
     try {
       await resetPassword({ email, token, newPassword: form.newPassword, confirmPassword: form.confirmPassword });
+      toastSuccess("Password reset — sign in with your new password");
       navigate("/sign-in", { replace: true });
     } catch (err) {
       setError(notifyError(err, { context: "Reset password" }));

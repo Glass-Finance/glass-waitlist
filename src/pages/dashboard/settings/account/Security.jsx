@@ -10,6 +10,7 @@ import LoadingState from "../../../../components/common/LoadingState";
 import { Button } from "../../../../components/ui/Button";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
+import { toastSuccess } from "../../../../utils/toast";
 
 // ─── MFA Modal ────────────────────────────────────────────────────────────────
 
@@ -63,6 +64,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
     setError("");
     try {
       await disableMfaTotp({ code });
+      toastSuccess("Two-factor authentication disabled");
       onSuccess();
     } catch (err) {
       setError(getErrorMessage(err, "Invalid code. Please try again."));

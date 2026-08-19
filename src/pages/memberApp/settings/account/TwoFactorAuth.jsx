@@ -10,6 +10,7 @@ import { setupMfaTotp, enableMfaTotp, disableMfaTotp } from "../../../../service
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
 import { Button } from "../../../../components/ui/Button";
+import { toastSuccess } from "../../../../utils/toast";
 
 // ── OTP digit input ───────────────────────────────────────────────────────────
 function CodeInput({ value, onChange, disabled }) {
@@ -56,6 +57,7 @@ function SetupFlow({ onSuccess, onCancel }) {
     try {
       await enableMfaTotp({ code });
       setStage("done");
+      toastSuccess("Two-factor authentication enabled");
       onSuccess();
     } catch (err) {
       setError(getErrorMessage(err, "Invalid code. Please try again."));
@@ -184,6 +186,7 @@ function DisableFlow({ onSuccess, onCancel }) {
     setError("");
     try {
       await disableMfaTotp({ code });
+      toastSuccess("Two-factor authentication disabled");
       onSuccess();
     } catch (err) {
       setError(getErrorMessage(err, "Invalid code. Please try again."));

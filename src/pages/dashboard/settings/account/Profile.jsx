@@ -15,6 +15,7 @@ import OtpBoxes from "../../../../components/common/OtpBoxes";
 import { toTitleCase } from "../../../../utils/format";
 import { Button } from "../../../../components/ui/Button";
 import verifiedBadge from "../../../../assets/icons/verified-badge.png";
+import { toastSuccess } from "../../../../utils/toast";
 
 const inputCls =
   "w-full h-12 min-h-8 px-4 py-1 rounded-lg text-gray-900 text-placeholder outline-none transition-all border-[1.5px] focus:border-[#002FA7]";
@@ -113,6 +114,7 @@ export default function Profile() {
     try {
       await deleteAccount(deletionCode.join(""));
       await logout();
+      toastSuccess("Account deleted");
       navigate("/sign-in");
     } catch (err) {
       setDeleteError(getErrorMessage(err, "Failed to delete account."));

@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
+import { toastSuccess } from "../../utils/toast";
 
 const NAV_ITEMS = [
   { Icon: HomeIcon, label: "Home", to: "/member/home" },
@@ -28,9 +29,8 @@ export default function SideDrawer({ open, onClose }) {
   async function handleLogout() {
     onClose();
     await logout();
-    // SignIn.jsx reads this to skip its "New to Glass?" copy -- someone who
-    // just logged out obviously already has an account.
-    navigate("/member/app-sign-in", { replace: true, state: { justLoggedOut: true } });
+    toastSuccess("Signed out");
+    navigate("/member/app-sign-in", { replace: true });
   }
 
   return (
