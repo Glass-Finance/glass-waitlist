@@ -270,9 +270,16 @@ export default function Members() {
         />
       )}
 
-      {/* Stats — only when there are members. auto-fit/minmax rather than a
-          fixed 2/lg:4 breakpoint -- see DashboardStats.jsx for why. */}
-      {hasRealMembers && (
+      {/* Stats — hidden only for the true empty state (isEmpty), not just
+          "no real members yet" (hasRealMembers) -- those aren't the same
+          thing while a fetch is loading or has errored, and gating on
+          hasRealMembers alone left a dead zone: isEmpty requires !isLoading
+          && !error, so a stuck-loading or errored fetch made isEmpty false
+          (showing the header) while hasRealMembers was also false (hiding
+          stats/table), rendering neither the real content nor the empty
+          state -- just blank space over the page background. auto-fit/minmax
+          rather than a fixed 2/lg:4 breakpoint -- see DashboardStats.jsx for why. */}
+      {!isEmpty && (
       <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3 mb-5">
         <StatCard icon={Users} label="Total Members" value={String(stats.total)} iconCls="text-brand bg-brand-tint" />
         <StatCard icon={UserCheck} label="Active Members" value={String(stats.active)} iconCls="text-success bg-success-tint" />
@@ -281,7 +288,7 @@ export default function Members() {
       </div>
       )}
 
-      {hasRealMembers && <div className="bg-surface-container rounded-xl border border-surface-container-border">
+      {!isEmpty && <div className="bg-surface-container rounded-xl border border-surface-container-border">
         <div className="flex items-center justify-between px-5 py-4">
           <span className="text-sm font-medium text-black">Member Payments</span>
           <button onClick={exportCsv} disabled={isExporting} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 transition-all bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
