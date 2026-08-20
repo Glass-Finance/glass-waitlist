@@ -174,9 +174,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             title="Platform Admin"
           >
             <img
-              src="/Glass.webp"
+              src="/glass-logo-silver.png"
               alt="Glass"
-              className="w-8 h-8 object-contain brightness-0 invert block"
+              className="w-8 h-8 object-contain block"
               onError={(e) => {
                 e.currentTarget.style.display = "none";
                 if (e.currentTarget.nextSibling)
@@ -307,9 +307,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           title="Your Communities"
         >
           <img
-            src="/Glass.webp"
+            src="/glass-logo-silver.png"
             alt="Glass"
-            className="w-8 h-8 object-contain brightness-0 invert block"
+            className="w-8 h-8 object-contain block"
             onError={(e) => {
               e.currentTarget.style.display = "none";
               if (e.currentTarget.nextSibling)
@@ -334,25 +334,30 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           className={`w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center mb-3 transition-all ${
             onCommunitiesOverview
               ? "bg-white text-brand"
-              : "bg-white/15 text-white hover:bg-white/25"
+              : "bg-transparent text-white hover:bg-white/15"
           }`}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          {onCommunitiesOverview ? (
+            <span
+              aria-hidden="true"
+              style={{
+                display: "inline-block",
+                width: 16,
+                height: 18,
+                backgroundColor: "var(--color-brand)",
+                WebkitMaskImage: "url(/home-solid.png)",
+                maskImage: "url(/home-solid.png)",
+                WebkitMaskSize: "contain",
+                maskSize: "contain",
+                WebkitMaskRepeat: "no-repeat",
+                maskRepeat: "no-repeat",
+                WebkitMaskPosition: "center",
+                maskPosition: "center",
+              }}
             />
-            <path
-              d="M9 21V12h6v9"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          ) : (
+            <img src="/home-outline.png" alt="" className="w-4 h-[18px] object-contain" />
+          )}
         </button>
 
         <div className="w-5 h-px bg-white/20 mb-3" />
