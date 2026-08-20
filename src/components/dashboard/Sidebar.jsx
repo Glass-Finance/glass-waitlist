@@ -324,41 +324,51 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           </div>
         </button>
 
-        {/* Home (communities overview) */}
-        <button
-          onClick={() => {
-            navigate("/dashboard/home");
-            onCloseMobile?.();
-          }}
-          title="Your Communities"
-          className={`w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center mb-3 transition-all ${
-            onCommunitiesOverview
-              ? "bg-white/20 text-white"
-              : "bg-transparent text-white hover:bg-white/15"
-          }`}
-        >
-          {onCommunitiesOverview ? (
+        {/* Home (communities overview) -- same active-indicator pattern as
+            the community tiles below: a pill riding the rail's outer edge
+            beside whichever one is active, not just a restyled tile. */}
+        <div className="relative mb-3">
+          {onCommunitiesOverview && (
             <span
+              className="absolute top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-white -left-2.5"
               aria-hidden="true"
-              style={{
-                display: "inline-block",
-                width: 16,
-                height: 18,
-                backgroundColor: "white",
-                WebkitMaskImage: "url(/home-solid.png)",
-                maskImage: "url(/home-solid.png)",
-                WebkitMaskSize: "contain",
-                maskSize: "contain",
-                WebkitMaskRepeat: "no-repeat",
-                maskRepeat: "no-repeat",
-                WebkitMaskPosition: "center",
-                maskPosition: "center",
-              }}
             />
-          ) : (
-            <img src="/home-outline.png" alt="" className="w-4 h-[18px] object-contain" />
           )}
-        </button>
+          <button
+            onClick={() => {
+              navigate("/dashboard/home");
+              onCloseMobile?.();
+            }}
+            title="Your Communities"
+            className={`w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center transition-all ${
+              onCommunitiesOverview
+                ? "bg-white/20 text-white"
+                : "bg-transparent text-white hover:bg-white/15"
+            }`}
+          >
+            {onCommunitiesOverview ? (
+              <span
+                aria-hidden="true"
+                style={{
+                  display: "inline-block",
+                  width: 16,
+                  height: 18,
+                  backgroundColor: "white",
+                  WebkitMaskImage: "url(/home-solid.png)",
+                  maskImage: "url(/home-solid.png)",
+                  WebkitMaskSize: "contain",
+                  maskSize: "contain",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskRepeat: "no-repeat",
+                  WebkitMaskPosition: "center",
+                  maskPosition: "center",
+                }}
+              />
+            ) : (
+              <img src="/home-outline.png" alt="" className="w-4 h-[18px] object-contain" />
+            )}
+          </button>
+        </div>
 
         <div className="w-5 h-px bg-white/20 mb-3" />
 
@@ -375,11 +385,11 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             [0, 1].map((i) => (
               <div
                 key={i}
-                className="w-9 h-9 rounded-xl bg-white/10 animate-pulse"
+                className="w-9 h-9 rounded-sm bg-white/10 animate-pulse"
               />
             ))
           ) : communities.filter(isCommunityAdmin).length === 0 ? (
-            <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-sm bg-white/10 flex items-center justify-center">
               <span className="text-white/40 text-[10px]">—</span>
             </div>
           ) : (
@@ -411,7 +421,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                       onCloseMobile?.();
                     }}
                     title={c.name}
-                    className={`w-9 h-9 rounded-xl border border-white/15 hover:border-white/30 cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 bg-white ${
+                    className={`w-9 h-9 rounded-sm border border-white/15 hover:border-white/30 cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 bg-white ${
                       c.logo?.url ? "" : "text-brand"
                     }`}
                   >
