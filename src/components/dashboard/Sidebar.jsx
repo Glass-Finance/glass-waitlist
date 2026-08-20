@@ -333,7 +333,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           title="Your Communities"
           className={`w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center mb-3 transition-all ${
             onCommunitiesOverview
-              ? "bg-white text-brand"
+              ? "bg-white/20 text-white"
               : "bg-transparent text-white hover:bg-white/15"
           }`}
         >
@@ -344,7 +344,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 display: "inline-block",
                 width: 16,
                 height: 18,
-                backgroundColor: "var(--color-brand)",
+                backgroundColor: "white",
                 WebkitMaskImage: "url(/home-solid.png)",
                 maskImage: "url(/home-solid.png)",
                 WebkitMaskSize: "contain",
