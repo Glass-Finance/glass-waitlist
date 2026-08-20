@@ -1,24 +1,33 @@
 import client from "./client";
-import { fetchAllPages } from "./pagination";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ADMIN FINANCE — community-scoped obligations + transactions
 // ─────────────────────────────────────────────────────────────────────────────
 
 // GET /api/v1/communities/{communityIdentifier}/finance/obligations
-// These endpoints are paginated server-side (content/pageNumber/pageSize/
-// totalElements). pageSize:1000 is a default, not a hard cap -- params can
-// override page/pageSize for a caller that needs to page through a
-// community with more obligations than that (see fetchAllCommunityObligations
-// below). Without this, a single fetch would silently truncate the list for
-// any community with more than a page's worth of obligations, breaking the
-// per-member aggregates the Members page derives from this data.
+// pageSize:1000 predates this comment and was already shipping fine. Adding
+// a `pageNumber` param on top of it (below) was confirmed live to return 400
+// "Illegal Argument Entered" -- for a 1-member community, so this isn't a
+// page-2-and-beyond edge case, the very first request fails. The same
+// pageNumber addition broke getCommunityMembers and getCommunityTransactions
+// identically, which points at this backend not accepting a `pageNumber`
+// param on these list endpoints at all (wrong param name, or no page-2+
+// support), not at pageSize specifically. Reverted to a single fetch with no
+// pageNumber until the actual accepted pagination scheme is confirmed --
+// don't guess a third time.
 export const getCommunityObligations = (communityId, params = {}) =>
   client.get(`/communities/${communityId}/finance/obligations`, { params: { pageSize: 1000, ...params } });
 
-// Pages through every obligation rather than trusting a single capped fetch.
+// NOT currently paginated -- see the comment on getCommunityObligations
+// above. A community with more than one page's worth of obligations may
+// still have this list silently truncated (the original F03/F16 risk);
+// that's preferable to every community being hard-broken by an unsupported
+// param.
 export const fetchAllCommunityObligations = (communityId) =>
-  fetchAllPages((pageNumber) => getCommunityObligations(communityId, { pageNumber }));
+  getCommunityObligations(communityId).then((res) => {
+    const data = res.data?.data;
+    return Array.isArray(data) ? data : (data?.content ?? []);
+  });
 
 // GET /api/v1/communities/{communityIdentifier}/finance/obligations/{obligationId}
 export const getCommunityObligation = (communityId, obligationId) =>
@@ -35,21 +44,26 @@ export const extendObligationDueDate = (communityId, obligationId, dueAt) =>
   );
 
 // GET /api/v1/communities/{communityIdentifier}/finance/transactions
-// pageSize:1000 is a default, not a hard cap -- params can override page/
-// pageSize for a caller that needs to page through a community with more
-// transactions than that (see fetchAllCommunityTransactions below).
+// See the comment on getCommunityObligations above -- a `pageNumber` param
+// added on top of this endpoint's existing pageSize:1000 was confirmed live
+// to return 400 "Illegal Argument Entered", for every community regardless
+// of size. Reverted to a single fetch with no pageNumber.
 export const getCommunityTransactions = (communityId, params = {}) =>
   client.get(`/communities/${communityId}/finance/transactions`, { params: { pageSize: 1000, ...params } });
 
-// Pages through every transaction rather than trusting a single capped
-// fetch -- the backend's own collectedAmount metric only tracks settlements
+// NOT currently paginated -- see the comment on getCommunityTransactions
+// above. The backend's own collectedAmount metric only tracks settlements
 // and returns 0 even when members have paid in full (see useCommunities.js),
 // so callers that need an accurate collected total or per-member payment
-// status derive it from the full transaction list instead. A single page
-// would silently understate that for any community with more transactions
-// than fit in one (see AUDIT_REPORT.md, F03).
+// status still derive it from this list rather than that metric -- it's
+// just not guaranteed complete for a community with more than one page's
+// worth of transactions (the original F03 risk), which is preferable to
+// every community being hard-broken by an unsupported param.
 export const fetchAllCommunityTransactions = (communityId) =>
-  fetchAllPages((pageNumber) => getCommunityTransactions(communityId, { pageNumber }));
+  getCommunityTransactions(communityId).then((res) => {
+    const data = res.data?.data;
+    return Array.isArray(data) ? data : (data?.content ?? []);
+  });
 
 // GET /api/v1/communities/{communityIdentifier}/finance/transactions/{transactionId}
 export const getCommunityTransaction = (communityId, transactionId) =>
