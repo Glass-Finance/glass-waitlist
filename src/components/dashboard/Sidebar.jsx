@@ -340,11 +340,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               onCloseMobile?.();
             }}
             title="Your Communities"
-            className={`w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center transition-all ${
-              onCommunitiesOverview
-                ? "bg-white/20 text-white"
-                : "bg-transparent text-white hover:bg-white/15"
-            }`}
+            className="w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center transition-all bg-transparent text-white hover:bg-white/15"
           >
             {onCommunitiesOverview ? (
               <span
@@ -421,7 +417,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                       onCloseMobile?.();
                     }}
                     title={c.name}
-                    className={`w-9 h-9 rounded-sm border border-white/15 hover:border-white/30 cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 bg-white ${
+                    className={`w-9 h-9 rounded-sm border-none cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 bg-white ${
                       c.logo?.url ? "" : "text-brand"
                     }`}
                   >
