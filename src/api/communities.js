@@ -1,5 +1,4 @@
 import client from "./client";
-import { fetchAllPages } from "./pagination";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // COMMUNITIES — admin-scoped CRUD + members + payout account
@@ -34,21 +33,31 @@ export const deleteCommunity = (communityId) =>
 // Removing a member is a soft-delete on the backend (status flips off
 // ACTIVE, exitedAt gets set — the row isn't dropped), so an unfiltered
 // fetch keeps returning removed members forever. Default to status=ACTIVE
-// unless the caller explicitly asks for something else. pageSize:1000 is a
-// default, not a hard cap -- params can override page/pageSize for a caller
-// that needs to page through a community with more members than that (see
-// fetchAllCommunityMembers below).
+// unless the caller explicitly asks for something else.
+//
+// Deliberately no pageSize override here, unlike getCommunityObligations/
+// getCommunityTransactions -- this endpoint returned 400 "Illegal Argument
+// Entered" for pageSize:1000 (confirmed against the live backend, breaking
+// every community regardless of size, including a 1-member one), so
+// whatever cap it enforces is well below what obligations/transactions
+// accept. Reverted to the backend's own default page size until the real
+// limit is confirmed.
 export const getCommunityMembers = (communityId, params = {}) =>
   client.get(`/communities/${communityId}/members`, {
-    params: { status: "ACTIVE", pageSize: 1000, ...params },
+    params: { status: "ACTIVE", ...params },
   });
 
-// Pages through every member rather than trusting a single capped fetch --
-// a community with more members than one page's worth would otherwise have
-// its roster, headcount, and CSV-adjacent aggregates silently truncated at
-// whatever the first page happened to return.
+// NOT currently paginated -- see the comment on getCommunityMembers above.
+// A community with more members than one page's worth may still have its
+// roster/headcount silently truncated (the original F16 risk); that's
+// preferable to every community being hard-broken by an oversized pageSize
+// request. Revisit once the backend's actual max pageSize for this specific
+// endpoint is known.
 export const fetchAllCommunityMembers = (communityId, params = {}) =>
-  fetchAllPages((pageNumber) => getCommunityMembers(communityId, { ...params, pageNumber }));
+  getCommunityMembers(communityId, params).then((res) => {
+    const data = res.data?.data;
+    return Array.isArray(data) ? data : (data?.content ?? []);
+  });
 
 // GET /api/v1/communities/{communityIdentifier}/members/{memberId}
 export const getCommunityMember = (communityId, memberId) =>
