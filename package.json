@@ -26,7 +26,7 @@
     "gsap": "^3.14.2",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
-    "lucide-react": "^0.562.0",
+    "lucide-react": "^1.29.0",
     "motion": "^12.40.0",
     "nigerian-bank-icons": "^2.0.1",
     "ogl": "^1.0.11",
