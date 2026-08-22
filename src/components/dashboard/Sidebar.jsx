@@ -474,12 +474,14 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         {/* Org header */}
         <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] flex items-center justify-between gap-2 min-h-14">
           {activeCommunity ? (
-            <div className="min-w-0 flex-1 flex items-start gap-2">
+            <div className="min-w-0 flex-1 flex items-center gap-2">
               <div className="text-xs font-medium text-black leading-[1.3] break-words">
                 {activeCommunity.name}
               </div>
+              {/* Exact spec from Figma's inspector: Hug 69x32, radius 4px,
+                  padding 4px/12px, #FFF1D6 for the admin variant. */}
               <span
-                className={`flex-shrink-0 mt-px text-[9px] font-bold rounded-md py-px px-[7px] ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#fff4ee]" : "text-[#059669] bg-[#ecfdf5]"}`}
+                className={`flex-shrink-0 text-sm font-bold rounded py-1 px-3 ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#FFF1D6]" : "text-[#059669] bg-[#ecfdf5]"}`}
               >
                 {activeCommunity.owned
                   ? "Owner"
@@ -543,7 +545,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                     margins here would just re-expand the pill back out to the
                     button's own padding, undoing the point -- plain padding
                     on an unstretched inline flex keeps it snug. */}
-                <span className={`inline-flex items-center gap-2 rounded-lg ${isActive ? "bg-brand-tint px-2 py-1" : ""}`}>
+                <span className={`inline-flex items-center gap-2 rounded-lg ${isActive ? "bg-brand-tint px-4 py-2" : ""}`}>
                   <Icon size={13} className="flex-shrink-0" />
                   <span className="text-left">{label}</span>
                 </span>
