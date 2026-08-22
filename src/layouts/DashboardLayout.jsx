@@ -99,12 +99,19 @@ export default function DashboardLayout() {
           the sidebar's own footprint, which reads as shifted left relative
           to the actual visible content area.
 
-          Confirmed against the Figma reference directly: glow sits bottom-
-          left. bg-cover + left bottom (not the contain/top-left attempt
-          before this, which was reasoned from the raw asset's own
-          composition rather than a real target and landed wrong). */}
+          admin-background.webp turned out to be the actual problem: it's a
+          tall 1728x2312 portrait crop with its glow confined to the upper
+          third and nothing below it. In a wide/short dashboard viewport,
+          bg-cover scales it width-driven, blowing it up far taller than the
+          container -- any bottom-anchored position (the previous attempt,
+          reasoned from a Figma screenshot read as "bottom-left") shows only
+          the image's blank lower two-thirds, cropping the glow out
+          entirely. That's why it was invisible. Reusing the same asset +
+          technique the onboarding pages already rely on for this exact
+          problem: bg-page-default is a landscape image sized for this
+          aspect ratio, shown with bg-contain (never crops) + bg-center. */}
       <div
-        className="flex-1 flex flex-col overflow-hidden bg-cover bg-left-bottom bg-no-repeat bg-admin-default"
+        className="flex-1 flex flex-col overflow-hidden bg-contain bg-center bg-no-repeat bg-page-default"
       >
         {/* Topbar */}
         <Topbar onMenuClick={() => setMobileNavOpen(true)} onOpenTour={() => setTourOpen(true)} />

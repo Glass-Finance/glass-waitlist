@@ -25,10 +25,20 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
       <p className="text-base text-gray-400 text-center mb-7 max-w-sm">
         Let's get your community ready to start collecting.
       </p>
+      {/* Figma's inspector on this exact button (text layer "Create
+          Account", content "Create Your First Collection"): 14px/
+          500-weight Inter, 24px line-height, width Hug (not a fixed
+          w-64 -- that forced a wider box than the text needs). This is
+          the button that spec was actually measured on -- an earlier
+          pass applied it to EmptyState.jsx's shared isBig button
+          instead, which doesn't render this component at all, and
+          incidentally over-shrunk the unrelated Payments/Members empty
+          state buttons that do go through it. */}
       <Button
         onClick={onCreatePlan}
         fullWidth={false}
-        className="w-64 mb-8 !rounded-full !font-normal"
+        size="sm"
+        className="px-6 !py-2.5 mb-8 !rounded-full !font-medium"
         data-tour="welcome-create-plan"
       >
         Create Your First Collection
