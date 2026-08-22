@@ -71,7 +71,7 @@ function BreadcrumbParent({ parent }) {
 function MenuList({ items }) {
   const navigate = useNavigate();
   return (
-    <div className="flex flex-col gap-3 max-w-3xl w-full">
+    <div className="flex flex-col gap-3 w-full">
       {items.map((item, i) => (
         <button
           key={i}
@@ -189,7 +189,7 @@ export default function Settings() {
       {/* Tab bar — hidden for platform admins */}
       {!isPlatformAdmin && (
         <div
-          className="flex gap-1 mb-6 bg-stacked-container rounded-md p-1 w-fit border border-[#fafafa]"
+          className="flex gap-1 mb-6 bg-stacked-container rounded-[4px] p-1 w-fit"
         >
           {TABS.map(tab => {
             const isActive = activeTab === tab.label;

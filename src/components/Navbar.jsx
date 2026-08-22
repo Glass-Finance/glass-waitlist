@@ -44,15 +44,15 @@ export default function Navbar() {
       }`}
     >
       {/* ── Toggle pill mobile ── */}
-      <div className="lg:hidden bg-white/[0.07] border border-white/[0.1] flex mt-[6px] mx-3 rounded-full">
+      <div className="lg:hidden bg-white/10 border border-white/[0.1] flex mt-[6px] mx-3 rounded-full">
         <button
           onClick={() => {
             handleViewModeChange("organizations");
             setMenuOpen(false);
           }}
-          className={`flex-1 px-4 py-2 rounded-md text-[13px] font-semibold cursor-pointer transition-all ${
+          className={`flex-1 px-4 py-2 rounded-md text-[13px] font-medium cursor-pointer transition-all ${
             viewMode === "organizations"
-              ? "bg-gray-text text-white"
+              ? "bg-white/20 text-white hover:text-white/70"
               : "text-white/55"
           }`}
         >
@@ -63,8 +63,10 @@ export default function Navbar() {
             handleViewModeChange("members");
             setMenuOpen(false);
           }}
-          className={`flex-1 px-4 py-3 rounded-md text-[13px] font-semibold cursor-pointer transition-all ${
-            viewMode === "members" ? "bg-gray-text text-white" : "text-white/55"
+          className={`flex-1 px-4 py-3 rounded-md text-[13px] font-medium cursor-pointer transition-all ${
+            viewMode === "members"
+              ? "bg-white/20 text-white hover:text-white/70"
+              : "text-white/55"
           }`}
         >
           Members
@@ -84,12 +86,12 @@ export default function Navbar() {
         </Link>
 
         {/* ── Toggle Pill (desktop) ── */}
-        <div className="hidden lg:flex bg-white/[0.07] border border-white/[0.1] rounded-full p-[3px] items-center gap-0.5 backdrop-blur-sm cursor-pointer">
+        <div className="hidden lg:flex bg-white/10 border border-white/[0.1] rounded-full p-[3px] items-center gap-0.5 backdrop-blur-sm cursor-pointer">
           <button
             onClick={() => handleViewModeChange("organizations")}
-            className={`px-4 py-2 rounded-full text-[13.5px] font-semibold transition-all duration-200 ${
+            className={`px-4 py-2 rounded-full text-[13.5px] font-medium transition-all duration-200 ${
               viewMode === "organizations"
-                ? "bg-white/15 text-white/70 shadow-sm"
+                ? "bg-white/20 text-white shadow-sm hover:text-white/70"
                 : "text-white/45 hover:text-white/50"
             }`}
           >
@@ -97,9 +99,9 @@ export default function Navbar() {
           </button>
           <button
             onClick={() => handleViewModeChange("members")}
-            className={`px-4 py-2 rounded-full text-[13.5px] font-semibold transition-all duration-200 ${
+            className={`px-4 py-2 rounded-full text-[13.5px] font-medium transition-all duration-200 ${
               viewMode === "members"
-                ? "bg-white/15 text-white/70 shadow-sm"
+                ? "bg-white/20 text-white shadow-sm hover:text-white/70"
                 : "text-white/45 hover:text-white/50"
             }`}
           >
