@@ -33,8 +33,14 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
       {subtitle && (
         <p className={isBig ? "text-base text-gray-400 mt-1.5 max-w-sm" : "text-xs text-gray-400 mt-1 max-w-xs"}>{subtitle}</p>
       )}
+      {/* Figma's own inspector on this exact button (text layer "Create
+          Account", content "Create Your First Collection"): 14px/500-weight
+          Inter, 24px line-height -- text-sm already matches the size, but
+          weight should be medium (500), not normal (400), and size="sm"'s
+          default py-3 (12px) is still much taller than what a 24px-line-
+          height label with real but modest padding calls for. */}
       {action && isBig && (
-        <Button onClick={action} fullWidth={false} size="sm" className="mt-6 px-6 inline-flex items-center gap-1.5 !rounded-full !font-normal">
+        <Button onClick={action} fullWidth={false} size="sm" className="mt-6 px-6 !py-2 inline-flex items-center gap-1.5 !rounded-full !font-medium">
           {actionLabel}
         </Button>
       )}

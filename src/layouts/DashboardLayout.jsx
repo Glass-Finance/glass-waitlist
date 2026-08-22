@@ -99,21 +99,12 @@ export default function DashboardLayout() {
           the sidebar's own footprint, which reads as shifted left relative
           to the actual visible content area.
 
-          bg-contain, not bg-cover: admin-background.webp is a tall portrait
-          asset (1728x2312) with its glow sitting in the upper-left, but this
-          wrapper is wide and comparatively short. Under cover, the browser
-          scales the image up to fill the width, which stretches it far
-          taller than the wrapper and crops to whatever's vertically
-          centered in that oversized image -- not reliably the glow, and not
-          controllable via a single bg-position keyword (same class of bug
-          bg-mobile-auth-default's own comment documents, and fixed there
-          with a purpose-cropped asset instead of fighting cover). No
-          matching crop exists for this asset, so bg-contain (show the whole
-          image, never crop) plus anchoring it to the top-left -- where the
-          glow already sits in the source file -- is the more predictable
-          fix without commissioning a new asset. */}
+          Confirmed against the Figma reference directly: glow sits bottom-
+          left. bg-cover + left bottom (not the contain/top-left attempt
+          before this, which was reasoned from the raw asset's own
+          composition rather than a real target and landed wrong). */}
       <div
-        className="flex-1 flex flex-col overflow-hidden bg-contain bg-left-top bg-no-repeat bg-admin-default"
+        className="flex-1 flex flex-col overflow-hidden bg-cover bg-left-bottom bg-no-repeat bg-admin-default"
       >
         {/* Topbar */}
         <Topbar onMenuClick={() => setMobileNavOpen(true)} onOpenTour={() => setTourOpen(true)} />

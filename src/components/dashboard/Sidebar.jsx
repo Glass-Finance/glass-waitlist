@@ -535,19 +535,20 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   }
                 }}
                 disabled={isDisabled}
-                // Figma spec (inspector, "Frame 53"): Fill width, Hug 44px
-                // height, radius 4px, padding 10px, gap 14px, background
-                // Glass/PrimaryContainer #D7E2FF -- the row genuinely does
-                // fill the available width when active, the earlier
-                // content-hugging version was chasing the wrong dimension.
-                // #D7E2FF is close to but not exactly --color-brand-tint
-                // (#e6eeff) -- used directly here rather than touching that
-                // shared token, which other components also rely on.
-                className={`w-full flex items-center gap-3.5 p-2.5 rounded tracking-normal text-xs mb-1.5 transition-all duration-150 whitespace-nowrap font-medium border-none ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"} ${
-                  isActive
-                    ? "bg-[#D7E2FF] text-brand"
-                    : isDisabled
-                      ? "bg-transparent text-[#9ca3af]"
+                // Icon/label are left-anchored regardless of state, so
+                // varying the button's own width doesn't shift or misalign
+                // anything -- only the background's right edge moves.
+                // Simpler than an inner wrapper element, and avoids the
+                // negative-margin trap from the last attempt at this. Per
+                // direct visual feedback against the rendered Figma design:
+                // roughly 70% of the row when active, not edge to edge (an
+                // earlier "Fill" reading of an isolated inspector panel) and
+                // not content-hugging either (an even earlier attempt).
+                className={`flex items-center gap-3.5 p-2.5 rounded tracking-normal text-xs mb-1.5 transition-all duration-150 whitespace-nowrap font-medium border-none ${isActive ? "w-[70%]" : "w-full"} ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"} ${
+                  isDisabled
+                    ? "bg-transparent text-[#9ca3af]"
+                    : isActive
+                      ? "bg-[#D7E2FF] text-brand"
                       : "bg-transparent text-[#6b7280] hover:bg-[#f9fafb]"
                 }`}
               >
