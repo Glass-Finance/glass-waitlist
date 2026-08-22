@@ -8,8 +8,10 @@
    usable the moment a component reaches for one. */
 @source inline("text-logo text-headline text-headline-salutation text-label text-placeholder text-button text-button-tertiary text-button-secondary-sm text-body text-title-sm text-section-title bg-surface-bg bg-surface-overlay backdrop-blur-logo-overlay bg-surface-container border-surface-container-border bg-stacked-container border-outline-on-surface border-outline-on-container text-outline-on-surface text-outline-on-container");
 
-/* LOAD THE FONTS */
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@400;500;600;700&family=Urbanist:wght@400;500;600;700;800&display=swap");
+/* Fonts are self-hosted via @fontsource, imported in main.jsx (not here --
+   a plain @import url() in this position never actually loaded: @import
+   "tailwindcss" above expands to real CSS rules at build time, and any
+   @import positioned after another rule is silently dropped per spec). */
 
 /* Tailwind v4 Theme Configuration */
 @theme {

@@ -3,8 +3,8 @@
   <head>
     <!-- CSP script-src hardening (see vercel.json's Content-Security-Policy-
          Report-Only): every inline script tag below with no src attribute
-         (structured data, font-preload listener, Pendo bootstrap) is
-         allowlisted by a 'sha256-<hash>' entry instead of 'unsafe-inline'.
+         (structured data, Pendo bootstrap) is allowlisted by a
+         'sha256-<hash>' entry instead of 'unsafe-inline'.
 
          If you edit any of those scripts' content: `npm run build` then
          `node scripts/compute-csp-hashes.mjs`, and swap the matching hash
@@ -122,35 +122,9 @@
     />
     <meta name="twitter:image" content="https://app.glasspay.app/og-image.png" />
 
-    <!-- Fonts (non-blocking) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      id="font-preload-link"
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@1,400&display=swap"
-    />
-    <!-- CSP: hash-allowlisted (see the CSP note at the top of <head>) -- an
-         inline onload="" attribute on the <link> above was replaced with
-         this listener specifically because CSP hashes/nonces don't cover
-         inline event-handler attributes, only script tags. -->
-    <script>
-    (function () {
-      var link = document.getElementById('font-preload-link');
-      if (link) {
-        link.addEventListener('load', function () {
-          this.rel = 'stylesheet';
-        }, { once: true });
-      }
-    })();
-    </script>
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@1,400&display=swap"
-      />
-    </noscript>
+    <!-- Fonts are self-hosted via @fontsource (imported in main.jsx) --
+         no external Google Fonts request, no preconnect/preload/swap dance
+         needed. -->
 
     <!-- Pendo -->
     <!-- CSP: hash-allowlisted (see the CSP note at the top of <head>). The

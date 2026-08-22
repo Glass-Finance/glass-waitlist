@@ -8,6 +8,30 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
 import App from "./App.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
+
+// Self-hosted fonts (replacing a Google Fonts CSS @import that silently
+// never shipped -- @import "tailwindcss" in index.css expands to real CSS
+// rules ahead of it at build time, and any @import positioned after another
+// rule is dropped entirely per spec. Importing as JS modules here sidesteps
+// that whole class of bug: each one becomes its own bundled/hashed CSS
+// asset in Vite's module graph, not a rule inside index.css competing for
+// position. Also drops the runtime dependency on fonts.googleapis.com.
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
+import "@fontsource/inter/700.css";
+import "@fontsource/dm-sans/400.css";
+import "@fontsource/dm-sans/500.css";
+import "@fontsource/dm-sans/600.css";
+import "@fontsource/dm-sans/700.css";
+import "@fontsource/playfair-display/400.css";
+import "@fontsource/playfair-display/400-italic.css";
+import "@fontsource/urbanist/400.css";
+import "@fontsource/urbanist/500.css";
+import "@fontsource/urbanist/600.css";
+import "@fontsource/urbanist/700.css";
+import "@fontsource/urbanist/800.css";
+
 import "./index.css";
 import { AuthProvider } from "./store/AuthContext.jsx";
 import RealtimeBridge from "./components/common/RealtimeBridge.jsx";
