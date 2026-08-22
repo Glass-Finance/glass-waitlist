@@ -478,10 +478,14 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               <div className="text-xs font-medium text-black leading-[1.3] break-words">
                 {activeCommunity.name}
               </div>
-              {/* Exact spec from Figma's inspector: Hug 69x32, radius 4px,
-                  padding 4px/12px, #FFF1D6 for the admin variant. */}
+              {/* The Figma inspector's literal 69x32/text-sm reading was
+                  measured on the badge in isolation -- applied verbatim next
+                  to this sidebar's much smaller 12px community name, it read
+                  as oversized and out of place rather than matching Figma
+                  "by eye". Scaled back down; kept the radius-4px/#FFF1D6 fix
+                  from that same spec, since neither of those was in question. */}
               <span
-                className={`flex-shrink-0 text-sm font-bold rounded py-1 px-3 ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#FFF1D6]" : "text-[#059669] bg-[#ecfdf5]"}`}
+                className={`flex-shrink-0 text-[10px] font-bold rounded py-0.5 px-2 ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#FFF1D6]" : "text-[#059669] bg-[#ecfdf5]"}`}
               >
                 {activeCommunity.owned
                   ? "Owner"
@@ -531,24 +535,24 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   }
                 }}
                 disabled={isDisabled}
-                className={`w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none tracking-normal text-xs mb-1.5 transition-all duration-150 whitespace-nowrap font-medium bg-transparent ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"} ${
+                // Figma spec (inspector, "Frame 53"): Fill width, Hug 44px
+                // height, radius 4px, padding 10px, gap 14px, background
+                // Glass/PrimaryContainer #D7E2FF -- the row genuinely does
+                // fill the available width when active, the earlier
+                // content-hugging version was chasing the wrong dimension.
+                // #D7E2FF is close to but not exactly --color-brand-tint
+                // (#e6eeff) -- used directly here rather than touching that
+                // shared token, which other components also rely on.
+                className={`w-full flex items-center gap-3.5 p-2.5 rounded tracking-normal text-xs mb-1.5 transition-all duration-150 whitespace-nowrap font-medium border-none ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"} ${
                   isActive
-                    ? "text-brand"
+                    ? "bg-[#D7E2FF] text-brand"
                     : isDisabled
-                      ? "text-[#9ca3af]"
-                      : "text-[#6b7280] hover:bg-[#f9fafb]"
+                      ? "bg-transparent text-[#9ca3af]"
+                      : "bg-transparent text-[#6b7280] hover:bg-[#f9fafb]"
                 }`}
               >
-                {/* Active highlight is a pill sized to the icon+label content,
-                    not the full row width -- was previously the whole
-                    button's own background, stretching edge to edge. Negative
-                    margins here would just re-expand the pill back out to the
-                    button's own padding, undoing the point -- plain padding
-                    on an unstretched inline flex keeps it snug. */}
-                <span className={`inline-flex items-center gap-2 rounded-lg ${isActive ? "bg-brand-tint px-4 py-2" : ""}`}>
-                  <Icon size={13} className="flex-shrink-0" />
-                  <span className="text-left">{label}</span>
-                </span>
+                <Icon size={13} className="flex-shrink-0" />
+                <span className="text-left">{label}</span>
                 {badge > 0 && (
                   <span className="ml-auto min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
                     {badge > 99 ? "99+" : badge}
