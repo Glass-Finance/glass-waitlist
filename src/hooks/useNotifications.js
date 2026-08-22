@@ -40,11 +40,15 @@ async function markAllRead() {
   return res.data;
 }
 
-function clearedAtKey(communityId) {
-  return communityId
-    ? `glass_notifications_cleared_at_${communityId}`
-    : "glass_notifications_cleared_at";
-}
+// One shared key, not per-community: the backend's read-all endpoint isn't
+// scoped by community (see markAllRead above -- no params), so "clear" from
+// any view already marks every notification read server-side regardless of
+// which community was active. A separate hide-window per view used to mean
+// clearing on the (community-scoped) page's clearedAt left the topbar
+// dropdown's own unscoped clearedAt untouched, so the same now-read
+// notifications kept showing there -- clearing anywhere now hides
+// everywhere, matching what actually happened on the backend.
+const CLEARED_AT_KEY = "glass_notifications_cleared_at";
 
 export function useNotifications() {
   const activeSlugOrId = useActiveCommunityId();
@@ -93,7 +97,7 @@ export function useNotifications() {
     refetchOnWindowFocus: true,
     select: (data) => {
       const notifications = data?.content ?? [];
-      const clearedAt = Number(localStorage.getItem(clearedAtKey(communityId)) ?? 0);
+      const clearedAt = Number(localStorage.getItem(CLEARED_AT_KEY) ?? 0);
       return [...notifications]
         .filter((n) => {
           // Confirmed against real data: the backend's ?communityId=
@@ -153,8 +157,11 @@ export function useNotifications() {
     onError: (_err, _vars, ctx) => {
       if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous);
     },
+    // Both PATCH endpoints are global, not scoped to this community -- a
+    // notification read here is read everywhere, so every other cached list
+    // (the topbar dropdown, any other community) needs to refetch too.
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: listKey });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 
@@ -175,7 +182,7 @@ export function useNotifications() {
       if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: listKey });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 
@@ -184,13 +191,17 @@ export function useNotifications() {
     mutationFn: markAllRead,
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: listKey });
-      localStorage.setItem(clearedAtKey(communityId), String(Date.now()));
+      localStorage.setItem(CLEARED_AT_KEY, String(Date.now()));
       queryClient.setQueryData(listKey, (old) =>
         old ? { ...old, content: [] } : old
       );
     },
+    // Prefix match ("notifications", not the specific listKey) -- clearing
+    // marks every notification read on the backend regardless of scope, so
+    // every other cached list (the topbar dropdown's unscoped one, any other
+    // community's) needs to refetch too, not just this one.
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: listKey });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 
@@ -225,7 +236,7 @@ export function useAllNotifications() {
     refetchOnWindowFocus: true,
     select: (data) => {
       const notifications = data?.content ?? [];
-      const clearedAt = Number(localStorage.getItem(clearedAtKey(null)) ?? 0);
+      const clearedAt = Number(localStorage.getItem(CLEARED_AT_KEY) ?? 0);
       return [...notifications]
         .filter((n) => {
           if (!clearedAt) return true;
@@ -247,7 +258,9 @@ export function useAllNotifications() {
       return { previous };
     },
     onError: (_e, _v, ctx) => { if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous); },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: listKey }),
+    // Prefix match, not just this listKey -- both PATCH endpoints are
+    // global, so a community-scoped page's cached list needs to refetch too.
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
   const markAllReadMutation = useMutation({
@@ -261,24 +274,25 @@ export function useAllNotifications() {
       return { previous };
     },
     onError: (_e, _v, ctx) => { if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous); },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: listKey }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
   // Same "mark read + hide from view persistently" behaviour as
-  // useNotifications' clearAll, scoped to the unscoped "all" clearedAt key
-  // (clearedAtKey(null)) so clearing from the dropdown doesn't touch any
-  // single community's own cleared-at timestamp or vice versa.
+  // useNotifications' clearAll -- shares the same CLEARED_AT_KEY now (see
+  // its definition above) so clearing from either the dropdown or a
+  // community page's own Notifications tab hides the same already-read
+  // notifications everywhere, instead of only in the view that cleared them.
   const clearAllMutation = useMutation({
     mutationFn: markAllRead,
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: listKey });
-      localStorage.setItem(clearedAtKey(null), String(Date.now()));
+      localStorage.setItem(CLEARED_AT_KEY, String(Date.now()));
       queryClient.setQueryData(listKey, (old) =>
         old ? { ...old, content: [] } : old
       );
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: listKey });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 
