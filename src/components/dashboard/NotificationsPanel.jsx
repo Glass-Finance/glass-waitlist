@@ -5,6 +5,7 @@ import { isSelfAccountType, notificationVisual } from "../../utils/notificationT
 import { useAuth } from "../../store/AuthContext";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
+import notificationsIllustration from "../../assets/dashboard/empty-states/notifications-illustration.png";
 import { formatRelativeDateTime as formatTimestamp, dayLabel } from "../../utils/format";
 
 // Resolve community info for display AND for the owned/member routing
@@ -196,7 +197,12 @@ export default function NotificationsPanel({
         {isLoading ? (
           <LoadingState className="py-8" />
         ) : notifications.length === 0 ? (
-          <EmptyState icon={Bell} title="No notifications yet" className="py-8" />
+          <EmptyState
+            illustration={notificationsIllustration}
+            illustrationClassName="w-[140px] h-auto mb-3"
+            title="No notifications yet"
+            className="py-8"
+          />
         ) : (
           buckets.map(({ label, items }) => (
             <div key={label}>
