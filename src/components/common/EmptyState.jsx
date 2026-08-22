@@ -9,7 +9,7 @@ import { Button } from "../ui/Button";
 // node, for illustrations composed of multiple layered pieces) are both
 // alternatives to `icon` for the bigger, page-level empty states — existing
 // `icon`-based call sites are unaffected.
-export default function EmptyState({ icon: Icon, illustration, illustrationNode, illustrationClassName, title, subtitle, action, actionLabel, className = "" }) {
+export default function EmptyState({ icon: Icon, illustration, illustrationNode, illustrationClassName, title, titleClassName, subtitle, action, actionLabel, className = "" }) {
   // The bigger page-level states (illustration/illustrationNode) use a
   // larger illustration with a larger, regular-weight title and a pill
   // action button, per Figma -- the small icon-based states used
@@ -29,7 +29,7 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
           <Icon size={20} className="text-brand" />
         </div>
       )}
-      <p className={isBig ? "text-xl leading-7 font-normal text-gray-900" : "text-sm font-semibold text-gray-900"}>{title}</p>
+      <p className={titleClassName || (isBig ? "text-xl leading-7 font-normal text-gray-900" : "text-sm font-semibold text-gray-900")}>{title}</p>
       {subtitle && (
         <p className={isBig ? "text-base text-gray-400 mt-1.5 max-w-sm" : "text-xs text-gray-400 mt-1 max-w-xs"}>{subtitle}</p>
       )}

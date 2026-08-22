@@ -199,9 +199,10 @@ export default function NotificationsPanel({
         ) : notifications.length === 0 ? (
           <EmptyState
             illustration={notificationsIllustration}
-            illustrationClassName="w-[140px] h-auto mb-3"
+            illustrationClassName="w-[100px] h-auto mb-3"
             title="No notifications yet"
-            className="py-8"
+            titleClassName="text-sm font-semibold text-gray-900"
+            className="py-6"
           />
         ) : (
           buckets.map(({ label, items }) => (
