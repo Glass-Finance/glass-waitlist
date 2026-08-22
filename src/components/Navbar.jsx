@@ -138,7 +138,7 @@ export default function Navbar() {
               </button>
               <button
                 onClick={() => goToApp("/sign-in", navigate)}
-                className="text-[13.5px] text-white/70 hover:text-white transition-colors font-medium"
+                className="text-[13.5px] text-white hover:text-white/70 transition-colors font-medium"
               >
                 Sign In
               </button>
