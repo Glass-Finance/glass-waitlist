@@ -475,11 +475,11 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] flex items-center justify-between gap-2 min-h-14">
           {activeCommunity ? (
             <div className="min-w-0 flex-1 flex items-start gap-2">
-              <div className="text-xs text-black leading-[1.3] break-words">
+              <div className="text-xs font-medium text-black leading-[1.3] break-words">
                 {activeCommunity.name}
               </div>
               <span
-                className={`flex-shrink-0 mt-px text-[9px] font-bold rounded-full py-px px-[7px] ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#fff4ee]" : "text-[#059669] bg-[#ecfdf5]"}`}
+                className={`flex-shrink-0 mt-px text-[9px] font-bold rounded-md py-px px-[7px] ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#fff4ee]" : "text-[#059669] bg-[#ecfdf5]"}`}
               >
                 {activeCommunity.owned
                   ? "Owner"
@@ -539,8 +539,11 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               >
                 {/* Active highlight is a pill sized to the icon+label content,
                     not the full row width -- was previously the whole
-                    button's own background, stretching edge to edge. */}
-                <span className={`flex items-center gap-2 rounded-lg ${isActive ? "bg-brand-tint px-2.5 py-1.5 -my-1.5 -mx-2.5" : ""}`}>
+                    button's own background, stretching edge to edge. Negative
+                    margins here would just re-expand the pill back out to the
+                    button's own padding, undoing the point -- plain padding
+                    on an unstretched inline flex keeps it snug. */}
+                <span className={`inline-flex items-center gap-2 rounded-lg ${isActive ? "bg-brand-tint px-2 py-1" : ""}`}>
                   <Icon size={13} className="flex-shrink-0" />
                   <span className="text-left">{label}</span>
                 </span>
