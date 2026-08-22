@@ -86,10 +86,10 @@ export default function Navbar() {
         </Link>
 
         {/* ── Toggle Pill (desktop) ── */}
-        <div className="hidden lg:flex bg-white/10 border border-white/[0.1] rounded-full p-[3px] items-center gap-0.5 backdrop-blur-sm cursor-pointer">
+        <div className="hidden lg:flex bg-white/10 border border-white/[0.1] rounded-full p-[2px] items-center backdrop-blur-sm cursor-pointer">
           <button
             onClick={() => handleViewModeChange("organizations")}
-            className={`px-4 py-2 rounded-full text-[13.5px] font-medium transition-all duration-200 ${
+            className={`px-[13px] py-[9px] rounded-full text-[13.5px] font-medium transition-all duration-200 ${
               viewMode === "organizations"
                 ? "bg-white/20 text-white shadow-sm hover:text-white/70"
                 : "text-white/45 hover:text-white/50"
@@ -99,7 +99,7 @@ export default function Navbar() {
           </button>
           <button
             onClick={() => handleViewModeChange("members")}
-            className={`px-4 py-2 rounded-full text-[13.5px] font-medium transition-all duration-200 ${
+            className={`px-[13px] py-[9px] rounded-full text-[13.5px] font-medium transition-all duration-200 ${
               viewMode === "members"
                 ? "bg-white/20 text-white shadow-sm hover:text-white/70"
                 : "text-white/45 hover:text-white/50"
