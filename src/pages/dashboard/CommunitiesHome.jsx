@@ -594,18 +594,18 @@ export default function CommunitiesHome() {
           )}
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex rounded-sm border border-gray-200 overflow-hidden">
           {[
             { id: "grid", icon: <Grid size={15} /> },
             { id: "list", icon: <List size={15} /> },
-          ].map((v) => (
+          ].map((v, i) => (
             <button
               key={v.id}
               onClick={() => setView(v.id)}
-              className={`w-8 h-8 rounded-sm border flex items-center justify-center transition-all ${
+              className={`w-8 h-8 flex items-center justify-center transition-all ${i === 0 ? "border-0 border-r border-gray-200" : "border-none"} ${
                 view === v.id
-                  ? "bg-blue-50 border-blue-200 text-brand"
-                  : "border-gray-200 bg-white text-gray-600"
+                  ? "bg-blue-50 text-brand"
+                  : "bg-white text-gray-600"
               }`}
             >
               {v.icon}

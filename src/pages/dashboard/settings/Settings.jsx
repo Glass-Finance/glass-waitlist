@@ -199,7 +199,7 @@ export default function Settings() {
                 onClick={() => navigate(tab.defaultPath)}
                 className={`px-6 py-2 text-[13px] rounded transition-all cursor-pointer border-none font-medium
                   ${isActive
-                    ? "bg-white text-gray-900 shadow-sm"
+                    ? "bg-surface-container text-gray-900 shadow-sm"
                     : "bg-transparent text-gray-500 hover:text-gray-800"}`}
               >
                 {tab.label}

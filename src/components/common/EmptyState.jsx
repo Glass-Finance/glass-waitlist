@@ -34,7 +34,7 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
         <p className={isBig ? "text-base text-gray-400 mt-1.5 max-w-sm" : "text-xs text-gray-400 mt-1 max-w-xs"}>{subtitle}</p>
       )}
       {action && isBig && (
-        <Button onClick={action} fullWidth={false} className="mt-6 px-6 inline-flex items-center gap-1.5 !rounded-full !font-normal">
+        <Button onClick={action} fullWidth={false} size="sm" className="mt-6 px-6 inline-flex items-center gap-1.5 !rounded-full !font-normal">
           {actionLabel}
         </Button>
       )}

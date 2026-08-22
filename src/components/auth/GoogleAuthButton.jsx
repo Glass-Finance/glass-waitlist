@@ -183,7 +183,7 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
           )}
           <span className="flex flex-col min-w-0 flex-1 text-left">
             <span className="text-sm font-semibold text-gray-900 truncate">
-              Sign in as {identity.name ?? identity.email}
+              Continue as {identity.name ?? identity.email}
             </span>
             <span className="text-xs text-gray-500 truncate">{identity.email}</span>
           </span>

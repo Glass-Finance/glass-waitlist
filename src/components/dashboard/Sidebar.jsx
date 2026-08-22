@@ -474,12 +474,12 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         {/* Org header */}
         <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] flex items-center justify-between gap-2 min-h-14">
           {activeCommunity ? (
-            <div className="min-w-0 flex-1">
-              <div className="text-xs font-bold text-black whitespace-nowrap overflow-hidden text-ellipsis leading-[1.3]">
+            <div className="min-w-0 flex-1 flex items-start gap-2">
+              <div className="text-xs text-black leading-[1.3] break-words">
                 {activeCommunity.name}
               </div>
               <span
-                className={`inline-block mt-[3px] text-[9px] font-bold rounded-full py-px px-[7px] ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#fff4ee]" : "text-[#059669] bg-[#ecfdf5]"}`}
+                className={`flex-shrink-0 mt-px text-[9px] font-bold rounded-full py-px px-[7px] ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#fff4ee]" : "text-[#059669] bg-[#ecfdf5]"}`}
               >
                 {activeCommunity.owned
                   ? "Owner"
@@ -529,18 +529,23 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   }
                 }}
                 disabled={isDisabled}
-                className={`w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none tracking-normal text-xs mb-1.5 transition-all duration-150 whitespace-nowrap ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"} ${
+                className={`w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none tracking-normal text-xs mb-1.5 transition-all duration-150 whitespace-nowrap font-medium bg-transparent ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"} ${
                   isActive
-                    ? "bg-brand-tint text-brand font-bold"
+                    ? "text-brand"
                     : isDisabled
-                      ? "bg-transparent text-[#9ca3af] font-medium"
-                      : "bg-transparent text-[#6b7280] font-medium hover:bg-[#f9fafb]"
+                      ? "text-[#9ca3af]"
+                      : "text-[#6b7280] hover:bg-[#f9fafb]"
                 }`}
               >
-                <Icon size={13} className="flex-shrink-0" />
-                <span className="flex-1 text-left">{label}</span>
+                {/* Active highlight is a pill sized to the icon+label content,
+                    not the full row width -- was previously the whole
+                    button's own background, stretching edge to edge. */}
+                <span className={`flex items-center gap-2 rounded-lg ${isActive ? "bg-brand-tint px-2.5 py-1.5 -my-1.5 -mx-2.5" : ""}`}>
+                  <Icon size={13} className="flex-shrink-0" />
+                  <span className="text-left">{label}</span>
+                </span>
                 {badge > 0 && (
-                  <span className="min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
+                  <span className="ml-auto min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
                     {badge > 99 ? "99+" : badge}
                   </span>
                 )}
