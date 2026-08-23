@@ -264,90 +264,89 @@ export default function PaystackAccount() {
               </div>
             )}
 
-          {/* Inner white card — bank row + stats */}
-          <div className="bg-white rounded-xl p-5 max-w-md">
-            <div
-              className="flex items-center justify-between gap-4 pb-4 mb-4 border-b border-stacked-container"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <BankAvatar
-                  bankCode={bankCode}
-                  bankName={bankName}
-                  storedLogoUrl={
-                    account?.settlementBankLogo ??
-                    account?.bankLogo ??
-                    account?.logo
-                  }
-                />
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-gray-900 truncate">
-                      {account.accountName ?? account.name ?? "—"}
-                    </p>
-                    <StatusBadge status={account.status} />
-                  </div>
-                  <p className="text-xs text-gray-400">
-                    {account.accountNumber ??
-                      account.number ??
-                      account.acctNumber ??
-                      "—"}
+          {/* Bank row + stats — sit directly in the outer card per Figma,
+              no separate nested card/background around them. */}
+          <div
+            className="flex items-center justify-between gap-4 pb-4 mb-4 border-b border-stacked-container"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <BankAvatar
+                bankCode={bankCode}
+                bankName={bankName}
+                storedLogoUrl={
+                  account?.settlementBankLogo ??
+                  account?.bankLogo ??
+                  account?.logo
+                }
+              />
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-gray-900 truncate">
+                    {account.accountName ?? account.name ?? "—"}
                   </p>
+                  <StatusBadge status={account.status} />
                 </div>
-              </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="text-xs font-medium text-brand bg-transparent border-none cursor-pointer hover:underline"
-                >
-                  Change Account
-                </button>
-                <button
-                  onClick={() => {
-                    setRemoveError("");
-                    setShowRemoveModal(true);
-                  }}
-                  title="Remove payout account"
-                  className="w-8 h-8 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                >
-                  <Trash2 size={15} />
-                </button>
+                <p className="text-xs text-gray-400">
+                  {account.accountNumber ??
+                    account.number ??
+                    account.acctNumber ??
+                    "—"}
+                </p>
               </div>
             </div>
-            {removeError && (
-              <p className="text-xs text-red-600 mb-4 -mt-2">{removeError}</p>
-            )}
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <p className="text-xs text-gray-500 mb-1">Total Received</p>
-                <p className="text-sm font-bold text-gray-900">
-                  {formatNaira(
-                    account.totalReceivedAmount ??
-                      account.totalReceived ??
-                      account.totalAmount ??
-                      account.totalSettlement,
-                  )}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 mb-1">Last Payout</p>
-                <p className="text-sm font-bold text-gray-900">
-                  {formatDate(
-                    account.lastPayoutAt ??
-                      account.lastPayout ??
-                      account.lastSettlementAt ??
-                      account.lastSettledAt,
-                  )}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 mb-1">Account Added</p>
-                <p className="text-sm font-bold text-gray-900">
-                  {formatDate(
-                    account.createdAt ?? account.addedAt ?? account.dateCreated,
-                  )}
-                </p>
-              </div>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button
+                onClick={() => setShowModal(true)}
+                className="text-xs font-medium text-brand bg-transparent border-none cursor-pointer hover:underline"
+              >
+                Change Account
+              </button>
+              <button
+                onClick={() => {
+                  setRemoveError("");
+                  setShowRemoveModal(true);
+                }}
+                title="Remove payout account"
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+              >
+                <Trash2 size={15} />
+              </button>
+            </div>
+          </div>
+          {removeError && (
+            <p className="text-xs text-red-600 mb-4 -mt-2">{removeError}</p>
+          )}
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <p className="text-xs text-gray-500 mb-1">Total Received</p>
+              <p className="text-sm font-bold text-gray-900">
+                {formatNaira(
+                  account.totalReceivedAmount ??
+                    account.totalReceived ??
+                    account.totalAmount ??
+                    account.totalSettlement,
+                )}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 mb-1">Last Payout</p>
+              <p className="text-sm font-bold text-gray-900">
+                {formatDate(
+                  account.lastPayoutAt ??
+                    account.lastPayout ??
+                    account.lastSettlementAt ??
+                    account.lastSettledAt,
+                )}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 mb-1">Account Added</p>
+              <p className="text-sm font-bold text-gray-900">
+                {formatDate(
+                  account.createdAt ?? account.addedAt ?? account.dateCreated,
+                )}
+              </p>
             </div>
           </div>
         </div>
