@@ -36,12 +36,20 @@ function CornerAccent({ className = "" }) {
         strokeDasharray="16 84"
         className="uc-corner-travel"
       />
-      <rect
-        x="49.5" y="70.5" width="7" height="7" rx="1.5"
-        fill="#7C3AED"
-        className="uc-corner-diamond"
-        style={{ transformBox: "fill-box", transformOrigin: "center" }}
-      />
+      {/* Sparkle marker — same 4-point star path as Lucide's Sparkle icon.
+          The static position/size lives on this outer <g> (an SVG transform
+          attribute); the pulse animation's CSS transform goes on the <path>
+          itself instead of here, since a CSS transform on an element wins
+          outright over that same element's transform attribute -- nesting
+          keeps the two from fighting over one element. */}
+      <g transform="translate(48,69) scale(0.4167)">
+        <path
+          d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+          fill="#7C3AED"
+          className="uc-corner-diamond"
+          style={{ transformBox: "fill-box", transformOrigin: "center" }}
+        />
+      </g>
     </svg>
   );
 }
