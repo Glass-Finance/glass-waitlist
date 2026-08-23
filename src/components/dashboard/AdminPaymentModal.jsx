@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Info, X, Landmark, Loader2 } from "lucide-react";
 import {
@@ -8,6 +8,7 @@ import {
   stashPendingPaymentCtx,
   findAuthorisationForPlan,
 } from "../../hooks/usePayments";
+import { useEscapeToClose } from "../../hooks/useKeyboardShortcuts";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
 import Toggle from "../common/Toggle";
@@ -41,11 +42,7 @@ export function AdminPaymentModal({ item, onClose }) {
   // No keyboard dismiss for the Auto-Pay prompt, matching Home.jsx's own
   // AutoPayPrompt (backdrop click only) -- Escape here would otherwise
   // close the whole flow without recording that they were asked.
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape" && !autoPayPrompt) onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose, autoPayPrompt]);
+  useEscapeToClose(onClose, !autoPayPrompt);
 
   // Deliberately no pre-fetch here. initiatePayment is the real charge
   // endpoint -- for a member with an existing saved/authorised method it

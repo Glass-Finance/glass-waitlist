@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
+import { useRegisterShortcutGroup } from "../../hooks/useKeyboardShortcuts";
 import {
   Building2,
   Users,
@@ -36,6 +37,22 @@ const TABS = [
 export default function PlatformAdmin() {
   usePageTitle("Admin Panel");
   const [activeTab, setActiveTab] = useState("communities");
+
+  // Digit keys, not "g <letter>" chords -- this page's own 9 tabs are a
+  // sub-navigation *within* wherever "g a" already landed you, not another
+  // top-level destination, so borrowing the "go to a page" prefix here would
+  // blur that distinction. Numbered tabs is the same convention browser tab
+  // switching and Slack channel-jumping already use.
+  const tabShortcuts = useMemo(
+    () =>
+      TABS.map(({ id, label }, i) => ({
+        keys: String(i + 1),
+        description: `Switch to ${label}`,
+        handler: () => setActiveTab(id),
+      })),
+    [],
+  );
+  useRegisterShortcutGroup(tabShortcuts, "Platform Admin");
 
   return (
     <div className="px-4 py-6 md:px-8 md:py-8 min-h-full">

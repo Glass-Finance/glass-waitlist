@@ -5,6 +5,8 @@ import Topbar from "../components/dashboard/Topbar";
 import DashboardTour from "../components/dashboard/DashboardTour";
 import { DASHBOARD_TOUR_SEEN_KEY, COMMUNITIES_HOME_STEPS } from "../components/dashboard/dashboardTourSteps";
 import AutoPayPrompt from "../components/common/AutoPayPrompt";
+import KeyboardShortcutsProvider from "../components/dashboard/KeyboardShortcutsProvider";
+import KeyboardShortcutsHelp from "../components/dashboard/KeyboardShortcutsHelp";
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
@@ -88,62 +90,65 @@ export default function DashboardLayout() {
     // than what's actually visible, cutting off whatever's pinned to the
     // bottom (the sidebar's Member View link, the user info strip). Same
     // fix MemberAppLayout.jsx already uses for the equivalent problem there.
-    <div className="h-dvh w-screen flex overflow-hidden bg-surface-bg">
-      {/* ── Sidebar ── */}
-      <Sidebar mobileOpen={mobileNavOpen} onCloseMobile={() => setMobileNavOpen(false)} />
+    <KeyboardShortcutsProvider>
+      <div className="h-dvh w-screen flex overflow-hidden bg-surface-bg">
+        {/* ── Sidebar ── */}
+        <Sidebar mobileOpen={mobileNavOpen} onCloseMobile={() => setMobileNavOpen(false)} />
 
-      {/* ── Main ──
-          Background lives on this inner wrapper (the area right of the
-          sidebar) rather than the full-width outer container -- centering
-          against the full w-screen width put the image's true center inside
-          the sidebar's own footprint, which reads as shifted left relative
-          to the actual visible content area.
+        {/* ── Main ──
+            Background lives on this inner wrapper (the area right of the
+            sidebar) rather than the full-width outer container -- centering
+            against the full w-screen width put the image's true center inside
+            the sidebar's own footprint, which reads as shifted left relative
+            to the actual visible content area.
 
-          admin-background.webp turned out to be the actual problem: it's a
-          tall 1728x2312 portrait crop with its glow confined to the upper
-          third and nothing below it. In a wide/short dashboard viewport,
-          bg-cover scales it width-driven, blowing it up far taller than the
-          container -- any bottom-anchored position (the previous attempt,
-          reasoned from a Figma screenshot read as "bottom-left") shows only
-          the image's blank lower two-thirds, cropping the glow out
-          entirely. That's why it was invisible. Reusing the same asset +
-          technique the onboarding pages already rely on for this exact
-          problem: bg-page-default is a landscape image sized for this
-          aspect ratio, shown with bg-contain (never crops) + bg-center. */}
-      <div
-        className="flex-1 flex flex-col overflow-hidden bg-contain bg-center bg-no-repeat bg-page-default"
-      >
-        {/* Topbar */}
-        <Topbar
-          isCommunitiesHome={isCommunitiesHome}
-          onMenuClick={() => setMobileNavOpen(true)}
-          onOpenTour={() => setTourOpen(true)}
-        />
+            admin-background.webp turned out to be the actual problem: it's a
+            tall 1728x2312 portrait crop with its glow confined to the upper
+            third and nothing below it. In a wide/short dashboard viewport,
+            bg-cover scales it width-driven, blowing it up far taller than the
+            container -- any bottom-anchored position (the previous attempt,
+            reasoned from a Figma screenshot read as "bottom-left") shows only
+            the image's blank lower two-thirds, cropping the glow out
+            entirely. That's why it was invisible. Reusing the same asset +
+            technique the onboarding pages already rely on for this exact
+            problem: bg-page-default is a landscape image sized for this
+            aspect ratio, shown with bg-contain (never crops) + bg-center. */}
+        <div
+          className="flex-1 flex flex-col overflow-hidden bg-contain bg-center bg-no-repeat bg-page-default"
+        >
+          {/* Topbar */}
+          <Topbar
+            isCommunitiesHome={isCommunitiesHome}
+            onMenuClick={() => setMobileNavOpen(true)}
+            onOpenTour={() => setTourOpen(true)}
+          />
 
-        {/* Page content — background texture lives on the wrapper above so
-            every dashboard page gets it uniformly, instead of each page
-            applying its own copy on a div sized to its own content (h-full
-            there only fills the content's own height, leaving a plain gray
-            gap below on shorter pages like Settings). */}
-        <main className="flex-1 overflow-y-auto">
-          <Outlet />
-        </main>
+          {/* Page content — background texture lives on the wrapper above so
+              every dashboard page gets it uniformly, instead of each page
+              applying its own copy on a div sized to its own content (h-full
+              there only fills the content's own height, leaving a plain gray
+              gap below on shorter pages like Settings). */}
+          <main className="flex-1 overflow-y-auto">
+            <Outlet />
+          </main>
+        </div>
+
+        {tourOpen && (
+          <DashboardTour
+            onClose={closeTour}
+            onNeedMobileNav={setMobileNavOpen}
+            steps={isCommunitiesHome ? COMMUNITIES_HOME_STEPS : undefined}
+          />
+        )}
+        {autoPayPrompt && (
+          <AutoPayPrompt
+            prompt={autoPayPrompt}
+            onDismiss={dismissAutoPayPrompt}
+            onEnable={enableAutoPay}
+          />
+        )}
+        <KeyboardShortcutsHelp />
       </div>
-
-      {tourOpen && (
-        <DashboardTour
-          onClose={closeTour}
-          onNeedMobileNav={setMobileNavOpen}
-          steps={isCommunitiesHome ? COMMUNITIES_HOME_STEPS : undefined}
-        />
-      )}
-      {autoPayPrompt && (
-        <AutoPayPrompt
-          prompt={autoPayPrompt}
-          onDismiss={dismissAutoPayPrompt}
-          onEnable={enableAutoPay}
-        />
-      )}
-    </div>
+    </KeyboardShortcutsProvider>
   );
 }

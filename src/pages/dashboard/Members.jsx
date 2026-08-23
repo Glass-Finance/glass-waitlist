@@ -1,5 +1,6 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
+import { useEscapeToClose } from "../../hooks/useKeyboardShortcuts";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, Clock, ShieldCheck, Copy, Check, UserCheck, ChevronRight, Download } from "lucide-react";
 import EmptyState from "../../components/common/EmptyState";
@@ -450,11 +451,7 @@ export default function Members() {
 }
 
 function QuickAddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavailable, inviteLink }) {
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
   const [email, setEmail] = useState("");
   const defaultRole = roles.find((r) => r.name === "Community Member") ?? roles[0];
   const [roleId, setRoleId] = useState(defaultRole?.id ?? "");

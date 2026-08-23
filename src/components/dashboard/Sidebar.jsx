@@ -16,9 +16,10 @@
  * panel shows generic labels.
  */
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useInvites } from "../../hooks/useInvites";
+import { useRegisterShortcutGroup } from "../../hooks/useKeyboardShortcuts";
 import {
   LayoutDashboard,
   CreditCard,
@@ -41,12 +42,15 @@ import { toastSuccess } from "../../utils/toast";
 // admin dashboard ("admin"), which keeps its own URL convention
 // (?community=slug — see AdminDashboard.jsx) distinct from the
 // /dashboard/home communities-overview page.
+// `shortcut` is the second key of a "g <key>" chord (see useKeyboardShortcuts)
+// -- picked to be the obvious first letter of each label with no collisions
+// within this list.
 const NAV = [
-  { icon: LayoutDashboard, label: "Dashboard",     segment: "home",          path: "admin" },
-  { icon: CreditCard,      label: "Payments",      segment: "payments",      path: "payments" },
-  { icon: Users,           label: "Members",       segment: "members",       path: "members" },
-  { icon: Bell,            label: "Notifications", segment: "notifications", path: "notifications" },
-  { icon: Settings,        label: "Settings",      segment: "settings",      path: "settings" },
+  { icon: LayoutDashboard, label: "Dashboard",     segment: "home",          path: "admin",         shortcut: "h" },
+  { icon: CreditCard,      label: "Payments",      segment: "payments",      path: "payments",      shortcut: "p" },
+  { icon: Users,           label: "Members",       segment: "members",       path: "members",       shortcut: "m" },
+  { icon: Bell,            label: "Notifications", segment: "notifications", path: "notifications", shortcut: "n" },
+  { icon: Settings,        label: "Settings",      segment: "settings",      path: "settings",      shortcut: "s" },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -135,6 +139,33 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   // as Role.jsx, so no extra network call and no race condition.
   const { data: myMemberRecord } = useMyMemberRecord(activeCommunity?.slug ?? null);
   const activeCommunityIsPaying = myMemberRecord?.billingExempt === false;
+
+  // "g h"/"g p"/etc. — mirrors exactly what a click on each nav item does,
+  // including staying disabled (no binding at all) when there's no active
+  // community to resolve a URL against, same as the button being disabled
+  // below. Registered unconditionally (before the isPlatformAdmin early
+  // return) since hooks can't run conditionally -- platform admins simply
+  // get an empty list, since this stripped rail has no community nav at all.
+  const navShortcuts = useMemo(() => {
+    if (isPlatformAdmin) return [];
+    return NAV.map(({ label, segment, path, shortcut }) => {
+      const href = activeCommunity
+        ? communityPath(activeCommunity.slug, path, activeCommunityIsPaying)
+        : segment === "home"
+          ? "/dashboard/home"
+          : null;
+      if (!href) return null;
+      return {
+        keys: `g ${shortcut}`,
+        description: `Go to ${label}`,
+        handler: () => {
+          navigate(href);
+          onCloseMobile?.();
+        },
+      };
+    }).filter(Boolean);
+  }, [isPlatformAdmin, activeCommunity, activeCommunityIsPaying, navigate, onCloseMobile]);
+  useRegisterShortcutGroup(navShortcuts, "Navigation");
 
   // ── Handle logout ──────────────────────────────────────────────────────────
   const handleLogout = async () => {

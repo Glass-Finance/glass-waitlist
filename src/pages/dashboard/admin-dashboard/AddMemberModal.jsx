@@ -5,6 +5,7 @@ import { APP_ORIGIN } from "../../../utils/deviceRedirect";
 import { useCommunityMembers, useRoles } from "../../../hooks/useCommunityMembers";
 import { getEmailError } from "../../../utils/validators";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
+import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 import { Button } from "../../../components/ui/Button";
 
 const ALLOWED_ROLE_NAMES = new Set([
@@ -31,11 +32,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
   const [urlProgress, setUrlProgress] = useState(0);
   const [urlFileInfo, setUrlFileInfo] = useState(null);
 
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
 
   // Guards handleUrlUpload's post-fetch state updates if this modal closes
   // (unmounts) while a URL fetch is still in flight.

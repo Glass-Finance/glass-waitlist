@@ -11,14 +11,11 @@ import {
 } from "./constants";
 import { toDateInput, blurOnWheel, intervalUnitLabel, validatePlanField } from "./helpers";
 import { PayoutAccountField, BillingDayField } from "./PlanFormFields";
+import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 
 // ── Edit plan modal ───────────────────────────────────────────────────────────
 export default function EditPlanModal({ plan, communityId, onClose, onSave, saving }) {
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
   const initialEndAt = toDateInput(plan.endAt ?? plan.recurringPlan?.endAt);
   const [form, setForm] = useState({
     name: plan.name ?? "",

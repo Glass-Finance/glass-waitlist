@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
+import { useEscapeToClose } from "../../../../hooks/useKeyboardShortcuts";
 import { useCommunity, useUpdateCommunity } from "../../../../hooks/useCommunity";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { getErrorMessage } from "../../../../utils/errorHandler";
@@ -46,12 +47,7 @@ export default function CommunityProfile() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState("");
 
-  useEffect(() => {
-    if (!deleteModal) return;
-    const handler = (e) => { if (e.key === "Escape") setDeleteModal(false); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [deleteModal]);
+  useEscapeToClose(() => setDeleteModal(false), deleteModal);
 
   async function handleDeleteCommunity() {
     setDeleteLoading(true);

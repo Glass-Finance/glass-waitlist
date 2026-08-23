@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
+import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 import { toTitleCase } from "../../../utils/format";
 import { inputCls, REMINDER_FREQUENCIES, REMINDER_CHANNELS } from "./constants";
 
@@ -8,11 +9,7 @@ import { inputCls, REMINDER_FREQUENCIES, REMINDER_CHANNELS } from "./constants";
 // "auto-scheduled" reminder configured at plan creation; admins choose
 // frequency + channels here and send on demand.
 export default function SendReminderModal({ plan, onClose, onSend, sending }) {
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
   const [frequency, setFrequency] = useState("EVERY_3_DAYS");
   const [channels, setChannels] = useState(new Set(["IN_APP"]));
 

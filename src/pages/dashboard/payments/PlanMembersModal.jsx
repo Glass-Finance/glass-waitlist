@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { X, Search, Filter, Users } from "lucide-react";
 import { getPaymentLinkMembers } from "../../../api/payments";
@@ -6,17 +6,14 @@ import { fetchAllCommunityMembers } from "../../../api/communities";
 import { fetchAllCommunityObligations, fetchAllCommunityTransactions } from "../../../api/transactions";
 import { exportCommunityObligations } from "../../../api/exports";
 import { useExportJob } from "../../../hooks/useExportJob";
+import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 import { formatNaira, toTitleCase, formatDate } from "../../../utils/format";
 import LoadingState from "../../../components/common/LoadingState";
 import EmptyState from "../../../components/common/EmptyState";
 
 // ── Plan members modal ────────────────────────────────────────────────────────
 export default function PlanMembersModal({ plan, communityId, onClose }) {
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
   const [search, setSearch] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");

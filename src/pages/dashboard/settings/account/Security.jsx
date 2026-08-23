@@ -10,6 +10,7 @@ import LoadingState from "../../../../components/common/LoadingState";
 import { Button } from "../../../../components/ui/Button";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
+import { useEscapeToClose } from "../../../../hooks/useKeyboardShortcuts";
 import { toastSuccess } from "../../../../utils/toast";
 
 // ─── MFA Modal ────────────────────────────────────────────────────────────────
@@ -39,6 +40,8 @@ function MfaModal({ mode, onClose, onSuccess }) {
     onClose();
   }
 
+  useEscapeToClose(requestDismiss);
+
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
@@ -51,7 +54,6 @@ function MfaModal({ mode, onClose, onSuccess }) {
     getFocusable()[0]?.focus();
 
     function handler(e) {
-      if (e.key === "Escape") { requestDismiss(); return; }
       if (e.key !== "Tab") return;
       const focusable = getFocusable();
       if (focusable.length === 0) return;
@@ -71,7 +73,6 @@ function MfaModal({ mode, onClose, onSuccess }) {
     return () => window.removeEventListener("keydown", handler);
     // Re-run when the visible stage changes -- the focusable set (and what
     // should get initial focus) is different on every screen.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stage]);
 
   async function startSetup() {

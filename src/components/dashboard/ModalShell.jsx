@@ -4,7 +4,11 @@ import { X } from "lucide-react";
 // Shared dashboard modal chrome — extracted out of PlatformAdmin.jsx so other
 // dashboard pages (Members, MemberDetail, MemberAccess, Payments, finance
 // settings) can build confirm dialogs on the same visual language instead
-// of falling back to window.confirm().
+// of falling back to window.confirm(). Also reused (via EmailChangeModal/
+// PhoneChangeModal) by SignUp and the member app -- both of those sit
+// outside the dashboard's KeyboardShortcutsProvider, so this keeps its own
+// self-contained Escape handling rather than going through
+// useEscapeToClose, which would silently no-op there.
 export default function ModalShell({ title, subtitle, onClose, children }) {
   // Escape-to-close -- every dashboard modal built on this shell gets this
   // for free; hand-rolled modals elsewhere in the app don't have it yet.

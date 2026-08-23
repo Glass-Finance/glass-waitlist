@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useEscapeToClose } from "../../../../hooks/useKeyboardShortcuts";
 import {
   Search,
   SlidersHorizontal,
@@ -74,12 +75,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
     description: config.description ?? "",
   });
 
-  // Close on Escape
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
 
   function handleSubmit(e) {
     e.preventDefault();

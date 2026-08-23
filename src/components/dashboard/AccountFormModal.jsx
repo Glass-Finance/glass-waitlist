@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Check, X } from "lucide-react";
 import { getBanks, resolveAccount } from "../../api/members";
+import { useEscapeToClose } from "../../hooks/useKeyboardShortcuts";
 import { notifyError } from "../../utils/errorHandler";
 import BankSelect from "../common/BankSelect";
 import { Button } from "../ui/Button";
@@ -32,11 +33,7 @@ export default function AccountFormModal({
   const [resolveError, setResolveError] = useState(""); // non-blocking warning
   const [manualMode, setManualMode] = useState(false); // allow typing accName after resolve fails
 
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
 
   useEffect(() => {
     getBanks()

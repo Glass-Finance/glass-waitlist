@@ -8,14 +8,11 @@ import PlanStepIndicator from "./PlanStepIndicator";
 import { Step1, Step2, Step3 } from "./PlanFormSteps";
 import SuccessBadge from "../../../components/common/SuccessBadge";
 import { Button } from "../../../components/ui/Button";
+import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 
 // ── Create plan modal ─────────────────────────────────────────────────────────
 export default function CreatePlanModal({ communityId, onClose, onCreate, creating, createError }) {
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
   const [step, setStep] = useState(1);
   const [planType, setPlanType] = useState("recurring");
   const [success, setSuccess] = useState(false);

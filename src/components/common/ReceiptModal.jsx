@@ -444,6 +444,10 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
     fetch("/Glass.webp").then((r) => r.blob()).then(toB64).then(setFooterLogoB64).catch(() => {});
   }, []);
 
+  // Not routed through useEscapeToClose/KeyboardShortcutsProvider -- this
+  // modal is shared with the member app (PaymentSuccess, TransactionDetail),
+  // which sits outside the dashboard's shortcut provider entirely. Keeping
+  // its own handler so Escape still works there.
   useEffect(() => {
     function onKey(e) {
       if (e.key === "Escape") onClose();

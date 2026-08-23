@@ -4,13 +4,10 @@ import { useSlug } from "../../../hooks/useSlug";
 import { dateInputToIso } from "../../../utils/date";
 import { inputCls } from "./constants";
 import { toDateInput } from "./helpers";
+import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 
 export default function DuplicatePlanModal({ plan, onClose, onDuplicate, duplicating }) {
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
   const [title, setTitle] = useState(`${plan.name ?? ""} (Copy)`.trim());
   const [startDate, setStartDate] = useState(toDateInput(new Date().toISOString()));
   const [dueDate, setDueDate] = useState("");

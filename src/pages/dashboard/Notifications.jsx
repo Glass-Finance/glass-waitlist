@@ -5,6 +5,7 @@ import { Bell, ChevronRight, X, User } from "lucide-react";
 import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
+import { useEscapeToClose } from "../../hooks/useKeyboardShortcuts";
 import { useAuth } from "../../store/AuthContext";
 import { notificationAction } from "../../utils/notificationRouting";
 import { notificationCategory, isSelfAccountType, notificationVisual } from "../../utils/notificationTypes";
@@ -138,11 +139,7 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
 // with the full (untruncated) content plus a contextual action button that
 // deep-links to the related page when one can be inferred.
 function NotificationDetailModal({ n, onClose }) {
-  useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+  useEscapeToClose(onClose);
   const navigate = useNavigate();
   const cat = categorize(n);
   const { label: catLabel, badgeCls } = SECTION_CONFIG[cat];
