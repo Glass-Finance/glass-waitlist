@@ -121,7 +121,14 @@ export function useNotifications() {
             if (resolved && resolved.id !== communityId) return false;
           }
           if (!clearedAt) return true;
-          if (n.readFlag && new Date(n.createdAt).getTime() <= clearedAt) return false;
+          // Deliberately not gated on n.readFlag: the backend's per-item
+          // read status is already known unreliable here (see the
+          // communityId filter above -- confirmed inconsistent against real
+          // data), and a notification the backend never actually flips to
+          // read would otherwise survive Clear All forever. "Clear All" means
+          // hide everything up to this moment, full stop; "Mark All Read"
+          // already covers the separate read/unread concern.
+          if (new Date(n.createdAt).getTime() <= clearedAt) return false;
           return true;
         })
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -240,7 +247,11 @@ export function useAllNotifications() {
       return [...notifications]
         .filter((n) => {
           if (!clearedAt) return true;
-          if (n.readFlag && new Date(n.createdAt).getTime() <= clearedAt) return false;
+          // Deliberately not gated on n.readFlag -- see useNotifications'
+          // identical filter above for why: the backend's per-item read
+          // status is unreliable, and gating on it left Clear All unable to
+          // hide notifications the backend never actually flipped to read.
+          if (new Date(n.createdAt).getTime() <= clearedAt) return false;
           return true;
         })
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
