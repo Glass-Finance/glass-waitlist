@@ -18,6 +18,7 @@ import { searchCommunity } from "../../api/communities";
 import NotificationsPanel from "./NotificationsPanel";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { useClickOutside } from "../../hooks/useClickOutside";
+import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 // user.firstName/lastName come from AuthContext's refreshUser() (GET /user/me)
@@ -43,6 +44,13 @@ function getDisplayName(user) {
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function Topbar({
   searchPlaceholder = "Search members, payments, receipts...",
+  // Communities Home lists every community the user belongs to rather than
+  // one active one -- the member/transaction/receipt search below only
+  // knows how to search inside a single community (useActiveCommunityId's
+  // stale "last community you clicked into" fallback), which would silently
+  // search the wrong thing here. Swaps in a name search over the already-
+  // loaded community list instead, matching what this page actually shows.
+  isCommunitiesHome = false,
   onMenuClick,
   onOpenTour,
 }) {
@@ -85,6 +93,10 @@ export default function Topbar({
   useClickOutside(searchRef, () => setSearchOpen(false), searchOpen);
 
   useEffect(() => {
+    // Communities Home uses the client-side community-name filter below
+    // instead -- skip the single-community API search entirely so it
+    // doesn't fire against whatever community happened to be cached.
+    if (isCommunitiesHome) return;
     const q = query.trim();
     if (!communityId || q.length < 2) {
       // Reset branch of the same debounced-search effect below, not a
@@ -107,7 +119,7 @@ export default function Topbar({
       }
     }, 400);
     return () => clearTimeout(timer);
-  }, [query, communityId]);
+  }, [query, communityId, isCommunitiesHome]);
 
   function goToResult(path) {
     setSearchOpen(false);
@@ -121,6 +133,51 @@ export default function Topbar({
   const searchSettlements = results?.settlements?.content ?? [];
   const hasSearchResults =
     searchMembers.length || searchTransactions.length || searchPaymentLinks.length || searchSettlements.length;
+
+  // ── Communities Home: filter the already-loaded community list by name,
+  // no API call needed. Query open state is driven the same way as the API
+  // search (2+ chars) for a consistent feel, just synchronous. ──────────────
+  const matchedCommunities = useMemo(() => {
+    if (!isCommunitiesHome) return [];
+    const q = query.trim().toLowerCase();
+    if (q.length < 2) return [];
+    const allCommunities = communitiesData?.communities ?? [];
+    return allCommunities.filter((c) => c.name?.toLowerCase().includes(q)).slice(0, 8);
+  }, [isCommunitiesHome, communitiesData, query]);
+
+  useEffect(() => {
+    if (!isCommunitiesHome) return;
+    // Mirrors the API-search effect's own setSearchOpen(true) on a match --
+    // genuinely reacting to the query changing, not a derived render value.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSearchOpen(query.trim().length >= 2);
+  }, [isCommunitiesHome, query]);
+
+  const hasCommunityResults = matchedCommunities.length > 0;
+
+  // Same role-based routing as CommunitiesHome's own community tiles
+  // (handleCommunityClick) -- a member (not admin/owner) goes to the member
+  // app, not the dashboard.
+  async function goToCommunity(community) {
+    setSearchOpen(false);
+    setQuery("");
+    if (!isCommunityAdmin(community)) {
+      try {
+        localStorage.setItem(
+          "glass_member_community",
+          JSON.stringify({ id: community.id, slug: community.slug, name: community.name })
+        );
+      } catch { /* ignore */ }
+      navigate("/member/home");
+      return;
+    }
+    const id = community.slug ?? community.id;
+    try {
+      localStorage.setItem("glass_community", JSON.stringify(community));
+    } catch { /* ignore */ }
+    const isPaying = await resolveIsPayingAdmin(id);
+    navigate(`/dashboard/${isPaying ? "admin/paying" : "admin"}?community=${id}`);
+  }
 
   return (
     <header className="h-14 bg-surface-container border-b border-surface-container-border flex items-center gap-6 px-4 md:px-8 sticky top-0 z-50 flex-shrink-0">
@@ -145,13 +202,35 @@ export default function Topbar({
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => { if (results) setSearchOpen(true); }}
-            placeholder={searchPlaceholder}
+            onFocus={() => { if (results || isCommunitiesHome) setSearchOpen(true); }}
+            placeholder={isCommunitiesHome ? "Search your communities..." : searchPlaceholder}
             className="flex-1 bg-transparent border-none outline-none text-xs text-gray-600 placeholder-gray-400"
           />
         </div>
 
-        {searchOpen && query.trim().length >= 2 && (
+        {searchOpen && query.trim().length >= 2 && isCommunitiesHome && (
+          <div className="absolute left-0 top-full mt-1.5 w-full bg-white rounded-xl border border-surface-container-border shadow-lg z-50 max-h-[420px] overflow-y-auto">
+            {!hasCommunityResults ? (
+              <p className="text-xs text-gray-400 px-4 py-4">No communities match "{query.trim()}"</p>
+            ) : (
+              <div className="py-2">
+                <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Communities</p>
+                {matchedCommunities.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => goToCommunity(c)}
+                    className="w-full flex items-center justify-between gap-2.5 px-4 py-2 hover:bg-gray-50 text-left bg-transparent border-none cursor-pointer"
+                  >
+                    <span className="text-xs font-medium text-gray-900 truncate">{c.name}</span>
+                    <span className="text-[11px] text-gray-400 flex-shrink-0">{c.owned ? "Owner" : isCommunityAdmin(c) ? "Admin" : "Member"}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {searchOpen && query.trim().length >= 2 && !isCommunitiesHome && (
           <div className="absolute left-0 top-full mt-1.5 w-full bg-white rounded-xl border border-surface-container-border shadow-lg z-50 max-h-[420px] overflow-y-auto">
             {!hasSearchResults ? (
               <p className="text-xs text-gray-400 px-4 py-4">No results for "{query.trim()}"</p>

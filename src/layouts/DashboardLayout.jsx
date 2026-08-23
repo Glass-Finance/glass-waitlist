@@ -114,7 +114,11 @@ export default function DashboardLayout() {
         className="flex-1 flex flex-col overflow-hidden bg-contain bg-center bg-no-repeat bg-page-default"
       >
         {/* Topbar */}
-        <Topbar onMenuClick={() => setMobileNavOpen(true)} onOpenTour={() => setTourOpen(true)} />
+        <Topbar
+          isCommunitiesHome={isCommunitiesHome}
+          onMenuClick={() => setMobileNavOpen(true)}
+          onOpenTour={() => setTourOpen(true)}
+        />
 
         {/* Page content — background texture lives on the wrapper above so
             every dashboard page gets it uniformly, instead of each page
