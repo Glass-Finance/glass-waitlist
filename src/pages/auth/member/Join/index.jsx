@@ -139,7 +139,13 @@ export default function Join() {
     // created via the marketing site's contextless "Join A Community" CTA,
     // not a specific invite. /member/invites would just be empty; send them
     // straight to browsing instead of a dead end they'd have to find their
-    // own way out of via Home's empty state.
+    // own way out of via Home's empty state. This is also the one path with
+    // no other confirmation moment (the community-slug and token branches
+    // above both have their own), and DiscoverCommunities' own header is
+    // just "Browse Communities" with no acknowledgment that signup actually
+    // succeeded -- worth saying so explicitly here instead of silently
+    // landing them on a search box with no idea whether it worked.
+    toastSuccess("Account created!", { description: "Find a community to join below." });
     navigate("/member/communities/search", { replace: true });
   }
 
@@ -160,6 +166,9 @@ export default function Join() {
       navigate("/member/invites", { replace: true });
       return;
     }
+    // Same missing-confirmation gap as finishAndRoute()'s equivalent branch
+    // above -- kept in sync with it.
+    toastSuccess("Account created!", { description: "Find a community to join below." });
     navigate("/member/communities/search", { replace: true });
   }
 
