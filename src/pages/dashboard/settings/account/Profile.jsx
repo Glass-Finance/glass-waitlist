@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Pencil, ShieldCheck } from "lucide-react";
+import { Pencil, ShieldCheck, ArrowLeft } from "lucide-react";
 import { useMe, useUpdateProfile, useRequestPhoneUpdate, useUpdatePhone } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { updateEmail, deleteAccount, requestAccountDeletionCode } from "../../../../api/members";
@@ -384,15 +384,15 @@ export default function Profile() {
         <>
           {/* Neither Figma mock shows a way back to the main profile view --
               kept for now rather than silently dropping the only navigation
-              out of this screen; ask before removing. */}
-          <div className="flex justify-end">
-            <button
-              onClick={() => setView("profile")}
-              className="text-xs font-medium text-gray-500 hover:text-gray-800 bg-transparent border-none cursor-pointer"
-            >
-              Cancel
-            </button>
-          </div>
+              out of this screen. Styled as the app's standard back-arrow link
+              (matches PaymentProfile.jsx/PayingMember.jsx/CreatePlanModal.jsx)
+              instead of a "Cancel" text button. */}
+          <button
+            onClick={() => setView("profile")}
+            className="self-start flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer -ml-1 p-0"
+          >
+            <ArrowLeft size={15} /> Back
+          </button>
 
           <div className="bg-white rounded-xl border border-surface-container-border">
             <div className="px-6 py-4 border-b border-surface-container-border">
@@ -414,7 +414,7 @@ export default function Profile() {
           </div>
 
           <div className="flex justify-center">
-            <Button onClick={handleStartEmailUpdate} loading={emailSending} fullWidth={false} className="px-16">
+            <Button onClick={handleStartEmailUpdate} loading={emailSending} fullWidth={false} size="sm" className="px-16">
               {emailSending ? "Sending Code…" : "Update"}
             </Button>
           </div>
@@ -424,14 +424,12 @@ export default function Profile() {
       {view === "phone" && (
         <>
           {/* See the email view's identical comment above. */}
-          <div className="flex justify-end">
-            <button
-              onClick={() => setView("profile")}
-              className="text-xs font-medium text-gray-500 hover:text-gray-800 bg-transparent border-none cursor-pointer"
-            >
-              Cancel
-            </button>
-          </div>
+          <button
+            onClick={() => setView("profile")}
+            className="self-start flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer -ml-1 p-0"
+          >
+            <ArrowLeft size={15} /> Back
+          </button>
 
           <div className="bg-white rounded-xl border border-surface-container-border">
             <div className="px-6 py-4 border-b border-surface-container-border">
@@ -469,7 +467,7 @@ export default function Profile() {
           )}
 
           <div className="flex justify-center">
-            <Button onClick={handleStartPhoneUpdate} loading={phoneSending} fullWidth={false} className="px-16">
+            <Button onClick={handleStartPhoneUpdate} loading={phoneSending} fullWidth={false} size="sm" className="px-16">
               {phoneSending ? "Sending Code…" : isPhoneUpdate ? "Update Phone Number" : "Verify"}
             </Button>
           </div>
