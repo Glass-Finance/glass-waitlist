@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useId } from "react";
 import QRCode from "qrcode";
 import { Eye, EyeOff, ShieldCheck, Shield, Copy, Check, X } from "lucide-react";
 import { useUpdatePassword, useMe } from "../../../../hooks/useMyAccount";
@@ -22,12 +22,57 @@ function MfaModal({ mode, onClose, onSuccess }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, copy] = useCopyToClipboard();
+  const [copiedAll, copyAll] = useCopyToClipboard();
+  const [savedConfirmed, setSavedConfirmed] = useState(false);
+  const titleId = useId();
+  const codeInputId = useId();
+  const dialogRef = useRef(null);
+
+  // Recovery codes are shown exactly once. Letting the backdrop, Escape, or
+  // the header's X dismiss the modal here the same as every other stage
+  // meant a single misclick lost them permanently, with no way to see them
+  // again. Every dismissal path funnels through here so that stage is the
+  // one place this is enforced -- "Done" (gated on savedConfirmed below) is
+  // the only way out once codes are on screen.
+  function requestDismiss() {
+    if (stage === "recovery") return;
+    onClose();
+  }
 
   useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    const getFocusable = () =>
+      Array.from(dialog.querySelectorAll('button:not(:disabled), [href], input:not(:disabled), select, textarea, [tabindex]:not([tabindex="-1"])'));
+
+    // Initial focus -- without this, focus stays on whatever triggered the
+    // modal (the page behind it), so a keyboard user's next Tab jumps back
+    // into the page instead of into the dialog that just covered it.
+    getFocusable()[0]?.focus();
+
+    function handler(e) {
+      if (e.key === "Escape") { requestDismiss(); return; }
+      if (e.key !== "Tab") return;
+      const focusable = getFocusable();
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      // Basic focus trap: Tab/Shift+Tab wraps within the dialog instead of
+      // escaping into the page behind it while the modal is open.
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
+    // Re-run when the visible stage changes -- the focusable set (and what
+    // should get initial focus) is different on every screen.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stage]);
 
   async function startSetup() {
     setStage("loading");
@@ -95,17 +140,28 @@ function MfaModal({ mode, onClose, onSuccess }) {
   return (
     <div
       className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/35 backdrop-blur-xs"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => { if (e.target === e.currentTarget) requestDismiss(); }}
     >
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border"
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
-          <h2 className="text-sm font-bold text-gray-900">
+          <h2 id={titleId} className="text-sm font-bold text-gray-900">
             {mode === "setup" ? "Set Up Authenticator App" : "Disable MFA"}
           </h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all">
-            <X size={15} />
-          </button>
+          {/* Hidden, not just a no-op, during the recovery stage -- same
+              reasoning as the Cancel button below: once codes are on
+              screen, "Done" is the only way out. */}
+          {stage !== "recovery" && (
+            <button onClick={requestDismiss} aria-label="Close" className="p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all">
+              <X size={15} />
+            </button>
+          )}
         </div>
 
         <div className="px-6 py-5 flex flex-col gap-4">
@@ -118,7 +174,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
                   Use Google Authenticator, Authy, or any TOTP-compatible app to generate time-based codes at login.
                 </p>
               </div>
-              {error && <p className="text-xs text-red-500">{error}</p>}
+              {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
               <Button onClick={startSetup}>
                 Begin Setup
               </Button>
@@ -155,13 +211,15 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 </div>
               )}
 
-              <p className="text-xs font-semibold text-gray-700">2. Enter the 6-digit code</p>
+              <label htmlFor={codeInputId} className="text-xs font-semibold text-gray-700">2. Enter the 6-digit code</label>
               <input
+                id={codeInputId}
                 type="text" inputMode="numeric" maxLength={6} placeholder="000000"
+                autoComplete="one-time-code"
                 value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 className={inputCls}
               />
-              {error && <p className="text-xs text-red-500">{error}</p>}
+              {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
               <Button
                 onClick={confirmEnable}
                 disabled={code.length !== 6}
@@ -179,24 +237,33 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 <p className="text-xs font-semibold text-amber-800 mb-1">Your account will be less secure</p>
                 <p className="text-xs text-amber-700 leading-relaxed">You can re-enable MFA at any time from Security settings.</p>
               </div>
-              <p className="text-xs text-gray-600">Enter the 6-digit code from your authenticator app to confirm:</p>
+              <label htmlFor={codeInputId} className="text-xs text-gray-600">Enter the 6-digit code from your authenticator app to confirm:</label>
               <input
+                id={codeInputId}
                 type="text" inputMode="numeric" maxLength={6} placeholder="000000"
+                autoComplete="one-time-code"
                 value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 className={inputCls}
               />
-              {error && <p className="text-xs text-red-500">{error}</p>}
-              <button
+              {error && <p role="alert" className="text-xs text-red-500">{error}</p>}
+              <Button
                 onClick={confirmDisable}
-                disabled={code.length !== 6 || loading}
-                className="w-full py-2.5 rounded-xl text-sm font-semibold text-white border-none cursor-pointer disabled:opacity-50 bg-danger"
+                disabled={code.length !== 6}
+                loading={loading}
+                variant="danger"
               >
                 {loading ? "Disabling…" : "Disable MFA"}
-              </button>
+              </Button>
             </>
           )}
 
-          {/* Recovery codes — shown after MFA is successfully enabled */}
+          {/* Recovery codes — shown after MFA is successfully enabled.
+              Shown exactly once (the backend won't return them again), so
+              this is the one screen in the modal that can't be dismissed
+              casually -- see requestDismiss above for the backdrop/Escape/X
+              side of that; "Done" itself is also gated on savedConfirmed so
+              clicking through isn't just as easy as the dismiss paths it
+              replaces. */}
           {stage === "recovery" && (
             <div className="flex flex-col gap-3">
               <div className="bg-green-50 rounded-xl p-4 border border-green-200">
@@ -204,25 +271,40 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 <p className="text-xs text-green-700 leading-relaxed">Save these recovery codes somewhere safe. Each code can only be used once if you lose access to your authenticator app.</p>
               </div>
               {recoveryCodes.length > 0 && (
-                <div className="bg-stacked-container rounded-xl p-4 border border-gray-200 grid grid-cols-2 gap-2">
-                  {recoveryCodes.map((rc, i) => (
-                    <code key={i} className="text-xs font-mono font-bold text-gray-800 bg-white rounded px-2 py-1 border border-gray-200 text-center">{rc}</code>
-                  ))}
-                </div>
+                <>
+                  <div className="bg-stacked-container rounded-xl p-4 border border-gray-200 grid grid-cols-2 gap-2">
+                    {recoveryCodes.map((rc, i) => (
+                      <code key={i} className="text-xs font-mono font-bold text-gray-800 bg-white rounded px-2 py-1 border border-gray-200 text-center">{rc}</code>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => copyAll(recoveryCodes.join("\n"))}
+                    className="flex items-center justify-center gap-1.5 text-xs font-semibold text-brand bg-transparent border-none cursor-pointer py-1"
+                  >
+                    {copiedAll ? <Check size={13} /> : <Copy size={13} />}
+                    {copiedAll ? "Copied" : "Copy all codes"}
+                  </button>
+                </>
               )}
-              <Button onClick={onSuccess}>
+              <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={savedConfirmed}
+                  onChange={(e) => setSavedConfirmed(e.target.checked)}
+                  className="w-3.5 h-3.5"
+                />
+                I've saved these codes somewhere safe
+              </label>
+              <Button onClick={onSuccess} disabled={!savedConfirmed}>
                 Done
               </Button>
             </div>
           )}
 
           {stage !== "recovery" && (
-          <button
-            onClick={onClose}
-            className="w-full py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
-          >
-            Cancel
-          </button>
+            <Button onClick={requestDismiss} variant="secondary" size="sm">
+              Cancel
+            </Button>
           )}
         </div>
       </div>

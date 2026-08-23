@@ -21,6 +21,12 @@ export const Button = forwardRef(function Button(
     // the Organization/Payment/Members onboarding funnel -- a button that
     // height-matches its own page's inputs, not a fixed size everywhere.
     size = "lg",
+    // "brand" (default, unchanged) is the primary CTA everywhere. "danger"
+    // and "secondary" cover the two other button roles that kept getting
+    // hand-rolled with their own bespoke classes instead of going through
+    // this component (e.g. Security.jsx's Disable MFA / Cancel) -- adding
+    // them here instead of a third bespoke copy.
+    variant = "brand",
     className = "",
     ...rest
   },
@@ -28,13 +34,20 @@ export const Button = forwardRef(function Button(
 ) {
   const isDisabled = disabled || loading;
   const sizeClasses = size === "sm" ? "py-3 text-sm" : "py-4 text-button";
+  const variantClasses = isDisabled
+    ? "text-white bg-[#B0B8D8]"
+    : variant === "danger"
+      ? "text-white bg-danger hover:opacity-90"
+      : variant === "secondary"
+        ? "text-gray-600 bg-gray-100 hover:bg-gray-200"
+        : "text-white bg-brand hover:opacity-90";
   return (
     <button
       ref={ref}
       type={type}
       onClick={onClick}
       disabled={isDisabled}
-      className={`${fullWidth ? "w-full " : ""}rounded-lg ${sizeClasses} font-medium text-white transition-all duration-150 active:scale-[0.98] disabled:cursor-not-allowed ${isDisabled ? "bg-[#B0B8D8]" : "bg-brand hover:opacity-90"} ${className}`}
+      className={`${fullWidth ? "w-full " : ""}rounded-lg ${sizeClasses} font-medium transition-all duration-150 active:scale-[0.98] disabled:cursor-not-allowed ${variantClasses} ${className}`}
       {...rest}
     >
       {children}
