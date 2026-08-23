@@ -7,6 +7,7 @@ import { validatePlanField } from "./helpers";
 import PlanStepIndicator from "./PlanStepIndicator";
 import { Step1, Step2, Step3 } from "./PlanFormSteps";
 import SuccessBadge from "../../../components/common/SuccessBadge";
+import { Button } from "../../../components/ui/Button";
 
 // ── Create plan modal ─────────────────────────────────────────────────────────
 export default function CreatePlanModal({ communityId, onClose, onCreate, creating, createError }) {
@@ -213,11 +214,11 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
           <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100">
             <button
               onClick={() => (step > 1 ? setStep((s) => s - 1) : onClose())}
-              className="flex items-center gap-1 text-xs font-medium text-gray-500 bg-transparent border-none cursor-pointer"
+              className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer"
             >
-              <ArrowLeft size={12} /> {step > 1 ? "Back" : "Cancel"}
+              <ArrowLeft size={15} /> {step > 1 ? "Back" : "Cancel"}
             </button>
-            <button
+            <Button
               onClick={() => {
                 if (step === 2) { handleStep2Continue(); return; }
                 step < 3 ? setStep((s) => s + 1) : handleSubmit();
@@ -228,10 +229,13 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
                 slugState.checking ||
                 slugState.available === false
               }
-              className={`px-6 py-2 rounded-lg text-xs font-medium border-none cursor-pointer ${canContinue ? "bg-brand text-white hover:opacity-90" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+              loading={creating}
+              fullWidth={false}
+              size="sm"
+              className="px-6"
             >
               {creating ? "Creating…" : step === 3 ? "Create Plan" : "Continue"}
-            </button>
+            </Button>
           </div>
         )}
       </div>

@@ -13,6 +13,13 @@ import {
 import { blurOnWheel, intervalUnitLabel, billingDayLabel, payoutAccountLabel } from "./helpers";
 import { PayoutAccountField, BillingDayField } from "./PlanFormFields";
 
+// Card look matches onboarding's ChoosePath.jsx (white fill, rounded-2xl,
+// brand border + filled checkmark circle only on selection) -- one
+// deliberate difference: ChoosePath's cards sit on a textured page
+// background, so an unselected "border-white" still reads as a distinct
+// card there. This modal's panel is itself bg-white (see CreatePlanModal),
+// so unselected cards get a visible border-gray-200 instead, or they'd
+// disappear into the panel entirely.
 export function Step1({ value, onChange }) {
   return (
     <div>
@@ -39,16 +46,22 @@ export function Step1({ value, onChange }) {
             <button
               key={opt.id}
               onClick={() => onChange(opt.id)}
-              className={`p-6 min-h-[180px] rounded-xl text-left border-2 transition-all relative flex flex-col ${sel ? "border-brand bg-blue-50" : "border-gray-200 bg-gray-50"}`}
+              className={`relative flex flex-col text-left p-6 min-h-[180px] rounded-2xl bg-white transition-all duration-200 border ${sel ? "border-2 border-brand" : "border-gray-200"}`}
             >
-              <div
-                className={`absolute top-3 left-3 w-5 h-5 rounded-full border-2 flex items-center justify-center ${sel ? "bg-brand border-brand" : "border-gray-300"}`}
-              >
-                {sel && <Check size={10} color="white" strokeWidth={3} />}
+              <div className="absolute top-4 left-4">
+                {sel ? (
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center bg-brand">
+                    <Check size={12} color="white" strokeWidth={3} />
+                  </div>
+                ) : (
+                  <div className="w-6 h-6 rounded-full border-2 border-[#C2C2C2]" />
+                )}
               </div>
-              <div className="mt-6 mb-3 text-gray-600">{opt.icon}</div>
-              <p className="text-sm font-medium text-gray-900">{opt.title}</p>
-              <p className="text-xs text-gray-500 mt-1">{opt.desc}</p>
+              <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] text-brand mt-6 mb-5">
+                {opt.icon}
+              </div>
+              <p className="font-semibold text-gray-900 text-base mb-1">{opt.title}</p>
+              <p className="text-sm text-gray-500 leading-relaxed">{opt.desc}</p>
             </button>
           );
         })}
