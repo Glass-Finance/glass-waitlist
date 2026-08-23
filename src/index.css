@@ -64,14 +64,17 @@
   --text-logo--line-height: 24px;
   --text-logo--letter-spacing: 0.001em;
 
-  --text-headline: 24px;
+  /* 18px per the actual Figma mobile frame (was 24px, guessed before the
+     spec was supplied) -- confirmed against the "Create Your Account" /
+     "Sign In To Your Account" headline layers. */
+  --text-headline: 18px;
   --text-headline--line-height: normal;
   --text-headline--letter-spacing: 0.001em;
   --text-headline--font-weight: 700;
 
   /* Same size/spacing as Page Headline Text, weight 400 per the salutation
      note rather than a separate size. */
-  --text-headline-salutation: 24px;
+  --text-headline-salutation: 18px;
   --text-headline-salutation--line-height: normal;
   --text-headline-salutation--letter-spacing: 0.001em;
   --text-headline-salutation--font-weight: 400;
