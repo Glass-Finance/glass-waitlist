@@ -76,18 +76,24 @@ function UseCaseCard({ title, desc, variant, entryDelay }) {
   return (
     <div
       ref={cardRef}
-      className="relative h-[380px] rounded-3xl bg-[#F5F5F8] shadow-[0_0_0_1px_rgba(255,255,255,0.75)_inset,0_2px_20px_rgba(28,43,138,0.08)] flex flex-col items-center justify-center gap-3 py-8 px-7 text-center overflow-hidden opacity-0"
+      className="uc-card relative h-[380px] rounded-3xl bg-[#F5F5F8] shadow-[0_0_0_1px_rgba(255,255,255,0.75)_inset,0_2px_20px_rgba(28,43,138,0.08)] flex flex-col items-center justify-center gap-3 py-8 px-7 text-center overflow-hidden opacity-0"
       style={{
         animation: inView
           ? `ucCardIn 0.7s cubic-bezier(0.22,1,0.36,1) ${entryDelay}ms forwards`
           : "none",
       }}
     >
-      {/* Top-left corner line */}
-      <CornerAccent className="absolute top-0 left-0 w-20 h-20" />
+      {/* Top-left corner line — bob animation lives on this wrapper, not the
+          SVG itself, so it doesn't collide with the bottom-right one's own
+          rotate-180 (both are `transform`, and only one value can win). */}
+      <div className="uc-corner-wrap absolute top-0 left-0 w-20 h-20 pointer-events-none">
+        <CornerAccent className="w-20 h-20" />
+      </div>
 
       {/* Bottom-right corner line — same accent, rotated 180° */}
-      <CornerAccent className="absolute bottom-0 right-0 w-20 h-20 rotate-180" />
+      <div className="uc-corner-wrap absolute bottom-0 right-0 w-20 h-20 pointer-events-none">
+        <CornerAccent className="w-20 h-20 rotate-180" />
+      </div>
 
       {/* Icon circle — your imported image */}
       <img
@@ -162,8 +168,15 @@ export default function UseCases() {
         .uc-corner-diamond {
           animation: ucCornerDiamondPulse 2.4s ease-in-out infinite;
         }
+        @keyframes ucCornerBob {
+          0%, 100% { transform: translateY(0); }
+          50%      { transform: translateY(-6px); }
+        }
+        .uc-card:hover .uc-corner-wrap {
+          animation: ucCornerBob 1.4s ease-in-out infinite;
+        }
         @media (prefers-reduced-motion: reduce) {
-          .uc-corner-travel, .uc-corner-diamond { animation: none; }
+          .uc-corner-travel, .uc-corner-diamond, .uc-card:hover .uc-corner-wrap { animation: none; }
         }
       `}</style>
 
