@@ -6,6 +6,7 @@ import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { updateEmail, deleteAccount, requestAccountDeletionCode } from "../../../../api/members";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { getEmailError } from "../../../../utils/validators";
+import { useEscapeToClose } from "../../../../hooks/useKeyboardShortcuts";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../../utils/phone";
 import { useAuth } from "../../../../store/AuthContext";
 import { parseUserData } from "../../../../utils/userData";
@@ -63,12 +64,7 @@ export default function Profile() {
   const [deleteError, setDeleteError] = useState("");
   const [deletionCode, setDeletionCode] = useState(Array(6).fill(""));
 
-  useEffect(() => {
-    if (!deleteModal) return;
-    const handler = (e) => { if (e.key === "Escape") setDeleteModal(false); };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [deleteModal]);
+  useEscapeToClose(() => setDeleteModal(false), deleteModal);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
 
@@ -386,10 +382,10 @@ export default function Profile() {
 
       {view === "email" && (
         <>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-gray-900 mb-0.5">Update Your Email</p>
-            </div>
+          {/* Neither Figma mock shows a way back to the main profile view --
+              kept for now rather than silently dropping the only navigation
+              out of this screen; ask before removing. */}
+          <div className="flex justify-end">
             <button
               onClick={() => setView("profile")}
               className="text-xs font-medium text-gray-500 hover:text-gray-800 bg-transparent border-none cursor-pointer"
@@ -398,22 +394,27 @@ export default function Profile() {
             </button>
           </div>
 
-          <div className="bg-white rounded-lg p-6 border border-surface-container-border max-w-md">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-gray-600">Email Address</label>
-              <input
-                type="email"
-                value={emailDraft}
-                onChange={(e) => { setEmailDraft(e.target.value); setEmailFieldError(""); }}
-                className={`${inputCls} ${emailFieldError ? "border-danger" : "border-gray-300"}`}
-                autoFocus
-              />
-              {emailFieldError && <p className="text-xs text-danger mt-1">{emailFieldError}</p>}
+          <div className="bg-white rounded-xl border border-surface-container-border">
+            <div className="px-6 py-4 border-b border-surface-container-border">
+              <p className="text-sm font-semibold text-gray-900">Update Your Email</p>
+            </div>
+            <div className="p-6">
+              <div className="flex flex-col gap-1.5 max-w-md">
+                <label className="text-xs text-gray-600">Email Address</label>
+                <input
+                  type="email"
+                  value={emailDraft}
+                  onChange={(e) => { setEmailDraft(e.target.value); setEmailFieldError(""); }}
+                  className={`${inputCls} ${emailFieldError ? "border-danger" : "border-gray-300"}`}
+                  autoFocus
+                />
+                {emailFieldError && <p className="text-xs text-danger mt-1">{emailFieldError}</p>}
+              </div>
             </div>
           </div>
 
-          <div className="max-w-md">
-            <Button onClick={handleStartEmailUpdate} loading={emailSending}>
+          <div className="flex justify-center">
+            <Button onClick={handleStartEmailUpdate} loading={emailSending} fullWidth={false} className="px-16">
               {emailSending ? "Sending Code…" : "Update"}
             </Button>
           </div>
@@ -422,12 +423,8 @@ export default function Profile() {
 
       {view === "phone" && (
         <>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-gray-900 mb-0.5">
-                {isPhoneUpdate ? "Update Your Phone Number" : "Verify Your Phone Number"}
-              </p>
-            </div>
+          {/* See the email view's identical comment above. */}
+          <div className="flex justify-end">
             <button
               onClick={() => setView("profile")}
               className="text-xs font-medium text-gray-500 hover:text-gray-800 bg-transparent border-none cursor-pointer"
@@ -436,27 +433,34 @@ export default function Profile() {
             </button>
           </div>
 
-          <div className="bg-white rounded-lg p-6 border border-surface-container-border max-w-md">
-            {!isPhoneUpdate && (
-              <p className="text-xs text-gray-500 mb-4">
-                We will use this number to send payments reminders and updates via WhatsApp or SMS.
+          <div className="bg-white rounded-xl border border-surface-container-border">
+            <div className="px-6 py-4 border-b border-surface-container-border">
+              <p className="text-sm font-semibold text-gray-900">
+                {isPhoneUpdate ? "Update Your Phone Number" : "Verify Your Phone Number"}
               </p>
-            )}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-gray-600">Phone Number</label>
-              <input
-                type="tel"
-                value={phoneDraft}
-                onChange={(e) => { setPhoneDraft(e.target.value); setPhoneFieldError(""); }}
-                className={`${inputCls} ${phoneFieldError ? "border-danger" : "border-gray-300"}`}
-                autoFocus
-              />
-              {phoneFieldError && <p className="text-xs text-danger mt-1">{phoneFieldError}</p>}
+            </div>
+            <div className="p-6">
+              {!isPhoneUpdate && (
+                <p className="text-xs text-gray-500 mb-4">
+                  We will use this number to send payments reminders and updates via WhatsApp or SMS.
+                </p>
+              )}
+              <div className="flex flex-col gap-1.5 max-w-md">
+                <label className="text-xs text-gray-600">Phone Number</label>
+                <input
+                  type="tel"
+                  value={phoneDraft}
+                  onChange={(e) => { setPhoneDraft(e.target.value); setPhoneFieldError(""); }}
+                  className={`${inputCls} ${phoneFieldError ? "border-danger" : "border-gray-300"}`}
+                  autoFocus
+                />
+                {phoneFieldError && <p className="text-xs text-danger mt-1">{phoneFieldError}</p>}
+              </div>
             </div>
           </div>
 
           {!isPhoneUpdate && (
-            <div className="flex items-start gap-2.5 px-4 py-3.5 rounded-xl bg-[#D7E2FF] max-w-md">
+            <div className="flex items-start gap-2.5 px-4 py-3.5 rounded-xl bg-[#D7E2FF]">
               <ShieldCheck size={18} className="text-brand flex-shrink-0 mt-0.5" />
               <p className="text-sm text-brand leading-snug m-0">
                 Your number is only used for payment reminders and account recovery. We will never share it.
@@ -464,8 +468,8 @@ export default function Profile() {
             </div>
           )}
 
-          <div className="max-w-md">
-            <Button onClick={handleStartPhoneUpdate} loading={phoneSending}>
+          <div className="flex justify-center">
+            <Button onClick={handleStartPhoneUpdate} loading={phoneSending} fullWidth={false} className="px-16">
               {phoneSending ? "Sending Code…" : isPhoneUpdate ? "Update Phone Number" : "Verify"}
             </Button>
           </div>
