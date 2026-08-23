@@ -5,12 +5,6 @@ import iconProfessional from "../assets/usecase/icon-professional.webp";
 import iconClubs from "../assets/usecase/icon-clubs.webp";
 import iconReligious from "../assets/usecase/icon-religious.webp";
 
-// ── Import your corner line assets ─────────────────────────────────────────
-// Two variants: top-left corner and bottom-right corner
-// Place them in src/assets/usecase/
-import cornerTL from "../assets/usecase/corner-tl.webp"; // top-left curved line
-import cornerBR from "../assets/usecase/corner-br.webp"; // bottom-right curved line
-
 // ─── Card icon map — uses your imported images ────────────────────────────────
 const CARD_ICONS = {
   schools: iconSchools,
@@ -18,6 +12,39 @@ const CARD_ICONS = {
   clubs: iconClubs,
   religious: iconReligious,
 };
+
+// ─── Corner accent — inline SVG (not a raster image), so it stays crisp at any
+// size/DPI and can carry a live "traveling light" animation along the line,
+// plus a pulsing diamond. `rotate-180` on the wrapper turns the top-left
+// variant into the bottom-right one.
+function CornerAccent({ className = "" }) {
+  const d = "M20 0 L20 56 Q20 74 38 74 L53 74";
+  return (
+    <svg
+      viewBox="0 0 53 100"
+      fill="none"
+      aria-hidden="true"
+      className={`pointer-events-none ${className}`}
+    >
+      <path d={d} stroke="#7C3AED" strokeOpacity="0.9" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d={d}
+        stroke="#C4B5FD"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        pathLength="100"
+        strokeDasharray="16 84"
+        className="uc-corner-travel"
+      />
+      <rect
+        x="49.5" y="70.5" width="7" height="7" rx="1.5"
+        fill="#7C3AED"
+        className="uc-corner-diamond"
+        style={{ transformBox: "fill-box", transformOrigin: "center" }}
+      />
+    </svg>
+  );
+}
 
 // ─── Use case card ──────────────────────────────────────────────────────────
 function UseCaseCard({ title, desc, variant, entryDelay }) {
@@ -47,25 +74,11 @@ function UseCaseCard({ title, desc, variant, entryDelay }) {
           : "none",
       }}
     >
-      {/* Top-left corner line — imported asset */}
-      <img
-        src={cornerTL}
-        alt=""
-        draggable={false}
-        className="absolute top-0 left-0 w-20 h-20 object-contain opacity-55 pointer-events-none"
-        loading="lazy"
-        decoding="async"
-      />
+      {/* Top-left corner line */}
+      <CornerAccent className="absolute top-0 left-0 w-20 h-20" />
 
-      {/* Bottom-right corner line — imported asset (rotated 180°) */}
-      <img
-        src={cornerBR}
-        alt=""
-        draggable={false}
-        className="absolute bottom-0 right-0 w-20 h-20 object-contain opacity-45 pointer-events-none"
-        loading="lazy"
-        decoding="async"
-      />
+      {/* Bottom-right corner line — same accent, rotated 180° */}
+      <CornerAccent className="absolute bottom-0 right-0 w-20 h-20 rotate-180" />
 
       {/* Icon circle — your imported image */}
       <img
@@ -123,6 +136,25 @@ export default function UseCases() {
         @keyframes ucCardIn {
           from { opacity: 0; transform: translateY(36px) scale(0.97); }
           to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes ucCornerTravel {
+          0%   { stroke-dashoffset: 100; opacity: 0; }
+          10%  { opacity: 1; }
+          90%  { opacity: 1; }
+          100% { stroke-dashoffset: -20; opacity: 0; }
+        }
+        .uc-corner-travel {
+          animation: ucCornerTravel 2.4s ease-in-out infinite;
+        }
+        @keyframes ucCornerDiamondPulse {
+          0%, 100% { opacity: 0.75; transform: scale(1); }
+          50%      { opacity: 1; transform: scale(1.35); }
+        }
+        .uc-corner-diamond {
+          animation: ucCornerDiamondPulse 2.4s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .uc-corner-travel, .uc-corner-diamond { animation: none; }
         }
       `}</style>
 
