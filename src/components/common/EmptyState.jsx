@@ -33,14 +33,15 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
       {subtitle && (
         <p className={isBig ? "text-base text-gray-400 mt-1.5 max-w-sm" : "text-xs text-gray-400 mt-1 max-w-xs"}>{subtitle}</p>
       )}
-      {/* The exact-measured Figma spec (14px/500-weight, tight py-2) was
-          for the Dashboard welcome CTA (WelcomeEmptyState.jsx), a
-          different component -- applying it here as well over-shrunk
-          this button for its actual callers (Payments' "Create
-          Collection", Members' "Add Members"), which weren't in
-          question. Reverted to this component's own original sizing. */}
+      {/* A prior Figma spec borrowed from a different component
+          (WelcomeEmptyState.jsx, 14px/500-weight) over-shrunk this button
+          for its actual callers (Payments' "Create Collection", Members'
+          "Add Members") and got reverted. This 16px/500-weight is measured
+          directly off this button's own Figma layer, not borrowed --
+          text-button's 14px undersizes it, and Button's own font-medium
+          was being knocked back to !font-normal, both fixed here. */}
       {action && isBig && (
-        <Button onClick={action} fullWidth={false} className="mt-6 px-6 inline-flex items-center gap-1.5 !rounded-full !font-normal">
+        <Button onClick={action} fullWidth={false} className="mt-6 px-6 inline-flex items-center gap-1.5 !rounded-full !text-[16px] !font-medium">
           {actionLabel}
         </Button>
       )}
