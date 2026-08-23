@@ -198,7 +198,15 @@ export function useNotifications() {
     mutationFn: markAllRead,
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: listKey });
-      localStorage.setItem(CLEARED_AT_KEY, String(Date.now()));
+      // Unguarded before: a throwing write (storage quota, private-mode
+      // restrictions) aborted onMutate right here, before the optimistic
+      // clear below ever ran -- so the list stayed visible AND the
+      // timestamp needed to hide it later was never actually saved. The
+      // list should still clear (locally, for this session) even if
+      // persisting the timestamp fails.
+      try {
+        localStorage.setItem(CLEARED_AT_KEY, String(Date.now()));
+      } catch { /* ignore */ }
       queryClient.setQueryData(listKey, (old) =>
         old ? { ...old, content: [] } : old
       );
@@ -297,7 +305,15 @@ export function useAllNotifications() {
     mutationFn: markAllRead,
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: listKey });
-      localStorage.setItem(CLEARED_AT_KEY, String(Date.now()));
+      // Unguarded before: a throwing write (storage quota, private-mode
+      // restrictions) aborted onMutate right here, before the optimistic
+      // clear below ever ran -- so the list stayed visible AND the
+      // timestamp needed to hide it later was never actually saved. The
+      // list should still clear (locally, for this session) even if
+      // persisting the timestamp fails.
+      try {
+        localStorage.setItem(CLEARED_AT_KEY, String(Date.now()));
+      } catch { /* ignore */ }
       queryClient.setQueryData(listKey, (old) =>
         old ? { ...old, content: [] } : old
       );
