@@ -398,7 +398,7 @@ export default function Profile() {
             </button>
           </div>
 
-          <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border max-w-md">
+          <div className="bg-white rounded-lg p-6 border border-surface-container-border max-w-md">
             <div className="flex flex-col gap-1.5">
               <label className="text-xs text-gray-600">Email Address</label>
               <input
@@ -436,7 +436,7 @@ export default function Profile() {
             </button>
           </div>
 
-          <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border max-w-md">
+          <div className="bg-white rounded-lg p-6 border border-surface-container-border max-w-md">
             {!isPhoneUpdate && (
               <p className="text-xs text-gray-500 mb-4">
                 We will use this number to send payments reminders and updates via WhatsApp or SMS.
