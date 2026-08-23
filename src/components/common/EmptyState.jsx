@@ -33,15 +33,16 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
       {subtitle && (
         <p className={isBig ? "text-base text-gray-400 mt-1.5 max-w-sm" : "text-xs text-gray-400 mt-1 max-w-xs"}>{subtitle}</p>
       )}
-      {/* A prior Figma spec borrowed from a different component
-          (WelcomeEmptyState.jsx, 14px/500-weight) over-shrunk this button
-          for its actual callers (Payments' "Create Collection", Members'
-          "Add Members") and got reverted. This 16px/500-weight is measured
-          directly off this button's own Figma layer, not borrowed --
-          text-button's 14px undersizes it, and Button's own font-medium
-          was being knocked back to !font-normal, both fixed here. */}
+      {/* Per direct feedback: should read the same as WelcomeEmptyState's
+          "Create Your First Collection" button -- not bold, smaller text.
+          A prior pass here tried a 16px/font-medium override reasoned from
+          this button's own Figma layer in isolation, but that read it as
+          bolder/larger than the sibling button it's meant to match.
+          Dropping the size override falls back to Button's own default
+          text-button (14px); !font-normal matches WelcomeEmptyState's own
+          override exactly. */}
       {action && isBig && (
-        <Button onClick={action} fullWidth={false} className="mt-6 px-6 inline-flex items-center gap-1.5 !rounded-full !text-[16px] !font-medium">
+        <Button onClick={action} fullWidth={false} className="mt-6 px-6 inline-flex items-center gap-1.5 !rounded-full !font-normal">
           {actionLabel}
         </Button>
       )}

@@ -46,7 +46,7 @@ export function Step1({ value, onChange }) {
             <button
               key={opt.id}
               onClick={() => onChange(opt.id)}
-              className={`relative flex flex-col text-left p-6 min-h-[180px] rounded-2xl bg-white transition-all duration-200 border ${sel ? "border-2 border-brand" : "border-gray-200"}`}
+              className={`relative flex flex-col text-left p-5 min-h-[140px] rounded-2xl bg-white transition-all duration-200 border ${sel ? "border-2 border-brand" : "border-gray-200"}`}
             >
               <div className="absolute top-4 left-4">
                 {sel ? (
@@ -57,7 +57,11 @@ export function Step1({ value, onChange }) {
                   <div className="w-6 h-6 rounded-full border-2 border-[#C2C2C2]" />
                 )}
               </div>
-              <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] text-brand mt-6 mb-5">
+              {/* Card was reading as near-square against Figma's wider
+                  rectangle -- min-h-[180px] plus mt-6/mb-5 around the icon
+                  tile added up to more vertical space than the content
+                  needed. Trimmed both; icon/title/description unchanged. */}
+              <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] text-brand mt-5 mb-3">
                 {opt.icon}
               </div>
               <p className="font-semibold text-gray-900 text-base mb-1">{opt.title}</p>
