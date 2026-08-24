@@ -145,7 +145,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
       className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-surface-container backdrop-blur-xl rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
         <div className="flex items-start justify-between px-6 pt-5">
           <div>
             <h2 className="text-base font-semibold text-black">

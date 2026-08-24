@@ -165,7 +165,7 @@ function NotificationDetailModal({ n, onClose }) {
       className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/50"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full bg-surface-container backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden max-w-[440px]">
+      <div className="w-full bg-white rounded-2xl shadow-2xl overflow-hidden max-w-[440px]">
         {/* Header */}
         <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-surface-container-border">
           <div className="flex items-start gap-3 min-w-0">

@@ -8,7 +8,7 @@ export default function JoinApprovedModal({ entry, onOpen, onDismiss }) {
       className="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-5"
       onClick={(e) => e.target === e.currentTarget && onDismiss(entry)}
     >
-      <div className="border border-surface-container-border w-full max-w-[340px] bg-surface-container backdrop-blur-xl rounded-[20px] py-7 px-6 text-center shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+      <div className="border border-surface-container-border w-full max-w-[340px] bg-white rounded-[20px] py-7 px-6 text-center shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
         <span className="text-4xl leading-none block mb-3">🎉</span>
         <p className="text-[17px] font-bold text-[#065F46] mb-1.5">
           You're in!
