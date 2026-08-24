@@ -7,6 +7,7 @@ import { getErrorMessage } from "../../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
 import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
 import LoadingState from "../../../../components/common/LoadingState";
+import SuccessBadge from "../../../../components/common/SuccessBadge";
 import { Button } from "../../../../components/ui/Button";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
@@ -36,7 +37,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
   // one place this is enforced -- "Done" (gated on savedConfirmed below) is
   // the only way out once codes are on screen.
   function requestDismiss() {
-    if (stage === "recovery") return;
+    if (stage === "recovery" || stage === "success") return;
     onClose();
   }
 
@@ -95,7 +96,8 @@ function MfaModal({ mode, onClose, onSuccess }) {
     try {
       const result = await enableMfaTotp({ code });
       setRecoveryCodes(result?.recoveryCodes ?? []);
-      setStage("recovery");
+      setStage("success");
+      setTimeout(() => setStage("recovery"), 1600);
     } catch (err) {
       setError(getErrorMessage(err, "Invalid code. Please try again."));
       setCode("");
@@ -158,7 +160,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
           {/* Hidden, not just a no-op, during the recovery stage -- same
               reasoning as the Cancel button below: once codes are on
               screen, "Done" is the only way out. */}
-          {stage !== "recovery" && (
+          {stage !== "recovery" && stage !== "success" && (
             <button onClick={requestDismiss} aria-label="Close" className="p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all">
               <X size={15} />
             </button>
@@ -258,6 +260,15 @@ function MfaModal({ mode, onClose, onSuccess }) {
             </>
           )}
 
+          {/* Brief animated confirmation before the recovery codes -- gives
+              the same success moment every other action in the app gets,
+              without holding up the codes screen (auto-advances). */}
+          {stage === "success" && (
+            <div className="flex flex-col items-center justify-center py-6">
+              <SuccessBadge message="MFA Enabled Successfully!" />
+            </div>
+          )}
+
           {/* Recovery codes — shown after MFA is successfully enabled.
               Shown exactly once (the backend won't return them again), so
               this is the one screen in the modal that can't be dismissed
@@ -267,9 +278,9 @@ function MfaModal({ mode, onClose, onSuccess }) {
               replaces. */}
           {stage === "recovery" && (
             <div className="flex flex-col gap-3">
-              <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-                <p className="text-xs font-semibold text-green-800 mb-1">MFA enabled successfully</p>
-                <p className="text-xs text-green-700 leading-relaxed">Save these recovery codes somewhere safe. Each code can only be used once if you lose access to your authenticator app.</p>
+              <div className="bg-stacked-container rounded-xl p-4 border border-gray-200">
+                <p className="text-xs font-semibold text-gray-700 mb-1">Save your recovery codes</p>
+                <p className="text-xs text-gray-500 leading-relaxed">Each code can only be used once if you lose access to your authenticator app.</p>
               </div>
               {recoveryCodes.length > 0 && (
                 <>
@@ -302,7 +313,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
             </div>
           )}
 
-          {stage !== "recovery" && (
+          {stage !== "recovery" && stage !== "success" && (
             <Button onClick={requestDismiss} variant="secondary" size="sm">
               Cancel
             </Button>

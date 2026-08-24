@@ -7,6 +7,7 @@ import { usePaymentPlans } from "../../hooks/usePaymentPlans";
 import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
+import SuccessBadge from "../../components/common/SuccessBadge";
 import PaymentPlanIllustration from "./admin-dashboard/sections/PaymentPlanIllustration";
 import StatCard from "../../components/dashboard/StatCard";
 import { formatNaira } from "../../utils/format";
@@ -30,7 +31,13 @@ export default function Payments() {
   const [viewingMembersPlan, setViewingMembersPlan] = useState(null);
   const [remindingPlan, setRemindingPlan] = useState(null);
   const [duplicatingPlan, setDuplicatingPlan] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [tab, setTab] = useState("All Plans");
+
+  function flashSuccess(message) {
+    setSuccessMessage(message);
+    setTimeout(() => setSuccessMessage(null), 1800);
+  }
 
   const planPlans = usePaymentPlans(communityId);
   const { plans, isLoading: plansLoading, error: plansError } = planPlans;
@@ -187,6 +194,7 @@ export default function Payments() {
     try {
       await planPlans.update.mutateAsync({ paymentLinkId, payload });
       setEditingPlan(null);
+      flashSuccess("Plan Updated!");
     } catch (err) {
       notifyError(err, { context: "Update payment plan" });
     }
@@ -199,6 +207,7 @@ export default function Payments() {
         payload,
       });
       setRemindingPlan(null);
+      flashSuccess("Reminder Sent!");
     } catch (err) {
       notifyError(err, { context: "Send reminder" });
     }
@@ -208,6 +217,7 @@ export default function Payments() {
     try {
       await planPlans.duplicate.mutateAsync({ paymentLinkId, payload });
       setDuplicatingPlan(null);
+      flashSuccess("Plan Duplicated!");
     } catch (err) {
       notifyError(err, { context: "Duplicate payment plan" });
     }
@@ -360,6 +370,14 @@ export default function Payments() {
           onDuplicate={handleDuplicate}
           duplicating={planPlans.duplicate.isPending}
         />
+      )}
+
+      {successMessage && (
+        <div className="fixed inset-0 z-80 flex items-center justify-center p-4 bg-black/35 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl p-8 shadow-2xl">
+            <SuccessBadge message={successMessage} />
+          </div>
+        </div>
       )}
     </div>
   );

@@ -2,6 +2,7 @@ import { useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
 import LoadingState from "../../../../components/common/LoadingState";
+import SuccessBadge from "../../../../components/common/SuccessBadge";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Shield, Copy, Check } from "lucide-react";
 import { useMe } from "../../../../hooks/useMyAccount";
@@ -31,7 +32,7 @@ function CodeInput({ value, onChange, disabled }) {
 
 // ── Setup flow ────────────────────────────────────────────────────────────────
 function SetupFlow({ onSuccess, onCancel }) {
-  const [stage, setStage] = useState("idle"); // idle | loading | qr | verifying | done
+  const [stage, setStage] = useState("idle"); // idle | loading | qr | verifying | success | done
   const [setupData, setSetupData] = useState(null); // { secret, qrCodeUri, qrCodeImage }
   const [recoveryCodes, setRecoveryCodes] = useState([]);
   const [code, setCode] = useState("");
@@ -58,7 +59,8 @@ function SetupFlow({ onSuccess, onCancel }) {
     try {
       const result = await enableMfaTotp({ code });
       setRecoveryCodes(result?.recoveryCodes ?? []);
-      setStage("done");
+      setStage("success");
+      setTimeout(() => setStage("done"), 1600);
     } catch (err) {
       setError(getErrorMessage(err, "Invalid code. Please try again."));
       setStage("qr");
@@ -171,13 +173,21 @@ function SetupFlow({ onSuccess, onCancel }) {
     );
   }
 
+  if (stage === "success") {
+    return (
+      <div className="flex flex-col items-center justify-center py-10">
+        <SuccessBadge message="Two-Factor Authentication Enabled!" />
+      </div>
+    );
+  }
+
   if (stage === "done") {
     return (
       <div className="flex flex-col gap-4">
-        <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-          <p className="text-[13px] font-semibold text-green-800 mb-1">MFA enabled successfully</p>
-          <p className="text-xs text-green-700 leading-relaxed m-0">
-            Save these recovery codes somewhere safe. Each code can only be used once if you lose access to your authenticator app.
+        <div className="bg-[#F5F5F5] rounded-xl p-4 border border-gray-200">
+          <p className="text-[13px] font-semibold text-[#111] mb-1">Save your recovery codes</p>
+          <p className="text-xs text-[#666] leading-relaxed m-0">
+            Each code can only be used once if you lose access to your authenticator app.
           </p>
         </div>
         {recoveryCodes.length > 0 && (
@@ -189,12 +199,7 @@ function SetupFlow({ onSuccess, onCancel }) {
             ))}
           </div>
         )}
-        <Button
-          onClick={() => {
-            toastSuccess("Two-factor authentication enabled");
-            onSuccess();
-          }}
-        >
+        <Button onClick={onSuccess}>
           Done
         </Button>
       </div>

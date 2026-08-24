@@ -7,6 +7,7 @@ import { getEmailError } from "../../../utils/validators";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
 import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 import { Button } from "../../../components/ui/Button";
+import SuccessBadge from "../../../components/common/SuccessBadge";
 
 const ALLOWED_ROLE_NAMES = new Set([
   "Community Member",
@@ -47,6 +48,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
   const [billingExempt, setBillingExempt] = useState(false);
   const [manualLoading, setManualLoading] = useState(false);
   const [manualError, setManualError] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const fileRef = useRef(null);
 
@@ -194,6 +196,8 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
     setCsvRows([]);
     setCsvFile(null);
     clearUrlUpload();
+    setShowSuccess(true);
+    setTimeout(onClose, 1800);
   }
 
   function commitEmailChip() {
@@ -237,7 +241,8 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
         );
       setEmails([]);
       setPhoneNumbers("");
-      onClose();
+      setShowSuccess(true);
+      setTimeout(onClose, 1800);
     } catch (err) {
       setManualError(
         err?.response?.data?.description ??
@@ -247,6 +252,16 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
     } finally {
       setManualLoading(false);
     }
+  }
+
+  if (showSuccess) {
+    return (
+      <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm">
+        <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl py-14 px-8 flex items-center justify-center">
+          <SuccessBadge message="Members Invited!" />
+        </div>
+      </div>
+    );
   }
 
   return (

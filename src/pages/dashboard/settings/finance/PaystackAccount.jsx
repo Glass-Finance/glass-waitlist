@@ -6,6 +6,7 @@ import { useCommunityAccount } from "../../../../hooks/useCommunityAccount";
 import { useCommunity } from "../../../../hooks/useCommunity";
 import AccountFormModal from "../../../../components/dashboard/AccountFormModal";
 import LoadingState from "../../../../components/common/LoadingState";
+import SuccessBadge from "../../../../components/common/SuccessBadge";
 import { Button } from "../../../../components/ui/Button";
 import { formatNairaCompact as formatNaira, formatDate } from "../../../../utils/format";
 import banksData from "nigerian-bank-icons/assets/banks.json";
@@ -161,6 +162,7 @@ export default function PaystackAccount() {
   const { data: community } = useCommunity(communityId);
   const [showModal, setShowModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [removeError, setRemoveError] = useState("");
 
@@ -194,6 +196,8 @@ export default function PaystackAccount() {
         await create.mutateAsync(body);
       }
       setShowModal(false);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 1800);
     } catch (err) {
       const desc =
         err?.response?.data?.description ??
@@ -401,6 +405,14 @@ export default function PaystackAccount() {
           onConfirm={handleRemove}
           isDeleting={remove.isPending}
         />
+      )}
+
+      {showSuccess && (
+        <div className="fixed inset-0 z-80 flex items-center justify-center p-4 bg-black/35 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl p-8 shadow-2xl">
+            <SuccessBadge message="Your Payout Account Is Now Set!" />
+          </div>
+        </div>
       )}
     </div>
   );
