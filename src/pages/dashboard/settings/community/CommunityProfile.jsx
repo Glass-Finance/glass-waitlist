@@ -133,7 +133,7 @@ export default function CommunityProfile() {
         <p className="text-xs text-gray-500 mb-3">Manage how your community appears across Glass</p>
 
         <div
-          className="bg-surface-container rounded-lg px-4 py-4 flex items-center justify-between border border-outline-on-surface"
+          className="bg-surface-container rounded-lg px-4 py-4 flex items-center justify-between border border-surface-container-border"
         >
           <div className="flex items-center gap-3">
             <div
@@ -241,7 +241,7 @@ export default function CommunityProfile() {
         <div
           className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/35 backdrop-blur-xs"
         >
-          <div className="bg-surface-container backdrop-blur-elevated-container rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-surface-container-border">
+          <div className="bg-surface-container backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-surface-container-border">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center mb-4 bg-danger-tint"
             >
