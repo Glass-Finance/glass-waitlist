@@ -27,7 +27,16 @@ function CornerAccent({ className = "" }) {
       aria-hidden="true"
       className={`pointer-events-none ${className}`}
     >
-      <path d={d} stroke="#7C3AED" strokeOpacity="0.9" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d={d}
+        stroke="#7C3AED"
+        strokeOpacity="0.9"
+        strokeWidth="2"
+        strokeLinecap="round"
+        pathLength="100"
+        strokeDasharray="100 100"
+        className="uc-corner-base"
+      />
       <path
         d={d}
         stroke="#C4B5FD"
@@ -83,17 +92,11 @@ function UseCaseCard({ title, desc, variant, entryDelay }) {
           : "none",
       }}
     >
-      {/* Top-left corner line — bob animation lives on this wrapper, not the
-          SVG itself, so it doesn't collide with the bottom-right one's own
-          rotate-180 (both are `transform`, and only one value can win). */}
-      <div className="uc-corner-wrap absolute top-0 left-0 w-20 h-20 pointer-events-none">
-        <CornerAccent className="w-20 h-20" />
-      </div>
+      {/* Top-left corner line */}
+      <CornerAccent className="absolute top-0 left-0 w-20 h-20" />
 
       {/* Bottom-right corner line — same accent, rotated 180° */}
-      <div className="uc-corner-wrap absolute bottom-0 right-0 w-20 h-20 pointer-events-none">
-        <CornerAccent className="w-20 h-20 rotate-180" />
-      </div>
+      <CornerAccent className="absolute bottom-0 right-0 w-20 h-20 rotate-180" />
 
       {/* Icon circle — your imported image */}
       <img
@@ -168,15 +171,32 @@ export default function UseCases() {
         .uc-corner-diamond {
           animation: ucCornerDiamondPulse 2.4s ease-in-out infinite;
         }
-        @keyframes ucCornerBob {
-          0%, 100% { transform: translateY(0); }
-          50%      { transform: translateY(-6px); }
+        /* On hover, the ambient travel/pulse hand off to a single full
+           draw-out-and-retract-in cycle on the line + sparkle together. */
+        @keyframes ucCornerDrawInOut {
+          0%   { stroke-dashoffset: 100; }
+          50%  { stroke-dashoffset: 0; }
+          100% { stroke-dashoffset: 100; }
         }
-        .uc-card:hover .uc-corner-wrap {
-          animation: ucCornerBob 1.4s ease-in-out infinite;
+        .uc-card:hover .uc-corner-base {
+          animation: ucCornerDrawInOut 1.8s ease-in-out infinite;
+        }
+        .uc-card:hover .uc-corner-travel {
+          animation: none;
+          opacity: 0;
+        }
+        @keyframes ucCornerSparkleInOut {
+          0%, 100% { opacity: 0; transform: scale(0.3); }
+          50%      { opacity: 1; transform: scale(1); }
+        }
+        .uc-card:hover .uc-corner-diamond {
+          animation: ucCornerSparkleInOut 1.8s ease-in-out infinite;
         }
         @media (prefers-reduced-motion: reduce) {
-          .uc-corner-travel, .uc-corner-diamond, .uc-card:hover .uc-corner-wrap { animation: none; }
+          .uc-corner-travel,
+          .uc-corner-diamond,
+          .uc-card:hover .uc-corner-base,
+          .uc-card:hover .uc-corner-diamond { animation: none; }
         }
       `}</style>
 
