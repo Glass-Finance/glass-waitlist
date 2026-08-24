@@ -26,7 +26,7 @@ export default function ModalShell({ title, subtitle, onClose, children }) {
       }}
     >
       <div
-        className="bg-surface-container backdrop-blur-elevated-container rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border"
+        className="bg-surface-container backdrop-blur-xl rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border"
       >
         <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <div>

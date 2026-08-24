@@ -473,7 +473,7 @@ function QuickAddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavai
 
   return (
     <div className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm" onClick={e => e.target === e.currentTarget && onClose()}>
-      <form onSubmit={handleSubmit} className="bg-surface-container backdrop-blur-elevated-container rounded-2xl w-full max-w-md shadow-2xl p-6 border border-surface-container-border">
+      <form onSubmit={handleSubmit} className="bg-surface-container backdrop-blur-xl rounded-2xl w-full max-w-md shadow-2xl p-6 border border-surface-container-border">
         <div className="flex items-start justify-between mb-5">
           <div>
             <h2 className="text-base font-semibold text-black">Invite Member</h2>

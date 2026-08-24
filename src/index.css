@@ -6,7 +6,7 @@
    component yet (foundation-first, per instruction), so without this they
    wouldn't exist in the build at all. Safelists them so they're real and
    usable the moment a component reaches for one. */
-@source inline("text-logo text-headline text-headline-salutation text-label text-placeholder text-button text-button-tertiary text-button-secondary-sm text-body text-title-sm text-section-title bg-surface-bg bg-surface-overlay backdrop-blur-logo-overlay bg-surface-container backdrop-blur-elevated-container border-surface-container-border bg-stacked-container border-outline-on-surface border-outline-on-container text-outline-on-surface text-outline-on-container");
+@source inline("text-logo text-headline text-headline-salutation text-label text-placeholder text-button text-button-tertiary text-button-secondary-sm text-body text-title-sm text-section-title bg-surface-bg bg-surface-overlay backdrop-blur-logo-overlay bg-surface-container border-surface-container-border bg-stacked-container border-outline-on-surface border-outline-on-container text-outline-on-surface text-outline-on-container");
 
 /* Fonts are self-hosted via @fontsource, imported in main.jsx (not here --
    a plain @import url() in this position never actually loaded: @import
@@ -140,14 +140,15 @@
      at reduced opacity. */
   --blur-logo-overlay: 120px;
   --color-surface-container: rgb(255 255 255 / 0.6);
-  /* Figma's "Glass/ElevatedContainerBlur" -- the backdrop-filter blur every
-     modal/dialog card is meant to carry behind its translucent
-     --color-surface-container fill, same "Figma px value used directly as
-     the CSS backdrop-blur px value" convention as --blur-logo-overlay
-     above. Without it, bg-surface-container alone just reads as a flat,
-     slightly washed-out white -- the blur is what actually produces the
-     frosted-glass look the 60% opacity is spec'd for. */
-  --blur-elevated-container: 240px;
+  /* Modal/dialog cards carry this + backdrop-blur-xl (Tailwind's built-in
+     24px preset) for the "Glass/ElevatedContainerBlur" frosted-glass look.
+     Figma's own blur value there is 240 -- used directly as CSS px (the
+     --blur-logo-overlay convention above) it's wildly too strong, smearing
+     everything behind the card into a flat, muddy wash instead of a
+     legible frosted effect (confirmed by rendering both side by side).
+     Figma's blur radius and a CSS backdrop-filter blur() aren't the same
+     unit; 24px is what actually reproduces the intended look here, so no
+     custom token for this one -- Tailwind's own scale already covers it. */
   --color-surface-container-border: #E0E0EB;
   /* For containers nested inside a Surface Container, e.g. toggle controls
      and horizontal selectors. */
