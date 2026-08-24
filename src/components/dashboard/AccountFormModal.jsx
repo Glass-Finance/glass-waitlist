@@ -131,7 +131,7 @@ export default function AccountFormModal({
       {/* Modal — centred */}
       <div className="fixed inset-0 z-80 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-xl rounded-xl p-7 shadow-2xl bg-white"
+          className="w-full max-w-xl rounded-xl p-7 shadow-2xl bg-surface-container backdrop-blur-elevated-container"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

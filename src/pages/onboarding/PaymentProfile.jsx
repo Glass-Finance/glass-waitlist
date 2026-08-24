@@ -49,7 +49,7 @@ function StepIcon({ id, completed }) {
 function SuccessModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-[rgba(20,20,30,0.45)]">
-      <div className="w-full lg:w-auto lg:min-w-[480px] bg-white rounded-t-[24px] lg:rounded-2xl px-8 py-10 lg:px-12 lg:py-16 flex flex-col items-center shadow-2xl">
+      <div className="w-full lg:w-auto lg:min-w-[480px] bg-surface-container backdrop-blur-elevated-container rounded-t-[24px] lg:rounded-2xl px-8 py-10 lg:px-12 lg:py-16 flex flex-col items-center shadow-2xl">
         <SuccessBadge message="Your Payment Account Is Now Set!" />
         <div className="h-[env(safe-area-inset-bottom,0px)] lg:hidden" />
       </div>

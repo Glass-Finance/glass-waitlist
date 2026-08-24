@@ -90,7 +90,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border"
+        className="bg-surface-container backdrop-blur-elevated-container rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border"
       >
         {/* Header */}
         <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
