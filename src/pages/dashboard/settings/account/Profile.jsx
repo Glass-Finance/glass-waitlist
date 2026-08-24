@@ -395,8 +395,8 @@ export default function Profile() {
           </button>
 
           <div className="bg-white rounded-xl border border-surface-container-border">
-            <div className="px-6 py-4 border-b border-surface-container-border">
-              <p className="text-sm font-semibold text-gray-900">Update Your Email</p>
+            <div className="px-6 py-4 border-b border-gray-100">
+              <p className="text-sm font-bold text-gray-900">Update Your Email</p>
             </div>
             <div className="p-6">
               <div className="flex flex-col gap-1.5 max-w-md">
@@ -414,7 +414,7 @@ export default function Profile() {
           </div>
 
           <div className="flex justify-center">
-            <Button onClick={handleStartEmailUpdate} loading={emailSending} fullWidth={false} size="sm" className="px-16">
+            <Button onClick={handleStartEmailUpdate} loading={emailSending} fullWidth={false} size="sm" className="px-10 min-w-[320px]">
               {emailSending ? "Sending Code…" : "Update"}
             </Button>
           </div>
@@ -432,8 +432,8 @@ export default function Profile() {
           </button>
 
           <div className="bg-white rounded-xl border border-surface-container-border">
-            <div className="px-6 py-4 border-b border-surface-container-border">
-              <p className="text-sm font-semibold text-gray-900">
+            <div className="px-6 py-4 border-b border-gray-100">
+              <p className="text-sm font-bold text-gray-900">
                 {isPhoneUpdate ? "Update Your Phone Number" : "Verify Your Phone Number"}
               </p>
             </div>
@@ -467,7 +467,7 @@ export default function Profile() {
           )}
 
           <div className="flex justify-center">
-            <Button onClick={handleStartPhoneUpdate} loading={phoneSending} fullWidth={false} size="sm" className="px-16">
+            <Button onClick={handleStartPhoneUpdate} loading={phoneSending} fullWidth={false} size="sm" className="px-10 min-w-[320px]">
               {phoneSending ? "Sending Code…" : isPhoneUpdate ? "Update Phone Number" : "Verify"}
             </Button>
           </div>
