@@ -127,14 +127,16 @@ export default function CommunityProfile() {
   return (
     <div className="flex flex-col gap-4" >
 
-      {/* ── Logo ── */}
-      <div>
-        <p className="text-sm font-semibold text-gray-900 mb-0.5">Profile</p>
-        <p className="text-xs text-gray-500 mb-3">Manage how your community appears across Glass</p>
+      {/* ── Community Information -- heading, logo, and fields all in one
+          card, matching Figma (was two separate cards: a bare "Profile"
+          heading + logo row, then a second card for the fields). ── */}
+      <div
+        className="bg-surface-container rounded-lg px-5 pt-4 pb-5 border border-surface-container-border"
+      >
+        <p className="text-sm font-semibold text-gray-900 mb-0.5">Community Information</p>
+        <p className="text-xs text-gray-500 mb-4">This is how your information will appear across glass</p>
 
-        <div
-          className="bg-surface-container rounded-lg px-4 py-4 flex items-center justify-between border border-surface-container-border"
-        >
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center text-xs text-brand flex-shrink-0 overflow-hidden bg-[#D7E2FF]"
@@ -165,14 +167,6 @@ export default function CommunityProfile() {
             {uploadFile.isPending ? "Uploading…" : "Change Logo"}
           </button>
         </div>
-      </div>
-
-      {/* ── Community Information ── */}
-      <div
-        className="bg-surface-container rounded-lg px-5 pt-4 pb-5 border border-surface-container-border"
-      >
-        <p className="text-sm font-semibold text-gray-900 mb-0.5">Community Information</p>
-        <p className="text-xs text-gray-500 mb-4">This is how your information will appear across glass</p>
 
         <div className="flex flex-col gap-3">
           <div>

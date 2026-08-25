@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, AlertTriangle } from "lucide-react";
 import {
   usePayments,
   useManagePayments,
@@ -86,13 +86,14 @@ export default function AutoPay() {
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      <div>
-        <p className="text-xs font-medium text-gray-900 mb-0.5">Auto-Pay plans</p>
-        <p className="text-xs text-gray-500">
+      {/* Heading now lives inside the card, matching Figma (was a bare
+          heading above it, the only card on this page not to follow that
+          pattern already used by Password, Community Information, etc.). */}
+      <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
+        <p className="text-sm font-semibold text-gray-900 mb-0.5">Auto-Pay plans</p>
+        <p className="text-xs text-gray-500 mb-4">
           Manage automatic payments for your personal dues across all communities.
         </p>
-      </div>
-      <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
         <div className="flex flex-col">
           {isLoading ? (
             <LoadingState className="py-4" />
@@ -141,12 +142,10 @@ export default function AutoPay() {
         </div>
       </div>
 
-      {/* Info banner */}
-      <div className="flex items-start gap-2.5 px-4 py-3 rounded-md bg-[#D7E2FF] border border-brand">
-        <div className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 border border-brand mt-0.5">
-          <span className="text-brand text-[9px] font-bold">i</span>
-        </div>
-        <p className="text-xs text-gray-700">
+      {/* Info banner -- amber, matching Figma (was styled blue/info). */}
+      <div className="flex items-start gap-2.5 px-4 py-3 rounded-md bg-amber-50 border border-amber-200">
+        <AlertTriangle size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
+        <p className="text-xs text-amber-800">
           Auto-Pay charges your saved payment method on each due date, and you'll
           get an in-app and email reminder 3 days before every charge. If a charge
           fails (an expired card, insufficient funds, or a declined transaction),
