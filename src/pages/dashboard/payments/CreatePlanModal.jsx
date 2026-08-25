@@ -229,7 +229,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
               loading={creating}
               fullWidth={false}
               size="sm"
-              className="px-6 !rounded-full"
+              className="px-6"
             >
               {creating ? "Creating…" : step === 3 ? "Create Plan" : "Continue"}
             </Button>

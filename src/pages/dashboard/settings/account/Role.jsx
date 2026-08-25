@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, AlertTriangle } from "lucide-react";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useMyMemberRecord } from "../../../../hooks/useMyAccount";
 import { updateCommunityMember } from "../../../../api/communities";
@@ -71,7 +71,7 @@ export default function Role() {
   // ── Loading skeleton ───────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="max-w-2xl flex flex-col gap-5 w-full">
+      <div className="flex flex-col gap-5 w-full">
         <div>
           <div className="h-4 w-24 bg-gray-200 rounded mb-2 animate-pulse" />
           <div className="h-3 w-56 bg-gray-100 rounded animate-pulse" />
@@ -96,7 +96,7 @@ export default function Role() {
   // ── No member record (admin owner with no member entry) ────────────────────
   if (fetchError || !memberRecord) {
     return (
-      <div className="max-w-2xl flex flex-col gap-5 w-full">
+      <div className="flex flex-col gap-5 w-full">
         <div>
           <p className="text-sm font-semibold text-gray-900 mb-0.5">My role</p>
           <p className="text-xs text-gray-500">Define Your Membership and Payment participation</p>
@@ -114,7 +114,7 @@ export default function Role() {
   }
 
   return (
-    <div className="max-w-2xl flex flex-col gap-5 w-full">
+    <div className="flex flex-col gap-5 w-full">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold text-gray-900 mb-0.5">My role</p>
@@ -143,7 +143,7 @@ export default function Role() {
                 onClick={() => handleSelect(opt.id)}
                 disabled={saving}
                 className={`flex items-start gap-3 px-4 py-4 rounded-xl text-left transition-all border-[1.5px]
-                  ${isSelected ? "bg-blue-50 border-brand" : "bg-gray-50 hover:bg-gray-100 border-surface-container-border"}
+                  ${isSelected ? "bg-blue-50 border-brand" : "bg-transparent hover:bg-gray-50 border-transparent"}
                   ${saving ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
               >
                 <div
@@ -167,14 +167,12 @@ export default function Role() {
         <p className="text-xs text-red-500">{saveError}</p>
       )}
 
-      {/* Info banner */}
-      <div
-        className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-blue-50 border border-brand"
-      >
-        <div className="w-4 h-4 rounded-full border border-brand flex items-center justify-center flex-shrink-0">
-          <span className="text-brand text-[9px] font-bold">i</span>
-        </div>
-        <p className="text-xs text-gray-700">
+      {/* Warning banner -- amber, matching this page's own "No member record
+          found" banner above and the Figma spec (was blue/info-styled,
+          wrong tone for a caution message). */}
+      <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200">
+        <AlertTriangle size={16} className="text-amber-500 flex-shrink-0" />
+        <p className="text-xs text-amber-800">
           Changes take effect from the next billing cycle. Past payment records are not affected.
         </p>
       </div>
