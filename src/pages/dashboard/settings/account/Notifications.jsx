@@ -45,7 +45,7 @@ export default function Notifications() {
   const rowDisabled = !!error;
 
   return (
-    <div className="flex flex-col gap-5 max-w-4xl">
+    <div className="flex flex-col gap-5 w-full">
       {/* Error banner */}
       {error && !isLoading && (
         <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl px-4 py-3">

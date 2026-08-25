@@ -286,7 +286,7 @@ export default function Profile() {
   const initials = displayName.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
 
   return (
-    <div className="flex flex-col gap-5 max-w-3xl w-full">
+    <div className="flex flex-col gap-5 w-full">
 
       {view === "profile" && (
         <>

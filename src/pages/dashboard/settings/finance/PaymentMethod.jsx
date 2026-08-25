@@ -14,7 +14,7 @@ export default function PaymentMethod() {
   }
 
   return (
-    <div className="flex flex-col gap-5 max-w-3xl w-full">
+    <div className="flex flex-col gap-5 w-full">
       <div>
         <p className="text-sm font-medium text-gray-900 mb-0.5">Payment methods</p>
         <p className="text-xs text-gray-500 mb-5">Saved cards and bank accounts used for your personal dues payments.</p>

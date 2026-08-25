@@ -271,7 +271,7 @@ export default function SystemConfig() {
   }
 
   return (
-    <div className="max-w-5xl w-full">
+    <div className="w-full">
       {/* Top bar — search + refresh */}
       <div className="flex items-center justify-between gap-4 mb-5">
         <div>

@@ -399,7 +399,7 @@ export default function Security() {
   }
 
   return (
-    <div className="max-w-2xl flex flex-col gap-5">
+    <div className="flex flex-col gap-5 w-full">
 
       {/* Password */}
       <div className="bg-surface-container rounded-2xl p-6 border border-surface-container-border">

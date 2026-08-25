@@ -85,7 +85,7 @@ export default function AutoPay() {
   const isLoading = paymentsLoading || authsLoading;
 
   return (
-    <div className="flex flex-col gap-5 max-w-3xl w-full">
+    <div className="flex flex-col gap-5 w-full">
       <div>
         <p className="text-xs font-medium text-gray-900 mb-0.5">Auto-Pay plans</p>
         <p className="text-xs text-gray-500">

@@ -109,7 +109,7 @@ export default function MemberAccess() {
   const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes(memberRoleKw(m));
 
   return (
-    <div className="flex flex-col gap-4 max-w-3xl w-full">
+    <div className="flex flex-col gap-4 w-full">
 
       {/* Joining & visibility */}
       <div className="bg-surface-container rounded-2xl p-5 border border-surface-container-border">
