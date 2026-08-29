@@ -9,10 +9,12 @@ import RegisterStep from "./RegisterStep";
 import OTPStep from "./OTPStep";
 import { useAuth } from "../../../store/AuthContext";
 
-// Steps: 1 email+phone -> 1.5 phone OTP (only when a phone was entered,
-// with 1.6 as its "wrong number" correction screen, phone-only so a
-// correct email typed at step 1 isn't put back in play too) -> 2 name+
-// password (register()) -> 3 email OTP.
+// Steps: 1 email -> 2 name+password (register()) -> 3 email OTP. Phone is
+// no longer collected here -- it's optional at registration (Meta/WhatsApp
+// verification isn't fully wired up backend-side yet) and is instead added
+// later via Settings/Profile's "Verify Your Phone Number" flow. Steps 1.5
+// (phone OTP) and 1.6 (its "wrong number" correction screen) are dead code
+// paths for now, kept in case phone-at-signup comes back once that's fixed.
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function SignUp() {
   usePageTitle("Create your account");
@@ -69,7 +71,6 @@ export default function SignUp() {
       {step === 1 && (
         <EmailPhoneStep
           initialEmail={email}
-          initialPhone={phone}
           onNext={handleEmailPhone}
           onSwitch={() => navigate("/sign-in")}
           onGoogleAuth={handleGoogleAuth}

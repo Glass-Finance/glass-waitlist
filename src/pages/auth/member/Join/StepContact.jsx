@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Check, Info } from "lucide-react";
+import { Check } from "lucide-react";
 import { useInviteToken } from "../../../../hooks/useInviteToken";
-import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../../utils/phone";
 import { getEmailError } from "../../../../utils/validators";
 import GoogleAuthButton from "../../../../components/auth/GoogleAuthButton";
 import { Button as PrimaryButton } from "../../../../components/ui/Button";
@@ -10,34 +9,29 @@ import { TextInput } from "../../../../components/ui/TextInput";
 import { Label, ErrorMessage } from "./shared";
 
 // ---------------------------------------------------------------------------
-// Step 1 — Contact (email + phone number) — no API call here, just like
-// SignUp's EmailPhoneStep; the fields are handed up to Join()'s local state
-// and combined with StepProfile's fields into one register() call once step
-// 2 completes, since the backend only sends a verification code after the
-// account actually exists.
+// Step 1 — Contact (email only) — no API call here, just like SignUp's
+// EmailPhoneStep; the field is handed up to Join()'s local state and
+// combined with StepProfile's fields into one register() call once step 2
+// completes, since the backend only sends a verification code after the
+// account actually exists. Phone is no longer collected here -- it's
+// optional at registration (Meta/WhatsApp verification isn't fully wired up
+// backend-side yet) and is instead added later via Settings/Profile's
+// "Verify Your Phone Number" flow. Join()'s STEPS.PHONE_OTP branch and
+// register() payload already treat an empty phone as the normal case.
 // ---------------------------------------------------------------------------
-export default function StepContact({ initialEmail, initialPhone, onNext, onGoogleAuth, hasCommunity }) {
+export default function StepContact({ initialEmail, onNext, onGoogleAuth, hasCommunity }) {
   const { hasToken } = useInviteToken();
   const [email, setEmail] = useState(initialEmail ?? "");
-  const [phone, setPhone] = useState(initialPhone ?? "");
-  const [phoneFocused, setPhoneFocused] = useState(false);
   const [agreed, setAgreed] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState({ email: "", phone: "" });
+  const [fieldErrors, setFieldErrors] = useState({ email: "" });
   const [error, setError] = useState("");
 
-  function validatePhone(value) {
-    if (!value.trim()) return "Phone number is required.";
-    if (!isPhoneValid(value)) return PHONE_FORMAT_HINT;
-    return "";
-  }
-
-  function handleFieldChange(field, setValue) {
+  function handleFieldChange(setValue) {
     return (e) => {
       const value = e.target.value;
       setValue(value);
       setError("");
-      const validate = field === "email" ? getEmailError : validatePhone;
-      setFieldErrors((fe) => (fe[field] ? { ...fe, [field]: validate(value) } : fe));
+      setFieldErrors((fe) => (fe.email ? { ...fe, email: getEmailError(value) } : fe));
     };
   }
 
@@ -51,13 +45,12 @@ export default function StepContact({ initialEmail, initialPhone, onNext, onGoog
     }
     const trimmedEmail = email.trim().toLowerCase();
     const emailError = getEmailError(trimmedEmail);
-    const phoneError = validatePhone(phone);
-    if (emailError || phoneError) {
-      setFieldErrors({ email: emailError, phone: phoneError });
+    if (emailError) {
+      setFieldErrors({ email: emailError });
       return;
     }
     setError("");
-    onNext({ email: trimmedEmail, phone: phone.trim() });
+    onNext({ email: trimmedEmail, phone: "" });
   }
 
   return (
@@ -88,35 +81,11 @@ export default function StepContact({ initialEmail, initialPhone, onNext, onGoog
           type="email"
           placeholder="Enter Your Email Address"
           value={email}
-          onChange={handleFieldChange("email", setEmail)}
+          onChange={handleFieldChange(setEmail)}
           autoComplete="email"
           inputMode="email"
         />
         <ErrorMessage message={fieldErrors.email} />
-      </div>
-
-      <div>
-        <Label htmlFor="phone">Phone Number</Label>
-        <TextInput
-          id="phone"
-          type="tel"
-          placeholder="Enter Your Phone Number"
-          value={phone}
-          onChange={handleFieldChange("phone", setPhone)}
-          onFocus={() => setPhoneFocused(true)}
-          onBlur={() => setPhoneFocused(false)}
-          autoComplete="tel"
-          inputMode="tel"
-        />
-        <ErrorMessage message={fieldErrors.phone} />
-        {phoneFocused && (
-          <div className="flex items-start gap-1.5 mt-1.5">
-            <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-gray-500 leading-snug">
-              We'll use this number to send you updates.
-            </p>
-          </div>
-        )}
       </div>
 
       <label className="flex items-start gap-2 cursor-pointer select-none">
@@ -162,7 +131,7 @@ export default function StepContact({ initialEmail, initialPhone, onNext, onGoog
 
       <ErrorMessage message={error} />
 
-      <PrimaryButton onClick={handleSubmit} disabled={!email.trim() || !phone.trim()} size="sm">
+      <PrimaryButton onClick={handleSubmit} disabled={!email.trim()} size="sm">
         Continue
       </PrimaryButton>
 

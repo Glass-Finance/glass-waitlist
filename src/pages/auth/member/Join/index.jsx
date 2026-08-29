@@ -174,11 +174,11 @@ export default function Join() {
 
   function handleContactNext({ email: enteredEmail, phone }) {
     setContact({ email: enteredEmail, phone });
-    // StepContact requires a phone number client-side (see its
-    // validatePhone), so this step always runs today -- the empty-phone
-    // fallback exists for symmetry with SignUp.jsx and in case that
-    // requirement is ever relaxed to match the backend's "phone stays
-    // optional" stance.
+    // StepContact no longer collects a phone number -- phone stays optional
+    // at registration (Meta/WhatsApp verification isn't fully wired up
+    // backend-side yet), added later via Settings/Profile instead. This
+    // always takes the empty-phone branch today; STEPS.PHONE_OTP is a dead
+    // code path kept in case phone-at-signup comes back.
     setStep(phone ? STEPS.PHONE_OTP : STEPS.PROFILE);
   }
 
@@ -224,9 +224,8 @@ export default function Join() {
         confirmPassword,
         ...(token && { inviteToken: token }),
         // phoneConfirmToken is required whenever phoneNumber is present --
-        // StepContact requires a phone client-side, so contact.phone is
-        // always set here today, but this stays conditional for symmetry
-        // with SignUp.jsx's genuinely-optional case.
+        // contact.phone is empty today since StepContact no longer collects
+        // it, so this branch is unused until phone-at-signup comes back.
         ...(contact.phone && { phoneNumber: contact.phone, phoneConfirmToken }),
       };
       const authData = await register(payload);
@@ -291,7 +290,6 @@ export default function Join() {
         // consent text to the bottom the way the Figma treatment shows it.
         <StepContact
           initialEmail={contact.email}
-          initialPhone={contact.phone}
           onNext={handleContactNext}
           onGoogleAuth={handleGoogleAuth}
           hasCommunity={Boolean(community)}
