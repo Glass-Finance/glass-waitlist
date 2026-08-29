@@ -115,25 +115,26 @@ export default function Role() {
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold text-gray-900 mb-0.5">My role</p>
-          <p className="text-xs text-gray-500">Define Your Membership and Payment participation</p>
-        </div>
-        {saving && (
-          <span className="flex items-center gap-1.5 text-xs text-gray-400">
-            <Loader2 size={13} className="animate-spin" /> Saving…
-          </span>
-        )}
-        {saved && !saving && (
-          <span className="flex items-center gap-1.5 text-xs text-emerald-600">
-            <Check size={13} /> Saved
-          </span>
-        )}
-      </div>
-
-      {/* Role card */}
+      {/* Heading now lives inside the card, matching every other Settings
+          card -- was the one page still keeping it in its own row above,
+          with no divider. */}
       <div className="bg-surface-container rounded-2xl p-6 border border-surface-container-border">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold text-gray-900 mb-0.5">My role</p>
+          {saving && (
+            <span className="flex items-center gap-1.5 text-xs text-gray-400">
+              <Loader2 size={13} className="animate-spin" /> Saving…
+            </span>
+          )}
+          {saved && !saving && (
+            <span className="flex items-center gap-1.5 text-xs text-emerald-600">
+              <Check size={13} /> Saved
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-gray-500 mb-4">Define Your Membership and Payment participation</p>
+        <div className="-mx-6 border-b border-gray-100 mb-4" />
+
         <div className="flex flex-col gap-3">
           {OPTIONS.map((opt) => {
             const isSelected = role === opt.id;

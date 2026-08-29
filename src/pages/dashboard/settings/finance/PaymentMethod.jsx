@@ -15,15 +15,14 @@ export default function PaymentMethod() {
 
   return (
     <div className="flex flex-col gap-5 w-full">
+      {/* Single card, heading inside -- was a bare "Payment methods" heading
+          wrapping a second, redundant "Saved methods" heading inside its
+          own card, the only page with a double heading like that. */}
       <div>
-        <p className="text-sm font-medium text-gray-900 mb-0.5">Payment methods</p>
-        <p className="text-xs text-gray-500 mb-5">Saved cards and bank accounts used for your personal dues payments.</p>
-
-        <div className="bg-surface-container rounded-xl p-5 mb-4 border border-surface-container-border">
-          <p className="text-sm font-medium text-gray-900 mb-0.5">Saved methods</p>
-          <p className="text-xs text-gray-500 mb-4">
-            Methods used across all communities you're a paying member of.
-          </p>
+        <div className="bg-surface-container rounded-xl p-5 border border-surface-container-border">
+          <p className="text-sm font-semibold text-gray-900 mb-0.5">Payment methods</p>
+          <p className="text-xs text-gray-500 mb-4">Saved cards and bank accounts used for your personal dues payments.</p>
+          <div className="-mx-5 border-b border-gray-100 mb-4" />
 
           <div className="flex flex-col gap-3">
             {isLoading ? (
