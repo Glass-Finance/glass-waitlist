@@ -135,6 +135,7 @@ export default function CommunityProfile() {
       >
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Community Information</p>
         <p className="text-xs text-gray-500 mb-4">This is how your information will appear across glass</p>
+        <div className="-mx-5 border-b border-gray-100 mb-4" />
 
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
@@ -214,6 +215,7 @@ export default function CommunityProfile() {
       >
         <p className="text-sm text-gray-900 mb-0.5">Delete Community</p>
         <p className="text-xs text-gray-500 mb-3">Permanent actions that cannot be undone.</p>
+        <div className="-mx-5 border-b border-gray-100 mb-3" />
 
         <div
           className="flex items-center justify-between px-4 py-3 rounded-xl border border-[#FECACA] bg-[#FFF5F5]"

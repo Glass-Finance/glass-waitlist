@@ -18,6 +18,7 @@ function SectionCard({ title, subtitle, children }) {
     <div className="bg-surface-container rounded-2xl px-5 pt-4 pb-2 border border-surface-container-border">
       <p className="text-sm font-semibold text-gray-900 mb-0.5">{title}</p>
       {subtitle && <p className="text-xs text-gray-500 mb-3">{subtitle}</p>}
+      <div className="-mx-5 border-b border-gray-100 mb-1" />
       {children}
     </div>
   );

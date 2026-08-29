@@ -404,7 +404,8 @@ export default function Security() {
       {/* Password */}
       <div className="bg-surface-container rounded-2xl p-6 border border-surface-container-border">
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Password</p>
-        <p className="text-xs text-gray-500 mb-5">Keep your account secure with a strong password.</p>
+        <p className="text-xs text-gray-500 mb-4">Keep your account secure with a strong password.</p>
+        <div className="-mx-6 border-b border-gray-100 mb-5" />
 
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
@@ -471,7 +472,8 @@ export default function Security() {
       {/* MFA */}
       <div className="bg-surface-container rounded-2xl p-6 border border-surface-container-border">
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Multi-Factor Authentication (MFA)</p>
-        <p className="text-xs text-gray-500 mb-5">Add an extra layer of protection to your account.</p>
+        <p className="text-xs text-gray-500 mb-4">Add an extra layer of protection to your account.</p>
+        <div className="-mx-6 border-b border-gray-100 mb-1" />
 
         <div className="flex items-center justify-between py-3 border-b border-gray-100">
           <div className="flex items-center gap-3">

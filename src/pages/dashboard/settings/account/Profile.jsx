@@ -290,12 +290,11 @@ export default function Profile() {
 
       {view === "profile" && (
         <>
-          <div>
-            <p className="text-sm font-semibold text-gray-900 mb-0.5">Profile</p>
-            <p className="text-xs text-gray-500">Manage your personal information</p>
-          </div>
-
           <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
+            <p className="text-sm font-semibold text-gray-900 mb-0.5">Profile</p>
+            <p className="text-xs text-gray-500 mb-4">Manage your personal information</p>
+            <div className="-mx-6 border-b border-gray-100 mb-5" />
+
             <div className="flex items-center gap-3 mb-5">
               <div className="w-14 h-14 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {photoPreview || profileImageUrl ? (
@@ -595,6 +594,7 @@ export default function Profile() {
         <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
           <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Account</p>
           <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
+          <div className="-mx-6 border-b border-gray-100 mb-4" />
           <div
             className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 rounded-lg border border-[#FECACA] bg-[#FFF5F5]"
           >

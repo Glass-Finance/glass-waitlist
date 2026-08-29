@@ -94,6 +94,7 @@ export default function AutoPay() {
         <p className="text-xs text-gray-500 mb-4">
           Manage automatic payments for your personal dues across all communities.
         </p>
+        <div className="-mx-6 border-b border-gray-100 mb-4" />
         <div className="flex flex-col">
           {isLoading ? (
             <LoadingState className="py-4" />

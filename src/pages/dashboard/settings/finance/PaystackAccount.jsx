@@ -232,11 +232,12 @@ export default function PaystackAccount() {
           <p className="text-sm font-bold text-gray-900 mb-0.5">
             Current Payout Account
           </p>
-          <p className="text-xs text-gray-400 mb-5">
+          <p className="text-xs text-gray-400 mb-4">
             All payments collected from members
             {communityName ? ` in ${communityName}` : ""} are disbursed to this
             account.
           </p>
+          <div className="-mx-6 border-b border-gray-100 mb-5" />
 
           {(account.status === "REJECTED" ||
             account.status === "NEED_MORE_INFORMATION") &&

@@ -117,6 +117,7 @@ export default function MemberAccess() {
         <p className="text-xs text-gray-500 mb-4">
           Control how new members find and join this community.
         </p>
+        <div className="-mx-5 border-b border-gray-100 mb-1" />
 
         <div className="flex items-center justify-between py-3 border-b border-gray-100">
           <div className="min-w-0 pr-4">
@@ -159,6 +160,7 @@ export default function MemberAccess() {
         <p className="text-xs text-gray-500 mb-4">
           Share this link or QR code with members so they can join your community on Glass.
         </p>
+        <div className="-mx-5 border-b border-gray-100 mb-4" />
         <div className="flex items-center gap-4">
           {inviteLink && (
             <div className="flex-shrink-0">
@@ -187,6 +189,7 @@ export default function MemberAccess() {
       <div className="bg-surface-container rounded-2xl p-5 border border-surface-container-border">
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Admin management</p>
         <p className="text-xs text-gray-500 mb-4">Promote members to admin or revoke admin access.</p>
+        <div className="-mx-5 border-b border-gray-100 mb-4" />
         {!rolesLoading && !adminRoleId && (
           <p className="text-xs text-red-500 mb-3">
             Couldn't find an Admin role on the server — Promote is disabled until this is resolved.
