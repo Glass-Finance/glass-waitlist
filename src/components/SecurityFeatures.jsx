@@ -106,7 +106,7 @@ export default function SecurityFeatures() {
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.65, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              We protect your funds with end-to-end encryption and ensure your data never falls into the wrong hands.
+              We protect your funds with encryption in transit and at rest, strict access controls, and continuous security monitoring.
             </motion.p>
           </div>
         </div>

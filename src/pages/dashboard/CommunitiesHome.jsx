@@ -498,13 +498,13 @@ export default function CommunitiesHome() {
         <div data-tour="communities-home-actions" className="flex gap-2.5">
           <button
             onClick={() => navigate("/onboarding/choose-path", { state: { intent: "join" } })}
-            className="px-4 py-2 rounded-lg border border-brand text-brand bg-white text-xs font-medium hover:bg-blue-50 transition-all"
+            className="h-14 px-4 rounded-lg border border-[#E0E0EB] text-brand bg-white text-sm font-medium hover:bg-gray-50 transition-all flex items-center justify-center"
           >
             Join Community
           </button>
           <button
             onClick={() => navigate("/onboarding/choose-path")}
-            className="px-4 py-2 rounded-lg bg-brand text-white text-xs font-medium hover:opacity-90 transition-all"
+            className="h-14 px-4 rounded-lg bg-[#002FA7] text-white text-sm font-medium hover:opacity-90 transition-all flex items-center justify-center"
           >
             Create Community
           </button>

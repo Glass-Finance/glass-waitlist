@@ -308,7 +308,7 @@ export default function Profile() {
               <button
                 onClick={() => photoInputRef.current?.click()}
                 disabled={uploadFile.isPending}
-                className="px-3 py-2 rounded-lg text-xs bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-gray-300"
+                className="h-12 px-2.5 rounded-[4px] text-xs text-brand bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-[#002FA7] flex items-center justify-center"
               >
                 {uploadFile.isPending ? "Uploading…" : "Upload Photo"}
               </button>
@@ -370,7 +370,11 @@ export default function Profile() {
               <button
                 onClick={handleSave}
                 disabled={updateProfile.isPending || !isDirty}
-                className="p-2 rounded-lg text-[11px] text-brand hover:bg-brand hover:text-white transition-all cursor-pointer border border-brand disabled:opacity-50"
+                className={`h-12 px-4 rounded-lg text-xs font-medium transition-all cursor-pointer disabled:cursor-not-allowed flex items-center justify-center ${
+                  updateProfile.isPending || !isDirty
+                    ? "bg-[#C5C5C5] text-white border-none"
+                    : "text-brand hover:bg-brand hover:text-white border border-brand"
+                }`}
               >
                 {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
               </button>
@@ -596,7 +600,7 @@ export default function Profile() {
           <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
           <div className="-mx-6 border-b border-gray-100 mb-4" />
           <div
-            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-3 rounded-lg border border-[#FECACA] bg-[#FFF5F5]"
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
           >
             <p className="text-xs text-gray-700">
               Permanently remove your account and all associated data from Glass.
