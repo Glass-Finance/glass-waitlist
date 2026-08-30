@@ -164,7 +164,7 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
         <img
           src={illustration}
           alt={title}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-auto object-contain z-10"
+          className="absolute inset-0 w-full h-full object-contain object-bottom z-10"
           draggable={false}
           loading="lazy"
           decoding="async"
