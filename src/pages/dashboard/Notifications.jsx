@@ -13,7 +13,7 @@ import { extractNotificationDetails, formatNairaAmount, resolveNotificationBody 
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import { Button } from "../../components/ui/Button";
-import notificationsIllustration from "../../assets/dashboard/empty-states/notifications-illustration.png";
+import notificationsIllustration from "../../assets/dashboard/empty-states/notifications-illustration.webp";
 import { formatRelativeDateTime as formatTime, dayLabel } from "../../utils/format";
 
 // notificationCategory() maps the backend's exact notificationType enum to a

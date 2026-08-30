@@ -5,7 +5,7 @@ import { isSelfAccountType, notificationVisual } from "../../utils/notificationT
 import { useAuth } from "../../store/AuthContext";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
-import notificationsIllustration from "../../assets/dashboard/empty-states/notifications-illustration.png";
+import notificationsIllustration from "../../assets/dashboard/empty-states/notifications-illustration.webp";
 import { formatRelativeDateTime as formatTimestamp, dayLabel } from "../../utils/format";
 
 // Resolve community info for display AND for the owned/member routing

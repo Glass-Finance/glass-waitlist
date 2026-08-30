@@ -1,4 +1,4 @@
-import documentImg from "../../../../assets/dashboard/empty-states/payment-plan-illustration.png";
+import documentImg from "../../../../assets/dashboard/empty-states/payment-plan-illustration.webp";
 
 export default function PaymentPlanIllustration({ className = "" }) {
   return (

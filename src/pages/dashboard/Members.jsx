@@ -4,7 +4,7 @@ import { useEscapeToClose } from "../../hooks/useKeyboardShortcuts";
 import { useNavigate } from "react-router-dom";
 import { Plus, Search, Filter, ChevronDown, RotateCcw, UserMinus, X, Users, Clock, ShieldCheck, Copy, Check, UserCheck, ChevronRight, Download } from "lucide-react";
 import EmptyState from "../../components/common/EmptyState";
-import addMembersIllustration from "../../assets/dashboard/empty-states/add-members-illustration.png";
+import addMembersIllustration from "../../assets/dashboard/empty-states/add-members-illustration.webp";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunity } from "../../hooks/useCommunity";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
