@@ -22,6 +22,8 @@ import { toTitleCase } from "../../utils/format";
 import { isMemberRoleOwner } from "../../utils/communityRole";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 import AddMemberModal from "./admin-dashboard/AddMemberModal";
+import CreatePlanModal from "./payments/CreatePlanModal";
+import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import GettingStartedChecklist from "./admin-dashboard/sections/GettingStartedChecklist";
 import WelcomeEmptyState from "./admin-dashboard/sections/WelcomeEmptyState";
 import DashboardStats from "./admin-dashboard/sections/DashboardStats";
@@ -46,6 +48,7 @@ function DashboardContent({ isPaying, communityId }) {
   const [alertVisible, setAlertVisible] = useState(true);
   const [payingItem, setPayingItem] = useState(null);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
+  const [createPlanOpen, setCreatePlanOpen] = useState(false);
   const [gsDismissed, setGsDismissed] = useState(() => {
     try {
       return localStorage.getItem(`gs_done_${communityId}`) === "1";
@@ -65,7 +68,17 @@ function DashboardContent({ isPaying, communityId }) {
     error,
   } = useCommunityDashboard(communityId);
   const { data: currentUser } = useMe();
-  const { plans, isLoading: plansLoading } = usePaymentPlans(communityId);
+  const { plans, isLoading: plansLoading, create: createPlan } = usePaymentPlans(communityId);
+
+  async function handleCreatePlan(payload) {
+    try {
+      await createPlan.mutateAsync(payload);
+      return true;
+    } catch (err) {
+      notifyError(err, { context: "Create payment plan" });
+      return false;
+    }
+  }
   // The Payment Plans widget below is an at-a-glance preview, not the full
   // list (that's Payments.jsx, which has its own status filters/badges) --
   // archived/expired plans no longer need attention and would otherwise
@@ -369,9 +382,7 @@ function DashboardContent({ isPaying, communityId }) {
       <>
         <main className="flex-1 px-4 md:px-6 py-5 overflow-y-auto">
           <WelcomeEmptyState
-            onCreatePlan={() =>
-              navigate(`/dashboard/payments?community=${communityId ?? ""}`)
-            }
+            onCreatePlan={() => setCreatePlanOpen(true)}
             onAddMember={() => setAddMemberOpen(true)}
           />
         </main>
@@ -382,6 +393,18 @@ function DashboardContent({ isPaying, communityId }) {
             communityId={communityId}
             communitySlug={community?.slug}
             onClose={() => setAddMemberOpen(false)}
+          />
+        )}
+
+        {createPlanOpen && (
+          <CreatePlanModal
+            communityId={communityId}
+            onClose={() => setCreatePlanOpen(false)}
+            onCreate={handleCreatePlan}
+            creating={createPlan.isPending}
+            createError={
+              createPlan.error ? getErrorMessage(createPlan.error) : null
+            }
           />
         )}
       </>
