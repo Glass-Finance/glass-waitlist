@@ -310,9 +310,12 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
             </button>
           </div>
 
-          {/* Direct add card */}
+          {/* Direct add card -- Glass/SurfaceContainerHigh (#F3F4F6) per
+              Figma, distinct from the modal's own white background; already
+              a real token (bg-stacked-container) used for nested panels
+              elsewhere, just not wired in here. */}
           <div
-            className="bg-white rounded-lg p-6 border border-surface-container-border"
+            className="bg-stacked-container rounded-lg p-6 border border-surface-container-border"
           >
             <h3 className="text-base font-semibold text-gray-900 mb-4">
               Prefer To Add Members Directly?
