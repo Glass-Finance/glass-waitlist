@@ -257,7 +257,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
   if (showSuccess) {
     return (
       <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm">
-        <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl py-14 px-8 flex items-center justify-center">
+        <div className="bg-surface-container backdrop-blur-xl rounded-2xl w-full max-w-md shadow-2xl py-14 px-8 flex items-center justify-center">
           <SuccessBadge message="Members Invited!" />
         </div>
       </div>
@@ -269,7 +269,16 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
       className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+      {/* Split into a non-scrolling outer layer (carries the blur/rounded
+          corners) and a scrolling inner layer -- backdrop-filter combined
+          with overflow-y-auto + rounded corners on the very same element is
+          a known trap for GPU-compositing glitches in some browsers/
+          drivers; keeping scroll and blur on separate elements avoids it
+          regardless of whether that's what caused the very blurry render
+          reported earlier (couldn't reproduce it locally to confirm root
+          cause, so this is the defensive structure either way). */}
+      <div className="bg-surface-container backdrop-blur-xl rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
+      <div className="max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between px-8 pt-7 pb-4">
           <div>
@@ -651,6 +660,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
