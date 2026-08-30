@@ -147,12 +147,14 @@ export default function Role() {
                   ${isSelected ? "bg-[#D7E2FF] border-transparent" : "bg-transparent hover:bg-gray-50 border-transparent"}
                   ${saving ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
               >
-                <div
-                  className={`w-5 h-5 rounded-full flex-shrink-0 mt-0.5 flex items-center justify-center
-                    ${isSelected ? "bg-brand border-none" : "bg-white border border-[#D1D5DB]"}`}
-                >
-                  {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
-                </div>
+                {isSelected ? (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 mt-0.5">
+                    <rect x="0.5" y="0.5" width="23" height="23" rx="11.5" stroke="#002FA7" />
+                    <circle cx="12" cy="12" r="8" fill="#002FA7" />
+                  </svg>
+                ) : (
+                  <div className="w-5 h-5 rounded-full flex-shrink-0 mt-0.5 bg-white border border-[#D1D5DB]" />
+                )}
                 <div>
                   <p className="text-sm text-gray-900 mb-0.5">{opt.title}</p>
                   <p className="text-xs text-gray-500 leading-relaxed">{opt.description}</p>
