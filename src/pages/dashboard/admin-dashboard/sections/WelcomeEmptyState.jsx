@@ -1,5 +1,5 @@
 import { ChevronRight, Users } from "lucide-react";
-import inviteIllustration from "../../../../assets/dashboard/empty-states/invite-illustration.png";
+import inviteIllustration from "../../../../assets/dashboard/empty-states/invite-illustration.webp";
 import tickIcon from "../../../../assets/dashboard/empty-states/tick-icon.png";
 import { Button } from "../../../../components/ui/Button";
 
@@ -28,7 +28,7 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
       <Button
         onClick={onCreatePlan}
         fullWidth={false}
-        className="w-64 mb-8 !rounded-full !font-normal"
+        className="w-64 mb-8"
         data-tour="welcome-create-plan"
       >
         Create Your First Collection

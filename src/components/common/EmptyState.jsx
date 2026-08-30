@@ -33,16 +33,15 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
       {subtitle && (
         <p className={isBig ? "text-base text-gray-400 mt-1.5 max-w-sm" : "text-xs text-gray-400 mt-1 max-w-xs"}>{subtitle}</p>
       )}
-      {/* Per direct feedback: should read the same as WelcomeEmptyState's
-          "Create Your First Collection" button -- not bold, smaller text.
-          A prior pass here tried a 16px/font-medium override reasoned from
-          this button's own Figma layer in isolation, but that read it as
-          bolder/larger than the sibling button it's meant to match.
-          Dropping the size override falls back to Button's own default
-          text-button (14px); !font-normal matches WelcomeEmptyState's own
-          override exactly. */}
+      {/* Figma's updated spec for this button (8px radius, weight 500) is
+          just Button's own true default (rounded-lg + font-medium, both in
+          its base className) -- the earlier !rounded-full !font-normal
+          overrides here and on WelcomeEmptyState's matching button were
+          fighting that default rather than using it. Dropped both so this
+          reads the same as WelcomeEmptyState's "Create Your First
+          Collection" button, which got the same fix. */}
       {action && isBig && (
-        <Button onClick={action} fullWidth={false} className="mt-6 px-6 inline-flex items-center gap-1.5 !rounded-full !font-normal">
+        <Button onClick={action} fullWidth={false} className="mt-6 px-6 inline-flex items-center gap-1.5">
           {actionLabel}
         </Button>
       )}
