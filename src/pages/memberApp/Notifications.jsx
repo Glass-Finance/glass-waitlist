@@ -11,9 +11,9 @@ import { extractNotificationDetails, formatNairaAmount, resolveNotificationBody 
 import { useAuth } from "../../store/AuthContext";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import { formatRelativeDateTime } from "../../utils/format";
-import paymentsEmptyIllustration from "../../assets/memberApp/empty-states/notifications-payments-empty.png";
-import communityEmptyIllustration from "../../assets/memberApp/empty-states/notifications-community-empty.png";
-import invitesEmptyIllustration from "../../assets/memberApp/empty-states/notifications-invites-empty.png";
+import paymentsEmptyIllustration from "../../assets/memberApp/empty-states/notifications-payments-empty.webp";
+import communityEmptyIllustration from "../../assets/memberApp/empty-states/notifications-community-empty.webp";
+import invitesEmptyIllustration from "../../assets/memberApp/empty-states/notifications-invites-empty.webp";
 
 const TABS = ["Payments", "Community", "Invites"];
 

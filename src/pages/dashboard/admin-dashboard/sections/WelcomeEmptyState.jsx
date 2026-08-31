@@ -1,6 +1,6 @@
 import { ChevronRight, Users } from "lucide-react";
 import inviteIllustration from "../../../../assets/dashboard/empty-states/invite-illustration.webp";
-import tickIcon from "../../../../assets/dashboard/empty-states/tick-icon.png";
+import tickIcon from "../../../../assets/dashboard/empty-states/tick-icon.webp";
 import { Button } from "../../../../components/ui/Button";
 
 // The very first thing an admin sees on a brand-new community — before a

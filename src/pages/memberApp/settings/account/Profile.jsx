@@ -9,7 +9,7 @@ import { getErrorMessage } from "../../../../utils/errorHandler";
 import { parseUserData } from "../../../../utils/userData";
 import { toTitleCase } from "../../../../utils/format";
 import { Button } from "../../../../components/ui/Button";
-import verifiedBadge from "../../../../assets/icons/verified-badge.png";
+import verifiedBadge from "../../../../assets/icons/verified-badge.webp";
 
 const inputCls = "w-full h-12 min-h-8 py-1 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all focus:border-[#002FA7]";
 

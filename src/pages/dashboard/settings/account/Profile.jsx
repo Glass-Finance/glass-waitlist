@@ -15,7 +15,7 @@ import PhoneChangeModal from "../../../../components/common/PhoneChangeModal";
 import OtpBoxes from "../../../../components/common/OtpBoxes";
 import { toTitleCase } from "../../../../utils/format";
 import { Button } from "../../../../components/ui/Button";
-import verifiedBadge from "../../../../assets/icons/verified-badge.png";
+import verifiedBadge from "../../../../assets/icons/verified-badge.webp";
 import { toastSuccess } from "../../../../utils/toast";
 
 const inputCls =

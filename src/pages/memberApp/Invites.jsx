@@ -8,7 +8,7 @@ import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import { PENDING_INVITE_KEY } from "../InviteLanding";
 import { Button } from "../../components/ui/Button";
 // Same empty-state illustration the Notifications page's Invites tab uses.
-import invitesEmptyIllustration from "../../assets/memberApp/empty-states/notifications-invites-empty.png";
+import invitesEmptyIllustration from "../../assets/memberApp/empty-states/notifications-invites-empty.webp";
 
 function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();

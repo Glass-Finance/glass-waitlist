@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { goToApp } from "../../utils/deviceRedirect";
 import HowItWorksSection from "../howItWorks/HowItWorksSection";
 
-import work1 from "../../assets/work/org-create-community.png";
-import work2 from "../../assets/work/org-add-members.png";
-import work3 from "../../assets/work/org-set-payment-schedule.png";
-import work4 from "../../assets/work/org-go-live.png";
+import work1 from "../../assets/work/org-create-community.webp";
+import work2 from "../../assets/work/org-add-members.webp";
+import work3 from "../../assets/work/org-set-payment-schedule.webp";
+import work4 from "../../assets/work/org-go-live.webp";
 import stepIcon1 from "../../assets/icon/step-1.webp";
 import stepIcon2 from "../../assets/icon/step-2.webp";
 import stepIcon3 from "../../assets/icon/step-3.webp";

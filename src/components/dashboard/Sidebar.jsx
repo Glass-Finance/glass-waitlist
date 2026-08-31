@@ -205,7 +205,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             title="Platform Admin"
           >
             <img
-              src="/glass-logo-silver.png"
+              src="/glass-logo-silver.webp"
               alt="Glass"
               className="w-8 h-8 object-contain block"
               onError={(e) => {
@@ -338,7 +338,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           title="Your Communities"
         >
           <img
-            src="/glass-logo-silver.png"
+            src="/glass-logo-silver.webp"
             alt="Glass"
             className="w-8 h-8 object-contain block"
             onError={(e) => {
@@ -381,8 +381,8 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   width: 16,
                   height: 18,
                   backgroundColor: "white",
-                  WebkitMaskImage: "url(/home-solid.png)",
-                  maskImage: "url(/home-solid.png)",
+                  WebkitMaskImage: "url(/home-solid.webp)",
+                  maskImage: "url(/home-solid.webp)",
                   WebkitMaskSize: "contain",
                   maskSize: "contain",
                   WebkitMaskRepeat: "no-repeat",
@@ -392,7 +392,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 }}
               />
             ) : (
-              <img src="/home-outline.png" alt="" className="w-4 h-[18px] object-contain" />
+              <img src="/home-outline.webp" alt="" className="w-4 h-[18px] object-contain" />
             )}
           </button>
         </div>

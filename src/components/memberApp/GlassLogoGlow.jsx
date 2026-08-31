@@ -23,7 +23,7 @@ export default function GlassLogoGlow({ className = "" }) {
       aria-hidden="true"
     >
       <img
-        src="/Bg.png"
+        src="/Bg.webp"
         alt=""
         className="absolute left-[-15%] bottom-[-10%] w-[85%] max-w-[420px]"
       />
