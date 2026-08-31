@@ -397,7 +397,7 @@ export default function Profile() {
             <ArrowLeft size={15} /> Back
           </button>
 
-          <div className="bg-white rounded-xl border border-surface-container-border">
+          <div className="bg-surface-container rounded-xl border border-surface-container-border">
             <div className="px-6 py-4 border-b border-gray-100">
               <p className="text-sm font-bold text-gray-900">Update Your Email</p>
             </div>
@@ -434,7 +434,7 @@ export default function Profile() {
             <ArrowLeft size={15} /> Back
           </button>
 
-          <div className="bg-white rounded-xl border border-surface-container-border">
+          <div className="bg-surface-container rounded-xl border border-surface-container-border">
             <div className="px-6 py-4 border-b border-gray-100">
               <p className="text-sm font-bold text-gray-900">
                 {isPhoneUpdate ? "Update Your Phone Number" : "Verify Your Phone Number"}
