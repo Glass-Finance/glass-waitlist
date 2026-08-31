@@ -19,7 +19,7 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
         className="w-[280px] h-auto mb-6"
         draggable={false}
       />
-      <h1 className="text-xl leading-7 font-semibold text-gray-900 text-center mb-1.5">
+      <h1 className="text-xl leading-7 font-normal text-gray-900 text-center mb-1.5">
         Welcome to Glass!
       </h1>
       <p className="text-base text-gray-400 text-center mb-7 max-w-sm">
@@ -28,7 +28,7 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
       <Button
         onClick={onCreatePlan}
         fullWidth={false}
-        className="w-56 mb-8 !py-2.5 !text-xs"
+        className="w-56 mb-8 !py-2.5 !text-sm"
         data-tour="welcome-create-plan"
       >
         Create Your First Collection
