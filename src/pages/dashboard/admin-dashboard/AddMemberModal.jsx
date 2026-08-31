@@ -256,7 +256,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
 
   if (showSuccess) {
     return (
-      <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/35 backdrop-blur-xs">
+      <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/35">
         <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl py-14 px-8 flex items-center justify-center">
           <SuccessBadge message="Members Invited!" />
         </div>
@@ -266,7 +266,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/35 backdrop-blur-xs"
+      className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/35"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       {/* Solid opaque white, matching ModalShell.jsx's established

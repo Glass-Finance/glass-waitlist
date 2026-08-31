@@ -142,7 +142,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-black/35 backdrop-blur-xs"
+      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-black/35"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       {/* Solid opaque white, matching ModalShell.jsx's established
