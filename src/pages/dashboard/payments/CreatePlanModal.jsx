@@ -142,16 +142,15 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-black/35 backdrop-blur-xs"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      {/* bg-white was a flat, opaque panel -- Figma's inspector on this
-          exact frame calls for "Glass/SurfaceContainer" (#FFFFFF at 60%)
-          + "Glass/ElevatedContainerBlur", the same frosted-glass treatment
-          AddMemberModal.jsx already uses (see index.css's own comment on
-          --color-surface-container for why backdrop-blur-xl, not the
-          literal Figma 240px blur value, is what actually reproduces it). */}
-      <div className="bg-surface-container backdrop-blur-xl rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
+      {/* Solid opaque white, matching ModalShell.jsx's established
+          standard -- the frosted-glass treatment previously here (and
+          still in AddMemberModal.jsx) reads as too transparent/blurry
+          against the actual Figma reference, which shows a crisp white
+          panel over a lightly-dimmed (not heavily blurred) backdrop. */}
+      <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
         <div className="flex items-start justify-between px-6 pt-5">
           <div>
             <h2 className="text-base font-semibold text-black">

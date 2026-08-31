@@ -67,28 +67,14 @@ export function Step1({ value, onChange }) {
                   rectangle -- min-h-[180px] plus mt-6/mb-5 around the icon
                   tile added up to more vertical space than the content
                   needed. Trimmed both; icon/title/description unchanged. */}
-              <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] mt-5 mb-3">
-                {/* recurring-payment.webp / one-time-payment.webp are solid
-                    black glyphs sitting unused in the assets folder --
-                    recolored to brand blue via the same mask technique
-                    Sidebar.jsx already uses for its Home icon, since an
-                    <img> can't pick up currentColor/text-brand the way the
-                    lucide icons this replaced could. */}
-                <span
-                  aria-hidden="true"
-                  className="w-5 h-5 bg-brand"
-                  style={{
-                    WebkitMaskImage: `url(${opt.icon})`,
-                    maskImage: `url(${opt.icon})`,
-                    WebkitMaskSize: "contain",
-                    maskSize: "contain",
-                    WebkitMaskRepeat: "no-repeat",
-                    maskRepeat: "no-repeat",
-                    WebkitMaskPosition: "center",
-                    maskPosition: "center",
-                  }}
-                />
-              </div>
+              {/* Plain black glyph, no colored background tile -- confirmed
+                  against the actual exported Figma icons (fill="black"),
+                  not recolored/boxed the way an earlier pass assumed. */}
+              <img
+                src={opt.icon}
+                alt=""
+                className="w-8 h-8 object-contain mt-5 mb-3"
+              />
               <p className="font-semibold text-gray-900 text-base mb-1">{opt.title}</p>
               {/* text-xs, not text-sm -- per direct feedback the
                   description read too large next to the title. */}

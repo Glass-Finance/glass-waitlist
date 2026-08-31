@@ -348,7 +348,7 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-[rgba(15,29,110,0.2)] backdrop-blur-sm"
+      className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-black/35 backdrop-blur-xs"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl max-h-[90vh] flex flex-col">
