@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, MoreHorizontal, User } from "lucide-react";
 import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity, resolveNotificationBody } from "../../utils/notificationContent";
+import { notificationsListDestination } from "../../utils/notificationRouting";
 import { isSelfAccountType, notificationVisual } from "../../utils/notificationTypes";
 import { useAuth } from "../../store/AuthContext";
 import { useClickOutside } from "../../hooks/useClickOutside";
@@ -34,15 +35,8 @@ function resolveCommunity(n, communityMap) {
 //   - no resolvable community (an account-level notification, or one whose
 //     community isn't in this user's list at all) → the unscoped admin
 //     notifications page, same as before.
-function notifDestination(n, community) {
-  if (community) {
-    const ref = community.slug ?? community.id;
-    return community.owned
-      ? `/dashboard/notifications?community=${ref}&open=${n.id}`
-      : `/member/notifications?community=${ref}`;
-  }
-  return `/dashboard/notifications?open=${n.id}`;
-}
+// (shared as notificationsListDestination in utils/notificationRouting —
+// Communities Home's overview card needs the exact same routing.)
 
 // Per Figma: notifications use a category icon, not a photo/initials
 // avatar — even a clearly-named event ("X joined Y") shows a status icon
@@ -94,7 +88,7 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
     <button
       onClick={() => {
         if (!isRead) onMarkRead?.(n.id);
-        onNavigate?.(notifDestination(n, community));
+        onNavigate?.(notificationsListDestination(n, community));
       }}
       className={`flex items-start gap-2.5 w-full py-3 px-3.5 border-none cursor-pointer text-left transition-[background] duration-150 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-brand)] ${isRead ? "bg-transparent rounded-none border-b border-[#EFEFEF]" : "bg-[#F5F5F7] rounded-xl"}`}
     >

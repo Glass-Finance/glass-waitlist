@@ -20,7 +20,8 @@ import { useInvites } from "../../hooks/useInvites";
 import { useGlobalOverview } from "../../hooks/usePayments";
 import { useAllNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
-import { extractNotificationDetails, formatNairaAmount } from "../../utils/notificationContent";
+import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity } from "../../utils/notificationContent";
+import { notificationsListDestination } from "../../utils/notificationRouting";
 import { useAuth } from "../../store/AuthContext";
 import { resolveIsPayingAdmin, isCommunityAdmin, roleKeyword } from "../../utils/communityRole";
 import { usePageTitle } from "../../hooks/usePageTitle";
@@ -367,7 +368,12 @@ function GlobalOverview() {
         title="Notifications"
         badge={unreadCount}
         footerLabel="View all notifications"
-        onFooter={() => navigate("/dashboard/notifications")}
+        // This card aggregates every community's activity (useAllNotifications,
+        // unscoped) -- "view all" has to open that same cross-community list
+        // (?all=1), not whichever single community happened to be
+        // active/last-visited, which is what a bare /dashboard/notifications
+        // link would silently fall back to.
+        onFooter={() => navigate("/dashboard/notifications?all=1")}
       >
         {notifTop.length === 0 ? (
           <OverviewEmpty text="No notifications yet." />
@@ -376,10 +382,14 @@ function GlobalOverview() {
             const details = extractNotificationDetails(n, { communityMap });
             const amount = formatNairaAmount(details.amount);
             const messageText = n.message ?? n.description ?? n.bodyText ?? null;
+            // Scoped to the community this notification actually came from
+            // (same resolution + routing the topbar bell dropdown uses) --
+            // not whatever community happens to be active/last-visited.
+            const destination = notificationsListDestination(n, resolveNotificationCommunity(n, communityMap));
             return (
               <button
                 key={n.id}
-                onClick={() => navigate(`/dashboard/notifications?open=${n.id}`)}
+                onClick={() => navigate(destination)}
                 className="w-full flex items-start gap-2.5 px-4 py-2.5 bg-transparent border-none text-left cursor-pointer hover:bg-gray-50 transition-colors"
               >
                 {!(n.readFlag ?? false) && (

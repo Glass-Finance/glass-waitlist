@@ -81,6 +81,23 @@ const MEMBER_ACTION_LABELS = {
   "/member/security": "Open security settings",
 };
 
+// Where clicking a notification from a cross-community feed (the topbar
+// bell dropdown, Communities Home's overview card) should open its full
+// notifications list — scoped to the community it actually came from, not
+// whatever community happens to be active/last-visited, and routed to the
+// right side of the app for this user's role there. Shared so every
+// cross-community surface sends a notification to the same place instead
+// of each maintaining its own copy that can drift out of sync.
+export function notificationsListDestination(n, community) {
+  if (community) {
+    const ref = community.slug ?? community.id;
+    return community.owned
+      ? `/dashboard/notifications?community=${ref}&open=${n.id}`
+      : `/member/notifications?community=${ref}`;
+  }
+  return `/dashboard/notifications?open=${n.id}`;
+}
+
 // The detail-view variant of notificationTarget: returns { to, label } for
 // the "open related page" button, or null when there's no better page.
 export function notificationAction(n, opts = {}) {

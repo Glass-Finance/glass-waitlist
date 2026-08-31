@@ -315,7 +315,17 @@ function ChronologicalList({ items, onMarkRead, onOpen }) {
   );
 }
 
-function SuperAdminNotifications() {
+// Cross-community view: every notification for this user regardless of
+// which community it belongs to (useAllNotifications, unscoped). Reached
+// two ways — a platform admin with no community context (their default,
+// see the Notifications() switch below), or anyone landing here via
+// Communities Home's "View all notifications" (?all=1). That overview
+// card already aggregates every community's activity, so its own "view
+// all" has to open this same aggregate, not whichever single community
+// happened to be active/last-visited (see useActiveCommunityId's
+// localStorage fallback) — that used to silently drop every other
+// community's notifications while still claiming to show "all".
+function AllCommunitiesNotifications() {
   usePageTitle("Notifications");
   const {
     notifications, isLoading, unreadCount,
@@ -331,7 +341,7 @@ function SuperAdminNotifications() {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
           <div>
             <h1 className="text-xl font-bold text-black mb-1">Notifications</h1>
-            <p className="text-sm text-gray-400">System alerts and platform events for your account.</p>
+            <p className="text-sm text-gray-400">Updates across every community you manage.</p>
           </div>
           {unreadCount > 0 && (
             <button
@@ -499,9 +509,12 @@ function CommunityNotifications() {
 export default function Notifications() {
   const { isPlatformAdmin } = useAuth();
   const activeCommunityId = useActiveCommunityId();
+  const [searchParams] = useSearchParams();
+  const showAll = searchParams.get("all") === "1";
 
-  // The Platform Admin sidebar's own "Notifications" link (no community
-  // context at all) is the only place the cross-platform view belongs.
+  // Two ways to land on the cross-community view: the Platform Admin
+  // sidebar's own "Notifications" link (no community context at all), or
+  // an explicit ?all=1 (Communities Home's "View all notifications").
   // Every other way of reaching this page -- the regular per-community
   // sidebar's "Notifications" item, the bell dropdown's per-community
   // destination, a notification row's own deep link -- carries or implies a
@@ -509,8 +522,8 @@ export default function Notifications() {
   // or its localStorage fallback, same convention Settings already uses
   // since this route never puts ?community= in its own URL). A platform admin
   // may also administer communities, so the global-role flag alone must not
-  // force the cross-platform view when a community context is active.
-  return isPlatformAdmin && !activeCommunityId
-    ? <SuperAdminNotifications />
+  // force the cross-community view when a community context is active.
+  return (isPlatformAdmin && !activeCommunityId) || showAll
+    ? <AllCommunitiesNotifications />
     : <CommunityNotifications />;
 }
