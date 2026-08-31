@@ -25,7 +25,7 @@ const CATEGORIES = [
 ];
 
 const inputCls =
-  "w-full h-12 min-h-8 border border-gray-300 px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+  "w-full h-12 min-h-8 border border-gray-300 px-4 py-1 rounded-lg text-placeholder text-black placeholder-black/60 outline-none focus:border-[#002FA7] transition-all";
 
 export default function CommunityProfile() {
   const navigate = useNavigate();
@@ -210,22 +210,17 @@ export default function CommunityProfile() {
       {/* ── Delete Community — owners only. Promoted admins manage the
           community but don't get its destructive controls. ── */}
       {community?.owned && (
-      <div
-        className="bg-surface-container rounded-lg px-5 pt-4 pb-4 border border-surface-container-border"
-      >
-        <p className="text-sm text-gray-900 mb-0.5">Delete Community</p>
-        <p className="text-xs text-gray-500 mb-3">Permanent actions that cannot be undone.</p>
-        <div className="-mx-5 border-b border-gray-100 mb-3" />
-
-        <div
-          className="flex items-center justify-between px-4 py-3 rounded-xl border border-[#FECACA] bg-[#FFF5F5]"
-        >
+      <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
+        <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Community</p>
+        <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
+        <div className="-mx-6 border-b border-gray-100 mb-4" />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p className="text-xs text-gray-700">
             Permanently remove this community and all associated data from Glass.
           </p>
           <button
             onClick={() => setDeleteModal(true)}
-            className="ml-4 px-3 py-1.5 rounded-lg text-xs text-red-600 bg-white hover:bg-red-50 transition-all flex-shrink-0 cursor-pointer border border-[#FECACA]"
+            className="self-start sm:self-auto flex-shrink-0 px-4 py-1.5 rounded-md text-xs font-medium text-red-500 hover:bg-red-50 transition-all cursor-pointer bg-transparent border border-[#FECACA]"
           >
             Delete
           </button>

@@ -339,7 +339,7 @@ export default function Security() {
   const [success, setSuccess] = useState(false);
   const [mfaModal, setMfaModal] = useState(null); // "setup" | "disable" | null
 
-  const inputCls = "w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-gray-300 text-gray-900 text-placeholder outline-none transition-all pr-11 focus:border-[#002FA7]";
+  const inputCls = "w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-gray-300 text-black placeholder-black/60 text-placeholder outline-none transition-all pr-11 focus:border-[#002FA7]";
 
   function validatePasswordField(field, value, otherValue) {
     if (field === "current" && !value) return "Current password is required.";

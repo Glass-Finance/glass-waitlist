@@ -19,7 +19,7 @@ import verifiedBadge from "../../../../assets/icons/verified-badge.webp";
 import { toastSuccess } from "../../../../utils/toast";
 
 const inputCls =
-  "w-full h-12 min-h-8 px-4 py-1 rounded-lg text-gray-900 text-placeholder outline-none transition-all border-[1.5px] focus:border-[#002FA7]";
+  "w-full h-12 min-h-8 px-4 py-1 rounded-lg text-black placeholder-black/60 text-placeholder outline-none transition-all border-[1.5px] focus:border-[#002FA7]";
 
 export default function Profile() {
   const navigate = useNavigate();
