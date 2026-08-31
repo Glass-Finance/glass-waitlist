@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { Bell, ChevronRight, X, User } from "lucide-react";
+import { AlertTriangle, ArrowRight, Bell, Check, ChevronRight, X, User } from "lucide-react";
 import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
@@ -43,9 +43,9 @@ function categorize(n) {
 }
 
 const SECTION_CONFIG = {
-  urgent:  { label: "Urgent",             badgeCls: "bg-[#E53E3E14] text-[#E53E3E]" },
-  payment: { label: "Payment Activity",   badgeCls: "bg-[#D69E2E14] text-[#D69E2E]" },
-  member:  { label: "Community Activity", badgeCls: "bg-brand-tint text-brand" },
+  urgent:  { label: "Urgent" },
+  payment: { label: "Payment Activity" },
+  member:  { label: "Community Activity" },
 };
 
 // Failed/overdue payment notifications ("urgent") are still a payment event
@@ -62,15 +62,17 @@ const TAB_CAT = { Payments: ["payment", "urgent"], Community: ["member"] };
 // icon + semantic color for its category (see notificationVisual) — red
 // for failures/urgent, amber for due-soon, green for success, indigo for
 // new/info, gray for neutral account notices.
-function Avatar({ n }) {
+function Avatar({ n, size = "sm" }) {
   const { user } = useAuth();
   const type = n?.notificationType ?? n?.type;
   const isSelf = isSelfAccountType(type);
   const selfName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email;
+  const boxCls = size === "lg" ? "w-14 h-14" : "w-9 h-9";
+  const iconSize = size === "lg" ? 26 : 18;
 
   if (isSelf && user?.profileImage?.url) {
     return (
-      <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden">
+      <div className={`${boxCls} rounded-full flex-shrink-0 overflow-hidden`}>
         <img src={user.profileImage.url} alt={selfName ?? ""} className="w-full h-full object-cover" />
       </div>
     );
@@ -83,10 +85,10 @@ function Avatar({ n }) {
 
   return (
     <div
-      className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center"
+      className={`${boxCls} rounded-full flex-shrink-0 flex items-center justify-center`}
       style={{ background: bg }}
     >
-      <Icon size={18} strokeWidth={2} color={fg} />
+      <Icon size={iconSize} strokeWidth={2} color={fg} />
     </div>
   );
 }
@@ -138,84 +140,109 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
 // Notifications have no page of their own, so clicking a row opens this modal
 // with the full (untruncated) content plus a contextual action button that
 // deep-links to the related page when one can be inferred.
+//
+// Every notification type shared one generic template before — same badge,
+// same box of rows, regardless of what actually happened. Each cluster of
+// types gets its own body now: a confirmation (self-account), an urgency
+// card (failed/overdue money), a people card (join/invite), a receipt
+// (routine payments), or a plain info card as the fallback for anything else
+// — sharing only the outer shell (header/close) and the shared discipline of
+// no per-category color-coding (Wise/Nubank's pattern): brand blue only ever
+// appears on a primary button, red only ever appears on the one cluster
+// that's genuinely urgent, never as decoration.
+function DetailShell({ catLabel, onClose, maxWidthCls, children }) {
+  return (
+    <div
+      className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/50"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className={`w-full bg-white rounded-2xl shadow-2xl overflow-hidden ${maxWidthCls}`}>
+        <div className="flex items-center justify-between px-6 pt-5 pb-1">
+          <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">
+            {catLabel}
+          </span>
+          <button
+            onClick={onClose}
+            className="w-7 h-7 -mr-1.5 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 cursor-pointer bg-transparent border-none flex-shrink-0 transition-colors"
+          >
+            <X size={15} />
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Right-aligned quiet rows shared by the receipt/urgent/info bodies — the
+// facts that didn't become that body's own hero.
+function FactRows({ rows }) {
+  if (rows.length === 0) return null;
+  return (
+    <div className="px-6 py-4 border-t border-gray-100 flex flex-col gap-2.5">
+      {rows.map((r) => (
+        <div key={r.label} className="flex items-center justify-between gap-4">
+          <span className="text-xs text-gray-400 flex-shrink-0">{r.label}</span>
+          <span
+            className={`text-xs font-medium text-gray-700 text-right break-all tabular-nums ${r.mono ? "font-mono" : ""}`}
+          >
+            {r.value}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function NotificationDetailModal({ n, onClose }) {
   useEscapeToClose(onClose);
   const navigate = useNavigate();
-  const cat = categorize(n);
-  const { label: catLabel, badgeCls } = SECTION_CONFIG[cat];
+  const { user } = useAuth();
+  const catLabel = SECTION_CONFIG[categorize(n)].label;
   const title = n.title ?? n.subject ?? "Notification";
   const action = notificationAction(n);
+  const isSelf = isSelfAccountType(n.notificationType ?? n.type);
+  const cat = categorize(n);
+  const goToAction = () => navigate(action.to);
 
   // Structured facts (#21): member, community, amount, plan, reference —
   // from real payload fields when present, best-effort text parsing otherwise.
   const communityMap = useCommunityMap();
   const details = extractNotificationDetails(n, { communityMap });
   const desc = resolveNotificationBody(n, details, n.description ?? n.message ?? n.bodyText ?? n.body ?? "");
-  const factRows = [
-    { label: "Member", value: details.memberName },
-    { label: "Community", value: details.communityName },
-    { label: "Amount", value: formatNairaAmount(details.amount) },
-    { label: "Payment plan", value: details.planName },
-    { label: "Reference", value: details.reference, mono: true },
-    { label: "Received", value: formatTime(details.time) },
-  ].filter((r) => r.value);
+  const amount = formatNairaAmount(details.amount);
 
-  return (
-    <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/50"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="w-full bg-white rounded-2xl shadow-2xl overflow-hidden max-w-[440px]">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-surface-container-border">
-          <div className="flex items-start gap-3 min-w-0">
-            <Avatar n={n} />
-            <div className="min-w-0">
-              <span
-                className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5 ${badgeCls}`}
-              >
-                {catLabel}
-              </span>
-              <p className="text-[15px] font-semibold text-gray-900 leading-snug">{title}</p>
+  // ── Confirmation: self-account events (profile/password/email updates) ──
+  // No amount, no other member, no other party — a confirmation about the
+  // reader's own account, not a record about something/someone else.
+  // Centered, closer to how the app treats a confirmation (see SuccessBadge)
+  // than how it treats a transaction record.
+  if (isSelf) {
+    const meta = [formatTime(details.time), n.channel].filter(Boolean).join(" · ");
+    return (
+      <DetailShell catLabel={catLabel} onClose={onClose} maxWidthCls="max-w-[360px]">
+        <div className="px-6 pt-4 pb-6 flex flex-col items-center text-center">
+          <div className="relative mb-4">
+            {user?.profileImage?.url ? (
+              <div className="w-20 h-20 rounded-full overflow-hidden ring-4 ring-gray-50">
+                <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="w-20 h-20 rounded-full ring-4 ring-gray-50 bg-gray-100 flex items-center justify-center">
+                <User size={30} className="text-gray-400" />
+              </div>
+            )}
+            <div className="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-brand ring-2 ring-white flex items-center justify-center">
+              <Check size={13} strokeWidth={3} className="text-white" />
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 cursor-pointer bg-transparent border-none flex-shrink-0 transition-colors"
-          >
-            <X size={16} />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="px-6 py-5">
-          {desc ? (
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap m-0">{desc}</p>
-          ) : (
-            <p className="text-sm text-gray-400 m-0">No additional details.</p>
+          <p className="text-[17px] font-bold text-gray-900 leading-snug">{title}</p>
+          {desc && (
+            <p className="text-sm text-gray-500 leading-relaxed mt-1.5 m-0 max-w-[260px]">{desc}</p>
           )}
-
-          {/* Facts — inner card matching the app's var(--color-surface-container)/var(--color-surface-container-border) standard */}
-          <div
-            className="flex flex-col gap-2.5 mt-5 rounded-xl px-4 py-3.5 bg-surface-container border border-surface-container-border"
-          >
-            {factRows.map((r) => (
-              <div key={r.label} className="flex items-center justify-between gap-4">
-                <span className="text-xs text-gray-500 flex-shrink-0">{r.label}</span>
-                <span
-                  className={`text-xs font-medium text-gray-900 text-right break-all ${r.mono ? "font-mono" : ""}`}
-                >
-                  {r.value}
-                </span>
-              </div>
-            ))}
-          </div>
+          {meta && <p className="text-xs text-gray-400 mt-3 m-0">{meta}</p>}
         </div>
-
-        {/* Footer */}
-        <div
-          className="flex items-center justify-end gap-3 px-6 py-4 bg-surface-container border-t border-surface-container-border"
-        >
+        <div className="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
@@ -223,17 +250,184 @@ function NotificationDetailModal({ n, onClose }) {
             Close
           </button>
           {action && (
-            <Button
-              onClick={() => navigate(action.to)}
-              fullWidth={false}
-              className="px-4 flex items-center gap-1"
-            >
+            <Button onClick={goToAction} fullWidth={false} className="px-4 flex items-center gap-1">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
         </div>
+      </DetailShell>
+    );
+  }
+
+  // ── Urgent: money that didn't move (failed/overdue/disabled auth/refund/
+  // reconciliation). The one place red earns its keep — a real semantic
+  // state, not a decorative per-category badge — and the one place a
+  // single, unmissable action beats a split Close/action footer.
+  if (cat === "urgent") {
+    const factRows = [
+      { label: "Member", value: details.memberName },
+      { label: "Community", value: details.communityName },
+      { label: "Payment plan", value: details.planName },
+      { label: "Reference", value: details.reference, mono: true },
+      { label: "Received", value: formatTime(details.time) },
+    ].filter((r) => r.value);
+
+    return (
+      <DetailShell catLabel={catLabel} onClose={onClose} maxWidthCls="max-w-[400px]">
+        <div className="px-6 pt-3 pb-5">
+          <div className="w-11 h-11 rounded-full bg-red-50 flex items-center justify-center mb-3">
+            <AlertTriangle size={20} className="text-red-600" />
+          </div>
+          <p className="text-[18px] font-bold text-gray-900 leading-snug">{title}</p>
+          {desc && (
+            <p className="text-sm text-gray-500 leading-relaxed mt-1.5 m-0 whitespace-pre-wrap">{desc}</p>
+          )}
+          {amount && (
+            <p className="text-[26px] font-bold text-gray-900 tabular-nums mt-3 mb-0">{amount}</p>
+          )}
+        </div>
+        <FactRows rows={factRows} />
+        <div className="flex flex-col gap-2 px-6 py-4 border-t border-gray-100">
+          {action && (
+            <Button
+              onClick={goToAction}
+              variant="danger"
+              className="flex items-center justify-center gap-1"
+            >
+              {action.label} <ChevronRight size={13} />
+            </Button>
+          )}
+          <button
+            onClick={onClose}
+            className="text-xs font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer py-1"
+          >
+            Not now
+          </button>
+        </div>
+      </DetailShell>
+    );
+  }
+
+  // ── People: join requests and invites — this is about a specific person
+  // and which community they're connected to, so that's the hero (bigger
+  // status-tinted icon + their name), not a fact buried in a row.
+  if (cat === "member" && details.memberName) {
+    const factRows = [
+      { label: "Reference", value: details.reference, mono: true },
+      { label: "Received", value: formatTime(details.time) },
+    ].filter((r) => r.value);
+
+    return (
+      <DetailShell catLabel={catLabel} onClose={onClose} maxWidthCls="max-w-[400px]">
+        <div className="px-6 pt-3 pb-5 flex items-start gap-3.5">
+          <Avatar n={n} size="lg" />
+          <div className="min-w-0 pt-1">
+            <p className="text-[17px] font-bold text-gray-900 leading-snug truncate">
+              {details.memberName}
+            </p>
+            <p className="text-sm text-gray-500 mt-0.5">{title}</p>
+            {details.communityName && (
+              <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                <ArrowRight size={11} className="flex-shrink-0" />
+                <span className="truncate">{details.communityName}</span>
+              </p>
+            )}
+          </div>
+        </div>
+        <FactRows rows={factRows} />
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+          >
+            Close
+          </button>
+          {action && (
+            <Button onClick={goToAction} fullWidth={false} className="px-4 flex items-center gap-1">
+              {action.label} <ChevronRight size={13} />
+            </Button>
+          )}
+        </div>
+      </DetailShell>
+    );
+  }
+
+  // ── Receipt: routine payment activity — the amount is the one fact worth
+  // a big number, everything else is a quiet supporting row.
+  if (cat === "payment" && amount) {
+    const factRows = [
+      { label: "Member", value: details.memberName },
+      { label: "Community", value: details.communityName },
+      { label: "Payment plan", value: details.planName },
+      { label: "Reference", value: details.reference, mono: true },
+      { label: "Received", value: formatTime(details.time) },
+    ].filter((r) => r.value);
+
+    return (
+      <DetailShell catLabel={catLabel} onClose={onClose} maxWidthCls="max-w-[400px]">
+        <div className="px-6 pt-3 pb-5">
+          <p className="text-[32px] font-bold text-gray-900 leading-none tabular-nums mb-2">{amount}</p>
+          <p className="text-sm font-medium text-gray-600 mt-0.5">{title}</p>
+          {desc && (
+            <p className="text-sm text-gray-500 leading-relaxed mt-1.5 m-0 whitespace-pre-wrap">{desc}</p>
+          )}
+        </div>
+        <FactRows rows={factRows} />
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+          >
+            Close
+          </button>
+          {action && (
+            <Button onClick={goToAction} fullWidth={false} className="px-4 flex items-center gap-1">
+              {action.label} <ChevronRight size={13} />
+            </Button>
+          )}
+        </div>
+      </DetailShell>
+    );
+  }
+
+  // ── Info: the fallback for everything without a strong single hero fact
+  // (settings changed, general notices) — and the safety net for any
+  // cluster whose expected hero data (memberName/amount) didn't resolve on
+  // a particular real payload, so nothing ever renders half-empty.
+  const factRows = [
+    { label: "Member", value: details.memberName },
+    { label: "Community", value: details.communityName },
+    { label: "Amount", value: amount },
+    { label: "Reference", value: details.reference, mono: true },
+    { label: "Received", value: formatTime(details.time) },
+  ].filter((r) => r.value);
+
+  return (
+    <DetailShell catLabel={catLabel} onClose={onClose} maxWidthCls="max-w-[400px]">
+      <div className="px-6 pt-3 pb-5">
+        <div className="mb-2">
+          <Avatar n={n} />
+        </div>
+        <p className="text-[16px] font-bold text-gray-900 leading-snug">{title}</p>
+        {desc && (
+          <p className="text-sm text-gray-500 leading-relaxed mt-1.5 m-0 whitespace-pre-wrap">{desc}</p>
+        )}
       </div>
-    </div>
+      <FactRows rows={factRows} />
+      <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+        <button
+          onClick={onClose}
+          className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+        >
+          Close
+        </button>
+        {action && (
+          <Button onClick={goToAction} fullWidth={false} className="px-4 flex items-center gap-1">
+            {action.label} <ChevronRight size={13} />
+          </Button>
+        )}
+      </div>
+    </DetailShell>
   );
 }
 
