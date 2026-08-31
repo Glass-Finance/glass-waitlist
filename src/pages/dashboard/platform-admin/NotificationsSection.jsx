@@ -177,10 +177,11 @@ function SendNotificationModal({ onClose }) {
           <label className="block text-xs font-semibold text-gray-700 mb-1.5">
             Type
           </label>
+          <div className="relative">
           <select
             value={notificationType}
             onChange={(e) => setNotificationType(e.target.value)}
-            className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-700 outline-none focus:border-[#002FA7]"
+            className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-700 outline-none focus:border-[#002FA7] appearance-none !pr-9"
           >
             {NOTIF_TYPES.map((t) => (
               <option key={t} value={t}>
@@ -188,6 +189,8 @@ function SendNotificationModal({ onClose }) {
               </option>
             ))}
           </select>
+          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+          </div>
         </div>
 
         {/* Channels */}

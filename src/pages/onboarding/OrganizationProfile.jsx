@@ -326,10 +326,13 @@ export default function OrganizationProfile() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Category *</label>
-                <select name="category" value={form.category} onChange={handleChange} onBlur={handleFieldBlur("category")} className={`${inputCls} ${fieldErrors.category ? "border-danger" : "border-gray-300"}`}>
-                  <option value="" disabled>Select a category</option>
-                  {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <div className="relative">
+                  <select name="category" value={form.category} onChange={handleChange} onBlur={handleFieldBlur("category")} className={`${inputCls} appearance-none !pr-9 ${fieldErrors.category ? "border-danger" : "border-gray-300"}`}>
+                    <option value="" disabled>Select a category</option>
+                    {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+                </div>
                 {fieldErrors.category && <span className="text-xs text-danger">{fieldErrors.category}</span>}
               </div>
               <div className="flex flex-col gap-1.5">

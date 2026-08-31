@@ -200,20 +200,23 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Frequency
             </label>
-            <select
-              className={inputCls}
-              value={form.frequency || ""}
-              onChange={(e) => onChange("frequency", e.target.value)}
-            >
-              <option value="" disabled>
-                Select frequency
-              </option>
-              {FREQUENCIES.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
+            <div className="relative">
+              <select
+                className={`${inputCls} appearance-none !pr-9`}
+                value={form.frequency || ""}
+                onChange={(e) => onChange("frequency", e.target.value)}
+              >
+                <option value="" disabled>
+                  Select frequency
                 </option>
-              ))}
-            </select>
+                {FREQUENCIES.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+            </div>
           </div>
         )}
       </div>
@@ -333,17 +336,20 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Retry Policy
             </label>
-            <select
-              className={inputCls}
-              value={form.retryPolicy || "NO_RETRY"}
-              onChange={(e) => onChange("retryPolicy", e.target.value)}
-            >
-              {RETRY_POLICIES.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                className={`${inputCls} appearance-none !pr-9`}
+                value={form.retryPolicy || "NO_RETRY"}
+                onChange={(e) => onChange("retryPolicy", e.target.value)}
+              >
+                {RETRY_POLICIES.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+            </div>
           </div>
         </div>
       )}
@@ -367,17 +373,20 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
               <label className="block text-[11px] text-gray-500 mb-1">
                 Remind every
               </label>
-              <select
-                className={inputCls}
-                value={form.reminderFrequency || "EVERY_3_DAYS"}
-                onChange={(e) => onChange("reminderFrequency", e.target.value)}
-              >
-                {REMINDER_FREQUENCIES.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  className={`${inputCls} appearance-none !pr-9`}
+                  value={form.reminderFrequency || "EVERY_3_DAYS"}
+                  onChange={(e) => onChange("reminderFrequency", e.target.value)}
+                >
+                  {REMINDER_FREQUENCIES.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+              </div>
             </div>
             <div>
               <label className="block text-[11px] text-gray-500 mb-1.5">

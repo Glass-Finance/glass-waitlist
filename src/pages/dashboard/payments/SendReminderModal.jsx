@@ -50,17 +50,20 @@ export default function SendReminderModal({ plan, onClose, onSend, sending }) {
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Repeat this reminder
             </label>
-            <select
-              className={inputCls}
-              value={frequency}
-              onChange={(e) => setFrequency(e.target.value)}
-            >
-              {REMINDER_FREQUENCIES.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                className={`${inputCls} appearance-none !pr-9`}
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value)}
+              >
+                {REMINDER_FREQUENCIES.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+            </div>
           </div>
 
           <div>

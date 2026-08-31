@@ -194,19 +194,22 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
                 <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   Frequency
                 </label>
-                <select
-                  className={inputCls}
-                  value={form.frequency}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, frequency: e.target.value }))
-                  }
-                >
-                  {FREQUENCIES.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    className={`${inputCls} appearance-none !pr-9`}
+                    value={form.frequency}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, frequency: e.target.value }))
+                    }
+                  >
+                    {FREQUENCIES.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+                </div>
               </div>
             )}
           </div>
@@ -315,19 +318,22 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
                 <label className="block text-xs font-medium text-gray-700 mb-1.5">
                   Retry Policy
                 </label>
-                <select
-                  className={inputCls}
-                  value={form.retryPolicy}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, retryPolicy: e.target.value }))
-                  }
-                >
-                  {RETRY_POLICIES.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    className={`${inputCls} appearance-none !pr-9`}
+                    value={form.retryPolicy}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, retryPolicy: e.target.value }))
+                    }
+                  >
+                    {RETRY_POLICIES.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+                </div>
               </div>
             </div>
           )}
@@ -349,19 +355,22 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
                   <label className="block text-[11px] text-gray-500 mb-1">
                     Remind every
                   </label>
-                  <select
-                    className={inputCls}
-                    value={form.reminderFrequency || "EVERY_3_DAYS"}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, reminderFrequency: e.target.value }))
-                    }
-                  >
-                    {REMINDER_FREQUENCIES.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      className={`${inputCls} appearance-none !pr-9`}
+                      value={form.reminderFrequency || "EVERY_3_DAYS"}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, reminderFrequency: e.target.value }))
+                      }
+                    >
+                      {REMINDER_FREQUENCIES.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-[11px] text-gray-500 mb-1.5">

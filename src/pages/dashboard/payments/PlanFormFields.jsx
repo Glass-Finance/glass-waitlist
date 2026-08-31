@@ -13,18 +13,21 @@ export function PayoutAccountField({ accounts, value, onChange }) {
       <label className="block text-xs font-medium text-gray-700 mb-1">
         Payout Account
       </label>
-      <select
-        className={inputCls}
-        value={value || ""}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        {accounts.map((a) => (
-          <option key={a.id} value={a.id}>
-            {payoutAccountLabel(a)}
-            {a.defaultAccount ? " (Default)" : ""}
-          </option>
-        ))}
-      </select>
+      <div className="relative">
+        <select
+          className={`${inputCls} appearance-none !pr-9`}
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value)}
+        >
+          {accounts.map((a) => (
+            <option key={a.id} value={a.id}>
+              {payoutAccountLabel(a)}
+              {a.defaultAccount ? " (Default)" : ""}
+            </option>
+          ))}
+        </select>
+        <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+      </div>
       <p className="text-[11px] text-gray-400 mt-1">
         Members' payments for this plan settle to this account.
       </p>
@@ -43,18 +46,21 @@ export function BillingDayField({ frequency, value, max, onChange }) {
         Billing Day
       </label>
       {frequency === "WEEKLY" ? (
-        <select
-          className={inputCls}
-          value={value || ""}
-          onChange={(e) => onChange(e.target.value)}
-        >
-          <option value="">Select day of week</option>
-          {WEEKDAYS.map((name, i) => (
-            <option key={name} value={i + 1}>
-              {name}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            className={`${inputCls} appearance-none !pr-9`}
+            value={value || ""}
+            onChange={(e) => onChange(e.target.value)}
+          >
+            <option value="">Select day of week</option>
+            {WEEKDAYS.map((name, i) => (
+              <option key={name} value={i + 1}>
+                {name}
+              </option>
+            ))}
+          </select>
+          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+        </div>
       ) : (
         <input
           type="number"

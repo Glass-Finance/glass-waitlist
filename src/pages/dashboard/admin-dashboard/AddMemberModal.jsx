@@ -620,10 +620,11 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                 />
 
                 <p className="text-sm font-medium text-gray-900 mb-2">Role:</p>
+                <div className="relative mb-4">
                 <select
                   value={roleId}
                   onChange={(e) => setRoleId(e.target.value)}
-                  className={`${inputCls} mb-4`}
+                  className={`${inputCls} appearance-none !pr-9`}
                 >
                   {finalRoles.map((r) => (
                     <option key={r.id} value={r.id}>
@@ -631,6 +632,8 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                     </option>
                   ))}
                 </select>
+                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+                </div>
 
                 <label className="flex items-center gap-2 text-sm text-gray-600 mb-5 cursor-pointer">
                   <input

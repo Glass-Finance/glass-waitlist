@@ -496,13 +496,16 @@ function QuickAddMemberModal({ onClose, onAdd, adding, error, roles, rolesUnavai
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">Role</label>
-            <select
-              value={roleId}
-              onChange={(e) => setRoleId(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-gray-200 text-xs outline-none focus:border-brand"
-            >
-              {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-            </select>
+            <div className="relative">
+              <select
+                value={roleId}
+                onChange={(e) => setRoleId(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-lg border-[1.5px] border-gray-200 text-xs outline-none focus:border-brand appearance-none !pr-8"
+              >
+                {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+              </select>
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+            </div>
             {rolesUnavailable && (
               <p className="text-xs text-red-500 mt-1.5">Couldn't load roles from the server — try closing and reopening this dialog.</p>
             )}
