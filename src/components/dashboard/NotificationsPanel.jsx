@@ -1,8 +1,10 @@
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, User } from "lucide-react";
+import { Bell, MoreHorizontal, User } from "lucide-react";
 import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity, resolveNotificationBody } from "../../utils/notificationContent";
 import { isSelfAccountType, notificationVisual } from "../../utils/notificationTypes";
 import { useAuth } from "../../store/AuthContext";
+import { useClickOutside } from "../../hooks/useClickOutside";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
 import notificationsIllustration from "../../assets/dashboard/empty-states/notifications-illustration.webp";
@@ -94,7 +96,7 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
         if (!isRead) onMarkRead?.(n.id);
         onNavigate?.(notifDestination(n, community));
       }}
-      className={`flex items-start gap-2.5 w-full rounded-[10px] py-2.5 px-3.5 border-none cursor-pointer text-left transition-[background] duration-150 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-brand)] ${isRead ? "bg-[#F9F9F9]" : "bg-white"}`}
+      className={`flex items-start gap-2.5 w-full py-3 px-3.5 border-none cursor-pointer text-left transition-[background] duration-150 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-brand)] ${isRead ? "bg-transparent rounded-none border-b border-[#EFEFEF]" : "bg-[#F5F5F7] rounded-xl"}`}
     >
       <NotifAvatar n={n} />
 
@@ -104,15 +106,15 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
             {commName}
           </p>
         )}
-        <p className={`text-[13px] m-0 leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap ${isRead ? "font-medium text-[#666]" : "font-semibold text-[#111]"}`}>
+        <p className={`text-[15px] m-0 leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap ${isRead ? "font-medium text-[#666]" : "font-semibold text-[#111]"}`}>
           {title}
         </p>
         {body && (
-          <p className="text-[11.5px] text-[#888] mt-[3px] mx-0 mb-0 leading-[1.4] overflow-hidden text-ellipsis whitespace-nowrap">
+          <p className="text-[13px] text-[#888] mt-1 mx-0 mb-0 leading-[1.4] overflow-hidden text-ellipsis whitespace-nowrap">
             {body}
           </p>
         )}
-        <p className="text-[10.5px] text-[#aaa] mt-[5px] mx-0 mb-0">
+        <p className="text-[12.5px] text-[#aaa] mt-1.5 mx-0 mb-0">
           {time}
           {(() => {
             const amount = formatNairaAmount(details.amount);
@@ -127,6 +129,47 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
         <div className="w-[7px] h-[7px] rounded-full bg-brand flex-shrink-0 mt-1" />
       )}
     </button>
+  );
+}
+
+// "Mark All As Read" and "Clear All" side by side read as cluttered at this
+// size (per design feedback) -- tucked into a single overflow menu instead,
+// same pattern as the panel itself closing on outside click.
+function HeaderMenu({ onMarkAllRead, onClearAll, isClearing }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useClickOutside(ref, () => setOpen(false), open);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center justify-center w-7 h-7 rounded-full bg-transparent border-none cursor-pointer text-[#666] hover:bg-[#F5F5F7] transition-colors"
+        aria-label="Notification options"
+      >
+        <MoreHorizontal size={18} />
+      </button>
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 top-[calc(100%+4px)] w-[176px] bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.16)] py-1.5 z-10"
+        >
+          <button
+            onClick={() => { setOpen(false); onMarkAllRead?.(); }}
+            className="w-full text-left px-3.5 py-2 text-xs font-medium text-[#111] bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7]"
+          >
+            Mark All As Read
+          </button>
+          <button
+            onClick={() => { setOpen(false); onClearAll?.(); }}
+            disabled={isClearing}
+            className="w-full text-left px-3.5 py-2 text-xs font-medium text-red-600 bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isClearing ? "Clearing..." : "Clear All"}
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -162,34 +205,20 @@ export default function NotificationsPanel({
 
   return (
     <div
-      className="absolute right-0 w-[390px] bg-[#F2F2F2] rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.14)] z-50 overflow-hidden [top:calc(100%+10px)] [max-width:calc(100vw-16px)]"
+      className="absolute right-0 w-[390px] bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.14)] z-50 overflow-hidden [top:calc(100%+10px)] [max-width:calc(100vw-16px)]"
       role="menu"
     >
       {/* Header */}
       <div className="flex items-center justify-between pt-3.5 px-4 pb-2.5">
-        <p className="text-[15px] font-bold text-[#111] m-0">
+        <p className="flex items-center gap-2 text-[19px] font-bold text-[#111] m-0">
           Notifications
           {count > 0 && (
-            <span className="ml-[7px] text-sm font-semibold text-[#555]">
+            <span className="text-[13px] font-semibold text-brand bg-[#E3E9FF] rounded-full min-w-[22px] h-[22px] px-1.5 flex items-center justify-center">
               {count}
             </span>
           )}
         </p>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onClearAll}
-            disabled={isClearing || notifications.length === 0}
-            className={`text-xs font-semibold text-[#E53E3E] bg-transparent border-none cursor-pointer p-0 ${isClearing || notifications.length === 0 ? "opacity-40" : "opacity-100"}`}
-          >
-            {isClearing ? "Clearing…" : "Clear All"}
-          </button>
-          <button
-            onClick={onMarkAllRead}
-            className="text-xs font-semibold text-brand bg-transparent border-none cursor-pointer p-0"
-          >
-            Mark All As Read
-          </button>
-        </div>
+        <HeaderMenu onMarkAllRead={onMarkAllRead} onClearAll={onClearAll} isClearing={isClearing} />
       </div>
 
       {/* Body */}
@@ -207,10 +236,10 @@ export default function NotificationsPanel({
         ) : (
           buckets.map(({ label, items }) => (
             <div key={label}>
-              <p className="text-[10px] font-bold text-[#999] tracking-[0.06em] uppercase pt-2.5 px-4 pb-[5px] m-0">
+              <p className="text-[15px] font-normal text-[#999] pt-3 px-4 pb-1.5 m-0">
                 {label}
               </p>
-              <div className="flex flex-col gap-[5px] px-2.5">
+              <div className="flex flex-col gap-1 px-2.5">
                 {items.map((n) => (
                   <NotifCard
                     key={n.id}
@@ -225,14 +254,6 @@ export default function NotificationsPanel({
           ))
         )}
       </div>
-
-      {/* Footer */}
-      <button
-        onClick={() => { onClose?.(); navigate("/dashboard/notifications"); }}
-        className="block w-full text-center text-xs font-semibold text-brand bg-stacked-container border-t border-t-[#E5E5E5] cursor-pointer py-2.5 px-0"
-      >
-        View all notifications
-      </button>
     </div>
   );
 }
