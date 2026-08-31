@@ -509,12 +509,9 @@ function CommunityNotifications() {
 export default function Notifications() {
   const { isPlatformAdmin } = useAuth();
   const activeCommunityId = useActiveCommunityId();
-  const [searchParams] = useSearchParams();
-  const showAll = searchParams.get("all") === "1";
 
-  // Two ways to land on the cross-community view: the Platform Admin
-  // sidebar's own "Notifications" link (no community context at all), or
-  // an explicit ?all=1 (Communities Home's "View all notifications").
+  // The Platform Admin sidebar's own "Notifications" link (no community
+  // context at all) is the only place the cross-community view belongs.
   // Every other way of reaching this page -- the regular per-community
   // sidebar's "Notifications" item, the bell dropdown's per-community
   // destination, a notification row's own deep link -- carries or implies a
@@ -523,7 +520,7 @@ export default function Notifications() {
   // since this route never puts ?community= in its own URL). A platform admin
   // may also administer communities, so the global-role flag alone must not
   // force the cross-community view when a community context is active.
-  return (isPlatformAdmin && !activeCommunityId) || showAll
+  return isPlatformAdmin && !activeCommunityId
     ? <AllCommunitiesNotifications />
     : <CommunityNotifications />;
 }

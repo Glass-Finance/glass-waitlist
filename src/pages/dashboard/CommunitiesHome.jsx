@@ -367,13 +367,10 @@ function GlobalOverview() {
         icon={<Bell size={14} className="text-brand" />}
         title="Notifications"
         badge={unreadCount}
-        footerLabel="View all notifications"
-        // This card aggregates every community's activity (useAllNotifications,
-        // unscoped) -- "view all" has to open that same cross-community list
-        // (?all=1), not whichever single community happened to be
-        // active/last-visited, which is what a bare /dashboard/notifications
-        // link would silently fall back to.
-        onFooter={() => navigate("/dashboard/notifications?all=1")}
+        // No page-level "view all" for this card: it aggregates every
+        // community's activity, and there's no single community page that
+        // "view all" could correctly deep-link into.
+        footerLabel={null}
       >
         {notifTop.length === 0 ? (
           <OverviewEmpty text="No notifications yet." />
