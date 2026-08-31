@@ -163,7 +163,7 @@ export default function CommunityProfile() {
           <button
             onClick={() => logoInputRef.current?.click()}
             disabled={uploadFile.isPending}
-            className="px-3 py-2 rounded-lg text-xs text-gray-700 hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-gray-700"
+            className="h-12 px-2.5 rounded-[4px] text-xs text-brand bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-[#002FA7] flex items-center justify-center"
           >
             {uploadFile.isPending ? "Uploading…" : "Change Logo"}
           </button>
@@ -206,7 +206,11 @@ export default function CommunityProfile() {
           <button
             onClick={handleSave}
             disabled={updateCommunity.isPending}
-            className="px-2 py-2 rounded-lg text-xs text-brand hover:bg-brand/10 transition-all border border-brand cursor-pointer disabled:opacity-50"
+            className={`h-12 px-4 rounded-lg text-xs font-medium transition-all cursor-pointer disabled:cursor-not-allowed flex items-center justify-center ${
+              updateCommunity.isPending
+                ? "bg-[#C5C5C5] text-white border-none"
+                : "text-brand hover:bg-brand hover:text-white border border-brand"
+            }`}
           >
             {saved ? "Saved!" : updateCommunity.isPending ? "Saving…" : "Save Changes"}
           </button>
