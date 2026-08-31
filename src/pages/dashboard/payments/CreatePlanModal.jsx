@@ -145,12 +145,11 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
       className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-black/35"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      {/* Solid opaque white, matching ModalShell.jsx's established
-          standard -- the frosted-glass treatment previously here (and
-          still in AddMemberModal.jsx) reads as too transparent/blurry
-          against the actual Figma reference, which shows a crisp white
-          panel over a lightly-dimmed (not heavily blurred) backdrop. */}
-      <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
+      {/* Trying bg-surface-container (60%-opacity white) with no blur this
+          time, per Figma's color spec -- deliberately no backdrop-blur, and
+          this only touches the panel's own background-color; text/borders/
+          buttons inside all keep their own explicit colors regardless. */}
+      <div className="bg-surface-container rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
         <div className="flex items-start justify-between px-6 pt-5">
           <div>
             <h2 className="text-base font-semibold text-black">
