@@ -33,15 +33,13 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
       {subtitle && (
         <p className={isBig ? "text-base text-gray-400 mt-1.5 max-w-sm" : "text-xs text-gray-400 mt-1 max-w-xs"}>{subtitle}</p>
       )}
-      {/* Figma's updated spec for this button (8px radius, weight 500) is
-          just Button's own true default (rounded-lg + font-medium, both in
-          its base className) -- the earlier !rounded-full !font-normal
-          overrides here and on WelcomeEmptyState's matching button were
-          fighting that default rather than using it. Dropped both so this
-          reads the same as WelcomeEmptyState's "Create Your First
-          Collection" button, which got the same fix. */}
+      {/* Matches WelcomeEmptyState's "Create Your First Collection" button
+          exactly: 13px/font-normal text, rounded (4px, Figma's Radius
+          spec), py-4 (16px top/bottom, Figma's Padding spec) -- all
+          overriding Button's own defaults (rounded-lg/font-medium/py-4-but-
+          different-text-size), not just accepting them. */}
       {action && isBig && (
-        <Button onClick={action} fullWidth={false} className="mt-6 px-5 !py-2.5 !text-xs inline-flex items-center gap-1.5">
+        <Button onClick={action} fullWidth={false} className="mt-6 px-5 !rounded !py-4 !text-[13px] !font-normal inline-flex items-center gap-1.5">
           {actionLabel}
         </Button>
       )}
