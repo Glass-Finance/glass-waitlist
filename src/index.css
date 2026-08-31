@@ -465,3 +465,24 @@ section {
 html.dashboard-compact {
   font-size: 93.75%; /* 16px -> 15px */
 }
+
+/* Neutral scrollbar for scrollable panels (e.g. CreatePlanModal's step
+   content) -- without this, some browsers paint the thumb using the
+   nearest focusable control's accent/highlight color (this app's inputs
+   all focus:border-brand), which read as an unintended blue scrollbar
+   inside an otherwise neutral-gray modal. Firefox via scrollbar-color,
+   Chromium/Safari via the ::-webkit-scrollbar-* pseudo-elements. */
+.scrollbar-neutral {
+  scrollbar-width: thin;
+  scrollbar-color: #D1D5DB transparent;
+}
+.scrollbar-neutral::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-neutral::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-neutral::-webkit-scrollbar-thumb {
+  background-color: #D1D5DB;
+  border-radius: 9999px;
+}

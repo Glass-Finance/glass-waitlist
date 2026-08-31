@@ -145,11 +145,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
       className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-black/35"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      {/* Trying bg-surface-container (60%-opacity white) with no blur this
-          time, per Figma's color spec -- deliberately no backdrop-blur, and
-          this only touches the panel's own background-color; text/borders/
-          buttons inside all keep their own explicit colors regardless. */}
-      <div className="bg-surface-container rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
         <div className="flex items-start justify-between px-6 pt-5">
           <div>
             <h2 className="text-base font-semibold text-black">
@@ -181,7 +177,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
           ) : (
             <>
               <PlanStepIndicator current={step} />
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto scrollbar-neutral">
                 {step === 1 && (
                   <Step1 value={planType} onChange={setPlanType} />
                 )}
