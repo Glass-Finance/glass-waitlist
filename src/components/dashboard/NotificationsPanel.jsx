@@ -96,19 +96,19 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
 
       <div className="flex-1 min-w-0">
         {commName && (
-          <p className="text-[10px] font-semibold text-brand mt-0 mx-0 mb-0.5 uppercase tracking-[0.04em] overflow-hidden text-ellipsis whitespace-nowrap">
+          <p className="text-[9px] font-semibold text-brand mt-0 mx-0 mb-0.5 uppercase tracking-[0.04em] overflow-hidden text-ellipsis whitespace-nowrap">
             {commName}
           </p>
         )}
-        <p className={`text-[15px] m-0 leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap ${isRead ? "font-medium text-[#666]" : "font-semibold text-[#111]"}`}>
+        <p className={`text-[11.5px] m-0 leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap ${isRead ? "font-medium text-[#666]" : "font-semibold text-[#111]"}`}>
           {title}
         </p>
         {body && (
-          <p className="text-[13px] text-[#888] mt-1 mx-0 mb-0 leading-[1.4] overflow-hidden text-ellipsis whitespace-nowrap">
+          <p className="text-[10.5px] text-[#888] mt-1 mx-0 mb-0 leading-[1.4] overflow-hidden text-ellipsis whitespace-nowrap">
             {body}
           </p>
         )}
-        <p className="text-[12.5px] text-[#aaa] mt-1.5 mx-0 mb-0">
+        <p className="text-[10px] text-[#aaa] mt-1.5 mx-0 mb-0">
           {time}
           {(() => {
             const amount = formatNairaAmount(details.amount);
@@ -204,10 +204,10 @@ export default function NotificationsPanel({
     >
       {/* Header */}
       <div className="flex items-center justify-between pt-3.5 px-4 pb-2.5">
-        <p className="flex items-center gap-2 text-[19px] font-bold text-[#111] m-0">
+        <p className="flex items-center gap-2 text-[14px] font-bold text-[#111] m-0">
           Notifications
           {count > 0 && (
-            <span className="text-[13px] font-semibold text-brand bg-[#E3E9FF] rounded-full min-w-[22px] h-[22px] px-1.5 flex items-center justify-center">
+            <span className="text-[10px] font-semibold text-brand bg-[#E3E9FF] rounded-full min-w-[17px] h-[17px] px-1.5 flex items-center justify-center">
               {count}
             </span>
           )}
@@ -230,7 +230,7 @@ export default function NotificationsPanel({
         ) : (
           buckets.map(({ label, items }) => (
             <div key={label}>
-              <p className="text-[15px] font-normal text-[#999] pt-3 px-4 pb-1.5 m-0">
+              <p className="text-[10.5px] font-normal text-[#999] pt-3 px-4 pb-1.5 m-0">
                 {label}
               </p>
               <div className="flex flex-col gap-1 px-2.5">
