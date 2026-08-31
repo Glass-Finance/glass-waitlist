@@ -156,14 +156,14 @@ function HeaderMenu({ onMarkAllRead, onClearAll, isClearing }) {
         >
           <button
             onClick={() => { setOpen(false); onMarkAllRead?.(); }}
-            className="w-full text-left px-3.5 py-2 text-xs font-medium text-[#111] bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7]"
+            className="w-full text-left px-3.5 py-2 text-[11px] font-normal text-[#002FA7] bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7]"
           >
             Mark All As Read
           </button>
           <button
             onClick={() => { setOpen(false); onClearAll?.(); }}
             disabled={isClearing}
-            className="w-full text-left px-3.5 py-2 text-xs font-medium text-red-600 bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full text-left px-3.5 py-2 text-[11px] font-normal text-red-600 bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isClearing ? "Clearing..." : "Clear All"}
           </button>

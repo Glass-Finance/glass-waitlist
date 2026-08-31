@@ -41,7 +41,7 @@ export default function EmptyState({ icon: Icon, illustration, illustrationNode,
           reads the same as WelcomeEmptyState's "Create Your First
           Collection" button, which got the same fix. */}
       {action && isBig && (
-        <Button onClick={action} fullWidth={false} className="mt-6 px-6 inline-flex items-center gap-1.5">
+        <Button onClick={action} fullWidth={false} className="mt-6 px-5 !py-2.5 !text-xs inline-flex items-center gap-1.5">
           {actionLabel}
         </Button>
       )}
