@@ -179,14 +179,24 @@ export default function CommunityProfile() {
 
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1.5">Category</label>
-            <select name="category" value={form.category} onChange={handleChange} className={inputCls}>
-              {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
+            {/* Native select's own arrow sits flush against the box edge with
+                no controllable gap -- appearance-none drops it in favor of a
+                custom triangle with proper right-margin breathing room. */}
+            <div className="relative">
+              <select name="category" value={form.category} onChange={handleChange} className={`${inputCls} appearance-none !pr-9`}>
+                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+            </div>
           </div>
 
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1.5">Description</label>
-            <textarea name="description" value={form.description} onChange={handleChange} rows={3} className={`${inputCls} resize-none`} />
+            {/* inputCls's h-12 (sized for single-line inputs) was squashing
+                this field to one line's worth of height despite rows={3},
+                leaving the text pinned near the top with dead space below
+                instead of a proper 3-row box. */}
+            <textarea name="description" value={form.description} onChange={handleChange} rows={3} className={`${inputCls} resize-none !h-auto !min-h-[88px] !py-3`} />
           </div>
         </div>
 
