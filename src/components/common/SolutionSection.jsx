@@ -150,8 +150,14 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
         </div>
       </div>
 
-      {/* Illustration */}
-      <div className="solution-illus relative [height:clamp(160px,45vw,240px)] overflow-hidden">
+      {/* Illustration — flex-1 (not a fixed height) so this box absorbs
+          whatever extra height CSS Grid's row-stretch adds when a sibling
+          card's longer description wraps to more lines; a fixed height
+          here left that leftover space as a visible gap below the image,
+          which also made the bottom-anchored image read as too small/cut
+          off short of the card's real bottom edge (#151). The clamp still
+          sets the natural/minimum size when no stretch is happening. */}
+      <div className="solution-illus relative flex-1 [min-height:clamp(160px,45vw,240px)] overflow-hidden">
         <img
           src={lightBg}
           alt=""
@@ -190,7 +196,7 @@ export default function SolutionSection({
         to   { opacity: 1; transform: perspective(900px) translateY(0px) rotateX(0deg); }
       }
       @media (min-width: 640px) and (max-width: 1023px) {
-        .solution-illus { height: 180px !important; }
+        .solution-illus { min-height: 180px !important; }
         .solution-fade { height: 8% !important; background: linear-gradient(to bottom, #EFEFF1 0%, transparent 100%) !important; }
       }
     `}</style>
