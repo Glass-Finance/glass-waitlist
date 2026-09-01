@@ -281,9 +281,9 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
       <div className="bg-stacked-container rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden">
       <div className="max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-start justify-between px-8 pt-7 pb-4">
+        <div className="flex items-start justify-between px-3 pt-7 pb-4">
           <div>
-            <h2 className="text-base font-semibold text-gray-900 mb-1">
+            <h2 className="text-sm font-normal text-gray-900 mb-1">
               Add your members
             </h2>
             <p className="text-sm text-gray-500">
@@ -299,7 +299,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
           </button>
         </div>
 
-        <div className="px-8 pb-8 flex flex-col gap-2">
+        <div className="px-3 pb-8 flex flex-col gap-2">
           {/* Invite link banner */}
           <div className="flex items-center justify-between px-5 py-4 rounded-xl bg-[#D7E2FF] border border-[#0E628C33]">
             <div>
@@ -313,7 +313,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
             </div>
             <button
               onClick={copyLink}
-              className="flex items-center gap-2 px-4 py-2 rounded-full border border-brand text-xs font-semibold text-brand hover:bg-white transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-white transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent"
             >
               <Copy size={12} />
               {linkCopied ? "Copied!" : "Copy Link"}
