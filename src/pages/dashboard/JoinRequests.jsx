@@ -188,17 +188,13 @@ export default function JoinRequests() {
         </p>
       )}
 
-      {/* Pending */}
-      <div className="flex items-center gap-2 mb-3">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider m-0">
-          Awaiting review
-        </p>
-        {pending.length > 0 && (
-          <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center bg-[#EEF2FF] text-brand border border-blue-100">
-            {pending.length}
-          </span>
-        )}
-      </div>
+      {/* Pending -- plain label, no count badge, matching "Recently
+          processed" below exactly (that one never had one, so the badge
+          here read as an inconsistency rather than a feature; the count
+          is redundant anyway since the cards themselves are right below). */}
+      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+        Awaiting review
+      </p>
 
       {isLoading ? (
         <LoadingState className="py-8" />
