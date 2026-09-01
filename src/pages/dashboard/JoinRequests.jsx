@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { UserPlus, Check, X, Mail, Phone, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { UserPlus, Check, X, Mail, Phone, Clock, ChevronLeft } from "lucide-react";
 import {
   useJoinRequests,
   requesterOf,
@@ -123,6 +124,7 @@ function RequestCard({ r, onApprove, onReject, busy }) {
 
 export default function JoinRequests() {
   usePageTitle("Join Requests");
+  const navigate = useNavigate();
   const communityId = useActiveCommunityId();
   const { requests, isLoading, error, approve, reject } =
     useJoinRequests(communityId);
@@ -159,7 +161,20 @@ export default function JoinRequests() {
     >
       {/* Header */}
       <div className="mb-5 flex-shrink-0">
-        <h1 className="text-xl font-bold text-black mb-1">Join Requests</h1>
+        {/* Reached only via a deep link (Members' pending-requests banner,
+            or a join-request notification), not the sidebar nav -- same
+            situation as TransactionDetail.jsx, so matching its exact
+            back-breadcrumb pattern (navigate(-1), not a fixed destination,
+            since either entry point is equally valid to return to). */}
+        <h1 className="text-xl font-bold text-black mb-1">
+          <button
+            onClick={() => navigate(-1)}
+            className="text-gray-400 font-medium bg-transparent border-none p-0 cursor-pointer hover:text-gray-600 hover:underline inline-flex items-center gap-1"
+          >
+            <ChevronLeft size={15} /> Back
+          </button>
+          <span className="text-gray-300 mx-2">›</span> Join Requests
+        </h1>
         <p className="text-sm text-gray-400">
           Review who wants to join before letting them into your community.
         </p>
