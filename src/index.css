@@ -404,7 +404,19 @@ body {
   }
 }
 
-/* Smooth transitions */
+/* Smooth transitions. Native <button> never gets cursor: pointer from the
+   browser's own UA stylesheet (unlike <a href>, which already does) --
+   without this, every plain <button> across the app shows the default
+   arrow cursor on hover instead of a hand, unless it happens to carry its
+   own explicit cursor-pointer class (most don't). :not(:disabled) matters:
+   an author rule always beats the UA stylesheet regardless of specificity,
+   so a bare `button` selector here would have overridden the browser's own
+   native not-allowed cursor on any disabled button that doesn't set its
+   own disabled-cursor class -- excluding :disabled keeps that native
+   behavior intact while still fixing every enabled button. */
+button:not(:disabled), a {
+  cursor: pointer;
+}
 button, a {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
