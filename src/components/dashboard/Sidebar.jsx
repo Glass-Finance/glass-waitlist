@@ -16,7 +16,7 @@
  * panel shows generic labels.
  */
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useInvites } from "../../hooks/useInvites";
 import { useRegisterShortcutGroup } from "../../hooks/useKeyboardShortcuts";
@@ -131,9 +131,30 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           }
         })());
 
-  const activeCommunity = urlSlug
-    ? (communities.find((c) => c.slug === urlSlug) ?? null)
-    : null;
+  const resolvedCommunity = urlSlug ? (communities.find((c) => c.slug === urlSlug) ?? null) : null;
+  // Falls back to the first community this admin manages when neither the
+  // URL nor localStorage resolves one -- reachable by landing on a
+  // per-community page (e.g. Notifications, via a self-account
+  // notification like "Profile image updated" that carries no
+  // ?community= at all) without ever having clicked into a community tile
+  // this session. Without this, every nav link but Home goes dead (no
+  // community to build a URL against), leaving no way out except the
+  // logo/overview button or the notification's own action button.
+  const activeCommunity =
+    resolvedCommunity ?? (!onCommunitiesOverview ? communities.filter(isCommunityAdmin)[0] ?? null : null);
+
+  // Keeps localStorage's "last active community" snapshot in sync with
+  // whatever got resolved above (including the fallback) -- other pages
+  // read the same key directly (useActiveCommunityId.js) and would
+  // otherwise silently disagree with what this sidebar just highlighted.
+  useEffect(() => {
+    if (!activeCommunity) return;
+    try {
+      const stored = JSON.parse(localStorage.getItem("glass_community") ?? "{}");
+      if (stored.slug === activeCommunity.slug) return;
+    } catch { /* fall through and (re)write it */ }
+    localStorage.setItem("glass_community", JSON.stringify(activeCommunity));
+  }, [activeCommunity]);
 
   // Use the cached member record to derive paying status — same data source
   // as Role.jsx, so no extra network call and no race condition.

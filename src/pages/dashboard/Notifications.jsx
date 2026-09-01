@@ -156,7 +156,7 @@ function DetailShell({ catLabel, onClose, maxWidthCls, children }) {
       className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/20"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className={`w-full bg-white rounded-2xl shadow-2xl overflow-hidden ${maxWidthCls}`}>
+      <div className={`w-full bg-surface-bg rounded-2xl shadow-2xl overflow-hidden ${maxWidthCls}`}>
         <div className="flex items-center justify-between px-6 pt-5 pb-1">
           <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">
             {catLabel}
