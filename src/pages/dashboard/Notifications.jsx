@@ -14,7 +14,7 @@ import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import { Button } from "../../components/ui/Button";
 import notificationsIllustration from "../../assets/dashboard/empty-states/notifications-illustration.webp";
-import { formatRelativeDateTime as formatTime, dayLabel } from "../../utils/format";
+import { formatRelativeDateTime as formatTime, dayLabel, toTitleCase } from "../../utils/format";
 
 // notificationCategory() maps the backend's exact notificationType enum to a
 // tab — precise for every documented type. This heuristic only runs for
@@ -218,7 +218,11 @@ function NotificationDetailModal({ n, onClose }) {
   // Centered, closer to how the app treats a confirmation (see SuccessBadge)
   // than how it treats a transaction record.
   if (isSelf) {
-    const meta = [formatTime(details.time), n.channel].filter(Boolean).join(" · ");
+    // n.channel is the backend's raw SCREAMING_SNAKE_CASE enum (IN_APP,
+    // EMAIL, ...) -- humanize before showing it next to a plain-English
+    // timestamp.
+    const channelLabel = n.channel && toTitleCase(n.channel.toLowerCase().replace(/_/g, " "));
+    const meta = [formatTime(details.time), channelLabel].filter(Boolean).join(" · ");
     return (
       <DetailShell catLabel={catLabel} onClose={onClose} maxWidthCls="max-w-[360px]">
         <div className="px-6 pt-4 pb-6 flex flex-col items-center text-center">
@@ -245,12 +249,12 @@ function NotificationDetailModal({ n, onClose }) {
         <div className="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+            className="h-9 px-4 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
           >
             Close
           </button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !text-xs">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !text-[11px] !font-normal">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -292,8 +296,7 @@ function NotificationDetailModal({ n, onClose }) {
             <Button
               onClick={goToAction}
               variant="danger"
-              size="sm"
-              className="flex items-center justify-center gap-1 !text-xs"
+              className="flex items-center justify-center gap-1"
             >
               {action.label} <ChevronRight size={13} />
             </Button>
@@ -339,12 +342,12 @@ function NotificationDetailModal({ n, onClose }) {
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+            className="h-9 px-4 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
           >
             Close
           </button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !text-xs">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !text-[11px] !font-normal">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -377,12 +380,12 @@ function NotificationDetailModal({ n, onClose }) {
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+            className="h-9 px-4 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
           >
             Close
           </button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !text-xs">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !text-[11px] !font-normal">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -423,7 +426,7 @@ function NotificationDetailModal({ n, onClose }) {
           Close
         </button>
         {action && (
-          <Button onClick={goToAction} fullWidth={false} className="px-4 flex items-center gap-1">
+          <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !text-[11px] !font-normal">
             {action.label} <ChevronRight size={13} />
           </Button>
         )}
