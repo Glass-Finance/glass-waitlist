@@ -301,7 +301,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
 
         <div className="px-3 pb-8 flex flex-col gap-2">
           {/* Invite link banner */}
-          <div className="flex items-center justify-between px-3 py-4 rounded-xl bg-[#D7E2FF] border border-[#0E628C33]">
+          <div className="flex items-center justify-between py-4 rounded-xl bg-[#D7E2FF] border border-[#0E628C33]">
             <div>
               <p className="text-xs text-gray-900 mb-0.5">
                 Your community is ready to grow.
@@ -313,7 +313,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
             </div>
             <button
               onClick={copyLink}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-white/60 transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-brand/10 transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent"
             >
               <Copy size={12} />
               {linkCopied ? "Copied!" : "Copy Link"}
