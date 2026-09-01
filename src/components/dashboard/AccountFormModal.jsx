@@ -125,7 +125,7 @@ export default function AccountFormModal({
           (0.35 opacity + blur, not a heavier flat 0.55 dark overlay). */}
       <div
         onClick={onClose}
-        className="fixed inset-0 z-70 bg-black/35"
+        className="fixed inset-0 z-70 bg-black/20"
       />
 
       {/* Modal — centred */}

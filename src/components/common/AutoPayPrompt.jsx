@@ -14,7 +14,7 @@ import { Button } from "../ui/Button";
 export default function AutoPayPrompt({ prompt, onDismiss, onEnable }) {
   return (
     <div
-      className="bg-black/40 fixed inset-0 z-[80] flex items-center justify-center px-4"
+      className="bg-black/20 fixed inset-0 z-[80] flex items-center justify-center px-4"
       onClick={(e) => e.target === e.currentTarget && onDismiss()}
     >
       <div className="w-full max-w-[430px] bg-white rounded-[20px] px-6 py-7 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">

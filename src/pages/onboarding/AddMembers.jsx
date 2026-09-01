@@ -98,7 +98,7 @@ function csvRowToMember(row, roles, defaultRoleId) {
 
 function SuccessModal({ communityName, onDashboard, onCopy }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/35">
+    <div className="fixed inset-0 z-50 flex items-end lg:items-center justify-center bg-black/20">
       <div className="bg-white rounded-t-[24px] lg:rounded-3xl flex flex-col items-center text-center px-8 py-12 lg:px-10 lg:py-20 w-full lg:max-w-[550px] shadow-[0_24px_64px_rgba(0,0,0,0.15)]">
         <SuccessBadge
           message="Your Community Is Now Live"

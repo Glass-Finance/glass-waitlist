@@ -84,7 +84,7 @@ export default function InvitePopup() {
 
   return (
     /* Full-screen backdrop */
-    <div className="fixed inset-0 bg-black/55 z-[200] flex items-center justify-center py-0 px-6">
+    <div className="fixed inset-0 bg-black/20 z-[200] flex items-center justify-center py-0 px-6">
       {/* Modal card */}
       <div className="w-full max-w-[360px] bg-surface-bg rounded-2xl pt-9 px-6 pb-7 text-center">
         {/* Community avatar */}

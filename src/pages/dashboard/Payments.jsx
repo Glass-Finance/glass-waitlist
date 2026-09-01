@@ -373,7 +373,7 @@ export default function Payments() {
       )}
 
       {successMessage && (
-        <div className="fixed inset-0 z-80 flex items-center justify-center p-4 bg-black/35">
+        <div className="fixed inset-0 z-80 flex items-center justify-center p-4 bg-black/20">
           <div className="bg-white rounded-2xl p-8 shadow-2xl">
             <SuccessBadge message={successMessage} />
           </div>

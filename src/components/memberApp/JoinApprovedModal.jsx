@@ -5,7 +5,7 @@ export default function JoinApprovedModal({ entry, onOpen, onDismiss }) {
   if (!entry) return null;
   return (
     <div
-      className="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-5"
+      className="fixed inset-0 z-[100] bg-black/20 flex items-center justify-center p-5"
       onClick={(e) => e.target === e.currentTarget && onDismiss(entry)}
     >
       <div className="border border-surface-container-border w-full max-w-[340px] bg-white rounded-[20px] py-7 px-6 text-center shadow-[0_20px_60px_rgba(0,0,0,0.25)]">

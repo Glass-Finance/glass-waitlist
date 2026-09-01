@@ -153,7 +153,7 @@ function NotificationRow({ n, onMarkRead, onOpen }) {
 function DetailShell({ catLabel, onClose, maxWidthCls, children }) {
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/50"
+      className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/20"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className={`w-full bg-white rounded-2xl shadow-2xl overflow-hidden ${maxWidthCls}`}>
@@ -495,7 +495,7 @@ function ChronologicalList({ items, onMarkRead, onOpen }) {
     <div className="bg-white rounded-2xl border border-surface-container-border p-4 flex flex-col gap-4">
       {buckets.map(({ label, notifications }) => (
         <div key={label}>
-          <p className="mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          <p className="mb-2 text-xs font-medium text-gray-400 uppercase tracking-wider">
             {label}
           </p>
           <div className="flex flex-col gap-0.5">

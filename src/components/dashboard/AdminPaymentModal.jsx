@@ -185,7 +185,7 @@ export function AdminPaymentModal({ item, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/35"
+      className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/20"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
