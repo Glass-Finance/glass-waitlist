@@ -29,7 +29,7 @@ export default function SendReminderModal({ plan, onClose, onSend, sending }) {
       className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-black/20"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border">
+      <div className="bg-surface-bg rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border">
         <div className="flex items-start justify-between px-6 pt-5">
           <div>
             <h2 className="text-base font-semibold text-black">Send Reminder</h2>

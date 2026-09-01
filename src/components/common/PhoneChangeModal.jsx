@@ -20,7 +20,7 @@ function maskPhone(phone) {
 function ModalShell({ children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 px-4">
-      <div className="relative bg-surface-container rounded-xl px-6 py-8 w-full max-w-xl shadow-xl border border-[#E5E7EB]">{children}</div>
+      <div className="relative bg-surface-bg rounded-xl px-6 py-8 w-full max-w-xl shadow-xl border border-[#E5E7EB]">{children}</div>
     </div>
   );
 }

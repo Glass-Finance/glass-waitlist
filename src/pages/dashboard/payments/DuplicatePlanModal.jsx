@@ -61,7 +61,7 @@ export default function DuplicatePlanModal({ plan, onClose, onDuplicate, duplica
       className="fixed inset-0 z-70 flex items-center justify-center p-6 bg-black/20"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
+      <div className="bg-surface-bg rounded-2xl w-full max-w-md shadow-2xl p-6">
         <div className="flex items-start justify-between mb-5">
           <div>
             <h2 className="text-base font-semibold text-black">Duplicate Payment Plan</h2>

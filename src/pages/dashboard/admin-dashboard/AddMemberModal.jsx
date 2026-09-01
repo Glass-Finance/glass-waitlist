@@ -257,7 +257,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
   if (showSuccess) {
     return (
       <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/20">
-        <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl py-14 px-8 flex items-center justify-center">
+        <div className="bg-surface-bg rounded-2xl w-full max-w-md shadow-2xl py-14 px-8 flex items-center justify-center">
           <SuccessBadge message="Members Invited!" />
         </div>
       </div>
@@ -277,7 +277,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
           crisp white panel over a lightly-dimmed backdrop, not a frosted
           one. Kept the split scroll/outer-layer structure regardless,
           since it's still good practice independent of this fix. */}
-      <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
+      <div className="bg-surface-bg rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
       <div className="max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between px-8 pt-7 pb-4">

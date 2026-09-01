@@ -189,7 +189,7 @@ export function AdminPaymentModal({ item, onClose }) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="w-full bg-white rounded-2xl overflow-hidden shadow-2xl border border-surface-container-border max-w-[560px] max-h-[90vh] overflow-y-auto"
+        className="w-full bg-surface-bg rounded-2xl overflow-hidden shadow-2xl border border-surface-container-border max-w-[560px] max-h-[90vh] overflow-y-auto"
       >
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-7 py-5">

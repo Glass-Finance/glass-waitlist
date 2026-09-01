@@ -246,7 +246,7 @@ export default function CommunityProfile() {
         <div
           className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/20"
         >
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-surface-container-border">
+          <div className="bg-surface-bg rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-surface-container-border">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center mb-4 bg-danger-tint"
             >

@@ -117,7 +117,7 @@ function RemoveAccountModal({ onClose, onConfirm, isDeleting }) {
       />
       <div className="fixed inset-0 z-80 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-sm rounded-xl p-6 bg-white"
+          className="w-full max-w-sm rounded-xl p-6 bg-surface-bg"
           onClick={(e) => e.stopPropagation()}
         >
           <h2 className="text-[16px] font-bold text-gray-900 mb-1.5">
@@ -410,7 +410,7 @@ export default function PaystackAccount() {
 
       {showSuccess && (
         <div className="fixed inset-0 z-80 flex items-center justify-center p-4 bg-black/20">
-          <div className="bg-white rounded-2xl p-8 shadow-2xl">
+          <div className="bg-surface-bg rounded-2xl p-8 shadow-2xl">
             <SuccessBadge message="Your Payout Account Is Now Set!" />
           </div>
         </div>
