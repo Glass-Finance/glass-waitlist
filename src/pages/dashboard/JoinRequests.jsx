@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserPlus, Check, X, Mail, Phone, Clock, ChevronLeft } from "lucide-react";
+import { Check, X, Mail, Phone, Clock, ChevronLeft } from "lucide-react";
 import {
   useJoinRequests,
   requesterOf,
@@ -9,7 +9,6 @@ import {
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingState from "../../components/common/LoadingState";
-import EmptyState from "../../components/common/EmptyState";
 import { formatDate, formatDateShort } from "../../utils/format";
 
 function formatRequestedAt(r) {
@@ -204,12 +203,19 @@ export default function JoinRequests() {
       {isLoading ? (
         <LoadingState className="py-8" />
       ) : pending.length === 0 ? (
-        <div className="bg-surface-container rounded-xl border border-dashed border-surface-container-border">
-          <EmptyState
-            icon={UserPlus}
-            title="No pending join requests"
-            subtitle="New requests from Discover or invite links will show up here for you to approve or reject."
-          />
+        // Shaped like a real RequestCard below (same px-5/py-4 card, same
+        // w-11 h-11 rounded-full avatar slot) but dashed and empty, instead
+        // of the generic icon-in-a-circle EmptyState -- no dedicated
+        // illustration exists for this page, and reusing an unrelated one
+        // (e.g. Members' add-members graphic) would be confusing shown for
+        // a different message. Matches the ghost-row treatment already
+        // applied to the rest of the dashboard's nested empty states.
+        <div className="flex items-center gap-3.5 px-5 py-4 bg-surface-container rounded-xl border border-surface-container-border">
+          <div className="w-11 h-11 rounded-full flex-shrink-0 border-2 border-dashed border-gray-200" />
+          <div>
+            <p className="text-sm text-gray-400 m-0">No pending join requests</p>
+            <p className="text-xs text-gray-400 mt-0.5">New requests from Discover or invite links will show up here for you to approve or reject.</p>
+          </div>
         </div>
       ) : (
         <div className="flex flex-col gap-2.5">
