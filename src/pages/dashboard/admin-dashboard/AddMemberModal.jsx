@@ -277,12 +277,12 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
           crisp white panel over a lightly-dimmed backdrop, not a frosted
           one. Kept the split scroll/outer-layer structure regardless,
           since it's still good practice independent of this fix. */}
-      <div className="bg-stacked-container rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
+      <div className="bg-stacked-container rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden">
       <div className="max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between px-8 pt-7 pb-4">
           <div>
-            <h2 className="text-base font-medium text-gray-900 mb-1">
+            <h2 className="text-base font-semibold text-gray-900 mb-1">
               Add your members
             </h2>
             <p className="text-sm text-gray-500">
@@ -424,7 +424,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                     className="hidden"
                     onChange={(e) => handleFile(e.target.files[0])}
                   />
-                  <UploadCloud size={30} className="text-gray-400 mb-3" />
+                  <UploadCloud size={40} strokeWidth={1.5} className="text-gray-500 mb-3" />
                   {csvFile ? (
                     <p className="text-xs text-brand font-medium">
                       {csvFile.name} — {csvRows.length} rows
