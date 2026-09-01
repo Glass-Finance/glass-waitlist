@@ -574,7 +574,6 @@ function CommunityNotifications() {
   const {
     notifications, isLoading, unreadCount,
     markRead, markAllRead, isMarkingAllRead,
-    clearAll, isClearing,
   } = useNotifications();
   const [tab, setTab] = useState("All");
   const detail = useNotificationDetail(notifications, markRead);
@@ -612,13 +611,6 @@ function CommunityNotifications() {
             </p>
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
-            <button
-              onClick={() => clearAll()}
-              disabled={isClearing || notifications.length === 0}
-              className="text-sm font-medium bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default text-[#E53E3E]"
-            >
-              {isClearing ? "Clearing…" : "Clear All"}
-            </button>
             <button
               onClick={() => markAllRead()}
               disabled={isMarkingAllRead || unreadCount === 0}

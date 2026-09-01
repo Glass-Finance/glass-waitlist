@@ -233,7 +233,7 @@ export default function Notifications() {
   const { invites, isLoading: invitesLoading, accept, reject, isAccepting, isRejecting, refresh } = useInvites();
   const {
     notifications, isLoading: notifsLoading, markRead,
-    markAllRead, isMarkingAllRead, clearAll, isClearing,
+    markAllRead, isMarkingAllRead,
   } = useNotifications();
 
   const { paymentNotifs, communityNotifs } = useMemo(() => {
@@ -277,19 +277,11 @@ export default function Notifications() {
         ))}
       </div>
 
-      {/* Clear All / Mark All As Read — same actions as the bell dropdown
-          and admin notifications page, missing here before. Applies to the
-          whole list regardless of which tab is active, matching how those
-          two surfaces already behave. */}
+      {/* Mark All As Read — same action as the bell dropdown and admin
+          notifications page. Applies to the whole list regardless of which
+          tab is active, matching how those two surfaces already behave. */}
       {(activeTab === "Payments" || activeTab === "Community") && notifications.length > 0 && (
         <div className="flex items-center justify-end gap-4 px-5 pb-3">
-          <button
-            onClick={() => clearAll()}
-            disabled={isClearing}
-            className={`text-[12.5px] font-semibold text-[#E53E3E] bg-transparent border-none cursor-pointer p-0 ${isClearing ? "opacity-50" : "opacity-100"}`}
-          >
-            {isClearing ? "Clearing…" : "Clear All"}
-          </button>
           <button
             onClick={() => markAllRead()}
             disabled={isMarkingAllRead}
