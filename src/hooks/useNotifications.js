@@ -40,15 +40,49 @@ async function markAllRead() {
   return res.data;
 }
 
-// One shared key, not per-community: the backend's read-all endpoint isn't
-// scoped by community (see markAllRead above -- no params), so "clear" from
-// any view already marks every notification read server-side regardless of
-// which community was active. A separate hide-window per view used to mean
-// clearing on the (community-scoped) page's clearedAt left the topbar
-// dropdown's own unscoped clearedAt untouched, so the same now-read
-// notifications kept showing there -- clearing anywhere now hides
-// everywhere, matching what actually happened on the backend.
+// One storage key, holding a cutoff PER SCOPE ("all", or a community id) --
+// not one flat number shared by every view. That flat version meant
+// clearing a single community's notifications page also hid every OTHER
+// community's history everywhere (the bell dropdown, Communities Home, any
+// other community's own page), since every view checked the exact same
+// cutoff regardless of which community it was actually looking at.
+// Clearing a specific community now only ever writes that community's own
+// entry; clearing "all" (the bell dropdown, cross-community views) writes
+// the "all" entry, which every scope still respects on top of its own --
+// see isCleared() below.
 const CLEARED_AT_KEY = "glass_notifications_cleared_at";
+
+function readClearedAtMap() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(CLEARED_AT_KEY) ?? "{}");
+    // Migrate the old format (a bare number -- one flat "clear everything"
+    // cutoff) into the "all" bucket so an existing clear isn't silently
+    // forgotten for users who already had one saved.
+    if (typeof raw === "number") return { all: raw };
+    return raw && typeof raw === "object" ? raw : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeClearedAt(scope, timestamp) {
+  try {
+    const map = readClearedAtMap();
+    map[scope] = timestamp;
+    localStorage.setItem(CLEARED_AT_KEY, JSON.stringify(map));
+  } catch { /* ignore -- storage quota / private-mode restrictions */ }
+}
+
+// A notification is hidden once EITHER its own community's cutoff (when
+// this view knows which community that is) OR the "clear everything"
+// cutoff has passed it -- so clearing one community never touches
+// another's history, but clearing "all" still hides everything regardless
+// of which community it came from.
+function isCleared(n, clearedMap, scopeCommunityId) {
+  const cutoff = Math.max(clearedMap.all ?? 0, scopeCommunityId ? (clearedMap[scopeCommunityId] ?? 0) : 0);
+  if (!cutoff) return false;
+  return new Date(n.createdAt).getTime() <= cutoff;
+}
 
 export function useNotifications() {
   const activeSlugOrId = useActiveCommunityId();
@@ -97,7 +131,7 @@ export function useNotifications() {
     refetchOnWindowFocus: true,
     select: (data) => {
       const notifications = data?.content ?? [];
-      const clearedAt = Number(localStorage.getItem(CLEARED_AT_KEY) ?? 0);
+      const clearedMap = readClearedAtMap();
       return [...notifications]
         .filter((n) => {
           // Confirmed against real data: the backend's ?communityId=
@@ -120,7 +154,6 @@ export function useNotifications() {
             const resolved = resolveCommunity(n, communityMap);
             if (resolved && resolved.id !== communityId) return false;
           }
-          if (!clearedAt) return true;
           // Deliberately not gated on n.readFlag: the backend's per-item
           // read status is already known unreliable here (see the
           // communityId filter above -- confirmed inconsistent against real
@@ -128,7 +161,7 @@ export function useNotifications() {
           // read would otherwise survive Clear All forever. "Clear All" means
           // hide everything up to this moment, full stop; "Mark All Read"
           // already covers the separate read/unread concern.
-          if (new Date(n.createdAt).getTime() <= clearedAt) return false;
+          if (isCleared(n, clearedMap, communityId)) return false;
           return true;
         })
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -193,9 +226,19 @@ export function useNotifications() {
     },
   });
 
-  // ── Clear all (mark read + hide from view persistently per community) ──────
+  // ── Clear all (mark read + hide from view persistently, scoped to just
+  // this community) ───────────────────────────────────────────────────────
   const clearAllMutation = useMutation({
-    mutationFn: markAllRead,
+    // The backend's read-all endpoint has no community filter -- calling it
+    // here would mark every OTHER community's notifications read too, the
+    // exact cross-community bleed this scoping fix is for. Mark just the
+    // notifications currently listed for this community instead, one at a
+    // time (reads the live cache rather than closing over a possibly-stale
+    // `notifications` value from render time).
+    mutationFn: async () => {
+      const ids = (queryClient.getQueryData(listKey)?.content ?? []).map((n) => n.id);
+      await Promise.all(ids.map((id) => markOneRead(id)));
+    },
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: listKey });
       // Unguarded before: a throwing write (storage quota, private-mode
@@ -204,17 +247,15 @@ export function useNotifications() {
       // timestamp needed to hide it later was never actually saved. The
       // list should still clear (locally, for this session) even if
       // persisting the timestamp fails.
-      try {
-        localStorage.setItem(CLEARED_AT_KEY, String(Date.now()));
-      } catch { /* ignore */ }
+      writeClearedAt(communityId ?? "all", Date.now());
       queryClient.setQueryData(listKey, (old) =>
         old ? { ...old, content: [] } : old
       );
     },
-    // Prefix match ("notifications", not the specific listKey) -- clearing
-    // marks every notification read on the backend regardless of scope, so
-    // every other cached list (the topbar dropdown's unscoped one, any other
-    // community's) needs to refetch too, not just this one.
+    // Prefix match ("notifications", not the specific listKey) -- the ids
+    // just marked read belong to other cached lists too (the topbar
+    // dropdown's unscoped one, in particular), which need to refetch to
+    // pick up both the new read state and this scope's updated cutoff.
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
@@ -237,6 +278,9 @@ export function useNotifications() {
 // Does NOT scope by communityId so the panel shows every notification the
 // user has, regardless of which community is currently active.
 export function useAllNotifications() {
+  const { data: communitiesData } = useCommunities();
+  const communities = communitiesData?.communities ?? EMPTY_COMMUNITIES;
+  const communityMap = useMemo(() => buildCommunityMap(communities), [communities]);
   const queryClient = useQueryClient();
   const realtimeConnected = useRealtimeConnected();
   const listKey = ["notifications", "all", "list"];
@@ -251,16 +295,20 @@ export function useAllNotifications() {
     refetchOnWindowFocus: true,
     select: (data) => {
       const notifications = data?.content ?? [];
-      const clearedAt = Number(localStorage.getItem(CLEARED_AT_KEY) ?? 0);
+      const clearedMap = readClearedAtMap();
       return [...notifications]
         .filter((n) => {
-          if (!clearedAt) return true;
           // Deliberately not gated on n.readFlag -- see useNotifications'
           // identical filter above for why: the backend's per-item read
           // status is unreliable, and gating on it left Clear All unable to
           // hide notifications the backend never actually flipped to read.
-          if (new Date(n.createdAt).getTime() <= clearedAt) return false;
-          return true;
+          //
+          // Resolves each notification's own community so a scoped clear
+          // from that community's page (which only writes THAT community's
+          // cutoff -- see clearAllMutation below) still hides it here too;
+          // an unresolvable notification only respects the "all" cutoff.
+          const resolvedCommunityId = resolveCommunity(n, communityMap)?.id ?? n.communityId ?? null;
+          return !isCleared(n, clearedMap, resolvedCommunityId);
         })
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     },
@@ -296,11 +344,11 @@ export function useAllNotifications() {
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
-  // Same "mark read + hide from view persistently" behaviour as
-  // useNotifications' clearAll -- shares the same CLEARED_AT_KEY now (see
-  // its definition above) so clearing from either the dropdown or a
-  // community page's own Notifications tab hides the same already-read
-  // notifications everywhere, instead of only in the view that cleared them.
+  // This view is genuinely cross-community, so "clear" here really does
+  // mean everything -- unlike useNotifications' scoped clearAllMutation
+  // above, the global read-all endpoint is the right call, and the cutoff
+  // it writes to the "all" bucket is respected by every other scope on top
+  // of that scope's own (see isCleared()).
   const clearAllMutation = useMutation({
     mutationFn: markAllRead,
     onMutate: async () => {
@@ -311,9 +359,7 @@ export function useAllNotifications() {
       // timestamp needed to hide it later was never actually saved. The
       // list should still clear (locally, for this session) even if
       // persisting the timestamp fails.
-      try {
-        localStorage.setItem(CLEARED_AT_KEY, String(Date.now()));
-      } catch { /* ignore */ }
+      writeClearedAt("all", Date.now());
       queryClient.setQueryData(listKey, (old) =>
         old ? { ...old, content: [] } : old
       );

@@ -510,15 +510,12 @@ function ChronologicalList({ items, onMarkRead, onOpen }) {
 }
 
 // Cross-community view: every notification for this user regardless of
-// which community it belongs to (useAllNotifications, unscoped). Reached
-// two ways — a platform admin with no community context (their default,
-// see the Notifications() switch below), or anyone landing here via
-// Communities Home's "View all notifications" (?all=1). That overview
-// card already aggregates every community's activity, so its own "view
-// all" has to open this same aggregate, not whichever single community
-// happened to be active/last-visited (see useActiveCommunityId's
-// localStorage fallback) — that used to silently drop every other
-// community's notifications while still claiming to show "all".
+// which community it belongs to (useAllNotifications, unscoped). The only
+// way here is the Platform Admin sidebar's own "Notifications" link (see
+// the Notifications() switch below) -- Communities Home's overview card
+// has no page-level "view all" of its own, since there's no single
+// community page a cross-community "view all" could correctly deep-link
+// into.
 function AllCommunitiesNotifications() {
   usePageTitle("Notifications");
   const {
