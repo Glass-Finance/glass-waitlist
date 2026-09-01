@@ -1,5 +1,3 @@
-import { Activity } from "lucide-react";
-import EmptyState from "../../../../components/common/EmptyState";
 import { toTitleCase } from "../../../../utils/format";
 import { Skeleton, ActivityIcon } from "../SkeletonUI";
 import { timeAgo } from "../helpers";
@@ -24,7 +22,15 @@ export default function RecentActivityCard({ isLoading, items }) {
           ))}
         </div>
       ) : items.length === 0 ? (
-        <EmptyState icon={Activity} title="No recent activity" className="py-6" />
+        // Shaped like a real row below (same gap-3/py-3, same w-9 h-9
+        // rounded-full icon slot) but dashed and empty instead of filled +
+        // colored -- reads as "this is where activity will show up" rather
+        // than a generic icon-in-a-circle badge repeated across every
+        // empty card on the page.
+        <div className="flex items-center gap-3 py-3">
+          <div className="w-9 h-9 rounded-full flex-shrink-0 border-2 border-dashed border-gray-200" />
+          <p className="text-xs text-gray-400">No recent activity yet</p>
+        </div>
       ) : (
         items.map((a, i) => {
           const event = a.event ?? "";
