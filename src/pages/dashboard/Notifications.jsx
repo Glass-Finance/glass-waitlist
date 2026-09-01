@@ -156,16 +156,16 @@ function DetailShell({ catLabel, onClose, maxWidthCls, children }) {
       className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/20"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className={`w-full bg-surface-bg rounded-2xl shadow-2xl overflow-hidden ${maxWidthCls}`}>
-        <div className="flex items-center justify-between px-6 pt-5 pb-1">
+      <div className={`w-full bg-surface-bg rounded-2xl shadow-2xl border border-surface-container-border overflow-hidden ${maxWidthCls}`}>
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">
             {catLabel}
           </span>
           <button
             onClick={onClose}
-            className="w-7 h-7 -mr-1.5 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 cursor-pointer bg-transparent border-none flex-shrink-0 transition-colors"
+            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer bg-transparent border-solid flex-shrink-0"
           >
-            <X size={15} />
+            <X size={14} />
           </button>
         </div>
         {children}
@@ -250,7 +250,7 @@ function NotificationDetailModal({ n, onClose }) {
             Close
           </button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} className="px-4 flex items-center gap-1">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !text-xs">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -292,7 +292,8 @@ function NotificationDetailModal({ n, onClose }) {
             <Button
               onClick={goToAction}
               variant="danger"
-              className="flex items-center justify-center gap-1"
+              size="sm"
+              className="flex items-center justify-center gap-1 !text-xs"
             >
               {action.label} <ChevronRight size={13} />
             </Button>
@@ -343,7 +344,7 @@ function NotificationDetailModal({ n, onClose }) {
             Close
           </button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} className="px-4 flex items-center gap-1">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !text-xs">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -381,7 +382,7 @@ function NotificationDetailModal({ n, onClose }) {
             Close
           </button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} className="px-4 flex items-center gap-1">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !text-xs">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
