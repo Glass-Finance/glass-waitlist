@@ -208,7 +208,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
           )}
         </div>
         {!success && (
-          <div className="flex items-center justify-between gap-4 px-6 py-4 border-t border-gray-100">
+          <div className="flex items-center justify-end gap-4 px-6 py-4 border-t border-gray-100">
             <button
               onClick={() => (step > 1 ? setStep((s) => s - 1) : onClose())}
               className="flex items-center gap-1.5 text-xs font-normal text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer"
@@ -227,8 +227,9 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
                 slugState.available === false
               }
               loading={creating}
+              fullWidth={false}
               size="sm"
-              className="w-1/2 !text-xs !font-normal"
+              className="px-14 !text-xs !font-normal"
             >
               {creating ? "Creating…" : step === 3 ? "Create Plan" : "Continue"}
             </Button>
