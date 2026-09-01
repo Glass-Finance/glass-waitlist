@@ -283,7 +283,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
         {/* Header */}
         <div className="flex items-start justify-between px-3 pt-7 pb-4">
           <div>
-            <h2 className="text-sm font-normal text-gray-900 mb-1">
+            <h2 className="text-sm font-medium text-gray-900 mb-1">
               Add your members
             </h2>
             <p className="text-sm text-gray-500">
@@ -327,7 +327,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
           <div
             className="bg-surface-bg rounded-lg p-6 border border-surface-container-border"
           >
-            <h3 className="text-base font-semibold text-gray-900 mb-4">
+            <h3 className="text-sm font-medium text-gray-900 mb-4">
               Prefer To Add Members Directly?
             </h3>
 
