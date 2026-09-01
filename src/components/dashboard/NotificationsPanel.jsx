@@ -167,14 +167,13 @@ export default function NotificationsPanel({
             </span>
           )}
         </p>
-        {count > 0 && (
-          <button
-            onClick={onMarkAllRead}
-            className="text-[11px] font-normal text-[#002FA7] bg-transparent border-none cursor-pointer hover:opacity-70"
-          >
-            Mark All As Read
-          </button>
-        )}
+        <button
+          onClick={onMarkAllRead}
+          disabled={count === 0}
+          className="text-[11px] font-normal text-[#002FA7] bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
+        >
+          Mark All As Read
+        </button>
       </div>
 
       {/* Body */}
