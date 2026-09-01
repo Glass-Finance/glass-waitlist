@@ -249,12 +249,12 @@ function NotificationDetailModal({ n, onClose }) {
         <div className="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
           <button
             onClick={onClose}
-            className="h-9 px-4 rounded-md text-[13px] font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+            className="h-9 px-4 rounded-xs text-[13px] font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
           >
             Close
           </button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-md !text-[13px] !font-normal">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-xs !text-[13px] !font-normal">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -342,12 +342,12 @@ function NotificationDetailModal({ n, onClose }) {
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
           <button
             onClick={onClose}
-            className="h-9 px-4 rounded-md text-[13px] font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+            className="h-9 px-4 rounded-xs text-[13px] font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
           >
             Close
           </button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-md !text-[13px] !font-normal">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-xs !text-[13px] !font-normal">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -380,12 +380,12 @@ function NotificationDetailModal({ n, onClose }) {
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
           <button
             onClick={onClose}
-            className="h-9 px-4 rounded-md text-[13px] font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
+            className="h-9 px-4 rounded-xs text-[13px] font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
           >
             Close
           </button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-md !text-[13px] !font-normal">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-xs !text-[13px] !font-normal">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -426,7 +426,7 @@ function NotificationDetailModal({ n, onClose }) {
           Close
         </button>
         {action && (
-          <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-md !text-[13px] !font-normal">
+          <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-xs !text-[13px] !font-normal">
             {action.label} <ChevronRight size={13} />
           </Button>
         )}
