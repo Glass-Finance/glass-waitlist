@@ -228,7 +228,10 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
               }
               loading={creating}
               size="sm"
-              className="flex-1 !text-xs !font-normal"
+              // Matches one plan-type card's width from Step1's own
+              // grid-cols-2 gap-3 split (an even two-column split minus the
+              // 0.75rem gutter), not the full remaining footer width.
+              className="w-[calc((100%-0.75rem)/2)] !text-xs !font-normal"
             >
               {creating ? "Creating…" : step === 3 ? "Create Plan" : "Continue"}
             </Button>
