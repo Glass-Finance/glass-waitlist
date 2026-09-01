@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { Copy, X, Download, UploadCloud, FileSpreadsheet, Check } from "lucide-react";
+import { Copy, X, Download, FileSpreadsheet, Check } from "lucide-react";
 import Papa from "papaparse";
+import uploadCloudIcon from "../../../assets/icons/upload-cloud.webp";
 import { APP_ORIGIN } from "../../../utils/deviceRedirect";
 import { useCommunityMembers, useRoles } from "../../../hooks/useCommunityMembers";
 import { getEmailError } from "../../../utils/validators";
@@ -424,7 +425,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                     className="hidden"
                     onChange={(e) => handleFile(e.target.files[0])}
                   />
-                  <UploadCloud size={40} strokeWidth={1.5} className="text-gray-500 mb-3" />
+                  <img src={uploadCloudIcon} alt="" className="w-[30px] h-[30px] mb-3" />
                   {csvFile ? (
                     <p className="text-xs text-brand font-medium">
                       {csvFile.name} — {csvRows.length} rows

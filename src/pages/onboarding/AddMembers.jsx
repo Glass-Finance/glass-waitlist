@@ -14,8 +14,9 @@ import { useState, useEffect, useRef } from "react";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 import { useNavigate, useLocation } from "react-router-dom";
 import Papa from "papaparse";
-import { Bell, Download, CloudUpload, Copy, Check, X, FileSpreadsheet, ArrowLeft } from "lucide-react";
+import { Bell, Download, Copy, Check, X, FileSpreadsheet, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
+import uploadCloudIcon from "../../assets/icons/upload-cloud.webp";
 import SuccessBadge from "../../components/common/SuccessBadge";
 import { notifyError } from "../../utils/errorHandler";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
@@ -480,7 +481,7 @@ export default function AddMembers() {
                   >
                     <input ref={fileRef} type="file" accept=".csv" className="hidden"
                       onChange={(e) => handleFile(e.target.files[0])} />
-                    <CloudUpload size={24} className="text-gray-400 mb-2" />
+                    <img src={uploadCloudIcon} alt="" className="w-6 h-6 mb-2" />
                     {uploadedFile
                       ? <p className="text-xs text-brand font-medium">{uploadedFile.name}</p>
                       : <p className="text-xs text-gray-500">Drag and Drop CSV here or <span className="text-brand font-medium underline">Browse</span></p>}
