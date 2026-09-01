@@ -167,13 +167,16 @@ export default function JoinRequests() {
             back-breadcrumb pattern (navigate(-1), not a fixed destination,
             since either entry point is equally valid to return to). */}
         <h1 className="text-xl font-bold text-black mb-1">
+          {/* Own text-sm, not inherited text-xl -- the button had no size
+              class of its own, so "Back" rendered at the same size as the
+              title itself instead of reading as a smaller, secondary link. */}
           <button
             onClick={() => navigate(-1)}
-            className="text-gray-400 font-medium bg-transparent border-none p-0 cursor-pointer hover:text-gray-600 hover:underline inline-flex items-center gap-1"
+            className="text-sm text-gray-400 font-medium bg-transparent border-none p-0 cursor-pointer hover:text-gray-600 hover:underline inline-flex items-center gap-1 align-middle"
           >
-            <ChevronLeft size={15} /> Back
+            <ChevronLeft size={13} /> Back
           </button>
-          <span className="text-gray-300 mx-2">›</span> Join Requests
+          <span className="text-sm text-gray-300 mx-2 align-middle">›</span> Join Requests
         </h1>
         <p className="text-sm text-gray-400">
           Review who wants to join before letting them into your community.
