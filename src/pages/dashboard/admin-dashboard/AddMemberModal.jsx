@@ -277,7 +277,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
           crisp white panel over a lightly-dimmed backdrop, not a frosted
           one. Kept the split scroll/outer-layer structure regardless,
           since it's still good practice independent of this fix. */}
-      <div className="bg-surface-bg rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
+      <div className="bg-stacked-container rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden">
       <div className="max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-start justify-between px-8 pt-7 pb-4">
@@ -324,7 +324,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
               a real token (bg-stacked-container) used for nested panels
               elsewhere, just not wired in here. */}
           <div
-            className="bg-stacked-container rounded-lg p-6 border border-surface-container-border"
+            className="bg-surface-bg rounded-lg p-6 border border-surface-container-border"
           >
             <h3 className="text-base font-semibold text-gray-900 mb-4">
               Prefer To Add Members Directly?
