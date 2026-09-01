@@ -1,5 +1,3 @@
-import { Wallet } from "lucide-react";
-import EmptyState from "../../../../components/common/EmptyState";
 import { toTitleCase } from "../../../../utils/format";
 import { Skeleton } from "../SkeletonUI";
 import { formatNaira } from "../helpers";
@@ -39,7 +37,13 @@ export default function PaymentPlansCard({
           ))}
         </div>
       ) : plans.length === 0 ? (
-        <EmptyState icon={Wallet} title="No payment plans yet" className="py-6" />
+        // Same h-20 rounded-xl footprint the loading Skeleton above already
+        // uses for a real plan card -- dashed instead of shimmering, so
+        // loading and empty read as the same shape rather than the
+        // generic icon-in-a-circle EmptyState.
+        <div className="h-20 rounded-xl border-2 border-dashed border-blue-200/60 flex items-center justify-center">
+          <span className="text-xs text-gray-500">No payment plans yet</span>
+        </div>
       ) : (
         <div className="flex flex-col gap-3">
           {plans.map((p, idx) => {

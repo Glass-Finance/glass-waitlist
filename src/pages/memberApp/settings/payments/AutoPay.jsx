@@ -1,10 +1,9 @@
 import { useMemo, useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, RefreshCw } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { usePayments, useManagePayments, isAuthorisationExpired } from "../../../../hooks/usePayments";
 import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
-import EmptyState from "../../../../components/common/EmptyState";
 import Toggle from "../../../../components/common/Toggle";
 import ConfirmSheet from "../../../../components/memberApp/ConfirmSheet";
 import { formatNaira } from "../../../../utils/format";
@@ -114,7 +113,12 @@ export default function AutoPay() {
           {isLoading ? (
             <PageLoadingState size={56} padding="36px 24px" />
           ) : allPlans.length === 0 ? (
-            <EmptyState icon={RefreshCw} title="You're not on any recurring plans yet" className="py-5" />
+            // Shaped like a real plan row below (flex justify-between p-4,
+            // a Toggle on the right, disabled+off so it renders muted).
+            <div className="flex items-center justify-between p-4">
+              <p className="text-[13px] text-[#999] m-0">You're not on any recurring plans yet</p>
+              <Toggle on={false} onChange={() => {}} disabled />
+            </div>
           ) : (
             allPlans.map((plan, i) => {
               const auth = findAuthForPlan(plan);

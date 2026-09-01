@@ -1,5 +1,4 @@
-import { ChevronDown, Clock } from "lucide-react";
-import EmptyState from "../../../../components/common/EmptyState";
+import { ChevronDown } from "lucide-react";
 import { toTitleCase, formatDate } from "../../../../utils/format";
 import { formatNaira, statusStyle, freqStyle } from "../helpers";
 
@@ -56,10 +55,11 @@ export default function YourPaymentsSection({
           </div>
         </div>
       </div>
-      {rows.length === 0 ? (
-        <EmptyState icon={Clock} title="Nothing due right now" className="py-4" />
-      ) : (
-        <div className="overflow-x-auto">
+      {/* Table shell (headers) stays visible even with nothing due -- a
+          single dashed ghost row below stands in for real rows rather than
+          the generic icon-in-a-circle EmptyState, so this still reads as
+          "an empty table" instead of losing its shape entirely. */}
+      <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse text-left">
             <thead>
               <tr className="border-b border-gray-100 bg-[#F3F4F6]">
@@ -76,7 +76,15 @@ export default function YourPaymentsSection({
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => {
+              {rows.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-4 px-2">
+                    <div className="border-2 border-dashed border-gray-200 rounded-lg py-3 px-3 text-center">
+                      <span className="text-xs text-gray-400">Nothing due right now</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : rows.map((row) => {
                 const isPaid = row.status === "PAID" || row.status === "SUCCESSFUL";
                 const s = statusStyle(isPaid ? "paid" : "unpaid");
                 const f = freqStyle(row);
@@ -127,8 +135,7 @@ export default function YourPaymentsSection({
               })}
             </tbody>
           </table>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

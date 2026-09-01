@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Landmark, Trash2, CreditCard } from "lucide-react";
+import { Landmark, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
 import LoadingState from "../../../../components/common/LoadingState";
-import EmptyState from "../../../../components/common/EmptyState";
 import ConfirmDialog from "../../../../components/dashboard/ConfirmDialog";
 
 export default function PaymentMethod() {
@@ -30,11 +29,18 @@ export default function PaymentMethod() {
             ) : error ? (
               <p className="text-xs text-red-500">Couldn't load payment methods.</p>
             ) : authorisations.length === 0 ? (
-              <EmptyState
-                icon={CreditCard}
-                title="No saved payment methods yet"
-                subtitle="These are created automatically the first time you pay."
-              />
+              // Shaped like a real method row below (same w-9 h-9 rounded-lg
+              // icon tile, same flex layout) but dashed and empty, instead
+              // of the generic icon-in-a-circle EmptyState.
+              <div className="flex items-center justify-between px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg flex-shrink-0 border-2 border-dashed border-gray-200" />
+                  <div>
+                    <p className="text-sm text-gray-400">No saved payment methods yet</p>
+                    <p className="text-xs text-gray-400">These are created automatically the first time you pay.</p>
+                  </div>
+                </div>
+              </div>
             ) : (
               authorisations.map((auth) => (
                 <div key={auth.id} className="flex items-center justify-between px-4 py-3">

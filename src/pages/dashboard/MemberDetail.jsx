@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { usePageTitle } from "../../hooks/usePageTitle";
-import { UserMinus, Phone, MessageCircle, CreditCard, Receipt } from "lucide-react";
+import { UserMinus, Phone, MessageCircle, CreditCard } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useMembersWithPayments, useMemberPaymentLinks } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers } from "../../hooks/useCommunityMembers";
@@ -198,7 +198,13 @@ export default function MemberDetail() {
               </thead>
               <tbody>
                 {member.transactions.length === 0 ? (
-                  <tr><td colSpan={6}><EmptyState icon={Receipt} title="No payments yet" subtitle="This member's payment history will show up here once they make their first payment." /></td></tr>
+                  <tr>
+                    <td colSpan={6} className="px-5 py-4">
+                      <div className="border-2 border-dashed border-gray-200 rounded-lg py-3 px-3 text-center">
+                        <span className="text-xs text-gray-400">No payments yet — this member's payment history will show up here once they make their first payment.</span>
+                      </div>
+                    </td>
+                  </tr>
                 ) : (
                   member.transactions.map((t) => {
                     const statusLabel = (t.status ?? "pending").charAt(0).toUpperCase() + (t.status ?? "pending").slice(1).toLowerCase();

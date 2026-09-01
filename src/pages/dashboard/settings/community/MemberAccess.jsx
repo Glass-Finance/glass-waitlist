@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Copy, Check, Users, MoreVertical } from "lucide-react";
+import { Copy, Check, MoreVertical } from "lucide-react";
 import { roleKeyword } from "../../../../utils/communityRole";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityMembers, useRoles } from "../../../../hooks/useCommunityMembers";
@@ -7,7 +7,6 @@ import { useCommunity, useUpdateCommunitySettings } from "../../../../hooks/useC
 import QRCodeCanvas from "../../../../components/common/QRCodeCanvas";
 import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
 import LoadingState from "../../../../components/common/LoadingState";
-import EmptyState from "../../../../components/common/EmptyState";
 import Toggle from "../../../../components/common/Toggle";
 import ConfirmDialog from "../../../../components/dashboard/ConfirmDialog";
 import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
@@ -200,7 +199,15 @@ export default function MemberAccess() {
           {isLoading ? (
             <LoadingState className="py-3" />
           ) : members.length === 0 ? (
-            <EmptyState icon={Users} title="No members yet" subtitle="Share the invite link above to start bringing members into this community." />
+            // Shaped like a real member row below (flex justify-between
+            // py-3, a role-badge pill on the right) but dashed and empty.
+            <div className="flex items-center justify-between py-3">
+              <div>
+                <p className="text-sm text-gray-400">No members yet</p>
+                <p className="text-xs text-gray-400">Share the invite link above to start bringing members into this community.</p>
+              </div>
+              <span className="w-14 h-5 rounded-full border-2 border-dashed border-gray-200 flex-shrink-0" />
+            </div>
           ) : (
             members.map((member, i) => (
               <div

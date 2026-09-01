@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { X, Search, Filter, Users } from "lucide-react";
+import { X, Search, Filter } from "lucide-react";
 import { getPaymentLinkMembers } from "../../../api/payments";
 import { fetchAllCommunityMembers } from "../../../api/communities";
 import { fetchAllCommunityObligations, fetchAllCommunityTransactions } from "../../../api/transactions";
@@ -9,7 +9,6 @@ import { useExportJob } from "../../../hooks/useExportJob";
 import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 import { formatNaira, toTitleCase, formatDate } from "../../../utils/format";
 import LoadingState from "../../../components/common/LoadingState";
-import EmptyState from "../../../components/common/EmptyState";
 
 // ── Plan members modal ────────────────────────────────────────────────────────
 export default function PlanMembersModal({ plan, communityId, onClose }) {
@@ -491,16 +490,14 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7}>
-                    <EmptyState
-                      icon={Users}
-                      title={
-                        planMembers.length === 0
+                  <td colSpan={7} className="px-5 py-4">
+                    <div className="border-2 border-dashed border-gray-200 rounded-lg py-3 px-3 text-center">
+                      <span className="text-xs text-gray-400">
+                        {planMembers.length === 0
                           ? "No members enrolled in this plan"
-                          : "No members match your filter"
-                      }
-                      className="py-10"
-                    />
+                          : "No members match your filter"}
+                      </span>
+                    </div>
                   </td>
                 </tr>
               ) : (

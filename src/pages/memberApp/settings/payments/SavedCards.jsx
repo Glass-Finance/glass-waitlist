@@ -4,7 +4,6 @@ import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { ChevronLeft, CreditCard, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
 import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
-import EmptyState from "../../../../components/common/EmptyState";
 import ConfirmSheet from "../../../../components/memberApp/ConfirmSheet";
 
 export default function SavedCards() {
@@ -45,7 +44,12 @@ export default function SavedCards() {
               Couldn't load saved payment methods.
             </p>
           ) : data.length === 0 ? (
-            <EmptyState icon={CreditCard} title="No saved cards yet" className="py-6" />
+            // Shaped like a real card row below (same w-9 h-9 rounded-[10px]
+            // icon tile, same flex layout) but dashed and empty.
+            <div className="flex items-center gap-3 py-3.5 px-4">
+              <div className="w-9 h-9 rounded-[10px] flex-shrink-0 border-2 border-dashed border-gray-200" />
+              <p className="text-sm text-[#999] m-0">No saved cards yet</p>
+            </div>
           ) : (
             data.map((item, i) => (
               <div

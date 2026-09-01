@@ -1,5 +1,4 @@
-import { Download, Search, ChevronDown, MoreHorizontal, Receipt } from "lucide-react";
-import EmptyState from "../../../../components/common/EmptyState";
+import { Download, Search, ChevronDown, MoreHorizontal } from "lucide-react";
 import ReceiptDownloadButton from "../../../../components/dashboard/ReceiptDownloadButton";
 import { toTitleCase, formatDate } from "../../../../utils/format";
 import TimerIcon from "../../../../assets/dashboard/timer.webp";
@@ -99,8 +98,10 @@ export default function MemberPaymentsSection({
               ))
             ) : transactions.length === 0 ? (
               <tr>
-                <td colSpan={7}>
-                  <EmptyState icon={Receipt} title="No transactions found" className="py-10" />
+                <td colSpan={7} className="px-5 py-4">
+                  <div className="border-2 border-dashed border-gray-200 rounded-lg py-3 px-3 text-center">
+                    <span className="text-xs text-gray-400">No transactions found</span>
+                  </div>
                 </td>
               </tr>
             ) : (

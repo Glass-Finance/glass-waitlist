@@ -1,11 +1,10 @@
 import { useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, ChevronLeft, ChevronRight, LogOut, Plus, Users, X } from "lucide-react";
+import { AlertTriangle, ChevronLeft, ChevronRight, LogOut, Plus, X } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
 import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
-import EmptyState from "../../../../components/common/EmptyState";
 
 function getInitials(name = "") {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
@@ -149,7 +148,12 @@ export default function MyCommunities() {
         {isLoading ? (
           <PageLoadingState size={56} padding="36px 24px" />
         ) : communities.length === 0 ? (
-          <EmptyState icon={Users} title="You haven't joined any communities yet" className="py-6" />
+          // Shaped like a real community row below (same w-11 h-11
+          // rounded-xl avatar tile, same card layout) but dashed and empty.
+          <div className="flex items-center gap-3 bg-white rounded-2xl p-3.5 border border-surface-container-border">
+            <div className="w-11 h-11 rounded-xl flex-shrink-0 border-2 border-dashed border-gray-200" />
+            <p className="text-sm text-[#999] m-0">You haven't joined any communities yet</p>
+          </div>
         ) : (
           <div className="flex flex-col gap-2.5">
             {communities.map((c) => (
