@@ -299,7 +299,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
           </button>
         </div>
 
-        <div className="px-8 pb-8 flex flex-col gap-5">
+        <div className="px-8 pb-8 flex flex-col gap-2">
           {/* Invite link banner */}
           <div className="flex items-center justify-between px-5 py-4 rounded-xl bg-[#D7E2FF] border border-[#0E628C33]">
             <div>
