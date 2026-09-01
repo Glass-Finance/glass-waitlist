@@ -1,12 +1,11 @@
 import { useMemo, useState } from "react";
-import { RefreshCw, AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import {
   usePayments,
   useManagePayments,
   isAuthorisationExpired,
 } from "../../../../hooks/usePayments";
 import LoadingState from "../../../../components/common/LoadingState";
-import EmptyState from "../../../../components/common/EmptyState";
 import Toggle from "../../../../components/common/Toggle";
 import ConfirmDialog from "../../../../components/dashboard/ConfirmDialog";
 import { formatNaira, formatDateShort } from "../../../../utils/format";
@@ -99,7 +98,16 @@ export default function AutoPay() {
           {isLoading ? (
             <LoadingState className="py-4" />
           ) : allPlans.length === 0 ? (
-            <EmptyState icon={RefreshCw} title="You're not on any recurring plans yet" className="py-4" />
+            // Shaped like a real plan row below (flex justify-between py-4,
+            // a Toggle on the right) rather than the generic icon-in-a-
+            // circle EmptyState -- reads as an inactive row waiting for a
+            // plan, not a decorative graphic repeated across every empty
+            // card on this page. Toggle itself (disabled, off) already
+            // renders muted -- no separate styling needed for it.
+            <div className="flex items-center justify-between py-4">
+              <p className="text-xs text-gray-400">You're not on any recurring plans yet</p>
+              <Toggle on={false} onChange={() => {}} disabled showLabel />
+            </div>
           ) : (
             allPlans.map((plan) => {
               const auth = findAuthForPlan(plan);
