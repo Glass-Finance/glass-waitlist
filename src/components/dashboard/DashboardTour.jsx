@@ -1,6 +1,7 @@
 import { useState, useLayoutEffect, useCallback, useRef } from "react";
 import { X } from "lucide-react";
 import { Button } from "../ui/Button";
+import { useEscapeToClose } from "../../hooks/useKeyboardShortcuts";
 import { STEPS } from "./dashboardTourSteps";
 
 const SPOTLIGHT_PADDING = 8;
@@ -51,6 +52,11 @@ function findValidStep(steps, from, direction) {
 }
 
 export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS }) {
+  // A stuck tour (see the viewport clamp in getCardStyle below) previously
+  // had no way out at all short of a hard refresh -- Escape is a second,
+  // independent path to onClose that doesn't depend on the card's own
+  // Close/X button actually being reachable on screen.
+  useEscapeToClose(onClose);
   const [step, setStep] = useState(0);
   const [rect, setRect] = useState(null);
   const cardRef = useRef(null);
@@ -185,13 +191,27 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
     const spaceBelow = viewportH - rectBottom - CARD_MARGIN;
     const spaceAbove = rect.top - CARD_MARGIN;
 
-    // Sitting flush against whichever side has more room is enough on its
-    // own to guarantee no overlap -- below never starts before rectBottom,
-    // above never ends after rect.top -- so there's deliberately no further
-    // viewport clamp here that could pull the card back toward the rect.
-    const top = spaceBelow >= spaceAbove
+    // Sitting flush against whichever side has more room avoids overlapping
+    // the spotlighted rect in the common case -- below never starts before
+    // rectBottom, above never ends after rect.top. But when the rect itself
+    // is tall enough to leave neither side with real room (e.g. the
+    // Overview cards row), that placement can push the card's own bottom
+    // half -- Back/Next/Done live down there -- past the viewport edge.
+    // The card is `position: fixed` and this overlay has no scroll
+    // container standing in for the page underneath, so an off-screen
+    // button isn't just hard to see, it's permanently unreachable (see
+    // #142: got stuck on the tour with no way to advance or close it).
+    // A final clamp into the viewport is a strictly better fallback than
+    // that even though it can overlap the rect in this one pathological
+    // case -- a highlight box the tooltip covers a corner of is a small
+    // visual glitch; a modal with no reachable buttons is a dead end.
+    const rawTop = spaceBelow >= spaceAbove
       ? rectBottom + CARD_MARGIN
       : rect.top - cardHeight - CARD_MARGIN;
+    const top = Math.min(
+      Math.max(rawTop, CARD_MARGIN),
+      Math.max(CARD_MARGIN, viewportH - cardHeight - CARD_MARGIN),
+    );
 
     const left = Math.min(Math.max(rect.left, CARD_MARGIN), viewportW - cardWidth - CARD_MARGIN);
     return { position: "fixed", top, left, width: cardWidth };
