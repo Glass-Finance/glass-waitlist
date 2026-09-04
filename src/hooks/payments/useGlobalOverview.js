@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getMyObligations, getMyTransactions } from "../../api/members";
 import { unwrapList, deriveStatus } from "./helpers";
 import { shapeObligation, shapeTransaction } from "./shape";
-import { isObligationSettled } from "./settlement";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Global overview — cross-community rollup for the home dashboard.
@@ -47,7 +46,7 @@ export function useGlobalOverview() {
   const upcoming = [...(obligationsQuery.data ?? [])]
     .filter((o) => {
       const linkIsActive = o.linkStatus === "ACTIVE" || !o.linkStatus;
-      return linkIsActive && o.status !== "PAID" && !isObligationSettled(o, transactionsQuery.data ?? []);
+      return linkIsActive && o.status !== "PAID";
     })
     .sort((a, b) => {
       const sa = deriveStatus(a);

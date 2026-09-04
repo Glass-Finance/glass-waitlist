@@ -1,6 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllCommunityMembers } from "../api/communities";
-import { fetchAllCommunityObligations, fetchAllCommunityTransactions } from "../api/transactions";
+import {
+  fetchAllCommunityObligations,
+  fetchAllCommunityTransactions,
+} from "../api/transactions";
 import { getCommunityPaymentLinks } from "../api/payments";
 
 function unwrapList(res) {
@@ -60,7 +63,8 @@ export function useMembersWithPayments(communityId) {
   // on the member's own Home/Upcoming screens.
   const paymentLinksQuery = useQuery({
     queryKey: ["community", communityId, "payment-links"],
-    queryFn: async () => unwrapList(await getCommunityPaymentLinks(communityId)),
+    queryFn: async () =>
+      unwrapList(await getCommunityPaymentLinks(communityId)),
     enabled,
     staleTime: 1000 * 60 * 2,
   });
@@ -74,33 +78,27 @@ export function useMembersWithPayments(communityId) {
 
   const enriched = members.map((member) => {
     const memberObligations = obligations.filter((o) =>
-      memberIdsMatch(member, o.member ?? o.user)
+      memberIdsMatch(member, o.member ?? o.user),
     );
     const memberTransactions = transactions
       .filter((t) => memberIdsMatch(member, t.member ?? t.user))
-      .sort((a, b) => new Date(b.paidAt ?? b.createdAt ?? 0) - new Date(a.paidAt ?? a.createdAt ?? 0));
+      .sort(
+        (a, b) =>
+          new Date(b.paidAt ?? b.createdAt ?? 0) -
+          new Date(a.paidAt ?? a.createdAt ?? 0),
+      );
 
-    const planIds = new Set(memberObligations.map((o) => o.paymentLink?.id ?? o.recurringPlan?.id));
-
-    // Set of obligation IDs that have a successful transaction (backend may not
-    // update obligation.status to PAID immediately after payment verification)
-    const successStatuses = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
-    const successfulTxs = memberTransactions.filter((t) =>
-      successStatuses.has((t.status ?? "").toUpperCase())
+    const planIds = new Set(
+      memberObligations.map((o) => o.paymentLink?.id ?? o.recurringPlan?.id),
     );
-    // Fallback 1: obligation ID on transaction (works when backend sets it)
-    const paidObligationIds = new Set(successfulTxs.map((t) => t.obligationId).filter(Boolean));
-    // Fallback 2: payment link ID match (covers payment-link flow where obligationId is null)
-    const paidLinkIds = new Set(successfulTxs.map((t) => t.paymentLink?.id).filter(Boolean));
 
-    const paidCount = memberObligations.filter((o) => {
-      const s = (o.status ?? "").toUpperCase();
-      if (s === "PAID" || s === "SUCCESSFUL") return true;
-      if (paidObligationIds.has(o.id)) return true;
-      return !!o.paymentLink?.id && paidLinkIds.has(o.paymentLink.id);
-    }).length;
+    const paidCount = memberObligations.filter(
+      (o) => (o.status ?? "").toUpperCase() === "PAID",
+    ).length;
 
-    const failedCount = memberTransactions.filter((t) => (t.status ?? "").toUpperCase() === "FAILED").length;
+    const failedCount = memberTransactions.filter(
+      (t) => (t.status ?? "").toUpperCase() === "FAILED",
+    ).length;
 
     // Exempt members genuinely have no dues -- only fill the gap for
     // everyone else, and only for plans that don't already have a real
@@ -118,7 +116,10 @@ export function useMembersWithPayments(communityId) {
       paidCount,
       totalCount,
       failedCount,
-      lastPaymentDate: memberTransactions[0]?.paidAt ?? memberTransactions[0]?.createdAt ?? null,
+      lastPaymentDate:
+        memberTransactions[0]?.paidAt ??
+        memberTransactions[0]?.createdAt ??
+        null,
       obligations: memberObligations,
       transactions: memberTransactions,
     };
@@ -159,7 +160,8 @@ export function useMemberPaymentLinks(communityId, memberId) {
   const enabled = !!communityId && !!memberId;
   const query = useQuery({
     queryKey: ["community", communityId, "payment-links", "member", memberId],
-    queryFn: async () => unwrapList(await getCommunityPaymentLinks(communityId, { memberId })),
+    queryFn: async () =>
+      unwrapList(await getCommunityPaymentLinks(communityId, { memberId })),
     enabled,
     staleTime: 1000 * 60 * 2,
   });
