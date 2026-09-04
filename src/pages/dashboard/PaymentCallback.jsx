@@ -83,6 +83,19 @@ function AdminPaymentCallback() {
     queryClient.invalidateQueries({ queryKey: ["community"] });
   }, [queryClient]);
 
+  // Same reasoning as PaymentSuccess.jsx's mount-time grace window: landing
+  // here at all means a real Paystack redirect just happened, so the token
+  // can be stale for a beat no matter how the admin leaves this page. Only
+  // opening the grace window inside this page's own button handlers misses
+  // the native browser/OS back button and swipe-back gestures -- React
+  // Router still navigates to the previous route for those, and that
+  // route's first data fetch can hit the stale token with no grace window
+  // open, reading as an unexpected hard sign-out instead of a normal beat
+  // of latency.
+  useEffect(() => {
+    beginAuthGrace();
+  }, []);
+
   useEffect(() => {
     if (!reference) return;
     let cancelled = false;

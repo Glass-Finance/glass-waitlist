@@ -18,7 +18,19 @@ const MAX_POLLS = 20;
 
 function isTerminal(status) {
   const s = (status ?? "").toUpperCase();
-  return s === "SUCCESS" || s === "SUCCESSFUL" || s === "FAILED";
+  return s === "SUCCESS" || s === "SUCCESSFUL";
+}
+
+// A FAILED reported at any single poll isn't necessarily final: a transfer
+// that's still genuinely pending on Paystack's side can (due to a known
+// backend gap) get written as FAILED prematurely, then get corrected to
+// SUCCESSFUL moments later once the real webhook lands. Exiting on the
+// first FAILED would mean this page just shows a wrong result and never
+// finds out it was wrong. Keep polling like any non-terminal status, and
+// only settle on "failed" once polling genuinely runs out -- see
+// lastStatusRef below.
+function isFailed(status) {
+  return (status ?? "").toUpperCase() === "FAILED";
 }
 
 export default function PaymentSuccess() {
@@ -42,6 +54,7 @@ export default function PaymentSuccess() {
   const [shareOpen, setShareOpen] = useState(false);
   const attemptsRef = useRef(0);
   const wasQueuedRef = useRef(false);
+  const lastStatusRef = useRef(null);
   // GET /finance/transactions/me/{transactionIdentifier} means the
   // internal transaction id, not Paystack's own gateway reference -- every
   // other real usage of this endpoint (Transaction Details, opened from a
@@ -101,6 +114,19 @@ export default function PaymentSuccess() {
     }
   }, [queryClient, paymentId]);
 
+  // Landing here at all means we just came back from a real Paystack
+  // redirect -- the access token can be stale for a beat regardless of how
+  // the payer eventually leaves this page. Opening the grace window only
+  // inside goTo()/goHome() (bound to this page's own buttons) misses the
+  // native browser/OS back button and swipe-back gestures: React Router
+  // still handles those as a real navigation to the previous route, whose
+  // first data fetch can hit the stale token with no grace window open,
+  // reading as a hard, unexpected sign-out. Opening it unconditionally on
+  // mount covers every exit path, not just the in-app buttons.
+  useEffect(() => {
+    beginAuthGrace();
+  }, []);
+
   useEffect(() => {
     if (!reference) return;
     let cancelled = false;
@@ -121,21 +147,20 @@ export default function PaymentSuccess() {
         const { status, verificationQueued, transactionId } = data;
 
         if (verificationQueued) wasQueuedRef.current = true;
+        lastStatusRef.current = status ?? lastStatusRef.current;
 
         if (cancelled) return;
 
         if (isTerminal(status)) {
-          const s = status.toUpperCase();
-          const finalState = (s === "SUCCESS" || s === "SUCCESSFUL") ? "success" : "failed";
           invalidateCaches();
           consumePendingFlags();
-          if (finalState === "success") {
-            settleLocalPaymentForReference(reference, transactionId);
-            if (transactionId) setTxId(transactionId);
-          }
-          setState(finalState);
+          settleLocalPaymentForReference(reference, transactionId);
+          if (transactionId) setTxId(transactionId);
+          setState("success");
           return;
         }
+        // FAILED falls through here deliberately -- see isFailed's comment.
+        // Keep polling; a later attempt may see it corrected to SUCCESSFUL.
       } catch (err) {
         // Session died while the payer was on Paystack's page -- show a
         // sign-in prompt instead of retrying into a hard redirect. The
@@ -154,7 +179,11 @@ export default function PaymentSuccess() {
       if (attemptsRef.current >= MAX_POLLS) {
         invalidateCaches();
         consumePendingFlags();
-        setState(wasQueuedRef.current ? "processing" : "unknown");
+        setState(
+          isFailed(lastStatusRef.current)
+            ? "failed"
+            : (wasQueuedRef.current ? "processing" : "unknown")
+        );
         return;
       }
 
