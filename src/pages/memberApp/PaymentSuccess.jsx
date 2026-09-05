@@ -4,7 +4,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Check, X, Loader2, Clock, Share2 } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 import { beginAuthGrace } from "../../api/client";
-import { settleLocalPaymentForReference, useManagePayments } from "../../hooks/usePayments";
+import {
+  settleLocalPaymentForReference,
+  useManagePayments,
+} from "../../hooks/usePayments";
 import { useTransactionDetail } from "../../hooks/useTransactionDetail";
 import { useAuth } from "../../store/AuthContext";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
@@ -47,7 +50,9 @@ export default function PaymentSuccess() {
   // App.jsx's /payment/callback), where the session can die mid-payment
   // while the payer was away on Paystack's page; clearing early would lose
   // the recovery trail through re-login (see the "signin" state below).
-  const [returnTo] = useState(() => sessionStorage.getItem("paymentReturnTo") ?? null);
+  const [returnTo] = useState(
+    () => sessionStorage.getItem("paymentReturnTo") ?? null,
+  );
 
   // "checking" | "success" | "failed" | "processing" | "unknown"
   const [state, setState] = useState(reference ? "checking" : "unknown");
@@ -76,7 +81,9 @@ export default function PaymentSuccess() {
     { skipAuthRedirect: true },
   );
   const payerName = toTitleCase(
-    [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "",
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+      user?.email ||
+      "",
   );
 
   // Per the UI designer's spec: on returning to Home after a payment,
@@ -93,14 +100,21 @@ export default function PaymentSuccess() {
     skipAuthRedirect: true,
   });
   const hasAutoPayConsent = (authorisations ?? []).some((auth) =>
-    (auth.consents ?? []).some((c) => !c.revoked && c.paymentLinkId === tx?.paymentLinkId),
+    (auth.consents ?? []).some(
+      (c) => !c.revoked && c.paymentLinkId === tx?.paymentLinkId,
+    ),
   );
   // authsLoading guards against a false positive if "Back to Home" is
   // tapped before this fetch (a separate request from the transaction
   // detail one) has actually resolved -- an empty/still-loading list must
   // never be read as "no consent found", or a plan that already has
   // Auto-Pay on would get prompted again.
-  const shouldOfferAutoPay = !!(tx?.isRecurring && tx?.paymentLinkId && !authsLoading && !hasAutoPayConsent);
+  const shouldOfferAutoPay = !!(
+    tx?.isRecurring &&
+    tx?.paymentLinkId &&
+    !authsLoading &&
+    !hasAutoPayConsent
+  );
 
   const invalidateCaches = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["obligations"] });
@@ -182,7 +196,9 @@ export default function PaymentSuccess() {
         setState(
           isFailed(lastStatusRef.current)
             ? "failed"
-            : (wasQueuedRef.current ? "processing" : "unknown")
+            : wasQueuedRef.current
+              ? "processing"
+              : "unknown",
         );
         return;
       }
@@ -191,7 +207,9 @@ export default function PaymentSuccess() {
     }
 
     poll();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [reference, invalidateCaches]);
 
   const dest = returnTo ?? "/member/home";
@@ -212,15 +230,23 @@ export default function PaymentSuccess() {
   // "set once" convention as glass_notifications_cleared_at) so it doesn't
   // nag on every future payment for the same plan once answered either way.
   function goHome() {
-    if (shouldOfferAutoPay && !localStorage.getItem(`glass_autopay_asked_${tx.paymentLinkId}`)) {
+    if (
+      shouldOfferAutoPay &&
+      !localStorage.getItem(`glass_autopay_asked_${tx.paymentLinkId}`)
+    ) {
       try {
-        sessionStorage.setItem("glass_autopay_prompt", JSON.stringify({
-          paymentLinkId: tx.paymentLinkId,
-          planName: tx.planName ?? tx.description ?? "this plan",
-          amount: tx.amount,
-          frequency: tx.frequency,
-        }));
-      } catch { /* ignore */ }
+        sessionStorage.setItem(
+          "glass_autopay_prompt",
+          JSON.stringify({
+            paymentLinkId: tx.paymentLinkId,
+            planName: tx.planName ?? tx.description ?? "this plan",
+            amount: tx.amount,
+            frequency: tx.frequency,
+          }),
+        );
+      } catch {
+        /* ignore */
+      }
     }
     goTo(dest);
   }
@@ -241,8 +267,15 @@ export default function PaymentSuccess() {
       text: "Transaction Successful",
       sub: tx ? (
         <>
-          Your Payment of <strong className="text-gray-700">{formatNaira(tx.amount, { decimals: 2 })}</strong> for{" "}
-          <strong className="text-gray-700">{toTitleCase(tx.planName ?? tx.description)}</strong> was successful.
+          Your Payment of{" "}
+          <strong className="text-gray-700">
+            {formatNaira(tx.amount, { decimals: 2 })}
+          </strong>{" "}
+          for{" "}
+          <strong className="text-gray-700">
+            {toTitleCase(tx.planName ?? tx.description)}
+          </strong>{" "}
+          was successful.
         </>
       ) : (
         "Your payment has been confirmed."
@@ -256,7 +289,9 @@ export default function PaymentSuccess() {
       sub: "Something went wrong with this payment. Please try again.",
       action: {
         label: returnTo ? "Back to Dashboard" : "Try again",
-        to: returnTo ?? (paymentId ? `/member/pay/${paymentId}` : "/member/upcoming"),
+        to:
+          returnTo ??
+          (paymentId ? `/member/pay/${paymentId}` : "/member/upcoming"),
       },
     },
     processing: {
@@ -283,9 +318,7 @@ export default function PaymentSuccess() {
   }[state];
 
   return (
-    <div
-      className="relative flex flex-col min-h-screen overflow-hidden max-w-[430px] mx-auto"
-    >
+    <div className="relative flex flex-col min-h-screen overflow-hidden max-w-[430px] mx-auto">
       <GlassLogoGlow />
       {/* Top bar — the success screen is a deliberate landing page (two
           real choices below, no auto-redirect), not an in-flow step, so it
@@ -334,17 +367,17 @@ export default function PaymentSuccess() {
 
         {state === "success" ? (
           <div className="flex-1 w-full flex flex-col justify-end gap-3 pb-10 max-w-[340px]">
-            <Button onClick={goHome}>
-              Back to Home
-            </Button>
+            <Button onClick={goHome}>Back to Home</Button>
             <button
               onClick={() => setShareOpen(true)}
               disabled={!tx}
               className="w-full px-8 py-3.5 rounded-full text-button font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-brand border-[1.5px] border-brand"
             >
-              {txLoading
-                ? <Loader2 size={15} className="animate-spin" />
-                : <Share2 size={15} />}
+              {txLoading ? (
+                <Loader2 size={15} className="animate-spin" />
+              ) : (
+                <Share2 size={15} />
+              )}
               {txLoading ? "Preparing receipt…" : "Share Receipt"}
             </button>
           </div>

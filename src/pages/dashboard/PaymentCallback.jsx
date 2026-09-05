@@ -122,21 +122,31 @@ function AdminPaymentCallback() {
       if (!ctx || !ctx.isRecurring || !ctx.paymentLinkId) return;
       if (ctx.reference && ctx.reference !== ref) return;
       try {
-        if (localStorage.getItem(`glass_autopay_asked_${ctx.paymentLinkId}`)) return;
+        if (localStorage.getItem(`glass_autopay_asked_${ctx.paymentLinkId}`))
+          return;
       } catch {
         return;
       }
-      const authorisations = await fetchAuthorisationsOnce({ _skipAuthRedirect: true });
-      const hasConsent = !!findAuthorisationForPlan(authorisations, { paymentLinkId: ctx.paymentLinkId });
+      const authorisations = await fetchAuthorisationsOnce({
+        _skipAuthRedirect: true,
+      });
+      const hasConsent = !!findAuthorisationForPlan(authorisations, {
+        paymentLinkId: ctx.paymentLinkId,
+      });
       if (hasConsent) return;
       try {
-        sessionStorage.setItem("glass_autopay_prompt_admin", JSON.stringify({
-          paymentLinkId: ctx.paymentLinkId,
-          planName: ctx.planName,
-          amount: ctx.amount,
-          frequency: ctx.frequency,
-        }));
-      } catch { /* ignore */ }
+        sessionStorage.setItem(
+          "glass_autopay_prompt_admin",
+          JSON.stringify({
+            paymentLinkId: ctx.paymentLinkId,
+            planName: ctx.planName,
+            amount: ctx.amount,
+            frequency: ctx.frequency,
+          }),
+        );
+      } catch {
+        /* ignore */
+      }
     }
 
     async function poll() {
@@ -151,7 +161,8 @@ function AdminPaymentCallback() {
 
         if (isTerminal(status)) {
           const s = status.toUpperCase();
-          const finalState = (s === "SUCCESS" || s === "SUCCESSFUL") ? "success" : "failed";
+          const finalState =
+            s === "SUCCESS" || s === "SUCCESSFUL" ? "success" : "failed";
           invalidateCaches();
           if (finalState === "success") {
             await maybeOfferAutoPay(reference);
@@ -191,7 +202,9 @@ function AdminPaymentCallback() {
     }
 
     poll();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [reference, invalidateCaches]);
 
   // Auto-redirect countdown after confirmed success. beginAuthGrace: the
@@ -200,7 +213,11 @@ function AdminPaymentCallback() {
   // goTo() -- so this shouldn't read as an unexpected sign-out.
   useEffect(() => {
     if (autoRedirectIn === null) return;
-    if (autoRedirectIn <= 0) { beginAuthGrace(); navigate(effectiveReturnTo, { replace: true }); return; }
+    if (autoRedirectIn <= 0) {
+      beginAuthGrace();
+      navigate(effectiveReturnTo, { replace: true });
+      return;
+    }
     const t = setTimeout(() => setAutoRedirectIn((n) => n - 1), 1000);
     return () => clearTimeout(t);
   }, [autoRedirectIn, navigate, effectiveReturnTo]);
@@ -222,9 +239,10 @@ function AdminPaymentCallback() {
     },
     success: {
       title: "Payment Successful",
-      subtitle: autoRedirectIn != null
-        ? `Redirecting you in ${autoRedirectIn}s…`
-        : "Your payment has been confirmed.",
+      subtitle:
+        autoRedirectIn != null
+          ? `Redirecting you in ${autoRedirectIn}s…`
+          : "Your payment has been confirmed.",
       buttonLabel: backLabel,
     },
     failed: {
@@ -240,7 +258,8 @@ function AdminPaymentCallback() {
       outerBgCls: "bg-brand-tint",
       innerBgCls: "bg-brand",
       title: "Payment Processing",
-      subtitle: "Your payment went through but status confirmation is taking a moment. You'll receive a notification when it's ready — usually within a few minutes.",
+      subtitle:
+        "Your payment went through but status confirmation is taking a moment. You'll receive a notification when it's ready — usually within a few minutes.",
       buttonLabel: backLabel,
     },
     unknown: {
@@ -248,7 +267,8 @@ function AdminPaymentCallback() {
       outerBgCls: "bg-stacked-container",
       innerBgCls: "bg-[#9CA3AF]",
       title: "Still confirming…",
-      subtitle: "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
+      subtitle:
+        "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
       buttonLabel: backLabel,
     },
     signin: {
@@ -265,9 +285,7 @@ function AdminPaymentCallback() {
   const buttonDest = state === "signin" ? "/sign-in" : effectiveReturnTo;
 
   return (
-    <div
-      className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-admin-default"
-    >
+    <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-admin-default">
       {/* Top bar */}
       <div className="flex items-center px-4 md:px-8 pt-6 md:pt-8 pb-4">
         <button
@@ -288,11 +306,13 @@ function AdminPaymentCallback() {
 
       {/* Centered card */}
       <div className="flex-1 flex items-center justify-center px-4 pb-16">
-        <div
-          className="w-full bg-surface-container border border-surface-container-border rounded-2xl flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center max-w-[560px]"
-        >
+        <div className="w-full bg-surface-container border border-surface-container-border rounded-2xl flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center max-w-[560px]">
           {state === "success" ? (
-            <SuccessBadge message={config.title} subMessage={config.subtitle} className="mb-2" />
+            <SuccessBadge
+              message={config.title}
+              subMessage={config.subtitle}
+              className="mb-2"
+            />
           ) : (
             <>
               <div
@@ -305,8 +325,12 @@ function AdminPaymentCallback() {
                 </div>
               </div>
 
-              <h1 className="text-headline text-gray-900 mb-2">{config.title}</h1>
-              <p className="text-title-sm text-gray-500 leading-relaxed mb-2">{config.subtitle}</p>
+              <h1 className="text-headline text-gray-900 mb-2">
+                {config.title}
+              </h1>
+              <p className="text-title-sm text-gray-500 leading-relaxed mb-2">
+                {config.subtitle}
+              </p>
             </>
           )}
 
@@ -318,7 +342,10 @@ function AdminPaymentCallback() {
 
           {config.buttonLabel && (
             <Button
-              onClick={() => { beginAuthGrace(); navigate(buttonDest, { replace: true }); }}
+              onClick={() => {
+                beginAuthGrace();
+                navigate(buttonDest, { replace: true });
+              }}
               fullWidth={false}
               className="mt-4 px-8"
             >

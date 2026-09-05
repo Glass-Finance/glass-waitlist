@@ -13,8 +13,6 @@ import {
   shapeTransaction,
   normalizeCommunity,
 } from "./shape";
-import { isObligationSettled, isPaidForCurrentCycle } from "./settlement";
-import { lastLocalPaidAt } from "./localCache";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main hook — Home screen data
@@ -128,7 +126,8 @@ export function usePayments(preferredCommunityIdentifier) {
   const rawActiveCommunity =
     findByIdentifier(preferredCommunityIdentifier) ??
     (storedCommunity
-      ? (findByIdentifier(storedCommunity.slug ?? storedCommunity.id) ?? activeCommunities[0])
+      ? (findByIdentifier(storedCommunity.slug ?? storedCommunity.id) ??
+        activeCommunities[0])
       : activeCommunities[0]);
 
   const communitySlug =
@@ -187,7 +186,7 @@ export function usePayments(preferredCommunityIdentifier) {
 
   const unpaidObligations = sorted.filter((o) => {
     const linkIsActive = o.linkStatus === "ACTIVE" || !o.linkStatus;
-    return linkIsActive && o.status !== "PAID" && !isObligationSettled(o, allTransactions);
+    return linkIsActive && o.status !== "PAID";
   });
 
   // Payment links that are ACTIVE (or have no status set) and have no
@@ -197,22 +196,9 @@ export function usePayments(preferredCommunityIdentifier) {
     const isActive = link.linkStatus === "ACTIVE" || !link.linkStatus;
     if (!isActive) return false;
     if (obligations.some((o) => o.paymentLinkId === link.id)) return false;
-    // No obligation record doesn't necessarily mean unpaid.
-    if (link.type === "one-time") {
-      // A one-time link can already have a successful transaction with no
-      // obligation ever created for it.
-      const alreadyPaid =
-        allTransactions.some(
-          (t) => t.paymentLinkId === link.id && t.status === "success",
-        ) || !!lastLocalPaidAt({ paymentLinkId: link.id });
-      if (alreadyPaid) return false;
-    } else {
-      // Recurring: a past cycle's payment shouldn't hide a *future* cycle's
-      // due payment, but it should hide the *current* one — otherwise a
-      // member who just paid sees the same plan reappear as due again
-      // immediately, before the next cycle has even started.
-      if (isPaidForCurrentCycle(link, allTransactions)) return false;
-    }
+    // There is no authoritative member payment status without an obligation.
+    // The backend must provide the next-cycle obligation before this item can
+    // be classified as paid or unpaid without client-side reconstruction.
     return true;
   });
 

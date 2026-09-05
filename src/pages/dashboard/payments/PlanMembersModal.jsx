@@ -1,9 +1,7 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { X, Search, Filter } from "lucide-react";
 import { getPaymentLinkMembers } from "../../../api/payments";
-import { fetchAllCommunityMembers } from "../../../api/communities";
-import { fetchAllCommunityObligations, fetchAllCommunityTransactions } from "../../../api/transactions";
 import { exportCommunityObligations } from "../../../api/exports";
 import { useExportJob } from "../../../hooks/useExportJob";
 import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
@@ -18,7 +16,6 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
   const [statusFilter, setStatusFilter] = useState("");
   const [selected, setSelected] = useState([]);
 
-  // Plan-specific obligation statuses
   const { data: planMembersData, isLoading } = useQuery({
     queryKey: ["plan-members", communityId, plan.id],
     queryFn: async () => {
@@ -32,211 +29,17 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
     staleTime: 1000 * 60,
   });
 
-  // Community members — for reliable name + email resolution. Explicitly
-  // overrides getCommunityMembers' default ACTIVE-only filter: this modal
-  // needs to show paid/unpaid status for every member ever on this plan,
-  // including ones who've since gone overdue/inactive — filtering them out
-  // here was why they silently disappeared from the paid/unpaid list.
-  const { data: communityMembersData } = useQuery({
-    queryKey: ["community", communityId, "members", "all-statuses"],
-    queryFn: () => fetchAllCommunityMembers(communityId, { status: undefined }),
-    enabled: !!communityId,
-    staleTime: 1000 * 60 * 5,
-  });
-
-  // Obligations — authoritative source for paid/due status per member
-  // Uses the same cache key as the main Payments page so no extra request.
-  const { data: allObligations = [] } = useQuery({
-    queryKey: ["community", communityId, "obligations"],
-    queryFn: () => fetchAllCommunityObligations(communityId),
-    enabled: !!communityId,
-    staleTime: 1000 * 60 * 2,
-  });
-
-  // Transactions — same cache key as the main page, so no extra request.
-  const { data: allTransactions = [] } = useQuery({
-    queryKey: ["community", communityId, "transactions"],
-    queryFn: () => fetchAllCommunityTransactions(communityId),
-    enabled: !!communityId,
-    staleTime: 1000 * 60 * 2,
-  });
-
-  // The backend doesn't always flip obligation.status to PAID immediately
-  // after a payment is verified — the plan cards' planMetrics already
-  // cross-reference successful transactions for exactly this reason, and
-  // without the same cross-reference here the modal shows a just-paid member
-  // as Pending / ₦0 collected while the card outside already counts them.
-  // Same matching rules as planMetrics: by obligationId when the transaction
-  // carries one, else by plan + member identity.
-  const planTx = useMemo(() => {
-    const SUCCESS = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
-    const paidObligationIds = new Set();
-    const byKey = {};
-    const seenMembers = new Set();
-    for (const tx of allTransactions) {
-      if (!SUCCESS.has((tx.status ?? "").toUpperCase())) continue;
-      if (tx.obligationId) paidObligationIds.add(String(tx.obligationId));
-      if (String(tx.paymentLink?.id) !== String(plan.id)) continue;
-      const keys = [
-        tx.member?.id,
-        tx.member?.userId,
-        tx.member?.user?.id,
-        tx.user?.id,
-        tx.member?.email,
-        tx.user?.email,
-      ]
-        .filter(Boolean)
-        .map(String);
-      if (!keys.length) continue;
-      // A member can have multiple SUCCESSFUL rows for one plan (repeat-
-      // payment bug, see planMetrics) — count the first per member.
-      if (keys.some((k) => seenMembers.has(k))) continue;
-      keys.forEach((k) => seenMembers.add(k));
-      const info = { amount: tx.amount ?? 0 };
-      for (const k of keys) byKey[k] = info;
-    }
-    return { paidObligationIds, byKey };
-  }, [allTransactions, plan.id]);
-
-  // Build memberId / userId → { name, email, joinedAt } lookup. Also track
-  // every ID this community currently knows about (any status) so only
-  // genuinely-removed members get filtered out below — overdue/inactive
-  // members must still show up in the paid/unpaid breakdown.
-  // getCommunityMembers returns a flat shape: cm.userId (not cm.user.id).
-  const { memberLookup, knownMemberIds } = useMemo(() => {
-    const byMemberId = {};
-    const byUserId = {};
-    const knownIds = new Set();
-    for (const m of communityMembersData ?? []) {
-      const first = m.user?.firstName ?? m.firstName ?? "";
-      const last = m.user?.lastName ?? m.lastName ?? "";
-      const name = `${first} ${last}`.trim() || null;
-      const email = m.user?.email ?? m.email ?? null;
-      const info = {
-        name,
-        email,
-        joinedAt: m.joinedAt ?? m.member?.joinedAt ?? null,
-      };
-      // cm.id = community membership ID; cm.userId = user's global ID (flat field)
-      const userId = m.userId ?? m.user?.id ?? null;
-      if (m.id) {
-        byMemberId[String(m.id)] = info;
-        knownIds.add(String(m.id));
-      }
-      if (userId) {
-        byUserId[String(userId)] = info;
-        knownIds.add(String(userId));
-      }
-    }
-    return { memberLookup: { byMemberId, byUserId }, knownMemberIds: knownIds };
-  }, [communityMembersData]);
-
-  // Show every member still known to the community — including
-  // overdue/inactive ones — and only filter out members who've actually
-  // been removed (and so no longer appear in communityMembersData at all).
-  const planMembers = useMemo(() => {
-    const all = planMembersData ?? [];
-    if (!communityMembersData) return all; // don't filter while community list is loading
-    return all.filter((m) => {
-      const mid = String(m.member?.id ?? m.memberId ?? "");
-      const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
-      return knownMemberIds.has(mid) || knownMemberIds.has(uid);
-    });
-  }, [planMembersData, communityMembersData, knownMemberIds]);
-
-  // Build a lookup for obligation status keyed by every reachable ID for this plan.
-  // Obligations use ob.member.userId (flat) not ob.member.user.id (nested).
-  // Plan members carry communityMemberId, so we bridge via communityMembersData:
-  //   communityMemberId → userId → obligation info
-  //
-  // Deps are deliberately narrowed to plan.id/plan.amount rather than the
-  // whole `plan` object, so this doesn't recompute every time an unrelated
-  // field on `plan` changes identity. React Compiler isn't wired into this
-  // build (no babel-plugin-react-compiler in vite.config.js), so it can't
-  // actually apply its own memoization here regardless -- this warning is
-  // purely about compiler-readiness, and the manual deps are correct today.
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
-  const obligationByMemberId = useMemo(() => {
-    // Step 1: communityMemberId → userId (cm.userId is flat, not cm.user.id)
-    const cmToUser = {};
-    for (const cm of communityMembersData ?? []) {
-      const userId = cm.userId ?? cm.user?.id ?? "";
-      if (cm.id && userId) cmToUser[String(cm.id)] = String(userId);
-    }
-
-    // Step 2: index obligations by userId and email
-    const map = {};
-    for (const ob of allObligations) {
-      if (String(ob.paymentLink?.id) !== String(plan.id)) continue;
-      // ob.member.userId is a flat field (not ob.member.user.id)
-      const userId = String(
-        ob.member?.userId ?? ob.member?.user?.id ?? ob.user?.id ?? "",
-      );
-      const email = ob.member?.email ?? ob.user?.email ?? "";
-      const status = (ob.status ?? "PENDING").toUpperCase();
-      // Upgrade to PAID when a successful transaction settles this
-      // obligation but the backend hasn't flipped its status yet.
-      const paidByTx =
-        planTx.paidObligationIds.has(String(ob.id)) ||
-        Boolean(
-          (ob.member?.id && planTx.byKey[String(ob.member.id)]) ||
-            (userId && planTx.byKey[userId]) ||
-            (email && planTx.byKey[email]),
-        );
-      const txAmount =
-        (ob.member?.id && planTx.byKey[String(ob.member.id)]?.amount) ||
-        (userId && planTx.byKey[userId]?.amount) ||
-        (email && planTx.byKey[email]?.amount) ||
-        0;
-      const info = {
-        status: paidByTx && status !== "PAID" ? "PAID" : status,
-        amountPaid: Math.max(ob.amountPaid ?? ob.paidAmount ?? 0, txAmount),
-        amountDue: ob.amount ?? ob.amountDue ?? plan.amount ?? 0,
-      };
-      if (userId) map[userId] = info;
-      if (email) map[email] = info;
-    }
-
-    // Step 3: add communityMemberId entries so plan members can match directly
-    for (const [cmId, userId] of Object.entries(cmToUser)) {
-      if (map[userId]) map[cmId] = map[userId];
-    }
-
-    return map;
-  }, [allObligations, communityMembersData, plan.id, plan.amount, planTx]);
-
-  function getObligationInfo(m) {
-    const mid = String(m.member?.id ?? m.memberId ?? "");
-    const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
-    // Use the plan member's own email (flat field) as well as the lookup email
-    const email =
-      m.email ??
-      memberLookup.byMemberId[mid]?.email ??
-      memberLookup.byUserId[uid]?.email ??
-      "";
-    return (
-      (mid && obligationByMemberId[mid]) ||
-      (uid && obligationByMemberId[uid]) ||
-      (email && obligationByMemberId[email]) ||
-      null
-    );
-  }
+  // This endpoint already returns the authoritative member identity, rolled-up
+  // obligation status, and aggregate amounts for this payment link.
+  const planMembers = planMembersData ?? [];
 
   function resolveMember(m) {
-    const mid = String(m.member?.id ?? m.memberId ?? "");
-    const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
-    const fromLookup =
-      (mid && memberLookup.byMemberId[mid]) ||
-      (uid && memberLookup.byUserId[uid]);
-    if (fromLookup) return fromLookup;
-    // Flat plan-member response: firstName/lastName/email at the top level
-    const u = m.member?.user ?? m.user ?? m.member ?? {};
-    const f = u.firstName ?? m.firstName ?? "";
-    const l = u.lastName ?? m.lastName ?? "";
+    const f = m.firstName ?? "";
+    const l = m.lastName ?? "";
     return {
       name: `${f} ${l}`.trim() || null,
-      email: u.email ?? m.email ?? null,
-      joinedAt: m.member?.joinedAt ?? m.joinedAt ?? null,
+      email: m.email ?? null,
+      joinedAt: m.joinedAt ?? null,
     };
   }
 
@@ -248,66 +51,30 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
     return resolveMember(m).email ?? "—";
   }
   function getJoinedAt(m) {
-    return (
-      resolveMember(m).joinedAt ?? m.member?.joinedAt ?? m.joinedAt ?? null
-    );
-  }
-
-  // Successful transaction for this member on this plan, if any — covers
-  // members whose payment went through but whose obligation either hasn't
-  // been status-flipped yet or was never linked (the N/A rows).
-  function getTxInfo(m) {
-    const mid = String(m.member?.id ?? m.memberId ?? "");
-    const uid = String(m.member?.user?.id ?? m.user?.id ?? m.userId ?? "");
-    const email =
-      m.email ??
-      memberLookup.byMemberId[mid]?.email ??
-      memberLookup.byUserId[uid]?.email ??
-      "";
-    return (
-      (mid && planTx.byKey[mid]) ||
-      (uid && planTx.byKey[uid]) ||
-      (email && planTx.byKey[email]) ||
-      null
-    );
+    return m.joinedAt ?? null;
   }
 
   function getStatus(m) {
-    const ob = getObligationInfo(m);
-    if (ob) return ob.status;
-    if (getTxInfo(m)) return "PAID";
-    const raw =
-      m.obligationStatus ??
-      m.obligation?.status ??
-      m.member?.obligationStatus ??
-      m.paymentStatus ??
-      m.status ??
-      "PENDING";
-    return raw.toUpperCase();
+    return (m.obligationStatus ?? "NONE").toUpperCase();
   }
   function getAmountPaid(m) {
-    const ob = getObligationInfo(m);
-    const txAmount = getTxInfo(m)?.amount ?? 0;
-    if (ob) return Math.max(ob.amountPaid, txAmount);
-    return Math.max(
-      m.amountPaid ?? m.paidAmount ?? m.obligation?.amountPaid ?? 0,
-      txAmount,
-    );
+    return m.amountPaid ?? 0;
   }
   function getAmountDue(m) {
-    const ob = getObligationInfo(m);
-    if (ob) return ob.amountDue;
-    return m.amount ?? m.amountDue ?? m.obligation?.amount ?? plan.amount ?? 0;
+    return m.totalAmountDue ?? 0;
   }
 
   function statusStyle(s) {
-    if (s === "PAID") return { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" };
+    if (s === "PAID")
+      return { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" };
     if (s === "OVERDUE")
       return { cls: "bg-[#fff1f2] text-[#e11d48]", label: "Overdue" };
-    if (s === "DUE") return { cls: "bg-[#fffbeb] text-[#b45309]", label: "Due" };
+    if (s === "DUE")
+      return { cls: "bg-[#fffbeb] text-[#b45309]", label: "Due" };
     if (s === "WAIVED")
       return { cls: "bg-[#f5f6fa] text-[#6b7280]", label: "Waived" };
-    if (s === "NONE") return { cls: "bg-[#f5f6fa] text-[#9ca3af]", label: "N/A" };
+    if (s === "NONE")
+      return { cls: "bg-[#f5f6fa] text-[#9ca3af]", label: "N/A" };
     return { cls: "bg-[#fffbeb] text-[#b45309]", label: "Pending" };
   }
 
@@ -341,7 +108,11 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
   const { run: runExport, isExporting } = useExportJob();
   function exportCsv() {
     runExport(() =>
-      exportCommunityObligations(communityId, { paymentLinkId: plan.id }, "CSV"),
+      exportCommunityObligations(
+        communityId,
+        { paymentLinkId: plan.id },
+        "CSV",
+      ),
     );
   }
 
@@ -458,7 +229,7 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
                     onChange={(e) =>
                       setSelected(
                         e.target.checked
-                          ? filtered.map((m) => m.id ?? getName(m))
+                          ? filtered.map((m) => m.memberId ?? getName(m))
                           : [],
                       )
                     }
@@ -502,7 +273,7 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
                 </tr>
               ) : (
                 filtered.map((m, i) => {
-                  const key = m.id ?? i;
+                  const key = m.memberId ?? i;
                   const s = statusStyle(getStatus(m));
                   return (
                     <tr

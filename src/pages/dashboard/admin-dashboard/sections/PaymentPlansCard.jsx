@@ -11,13 +11,7 @@ const BAR_COLOR_CLASSES = [
   "bg-[#e11d48]",
 ];
 
-export default function PaymentPlansCard({
-  plans,
-  plansLoading,
-  planMetrics,
-  membersTotal,
-  onManageAll,
-}) {
+export default function PaymentPlansCard({ plans, plansLoading, onManageAll }) {
   return (
     <div className="rounded-xl border border-surface-container-border p-4 bg-[#D7E2FF]">
       <div className="flex items-center justify-between mb-4">
@@ -47,24 +41,16 @@ export default function PaymentPlansCard({
       ) : (
         <div className="flex flex-col gap-3">
           {plans.map((p, idx) => {
-            const cm = planMetrics[p.id] ?? {};
-            const paidCount = cm.paidCount ?? p.paidCount ?? 0;
-            const totalCount =
-              cm.totalCount > 0
-                ? cm.totalCount
-                : p.totalCount > 0
-                  ? p.totalCount
-                  : membersTotal;
-            const collected = cm.collected ?? p.amountCollected ?? 0;
-            const expected =
-              p.amount > 0 && totalCount > 0
-                ? p.amount * totalCount
-                : (p.expectedAmount ?? 0);
+            const paidCount = p.paidCount ?? 0;
+            const totalCount = p.totalCount ?? 0;
+            const collected = p.amountCollected ?? 0;
+            const expected = p.expectedAmount ?? 0;
             const pct =
               expected > 0
                 ? Math.min(100, Math.round((collected / expected) * 100))
                 : 0;
-            const barColorCls = BAR_COLOR_CLASSES[idx % BAR_COLOR_CLASSES.length];
+            const barColorCls =
+              BAR_COLOR_CLASSES[idx % BAR_COLOR_CLASSES.length];
             return (
               <div
                 key={p.id}

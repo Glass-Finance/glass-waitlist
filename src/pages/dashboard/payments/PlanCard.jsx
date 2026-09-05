@@ -1,4 +1,8 @@
-import { formatNaira, formatDateShort, toTitleCase } from "../../../utils/format";
+import {
+  formatNaira,
+  formatDateShort,
+  toTitleCase,
+} from "../../../utils/format";
 import { PLAN_STATUS, FREQUENCIES } from "./constants";
 import { formatCompact } from "./helpers";
 import PlanOverflowMenu from "./PlanOverflowMenu";
@@ -11,7 +15,6 @@ export default function PlanCard({
   onViewMembers,
   onSendReminder,
   onDuplicate,
-  metrics,
 }) {
   const ps = PLAN_STATUS[plan.status] ?? PLAN_STATUS.DRAFT;
 
@@ -22,23 +25,15 @@ export default function PlanCard({
         "Recurring")
       : "One-Time";
 
-  // Prefer computed metrics (from obligations/transactions) over the list
-  // endpoint's metrics which are never populated server-side.
-  const cm = metrics ?? {};
-  const paidCount = cm.paidCount ?? plan.paidCount ?? 0;
-  const totalCount = cm.totalCount ?? plan.totalCount ?? 0;
-  const collected = cm.collected ?? plan.amountCollected ?? 0;
-  const expected =
-    totalCount > 0 && plan.amount > 0
-      ? plan.amount * totalCount
-      : (plan.expectedAmount ?? 0);
+  const paidCount = plan.paidCount ?? 0;
+  const totalCount = plan.totalCount ?? 0;
+  const collected = plan.amountCollected ?? 0;
+  const expected = plan.expectedAmount ?? 0;
   const pct =
     expected > 0 ? Math.min(100, Math.round((collected / expected) * 100)) : 0;
 
   return (
-    <div
-      className="bg-surface-container rounded-2xl border border-surface-container-border p-5 flex flex-col gap-4"
-    >
+    <div className="bg-surface-container rounded-2xl border border-surface-container-border p-5 flex flex-col gap-4">
       {/* Status + overflow */}
       <div className="flex items-center justify-between">
         <span
@@ -70,9 +65,7 @@ export default function PlanCard({
           <span className="text-md font-semibold text-gray-900 leading-none">
             {formatNaira(plan.amount)}
           </span>
-          <span
-            className="text-[11px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0 text-[#7c3aed] bg-[#f3eeff]"
-          >
+          <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0 text-[#7c3aed] bg-[#f3eeff]">
             {freqLabel}
           </span>
         </div>
@@ -97,8 +90,7 @@ export default function PlanCard({
             {paidCount} / {totalCount} members paid
           </p>
           <p className="text-xs text-gray-400">
-            Due{" "}
-            {plan.dueAt ? formatDateShort(plan.dueAt) : "—"}
+            Due {plan.dueAt ? formatDateShort(plan.dueAt) : "—"}
           </p>
         </div>
       </div>

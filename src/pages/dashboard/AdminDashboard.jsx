@@ -61,14 +61,17 @@ function DashboardContent({ isPaying, communityId }) {
     balances,
     members,
     transactions,
-    obligations,
     activity,
     community,
     isLoading,
     error,
   } = useCommunityDashboard(communityId);
   const { data: currentUser } = useMe();
-  const { plans, isLoading: plansLoading, create: createPlan } = usePaymentPlans(communityId);
+  const {
+    plans,
+    isLoading: plansLoading,
+    create: createPlan,
+  } = usePaymentPlans(communityId);
 
   async function handleCreatePlan(payload) {
     try {
@@ -157,9 +160,14 @@ function DashboardContent({ isPaying, communityId }) {
   // account was still being reviewed until they hit a wall trying to
   // create a payment plan.
   const payoutAccountStatus = payoutAccount?.status?.toUpperCase() ?? null;
-  const gsHasPayoutAccount = ["ACTIVE", "VERIFIED"].includes(payoutAccountStatus);
-  const gsPayoutAccountRejected = ["FAILED", "REJECTED"].includes(payoutAccountStatus);
-  const gsPayoutAccountPending = !!payoutAccount && !gsHasPayoutAccount && !gsPayoutAccountRejected;
+  const gsHasPayoutAccount = ["ACTIVE", "VERIFIED"].includes(
+    payoutAccountStatus,
+  );
+  const gsPayoutAccountRejected = ["FAILED", "REJECTED"].includes(
+    payoutAccountStatus,
+  );
+  const gsPayoutAccountPending =
+    !!payoutAccount && !gsHasPayoutAccount && !gsPayoutAccountRejected;
   const showGettingStarted =
     !isLoading &&
     !plansLoading &&
@@ -169,13 +177,16 @@ function DashboardContent({ isPaying, communityId }) {
   // The very-first-load state -- nothing at all yet. Distinct from (and
   // takes priority over) showGettingStarted's banner, which still shows
   // stats/tables alongside it once at least one of plans/members exists.
-  const isFreshCommunity = !isLoading && !plansLoading && !gsHasPlans && !gsHasMembers;
+  const isFreshCommunity =
+    !isLoading && !plansLoading && !gsHasPlans && !gsHasMembers;
 
   function dismissGs() {
     setGsDismissed(true);
     try {
       localStorage.setItem(`gs_done_${communityId}`, "1");
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 
   // ── Derived stats ─────────────────────────────────────────────────────────
@@ -229,108 +240,24 @@ function DashboardContent({ isPaying, communityId }) {
     return { byMemberId, byUserId };
   }, [members.list]);
 
-  const resolveMemberName = useCallback((tx) => {
-    // 1. Try the members list (most reliable — has proper first/last name)
-    const mid = tx.member?.id ?? tx.memberId;
-    if (mid && memberNameMap.byMemberId[String(mid)])
-      return memberNameMap.byMemberId[String(mid)];
-    const uid = tx.member?.user?.id ?? tx.user?.id ?? tx.userId;
-    if (uid && memberNameMap.byUserId[String(uid)])
-      return memberNameMap.byUserId[String(uid)];
-    // 2. Fall back to whatever name fields the transaction itself carries
-    const u = tx.member?.user ?? tx.user ?? tx.payer ?? tx.member ?? {};
-    const f = u.firstName ?? tx.firstName ?? "";
-    const l = u.lastName ?? tx.lastName ?? "";
-    const full = `${f} ${l}`.trim();
-    return full ? toTitleCase(full) : null;
-  }, [memberNameMap]);
-
-  // ── Per-plan metrics computed from obligations + transactions ────────────────
-  const planMetrics = useMemo(() => {
-    const SUCCESS_STATUSES = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
-
-    // The backend doesn't always flip obligation.status to PAID immediately
-    // after a payment is verified — cross-reference successful transactions
-    // too, so a member who's actually paid isn't miscounted as unpaid just
-    // because their obligation record lags behind.
-    const paidObligationIds = new Set();
-    const paidLinkMemberKeys = new Set(); // `${paymentLinkId}::${memberId}`, for txs with no obligationId
-    for (const tx of transactions) {
-      if (!SUCCESS_STATUSES.has((tx.status ?? "").toUpperCase())) continue;
-      if (tx.obligationId) paidObligationIds.add(String(tx.obligationId));
-      const planId = tx.paymentLink?.id;
-      const mid = String(
-        tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "",
-      );
-      if (planId && mid) paidLinkMemberKeys.add(`${planId}::${mid}`);
-    }
-
-    const byPlan = {};
-
-    // Track paid members as a unique-member set — a member with multiple
-    // paid obligations on the same recurring plan is still only 1 paid
-    // member, not 2. (This is what caused "2/1 members paid" earlier.)
-    for (const ob of obligations) {
-      const planId = ob.paymentLink?.id;
-      if (!planId) continue;
-      if (!byPlan[planId]) {
-        byPlan[planId] = {
-          collected: 0,
-          seenMemberIds: new Set(),
-          paidMemberIds: new Set(),
-        };
-      }
-
-      const mid = String(
-        ob.member?.id ?? ob.member?.user?.id ?? ob.user?.id ?? ob.id ?? "",
-      );
-      byPlan[planId].seenMemberIds.add(mid);
-
-      const s = (ob.status ?? "").toUpperCase();
-      const isPaid =
-        SUCCESS_STATUSES.has(s) ||
-        paidObligationIds.has(String(ob.id)) ||
-        (planId && mid && paidLinkMemberKeys.has(`${planId}::${mid}`));
-      if (isPaid && mid) byPlan[planId].paidMemberIds.add(mid);
-    }
-
-    // Transactions tell us the real amount collected — dedupe by
-    // plan+member so a member's repeat successful transactions on the same
-    // plan (see Payments.jsx's PlanCard metrics for why those can occur)
-    // aren't double-counted.
-    const countedPlanMemberPaymentsDashboard = new Set();
-    for (const tx of transactions) {
-      const planId = tx.paymentLink?.id;
-      if (!planId) continue;
-      if (!byPlan[planId]) {
-        byPlan[planId] = {
-          collected: 0,
-          seenMemberIds: new Set(),
-          paidMemberIds: new Set(),
-        };
-      }
-      if (!SUCCESS_STATUSES.has((tx.status ?? "").toUpperCase())) continue;
-
-      const mid = String(
-        tx.member?.id ?? tx.member?.user?.id ?? tx.user?.id ?? "",
-      );
-      const dedupeKey = mid ? `${planId}::${mid}` : `${planId}::${tx.id}`;
-      if (countedPlanMemberPaymentsDashboard.has(dedupeKey)) continue;
-      countedPlanMemberPaymentsDashboard.add(dedupeKey);
-
-      byPlan[planId].collected += tx.amount ?? 0;
-    }
-
-    const result = {};
-    for (const [id, m] of Object.entries(byPlan)) {
-      result[id] = {
-        collected: m.collected,
-        paidCount: m.paidMemberIds.size,
-        totalCount: m.seenMemberIds.size,
-      };
-    }
-    return result;
-  }, [obligations, transactions]);
+  const resolveMemberName = useCallback(
+    (tx) => {
+      // 1. Try the members list (most reliable — has proper first/last name)
+      const mid = tx.member?.id ?? tx.memberId;
+      if (mid && memberNameMap.byMemberId[String(mid)])
+        return memberNameMap.byMemberId[String(mid)];
+      const uid = tx.member?.user?.id ?? tx.user?.id ?? tx.userId;
+      if (uid && memberNameMap.byUserId[String(uid)])
+        return memberNameMap.byUserId[String(uid)];
+      // 2. Fall back to whatever name fields the transaction itself carries
+      const u = tx.member?.user ?? tx.user ?? tx.payer ?? tx.member ?? {};
+      const f = u.firstName ?? tx.firstName ?? "";
+      const l = u.lastName ?? tx.lastName ?? "";
+      const full = `${f} ${l}`.trim();
+      return full ? toTitleCase(full) : null;
+    },
+    [memberNameMap],
+  );
 
   // ── Filter payments by search ─────────────────────────────────────────────
   const filteredTransactions = useMemo(() => {
@@ -444,12 +371,18 @@ function DashboardContent({ isPaying, communityId }) {
             empty state (real members/plans exist), not on first login. */}
         {currentUser && !currentUser.phoneVerified && (
           <button
-            onClick={() => navigate(`/dashboard/settings/account/profile?verify=phone`)}
+            onClick={() =>
+              navigate(`/dashboard/settings/account/profile?verify=phone`)
+            }
             className="w-full flex items-center justify-between gap-3 text-left bg-[#D7E2FF] rounded px-6 py-3 mb-5 border border-[#E0E0EB] cursor-pointer"
           >
             <div>
-              <p className="text-sm font-semibold text-brand m-0">Verify Your Phone Number</p>
-              <p className="text-xs text-brand/80 mt-0.5 mb-0">We will use it for payment reminders and account security.</p>
+              <p className="text-sm font-semibold text-brand m-0">
+                Verify Your Phone Number
+              </p>
+              <p className="text-xs text-brand/80 mt-0.5 mb-0">
+                We will use it for payment reminders and account security.
+              </p>
             </div>
             <ChevronRight size={18} className="text-brand flex-shrink-0" />
           </button>
@@ -506,8 +439,6 @@ function DashboardContent({ isPaying, communityId }) {
           <PaymentPlansCard
             plans={visiblePlans}
             plansLoading={plansLoading}
-            planMetrics={planMetrics}
-            membersTotal={members.total}
             onManageAll={() =>
               navigate(`/dashboard/payments?community=${communityId ?? ""}`)
             }
@@ -536,7 +467,9 @@ function DashboardContent({ isPaying, communityId }) {
           resolveMemberName={resolveMemberName}
           community={community}
           onRowClick={(txId) =>
-            navigate(`/dashboard/transactions/${txId}?community=${communityId ?? ""}`)
+            navigate(
+              `/dashboard/transactions/${txId}?community=${communityId ?? ""}`,
+            )
           }
         />
       </main>
