@@ -9,9 +9,15 @@ import { getErrorMessage } from "../../../../utils/errorHandler";
 import { parseUserData } from "../../../../utils/userData";
 import { toTitleCase } from "../../../../utils/format";
 import { Button } from "../../../../components/ui/Button";
+import { TextInput } from "../../../../components/ui/TextInput";
 import verifiedBadge from "../../../../assets/icons/verified-badge.webp";
 
-const inputCls = "w-full h-12 min-h-8 py-1 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all focus:border-[#002FA7]";
+// Only used for the two non-editable "display" boxes below (verified email/
+// phone) -- real text fields (first/last name) use the shared TextInput
+// component instead, which is also where the actual border color/radius
+// spec lives now. Kept separate rather than reusing TextInput's own class
+// string here since these aren't real <input> elements.
+const readOnlyFieldCls = "w-full h-12 min-h-8 py-1 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -137,16 +143,16 @@ export default function Profile() {
         <div className="border border-surface-container-border bg-white rounded-2xl p-4 flex flex-col gap-3.5">
           <div>
             <label className="text-xs text-[#888] block mb-1.5">First Name</label>
-            <input className={inputCls} value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />
+            <TextInput value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />
           </div>
           <div>
             <label className="text-xs text-[#888] block mb-1.5">Last Name</label>
-            <input className={inputCls} value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} />
+            <TextInput value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} />
           </div>
           <div>
             <label className="text-xs text-[#888] block mb-1.5">Email Address</label>
             <div className="flex items-center gap-2">
-              <div className={`${inputCls} bg-[#F5F5F5] text-[#999] flex items-center justify-between gap-2`}>
+              <div className={`${readOnlyFieldCls} bg-[#F5F5F5] text-[#999] flex items-center justify-between gap-2`}>
                 <span className="truncate">{user?.email ?? ""}</span>
                 {user?.emailVerified && <img src={verifiedBadge} alt="Verified" className="w-[18px] h-[18px] flex-shrink-0" />}
               </div>
@@ -163,7 +169,7 @@ export default function Profile() {
           <div>
             <label className="text-xs text-[#888] block mb-1.5">Phone Number</label>
             <div className="flex items-center gap-2">
-              <div className={`${inputCls} bg-[#F5F5F5] text-[#999] flex items-center justify-between gap-2`}>
+              <div className={`${readOnlyFieldCls} bg-[#F5F5F5] text-[#999] flex items-center justify-between gap-2`}>
                 <span className="truncate">{user?.phoneNumber ?? ""}</span>
                 {user?.phoneVerified && <img src={verifiedBadge} alt="Verified" className="w-[18px] h-[18px] flex-shrink-0" />}
               </div>
