@@ -10,9 +10,8 @@ import { notifyError } from "../../../../utils/errorHandler";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { getEmailError } from "../../../../utils/validators";
 import { Button } from "../../../../components/ui/Button";
+import { TextInput } from "../../../../components/ui/TextInput";
 import SuccessBadge from "../../../../components/common/SuccessBadge";
-
-const inputCls = "w-full h-12 min-h-8 py-1 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all focus:border-[#002FA7]";
 
 // Masks an email's local part for display in the OTP prompt, e.g.
 // "aminaargawal@gmail.com" -> "**********al@gmail.com" — keep the last 2
@@ -140,12 +139,12 @@ export default function UpdateEmail() {
           <div className="px-4">
             <div className="border border-surface-container-border bg-white rounded-2xl p-4">
               <label className="text-xs text-[#888] block mb-1.5">Email Address</label>
-              <input
-                className={inputCls}
+              <TextInput
                 type="email"
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setFieldError(""); }}
                 autoFocus
+                error={fieldError}
               />
               {fieldError && <p className="text-xs text-danger mt-1.5 mx-1 mb-0">{fieldError}</p>}
             </div>

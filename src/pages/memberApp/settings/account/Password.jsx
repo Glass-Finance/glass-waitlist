@@ -7,28 +7,26 @@ import { getErrorMessage } from "../../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
 import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
 import { Button } from "../../../../components/ui/Button";
-
-const inputCls = "w-full h-12 min-h-8 py-1 pl-4 pr-10 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all focus:border-[#002FA7]";
+import { TextInput } from "../../../../components/ui/TextInput";
 
 function PasswordField({ label, value, onChange, show, onToggleShow }) {
   return (
     <div>
       <label className="text-xs text-[#888] block mb-1.5">{label}</label>
-      <div className="relative">
-        <input
-          type={show ? "text" : "password"}
-          value={value}
-          onChange={onChange}
-          className={inputCls}
-        />
-        <button
-          type="button"
-          onClick={onToggleShow}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[#999] p-1"
-        >
-          {show ? <EyeOff size={15} /> : <Eye size={15} />}
-        </button>
-      </div>
+      <TextInput
+        type={show ? "text" : "password"}
+        value={value}
+        onChange={onChange}
+        rightElement={
+          <button
+            type="button"
+            onClick={onToggleShow}
+            className="bg-transparent border-none cursor-pointer text-[#999] p-1"
+          >
+            {show ? <EyeOff size={15} /> : <Eye size={15} />}
+          </button>
+        }
+      />
     </div>
   );
 }

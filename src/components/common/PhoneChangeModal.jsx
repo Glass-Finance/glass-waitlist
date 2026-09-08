@@ -4,6 +4,7 @@ import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
 import OtpBoxes from "./OtpBoxes";
 import { Button } from "../ui/Button";
 import SuccessBadge from "./SuccessBadge";
+import ModalShell from "../dashboard/ModalShell";
 
 // Codes are valid for 15 minutes (see the same figure quoted in SignIn.jsx
 // and EmailChangeModal.jsx).
@@ -15,14 +16,6 @@ function maskPhone(phone) {
   const digits = (phone ?? "").replace(/\D/g, "");
   if (digits.length <= 4) return phone;
   return "*".repeat(digits.length - 4) + digits.slice(-4);
-}
-
-function ModalShell({ children }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 px-4">
-      <div className="relative bg-surface-bg rounded-xl px-6 py-8 w-full max-w-xl shadow-xl border border-[#E5E7EB]">{children}</div>
-    </div>
-  );
 }
 
 // Two-step modal: enter the OTP sent to the new phone number, then a brief
@@ -76,7 +69,7 @@ export default function PhoneChangeModal({ newPhone, isUpdate, onSubmitOtp, onVe
 
   if (step === "success") {
     return (
-      <ModalShell>
+      <ModalShell onClose={onVerified}>
         <SuccessBadge
           message={isUpdate ? "Your Phone Number Has Been Updated!" : "Your Phone Number Has Been Verified!"}
         />
@@ -85,10 +78,7 @@ export default function PhoneChangeModal({ newPhone, isUpdate, onSubmitOtp, onVe
   }
 
   return (
-    <ModalShell>
-      <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600" aria-label="Close">
-        ✕
-      </button>
+    <ModalShell onClose={onClose}>
       <h1 className="text-headline text-gray-900 mb-3">Enter the Code we Sent</h1>
       <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code that was sent to</p>
       <p className="text-sm font-semibold text-gray-900 mb-2">{maskPhone(newPhone)}</p>

@@ -4,11 +4,17 @@ import { X } from "lucide-react";
 // Shared dashboard modal chrome — extracted out of PlatformAdmin.jsx so other
 // dashboard pages (Members, MemberDetail, MemberAccess, Payments, finance
 // settings) can build confirm dialogs on the same visual language instead
-// of falling back to window.confirm(). Also reused (via EmailChangeModal/
-// PhoneChangeModal) by SignUp and the member app -- both of those sit
-// outside the dashboard's KeyboardShortcutsProvider, so this keeps its own
+// of falling back to window.confirm(). Also used by EmailChangeModal and
+// PhoneChangeModal (SignUp and the member app) -- both of those sit outside
+// the dashboard's KeyboardShortcutsProvider, so this keeps its own
 // self-contained Escape handling rather than going through
 // useEscapeToClose, which would silently no-op there.
+//
+// title is optional: EmailChangeModal/PhoneChangeModal put their own
+// heading inside their content (a bigger, differently-styled title than a
+// dashboard confirm dialog's), so when title is omitted the bordered
+// header row + divider aren't rendered at all -- only the close button,
+// positioned over the content instead of inside a header strip.
 export default function ModalShell({ title, subtitle, onClose, children }) {
   // Escape-to-close -- every dashboard modal built on this shell gets this
   // for free; hand-rolled modals elsewhere in the app don't have it yet.
@@ -26,22 +32,32 @@ export default function ModalShell({ title, subtitle, onClose, children }) {
       }}
     >
       <div
-        className="bg-surface-bg rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border"
+        className={`relative bg-surface-bg rounded-2xl w-full shadow-2xl border border-surface-container-border ${title ? "max-w-md" : "max-w-xl px-6 py-8"}`}
       >
-        <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
-          <div>
-            <h2 className="text-sm font-bold text-gray-900">{title}</h2>
-            {subtitle && (
-              <p className="text-[11px] text-gray-400 mt-0.5">{subtitle}</p>
-            )}
+        {title ? (
+          <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
+            <div>
+              <h2 className="text-sm font-bold text-gray-900">{title}</h2>
+              {subtitle && (
+                <p className="text-[11px] text-gray-400 mt-0.5">{subtitle}</p>
+              )}
+            </div>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+            >
+              <X size={15} />
+            </button>
           </div>
+        ) : (
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+            aria-label="Close"
+            className="absolute top-4 right-4 p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
           >
             <X size={15} />
           </button>
-        </div>
+        )}
         {children}
       </div>
     </div>

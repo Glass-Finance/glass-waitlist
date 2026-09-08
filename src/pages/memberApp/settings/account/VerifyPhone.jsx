@@ -9,9 +9,8 @@ import { useCountdown, formatCountdown } from "../../../../hooks/useCountdown";
 import { notifyError, getErrorMessage } from "../../../../utils/errorHandler";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../../utils/phone";
 import { Button } from "../../../../components/ui/Button";
+import { TextInput } from "../../../../components/ui/TextInput";
 import SuccessBadge from "../../../../components/common/SuccessBadge";
-
-const inputCls = "w-full h-12 min-h-8 py-1 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all focus:border-[#002FA7]";
 
 // Masks a phone number for display, keeping the last 4 digits visible, e.g.
 // "2348012345678" -> "*********5678".
@@ -141,12 +140,12 @@ export default function VerifyPhone() {
           <div className="px-4">
             <div className="border border-surface-container-border bg-white rounded-2xl p-4">
               <label className="text-xs text-[#888] block mb-1.5">Phone Number</label>
-              <input
-                className={inputCls}
+              <TextInput
                 type="tel"
                 value={phone}
                 onChange={(e) => { setPhone(e.target.value); setFieldError(""); }}
                 autoFocus
+                error={fieldError}
               />
               {fieldError && <p className="text-xs text-danger mt-1.5 mx-1 mb-0">{fieldError}</p>}
             </div>
