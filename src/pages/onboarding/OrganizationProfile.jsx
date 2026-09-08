@@ -21,9 +21,9 @@ import { notifyError } from "../../utils/errorHandler";
 import { getEmailError } from "../../utils/validators";
 import { resizeImageFile } from "../../utils/resizeImage";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
-import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import StepIndicator from "../../components/onboarding/StepIndicator";
+import OnboardingStepsSidebar from "../../components/onboarding/OnboardingStepsSidebar";
 import { Button } from "../../components/ui/Button";
 
 const INVITE_HOST = APP_ORIGIN.replace(/^https?:\/\//, "");
@@ -37,19 +37,6 @@ const COMPLETED_STEP_IDS = ["choose-path", "paying-member"];
 
 const inputCls =
   "w-full h-12 min-h-8 border bg-stacked-container px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
-
-function StepIcon({ id }) {
-  const icons = {
-    organization: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>,
-    payment:      <><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></>,
-    members:      <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>,
-  };
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      {icons[id]}
-    </svg>
-  );
-}
 
 export default function OrganizationProfile() {
   const navigate   = useNavigate();
@@ -259,36 +246,7 @@ export default function OrganizationProfile() {
         </div>
 
         {/* Sidebar */}
-        <aside className="hidden lg:flex w-64 flex-shrink-0 bg-surface-container border-r border-outline-on-surface flex-col pt-10 px-6">
-          {ONBOARDING_STEPS.map((step, i) => {
-            const isActive    = step.id === "organization";
-            const isCompleted = COMPLETED_STEP_IDS.includes(step.id);
-            const isLast      = i === ONBOARDING_STEPS.length - 1;
-            return (
-              <div key={step.id} className="flex items-start gap-4">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      isCompleted
-                        ? "bg-brand text-white"
-                        : isActive
-                          ? "bg-white border-2 border-brand text-brand shadow-[0_0_0_4px_rgba(0,47,167,0.15)]"
-                          : "bg-white border border-outline-on-surface text-gray-400"
-                    }`}
-                  >
-                    {isCompleted
-                      ? <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      : <StepIcon id={step.id} />}
-                  </div>
-                  {!isLast && <div className={`w-px my-1 min-h-10 ${isCompleted ? "bg-brand" : "bg-outline-on-surface"}`} />}
-                </div>
-                <div className="pt-1.5 pb-10">
-                  <span className={`text-sm font-medium ${isActive ? "text-[#000000]" : "text-gray-400"}`}>{step.label}</span>
-                </div>
-              </div>
-            );
-          })}
-        </aside>
+        <OnboardingStepsSidebar activeStepId="organization" completedStepIds={COMPLETED_STEP_IDS} />
 
         {/* Main */}
         <main className="flex-1 lg:overflow-y-auto py-6 px-4 lg:py-10 lg:px-12 flex flex-col items-center">

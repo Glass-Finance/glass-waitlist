@@ -163,9 +163,9 @@ function DetailShell({ catLabel, onClose, maxWidthCls, children }) {
           </span>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer bg-transparent border-solid flex-shrink-0"
+            className="p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all flex-shrink-0"
           >
-            <X size={14} />
+            <X size={15} />
           </button>
         </div>
         {children}
@@ -247,14 +247,11 @@ function NotificationDetailModal({ n, onClose }) {
           {meta && <p className="text-xs text-gray-400 mt-3 m-0">{meta}</p>}
         </div>
         <div className="flex items-center justify-center gap-3 px-6 py-4 border-t border-gray-100">
-          <button
-            onClick={onClose}
-            className="h-9 px-4 rounded-sm text-[13px] font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
-          >
+          <Button onClick={onClose} variant="secondary" fullWidth={false} size="sm" className="!h-9 !py-0 !text-[13px] !font-normal">
             Close
-          </button>
+          </Button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-sm !text-[13px] !font-normal">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !text-[13px] !font-normal">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -340,14 +337,11 @@ function NotificationDetailModal({ n, onClose }) {
         </div>
         <FactRows rows={factRows} />
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
-          <button
-            onClick={onClose}
-            className="h-9 px-4 rounded-sm text-[13px] font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
-          >
+          <Button onClick={onClose} variant="secondary" fullWidth={false} size="sm" className="!h-9 !py-0 !text-[13px] !font-normal">
             Close
-          </button>
+          </Button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-sm !text-[13px] !font-normal">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !text-[13px] !font-normal">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -378,14 +372,11 @@ function NotificationDetailModal({ n, onClose }) {
         </div>
         <FactRows rows={factRows} />
         <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
-          <button
-            onClick={onClose}
-            className="h-9 px-4 rounded-sm text-[13px] font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
-          >
+          <Button onClick={onClose} variant="secondary" fullWidth={false} size="sm" className="!h-9 !py-0 !text-[13px] !font-normal">
             Close
-          </button>
+          </Button>
           {action && (
-            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-sm !text-[13px] !font-normal">
+            <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !text-[13px] !font-normal">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -419,14 +410,11 @@ function NotificationDetailModal({ n, onClose }) {
       </div>
       <FactRows rows={factRows} />
       <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
-        <button
-          onClick={onClose}
-          className="px-4 py-2 rounded-lg text-xs font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-100 cursor-pointer transition-colors"
-        >
+        <Button onClick={onClose} variant="secondary" fullWidth={false} size="sm" className="!h-9 !py-0 !text-xs !font-normal">
           Close
-        </button>
+        </Button>
         {action && (
-          <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !rounded-sm !text-[13px] !font-normal">
+          <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4 flex items-center gap-1 !h-9 !py-0 !text-[13px] !font-normal">
             {action.label} <ChevronRight size={13} />
           </Button>
         )}

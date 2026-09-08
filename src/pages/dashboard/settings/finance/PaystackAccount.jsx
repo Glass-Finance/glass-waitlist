@@ -9,6 +9,7 @@ import LoadingState from "../../../../components/common/LoadingState";
 import SuccessBadge from "../../../../components/common/SuccessBadge";
 import { Button } from "../../../../components/ui/Button";
 import { formatNairaCompact as formatNaira, formatDate } from "../../../../utils/format";
+import { getErrorMessage } from "../../../../utils/errorHandler";
 import banksData from "nigerian-bank-icons/assets/banks.json";
 
 // Exclude generic placeholder entries — banks without real logos use colored initials.
@@ -199,11 +200,7 @@ export default function PaystackAccount() {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 1800);
     } catch (err) {
-      const desc =
-        err?.response?.data?.description ??
-        err?.response?.data?.message ??
-        "Couldn't save the account. Please try again.";
-      setSaveError(desc);
+      setSaveError(getErrorMessage(err, "Couldn't save the account. Please try again."));
     }
   }
 
@@ -213,11 +210,7 @@ export default function PaystackAccount() {
       await remove.mutateAsync(account.id);
       setShowRemoveModal(false);
     } catch (err) {
-      const desc =
-        err?.response?.data?.description ??
-        err?.response?.data?.message ??
-        "Couldn't remove the account. Please try again.";
-      setRemoveError(desc);
+      setRemoveError(getErrorMessage(err, "Couldn't remove the account. Please try again."));
     }
   }
 

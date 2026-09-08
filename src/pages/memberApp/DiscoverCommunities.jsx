@@ -19,6 +19,7 @@ import {
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import LoadingState from "../../components/common/LoadingState";
 import JoinApprovedModal from "../../components/memberApp/JoinApprovedModal";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 function unwrapList(res) {
   const d = res.data?.data;
@@ -89,9 +90,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
         });
       }
     } catch (err) {
-      setErrorMsg(
-        err?.response?.data?.message ?? "Couldn't send request. Try again.",
-      );
+      setErrorMsg(getErrorMessage(err, "Couldn't send request. Try again."));
     } finally {
       setLoading(false);
     }

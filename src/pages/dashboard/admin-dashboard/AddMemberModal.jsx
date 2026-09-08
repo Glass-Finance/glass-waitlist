@@ -9,6 +9,7 @@ import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
 import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 import { Button } from "../../../components/ui/Button";
 import SuccessBadge from "../../../components/common/SuccessBadge";
+import { getErrorMessage } from "../../../utils/errorHandler";
 
 const ALLOWED_ROLE_NAMES = new Set([
   "Community Member",
@@ -245,11 +246,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
       setShowSuccess(true);
       setTimeout(onClose, 1800);
     } catch (err) {
-      setManualError(
-        err?.response?.data?.description ??
-          err?.message ??
-          "Failed to send invites.",
-      );
+      setManualError(getErrorMessage(err, "Failed to send invites."));
     } finally {
       setManualLoading(false);
     }

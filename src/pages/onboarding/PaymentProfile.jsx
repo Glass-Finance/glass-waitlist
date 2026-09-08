@@ -21,8 +21,8 @@ import { notifyError, getErrorMessage } from "../../utils/errorHandler";
 import { useCommunityAccount } from "../../hooks/useCommunityAccount";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
 import BankSelect from "../../components/common/BankSelect";
-import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import StepIndicator from "../../components/onboarding/StepIndicator";
+import OnboardingStepsSidebar from "../../components/onboarding/OnboardingStepsSidebar";
 import { useAuth } from "../../store/AuthContext";
 import { Button } from "../../components/ui/Button";
 
@@ -30,21 +30,6 @@ const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization"];
 
 const inputCls =
   "w-full h-12 min-h-8 border-[1.5px] border-gray-200 px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
-
-function StepIcon({ id, completed }) {
-  if (completed) return (
-    <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
-      <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      {id === "organization" && <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>}
-      {id === "payment"      && <><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></>}
-      {id === "members"      && <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>}
-    </svg>
-  );
-}
 
 function SuccessModal() {
   return (
@@ -165,15 +150,8 @@ export default function PaymentProfile() {
           setManualMode(true);
         }
       } catch (err) {
-        const desc =
-          err?.response?.data?.description ??
-          err?.response?.data?.message ??
-          null;
-        setError(
-          desc
-            ? `${desc}. Enter the account name manually below.`
-            : "Couldn't auto-verify this account. Enter the account name manually below."
-        );
+        const message = getErrorMessage(err, "Couldn't auto-verify this account");
+        setError(`${message} Enter the account name manually below.`);
         setManualMode(true);
       } finally {
         setResolving(false);
@@ -267,37 +245,7 @@ export default function PaymentProfile() {
         </div>
 
         {/* Sidebar */}
-        <aside className="hidden lg:flex w-64 flex-shrink-0 bg-surface-container border-r border-outline-on-surface flex-col pt-10 px-6">
-          {ONBOARDING_STEPS.map((step, i) => {
-            const isActive    = step.id === "payment";
-            const isCompleted = COMPLETED_STEP_IDS.includes(step.id);
-            const isLast      = i === ONBOARDING_STEPS.length - 1;
-            return (
-              <div key={step.id} className="flex items-start gap-4">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      isCompleted
-                        ? "bg-brand text-white"
-                        : isActive
-                          ? "bg-white border-2 border-brand text-brand"
-                          : "bg-white border border-outline-on-surface text-gray-400"
-                    }`}
-                    style={isActive && !isCompleted ? { boxShadow: "0 0 0 4px rgba(0,47,167,0.15)" } : undefined}
-                  >
-                    <StepIcon id={step.id} completed={isCompleted} />
-                  </div>
-                  {!isLast && <div className={`w-px my-1 min-h-10 ${isCompleted ? "bg-brand" : "bg-outline-on-surface"}`} />}
-                </div>
-                <div className="pt-1.5 pb-10">
-                  <span className={`text-sm font-medium ${isActive ? "text-[#000000]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}>
-                    {step.label}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </aside>
+        <OnboardingStepsSidebar activeStepId="payment" completedStepIds={COMPLETED_STEP_IDS} />
 
         {/* Main */}
         <main className="flex-1 lg:overflow-y-auto py-6 px-4 lg:py-10 lg:px-12">

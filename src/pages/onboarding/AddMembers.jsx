@@ -24,8 +24,8 @@ import { toastProgress, toastSuccess } from "../../utils/toast";
 import { useRoles } from "../../hooks/useCommunityMembers";
 import { bulkCreateCommunityInvites } from "../../api/invites";
 import { readOnboardingProgress, clearOnboardingProgress } from "../../utils/onboardingProgress";
-import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 import StepIndicator from "../../components/onboarding/StepIndicator";
+import OnboardingStepsSidebar from "../../components/onboarding/OnboardingStepsSidebar";
 import { useAuth } from "../../store/AuthContext";
 import { Button } from "../../components/ui/Button";
 
@@ -117,6 +117,208 @@ function SuccessModal({ communityName, onDashboard, onCopy }) {
         <div className="h-[env(safe-area-inset-bottom,0px)] lg:hidden" />
       </div>
     </div>
+  );
+}
+
+// Extracted from AddMembers() as a pure presentational piece -- all state
+// and handlers still live in the parent and come in as props, same shape
+// as SuccessModal above. Kept as an explicit flat prop list (rather than
+// a bundled object) so each prop maps 1:1 to the variable it replaced,
+// making this a mechanical extraction with no behavior change.
+function UploadMembersTab({
+  uploadedFile, dragOver, setDragOver, fileRef, handleFile, handleDrop,
+  fileUrl, setFileUrl, urlStage, urlProgress, urlFileInfo,
+  handleUrlUpload, clearUrlUpload, loading, error,
+}) {
+  return (
+    <>
+      <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 mb-4">
+        <p className="text-sm text-gray-500">Upload a CSV file with following sample information</p>
+        <button onClick={downloadTemplate} className="flex items-center gap-1.5 text-xs font-medium text-brand hover:opacity-80 bg-transparent border-none cursor-pointer">
+          <Download size={12} />Download Template
+        </button>
+      </div>
+
+      {/* Sample table — wider than any phone viewport, so it
+          scrolls in its own strip instead of squeezing columns
+          down to illegible widths. */}
+      <div className="rounded-md overflow-x-auto mb-4 border border-[#E5E7EB]">
+        <table className="w-full text-xs min-w-[560px]">
+          <thead>
+            <tr className="bg-gray-50">
+              {HEADERS.map((h) => <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500">{h}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-t border-gray-100">
+              {SAMPLE_ROW.map((cell, i) => (
+                <td key={i} className={`px-4 py-3 ${i === 2 ? "text-brand underline" : "text-gray-900"}`}>{cell}</td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* Drop zone */}
+      <div
+        onClick={() => fileRef.current?.click()}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+        className={`w-full rounded-lg flex flex-col items-center justify-center py-8 cursor-pointer transition-all mb-5 min-h-[100px] border-dashed ${dragOver ? "border-2 bg-[#EEF2FF] border-brand" : "border bg-[#FAFAFA] border-gray-200"}`}
+      >
+        <input ref={fileRef} type="file" accept=".csv" className="hidden"
+          onChange={(e) => handleFile(e.target.files[0])} />
+        <img src={uploadCloudIcon} alt="" className="w-6 h-6 mb-2" />
+        {uploadedFile
+          ? <p className="text-xs text-brand font-medium">{uploadedFile.name}</p>
+          : <p className="text-xs text-gray-500">Drag and Drop CSV here or <span className="text-brand font-medium underline">Browse</span></p>}
+      </div>
+
+      {/* URL upload */}
+      <div>
+        <p className="text-xs font-medium text-gray-700 mb-2">Or Upload from URL</p>
+        <div className="flex gap-2">
+          <input type="url" value={fileUrl}
+            onChange={(e) => { setFileUrl(e.target.value); if (urlStage !== "idle") clearUrlUpload(); }}
+            placeholder="Add File URL" className={inputCls}
+            disabled={urlStage === "fetching"} />
+          <button onClick={handleUrlUpload} disabled={!fileUrl.trim() || urlStage === "fetching" || loading}
+            className="px-5 py-2 rounded-lg bg-[#002FA733] text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50">
+            Upload
+          </button>
+        </div>
+
+        {urlStage === "fetching" && (
+          <div className="mt-3 flex items-center gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
+            <FileSpreadsheet size={20} className="text-gray-400 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-gray-900 truncate">{fileUrl.split("/").pop() || "file.csv"}</p>
+              <div className="mt-1.5 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-brand transition-[width] duration-200 ease-linear"
+                  style={{ width: `${urlProgress}%` }}
+                />
+              </div>
+            </div>
+            <span className="text-xs text-gray-500 flex-shrink-0">{Math.round(urlProgress)}%</span>
+            <button onClick={clearUrlUpload} aria-label="Cancel upload"
+              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0">
+              <X size={16} />
+            </button>
+          </div>
+        )}
+
+        {urlStage === "complete" && urlFileInfo && (
+          <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
+            <FileSpreadsheet size={20} className="text-green-600 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-gray-900 truncate">{urlFileInfo.name}</p>
+              <p className="text-xs text-gray-500 flex items-center gap-1">
+                {urlFileInfo.sizeLabel} • <Check size={11} className="text-green-600" /> <span className="text-green-600 font-medium">Complete</span>
+              </p>
+            </div>
+            <button onClick={clearUrlUpload} aria-label="Remove file"
+              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0">
+              <X size={16} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {error && <p className="text-sm text-red-500 mt-3">{error}</p>}
+    </>
+  );
+}
+
+// Same extraction approach as UploadMembersTab above.
+function ManualMembersTab({
+  emails, emailInput, setEmailInput, handleEmailKeyDown, commitEmailChip, removeEmailChip,
+  phoneNumbers, setPhoneNumbers, selectedRoleId, setSelectedRoleId, rolesLoading, finalRoles,
+  billingExempt, setBillingExempt, error, loading, handleSendInvite,
+}) {
+  return (
+    <>
+      <p className="text-sm font-medium text-gray-900 mb-2">Enter Email(s):</p>
+      <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5 min-h-[60px] border border-[#E5E7EB] bg-white focus-within:border-[#002FA7]">
+        {emails.map((em, i) => (
+          <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800 bg-stacked-container">
+            <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-brand text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
+              {em.charAt(0).toUpperCase()}
+            </span>
+            {em}
+            <button onClick={() => removeEmailChip(i)} aria-label={`Remove ${em}`}
+              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex items-center justify-center">
+              <X size={12} />
+            </button>
+          </span>
+        ))}
+        <input
+          type="text"
+          value={emailInput}
+          onChange={(e) => setEmailInput(e.target.value)}
+          onKeyDown={handleEmailKeyDown}
+          onBlur={commitEmailChip}
+          placeholder={emails.length === 0 ? "Type an email and press Enter" : ""}
+          className="flex-1 min-w-[160px] outline-none text-sm bg-transparent border-none py-1"
+        />
+      </div>
+
+      <p className="text-sm font-medium text-gray-900 mb-2">
+        Enter Phone Number(s) <span className="text-gray-400 font-normal">(Optional):</span>
+      </p>
+      <input
+        type="text"
+        value={phoneNumbers}
+        onChange={(e) => setPhoneNumbers(e.target.value)}
+        placeholder="Enter Phone Number"
+        className={`${inputCls} mb-5`}
+      />
+
+      <p className="text-sm font-medium text-gray-900 mb-2">Role:</p>
+      <div className="relative mb-4">
+        <select
+          value={selectedRoleId}
+          onChange={(e) => setSelectedRoleId(e.target.value)}
+          disabled={rolesLoading}
+          className={`${inputCls} appearance-none pr-8 ${rolesLoading ? "opacity-50" : ""}`}
+        >
+          {rolesLoading
+            ? <option>Loading roles…</option>
+            : finalRoles.map((r) => (
+                <option key={r.id} value={r.id}>{r.name}</option>
+              ))
+          }
+        </select>
+        <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+
+      <label className="flex items-center gap-2.5 text-sm text-gray-700 mb-5 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={billingExempt}
+          onChange={(e) => setBillingExempt(e.target.checked)}
+          className="w-4 h-4 accent-brand cursor-pointer"
+        />
+        Exempt from billing
+        <span className="text-xs text-gray-400 font-normal">(no payment reminders will be sent)</span>
+      </label>
+
+      {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
+
+      <div className="flex lg:justify-end">
+        <Button
+          onClick={handleSendInvite}
+          disabled={emails.length === 0 || rolesLoading || !selectedRoleId}
+          loading={loading}
+          size="sm"
+          className="lg:w-auto px-6"
+        >
+          {loading ? "Sending…" : "Send Invite"}
+        </Button>
+      </div>
+    </>
   );
 }
 
@@ -361,42 +563,7 @@ export default function AddMembers() {
         </div>
 
         {/* Sidebar */}
-        <aside className="hidden lg:flex w-64 flex-shrink-0 bg-surface-container border-r border-outline-on-surface flex-col pt-10 px-6">
-          {ONBOARDING_STEPS.map((step, i) => {
-            const isActive    = step.id === "members";
-            const isCompleted = COMPLETED_STEP_IDS.includes(step.id);
-            const isLast      = i === ONBOARDING_STEPS.length - 1;
-            return (
-              <div key={step.id} className="flex items-start gap-4">
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      isCompleted
-                        ? "bg-brand text-white"
-                        : isActive
-                          ? "bg-white border-2 border-brand text-brand"
-                          : "bg-white border border-outline-on-surface text-gray-400"
-                    }`}
-                    style={isActive && !isCompleted ? { boxShadow: "0 0 0 4px rgba(0,47,167,0.15)" } : undefined}
-                  >
-                    {isCompleted
-                      ? <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                      : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          {step.id === "organization" && <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>}
-                          {step.id === "payment"      && <><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></>}
-                          {step.id === "members"      && <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>}
-                        </svg>
-                    }
-                  </div>
-                  {!isLast && <div className={`w-px my-1 min-h-10 ${isCompleted ? "bg-brand" : "bg-outline-on-surface"}`} />}
-                </div>
-                <div className="pt-1.5 pb-10">
-                  <span className={`text-sm font-medium ${isActive ? "text-[#000000]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}>{step.label}</span>
-                </div>
-              </div>
-            );
-          })}
-        </aside>
+        <OnboardingStepsSidebar activeStepId="members" completedStepIds={COMPLETED_STEP_IDS} />
 
         {/* Main */}
         <main className="flex-1 lg:overflow-y-auto py-6 px-4 lg:py-10 lg:px-12">
@@ -442,188 +609,28 @@ export default function AddMembers() {
 
               {/* Upload tab */}
               {tab === "upload" && (
-                <>
-                  <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 mb-4">
-                    <p className="text-sm text-gray-500">Upload a CSV file with following sample information</p>
-                    <button onClick={downloadTemplate} className="flex items-center gap-1.5 text-xs font-medium text-brand hover:opacity-80 bg-transparent border-none cursor-pointer">
-                      <Download size={12} />Download Template
-                    </button>
-                  </div>
-
-                  {/* Sample table — wider than any phone viewport, so it
-                      scrolls in its own strip instead of squeezing columns
-                      down to illegible widths. */}
-                  <div className="rounded-md overflow-x-auto mb-4 border border-[#E5E7EB]">
-                    <table className="w-full text-xs min-w-[560px]">
-                      <thead>
-                        <tr className="bg-gray-50">
-                          {HEADERS.map((h) => <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500">{h}</th>)}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="border-t border-gray-100">
-                          {SAMPLE_ROW.map((cell, i) => (
-                            <td key={i} className={`px-4 py-3 ${i === 2 ? "text-brand underline" : "text-gray-900"}`}>{cell}</td>
-                          ))}
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Drop zone */}
-                  <div
-                    onClick={() => fileRef.current?.click()}
-                    onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-                    onDragLeave={() => setDragOver(false)}
-                    onDrop={handleDrop}
-                    className={`w-full rounded-lg flex flex-col items-center justify-center py-8 cursor-pointer transition-all mb-5 min-h-[100px] border-dashed ${dragOver ? "border-2 bg-[#EEF2FF] border-brand" : "border bg-[#FAFAFA] border-gray-200"}`}
-                  >
-                    <input ref={fileRef} type="file" accept=".csv" className="hidden"
-                      onChange={(e) => handleFile(e.target.files[0])} />
-                    <img src={uploadCloudIcon} alt="" className="w-6 h-6 mb-2" />
-                    {uploadedFile
-                      ? <p className="text-xs text-brand font-medium">{uploadedFile.name}</p>
-                      : <p className="text-xs text-gray-500">Drag and Drop CSV here or <span className="text-brand font-medium underline">Browse</span></p>}
-                  </div>
-
-                  {/* URL upload */}
-                  <div>
-                    <p className="text-xs font-medium text-gray-700 mb-2">Or Upload from URL</p>
-                    <div className="flex gap-2">
-                      <input type="url" value={fileUrl}
-                        onChange={(e) => { setFileUrl(e.target.value); if (urlStage !== "idle") clearUrlUpload(); }}
-                        placeholder="Add File URL" className={inputCls}
-                        disabled={urlStage === "fetching"} />
-                      <button onClick={handleUrlUpload} disabled={!fileUrl.trim() || urlStage === "fetching" || loading}
-                        className="px-5 py-2 rounded-lg bg-[#002FA733] text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50">
-                        Upload
-                      </button>
-                    </div>
-
-                    {urlStage === "fetching" && (
-                      <div className="mt-3 flex items-center gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
-                        <FileSpreadsheet size={20} className="text-gray-400 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs text-gray-900 truncate">{fileUrl.split("/").pop() || "file.csv"}</p>
-                          <div className="mt-1.5 h-1.5 rounded-full bg-gray-100 overflow-hidden">
-                            <div
-                              className="h-full rounded-full bg-brand transition-[width] duration-200 ease-linear"
-                              style={{ width: `${urlProgress}%` }}
-                            />
-                          </div>
-                        </div>
-                        <span className="text-xs text-gray-500 flex-shrink-0">{Math.round(urlProgress)}%</span>
-                        <button onClick={clearUrlUpload} aria-label="Cancel upload"
-                          className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0">
-                          <X size={16} />
-                        </button>
-                      </div>
-                    )}
-
-                    {urlStage === "complete" && urlFileInfo && (
-                      <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
-                        <FileSpreadsheet size={20} className="text-green-600 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs text-gray-900 truncate">{urlFileInfo.name}</p>
-                          <p className="text-xs text-gray-500 flex items-center gap-1">
-                            {urlFileInfo.sizeLabel} • <Check size={11} className="text-green-600" /> <span className="text-green-600 font-medium">Complete</span>
-                          </p>
-                        </div>
-                        <button onClick={clearUrlUpload} aria-label="Remove file"
-                          className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0">
-                          <X size={16} />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {error && <p className="text-sm text-red-500 mt-3">{error}</p>}
-                </>
+                <UploadMembersTab
+                  uploadedFile={uploadedFile} dragOver={dragOver} setDragOver={setDragOver}
+                  fileRef={fileRef} handleFile={handleFile} handleDrop={handleDrop}
+                  fileUrl={fileUrl} setFileUrl={setFileUrl} urlStage={urlStage}
+                  urlProgress={urlProgress} urlFileInfo={urlFileInfo}
+                  handleUrlUpload={handleUrlUpload} clearUrlUpload={clearUrlUpload}
+                  loading={loading} error={error}
+                />
               )}
 
               {/* Manual tab */}
               {tab === "manual" && (
-                <>
-                  <p className="text-sm font-medium text-gray-900 mb-2">Enter Email(s):</p>
-                  <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5 min-h-[60px] border border-[#E5E7EB] bg-white focus-within:border-[#002FA7]">
-                    {emails.map((em, i) => (
-                      <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800 bg-stacked-container">
-                        <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-brand text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
-                          {em.charAt(0).toUpperCase()}
-                        </span>
-                        {em}
-                        <button onClick={() => removeEmailChip(i)} aria-label={`Remove ${em}`}
-                          className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex items-center justify-center">
-                          <X size={12} />
-                        </button>
-                      </span>
-                    ))}
-                    <input
-                      type="text"
-                      value={emailInput}
-                      onChange={(e) => setEmailInput(e.target.value)}
-                      onKeyDown={handleEmailKeyDown}
-                      onBlur={commitEmailChip}
-                      placeholder={emails.length === 0 ? "Type an email and press Enter" : ""}
-                      className="flex-1 min-w-[160px] outline-none text-sm bg-transparent border-none py-1"
-                    />
-                  </div>
-
-                  <p className="text-sm font-medium text-gray-900 mb-2">
-                    Enter Phone Number(s) <span className="text-gray-400 font-normal">(Optional):</span>
-                  </p>
-                  <input
-                    type="text"
-                    value={phoneNumbers}
-                    onChange={(e) => setPhoneNumbers(e.target.value)}
-                    placeholder="Enter Phone Number"
-                    className={`${inputCls} mb-5`}
-                  />
-
-                  <p className="text-sm font-medium text-gray-900 mb-2">Role:</p>
-                  <div className="relative mb-4">
-                    <select
-                      value={selectedRoleId}
-                      onChange={(e) => setSelectedRoleId(e.target.value)}
-                      disabled={rolesLoading}
-                      className={`${inputCls} appearance-none pr-8 ${rolesLoading ? "opacity-50" : ""}`}
-                    >
-                      {rolesLoading
-                        ? <option>Loading roles…</option>
-                        : finalRoles.map((r) => (
-                            <option key={r.id} value={r.id}>{r.name}</option>
-                          ))
-                      }
-                    </select>
-                    <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                  </div>
-
-                  <label className="flex items-center gap-2.5 text-sm text-gray-700 mb-5 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={billingExempt}
-                      onChange={(e) => setBillingExempt(e.target.checked)}
-                      className="w-4 h-4 accent-brand cursor-pointer"
-                    />
-                    Exempt from billing
-                    <span className="text-xs text-gray-400 font-normal">(no payment reminders will be sent)</span>
-                  </label>
-
-                  {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
-
-                  <div className="flex lg:justify-end">
-                    <Button
-                      onClick={handleSendInvite}
-                      disabled={emails.length === 0 || rolesLoading || !selectedRoleId}
-                      loading={loading}
-                      size="sm"
-                      className="lg:w-auto px-6"
-                    >
-                      {loading ? "Sending…" : "Send Invite"}
-                    </Button>
-                  </div>
-                </>
+                <ManualMembersTab
+                  emails={emails} emailInput={emailInput} setEmailInput={setEmailInput}
+                  handleEmailKeyDown={handleEmailKeyDown} commitEmailChip={commitEmailChip}
+                  removeEmailChip={removeEmailChip} phoneNumbers={phoneNumbers}
+                  setPhoneNumbers={setPhoneNumbers} selectedRoleId={selectedRoleId}
+                  setSelectedRoleId={setSelectedRoleId} rolesLoading={rolesLoading}
+                  finalRoles={finalRoles} billingExempt={billingExempt}
+                  setBillingExempt={setBillingExempt} error={error} loading={loading}
+                  handleSendInvite={handleSendInvite}
+                />
               )}
             </div>
 

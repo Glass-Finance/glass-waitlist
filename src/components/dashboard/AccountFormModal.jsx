@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Check, X } from "lucide-react";
 import { getBanks, resolveAccount } from "../../api/members";
 import { useEscapeToClose } from "../../hooks/useKeyboardShortcuts";
-import { notifyError } from "../../utils/errorHandler";
+import { getErrorMessage, notifyError } from "../../utils/errorHandler";
 import BankSelect from "../common/BankSelect";
 import { Button } from "../ui/Button";
 
@@ -88,15 +88,8 @@ export default function AccountFormModal({
           setManualMode(true);
         }
       } catch (err) {
-        const desc =
-          err?.response?.data?.description ??
-          err?.response?.data?.message ??
-          null;
-        setResolveError(
-          desc
-            ? `${desc}. Enter the account name manually.`
-            : "Couldn't auto-verify this account. Enter the account name manually.",
-        );
+        const message = getErrorMessage(err, "Couldn't auto-verify this account");
+        setResolveError(`${message} Enter the account name manually.`);
         setManualMode(true);
       } finally {
         setResolving(false);
