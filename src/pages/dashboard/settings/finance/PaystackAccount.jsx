@@ -180,12 +180,14 @@ export default function PaystackAccount() {
   async function handleSave({
     settlementBank,
     settlementBankCode,
+    settlementBankSlug,
     accountNumber,
     accountName,
   }) {
     const body = {
       settlementBank,
       settlementBankCode,
+      settlementBankSlug,
       accountNumber,
       accountName,
     };
