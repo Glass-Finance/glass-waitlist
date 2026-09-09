@@ -1,9 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Pencil, ShieldCheck, ArrowLeft } from "lucide-react";
-import { useMe, useUpdateProfile, useRequestPhoneUpdate, useUpdatePhone } from "../../../../hooks/useMyAccount";
+import {
+  useMe,
+  useUpdateProfile,
+  useRequestPhoneUpdate,
+  useUpdatePhone,
+} from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
-import { updateEmail, deleteAccount, requestAccountDeletionCode } from "../../../../api/members";
+import {
+  updateEmail,
+  deleteAccount,
+  requestAccountDeletionCode,
+} from "../../../../api/members";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { getEmailError } from "../../../../utils/validators";
 import { useEscapeToClose } from "../../../../hooks/useKeyboardShortcuts";
@@ -35,13 +44,18 @@ export default function Profile() {
   // mirroring the member app's full-page equivalents but inline since this
   // is desktop. Seeded straight from ?verify=phone (the Dashboard banner's
   // deep link) so there's no flash of the normal profile view first.
-  const [view, setView] = useState(() => (searchParams.get("verify") === "phone" ? "phone" : "profile"));
+  const [view, setView] = useState(() =>
+    searchParams.get("verify") === "phone" ? "phone" : "profile",
+  );
 
   const [form, setForm] = useState({ firstName: "", lastName: "" });
   const [savedForm, setSavedForm] = useState(form);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
-  const [fieldErrors, setFieldErrors] = useState({ firstName: "", lastName: "" });
+  const [fieldErrors, setFieldErrors] = useState({
+    firstName: "",
+    lastName: "",
+  });
   const [photoPreview, setPhotoPreview] = useState(null);
 
   const [emailDraft, setEmailDraft] = useState("");
@@ -118,7 +132,8 @@ export default function Profile() {
     }
   }
 
-  const profileImageUrl = parseUserData(user).profileImage?.url ?? user?.profileImage?.url ?? null;
+  const profileImageUrl =
+    parseUserData(user).profileImage?.url ?? user?.profileImage?.url ?? null;
 
   useEffect(() => {
     if (!user) return;
@@ -148,7 +163,8 @@ export default function Profile() {
   }, []);
 
   function validateField(field, value) {
-    if (field === "firstName" && !value.trim()) return "First name is required.";
+    if (field === "firstName" && !value.trim())
+      return "First name is required.";
     if (field === "lastName" && !value.trim()) return "Last name is required.";
     return "";
   }
@@ -156,7 +172,9 @@ export default function Profile() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
-    setFieldErrors((fe) => (fe[name] ? { ...fe, [name]: validateField(name, value) } : fe));
+    setFieldErrors((fe) =>
+      fe[name] ? { ...fe, [name]: validateField(name, value) } : fe,
+    );
   };
 
   const handleFieldBlur = (e) => {
@@ -165,7 +183,9 @@ export default function Profile() {
     setFieldErrors((fe) => ({ ...fe, [name]: validateField(name, value) }));
   };
 
-  const isDirty = form.firstName !== savedForm.firstName || form.lastName !== savedForm.lastName;
+  const isDirty =
+    form.firstName !== savedForm.firstName ||
+    form.lastName !== savedForm.lastName;
 
   const handleSave = async () => {
     setError("");
@@ -181,7 +201,8 @@ export default function Profile() {
       const userData = {};
       const firstName = toTitleCase(form.firstName.trim());
       const lastName = toTitleCase(form.lastName.trim());
-      if (form.firstName !== savedForm.firstName) userData.firstName = firstName;
+      if (form.firstName !== savedForm.firstName)
+        userData.firstName = firstName;
       if (form.lastName !== savedForm.lastName) userData.lastName = lastName;
       await updateProfile.mutateAsync({ username: user?.username, userData });
       await refreshUser();
@@ -194,7 +215,7 @@ export default function Profile() {
       setError(
         status === 404
           ? "Profile setup incomplete — please contact support to finish setting up your account."
-          : getErrorMessage(err, "Failed to save changes.")
+          : getErrorMessage(err, "Failed to save changes."),
       );
     }
   };
@@ -202,7 +223,10 @@ export default function Profile() {
   async function handleStartEmailUpdate() {
     const trimmed = emailDraft.trim();
     const fieldErr = getEmailError(trimmed);
-    if (fieldErr) { setEmailFieldError(fieldErr); return; }
+    if (fieldErr) {
+      setEmailFieldError(fieldErr);
+      return;
+    }
     if (trimmed.toLowerCase() === user?.email?.toLowerCase()) {
       setEmailFieldError("That's already your current email address.");
       return;
@@ -213,7 +237,12 @@ export default function Profile() {
       await updateEmail({ email: trimmed.toLowerCase() });
       setEmailModalOpen(true);
     } catch (err) {
-      setEmailFieldError(getErrorMessage(err, "Couldn't send a code to that address. Please try again."));
+      setEmailFieldError(
+        getErrorMessage(
+          err,
+          "Couldn't send a code to that address. Please try again.",
+        ),
+      );
     } finally {
       setEmailSending(false);
     }
@@ -231,7 +260,10 @@ export default function Profile() {
 
   async function handleStartPhoneUpdate() {
     const trimmed = phoneDraft.trim();
-    if (!isPhoneValid(trimmed)) { setPhoneFieldError(PHONE_FORMAT_HINT); return; }
+    if (!isPhoneValid(trimmed)) {
+      setPhoneFieldError(PHONE_FORMAT_HINT);
+      return;
+    }
     if (isPhoneUpdate && trimmed === user?.phoneNumber) {
       setPhoneFieldError("That's already your current phone number.");
       return;
@@ -242,14 +274,22 @@ export default function Profile() {
       await requestPhoneUpdate.mutateAsync({ phoneNumber: trimmed });
       setPhoneModalOpen(true);
     } catch (err) {
-      setPhoneFieldError(getErrorMessage(err, "Couldn't send a code to that number. Please try again."));
+      setPhoneFieldError(
+        getErrorMessage(
+          err,
+          "Couldn't send a code to that number. Please try again.",
+        ),
+      );
     } finally {
       setPhoneSending(false);
     }
   }
 
   async function handleConfirmPhoneOtp(otp) {
-    await updatePhone.mutateAsync({ phoneNumber: phoneDraft.trim(), phoneVerificationOtp: otp });
+    await updatePhone.mutateAsync({
+      phoneNumber: phoneDraft.trim(),
+      phoneVerificationOtp: otp,
+    });
   }
 
   function handlePhoneVerified() {
@@ -267,7 +307,10 @@ export default function Profile() {
     setPhotoPreview(URL.createObjectURL(file));
     setError("");
     try {
-      const uploadRes = await uploadFile.mutateAsync({ file, fileCategory: "PROFILE_IMAGE" });
+      const uploadRes = await uploadFile.mutateAsync({
+        file,
+        fileCategory: "PROFILE_IMAGE",
+      });
       const fileData = uploadRes.data?.data ?? uploadRes.data;
       const profileImageFileId = fileData?.id ?? fileData?.fileId;
       await updateProfile.mutateAsync({ userData: { profileImageFileId } });
@@ -277,34 +320,53 @@ export default function Profile() {
       setError(
         status === 404
           ? "Profile setup incomplete — please contact support to finish setting up your account."
-          : getErrorMessage(err, "Failed to upload photo.")
+          : getErrorMessage(err, "Failed to upload photo."),
       );
     }
   };
 
-  const displayName = `${form.firstName} ${form.lastName}`.trim() || user?.email || "—";
-  const initials = displayName.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
+  const displayName =
+    `${form.firstName} ${form.lastName}`.trim() || user?.email || "—";
+  const initials =
+    displayName
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase())
+      .join("") || "?";
 
   return (
     <div className="flex flex-col gap-5 w-full">
-
       {view === "profile" && (
         <>
           <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
-            <p className="text-sm font-semibold text-gray-900 mb-0.5">Profile</p>
-            <p className="text-xs text-gray-500 mb-4">Manage your personal information</p>
+            <p className="text-sm font-semibold text-gray-900 mb-0.5">
+              Profile
+            </p>
+            <p className="text-xs text-gray-500 mb-4">
+              Manage your personal information
+            </p>
             <div className="-mx-6 border-b border-gray-100 mb-5" />
 
             <div className="flex items-center gap-3 mb-5">
               <div className="w-14 h-14 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {photoPreview || profileImageUrl ? (
-                  <img src={photoPreview ?? profileImageUrl} alt="" className="w-full h-full object-cover" />
+                  <img
+                    src={photoPreview ?? profileImageUrl}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <span className="text-base text-brand">{initials}</span>
                 )}
               </div>
-              <input ref={photoInputRef} type="file" accept="image/png,image/jpeg" className="hidden"
-                onChange={(e) => handlePhotoSelect(e.target.files[0])} />
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/png,image/jpeg"
+                className="hidden"
+                onChange={(e) => handlePhotoSelect(e.target.files[0])}
+              />
               <button
                 onClick={() => photoInputRef.current?.click()}
                 disabled={uploadFile.isPending}
@@ -317,13 +379,29 @@ export default function Profile() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs text-gray-600">First Name</label>
-                <input name="firstName" value={form.firstName} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.firstName ? "border-danger" : "border-gray-300"}`} />
-                {fieldErrors.firstName && <p className="text-xs text-danger">{fieldErrors.firstName}</p>}
+                <input
+                  name="firstName"
+                  value={form.firstName}
+                  onChange={handleChange}
+                  onBlur={handleFieldBlur}
+                  className={`${inputCls} ${fieldErrors.firstName ? "border-danger" : "border-gray-300"}`}
+                />
+                {fieldErrors.firstName && (
+                  <p className="text-xs text-danger">{fieldErrors.firstName}</p>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs text-gray-600">Last Name</label>
-                <input name="lastName" value={form.lastName} onChange={handleChange} onBlur={handleFieldBlur} className={`${inputCls} ${fieldErrors.lastName ? "border-danger" : "border-gray-300"}`} />
-                {fieldErrors.lastName && <p className="text-xs text-danger">{fieldErrors.lastName}</p>}
+                <input
+                  name="lastName"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  onBlur={handleFieldBlur}
+                  className={`${inputCls} ${fieldErrors.lastName ? "border-danger" : "border-gray-300"}`}
+                />
+                {fieldErrors.lastName && (
+                  <p className="text-xs text-danger">{fieldErrors.lastName}</p>
+                )}
               </div>
             </div>
 
@@ -331,12 +409,23 @@ export default function Profile() {
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs text-gray-600">Email Address</label>
                 <div className="flex items-center gap-2">
-                  <div className={`${inputCls} bg-gray-50 text-gray-500 border-gray-300 flex items-center justify-between gap-2`}>
+                  <div
+                    className={`${inputCls} bg-gray-50 text-gray-500 border-gray-300 flex items-center justify-between gap-2`}
+                  >
                     <span className="truncate">{user?.email ?? ""}</span>
-                    {user?.emailVerified && <img src={verifiedBadge} alt="Verified" className="w-[18px] h-[18px] flex-shrink-0" />}
+                    {user?.emailVerified && (
+                      <img
+                        src={verifiedBadge}
+                        alt="Verified"
+                        className="w-[18px] h-[18px] flex-shrink-0"
+                      />
+                    )}
                   </div>
                   <button
-                    onClick={() => { setEmailFieldError(""); setView("email"); }}
+                    onClick={() => {
+                      setEmailFieldError("");
+                      setView("email");
+                    }}
                     title="Update email"
                     aria-label="Update email"
                     className="flex-shrink-0 w-12 h-12 rounded-lg border-[1.5px] border-gray-300 bg-white text-brand cursor-pointer flex items-center justify-center"
@@ -348,14 +437,33 @@ export default function Profile() {
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs text-gray-600">Phone Number</label>
                 <div className="flex items-center gap-2">
-                  <div className={`${inputCls} bg-gray-50 text-gray-500 border-gray-300 flex items-center justify-between gap-2`}>
+                  <div
+                    className={`${inputCls} bg-gray-50 text-gray-500 border-gray-300 flex items-center justify-between gap-2`}
+                  >
                     <span className="truncate">{user?.phoneNumber ?? ""}</span>
-                    {user?.phoneVerified && <img src={verifiedBadge} alt="Verified" className="w-[18px] h-[18px] flex-shrink-0" />}
+                    {user?.phoneVerified && (
+                      <img
+                        src={verifiedBadge}
+                        alt="Verified"
+                        className="w-[18px] h-[18px] flex-shrink-0"
+                      />
+                    )}
                   </div>
                   <button
-                    onClick={() => { setPhoneFieldError(""); setView("phone"); }}
-                    title={isPhoneUpdate ? "Update phone number" : "Verify phone number"}
-                    aria-label={isPhoneUpdate ? "Update phone number" : "Verify phone number"}
+                    onClick={() => {
+                      setPhoneFieldError("");
+                      setView("phone");
+                    }}
+                    title={
+                      isPhoneUpdate
+                        ? "Update phone number"
+                        : "Verify phone number"
+                    }
+                    aria-label={
+                      isPhoneUpdate
+                        ? "Update phone number"
+                        : "Verify phone number"
+                    }
                     className="flex-shrink-0 w-12 h-12 rounded-lg border-[1.5px] border-gray-300 bg-white text-brand cursor-pointer flex items-center justify-center"
                   >
                     <Pencil size={15} />
@@ -376,7 +484,11 @@ export default function Profile() {
                     : "text-brand hover:bg-brand hover:text-white border border-brand"
                 }`}
               >
-                {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
+                {saved
+                  ? "Saved!"
+                  : updateProfile.isPending
+                    ? "Saving…"
+                    : "Save Changes"}
               </button>
             </div>
           </div>
@@ -399,7 +511,9 @@ export default function Profile() {
 
           <div className="bg-surface-container rounded-xl border border-surface-container-border">
             <div className="px-6 py-4 border-b border-gray-100">
-              <p className="text-sm font-bold text-gray-900">Update Your Email</p>
+              <p className="text-sm font-bold text-gray-900">
+                Update Your Email
+              </p>
             </div>
             <div className="p-6">
               <div className="flex flex-col gap-1.5 max-w-md">
@@ -407,17 +521,28 @@ export default function Profile() {
                 <input
                   type="email"
                   value={emailDraft}
-                  onChange={(e) => { setEmailDraft(e.target.value); setEmailFieldError(""); }}
+                  onChange={(e) => {
+                    setEmailDraft(e.target.value);
+                    setEmailFieldError("");
+                  }}
                   className={`${inputCls} ${emailFieldError ? "border-danger" : "border-gray-300"}`}
                   autoFocus
                 />
-                {emailFieldError && <p className="text-xs text-danger mt-1">{emailFieldError}</p>}
+                {emailFieldError && (
+                  <p className="text-xs text-danger mt-1">{emailFieldError}</p>
+                )}
               </div>
             </div>
           </div>
 
           <div className="flex justify-center">
-            <Button onClick={handleStartEmailUpdate} loading={emailSending} fullWidth={false} size="sm" className="px-10 min-w-[320px]">
+            <Button
+              onClick={handleStartEmailUpdate}
+              loading={emailSending}
+              fullWidth={false}
+              size="sm"
+              className="px-10 min-w-[320px]"
+            >
               {emailSending ? "Sending Code…" : "Update"}
             </Button>
           </div>
@@ -437,13 +562,16 @@ export default function Profile() {
           <div className="bg-surface-container rounded-xl border border-surface-container-border">
             <div className="px-6 py-4 border-b border-gray-100">
               <p className="text-sm font-bold text-gray-900">
-                {isPhoneUpdate ? "Update Your Phone Number" : "Verify Your Phone Number"}
+                {isPhoneUpdate
+                  ? "Update Your Phone Number"
+                  : "Verify Your Phone Number"}
               </p>
             </div>
             <div className="p-6">
               {!isPhoneUpdate && (
                 <p className="text-xs text-gray-500 mb-4">
-                  We will use this number to send payments reminders and updates via WhatsApp or SMS.
+                  We will use this number to send payments reminders and updates
+                  via WhatsApp or SMS.
                 </p>
               )}
               <div className="flex flex-col gap-1.5 max-w-md">
@@ -451,27 +579,46 @@ export default function Profile() {
                 <input
                   type="tel"
                   value={phoneDraft}
-                  onChange={(e) => { setPhoneDraft(e.target.value); setPhoneFieldError(""); }}
+                  onChange={(e) => {
+                    setPhoneDraft(e.target.value);
+                    setPhoneFieldError("");
+                  }}
                   className={`${inputCls} ${phoneFieldError ? "border-danger" : "border-gray-300"}`}
                   autoFocus
                 />
-                {phoneFieldError && <p className="text-xs text-danger mt-1">{phoneFieldError}</p>}
+                {phoneFieldError && (
+                  <p className="text-xs text-danger mt-1">{phoneFieldError}</p>
+                )}
               </div>
             </div>
           </div>
 
           {!isPhoneUpdate && (
             <div className="flex items-start gap-2.5 px-4 py-3.5 rounded-xl bg-[#D7E2FF]">
-              <ShieldCheck size={18} className="text-brand flex-shrink-0 mt-0.5" />
+              <ShieldCheck
+                size={18}
+                className="text-brand flex-shrink-0 mt-0.5"
+              />
               <p className="text-sm text-brand leading-snug m-0">
-                Your number is only used for payment reminders and account recovery. We will never share it.
+                Your number is only used for payment reminders and account
+                recovery. We will never share it.
               </p>
             </div>
           )}
 
           <div className="flex justify-center">
-            <Button onClick={handleStartPhoneUpdate} loading={phoneSending} fullWidth={false} size="sm" className="px-10 min-w-[320px]">
-              {phoneSending ? "Sending Code…" : isPhoneUpdate ? "Update Phone Number" : "Verify"}
+            <Button
+              onClick={handleStartPhoneUpdate}
+              loading={phoneSending}
+              fullWidth={false}
+              size="sm"
+              className="px-10 min-w-[320px]"
+            >
+              {phoneSending
+                ? "Sending Code…"
+                : isPhoneUpdate
+                  ? "Update Phone Number"
+                  : "Verify"}
             </Button>
           </div>
         </>
@@ -480,7 +627,12 @@ export default function Profile() {
       {emailModalOpen && (
         <EmailChangeModal
           newEmail={emailDraft}
-          onSubmitOtp={(code) => updateEmail({ email: emailDraft.trim().toLowerCase(), emailVerificationOtp: code })}
+          onSubmitOtp={(code) =>
+            updateEmail({
+              email: emailDraft.trim().toLowerCase(),
+              emailVerificationOtp: code,
+            })
+          }
           onVerified={handleEmailVerified}
           onWrongEmail={handleWrongEmail}
           onClose={handleWrongEmail}
@@ -494,7 +646,9 @@ export default function Profile() {
           onSubmitOtp={handleConfirmPhoneOtp}
           onVerified={handlePhoneVerified}
           onWrongNumber={handleWrongPhone}
-          onResend={() => requestPhoneUpdate.mutateAsync({ phoneNumber: phoneDraft.trim() })}
+          onResend={() =>
+            requestPhoneUpdate.mutateAsync({ phoneNumber: phoneDraft.trim() })
+          }
           onClose={handleWrongPhone}
         />
       )}
@@ -520,14 +674,17 @@ export default function Profile() {
 
       {view === "profile" && (
         <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
-          <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Account</p>
-          <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
+          <p className="text-sm font-medium text-gray-900 mb-0.5">
+            Delete Account
+          </p>
+          <p className="text-xs text-gray-500 mb-4">
+            Permanent actions that cannot be undone.
+          </p>
           <div className="-mx-6 border-b border-gray-100 mb-4" />
-          <div
-            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
-          >
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <p className="text-xs text-gray-700">
-              Permanently remove your account and all associated data from Glass.
+              Permanently remove your account and all associated data from
+              Glass.
             </p>
             <button
               onClick={() => setDeleteModal(true)}

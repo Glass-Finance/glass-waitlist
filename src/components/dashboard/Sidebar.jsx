@@ -34,7 +34,10 @@ import { useNotifications } from "../../hooks/useNotifications";
 import { useAuth } from "../../store/AuthContext";
 import { useCommunities } from "../../hooks/useCommunities";
 import { useMyMemberRecord } from "../../hooks/useMyAccount";
-import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
+import {
+  resolveIsPayingAdmin,
+  isCommunityAdmin,
+} from "../../utils/communityRole";
 import { toastSuccess } from "../../utils/toast";
 import {
   MobileOverlay,
@@ -52,11 +55,41 @@ import {
 // -- picked to be the obvious first letter of each label with no collisions
 // within this list.
 const NAV = [
-  { icon: LayoutDashboard, label: "Dashboard",     segment: "home",          path: "admin",         shortcut: "h" },
-  { icon: CreditCard,      label: "Payments",      segment: "payments",      path: "payments",      shortcut: "p" },
-  { icon: Users,           label: "Members",       segment: "members",       path: "members",       shortcut: "m" },
-  { icon: Bell,            label: "Notifications", segment: "notifications", path: "notifications", shortcut: "n" },
-  { icon: Settings,        label: "Settings",      segment: "settings",      path: "settings",      shortcut: "s" },
+  {
+    icon: LayoutDashboard,
+    label: "Dashboard",
+    segment: "home",
+    path: "admin",
+    shortcut: "h",
+  },
+  {
+    icon: CreditCard,
+    label: "Payments",
+    segment: "payments",
+    path: "payments",
+    shortcut: "p",
+  },
+  {
+    icon: Users,
+    label: "Members",
+    segment: "members",
+    path: "members",
+    shortcut: "m",
+  },
+  {
+    icon: Bell,
+    label: "Notifications",
+    segment: "notifications",
+    path: "notifications",
+    shortcut: "n",
+  },
+  {
+    icon: Settings,
+    label: "Settings",
+    segment: "settings",
+    path: "settings",
+    shortcut: "s",
+  },
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -98,11 +131,15 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { logout, user, isPlatformAdmin } = useAuth();
-  const userDisplayName = ([user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-  const userInitials = (user?.firstName || user?.lastName)
-    ? `${(user?.firstName ?? "")[0] ?? ""}${(user?.lastName ?? "")[0] ?? ""}`.toUpperCase()
-    : (user?.email ?? "").slice(0, 2).toUpperCase() || "?";
+  const userDisplayName = (
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+    user?.email ||
+    ""
+  ).replace(/\b\w/g, (c) => c.toUpperCase());
+  const userInitials =
+    user?.firstName || user?.lastName
+      ? `${(user?.firstName ?? "")[0] ?? ""}${(user?.lastName ?? "")[0] ?? ""}`.toUpperCase()
+      : (user?.email ?? "").slice(0, 2).toUpperCase() || "?";
 
   const { data: communitiesData, isLoading: loading } = useCommunities();
   const communities = communitiesData?.communities ?? [];
@@ -130,14 +167,18 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       ? null
       : (() => {
           try {
-            const stored = JSON.parse(localStorage.getItem("glass_community") ?? "{}");
+            const stored = JSON.parse(
+              localStorage.getItem("glass_community") ?? "{}",
+            );
             return stored.slug ?? stored.id ?? null;
           } catch {
             return null;
           }
         })());
 
-  const resolvedCommunity = urlSlug ? (communities.find((c) => c.slug === urlSlug) ?? null) : null;
+  const resolvedCommunity = urlSlug
+    ? (communities.find((c) => c.slug === urlSlug) ?? null)
+    : null;
   // Falls back to the first community this admin manages when neither the
   // URL nor localStorage resolves one -- reachable by landing on a
   // per-community page (e.g. Notifications, via a self-account
@@ -147,7 +188,10 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   // community to build a URL against), leaving no way out except the
   // logo/overview button or the notification's own action button.
   const activeCommunity =
-    resolvedCommunity ?? (!onCommunitiesOverview ? communities.filter(isCommunityAdmin)[0] ?? null : null);
+    resolvedCommunity ??
+    (!onCommunitiesOverview
+      ? (communities.filter(isCommunityAdmin)[0] ?? null)
+      : null);
 
   // Keeps localStorage's "last active community" snapshot in sync with
   // whatever got resolved above (including the fallback) -- other pages
@@ -156,15 +200,21 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   useEffect(() => {
     if (!activeCommunity) return;
     try {
-      const stored = JSON.parse(localStorage.getItem("glass_community") ?? "{}");
+      const stored = JSON.parse(
+        localStorage.getItem("glass_community") ?? "{}",
+      );
       if (stored.slug === activeCommunity.slug) return;
-    } catch { /* fall through and (re)write it */ }
+    } catch {
+      /* fall through and (re)write it */
+    }
     localStorage.setItem("glass_community", JSON.stringify(activeCommunity));
   }, [activeCommunity]);
 
   // Use the cached member record to derive paying status — same data source
   // as Role.jsx, so no extra network call and no race condition.
-  const { data: myMemberRecord } = useMyMemberRecord(activeCommunity?.slug ?? null);
+  const { data: myMemberRecord } = useMyMemberRecord(
+    activeCommunity?.slug ?? null,
+  );
   const activeCommunityIsPaying = myMemberRecord?.billingExempt === false;
 
   // "g h"/"g p"/etc. — mirrors exactly what a click on each nav item does,
@@ -191,7 +241,13 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         },
       };
     }).filter(Boolean);
-  }, [isPlatformAdmin, activeCommunity, activeCommunityIsPaying, navigate, onCloseMobile]);
+  }, [
+    isPlatformAdmin,
+    activeCommunity,
+    activeCommunityIsPaying,
+    navigate,
+    onCloseMobile,
+  ]);
   useRegisterShortcutGroup(navShortcuts, "Navigation");
 
   // ── Handle logout ──────────────────────────────────────────────────────────
@@ -216,91 +272,107 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           }`}
         >
-        {/* Blue rail */}
-        <div className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5 w-14">
-          <SidebarLogo
-            title="Platform Admin"
-            onClick={() => {
-              navigate("/dashboard/admin-panel");
-              onCloseMobile?.();
-            }}
-          />
+          {/* Blue rail */}
+          <div className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5 w-14">
+            <SidebarLogo
+              title="Platform Admin"
+              onClick={() => {
+                navigate("/dashboard/admin-panel");
+                onCloseMobile?.();
+              }}
+            />
 
-          <button
-            onClick={() => {
-              navigate("/dashboard/admin-panel");
-              onCloseMobile?.();
-            }}
-            title="Platform Admin"
-            className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/20 text-white transition-all hover:bg-white/30"
-          >
-            <ShieldCheck size={15} />
-          </button>
+            <button
+              onClick={() => {
+                navigate("/dashboard/admin-panel");
+                onCloseMobile?.();
+              }}
+              title="Platform Admin"
+              className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/20 text-white transition-all hover:bg-white/30"
+            >
+              <ShieldCheck size={15} />
+            </button>
 
-          <div className="flex-1" />
+            <div className="flex-1" />
 
-          <LogoutButton onClick={handleLogout} loggingOut={loggingOut} />
-        </div>
+            <LogoutButton onClick={handleLogout} loggingOut={loggingOut} />
+          </div>
 
-        {/* White panel */}
-        <div
-          className="bg-white md:bg-surface-container md:border-r md:border-surface-container-border w-[220px] flex flex-col"
-        >
-          <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] min-h-14 flex items-center">
-            <div>
-              <div className="text-xs font-bold text-brand leading-[1.3]">
-                Platform Admin
+          {/* White panel */}
+          <div className="bg-white md:bg-surface-container md:border-r md:border-surface-container-border w-[220px] flex flex-col">
+            <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] min-h-14 flex items-center">
+              <div>
+                <div className="text-xs font-bold text-brand leading-[1.3]">
+                  Platform Admin
+                </div>
+                <span className="inline-block mt-[3px] text-[9px] font-bold text-[#7c3aed] bg-[#f5f3ff] rounded-full py-px px-[7px]">
+                  Platform Admin
+                </span>
               </div>
-              <span className="inline-block mt-[3px] text-[9px] font-bold text-[#7c3aed] bg-[#f5f3ff] rounded-full py-px px-[7px]">
-                Platform Admin
-              </span>
+            </div>
+
+            <nav className="flex-1 py-2.5 px-2">
+              {[
+                {
+                  icon: ShieldCheck,
+                  label: "Admin Panel",
+                  path: "/dashboard/admin-panel",
+                  match: "/dashboard/admin-panel",
+                },
+                {
+                  icon: Bell,
+                  label: "Notifications",
+                  path: "/dashboard/notifications",
+                  match: "/dashboard/notifications",
+                },
+                {
+                  icon: Settings,
+                  label: "Settings",
+                  path: "/dashboard/settings/account/security",
+                  match: "/dashboard/settings",
+                },
+              ].map(({ icon: Icon, label, path, match }) => {
+                const isActive = location.pathname.startsWith(match);
+                const badge =
+                  label === "Notifications" && unreadCount > 0
+                    ? unreadCount
+                    : 0;
+                return (
+                  <button
+                    key={path}
+                    onClick={() => {
+                      navigate(path);
+                      onCloseMobile?.();
+                    }}
+                    className={`w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer tracking-normal text-xs whitespace-nowrap mb-1.5 transition-all duration-150 ${
+                      isActive
+                        ? "bg-brand-tint text-brand font-bold"
+                        : "bg-transparent text-[#6b7280] font-medium hover:bg-[#f9fafb]"
+                    }`}
+                  >
+                    <Icon size={13} className="flex-shrink-0" />
+                    <span className="flex-1 text-left">{label}</span>
+                    {badge > 0 && (
+                      <span className="min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
+                        {badge > 99 ? "99+" : badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+
+            <div className="py-2.5 px-3 border-t border-[var(--color-hairline)] flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,#7c3aed,var(--color-brand))] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                SA
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-semibold m-0 whitespace-nowrap overflow-hidden text-ellipsis">
+                  {user?.email}
+                </p>
+              </div>
             </div>
           </div>
-
-          <nav className="flex-1 py-2.5 px-2">
-            {[
-              { icon: ShieldCheck, label: "Admin Panel",  path: "/dashboard/admin-panel",               match: "/dashboard/admin-panel" },
-              { icon: Bell,        label: "Notifications", path: "/dashboard/notifications",              match: "/dashboard/notifications" },
-              { icon: Settings,    label: "Settings",      path: "/dashboard/settings/account/security", match: "/dashboard/settings" },
-            ].map(({ icon: Icon, label, path, match }) => {
-              const isActive = location.pathname.startsWith(match);
-              const badge = label === "Notifications" && unreadCount > 0 ? unreadCount : 0;
-              return (
-                <button
-                  key={path}
-                  onClick={() => {
-                    navigate(path);
-                    onCloseMobile?.();
-                  }}
-                  className={`w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer tracking-normal text-xs whitespace-nowrap mb-1.5 transition-all duration-150 ${
-                    isActive
-                      ? "bg-brand-tint text-brand font-bold"
-                      : "bg-transparent text-[#6b7280] font-medium hover:bg-[#f9fafb]"
-                  }`}
-                >
-                  <Icon size={13} className="flex-shrink-0" />
-                  <span className="flex-1 text-left">{label}</span>
-                  {badge > 0 && (
-                    <span className="min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
-                      {badge > 99 ? "99+" : badge}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </nav>
-
-          <div className="py-2.5 px-3 border-t border-[var(--color-hairline)] flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,#7c3aed,var(--color-brand))] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
-              SA
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-semibold m-0 whitespace-nowrap overflow-hidden text-ellipsis">
-                {user?.email}
-              </p>
-            </div>
-          </div>
-        </div>
         </div>
       </>
     );
@@ -318,316 +390,350 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-      {/* ── Blue rail ─────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5 w-14">
-        {/* Logo — goes to communities overview */}
-        <SidebarLogo
-          title="Your Communities"
-          onClick={() => {
-            navigate("/dashboard/home");
-            onCloseMobile?.();
-          }}
-        />
-
-        {/* Home (communities overview) -- same active-indicator pattern as
-            the community tiles below: a pill riding the rail's outer edge
-            beside whichever one is active, not just a restyled tile. */}
-        <div className="relative mb-3">
-          {onCommunitiesOverview && (
-            <span
-              className="absolute top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-white -left-2.5"
-              aria-hidden="true"
-            />
-          )}
-          <button
+        {/* ── Blue rail ─────────────────────────────────────────────────────── */}
+        <div className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5 w-14">
+          {/* Logo — goes to communities overview */}
+          <SidebarLogo
+            title="Your Communities"
             onClick={() => {
               navigate("/dashboard/home");
               onCloseMobile?.();
             }}
-            title="Your Communities"
-            className="w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center transition-all bg-transparent text-white hover:bg-white/15"
-          >
-            {onCommunitiesOverview ? (
+          />
+
+          {/* Home (communities overview) -- same active-indicator pattern as
+            the community tiles below: a pill riding the rail's outer edge
+            beside whichever one is active, not just a restyled tile. */}
+          <div className="relative mb-3">
+            {onCommunitiesOverview && (
               <span
+                className="absolute top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-white -left-2.5"
                 aria-hidden="true"
-                style={{
-                  display: "inline-block",
-                  width: 16,
-                  height: 18,
-                  backgroundColor: "white",
-                  WebkitMaskImage: "url(/home-solid.webp)",
-                  maskImage: "url(/home-solid.webp)",
-                  WebkitMaskSize: "contain",
-                  maskSize: "contain",
-                  WebkitMaskRepeat: "no-repeat",
-                  maskRepeat: "no-repeat",
-                  WebkitMaskPosition: "center",
-                  maskPosition: "center",
-                }}
               />
-            ) : (
-              <img src="/home-outline.webp" alt="" className="w-4 h-[18px] object-contain" />
             )}
-          </button>
-        </div>
+            <button
+              onClick={() => {
+                navigate("/dashboard/home");
+                onCloseMobile?.();
+              }}
+              title="Your Communities"
+              className="w-9 h-9 rounded-lg border-none cursor-pointer flex items-center justify-center transition-all bg-transparent text-white hover:bg-white/15"
+            >
+              {onCommunitiesOverview ? (
+                <span
+                  aria-hidden="true"
+                  style={{
+                    display: "inline-block",
+                    width: 16,
+                    height: 18,
+                    backgroundColor: "white",
+                    WebkitMaskImage: "url(/home-solid.webp)",
+                    maskImage: "url(/home-solid.webp)",
+                    WebkitMaskSize: "contain",
+                    maskSize: "contain",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskPosition: "center",
+                    maskPosition: "center",
+                  }}
+                />
+              ) : (
+                <img
+                  src="/home-outline.webp"
+                  alt=""
+                  className="w-4 h-[18px] object-contain"
+                />
+              )}
+            </button>
+          </div>
 
-        <div className="w-5 h-px bg-white/20 mb-3" />
+          <div className="w-5 h-px bg-white/20 mb-3" />
 
-        {/* Community avatar list */}
-        <div className="flex flex-col gap-2 items-center flex-1 overflow-y-auto w-full px-2">
-          {/* data-tour lives on this inner wrapper, not the scrollable outer
+          {/* Community avatar list */}
+          <div className="flex flex-col gap-2 items-center flex-1 overflow-y-auto w-full px-2">
+            {/* data-tour lives on this inner wrapper, not the scrollable outer
               div -- the outer div is flex-1 so it stretches to fill whatever
               space is left in the rail, which made the tour's spotlight
               highlight that entire empty area instead of just the avatar
               list. This wrapper shrinks to fit its actual content. */}
-          <div data-tour="community-switcher" className="flex flex-col gap-2 items-center w-full">
-          {loading ? (
-            // Skeleton
-            [0, 1].map((i) => (
-              <div
-                key={i}
-                className="w-9 h-9 rounded-sm bg-white/10 animate-pulse"
-              />
-            ))
-          ) : communities.filter(isCommunityAdmin).length === 0 ? (
-            <div className="w-9 h-9 rounded-sm bg-white/10 flex items-center justify-center">
-              <span className="text-white/40 text-[10px]">—</span>
-            </div>
-          ) : (
-            // Role-based, not ownership-based: promoted ADMIN/MANAGER
-            // members administer communities they don't own and need them
-            // reachable from this rail too.
-            communities.filter(isCommunityAdmin).map((c) => {
-              const isActive = c.slug === urlSlug;
-              const initials = getInitials(c.name);
-              return (
-                <div key={c.id} className="relative flex-shrink-0">
-                  {/* Active indicator — a pill riding the rail's outer edge,
+            <div
+              data-tour="community-switcher"
+              className="flex flex-col gap-2 items-center w-full"
+            >
+              {loading ? (
+                // Skeleton
+                [0, 1].map((i) => (
+                  <div
+                    key={i}
+                    className="w-9 h-9 rounded-sm bg-white/10 animate-pulse"
+                  />
+                ))
+              ) : communities.filter(isCommunityAdmin).length === 0 ? (
+                <div className="w-9 h-9 rounded-sm bg-white/10 flex items-center justify-center">
+                  <span className="text-white/40 text-[10px]">—</span>
+                </div>
+              ) : (
+                // Role-based, not ownership-based: promoted ADMIN/MANAGER
+                // members administer communities they don't own and need them
+                // reachable from this rail too.
+                communities.filter(isCommunityAdmin).map((c) => {
+                  const isActive = c.slug === urlSlug;
+                  const initials = getInitials(c.name);
+                  return (
+                    <div key={c.id} className="relative flex-shrink-0">
+                      {/* Active indicator — a pill riding the rail's outer edge,
                       not a change to the tile itself. This is what actually
                       shows which community is selected; it shifts to sit
                       beside whichever tile is active instead of restyling
                       the tile (a restyled tile is what "ruins" a logo that
                       has its own white/colored background). */}
-                  {isActive && (
-                    <span
-                      className="absolute top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-white -left-2.5"
-                      aria-hidden="true"
-                    />
-                  )}
-                  <button
-                    onClick={async () => {
-                      localStorage.setItem("glass_community", JSON.stringify(c));
-                      const isPaying = await resolveIsPayingAdmin(c.slug);
-                      navigate(communityPath(c.slug, "admin", isPaying));
-                      onCloseMobile?.();
-                    }}
-                    title={c.name}
-                    className={`w-9 h-9 rounded-sm border-none cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 bg-white ${
-                      c.logo?.url ? "" : "text-brand"
-                    }`}
-                  >
-                    {c.logo?.url ? (
-                      <img
-                        src={c.logo.url}
-                        alt={c.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
+                      {isActive && (
+                        <span
+                          className="absolute top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-white -left-2.5"
+                          aria-hidden="true"
+                        />
+                      )}
+                      <button
+                        onClick={async () => {
+                          localStorage.setItem(
+                            "glass_community",
+                            JSON.stringify(c),
+                          );
+                          const isPaying = await resolveIsPayingAdmin(c.slug);
+                          navigate(communityPath(c.slug, "admin", isPaying));
+                          onCloseMobile?.();
                         }}
-                      />
-                    ) : (
-                      initials || "?"
-                    )}
-                  </button>
-                </div>
-              );
-            })
+                        title={c.name}
+                        className={`w-9 h-9 rounded-sm border-none cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 bg-white ${
+                          c.logo?.url ? "" : "text-brand"
+                        }`}
+                      >
+                        {c.logo?.url ? (
+                          <img
+                            src={c.logo.url}
+                            alt={c.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        ) : (
+                          initials || "?"
+                        )}
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          {/* Platform-admin shortcut */}
+          {isPlatformAdmin && (
+            <button
+              onClick={() => {
+                navigate("/dashboard/admin-panel");
+                onCloseMobile?.();
+              }}
+              title="Platform Admin"
+              className="mt-2 w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/50 hover:bg-white/20 hover:text-white transition-all"
+            >
+              <ShieldCheck size={14} />
+            </button>
           )}
+
+          {/* Logout button pinned to bottom of rail */}
+          <div className="mt-2">
+            <LogoutButton onClick={handleLogout} loggingOut={loggingOut} />
           </div>
         </div>
 
-        {/* Platform-admin shortcut */}
-        {isPlatformAdmin && (
-          <button
-            onClick={() => {
-              navigate("/dashboard/admin-panel");
-              onCloseMobile?.();
-            }}
-            title="Platform Admin"
-            className="mt-2 w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/50 hover:bg-white/20 hover:text-white transition-all"
-          >
-            <ShieldCheck size={14} />
-          </button>
-        )}
-
-        {/* Logout button pinned to bottom of rail */}
-        <div className="mt-2">
-          <LogoutButton onClick={handleLogout} loggingOut={loggingOut} />
-        </div>
-      </div>
-
-      {/* ── White nav panel ────────────────────────────────────────────────── */}
-      {!onCommunitiesOverview  && (
-      <div
-        className="bg-white md:bg-surface-container w-[220px] border-r border-surface-container-border flex flex-col overflow-hidden transition-[width] duration-[220ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-      >
-        {/* Org header */}
-        <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] flex items-center justify-between gap-2 min-h-14">
-          {activeCommunity ? (
-            <div className="min-w-0 flex-1 flex items-center gap-2">
-              <div className="text-xs font-medium text-black leading-[1.3] break-words">
-                {activeCommunity.name}
-              </div>
-              {/* The Figma inspector's literal 69x32/text-sm reading was
+        {/* ── White nav panel ────────────────────────────────────────────────── */}
+        {!onCommunitiesOverview && (
+          <div className="bg-white md:bg-surface-container w-[220px] border-r border-surface-container-border flex flex-col overflow-hidden transition-[width] duration-[220ms] ease-[cubic-bezier(0.4,0,0.2,1)]">
+            {/* Org header */}
+            <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] flex items-center justify-between gap-2 min-h-14">
+              {activeCommunity ? (
+                <div className="min-w-0 flex-1 flex items-center gap-2">
+                  <div className="text-xs font-medium text-black leading-[1.3] break-words">
+                    {activeCommunity.name}
+                  </div>
+                  {/* The Figma inspector's literal 69x32/text-sm reading was
                   measured on the badge in isolation -- applied verbatim next
                   to this sidebar's much smaller 12px community name, it read
                   as oversized and out of place rather than matching Figma
                   "by eye". Scaled back down; kept the radius-4px/#FFF1D6 fix
                   from that same spec, since neither of those was in question. */}
-              <span
-                className={`flex-shrink-0 text-[10px] font-bold rounded py-0.5 px-2 ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#FFF1D6]" : "text-[#059669] bg-[#ecfdf5]"}`}
-              >
-                {activeCommunity.owned
-                  ? "Owner"
-                  : isCommunityAdmin(activeCommunity)
-                    ? "Admin"
-                    : "Member"}
-              </span>
+                  <span
+                    className={`flex-shrink-0 text-[10px] font-bold rounded py-0.5 px-2 ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#FFF1D6]" : "text-[#059669] bg-[#ecfdf5]"}`}
+                  >
+                    {activeCommunity.owned
+                      ? "Owner"
+                      : isCommunityAdmin(activeCommunity)
+                        ? "Admin"
+                        : "Member"}
+                  </span>
+                </div>
+              ) : (
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold text-black leading-[1.3]">
+                    Your Communities
+                  </div>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="min-w-0 flex-1">
-              <div className="text-xs font-bold text-black leading-[1.3]">
-                Your Communities
-              </div>
-            </div>
-          )}
-        </div>
 
-        {/* Nav links */}
-        <nav className="flex-1 py-2.5 px-2 overflow-y-auto">
-          {/* data-tour lives on this inner wrapper, not the scrollable <nav>
+            {/* Nav links */}
+            <nav className="flex-1 py-2.5 px-2 overflow-y-auto">
+              {/* data-tour lives on this inner wrapper, not the scrollable <nav>
               itself -- <nav> is flex-1 so it stretches to fill whatever
               space is left in the sidebar, which made the tour's spotlight
               highlight that entire empty area instead of just the nav
               items. This wrapper shrinks to fit its actual content. */}
-          <div data-tour="sidebar-nav">
-          {NAV.map(({ icon: Icon, label, segment, path }) => {
-            const isActive = activeSegment === segment;
-            // Every nav item except "Dashboard" (which points at the
-            // communities overview when none is selected) requires an
-            // active community — matches the blue-rail community picker
-            // being the only way to get into a community's admin area.
-            const href = activeCommunity
-              ? communityPath(activeCommunity.slug, path, activeCommunityIsPaying)
-              : segment === "home"
-                ? "/dashboard/home"
-                : null;
-            const isDisabled = !href;
-            const badge = segment === "notifications" && unreadCount > 0 ? unreadCount : 0;
+              <div data-tour="sidebar-nav">
+                {NAV.map(({ icon: Icon, label, segment, path }) => {
+                  const isActive = activeSegment === segment;
+                  // Every nav item except "Dashboard" (which points at the
+                  // communities overview when none is selected) requires an
+                  // active community — matches the blue-rail community picker
+                  // being the only way to get into a community's admin area.
+                  const href = activeCommunity
+                    ? communityPath(
+                        activeCommunity.slug,
+                        path,
+                        activeCommunityIsPaying,
+                      )
+                    : segment === "home"
+                      ? "/dashboard/home"
+                      : null;
+                  const isDisabled = !href;
+                  const badge =
+                    segment === "notifications" && unreadCount > 0
+                      ? unreadCount
+                      : 0;
 
-            return (
+                  return (
+                    <button
+                      key={segment}
+                      onClick={() => {
+                        if (href) {
+                          navigate(href);
+                          onCloseMobile?.();
+                        }
+                      }}
+                      disabled={isDisabled}
+                      // Icon/label are left-anchored regardless of state, so
+                      // varying the button's own width doesn't shift or misalign
+                      // anything -- only the background's right edge moves.
+                      // Simpler than an inner wrapper element, and avoids the
+                      // negative-margin trap from the last attempt at this. Per
+                      // direct visual feedback against the rendered Figma design:
+                      // roughly 70% of the row when active, not edge to edge (an
+                      // earlier "Fill" reading of an isolated inspector panel) and
+                      // not content-hugging either (an even earlier attempt).
+                      className={`flex items-center gap-3.5 p-2.5 rounded tracking-normal text-xs mb-1.5 transition-all duration-150 whitespace-nowrap font-medium border-none ${isActive ? "w-[70%]" : "w-full"} ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"} ${
+                        isDisabled
+                          ? "bg-transparent text-[#9ca3af]"
+                          : isActive
+                            ? "bg-[#D7E2FF] text-brand"
+                            : "bg-transparent text-[#6b7280] hover:bg-[#f9fafb]"
+                      }`}
+                    >
+                      <Icon size={13} className="flex-shrink-0" />
+                      <span className="text-left">{label}</span>
+                      {badge > 0 && (
+                        <span className="ml-auto min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
+                          {badge > 99 ? "99+" : badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </nav>
+
+            {/* Member View switch */}
+            <div className="px-2 pb-2 relative">
+              <div className="h-px bg-[var(--color-hairline)] mb-2" />
               <button
-                key={segment}
                 onClick={() => {
-                  if (href) {
-                    navigate(href);
+                  // If the admin is also a member of the community they're
+                  // currently viewing, that's the "own Member View" they'd
+                  // expect this button to open — not some unrelated community
+                  // they happen to belong to. Only fall back to searching for
+                  // any other membership (or the invites hint) when there's no
+                  // such same-community membership to switch into.
+                  if (activeCommunity && myMemberRecord) {
+                    try {
+                      localStorage.setItem(
+                        "glass_member_community",
+                        JSON.stringify({
+                          id: activeCommunity.id,
+                          slug: activeCommunity.slug,
+                          name: activeCommunity.name,
+                        }),
+                      );
+                    } catch {
+                      /* ignore */
+                    }
+                    navigate("/member/home");
                     onCloseMobile?.();
+                    return;
                   }
+                  const memberCommunity = communities.find((c) => !c.owned);
+                  if (memberCommunity) {
+                    // Set the active member community so Home loads the right one
+                    try {
+                      localStorage.setItem(
+                        "glass_member_community",
+                        JSON.stringify({
+                          id: memberCommunity.id,
+                          slug: memberCommunity.slug,
+                          name: memberCommunity.name,
+                        }),
+                      );
+                    } catch {
+                      /* ignore */
+                    }
+                    navigate("/member/home");
+                    onCloseMobile?.();
+                    return;
+                  }
+                  const pendingInvites = invites.filter(
+                    (i) => (i.status ?? "").toUpperCase() === "PENDING",
+                  );
+                  if (pendingInvites.length > 0) {
+                    navigate("/member/invites");
+                    onCloseMobile?.();
+                    return;
+                  }
+                  // Nothing actionable — show hint
+                  setMemberViewHint(true);
+                  setTimeout(() => setMemberViewHint(false), 3500);
                 }}
-                disabled={isDisabled}
-                // Icon/label are left-anchored regardless of state, so
-                // varying the button's own width doesn't shift or misalign
-                // anything -- only the background's right edge moves.
-                // Simpler than an inner wrapper element, and avoids the
-                // negative-margin trap from the last attempt at this. Per
-                // direct visual feedback against the rendered Figma design:
-                // roughly 70% of the row when active, not edge to edge (an
-                // earlier "Fill" reading of an isolated inspector panel) and
-                // not content-hugging either (an even earlier attempt).
-                className={`flex items-center gap-3.5 p-2.5 rounded tracking-normal text-xs mb-1.5 transition-all duration-150 whitespace-nowrap font-medium border-none ${isActive ? "w-[70%]" : "w-full"} ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"} ${
-                  isDisabled
-                    ? "bg-transparent text-[#9ca3af]"
-                    : isActive
-                      ? "bg-[#D7E2FF] text-brand"
-                      : "bg-transparent text-[#6b7280] hover:bg-[#f9fafb]"
-                }`}
+                className="w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer bg-transparent text-[#6b7280] font-medium text-xs transition-all duration-150 whitespace-nowrap hover:bg-[#f9fafb] hover:text-brand"
               >
-                <Icon size={13} className="flex-shrink-0" />
-                <span className="text-left">{label}</span>
-                {badge > 0 && (
-                  <span className="ml-auto min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
-                    {badge > 99 ? "99+" : badge}
-                  </span>
-                )}
+                <Smartphone size={13} className="flex-shrink-0" />
+                <span className="flex-1 text-left">Member View</span>
               </button>
-            );
-          })}
-          </div>
-        </nav>
 
-        {/* Member View switch */}
-        <div className="px-2 pb-2 relative">
-          <div className="h-px bg-[var(--color-hairline)] mb-2" />
-          <button
-            onClick={() => {
-              // If the admin is also a member of the community they're
-              // currently viewing, that's the "own Member View" they'd
-              // expect this button to open — not some unrelated community
-              // they happen to belong to. Only fall back to searching for
-              // any other membership (or the invites hint) when there's no
-              // such same-community membership to switch into.
-              if (activeCommunity && myMemberRecord) {
-                try {
-                  localStorage.setItem(
-                    "glass_member_community",
-                    JSON.stringify({ id: activeCommunity.id, slug: activeCommunity.slug, name: activeCommunity.name })
-                  );
-                } catch { /* ignore */ }
-                navigate("/member/home");
-                onCloseMobile?.();
-                return;
-              }
-              const memberCommunity = communities.find((c) => !c.owned);
-              if (memberCommunity) {
-                // Set the active member community so Home loads the right one
-                try {
-                  localStorage.setItem(
-                    "glass_member_community",
-                    JSON.stringify({ id: memberCommunity.id, slug: memberCommunity.slug, name: memberCommunity.name })
-                  );
-                } catch { /* ignore */ }
-                navigate("/member/home");
-                onCloseMobile?.();
-                return;
-              }
-              const pendingInvites = invites.filter((i) => (i.status ?? "").toUpperCase() === "PENDING");
-              if (pendingInvites.length > 0) {
-                navigate("/member/invites");
-                onCloseMobile?.();
-                return;
-              }
-              // Nothing actionable — show hint
-              setMemberViewHint(true);
-              setTimeout(() => setMemberViewHint(false), 3500);
-            }}
-            className="w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer bg-transparent text-[#6b7280] font-medium text-xs transition-all duration-150 whitespace-nowrap hover:bg-[#f9fafb] hover:text-brand"
-          >
-            <Smartphone size={13} className="flex-shrink-0" />
-            <span className="flex-1 text-left">Member View</span>
-          </button>
-
-          {memberViewHint && (
-            <div className="absolute left-2 right-2 bg-[#1f2937] text-[#f9fafb] text-[11px] leading-relaxed py-2 px-2.5 rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.15)] z-10 pointer-events-none [bottom:calc(100%-4px)]">
-              Ask another admin to invite you to their community, then come back here.
-              <div className="absolute -bottom-[5px] left-[18px] w-2.5 h-2.5 bg-[#1f2937] rotate-45 rounded-sm" />
+              {memberViewHint && (
+                <div className="absolute left-2 right-2 bg-[#1f2937] text-[#f9fafb] text-[11px] leading-relaxed py-2 px-2.5 rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.15)] z-10 pointer-events-none [bottom:calc(100%-4px)]">
+                  Ask another admin to invite you to their community, then come
+                  back here.
+                  <div className="absolute -bottom-[5px] left-[18px] w-2.5 h-2.5 bg-[#1f2937] rotate-45 rounded-sm" />
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Bottom — user info strip */}
-        <UserIdentity user={user} initials={userInitials} displayName={userDisplayName} />
-      </div>
-      )}
+            {/* Bottom — user info strip */}
+            <UserIdentity
+              user={user}
+              initials={userInitials}
+              displayName={userDisplayName}
+            />
+          </div>
+        )}
       </div>
     </>
   );

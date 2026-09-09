@@ -3,17 +3,34 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Lock, KeyRound } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
-import { verifyMfaLogin, requestLoginOtp, verifyLoginOtp } from "../../services/authService";
-import { getMyInvites, getMyCommunityJoinRequests, submitJoinRequest } from "../../api/invites";
+import {
+  verifyMfaLogin,
+  requestLoginOtp,
+  verifyLoginOtp,
+} from "../../services/authService";
+import {
+  getMyInvites,
+  getMyCommunityJoinRequests,
+  submitJoinRequest,
+} from "../../api/invites";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
-import { notifyError, getErrorMessage, getRetryAfterSeconds } from "../../utils/errorHandler";
+import {
+  notifyError,
+  getErrorMessage,
+  getRetryAfterSeconds,
+} from "../../utils/errorHandler";
 import { getEmailError } from "../../utils/validators";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../utils/phone";
 import { toastInfo, toastSuccess } from "../../utils/toast";
 import { JOIN_COMMUNITY_KEY } from "../../hooks/useJoinCommunityParam";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 import AuthLayout from "../../layouts/AuthLayout";
-import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
+import {
+  Label,
+  TextInput,
+  PrimaryButton,
+  ErrorMessage,
+} from "../../components/auth/FormFields";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
 import { MfaChallengeScreen, OtpVerifyScreen } from "./SignInSections";
 
@@ -30,7 +47,11 @@ function parseIdentifier(value) {
 function validateIdentifier(value) {
   const trimmed = value.trim();
   if (!trimmed) return "Enter your email or phone number.";
-  return trimmed.includes("@") ? getEmailError(trimmed) : (isPhoneValid(trimmed) ? "" : PHONE_FORMAT_HINT);
+  return trimmed.includes("@")
+    ? getEmailError(trimmed)
+    : isPhoneValid(trimmed)
+      ? ""
+      : PHONE_FORMAT_HINT;
 }
 
 // Tab switcher between password and passwordless sign-in -- both are
@@ -45,7 +66,9 @@ function ModeTabs({ mode, setMode, disabled }) {
         onClick={() => setMode("password")}
         disabled={disabled}
         className={`appearance-none flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
-          mode === "password" ? "bg-white text-gray-900" : "bg-transparent text-gray-500 hover:text-gray-800"
+          mode === "password"
+            ? "bg-white text-gray-900"
+            : "bg-transparent text-gray-500 hover:text-gray-800"
         }`}
       >
         <Lock size={14} /> Password
@@ -55,7 +78,9 @@ function ModeTabs({ mode, setMode, disabled }) {
         onClick={() => setMode("otp")}
         disabled={disabled}
         className={`appearance-none flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
-          mode === "otp" ? "bg-white text-gray-900" : "bg-transparent text-gray-500 hover:text-gray-800"
+          mode === "otp"
+            ? "bg-white text-gray-900"
+            : "bg-transparent text-gray-500 hover:text-gray-800"
         }`}
       >
         <KeyRound size={14} /> One-Time Code
@@ -79,7 +104,10 @@ export default function SignIn() {
   const { login, setSession } = useAuth();
   const isMemberSignIn = location.pathname === "/member/app-sign-in";
   const [form, setForm] = useState({ identifier: "", password: "" });
-  const [fieldErrors, setFieldErrors] = useState({ identifier: "", password: "" });
+  const [fieldErrors, setFieldErrors] = useState({
+    identifier: "",
+    password: "",
+  });
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -134,7 +162,9 @@ export default function SignIn() {
     try {
       const raw = sessionStorage.getItem("glass_pending_member_verification");
       return raw ? JSON.parse(raw).email : null;
-    } catch { return null; }
+    } catch {
+      return null;
+    }
   });
 
   // client.js's 401 interceptor hard-redirects here on session expiry — a
@@ -144,7 +174,9 @@ export default function SignIn() {
     if (sessionStorage.getItem("glass_session_expired")) {
       sessionStorage.removeItem("glass_session_expired");
       setTimeout(() => {
-        toastInfo("Session expired", { description: "For your security, please sign in again." });
+        toastInfo("Session expired", {
+          description: "For your security, please sign in again.",
+        });
       }, 0);
     }
   }, []);
@@ -162,7 +194,9 @@ export default function SignIn() {
       setError("");
       // Only live-validate once the field has already been flagged invalid,
       // so a fresh field doesn't turn red before the user's even left it.
-      setFieldErrors((fe) => (fe[field] ? { ...fe, [field]: validateField(field, value) } : fe));
+      setFieldErrors((fe) =>
+        fe[field] ? { ...fe, [field]: validateField(field, value) } : fe,
+      );
     };
   }
 
@@ -190,7 +224,9 @@ export default function SignIn() {
       sessionStorage.removeItem(JOIN_COMMUNITY_KEY);
       try {
         await submitJoinRequest(pendingCommunity);
-        toastSuccess("Join request sent", { description: "The community admin will review it shortly." });
+        toastSuccess("Join request sent", {
+          description: "The community admin will review it shortly.",
+        });
       } catch (err) {
         notifyError(err, { context: "Join community" });
       }
@@ -217,7 +253,9 @@ export default function SignIn() {
     try {
       const inviteRes = await getMyInvites();
       const inviteData = inviteRes?.data?.data;
-      invites = Array.isArray(inviteData) ? inviteData : (inviteData?.content ?? []);
+      invites = Array.isArray(inviteData)
+        ? inviteData
+        : (inviteData?.content ?? []);
     } catch {
       // fall through with invites = []
     }
@@ -231,7 +269,9 @@ export default function SignIn() {
       // fall through with joinRequests = []
     }
 
-    return invites.length > 0 || joinRequests.length > 0 ? "/member/invites" : "/member/home";
+    return invites.length > 0 || joinRequests.length > 0
+      ? "/member/invites"
+      : "/member/home";
   }
 
   async function handleSignIn() {
@@ -247,7 +287,10 @@ export default function SignIn() {
     setLoading(true);
     setError("");
     try {
-      const result = await login({ ...parseIdentifier(form.identifier), password: form.password });
+      const result = await login({
+        ...parseIdentifier(form.identifier),
+        password: form.password,
+      });
       if (result?.mfaRequired) {
         setMfaChallenge({ mfaChallengeToken: result.mfaChallengeToken });
         setTimeout(() => mfaInputRef.current?.focus(), 50);
@@ -255,7 +298,12 @@ export default function SignIn() {
       }
       navigate(await resolveDestination(result), { replace: true });
     } catch (err) {
-      setError(notifyError(err, { context: "Sign in", fallback: "Incorrect email or password." }));
+      setError(
+        notifyError(err, {
+          context: "Sign in",
+          fallback: "Incorrect email or password.",
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -272,7 +320,10 @@ export default function SignIn() {
     setOtpIdentifierError("");
     try {
       const result = await requestLoginOtp(parseIdentifier(otpIdentifier));
-      const seconds = Math.max(0, Math.round((new Date(result.expiresAt) - Date.now()) / 1000));
+      const seconds = Math.max(
+        0,
+        Math.round((new Date(result.expiresAt) - Date.now()) / 1000),
+      );
       setOtpInitialSeconds(seconds);
       setResendCount((c) => c + 1);
       setOtp(["", "", "", "", "", ""]);
@@ -290,7 +341,10 @@ export default function SignIn() {
     setOtpVerifying(true);
     setOtpError("");
     try {
-      const result = await verifyLoginOtp({ ...parseIdentifier(otpIdentifier), token: otp.join("") });
+      const result = await verifyLoginOtp({
+        ...parseIdentifier(otpIdentifier),
+        token: otp.join(""),
+      });
       if (result?.mfaRequired) {
         setMfaChallenge({ mfaChallengeToken: result.mfaChallengeToken });
         setTimeout(() => mfaInputRef.current?.focus(), 50);
@@ -299,7 +353,12 @@ export default function SignIn() {
       const user = await setSession(result);
       navigate(await resolveDestination(user), { replace: true });
     } catch (err) {
-      setOtpError(notifyError(err, { context: "Verify login code", fallback: "Invalid or expired code." }));
+      setOtpError(
+        notifyError(err, {
+          context: "Verify login code",
+          fallback: "Invalid or expired code.",
+        }),
+      );
     } finally {
       setOtpVerifying(false);
     }
@@ -310,7 +369,10 @@ export default function SignIn() {
     setOtpError("");
     try {
       const result = await requestLoginOtp(parseIdentifier(otpIdentifier));
-      const seconds = Math.max(0, Math.round((new Date(result.expiresAt) - Date.now()) / 1000));
+      const seconds = Math.max(
+        0,
+        Math.round((new Date(result.expiresAt) - Date.now()) / 1000),
+      );
       setOtpInitialSeconds(seconds);
       setResendCount((c) => c + 1);
       setOtp(["", "", "", "", "", ""]);
@@ -319,7 +381,9 @@ export default function SignIn() {
       if (retryAfter) {
         setResendCooldown(retryAfter);
         setResendCooldownKey((k) => k + 1);
-        setOtpError(`Too many attempts — try again in ${formatCountdown(retryAfter)}.`);
+        setOtpError(
+          `Too many attempts — try again in ${formatCountdown(retryAfter)}.`,
+        );
       } else {
         setOtpError(getErrorMessage(err, "Couldn't resend. Please try again."));
       }
@@ -340,7 +404,12 @@ export default function SignIn() {
       const user = await setSession(authData);
       navigate(await resolveDestination(user), { replace: true });
     } catch (err) {
-      setError(notifyError(err, { context: "MFA verification", fallback: "Invalid code. Please try again." }));
+      setError(
+        notifyError(err, {
+          context: "MFA verification",
+          fallback: "Invalid code. Please try again.",
+        }),
+      );
       setMfaCode("");
       mfaInputRef.current?.focus();
     } finally {
@@ -364,7 +433,10 @@ export default function SignIn() {
       <MfaChallengeScreen
         mfaInputRef={mfaInputRef}
         mfaCode={mfaCode}
-        setMfaCode={(value) => { setMfaCode(value); setError(""); }}
+        setMfaCode={(value) => {
+          setMfaCode(value);
+          setError("");
+        }}
         error={error}
         loading={loading}
         onVerify={handleMfaVerify}
@@ -385,14 +457,21 @@ export default function SignIn() {
       <OtpVerifyScreen
         otpIdentifier={otpIdentifier}
         otp={otp}
-        setOtp={(next) => { setOtp(next); setOtpError(""); }}
+        setOtp={(next) => {
+          setOtp(next);
+          setOtpError("");
+        }}
         otpError={otpError}
         otpCodeExpired={otpCodeExpired}
         otpSecondsLeft={otpSecondsLeft}
         otpVerifying={otpVerifying}
         otpSending={otpSending}
         resendSecondsLeft={resendSecondsLeft}
-        onBackToIdentifier={() => { setOtpStep("request"); setOtp(["", "", "", "", "", ""]); setOtpError(""); }}
+        onBackToIdentifier={() => {
+          setOtpStep("request");
+          setOtp(["", "", "", "", "", ""]);
+          setOtpError("");
+        }}
         onVerify={handleVerifyOtp}
         onResend={handleResendOtp}
         formatCountdown={formatCountdown}
@@ -401,7 +480,10 @@ export default function SignIn() {
   }
 
   return (
-    <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
+    <AuthLayout
+      heroTitle="Manage Your Community"
+      heroSubtitle="Finance Effortlessly"
+    >
       {/* mt-* + mb-auto (not my-auto) -- the Password tab has noticeably
           more content than One-Time Code (an extra field, a Forgot-password
           link), so pure vertical centering gave the two tabs different top
@@ -412,13 +494,18 @@ export default function SignIn() {
       <div className="w-full max-w-md flex flex-col md:mt-14 mb-auto gap-6">
         {pendingVerificationEmail && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-            <p className="text-xs font-semibold text-amber-800 mb-1">Email verification pending</p>
+            <p className="text-xs font-semibold text-amber-800 mb-1">
+              Email verification pending
+            </p>
             <p className="text-xs text-amber-700 leading-relaxed">
-              You registered with <span className="font-medium">{pendingVerificationEmail}</span> but didn't finish verifying.
-              Check your inbox — and spam folder — for the 6-digit code.
+              You registered with{" "}
+              <span className="font-medium">{pendingVerificationEmail}</span>{" "}
+              but didn't finish verifying. Check your inbox — and spam folder —
+              for the 6-digit code.
             </p>
             <p className="text-xs text-amber-700 leading-relaxed mt-1">
-              Codes expire after 15 minutes. If yours has expired, go back and register again to receive a fresh one.
+              Codes expire after 15 minutes. If yours has expired, go back and
+              register again to receive a fresh one.
             </p>
             <Link
               to="/member/join"
@@ -429,13 +516,21 @@ export default function SignIn() {
           </div>
         )}
         <div>
-          <h1 className="text-headline text-gray-900 mb-1">Sign In To Your Account</h1>
+          <h1 className="text-headline text-gray-900 mb-1">
+            Sign In To Your Account
+          </h1>
           <p className="text-sm text-gray-500">
-            {mode === "otp" ? "We'll email or text you a one-time code, no password needed." : "Enter your credentials to continue."}
+            {mode === "otp"
+              ? "We'll email or text you a one-time code, no password needed."
+              : "Enter your credentials to continue."}
           </p>
         </div>
 
-        <ModeTabs mode={mode} setMode={switchMode} disabled={loading || otpSending} />
+        <ModeTabs
+          mode={mode}
+          setMode={switchMode}
+          disabled={loading || otpSending}
+        />
 
         {mode === "password" ? (
           <>
@@ -451,7 +546,9 @@ export default function SignIn() {
                 onFocus={() => setActiveField("identifier")}
                 autoComplete="username"
                 disabled={loading}
-                error={activeField === "identifier" ? fieldErrors.identifier : ""}
+                error={
+                  activeField === "identifier" ? fieldErrors.identifier : ""
+                }
               />
               <ErrorMessage message={fieldErrors.identifier} />
             </div>
@@ -483,13 +580,20 @@ export default function SignIn() {
               />
               <ErrorMessage message={fieldErrors.password || error} />
               <div className="flex justify-end mt-1.5">
-                <Link to="/forgot-password" className="text-label font-medium text-[#1C2B8A]">
+                <Link
+                  to="/forgot-password"
+                  className="text-label font-medium text-[#1C2B8A]"
+                >
                   Forgot password?
                 </Link>
               </div>
             </div>
 
-            <PrimaryButton onClick={handleSignIn} loading={loading} disabled={!isReady}>
+            <PrimaryButton
+              onClick={handleSignIn}
+              loading={loading}
+              disabled={!isReady}
+            >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 size={16} className="animate-spin" />
@@ -509,7 +613,10 @@ export default function SignIn() {
                 type="text"
                 placeholder="Enter your email or number"
                 value={otpIdentifier}
-                onChange={(e) => { setOtpIdentifier(e.target.value); setOtpIdentifierError(""); }}
+                onChange={(e) => {
+                  setOtpIdentifier(e.target.value);
+                  setOtpIdentifierError("");
+                }}
                 autoComplete="username"
                 disabled={otpSending}
                 error={otpIdentifierError}
@@ -517,7 +624,11 @@ export default function SignIn() {
               <ErrorMessage message={otpIdentifierError} />
             </div>
 
-            <PrimaryButton onClick={handleSendOtp} loading={otpSending} disabled={!otpIdentifier.trim()}>
+            <PrimaryButton
+              onClick={handleSendOtp}
+              loading={otpSending}
+              disabled={!otpIdentifier.trim()}
+            >
               {otpSending ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 size={16} className="animate-spin" />
@@ -536,14 +647,20 @@ export default function SignIn() {
           <div className="flex-1 h-px bg-gray-300" />
         </div>
 
-        <GoogleAuthButton onAuthenticated={handleGoogleAuth} label="signin_with" />
+        <GoogleAuthButton
+          onAuthenticated={handleGoogleAuth}
+          label="signin_with"
+        />
 
         <p className="text-sm text-center text-gray-500 pb-2">
           New to Glass?{" "}
           {/* /sign-up is the community-owner entry point, /member/join is
               the member one -- same distinction App.jsx's route comment
               draws, so this can't just always point to /sign-up. */}
-          <Link to={isMemberSignIn ? "/member/join" : "/sign-up"} className="font-semibold text-[#1C2B8A]">
+          <Link
+            to={isMemberSignIn ? "/member/join" : "/sign-up"}
+            className="font-semibold text-[#1C2B8A]"
+          >
             Create Account
           </Link>
         </p>

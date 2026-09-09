@@ -16,7 +16,8 @@ export function parseMemberCSV(text) {
   const get = (row, ...keys) => {
     for (const key of keys) {
       const value = row[key];
-      if (value != null && String(value).trim() !== "") return String(value).trim();
+      if (value != null && String(value).trim() !== "")
+        return String(value).trim();
     }
     return "";
   };

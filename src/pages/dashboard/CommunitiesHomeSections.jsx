@@ -35,7 +35,11 @@ export function CommunityCard({ community, onClick }) {
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             {logoUrl ? (
-              <img src={logoUrl} alt={community.name} className="w-10 h-10 rounded object-cover flex-shrink-0" />
+              <img
+                src={logoUrl}
+                alt={community.name}
+                className="w-10 h-10 rounded object-cover flex-shrink-0"
+              />
             ) : (
               <div
                 className={`w-10 h-10 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
@@ -48,11 +52,15 @@ export function CommunityCard({ community, onClick }) {
               </div>
             )}
             <div>
-              <p className="text-xs font-semibold text-[#000000]">{community.name ?? community.slug}</p>
+              <p className="text-xs font-semibold text-[#000000]">
+                {community.name ?? community.slug}
+              </p>
               {memberCount != null && (
                 <div className="flex items-center gap-1 mt-0.5">
                   <Users size={11} className="text-gray-400" />
-                  <span className="text-[10px] text-gray-400">{memberCount} Members</span>
+                  <span className="text-[10px] text-gray-400">
+                    {memberCount} Members
+                  </span>
                 </div>
               )}
             </div>
@@ -74,17 +82,26 @@ export function CommunityCard({ community, onClick }) {
         {isAdmin ? (
           <>
             <span className="text-xs text-gray-500">
-              Collected: <strong className="text-[#000000]">{totalCollected != null ? formatNaira(totalCollected) : "—"}</strong>
+              Collected:{" "}
+              <strong className="text-[#000000]">
+                {totalCollected != null ? formatNaira(totalCollected) : "—"}
+              </strong>
             </span>
             <span className="text-xs text-gray-500">
-              Outstanding: <strong className="text-red-500">{outstanding != null && outstanding > 0 ? formatNaira(outstanding) : "—"}</strong>
+              Outstanding:{" "}
+              <strong className="text-red-500">
+                {outstanding != null && outstanding > 0
+                  ? formatNaira(outstanding)
+                  : "—"}
+              </strong>
             </span>
           </>
         ) : (
           <div className="flex items-center gap-1.5">
             <Clock size={12} className="text-gray-400" />
             <span className="text-xs text-gray-600">
-              Status: <strong className="text-[#000000]">{memberStatus ?? "—"}</strong>
+              Status:{" "}
+              <strong className="text-[#000000]">{memberStatus ?? "—"}</strong>
             </span>
           </div>
         )}

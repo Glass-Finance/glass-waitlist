@@ -13,16 +13,27 @@ import {
   CreditCard,
   ChevronRight,
 } from "lucide-react";
-import { formatNaira as sharedFormatNaira, formatDateShort, toTitleCase } from "../../utils/format";
+import {
+  formatNaira as sharedFormatNaira,
+  formatDateShort,
+  toTitleCase,
+} from "../../utils/format";
 import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
 import { useInvites } from "../../hooks/useInvites";
 import { useGlobalOverview } from "../../hooks/usePayments";
 import { useAllNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
-import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity } from "../../utils/notificationContent";
+import {
+  extractNotificationDetails,
+  formatNairaAmount,
+  resolveCommunity as resolveNotificationCommunity,
+} from "../../utils/notificationContent";
 import { notificationsListDestination } from "../../utils/notificationRouting";
 import { useAuth } from "../../store/AuthContext";
-import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
+import {
+  resolveIsPayingAdmin,
+  isCommunityAdmin,
+} from "../../utils/communityRole";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingState from "../../components/common/LoadingState";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
@@ -75,9 +86,7 @@ function obligationStatusChip(o) {
 
 function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
   return (
-    <div
-      className="bg-surface-container rounded-lg border border-surface-container-border flex flex-col"
-    >
+    <div className="bg-surface-container rounded-lg border border-surface-container-border flex flex-col">
       <div className="flex items-center gap-2 px-4 pt-3.5 pb-2 border-b border-hairline">
         {icon}
         <p className="text-xs font-semibold text-gray-900">{title}</p>
@@ -101,7 +110,9 @@ function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
 }
 
 function OverviewEmpty({ text }) {
-  return <p className="text-[11px] text-gray-400 px-4 py-5 text-center">{text}</p>;
+  return (
+    <p className="text-[11px] text-gray-400 px-4 py-5 text-center">{text}</p>
+  );
 }
 
 function GlobalOverview() {
@@ -114,7 +125,6 @@ function GlobalOverview() {
   const upcomingTop = upcoming.slice(0, 4);
   const activityTop = recentActivity.slice(0, 4);
   const notifTop = notifications.slice(0, 3);
-
 
   // This page spans every community the admin belongs to, not one route's
   // worth — so it can't lean on /member/pay/:id the way a single-community
@@ -129,173 +139,196 @@ function GlobalOverview() {
     setPayingItem(o);
   }
 
-
-   // Nothing to roll up yet (brand-new account) — the community grid and its
+  // Nothing to roll up yet (brand-new account) — the community grid and its
   // empty state carry the page fine on their own.
-  if (!isLoading && !upcomingTop.length && !activityTop.length && !notifTop.length) {
+  if (
+    !isLoading &&
+    !upcomingTop.length &&
+    !activityTop.length &&
+    !notifTop.length
+  ) {
     return null;
   }
 
   return (
     <>
-    <div data-tour="global-overview" className="px-4 md:px-7 pb-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {/* Upcoming payments across all communities */}
-      <OverviewCard
-        icon={<Clock size={14} className="text-brand" />}
-        title="Upcoming Payments"
-        badge={upcoming.length}
-        // No desktop-native page exists yet for "my dues across every
-        // community" (only /member/upcoming, which is permanently
-        // mobile-gated) — hiding the footer link rather than pointing it at
-        // Payments.jsx, which is a single active community's admin
-        // payment-plan management view, not a personal cross-community list.
-        footerLabel={null}
+      <div
+        data-tour="global-overview"
+        className="px-4 md:px-7 pb-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
       >
-        {isLoading ? (
-          <LoadingState className="py-5" />
-        ) : upcomingTop.length === 0 ? (
-          <OverviewEmpty text="No payments due — you're all caught up." />
-        ) : (
-          upcomingTop.map((o) => {
-            const chip = obligationStatusChip(o);
-            return (
-              <button
-                key={o.id}
-                onClick={() => handlePay(o)}
-                className="w-full flex items-center justify-between gap-3 px-4 py-2.5 bg-transparent border-none text-left cursor-pointer hover:bg-gray-50 transition-colors"
+        {/* Upcoming payments across all communities */}
+        <OverviewCard
+          icon={<Clock size={14} className="text-brand" />}
+          title="Upcoming Payments"
+          badge={upcoming.length}
+          // No desktop-native page exists yet for "my dues across every
+          // community" (only /member/upcoming, which is permanently
+          // mobile-gated) — hiding the footer link rather than pointing it at
+          // Payments.jsx, which is a single active community's admin
+          // payment-plan management view, not a personal cross-community list.
+          footerLabel={null}
+        >
+          {isLoading ? (
+            <LoadingState className="py-5" />
+          ) : upcomingTop.length === 0 ? (
+            <OverviewEmpty text="No payments due — you're all caught up." />
+          ) : (
+            upcomingTop.map((o) => {
+              const chip = obligationStatusChip(o);
+              return (
+                <button
+                  key={o.id}
+                  onClick={() => handlePay(o)}
+                  className="w-full flex items-center justify-between gap-3 px-4 py-2.5 bg-transparent border-none text-left cursor-pointer hover:bg-gray-50 transition-colors"
+                >
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-gray-900 truncate">
+                      {toTitleCase(o.name)}
+                    </p>
+                    <p className="text-[11px] text-gray-400 mt-0.5 truncate">
+                      {[
+                        o.communityName,
+                        o.dueDate ? `Due ${formatDateShort(o.dueDate)}` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                    <span className="text-xs font-semibold text-gray-900">
+                      {formatNaira(o.amount)}
+                    </span>
+                    <span
+                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${chip.cls}`}
+                    >
+                      {chip.label}
+                    </span>
+                  </div>
+                </button>
+              );
+            })
+          )}
+        </OverviewCard>
+
+        {/* Recent activity */}
+        <OverviewCard
+          icon={<CreditCard size={14} className="text-brand" />}
+          title="Recent Activity"
+          // Same gap as Upcoming Payments above — no desktop page for this yet.
+          footerLabel={null}
+        >
+          {isLoading ? (
+            <LoadingState className="py-5" />
+          ) : activityTop.length === 0 ? (
+            <OverviewEmpty text="No transactions yet." />
+          ) : (
+            activityTop.map((t) => (
+              <div
+                key={t.id}
+                className="flex items-center justify-between gap-3 px-4 py-2.5"
               >
                 <div className="min-w-0">
                   <p className="text-xs font-medium text-gray-900 truncate">
-                    {toTitleCase(o.name)}
+                    {toTitleCase(t.description)}
                   </p>
                   <p className="text-[11px] text-gray-400 mt-0.5 truncate">
-                    {[o.communityName, o.dueDate ? `Due ${formatDateShort(o.dueDate)}` : null]
+                    {[t.communityName, t.date ? formatDateShort(t.date) : null]
                       .filter(Boolean)
                       .join(" · ")}
                   </p>
                 </div>
-                <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
                   <span className="text-xs font-semibold text-gray-900">
-                    {formatNaira(o.amount)}
+                    {formatNaira(t.amount)}
                   </span>
                   <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${chip.cls}`}
+                    className={`text-[10px] font-semibold ${
+                      t.status === "success"
+                        ? "text-emerald-600"
+                        : t.status === "failed"
+                          ? "text-red-500"
+                          : "text-amber-600"
+                    }`}
                   >
-                    {chip.label}
+                    {t.status === "success"
+                      ? "Successful"
+                      : t.status === "failed"
+                        ? "Failed"
+                        : "Pending"}
                   </span>
                 </div>
-              </button>
-            );
-          })
-        )}
-      </OverviewCard>
-
-      {/* Recent activity */}
-      <OverviewCard
-        icon={<CreditCard size={14} className="text-brand" />}
-        title="Recent Activity"
-        // Same gap as Upcoming Payments above — no desktop page for this yet.
-        footerLabel={null}
-      >
-        {isLoading ? (
-          <LoadingState className="py-5" />
-        ) : activityTop.length === 0 ? (
-          <OverviewEmpty text="No transactions yet." />
-        ) : (
-          activityTop.map((t) => (
-            <div
-              key={t.id}
-              className="flex items-center justify-between gap-3 px-4 py-2.5"
-            >
-              <div className="min-w-0">
-                <p className="text-xs font-medium text-gray-900 truncate">
-                  {toTitleCase(t.description)}
-                </p>
-                <p className="text-[11px] text-gray-400 mt-0.5 truncate">
-                  {[t.communityName, t.date ? formatDateShort(t.date) : null].filter(Boolean).join(" · ")}
-                </p>
               </div>
-              <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
-                <span className="text-xs font-semibold text-gray-900">
-                  {formatNaira(t.amount)}
-                </span>
-                <span
-                  className={`text-[10px] font-semibold ${
-                    t.status === "success"
-                      ? "text-emerald-600"
-                      : t.status === "failed"
-                        ? "text-red-500"
-                        : "text-amber-600"
-                  }`}
+            ))
+          )}
+        </OverviewCard>
+
+        {/* Notifications */}
+        <OverviewCard
+          icon={<Bell size={14} className="text-brand" />}
+          title="Notifications"
+          badge={unreadCount}
+          // No page-level "view all" for this card: it aggregates every
+          // community's activity, and there's no single community page that
+          // "view all" could correctly deep-link into.
+          footerLabel={null}
+        >
+          {notifTop.length === 0 ? (
+            <OverviewEmpty text="No notifications yet." />
+          ) : (
+            notifTop.map((n) => {
+              const details = extractNotificationDetails(n, { communityMap });
+              const amount = formatNairaAmount(details.amount);
+              const messageText =
+                n.message ?? n.description ?? n.bodyText ?? null;
+              // Scoped to the community this notification actually came from
+              // (same resolution + routing the topbar bell dropdown uses) --
+              // not whatever community happens to be active/last-visited.
+              const destination = notificationsListDestination(
+                n,
+                resolveNotificationCommunity(n, communityMap),
+              );
+              return (
+                <button
+                  key={n.id}
+                  onClick={() => navigate(destination)}
+                  className="w-full flex items-start gap-2.5 px-4 py-2.5 bg-transparent border-none text-left cursor-pointer hover:bg-gray-50 transition-colors"
                 >
-                  {t.status === "success"
-                    ? "Successful"
-                    : t.status === "failed"
-                      ? "Failed"
-                      : "Pending"}
-                </span>
-              </div>
-            </div>
-          ))
-        )}
-      </OverviewCard>
-
-      {/* Notifications */}
-      <OverviewCard
-        icon={<Bell size={14} className="text-brand" />}
-        title="Notifications"
-        badge={unreadCount}
-        // No page-level "view all" for this card: it aggregates every
-        // community's activity, and there's no single community page that
-        // "view all" could correctly deep-link into.
-        footerLabel={null}
-      >
-        {notifTop.length === 0 ? (
-          <OverviewEmpty text="No notifications yet." />
-        ) : (
-          notifTop.map((n) => {
-            const details = extractNotificationDetails(n, { communityMap });
-            const amount = formatNairaAmount(details.amount);
-            const messageText = n.message ?? n.description ?? n.bodyText ?? null;
-            // Scoped to the community this notification actually came from
-            // (same resolution + routing the topbar bell dropdown uses) --
-            // not whatever community happens to be active/last-visited.
-            const destination = notificationsListDestination(n, resolveNotificationCommunity(n, communityMap));
-            return (
-              <button
-                key={n.id}
-                onClick={() => navigate(destination)}
-                className="w-full flex items-start gap-2.5 px-4 py-2.5 bg-transparent border-none text-left cursor-pointer hover:bg-gray-50 transition-colors"
-              >
-                {!(n.readFlag ?? false) && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand flex-shrink-0 mt-1.5" />
-                )}
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={`text-xs truncate ${(n.readFlag ?? false) ? "text-gray-500" : "text-gray-900 font-medium"}`}
-                  >
-                    {n.title ?? n.subject ?? "Notification"}
-                  </p>
-                  {messageText && (
-                    <p className="text-[11px] text-gray-500 mt-0.5 truncate">
-                      {messageText}
-                    </p>
+                  {!(n.readFlag ?? false) && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand flex-shrink-0 mt-1.5" />
                   )}
-                  <p className="text-[11px] text-gray-400 mt-0.5">
-                    {[amount, details.communityName, n.createdAt ? formatDateShort(n.createdAt) : null]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </p>
-                </div>
-              </button>
-            );
-          })
-        )}
-      </OverviewCard>
-    </div>
-    {payingItem && (
-      <AdminPaymentModal item={payingItem} onClose={() => setPayingItem(null)} />
-    )}
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={`text-xs truncate ${(n.readFlag ?? false) ? "text-gray-500" : "text-gray-900 font-medium"}`}
+                    >
+                      {n.title ?? n.subject ?? "Notification"}
+                    </p>
+                    {messageText && (
+                      <p className="text-[11px] text-gray-500 mt-0.5 truncate">
+                        {messageText}
+                      </p>
+                    )}
+                    <p className="text-[11px] text-gray-400 mt-0.5">
+                      {[
+                        amount,
+                        details.communityName,
+                        n.createdAt ? formatDateShort(n.createdAt) : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                  </div>
+                </button>
+              );
+            })
+          )}
+        </OverviewCard>
+      </div>
+      {payingItem && (
+        <AdminPaymentModal
+          item={payingItem}
+          onClose={() => setPayingItem(null)}
+        />
+      )}
     </>
   );
 }
@@ -305,7 +338,14 @@ export default function CommunitiesHome() {
   const navigate = useNavigate();
   const { user, isPlatformAdmin } = useAuth();
   const { data, isLoading, error } = useCommunitiesWithMetrics();
-  const { invites, isLoading: invitesLoading, accept, reject, isAccepting, isRejecting } = useInvites();
+  const {
+    invites,
+    isLoading: invitesLoading,
+    accept,
+    reject,
+    isAccepting,
+    isRejecting,
+  } = useInvites();
   const [respondingId, setRespondingId] = useState(null);
   const [sort, setSort] = useState("Recently Viewed");
   const [sortOpen, setSortOpen] = useState(false);
@@ -317,7 +357,7 @@ export default function CommunitiesHome() {
 
   const communities = data?.communities ?? [];
   const pendingInvites = invites.filter(
-    (i) => (i.status ?? "PENDING").toUpperCase() === "PENDING"
+    (i) => (i.status ?? "PENDING").toUpperCase() === "PENDING",
   );
 
   async function handleAcceptInvite(inviteId) {
@@ -354,16 +394,24 @@ export default function CommunitiesHome() {
       try {
         localStorage.setItem(
           "glass_member_community",
-          JSON.stringify({ id: community.id, slug: community.slug, name: community.name })
+          JSON.stringify({
+            id: community.id,
+            slug: community.slug,
+            name: community.name,
+          }),
         );
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       navigate("/member/home");
       return;
     }
     const id = community.slug ?? community.id;
     localStorage.setItem("glass_community", JSON.stringify(community));
     const isPaying = await resolveIsPayingAdmin(id);
-    navigate(`/dashboard/${isPaying ? "admin/paying" : "admin"}?community=${id}`);
+    navigate(
+      `/dashboard/${isPaying ? "admin/paying" : "admin"}?community=${id}`,
+    );
   }
 
   return (
@@ -382,7 +430,9 @@ export default function CommunitiesHome() {
         </div>
         <div data-tour="communities-home-actions" className="flex gap-2.5">
           <button
-            onClick={() => navigate("/onboarding/choose-path", { state: { intent: "join" } })}
+            onClick={() =>
+              navigate("/onboarding/choose-path", { state: { intent: "join" } })
+            }
             className="h-10 px-3.5 rounded-lg border border-[#E0E0EB] text-brand bg-white text-xs font-medium hover:bg-gray-50 transition-all flex items-center justify-center"
           >
             Join Community
@@ -407,7 +457,8 @@ export default function CommunitiesHome() {
             </div>
             <div className="flex flex-col divide-y divide-blue-100">
               {pendingInvites.map((invite) => {
-                const isResponding = respondingId === invite.id && (isAccepting || isRejecting);
+                const isResponding =
+                  respondingId === invite.id && (isAccepting || isRejecting);
                 return (
                   <div
                     key={invite.id}
@@ -415,10 +466,15 @@ export default function CommunitiesHome() {
                   >
                     <div className="min-w-0">
                       <p className="text-xs font-medium text-gray-900 truncate">
-                        {invite.community?.name ?? invite.community?.slug ?? "A community"}
+                        {invite.community?.name ??
+                          invite.community?.slug ??
+                          "A community"}
                       </p>
                       <p className="text-[11px] text-gray-500 mt-0.5">
-                        invited you to join{invite.roleCode ? ` as ${invite.roleCode.toLowerCase()}` : ""}
+                        invited you to join
+                        {invite.roleCode
+                          ? ` as ${invite.roleCode.toLowerCase()}`
+                          : ""}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
@@ -449,7 +505,10 @@ export default function CommunitiesHome() {
       <GlobalOverview />
 
       {/* Filters */}
-      <div data-tour="communities-view-controls" className="flex items-center gap-5 px-4 md:px-7 pb-5 w-fit">
+      <div
+        data-tour="communities-view-controls"
+        className="flex items-center gap-5 px-4 md:px-7 pb-5 w-fit"
+      >
         <div className="relative">
           <button
             onClick={() => setSortOpen((o) => !o)}
@@ -513,7 +572,9 @@ export default function CommunitiesHome() {
       <div
         data-tour="communities-grid"
         className={`px-4 md:px-7 pb-10 grid gap-4 ${
-          view === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
+          view === "grid"
+            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            : "grid-cols-1"
         }`}
       >
         {isLoading ? (
