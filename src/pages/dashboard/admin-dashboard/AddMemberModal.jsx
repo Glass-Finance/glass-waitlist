@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Copy, X, Download, FileSpreadsheet, Check } from "lucide-react";
-import Papa from "papaparse";
 import uploadCloudIcon from "../../../assets/icons/upload-cloud.webp";
 import { APP_ORIGIN } from "../../../utils/deviceRedirect";
 import { useCommunityMembers, useRoles } from "../../../hooks/useCommunityMembers";
@@ -10,15 +9,12 @@ import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 import { Button } from "../../../components/ui/Button";
 import SuccessBadge from "../../../components/common/SuccessBadge";
 import { getErrorMessage } from "../../../utils/errorHandler";
-
-const ALLOWED_ROLE_NAMES = new Set([
-  "Community Member",
-  "Community Admin",
-  "Community Manager",
-]);
-const FALLBACK_ROLES = [{ id: "member", name: "Community Member" }];
-const CSV_TEMPLATE =
-  "First Name,Last Name,Email Address,Phone Number,Member ID,Role/Title\nMuhammed,Dorachinma,Muhammed@example.com,0812990293,A23434,Student";
+import {
+  ALLOWED_ROLE_NAMES,
+  FALLBACK_ROLES,
+  CSV_TEMPLATE,
+  parseMemberCSV,
+} from "./addMemberModalUtils";
 
 export default function AddMemberModal({ onClose, communityId, communitySlug }) {
   const [tab, setTab] = useState("upload");
@@ -88,31 +84,6 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
     URL.revokeObjectURL(url);
   }
 
-  // Papa.parse (not a naive split(",")) so a comma inside a quoted field --
-  // e.g. a name like "Okafor, Jr." or a role title -- doesn't shift every
-  // later column in that row. Same tolerant header lookup as the onboarding
-  // AddMembers.jsx CSV path, since admins fill in the same template there.
-  function parseCSV(text) {
-    const { data } = Papa.parse(text, { header: true, skipEmptyLines: true });
-    const get = (row, ...keys) => {
-      for (const k of keys) {
-        const v = row[k];
-        if (v != null && String(v).trim() !== "") return String(v).trim();
-      }
-      return "";
-    };
-    return data
-      .map((row) => ({
-        firstName: get(row, "First Name", "firstName"),
-        lastName: get(row, "Last Name", "lastName"),
-        email: get(row, "Email Address", "Email", "email"),
-        phone: get(row, "Phone Number", "Phone", "phone"),
-        memberId: get(row, "Member ID", "memberId"),
-        role: get(row, "Role/Title", "Role", "Title", "role"),
-      }))
-      .filter((r) => r.email);
-  }
-
   function handleFile(file) {
     if (!file || !file.name.endsWith(".csv")) {
       setCsvError("Please upload a .csv file.");
@@ -121,7 +92,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
     setCsvError("");
     setCsvFile(file);
     const reader = new FileReader();
-    reader.onload = (e) => setCsvRows(parseCSV(e.target.result));
+    reader.onload = (e) => setCsvRows(parseMemberCSV(e.target.result));
     reader.readAsText(file);
   }
 
@@ -157,7 +128,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
             ? `${(sizeKb / 1024).toFixed(1)} MB`
             : `${Math.max(1, Math.round(sizeKb))} KB`,
       });
-      setCsvRows(parseCSV(text));
+      setCsvRows(parseMemberCSV(text));
       setUrlStage("complete");
     } catch {
       clearInterval(tick);

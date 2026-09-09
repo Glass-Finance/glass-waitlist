@@ -36,6 +36,12 @@ import { useCommunities } from "../../hooks/useCommunities";
 import { useMyMemberRecord } from "../../hooks/useMyAccount";
 import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
 import { toastSuccess } from "../../utils/toast";
+import {
+  MobileOverlay,
+  SidebarLogo,
+  LogoutButton,
+  UserIdentity,
+} from "./SidebarPrimitives";
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
 // `path` is the route under /dashboard; "home" maps to the per-community
@@ -204,12 +210,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   if (isPlatformAdmin) {
     return (
       <>
-        {mobileOpen && (
-          <div
-            className="fixed inset-0 bg-black/40 z-[55] md:hidden"
-            onClick={onCloseMobile}
-          />
-        )}
+        <MobileOverlay mobileOpen={mobileOpen} onClose={onCloseMobile} />
         <div
           className={`fixed md:sticky top-0 left-0 h-dvh z-[60] flex-shrink-0 flex transition-transform duration-300 ${
             mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
@@ -217,31 +218,13 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         >
         {/* Blue rail */}
         <div className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5 w-14">
-          <button
+          <SidebarLogo
+            title="Platform Admin"
             onClick={() => {
               navigate("/dashboard/admin-panel");
               onCloseMobile?.();
             }}
-            className="mb-4 p-0 bg-transparent border-none cursor-pointer"
-            title="Platform Admin"
-          >
-            <img
-              src="/glass-logo-silver.webp"
-              alt="Glass"
-              className="w-8 h-8 object-contain block"
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-                if (e.currentTarget.nextSibling)
-                  e.currentTarget.nextSibling.style.display = "flex";
-              }}
-            />
-            <div
-              className="hidden w-8 h-8 rounded-md bg-white/25 items-center justify-center text-white font-black text-base"
-              aria-hidden="true"
-            >
-              G
-            </div>
-          </button>
+          />
 
           <button
             onClick={() => {
@@ -256,14 +239,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
           <div className="flex-1" />
 
-          <button
-            onClick={handleLogout}
-            disabled={loggingOut}
-            title="Log out"
-            className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/60 hover:bg-red-500/20 hover:text-red-300 transition-all disabled:opacity-50"
-          >
-            <LogOut size={14} />
-          </button>
+          <LogoutButton onClick={handleLogout} loggingOut={loggingOut} />
         </div>
 
         {/* White panel */}
@@ -332,12 +308,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
   return (
     <>
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-[55] md:hidden"
-          onClick={onCloseMobile}
-        />
-      )}
+      <MobileOverlay mobileOpen={mobileOpen} onClose={onCloseMobile} />
       {/* h-dvh, not h-screen -- see DashboardLayout.jsx for why: 100vh on iOS
           Safari sits behind the address bar, so this fixed drawer rendered
           taller than the real visible viewport and cut off Member View /
@@ -350,31 +321,13 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       {/* ── Blue rail ─────────────────────────────────────────────────────── */}
       <div className="flex-shrink-0 bg-brand flex flex-col items-center pt-3.5 pb-5 w-14">
         {/* Logo — goes to communities overview */}
-        <button
+        <SidebarLogo
+          title="Your Communities"
           onClick={() => {
             navigate("/dashboard/home");
             onCloseMobile?.();
           }}
-          className="mb-4 p-0 bg-transparent border-none cursor-pointer"
-          title="Your Communities"
-        >
-          <img
-            src="/glass-logo-silver.webp"
-            alt="Glass"
-            className="w-8 h-8 object-contain block"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-              if (e.currentTarget.nextSibling)
-                e.currentTarget.nextSibling.style.display = "flex";
-            }}
-          />
-          <div
-            className="hidden w-8 h-8 rounded-md bg-white/25 items-center justify-center text-white font-black text-base"
-            aria-hidden="true"
-          >
-            G
-          </div>
-        </button>
+        />
 
         {/* Home (communities overview) -- same active-indicator pattern as
             the community tiles below: a pill riding the rail's outer edge
@@ -508,14 +461,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         )}
 
         {/* Logout button pinned to bottom of rail */}
-        <button
-          onClick={handleLogout}
-          disabled={loggingOut}
-          title="Log out"
-          className="mt-2 w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/60 hover:bg-red-500/20 hover:text-red-300 transition-all disabled:opacity-50"
-        >
-          <LogOut size={14} />
-        </button>
+        <div className="mt-2">
+          <LogoutButton onClick={handleLogout} loggingOut={loggingOut} />
+        </div>
       </div>
 
       {/* ── White nav panel ────────────────────────────────────────────────── */}
@@ -677,20 +625,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         </div>
 
         {/* Bottom — user info strip */}
-        <div className="py-2.5 px-3 border-t border-[var(--color-hairline)] flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--color-brand),#4f46e5)] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 overflow-hidden">
-            {user?.profileImage?.url ? (
-              <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
-            ) : (
-              userInitials
-            )}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-semibold m-0 whitespace-nowrap overflow-hidden text-ellipsis">
-              {userDisplayName}
-            </p>
-          </div>
-        </div>
+        <UserIdentity user={user} initials={userInitials} displayName={userDisplayName} />
       </div>
       )}
       </div>

@@ -3,77 +3,17 @@ import { createPortal } from "react-dom";
 import { X, FileText, Image as ImageIcon, Share2, Check, Copy, CheckCheck } from "lucide-react";
 import html2canvas from "html2canvas";
 import ctaLogoUrl from "../../assets/cta/ctalogo.webp";
-import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
+import { toTitleCase } from "../../utils/format";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-// Receipts show 2 decimal places (kobo precision), unlike the app-wide 0-decimal default.
-function formatNaira(amount) {
-  return sharedFormatNaira(amount, { decimals: 2 });
-}
-
-// Splits "₦5,010.00" into the whole part and ".00" so the decimals can be
-// styled in a lighter tone, matching the Figma amount treatment.
-function splitNaira(amount) {
-  const full = formatNaira(amount);
-  const dot = full.lastIndexOf(".");
-  if (dot === -1) return { whole: full, decimals: "" };
-  return { whole: full.slice(0, dot), decimals: full.slice(dot) };
-}
-
-function formatDateTime(d) {
-  if (!d) return "—";
-  return new Date(d).toLocaleString("en-NG", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-// Compact "Apr 1,2025 • 12:00AM" -- toLocaleString's "en-NG" locale defaults
-// to a 24-hour clock with no AM/PM marker, which is why the header timestamp
-// never matched the Figma format. Built by hand so the 12-hour clock and
-// AM/PM suffix are guaranteed regardless of locale/engine defaults.
-function formatHeaderDate(d) {
-  if (!d) return "—";
-  const date = new Date(d);
-  const month = date.toLocaleDateString("en-US", { month: "short" });
-  const day = date.getDate();
-  const year = date.getFullYear();
-  let hours = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12 || 12;
-  return `${month} ${day},${year} • ${hours}:${minutes}${ampm}`;
-}
-
-function statusLabel(status) {
-  const s = (status ?? "").toLowerCase();
-  if (s === "success" || s === "successful") return "Successful";
-  if (s === "failed") return "Failed";
-  return "Pending";
-}
-
-// Cosmetic masking for the Member Details row (e.g. "am**bu@gmail.com") — the
-// viewer is always either the payer themselves or an admin who already has
-// this member's full record elsewhere, so this is polish, not real privacy.
-function maskEmail(email) {
-  if (!email || !email.includes("@")) return null;
-  const [local, domain] = email.split("@");
-  if (!local || !domain) return null;
-  if (local.length <= 4) return `${local[0]}**@${domain}`;
-  return `${local.slice(0, 2)}**${local.slice(-2)}@${domain}`;
-}
-
-function getInitials(name) {
-  if (!name) return "?";
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0][0]?.toUpperCase() ?? "?";
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
+import {
+  formatNaira,
+  splitNaira,
+  formatDateTime,
+  formatHeaderDate,
+  statusLabel,
+  maskEmail,
+  getInitials,
+} from "./receiptUtils";
 
 // Photo-or-initials circle for the Member Details row. Plain <img>/div with
 // borderRadius: "50%" rather than a CSS mask -- html2canvas (used for Save
