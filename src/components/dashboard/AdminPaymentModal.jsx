@@ -189,10 +189,10 @@ export function AdminPaymentModal({ item, onClose }) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="w-full bg-surface-bg rounded-2xl overflow-hidden shadow-2xl border border-surface-container-border max-w-[560px] max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-[893px] max-h-[90vh] overflow-y-auto rounded-lg bg-surface-container shadow-2xl border border-surface-container-border"
       >
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-7 py-5">
+        <div className="flex items-center justify-between px-6 py-4">
           <span className="text-lg font-medium text-gray-900">Transaction Details</span>
           <button
             onClick={onClose}
@@ -203,8 +203,8 @@ export function AdminPaymentModal({ item, onClose }) {
         </div>
 
         {/* ── Community + payment method + Auto-Pay toggle ── */}
-        <div className="mx-7 rounded-xl bg-stacked-container px-4">
-          <div className="flex items-center gap-3 py-4 border-b border-gray-200">
+        <div className="mx-6 rounded-lg bg-white px-4">
+          <div className="flex items-center gap-3 py-3 border-b border-gray-200">
             <div
               className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 border border-surface-container-border bg-[#f0f4ff]"
             >
@@ -226,7 +226,7 @@ export function AdminPaymentModal({ item, onClose }) {
           </div>
 
           {savedMethod ? (
-            <div className="flex items-center justify-between py-3 border-b border-gray-200">
+            <div className="flex items-center justify-between py-2.5 border-b border-gray-200">
               <div className="flex items-center gap-2.5">
                 <Landmark size={16} className="text-brand" />
                 <span className="text-sm font-medium text-gray-900">
@@ -244,7 +244,7 @@ export function AdminPaymentModal({ item, onClose }) {
               </button>
             </div>
           ) : (
-            <p className="text-sm text-gray-500 py-3 border-b border-gray-200">
+            <p className="text-sm text-gray-500 py-2.5 border-b border-gray-200">
               You'll select your payment method on the next screen.
             </p>
           )}
@@ -252,7 +252,7 @@ export function AdminPaymentModal({ item, onClose }) {
           {/* Always shown, saved method or not -- a real, changeable choice
               for every plan (confirmed with backend: savePaymentMethod is
               optional at the API level regardless of plan type). */}
-          <div className="flex items-center justify-between py-3">
+          <div className="flex items-center justify-between py-2.5">
             <span className="flex items-center gap-1.5 text-sm text-gray-500">
               {isRecurring ? "Enable Recurring Payment" : "Save Payment Method"}
               <span
@@ -270,9 +270,9 @@ export function AdminPaymentModal({ item, onClose }) {
         </div>
 
         {/* ── Plan details ── */}
-        <div className="mx-7 mt-4 mb-6 rounded-xl bg-stacked-container p-4">
-          <p className="text-sm font-semibold text-gray-900 mb-4">Plan Details</p>
-          <div className="flex flex-col gap-3">
+        <div className="mx-6 mt-4 mb-4 rounded-lg bg-white p-4">
+          <p className="text-sm font-semibold text-gray-900 mb-3">Plan Details</p>
+          <div className="flex flex-col gap-2.5">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Plan</span>
               <span className="text-sm font-medium text-gray-900">
@@ -300,13 +300,13 @@ export function AdminPaymentModal({ item, onClose }) {
 
         {/* ── Footer -- single action, matching the X close button for
             "never mind" instead of a redundant second Cancel button. ── */}
-        <div className="px-7 pb-6 flex items-center justify-end">
+        <div className="px-6 pb-4 flex items-center justify-end">
           <Button
             onClick={handlePay}
             disabled={isLinkInactive}
             loading={initiatePayment.isPending || redirecting}
             fullWidth={false}
-            className="px-6 flex items-center gap-2"
+            className="w-[262px] flex items-center justify-center gap-2"
           >
             {initiatePayment.isPending || redirecting ? (
               <>
