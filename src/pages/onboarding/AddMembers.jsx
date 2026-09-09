@@ -13,7 +13,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 import { useNavigate, useLocation } from "react-router-dom";
-import Papa from "papaparse";
 import { Bell, Download, Copy, Check, X, FileSpreadsheet, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
 import uploadCloudIcon from "../../assets/icons/upload-cloud.webp";
@@ -28,6 +27,18 @@ import StepIndicator from "../../components/onboarding/StepIndicator";
 import OnboardingStepsSidebar from "../../components/onboarding/OnboardingStepsSidebar";
 import { useAuth } from "../../store/AuthContext";
 import { Button } from "../../components/ui/Button";
+import {
+  ALLOWED_ROLE_NAMES,
+  FALLBACK_ROLES,
+  COMPLETED_STEP_IDS,
+  HEADERS,
+  SAMPLE_ROW,
+  downloadTemplate,
+  parseCsvText,
+  parseCsvFile,
+  parseCsvFromUrl,
+  csvRowToMember,
+} from "./addMembersUtils";
 
 // Confirmed against the live backend (GET /roles/community, 2026-07-12):
 // only these three roles actually exist -- COMMUNITY_OWNER, COMMUNITY_ADMIN,
@@ -35,67 +46,7 @@ import { Button } from "../../components/ui/Button";
 // this dropdown silently only ever offered "Community Member" no matter how
 // many roles the backend returned. Matches the same allowlist Members.jsx
 // uses for consistency between the two places a role gets assigned.
-const ALLOWED_ROLE_NAMES = new Set(["Community Owner", "Community Admin", "Community Member"]);
-const FALLBACK_ROLES = [{ id: "", name: "Community Member" }];
-
-const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization", "payment"];
-
-const HEADERS = ["First Name", "Last Name", "Email Address", "Phone Number", "Member ID", "Role/Title"];
-const SAMPLE_ROW = ["Muhammed", "Dorachinma", "Muha***med@**.com", "0812990293", "A23434", "Student"];
-
 const inputCls = "w-full h-12 min-h-8 border border-[#797D86] px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
-
-function downloadTemplate() {
-  const sample = ["Ada", "Okafor", "ada@example.com", "08031234567", "M001", "Member"];
-  const csv = `${HEADERS.join(",")}\n${sample.join(",")}\n`;
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "glass-member-import-template.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function parseCsvText(text) {
-  const { data } = Papa.parse(text, { header: true, skipEmptyLines: true });
-  return data;
-}
-
-async function parseCsvFile(file) {
-  const text = await file.text();
-  return parseCsvText(text);
-}
-
-async function parseCsvFromUrl(url) {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Couldn't download a file from that URL.");
-  return parseCsvText(await res.text());
-}
-
-// Maps a parsed CSV row (using our template's headers, tolerant of a few
-// common variants) to the real addCommunityMember payload — {email, roleId}
-// is the only confirmed shape (api/communities.js); name/phone/member-ref
-// columns are accepted in the template for the admin's own reference but
-// aren't part of that contract, so they're dropped before submission.
-// "Role/Title" is a free-text label in the CSV but the backend wants a
-// roleId, so it's resolved against the community's actual roles by name.
-function csvRowToMember(row, roles, defaultRoleId) {
-  const get = (...keys) => {
-    for (const k of keys) {
-      const v = row[k];
-      if (v != null && String(v).trim() !== "") return String(v).trim();
-    }
-    return "";
-  };
-  const roleLabel = get("Role/Title", "Role", "Title", "role");
-  const matchedRole = roles?.find((r) => r.name?.toLowerCase() === roleLabel.toLowerCase());
-
-  return {
-    email: get("Email Address", "Email", "email"),
-    roleId: matchedRole?.id ?? defaultRoleId,
-  };
-}
 
 function SuccessModal({ communityName, onDashboard, onCopy }) {
   return (
