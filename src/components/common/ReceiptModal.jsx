@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, FileText, Image as ImageIcon, Share2, Check, Copy, CheckCheck } from "lucide-react";
+import {
+  X,
+  FileText,
+  Image as ImageIcon,
+  Share2,
+  Check,
+  Copy,
+  CheckCheck,
+} from "lucide-react";
 import html2canvas from "html2canvas";
 import ctaLogoUrl from "../../assets/cta/ctalogo.webp";
 import { toTitleCase } from "../../utils/format";
@@ -27,7 +35,13 @@ function Avatar({ photo, name, size = 28 }) {
       alt=""
       width={size}
       height={size}
-      style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        objectFit: "cover",
+        flexShrink: 0,
+      }}
     />
   ) : (
     <div
@@ -42,7 +56,14 @@ function Avatar({ photo, name, size = 28 }) {
         flexShrink: 0,
       }}
     >
-      <span style={{ color: "#fff", fontSize: size * 0.38, fontWeight: 700, lineHeight: 1 }}>
+      <span
+        style={{
+          color: "#fff",
+          fontSize: size * 0.38,
+          fontWeight: 700,
+          lineHeight: 1,
+        }}
+      >
         {getInitials(name)}
       </span>
     </div>
@@ -91,7 +112,16 @@ function DetailRow({ label, children, last }) {
 // ── ReceiptCard — rendered as real JSX for the in-app preview ────────────────
 // Rules: no border-radius on the outer card or logo, no overlapping sections.
 
-function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRef, copied, onCopyReference }) {
+function ReceiptCard({
+  tx,
+  payerName,
+  payerEmail,
+  logoB64,
+  footerLogoB64,
+  cardRef,
+  copied,
+  onCopyReference,
+}) {
   const status = statusLabel(tx?.status);
   const isSuccess = status === "Successful";
   const isFailed = status === "Failed";
@@ -134,7 +164,13 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
         {Array.from({ length: 11 }).map((_, i) => (
           <div
             key={i}
-            style={{ width: 16, height: 16, borderRadius: "50%", background: "#ffffff", flexShrink: 0 }}
+            style={{
+              width: 16,
+              height: 16,
+              borderRadius: "50%",
+              background: "#ffffff",
+              flexShrink: 0,
+            }}
           />
         ))}
       </div>
@@ -176,7 +212,14 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
                   justifyContent: "center",
                 }}
               >
-                <span style={{ color: "#fff", fontSize: 15, fontWeight: 900, lineHeight: 1 }}>
+                <span
+                  style={{
+                    color: "#fff",
+                    fontSize: 15,
+                    fontWeight: 900,
+                    lineHeight: 1,
+                  }}
+                >
                   G
                 </span>
               </div>
@@ -205,10 +248,24 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
         {/* Amount + status */}
         <div style={{ textAlign: "center" }}>
           <div style={{ marginBottom: 14, lineHeight: 1 }}>
-            <span style={{ color: "#ffffff", fontSize: 38, fontWeight: 700, letterSpacing: "-1px" }}>
+            <span
+              style={{
+                color: "#ffffff",
+                fontSize: 38,
+                fontWeight: 700,
+                letterSpacing: "-1px",
+              }}
+            >
               {amountParts.whole}
             </span>
-            <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 38, fontWeight: 700, letterSpacing: "-1px" }}>
+            <span
+              style={{
+                color: "rgba(255,255,255,0.6)",
+                fontSize: 38,
+                fontWeight: 700,
+                letterSpacing: "-1px",
+              }}
+            >
               {amountParts.decimals}
             </span>
           </div>
@@ -227,7 +284,11 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
                 width: 15,
                 height: 15,
                 borderRadius: "50%",
-                background: isSuccess ? "#0ECE7B" : isFailed ? "#EF4444" : "#F59E0B",
+                background: isSuccess
+                  ? "#0ECE7B"
+                  : isFailed
+                    ? "#EF4444"
+                    : "#F59E0B",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -249,7 +310,13 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
           </div>
 
           {/* Timestamp */}
-          <div style={{ color: "rgba(255,255,255,0.65)", fontSize: 11.5, letterSpacing: "0.2px" }}>
+          <div
+            style={{
+              color: "rgba(255,255,255,0.65)",
+              fontSize: 11.5,
+              letterSpacing: "0.2px",
+            }}
+          >
             {formatHeaderDate(tx?.date ?? tx?.createdAt)}
           </div>
         </div>
@@ -258,7 +325,14 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
       {/* ── TRANSACTION DETAILS ───────────────────────────────────────────── */}
       <div style={{ background: "#ffffff" }}>
         <DetailRow label="Community">
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 7, justifyContent: "flex-end" }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 7,
+              justifyContent: "flex-end",
+            }}
+          >
             {tx?.communityLogo?.url && (
               <img
                 src={tx.communityLogo.url}
@@ -277,12 +351,28 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
         </DetailRow>
 
         <DetailRow label="Member Details">
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              justifyContent: "flex-end",
+            }}
+          >
             <Avatar photo={tx?.payerPhoto} name={payerName} />
-            <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 2 }}>
+            <span
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+                gap: 2,
+              }}
+            >
               <span>{toTitleCase(payerName) || "—"}</span>
               {maskedEmail && (
-                <span style={{ fontSize: 11, fontWeight: 500, color: "#94A3B8" }}>
+                <span
+                  style={{ fontSize: 11, fontWeight: 500, color: "#94A3B8" }}
+                >
                   {maskedEmail}
                 </span>
               )}
@@ -311,10 +401,22 @@ function ReceiptCard({ tx, payerName, payerEmail, logoB64, footerLogoB64, cardRe
           <span style={{ wordBreak: "break-all" }}>{refValue}</span>{" "}
           <button
             onClick={onCopyReference}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 2, color: "#94A3B8", display: "inline-flex", verticalAlign: "middle" }}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 2,
+              color: "#94A3B8",
+              display: "inline-flex",
+              verticalAlign: "middle",
+            }}
             aria-label="Copy transaction ID"
           >
-            {copied ? <CheckCheck size={13} color="#15803d" /> : <Copy size={13} />}
+            {copied ? (
+              <CheckCheck size={13} color="#15803d" />
+            ) : (
+              <Copy size={13} />
+            )}
           </button>
         </DetailRow>
       </div>
@@ -380,8 +482,16 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
         reader.readAsDataURL(blob);
       });
     }
-    fetch(ctaLogoUrl).then((r) => r.blob()).then(toB64).then(setLogoB64).catch(() => {});
-    fetch("/Glass.webp").then((r) => r.blob()).then(toB64).then(setFooterLogoB64).catch(() => {});
+    fetch(ctaLogoUrl)
+      .then((r) => r.blob())
+      .then(toB64)
+      .then(setLogoB64)
+      .catch(() => {});
+    fetch("/Glass.webp")
+      .then((r) => r.blob())
+      .then(toB64)
+      .then(setFooterLogoB64)
+      .catch(() => {});
   }, []);
 
   // Not routed through useEscapeToClose/KeyboardShortcutsProvider -- this
@@ -429,7 +539,8 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
     if (saving) return;
     setSaving("pdf");
     try {
-      const { downloadReceiptPdf } = await import("../../utils/generateReceipt");
+      const { downloadReceiptPdf } =
+        await import("../../utils/generateReceipt");
       await downloadReceiptPdf(tx, { payerName, payerEmail });
     } finally {
       setSaving(null);
@@ -443,7 +554,10 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
       const canvas = await captureCard(2);
       if (!canvas) return;
       canvas.toBlob(async (blob) => {
-        if (!blob) { setSaving(null); return; }
+        if (!blob) {
+          setSaving(null);
+          return;
+        }
         try {
           await navigator.share({
             files: [

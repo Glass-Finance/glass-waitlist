@@ -13,7 +13,15 @@
 import { useState, useEffect, useRef } from "react";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, Download, Copy, Check, X, FileSpreadsheet, ArrowLeft } from "lucide-react";
+import {
+  Bell,
+  Download,
+  Copy,
+  Check,
+  X,
+  FileSpreadsheet,
+  ArrowLeft,
+} from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
 import uploadCloudIcon from "../../assets/icons/upload-cloud.webp";
 import SuccessBadge from "../../components/common/SuccessBadge";
@@ -22,7 +30,10 @@ import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { toastProgress, toastSuccess } from "../../utils/toast";
 import { useRoles } from "../../hooks/useCommunityMembers";
 import { bulkCreateCommunityInvites } from "../../api/invites";
-import { readOnboardingProgress, clearOnboardingProgress } from "../../utils/onboardingProgress";
+import {
+  readOnboardingProgress,
+  clearOnboardingProgress,
+} from "../../utils/onboardingProgress";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 import OnboardingStepsSidebar from "../../components/onboarding/OnboardingStepsSidebar";
 import { useAuth } from "../../store/AuthContext";
@@ -46,7 +57,8 @@ import {
 // this dropdown silently only ever offered "Community Member" no matter how
 // many roles the backend returned. Matches the same allowlist Members.jsx
 // uses for consistency between the two places a role gets assigned.
-const inputCls = "w-full h-12 min-h-8 border border-[#797D86] px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+const inputCls =
+  "w-full h-12 min-h-8 border border-[#797D86] px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
 
 function SuccessModal({ communityName, onDashboard, onCopy }) {
   return (
@@ -61,8 +73,10 @@ function SuccessModal({ communityName, onDashboard, onCopy }) {
           Go To Dashboard
         </Button>
         <p className="text-xs text-gray-900 mb-1">Ready To Invite Members?</p>
-        <button onClick={onCopy}
-          className="text-xs font-medium text-brand hover:underline bg-transparent border-none cursor-pointer">
+        <button
+          onClick={onCopy}
+          className="text-xs font-medium text-brand hover:underline bg-transparent border-none cursor-pointer"
+        >
           Click here to copy your community link
         </button>
         <div className="h-[env(safe-area-inset-bottom,0px)] lg:hidden" />
@@ -77,17 +91,35 @@ function SuccessModal({ communityName, onDashboard, onCopy }) {
 // a bundled object) so each prop maps 1:1 to the variable it replaced,
 // making this a mechanical extraction with no behavior change.
 function UploadMembersTab({
-  uploadedFile, dragOver, setDragOver, fileRef, handleFile, handleDrop,
-  fileUrl, setFileUrl, urlStage, urlProgress, urlFileInfo,
-  handleUrlUpload, clearUrlUpload, loading, error,
+  uploadedFile,
+  dragOver,
+  setDragOver,
+  fileRef,
+  handleFile,
+  handleDrop,
+  fileUrl,
+  setFileUrl,
+  urlStage,
+  urlProgress,
+  urlFileInfo,
+  handleUrlUpload,
+  clearUrlUpload,
+  loading,
+  error,
 }) {
   return (
     <>
       <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 mb-4">
-        <p className="text-sm text-gray-500">Upload a CSV file with following sample information</p>
-        <button onClick={downloadTemplate} className="flex items-center gap-1.5 text-xs font-medium text-brand hover:opacity-80 bg-transparent border-none cursor-pointer">
-          <Download size={12} />Download Template
+        <p className="text-sm text-gray-500">
+          Upload a CSV file with following sample information
+        </p>
+        <button
+          onClick={downloadTemplate}
+          className="flex items-center gap-1.5 text-xs font-medium text-brand hover:opacity-80 bg-transparent border-none cursor-pointer"
+        >
+          <Download size={12} />
+          Download Template
         </button>
       </div>
 
@@ -98,13 +130,25 @@ function UploadMembersTab({
         <table className="w-full text-xs min-w-[560px]">
           <thead>
             <tr className="bg-gray-50">
-              {HEADERS.map((h) => <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500">{h}</th>)}
+              {HEADERS.map((h) => (
+                <th
+                  key={h}
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500"
+                >
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             <tr className="border-t border-gray-100">
               {SAMPLE_ROW.map((cell, i) => (
-                <td key={i} className={`px-4 py-3 ${i === 2 ? "text-brand underline" : "text-gray-900"}`}>{cell}</td>
+                <td
+                  key={i}
+                  className={`px-4 py-3 ${i === 2 ? "text-brand underline" : "text-gray-900"}`}
+                >
+                  {cell}
+                </td>
               ))}
             </tr>
           </tbody>
@@ -114,38 +158,68 @@ function UploadMembersTab({
       {/* Drop zone */}
       <div
         onClick={() => fileRef.current?.click()}
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
         className={`w-full rounded-lg flex flex-col items-center justify-center py-8 cursor-pointer transition-all mb-5 min-h-[100px] border-dashed ${dragOver ? "border-2 bg-[#EEF2FF] border-brand" : "border bg-[#FAFAFA] border-gray-200"}`}
       >
-        <input ref={fileRef} type="file" accept=".csv" className="hidden"
-          onChange={(e) => handleFile(e.target.files[0])} />
+        <input
+          ref={fileRef}
+          type="file"
+          accept=".csv"
+          className="hidden"
+          onChange={(e) => handleFile(e.target.files[0])}
+        />
         <img src={uploadCloudIcon} alt="" className="w-6 h-6 mb-2" />
-        {uploadedFile
-          ? <p className="text-xs text-brand font-medium">{uploadedFile.name}</p>
-          : <p className="text-xs text-gray-500">Drag and Drop CSV here or <span className="text-brand font-medium underline">Browse</span></p>}
+        {uploadedFile ? (
+          <p className="text-xs text-brand font-medium">{uploadedFile.name}</p>
+        ) : (
+          <p className="text-xs text-gray-500">
+            Drag and Drop CSV here or{" "}
+            <span className="text-brand font-medium underline">Browse</span>
+          </p>
+        )}
       </div>
 
       {/* URL upload */}
       <div>
-        <p className="text-xs font-medium text-gray-700 mb-2">Or Upload from URL</p>
+        <p className="text-xs font-medium text-gray-700 mb-2">
+          Or Upload from URL
+        </p>
         <div className="flex gap-2">
-          <input type="url" value={fileUrl}
-            onChange={(e) => { setFileUrl(e.target.value); if (urlStage !== "idle") clearUrlUpload(); }}
-            placeholder="Add File URL" className={inputCls}
-            disabled={urlStage === "fetching"} />
-          <button onClick={handleUrlUpload} disabled={!fileUrl.trim() || urlStage === "fetching" || loading}
-            className="px-5 py-2 rounded-lg bg-[#002FA733] text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50">
+          <input
+            type="url"
+            value={fileUrl}
+            onChange={(e) => {
+              setFileUrl(e.target.value);
+              if (urlStage !== "idle") clearUrlUpload();
+            }}
+            placeholder="Add File URL"
+            className={inputCls}
+            disabled={urlStage === "fetching"}
+          />
+          <button
+            onClick={handleUrlUpload}
+            disabled={!fileUrl.trim() || urlStage === "fetching" || loading}
+            className="px-5 py-2 rounded-lg bg-[#002FA733] text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50"
+          >
             Upload
           </button>
         </div>
 
         {urlStage === "fetching" && (
           <div className="mt-3 flex items-center gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
-            <FileSpreadsheet size={20} className="text-gray-400 flex-shrink-0" />
+            <FileSpreadsheet
+              size={20}
+              className="text-gray-400 flex-shrink-0"
+            />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-gray-900 truncate">{fileUrl.split("/").pop() || "file.csv"}</p>
+              <p className="text-xs text-gray-900 truncate">
+                {fileUrl.split("/").pop() || "file.csv"}
+              </p>
               <div className="mt-1.5 h-1.5 rounded-full bg-gray-100 overflow-hidden">
                 <div
                   className="h-full rounded-full bg-brand transition-[width] duration-200 ease-linear"
@@ -153,9 +227,14 @@ function UploadMembersTab({
                 />
               </div>
             </div>
-            <span className="text-xs text-gray-500 flex-shrink-0">{Math.round(urlProgress)}%</span>
-            <button onClick={clearUrlUpload} aria-label="Cancel upload"
-              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0">
+            <span className="text-xs text-gray-500 flex-shrink-0">
+              {Math.round(urlProgress)}%
+            </span>
+            <button
+              onClick={clearUrlUpload}
+              aria-label="Cancel upload"
+              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0"
+            >
               <X size={16} />
             </button>
           </div>
@@ -163,15 +242,25 @@ function UploadMembersTab({
 
         {urlStage === "complete" && urlFileInfo && (
           <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
-            <FileSpreadsheet size={20} className="text-green-600 flex-shrink-0" />
+            <FileSpreadsheet
+              size={20}
+              className="text-green-600 flex-shrink-0"
+            />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-gray-900 truncate">{urlFileInfo.name}</p>
+              <p className="text-xs text-gray-900 truncate">
+                {urlFileInfo.name}
+              </p>
               <p className="text-xs text-gray-500 flex items-center gap-1">
-                {urlFileInfo.sizeLabel} • <Check size={11} className="text-green-600" /> <span className="text-green-600 font-medium">Complete</span>
+                {urlFileInfo.sizeLabel} •{" "}
+                <Check size={11} className="text-green-600" />{" "}
+                <span className="text-green-600 font-medium">Complete</span>
               </p>
             </div>
-            <button onClick={clearUrlUpload} aria-label="Remove file"
-              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0">
+            <button
+              onClick={clearUrlUpload}
+              aria-label="Remove file"
+              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0"
+            >
               <X size={16} />
             </button>
           </div>
@@ -185,22 +274,42 @@ function UploadMembersTab({
 
 // Same extraction approach as UploadMembersTab above.
 function ManualMembersTab({
-  emails, emailInput, setEmailInput, handleEmailKeyDown, commitEmailChip, removeEmailChip,
-  phoneNumbers, setPhoneNumbers, selectedRoleId, setSelectedRoleId, rolesLoading, finalRoles,
-  billingExempt, setBillingExempt, error, loading, handleSendInvite,
+  emails,
+  emailInput,
+  setEmailInput,
+  handleEmailKeyDown,
+  commitEmailChip,
+  removeEmailChip,
+  phoneNumbers,
+  setPhoneNumbers,
+  selectedRoleId,
+  setSelectedRoleId,
+  rolesLoading,
+  finalRoles,
+  billingExempt,
+  setBillingExempt,
+  error,
+  loading,
+  handleSendInvite,
 }) {
   return (
     <>
       <p className="text-sm font-medium text-gray-900 mb-2">Enter Email(s):</p>
       <div className="rounded-lg p-3 flex flex-wrap items-center gap-2 mb-5 min-h-[60px] border border-[#E5E7EB] bg-white focus-within:border-[#002FA7]">
         {emails.map((em, i) => (
-          <span key={em + i} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800 bg-stacked-container">
+          <span
+            key={em + i}
+            className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800 bg-stacked-container"
+          >
             <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-brand text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
               {em.charAt(0).toUpperCase()}
             </span>
             {em}
-            <button onClick={() => removeEmailChip(i)} aria-label={`Remove ${em}`}
-              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex items-center justify-center">
+            <button
+              onClick={() => removeEmailChip(i)}
+              aria-label={`Remove ${em}`}
+              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex items-center justify-center"
+            >
               <X size={12} />
             </button>
           </span>
@@ -211,13 +320,16 @@ function ManualMembersTab({
           onChange={(e) => setEmailInput(e.target.value)}
           onKeyDown={handleEmailKeyDown}
           onBlur={commitEmailChip}
-          placeholder={emails.length === 0 ? "Type an email and press Enter" : ""}
+          placeholder={
+            emails.length === 0 ? "Type an email and press Enter" : ""
+          }
           className="flex-1 min-w-[160px] outline-none text-sm bg-transparent border-none py-1"
         />
       </div>
 
       <p className="text-sm font-medium text-gray-900 mb-2">
-        Enter Phone Number(s) <span className="text-gray-400 font-normal">(Optional):</span>
+        Enter Phone Number(s){" "}
+        <span className="text-gray-400 font-normal">(Optional):</span>
       </p>
       <input
         type="text"
@@ -235,14 +347,27 @@ function ManualMembersTab({
           disabled={rolesLoading}
           className={`${inputCls} appearance-none pr-8 ${rolesLoading ? "opacity-50" : ""}`}
         >
-          {rolesLoading
-            ? <option>Loading roles…</option>
-            : finalRoles.map((r) => (
-                <option key={r.id} value={r.id}>{r.name}</option>
-              ))
-          }
+          {rolesLoading ? (
+            <option>Loading roles…</option>
+          ) : (
+            finalRoles.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))
+          )}
         </select>
-        <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        <svg
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
       </div>
 
       <label className="flex items-center gap-2.5 text-sm text-gray-700 mb-5 cursor-pointer select-none">
@@ -253,7 +378,9 @@ function ManualMembersTab({
           className="w-4 h-4 accent-brand cursor-pointer"
         />
         Exempt from billing
-        <span className="text-xs text-gray-400 font-normal">(no payment reminders will be sent)</span>
+        <span className="text-xs text-gray-400 font-normal">
+          (no payment reminders will be sent)
+        </span>
       </label>
 
       {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
@@ -274,12 +401,14 @@ function ManualMembersTab({
 }
 
 export default function AddMembers() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useAuth();
-  const fileRef   = useRef(null);
+  const fileRef = useRef(null);
   const { data: rolesData, isLoading: rolesLoading } = useRoles();
-  const roles = rolesData ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name)) : [];
+  const roles = rolesData
+    ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name))
+    : [];
   const finalRoles = roles.length ? roles : FALLBACK_ROLES;
 
   // Same fallback as PaymentProfile.jsx -- location.state doesn't survive a
@@ -302,7 +431,7 @@ export default function AddMembers() {
   };
 
   const [selectedRoleId, setSelectedRoleId] = useState("");
-  const [billingExempt,  setBillingExempt]  = useState(false);
+  const [billingExempt, setBillingExempt] = useState(false);
 
   // Set default to "Community Member" once roles resolve
   useEffect(() => {
@@ -331,39 +460,50 @@ export default function AddMembers() {
     ? `${APP_ORIGIN}/member/join?community=${communitySlug}`
     : APP_ORIGIN;
 
-  const [tab,          setTab]          = useState("upload");
-  const [dragOver,     setDragOver]     = useState(false);
+  const [tab, setTab] = useState("upload");
+  const [dragOver, setDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [fileUrl,      setFileUrl]      = useState("");
+  const [fileUrl, setFileUrl] = useState("");
   const [copied, copy] = useCopyToClipboard();
-  const [showSuccess,  setShowSuccess]  = useState(false);
-  const [loading,      setLoading]      = useState(false);
-  const [error,        setError]        = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Manual tab — chip-based email entry instead of a full per-row table.
   // No name/role fields are collected here, so these go through the same
   // bulk-add endpoint as an {email}-only (+ optional phone) member record.
-  const [emails,      setEmails]      = useState([]);
-  const [emailInput,  setEmailInput]  = useState("");
+  const [emails, setEmails] = useState([]);
+  const [emailInput, setEmailInput] = useState("");
   const [phoneNumbers, setPhoneNumbers] = useState("");
 
   // URL upload — a simulated progress sequence (the underlying fetch+parse
   // has no natural byte-level progress signal worth wiring up for a CSV
   // that's typically tiny) so the wait doesn't feel like nothing's happening.
-  const [urlStage,    setUrlStage]    = useState("idle"); // idle | fetching | complete
+  const [urlStage, setUrlStage] = useState("idle"); // idle | fetching | complete
   const [urlProgress, setUrlProgress] = useState(0);
   const [urlFileInfo, setUrlFileInfo] = useState(null); // { name, sizeLabel }
-  const [urlCsvText,  setUrlCsvText]  = useState(null);
+  const [urlCsvText, setUrlCsvText] = useState(null);
 
   // Guards handleUrlUpload's post-fetch state updates if this page unmounts
   // (e.g. the user navigates away) while a URL fetch is still in flight.
   const unmountedRef = useRef(false);
-  useEffect(() => () => { unmountedRef.current = true; }, []);
+  useEffect(
+    () => () => {
+      unmountedRef.current = true;
+    },
+    [],
+  );
 
   const copyLink = () => copy(inviteLink);
 
-  const handleFile = (file) => { if (file) setUploadedFile(file); };
-  const handleDrop = (e) => { e.preventDefault(); setDragOver(false); handleFile(e.dataTransfer.files[0]); };
+  const handleFile = (file) => {
+    if (file) setUploadedFile(file);
+  };
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    handleFile(e.dataTransfer.files[0]);
+  };
 
   function commitEmailChip() {
     const val = emailInput.trim().replace(/[,;]+$/, "");
@@ -378,7 +518,8 @@ export default function AddMembers() {
       setEmails((arr) => arr.slice(0, -1));
     }
   }
-  const removeEmailChip = (i) => setEmails((arr) => arr.filter((_, idx) => idx !== i));
+  const removeEmailChip = (i) =>
+    setEmails((arr) => arr.filter((_, idx) => idx !== i));
 
   async function handleUrlUpload() {
     const url = fileUrl.trim();
@@ -400,7 +541,10 @@ export default function AddMembers() {
       const name = url.split("/").pop() || "file.csv";
       setUrlFileInfo({
         name,
-        sizeLabel: sizeKb > 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(sizeKb))} KB`,
+        sizeLabel:
+          sizeKb > 1024
+            ? `${(sizeKb / 1024).toFixed(1)} MB`
+            : `${Math.max(1, Math.round(sizeKb))} KB`,
       });
       setUrlCsvText(text);
       setUrlStage("complete");
@@ -425,18 +569,40 @@ export default function AddMembers() {
     setError("");
     setLoading(true);
     try {
-      if (!communityId) { setError("Community ID missing — go back and retry."); return; }
-      if (!selectedRoleId) { setError("Roles are still loading — please wait a moment."); return; }
-      const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
+      if (!communityId) {
+        setError("Community ID missing — go back and retry.");
+        return;
+      }
+      if (!selectedRoleId) {
+        setError("Roles are still loading — please wait a moment.");
+        return;
+      }
+      const toastId = toastProgress(
+        "Sending invites…",
+        "Usually takes 5–10 seconds",
+      );
       await bulkCreateCommunityInvites(communityId, {
-        invites: emails.map((email) => ({ email, roleId: selectedRoleId, billingExempt })),
+        invites: emails.map((email) => ({
+          email,
+          roleId: selectedRoleId,
+          billingExempt,
+        })),
       });
-      toastSuccess(`${emails.length} invite${emails.length === 1 ? "" : "s"} sent`, { id: toastId });
+      toastSuccess(
+        `${emails.length} invite${emails.length === 1 ? "" : "s"} sent`,
+        { id: toastId },
+      );
       setEmails([]);
       setPhoneNumbers("");
       setShowSuccess(true);
     } catch (err) {
-      setError(notifyError(err, { context: "Send invites", fallback: "Failed to send invites. You can add members from the dashboard later." }));
+      setError(
+        notifyError(err, {
+          context: "Send invites",
+          fallback:
+            "Failed to send invites. You can add members from the dashboard later.",
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -448,27 +614,51 @@ export default function AddMembers() {
     try {
       let members;
       if (uploadedFile) {
-        members = (await parseCsvFile(uploadedFile)).map((row) => csvRowToMember(row, rolesData, selectedRoleId));
+        members = (await parseCsvFile(uploadedFile)).map((row) =>
+          csvRowToMember(row, rolesData, selectedRoleId),
+        );
       } else if (urlCsvText) {
-        members = parseCsvText(urlCsvText).map((row) => csvRowToMember(row, rolesData, selectedRoleId));
+        members = parseCsvText(urlCsvText).map((row) =>
+          csvRowToMember(row, rolesData, selectedRoleId),
+        );
       } else if (fileUrl.trim()) {
-        members = (await parseCsvFromUrl(fileUrl.trim())).map((row) => csvRowToMember(row, rolesData, selectedRoleId));
+        members = (await parseCsvFromUrl(fileUrl.trim())).map((row) =>
+          csvRowToMember(row, rolesData, selectedRoleId),
+        );
       } else {
         members = [];
       }
 
       const filled = members.filter((m) => m.email);
-      if (filled.length === 0) { setShowSuccess(true); return; }
-      if (!communityId) { setError("Community ID missing — go back and retry."); return; }
+      if (filled.length === 0) {
+        setShowSuccess(true);
+        return;
+      }
+      if (!communityId) {
+        setError("Community ID missing — go back and retry.");
+        return;
+      }
 
-      const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
+      const toastId = toastProgress(
+        "Sending invites…",
+        "Usually takes 5–10 seconds",
+      );
       await bulkCreateCommunityInvites(communityId, {
         invites: filled.map((m) => ({ email: m.email, roleId: m.roleId })),
       });
-      toastSuccess(`${filled.length} invite${filled.length === 1 ? "" : "s"} sent`, { id: toastId });
+      toastSuccess(
+        `${filled.length} invite${filled.length === 1 ? "" : "s"} sent`,
+        { id: toastId },
+      );
       setShowSuccess(true);
     } catch (err) {
-      setError(notifyError(err, { context: "Send invites", fallback: "Failed to send invites. You can invite members from the dashboard later." }));
+      setError(
+        notifyError(err, {
+          context: "Send invites",
+          fallback:
+            "Failed to send invites. You can invite members from the dashboard later.",
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -484,9 +674,15 @@ export default function AddMembers() {
       // straight back to the landing page via the catch-all route.
       localStorage.setItem(
         "glass_community",
-        JSON.stringify({ id: communityId, slug: communitySlug, name: communityName }),
+        JSON.stringify({
+          id: communityId,
+          slug: communitySlug,
+          name: communityName,
+        }),
       );
-      navigate(`/dashboard/admin?community=${communitySlug ?? communityId}`, { replace: true });
+      navigate(`/dashboard/admin?community=${communitySlug ?? communityId}`, {
+        replace: true,
+      });
     } else {
       navigate("/dashboard/home", { replace: true });
     }
@@ -503,7 +699,9 @@ export default function AddMembers() {
         </div>
         <div className="flex items-center gap-4">
           <Bell size={20} className="text-gray-400 hidden lg:block" />
-          <p className="text-sm text-gray-600 truncate max-w-[160px] lg:max-w-none">{email}</p>
+          <p className="text-sm text-gray-600 truncate max-w-[160px] lg:max-w-none">
+            {email}
+          </p>
         </div>
       </header>
 
@@ -514,7 +712,10 @@ export default function AddMembers() {
         </div>
 
         {/* Sidebar */}
-        <OnboardingStepsSidebar activeStepId="members" completedStepIds={COMPLETED_STEP_IDS} />
+        <OnboardingStepsSidebar
+          activeStepId="members"
+          completedStepIds={COMPLETED_STEP_IDS}
+        />
 
         {/* Main */}
         <main className="flex-1 lg:overflow-y-auto py-6 px-4 lg:py-10 lg:px-12">
@@ -528,31 +729,49 @@ export default function AddMembers() {
                 <ArrowLeft size={15} />
                 {isAuthenticated ? "Back to dashboard" : "Back"}
               </button>
-              <h2 className="text-base font-medium text-gray-900 mb-1">Add your members</h2>
-              <p className="text-sm text-gray-500">Add members now or invite them to join. You can always add more from your dashboard later.</p>
+              <h2 className="text-base font-medium text-gray-900 mb-1">
+                Add your members
+              </h2>
+              <p className="text-sm text-gray-500">
+                Add members now or invite them to join. You can always add more
+                from your dashboard later.
+              </p>
             </div>
 
             {/* Invite banner */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 px-5 py-4 rounded-xl mb-6 bg-[#D7E2FF] border border-[#0E628C33]">
               <div>
-                <p className="text-xs text-gray-900 mb-0.5">Your community is ready to grow.</p>
-                <p className="text-xs text-gray-500">Copy this link and share it with your members to get them on Glass.</p>
+                <p className="text-xs text-gray-900 mb-0.5">
+                  Your community is ready to grow.
+                </p>
+                <p className="text-xs text-gray-500">
+                  Copy this link and share it with your members to get them on
+                  Glass.
+                </p>
               </div>
-              <button onClick={copyLink}
-                className="flex items-center justify-center gap-2 w-full lg:w-auto px-4 py-2 rounded-full border border-brand text-xs font-semibold text-brand hover:bg-gray-50 transition-all flex-shrink-0 lg:ml-6 cursor-pointer bg-transparent">
-                <Copy size={12} />{copied ? "Copied!" : "Copy Link"}
+              <button
+                onClick={copyLink}
+                className="flex items-center justify-center gap-2 w-full lg:w-auto px-4 py-2 rounded-full border border-brand text-xs font-semibold text-brand hover:bg-gray-50 transition-all flex-shrink-0 lg:ml-6 cursor-pointer bg-transparent"
+              >
+                <Copy size={12} />
+                {copied ? "Copied!" : "Copy Link"}
               </button>
             </div>
 
             {/* Direct add card */}
             <div className="bg-white rounded-lg p-4 lg:p-6 border border-[#E5E7EB]">
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Prefer To Add Members Directly?</h3>
+              <h3 className="text-base font-semibold text-gray-900 mb-4">
+                Prefer To Add Members Directly?
+              </h3>
 
               {/* Tabs */}
               <div className="flex gap-6 border-b border-gray-200 mb-5">
                 {["upload", "manual"].map((t) => (
-                  <button key={t} onClick={() => setTab(t)}
-                    className={`pb-2.5 text-sm font-medium capitalize bg-transparent cursor-pointer transition-all border-x-0 border-t-0 border-b-2 ${tab === t ? "text-brand border-b-brand" : "text-[#9ca3af] border-b-transparent"}`}>
+                  <button
+                    key={t}
+                    onClick={() => setTab(t)}
+                    className={`pb-2.5 text-sm font-medium capitalize bg-transparent cursor-pointer transition-all border-x-0 border-t-0 border-b-2 ${tab === t ? "text-brand border-b-brand" : "text-[#9ca3af] border-b-transparent"}`}
+                  >
                     {t.charAt(0).toUpperCase() + t.slice(1)}
                   </button>
                 ))}
@@ -561,25 +780,43 @@ export default function AddMembers() {
               {/* Upload tab */}
               {tab === "upload" && (
                 <UploadMembersTab
-                  uploadedFile={uploadedFile} dragOver={dragOver} setDragOver={setDragOver}
-                  fileRef={fileRef} handleFile={handleFile} handleDrop={handleDrop}
-                  fileUrl={fileUrl} setFileUrl={setFileUrl} urlStage={urlStage}
-                  urlProgress={urlProgress} urlFileInfo={urlFileInfo}
-                  handleUrlUpload={handleUrlUpload} clearUrlUpload={clearUrlUpload}
-                  loading={loading} error={error}
+                  uploadedFile={uploadedFile}
+                  dragOver={dragOver}
+                  setDragOver={setDragOver}
+                  fileRef={fileRef}
+                  handleFile={handleFile}
+                  handleDrop={handleDrop}
+                  fileUrl={fileUrl}
+                  setFileUrl={setFileUrl}
+                  urlStage={urlStage}
+                  urlProgress={urlProgress}
+                  urlFileInfo={urlFileInfo}
+                  handleUrlUpload={handleUrlUpload}
+                  clearUrlUpload={clearUrlUpload}
+                  loading={loading}
+                  error={error}
                 />
               )}
 
               {/* Manual tab */}
               {tab === "manual" && (
                 <ManualMembersTab
-                  emails={emails} emailInput={emailInput} setEmailInput={setEmailInput}
-                  handleEmailKeyDown={handleEmailKeyDown} commitEmailChip={commitEmailChip}
-                  removeEmailChip={removeEmailChip} phoneNumbers={phoneNumbers}
-                  setPhoneNumbers={setPhoneNumbers} selectedRoleId={selectedRoleId}
-                  setSelectedRoleId={setSelectedRoleId} rolesLoading={rolesLoading}
-                  finalRoles={finalRoles} billingExempt={billingExempt}
-                  setBillingExempt={setBillingExempt} error={error} loading={loading}
+                  emails={emails}
+                  emailInput={emailInput}
+                  setEmailInput={setEmailInput}
+                  handleEmailKeyDown={handleEmailKeyDown}
+                  commitEmailChip={commitEmailChip}
+                  removeEmailChip={removeEmailChip}
+                  phoneNumbers={phoneNumbers}
+                  setPhoneNumbers={setPhoneNumbers}
+                  selectedRoleId={selectedRoleId}
+                  setSelectedRoleId={setSelectedRoleId}
+                  rolesLoading={rolesLoading}
+                  finalRoles={finalRoles}
+                  billingExempt={billingExempt}
+                  setBillingExempt={setBillingExempt}
+                  error={error}
+                  loading={loading}
                   handleSendInvite={handleSendInvite}
                 />
               )}
@@ -610,5 +847,3 @@ export default function AddMembers() {
     </div>
   );
 }
-
-

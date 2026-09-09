@@ -56,7 +56,11 @@ export function UserIdentity({ user, initials, displayName }) {
     <div className="py-2.5 px-3 border-t border-[var(--color-hairline)] flex items-center gap-2">
       <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--color-brand),#4f46e5)] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 overflow-hidden">
         {user?.profileImage?.url ? (
-          <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
+          <img
+            src={user.profileImage.url}
+            alt=""
+            className="w-full h-full object-cover"
+          />
         ) : (
           initials
         )}

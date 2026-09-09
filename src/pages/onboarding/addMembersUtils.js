@@ -7,7 +7,12 @@ export const ALLOWED_ROLE_NAMES = new Set([
 ]);
 
 export const FALLBACK_ROLES = [{ id: "", name: "Community Member" }];
-export const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization", "payment"];
+export const COMPLETED_STEP_IDS = [
+  "choose-path",
+  "paying-member",
+  "organization",
+  "payment",
+];
 export const HEADERS = [
   "First Name",
   "Last Name",
@@ -26,7 +31,14 @@ export const SAMPLE_ROW = [
 ];
 
 export function downloadTemplate() {
-  const sample = ["Ada", "Okafor", "ada@example.com", "08031234567", "M001", "Member"];
+  const sample = [
+    "Ada",
+    "Okafor",
+    "ada@example.com",
+    "08031234567",
+    "M001",
+    "Member",
+  ];
   const csv = `${HEADERS.join(",")}\n${sample.join(",")}\n`;
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
@@ -56,7 +68,8 @@ export function csvRowToMember(row, roles, defaultRoleId) {
   const get = (...keys) => {
     for (const key of keys) {
       const value = row[key];
-      if (value != null && String(value).trim() !== "") return String(value).trim();
+      if (value != null && String(value).trim() !== "")
+        return String(value).trim();
     }
     return "";
   };
