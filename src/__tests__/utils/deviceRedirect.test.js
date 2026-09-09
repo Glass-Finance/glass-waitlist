@@ -7,6 +7,7 @@ import {
   goToApp,
   buildMobileUrl,
   mobileRequiredPath,
+  APP_ORIGIN,
 } from "../../utils/deviceRedirect";
 
 function setUA(ua) {
@@ -121,9 +122,18 @@ describe("host detection + navigation", () => {
     expect(isAppHost()).toBe(false);
   });
 
-  it("buildMobileUrl prefixes the path with APP_ORIGIN (VITE_APP_URL from .env)", () => {
+  it("buildMobileUrl prefixes the path with APP_ORIGIN", () => {
+    // Asserts against the real APP_ORIGIN constant rather than a hardcoded
+    // "https://app.glasspay.app" -- that hardcoded version only passed
+    // locally because whoever wrote it had VITE_APP_URL set in their own
+    // .env, and silently failed anywhere that env var isn't set (CI never
+    // sets it for the test step -- see .github/workflows/ci.yml -- so this
+    // was failing there regardless of the actual code being correct). The
+    // test's job is to verify buildMobileUrl prefixes correctly, not to
+    // pin a specific production value that has nothing to do with the
+    // prefixing logic itself.
     expect(buildMobileUrl("/member/join?x=1")).toBe(
-      "https://app.glasspay.app/member/join?x=1",
+      `${APP_ORIGIN}/member/join?x=1`,
     );
   });
 
