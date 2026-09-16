@@ -12,10 +12,7 @@ const CARD_MARGIN = 16;
 // (see Sidebar.jsx) that's translated out of the viewport by default --
 // these two steps live inside it, so on mobile the drawer has to be
 // opened before their target can actually be seen, not just measured.
-const SIDEBAR_TARGETS = new Set([
-  '[data-tour="community-switcher"]',
-  '[data-tour="sidebar-nav"]',
-]);
+const SIDEBAR_TARGETS = new Set(['[data-tour="community-switcher"]', '[data-tour="sidebar-nav"]']);
 const MOBILE_QUERY = "(max-width: 767px)";
 // Matches Sidebar.jsx's own `duration-300` slide transition.
 const SIDEBAR_TRANSITION_MS = 300;
@@ -205,9 +202,8 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
     // that even though it can overlap the rect in this one pathological
     // case -- a highlight box the tooltip covers a corner of is a small
     // visual glitch; a modal with no reachable buttons is a dead end.
-    const rawTop = spaceBelow >= spaceAbove
-      ? rectBottom + CARD_MARGIN
-      : rect.top - cardHeight - CARD_MARGIN;
+    const rawTop =
+      spaceBelow >= spaceAbove ? rectBottom + CARD_MARGIN : rect.top - cardHeight - CARD_MARGIN;
     const top = Math.min(
       Math.max(rawTop, CARD_MARGIN),
       Math.max(CARD_MARGIN, viewportH - cardHeight - CARD_MARGIN),
@@ -239,7 +235,14 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
             )}
           </mask>
         </defs>
-        <rect x="0" y="0" width="100%" height="100%" fill="rgba(0,0,0,0.6)" mask="url(#tour-mask)" />
+        <rect
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          fill="rgba(0,0,0,0.6)"
+          mask="url(#tour-mask)"
+        />
       </svg>
 
       {/* Highlight ring around the spotlighted element */}
@@ -261,9 +264,7 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
         style={getCardStyle()}
       >
         <div className="flex items-start justify-between px-6 pt-6">
-          <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-brand-tint"
-          >
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-brand-tint">
             <Icon size={20} className="text-brand" />
           </div>
           <button

@@ -10,14 +10,9 @@ export default function PasswordChecklist({ password }) {
   return (
     <ul className="mt-1.5 px-0.5 flex flex-col gap-1.5">
       {checks.map(({ key, label, met }) => (
-        <li
-          key={key}
-          className="flex items-center gap-2 text-xs text-gray-600 transition-colors"
-        >
+        <li key={key} className="flex items-center gap-2 text-xs text-gray-600 transition-colors">
           {met ? (
-            <span
-              className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 border border-[#002FA7]"
-            >
+            <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 border border-[#002FA7]">
               <Check size={10} className="text-[#002FA7]" strokeWidth={3} />
             </span>
           ) : (

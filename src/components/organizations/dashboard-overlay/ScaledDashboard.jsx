@@ -29,11 +29,19 @@ export default function ScaledDashboard() {
   return (
     <div
       ref={outerRef}
-      style={{ width: "100%", overflow: "hidden", height: naturalHeight ? naturalHeight * scale : undefined }}
+      style={{
+        width: "100%",
+        overflow: "hidden",
+        height: naturalHeight ? naturalHeight * scale : undefined,
+      }}
     >
       <div
         ref={innerRef}
-        style={{ width: DASHBOARD_NATURAL_WIDTH, transform: `scale(${scale})`, transformOrigin: "top left" }}
+        style={{
+          width: DASHBOARD_NATURAL_WIDTH,
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+        }}
       >
         <DashboardOverlay />
       </div>

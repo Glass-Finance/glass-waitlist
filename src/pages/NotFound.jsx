@@ -7,20 +7,12 @@ export default function NotFound() {
   const navigate = useNavigate();
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-cover bg-center bg-page-default"
-    >
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-cover bg-center bg-page-default">
       {/* Logo — no container */}
-      <img
-        src={GlassLogo}
-        alt="Glass"
-        className="w-10 h-10 object-contain mb-10"
-      />
+      <img src={GlassLogo} alt="Glass" className="w-10 h-10 object-contain mb-10" />
 
       {/* 404 */}
-      <p
-        className="font-black leading-none tracking-tighter mb-5 select-none text-[clamp(96px,20vw,160px)] text-brand opacity-[0.12]"
-      >
+      <p className="font-black leading-none tracking-tighter mb-5 select-none text-[clamp(96px,20vw,160px)] text-brand opacity-[0.12]">
         404
       </p>
 

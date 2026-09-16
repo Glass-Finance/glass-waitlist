@@ -94,7 +94,9 @@ describe("PaystackAccount removal flow", () => {
 
   it("shows the server's specific error message when removal fails, not a silent failure", async () => {
     removeMutateAsync.mockRejectedValueOnce({
-      response: { data: { description: "This account has a pending settlement and cannot be removed." } },
+      response: {
+        data: { description: "This account has a pending settlement and cannot be removed." },
+      },
     });
     renderPage();
 

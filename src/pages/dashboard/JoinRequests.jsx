@@ -33,9 +33,7 @@ const STATUS_CHIP = {
 
 function Avatar({ requester }) {
   return (
-    <div
-      className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-blue-100 bg-[#EEF2FF]"
-    >
+    <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-blue-100 bg-[#EEF2FF]">
       {requester.image ? (
         <img src={requester.image} alt="" className="w-full h-full object-cover" />
       ) : (
@@ -54,15 +52,11 @@ function RequestCard({ r, onApprove, onReject, busy }) {
   const chip = STATUS_CHIP[status];
 
   return (
-    <div
-      className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-surface-container rounded-xl border border-surface-container-border"
-    >
+    <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 bg-surface-container rounded-xl border border-surface-container-border">
       <div className="flex items-center gap-3.5 min-w-0">
         <Avatar requester={requester} />
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-gray-900 truncate m-0">
-            {requester.name}
-          </p>
+          <p className="text-sm font-semibold text-gray-900 truncate m-0">{requester.name}</p>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
             {requester.email && (
               <span className="flex items-center gap-1 text-xs text-gray-500">
@@ -106,14 +100,10 @@ function RequestCard({ r, onApprove, onReject, busy }) {
       ) : (
         chip && (
           <div className="flex flex-col items-end gap-1 flex-shrink-0">
-            <span
-              className={`text-xs font-semibold px-3 py-1 rounded-full ${chip.cls}`}
-            >
+            <span className={`text-xs font-semibold px-3 py-1 rounded-full ${chip.cls}`}>
               {chip.label}
             </span>
-            {reviewedAt && (
-              <span className="text-[11px] text-gray-400">on {reviewedAt}</span>
-            )}
+            {reviewedAt && <span className="text-[11px] text-gray-400">on {reviewedAt}</span>}
           </div>
         )
       )}
@@ -125,8 +115,7 @@ export default function JoinRequests() {
   usePageTitle("Join Requests");
   const navigate = useNavigate();
   const communityId = useActiveCommunityId();
-  const { requests, isLoading, error, approve, reject } =
-    useJoinRequests(communityId);
+  const { requests, isLoading, error, approve, reject } = useJoinRequests(communityId);
   // Row-level busy state so approving one request doesn't freeze the rest.
   const [respondingId, setRespondingId] = useState(null);
 
@@ -155,9 +144,7 @@ export default function JoinRequests() {
   }
 
   return (
-    <div
-      className="flex flex-col h-full px-4 md:px-6 py-6 overflow-y-auto min-h-0"
-    >
+    <div className="flex flex-col h-full px-4 md:px-6 py-6 overflow-y-auto min-h-0">
       {/* Header */}
       <div className="mb-5 flex-shrink-0">
         {/* Reached only via a deep link (Members' pending-requests banner,
@@ -183,9 +170,7 @@ export default function JoinRequests() {
       </div>
 
       {error && (
-        <p className="text-sm text-red-500 mb-4">
-          Couldn't load join requests. Please refresh.
-        </p>
+        <p className="text-sm text-red-500 mb-4">Couldn't load join requests. Please refresh.</p>
       )}
 
       {/* Pending -- plain label, no count badge, matching "Recently
@@ -210,7 +195,10 @@ export default function JoinRequests() {
           <div className="w-11 h-11 rounded-full flex-shrink-0 border-2 border-dashed border-gray-200" />
           <div>
             <p className="text-sm text-gray-400 m-0">No pending join requests</p>
-            <p className="text-xs text-gray-400 mt-0.5">New requests from Discover or invite links will show up here for you to approve or reject.</p>
+            <p className="text-xs text-gray-400 mt-0.5">
+              New requests from Discover or invite links will show up here for you to approve or
+              reject.
+            </p>
           </div>
         </div>
       ) : (

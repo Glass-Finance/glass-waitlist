@@ -60,31 +60,27 @@ export default function YourPaymentsSection({
           the generic icon-in-a-circle EmptyState, so this still reads as
           "an empty table" instead of losing its shape entirely. */}
       <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse text-left">
-            <thead>
-              <tr className="border-b border-gray-100 bg-[#F3F4F6]">
-                {["Plan", "Frequency", "Amount", "Due Date", "Status", "Action"].map(
-                  (h) => (
-                    <th
-                      key={h}
-                      className="p-2 text-left text-xs font-normal text-gray-400"
-                    >
-                      {h}
-                    </th>
-                  ),
-                )}
+        <table className="w-full text-sm border-collapse text-left">
+          <thead>
+            <tr className="border-b border-gray-100 bg-[#F3F4F6]">
+              {["Plan", "Frequency", "Amount", "Due Date", "Status", "Action"].map((h) => (
+                <th key={h} className="p-2 text-left text-xs font-normal text-gray-400">
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-4 px-2">
+                  <div className="border-2 border-dashed border-gray-200 rounded-lg py-3 px-3 text-center">
+                    <span className="text-xs text-gray-400">Nothing due right now</span>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {rows.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-4 px-2">
-                    <div className="border-2 border-dashed border-gray-200 rounded-lg py-3 px-3 text-center">
-                      <span className="text-xs text-gray-400">Nothing due right now</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : rows.map((row) => {
+            ) : (
+              rows.map((row) => {
                 const isPaid = row.status === "PAID" || row.status === "SUCCESSFUL";
                 const s = statusStyle(isPaid ? "paid" : "unpaid");
                 const f = freqStyle(row);
@@ -94,22 +90,16 @@ export default function YourPaymentsSection({
                       {toTitleCase(row.name)}
                     </td>
                     <td className="py-3 px-2">
-                      <span
-                        className={`text-xs font-semibold px-2.5 py-1 rounded-full ${f.cls}`}
-                      >
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${f.cls}`}>
                         {f.label}
                       </span>
                     </td>
-                    <td className="py-3 px-2 text-xs text-black">
-                      {formatNaira(row.amount)}
-                    </td>
+                    <td className="py-3 px-2 text-xs text-black">{formatNaira(row.amount)}</td>
                     <td className="py-3 px-2 text-xs text-gray-500">
                       {row.dueDate ? formatDate(row.dueDate) : "—"}
                     </td>
                     <td className="py-3 px-2">
-                      <span
-                        className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.cls}`}
-                      >
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.cls}`}>
                         {s.label}
                       </span>
                     </td>
@@ -132,9 +122,10 @@ export default function YourPaymentsSection({
                     </td>
                   </tr>
                 );
-              })}
-            </tbody>
-          </table>
+              })
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

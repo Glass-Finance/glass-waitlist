@@ -43,9 +43,18 @@ type FormatNairaOptions = {
 // untyped callers pass plain numbers; this keeps them compiling once
 // they're eventually converted, without forcing every call site to adopt
 // the branded types on day one).
-export function formatNaira(amount: Kobo | null | undefined, options: FormatNairaOptions & { minor: true }): string;
-export function formatNaira(amount: Naira | number | null | undefined, options?: FormatNairaOptions & { minor?: false }): string;
-export function formatNaira(amount: number | null | undefined, { decimals = 0, emptyDash = false, minor = false }: FormatNairaOptions = {}): string {
+export function formatNaira(
+  amount: Kobo | null | undefined,
+  options: FormatNairaOptions & { minor: true },
+): string;
+export function formatNaira(
+  amount: Naira | number | null | undefined,
+  options?: FormatNairaOptions & { minor?: false },
+): string;
+export function formatNaira(
+  amount: number | null | undefined,
+  { decimals = 0, emptyDash = false, minor = false }: FormatNairaOptions = {},
+): string {
   if (emptyDash && (amount === null || amount === undefined)) return "—";
   const value = minor ? (amount ?? 0) / 100 : (amount ?? 0);
   return new Intl.NumberFormat("en-NG", {

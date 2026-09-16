@@ -53,8 +53,12 @@ function parseAmount(text) {
 function parseMemberName(text) {
   const name = "([A-Za-z][\\w'’-]*(?:\\s+[A-Za-z][\\w'’-]*)+)";
   const m =
-    text.match(new RegExp(`${name}\\s+(?:has\\s+)?(?:paid|made|sent|joined|requested|completed|missed)`, "i")) ??
-    text.match(new RegExp(`(?:from|by)\\s+${name}`, "i"));
+    text.match(
+      new RegExp(
+        `${name}\\s+(?:has\\s+)?(?:paid|made|sent|joined|requested|completed|missed)`,
+        "i",
+      ),
+    ) ?? text.match(new RegExp(`(?:from|by)\\s+${name}`, "i"));
   return m?.[1] ?? null;
 }
 
@@ -62,7 +66,9 @@ function parseMemberName(text) {
 function parsePlanName(text) {
   const quoted = text.match(/["“']([^"“”']{3,60})["”']/);
   if (quoted) return quoted[1];
-  const m = text.match(/\bfor\s+(?:the\s+)?([A-Z][\w\s&-]{2,50}?)\s*(?:plan|dues|payment|subscription)\b/i);
+  const m = text.match(
+    /\bfor\s+(?:the\s+)?([A-Z][\w\s&-]{2,50}?)\s*(?:plan|dues|payment|subscription)\b/i,
+  );
   return m?.[1]?.trim() ?? null;
 }
 
@@ -157,9 +163,14 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
     const first = content.firstName ?? content.first_name;
     const last = content.lastName ?? content.last_name;
     const structured =
-      (first || last)
+      first || last
         ? `${first ?? ""} ${last ?? ""}`.trim()
-        : (content.memberName ?? content.actorName ?? content.payerName ?? content.fullName ?? content.name ?? null);
+        : (content.memberName ??
+          content.actorName ??
+          content.payerName ??
+          content.fullName ??
+          content.name ??
+          null);
     const parsed = parseMemberName(messageOnly(n));
     const wordCount = (s) => (s ?? "").trim().split(/\s+/).filter(Boolean).length;
     return wordCount(parsed) > wordCount(structured) ? parsed : (structured ?? parsed);
@@ -171,7 +182,12 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
   // lightweight event record, not a full user snapshot), so this resolves
   // to null far more often than not -- the initials fallback in the avatar
   // components is the realistic common case, not this.
-  const memberPhoto = content.profileImage?.url ?? content.profileImageUrl ?? content.avatarUrl ?? content.photoUrl ?? null;
+  const memberPhoto =
+    content.profileImage?.url ??
+    content.profileImageUrl ??
+    content.avatarUrl ??
+    content.photoUrl ??
+    null;
 
   return {
     memberName: rawMemberName ? toTitleCase(rawMemberName) : null,
@@ -183,13 +199,17 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
     // Paystack convention, ÷100 to get naira). Neither is universal, so both
     // are checked.
     amount:
-      content.amount ?? content.paymentAmount ??
+      content.amount ??
+      content.paymentAmount ??
       (content.amountMinor != null ? content.amountMinor / 100 : null) ??
       parseAmount(text),
     // paymentLinkTitle is the confirmed field name — planTitle/planName
     // were guesses that never matched anything.
     planName:
-      content.paymentLinkTitle ?? content.planTitle ?? content.paymentPlanTitle ?? content.planName ??
+      content.paymentLinkTitle ??
+      content.planTitle ??
+      content.paymentPlanTitle ??
+      content.planName ??
       parsePlanName(text),
     // A human-readable `reference` string only shows up on some
     // transactions; when it's missing, relatedEntityId (a real field —
@@ -197,7 +217,9 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
     // genuine, traceable reference for Transaction-typed notifications —
     // better than showing nothing.
     reference:
-      content.reference ?? content.transactionReference ?? content.transactionId ??
+      content.reference ??
+      content.transactionReference ??
+      content.transactionId ??
       (n.relatedEntityType === "Transaction" ? n.relatedEntityId : null) ??
       parseReference(text),
     time: n.createdAt ?? null,
@@ -244,7 +266,10 @@ export function formatNairaAmount(amount) {
 export function initials(name) {
   const words = (name ?? "").trim().split(/\s+/).filter(Boolean);
   if (!words.length) return "?";
-  return words.slice(0, 2).map((w) => w[0].toUpperCase()).join("");
+  return words
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join("");
 }
 
 // Builds a Map(id → community) from a flat communities list (the shape

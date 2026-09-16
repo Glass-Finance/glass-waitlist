@@ -3,7 +3,9 @@ import Toggle from "../../../../components/common/Toggle";
 
 function NotifRow({ label, description, value, onChange, disabled, last = false }) {
   return (
-    <div className={`flex items-center justify-between py-3 ${!last ? "border-b border-gray-100" : ""}`}>
+    <div
+      className={`flex items-center justify-between py-3 ${!last ? "border-b border-gray-100" : ""}`}
+    >
       <div className="min-w-0 pr-4">
         <p className="text-xs font-medium text-gray-900 m-0">{label}</p>
         {description && <p className="text-xs text-gray-500 mt-0.5 m-0">{description}</p>}
@@ -26,7 +28,9 @@ function SectionCard({ title, subtitle, children }) {
 
 function SkeletonRow({ last }) {
   return (
-    <div className={`flex items-center justify-between py-3 ${!last ? "border-b border-gray-100" : ""}`}>
+    <div
+      className={`flex items-center justify-between py-3 ${!last ? "border-b border-gray-100" : ""}`}
+    >
       <div>
         <div className="w-36 h-3 rounded-md bg-gray-200 mb-1.5" />
         <div className="w-52 h-2.5 rounded-md bg-gray-100" />
@@ -50,7 +54,9 @@ export default function Notifications() {
       {/* Error banner */}
       {error && !isLoading && (
         <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-          <p className="text-xs text-red-600 m-0">Couldn't load preferences. Check your connection.</p>
+          <p className="text-xs text-red-600 m-0">
+            Couldn't load preferences. Check your connection.
+          </p>
           <button
             onClick={() => window.location.reload()}
             className="text-xs font-semibold text-red-600 bg-transparent border-none cursor-pointer ml-3"
@@ -100,10 +106,7 @@ export default function Notifications() {
       </SectionCard>
 
       {/* ── Payments ─────────────────────────────────────────────────────────── */}
-      <SectionCard
-        title="Payments"
-        subtitle="Stay on top of payment activity in your communities."
-      >
+      <SectionCard title="Payments" subtitle="Stay on top of payment activity in your communities.">
         {isLoading ? (
           <>
             <SkeletonRow />
@@ -191,7 +194,8 @@ export default function Notifications() {
           <span className="text-[9px] font-bold text-blue-600">i</span>
         </div>
         <p className="text-xs text-gray-600 m-0 leading-relaxed">
-          Changes take effect immediately. Critical security alerts are always sent regardless of your preferences.
+          Changes take effect immediately. Critical security alerts are always sent regardless of
+          your preferences.
         </p>
       </div>
     </div>

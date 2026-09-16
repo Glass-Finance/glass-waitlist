@@ -6,8 +6,16 @@ import { useInvites } from "../../hooks/useInvites";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useCommunityMap } from "../../hooks/useCommunityMap";
 import { notificationTarget } from "../../utils/notificationRouting";
-import { isPaymentNotificationType, isSelfAccountType, notificationVisual } from "../../utils/notificationTypes";
-import { extractNotificationDetails, formatNairaAmount, resolveNotificationBody } from "../../utils/notificationContent";
+import {
+  isPaymentNotificationType,
+  isSelfAccountType,
+  notificationVisual,
+} from "../../utils/notificationTypes";
+import {
+  extractNotificationDetails,
+  formatNairaAmount,
+  resolveNotificationBody,
+} from "../../utils/notificationContent";
 import { useAuth } from "../../store/AuthContext";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import { formatRelativeDateTime } from "../../utils/format";
@@ -76,7 +84,11 @@ function NotifIcon({ n }) {
   if (isSelf && user?.profileImage?.url) {
     return (
       <div className="w-[38px] h-[38px] rounded-full flex-shrink-0 overflow-hidden">
-        <img src={user.profileImage.url} alt={selfName ?? ""} className="w-full h-full object-cover" />
+        <img
+          src={user.profileImage.url}
+          alt={selfName ?? ""}
+          className="w-full h-full object-cover"
+        />
       </div>
     );
   }
@@ -105,7 +117,11 @@ function NotificationRow({ n, onTap, onNavigate }) {
   const communityMap = useCommunityMap();
   const details = extractNotificationDetails(n, { communityMap });
   const amount = formatNairaAmount(details.amount);
-  const messageText = resolveNotificationBody(n, details, n.message ?? n.description ?? n.bodyText ?? null);
+  const messageText = resolveNotificationBody(
+    n,
+    details,
+    n.message ?? n.description ?? n.bodyText ?? null,
+  );
 
   return (
     <div
@@ -126,9 +142,7 @@ function NotificationRow({ n, onTap, onNavigate }) {
           {!n.title && !messageText && <span className="font-medium">Notification</span>}
         </p>
         <p className="text-[11.5px] text-[#999] mt-1 mb-0">
-          {amount && (
-            <span className="text-[#111] font-semibold">{amount} · </span>
-          )}
+          {amount && <span className="text-[#111] font-semibold">{amount} · </span>}
           {[details.communityName, timeLabel(n.createdAt)].filter(Boolean).join(" · ")}
         </p>
       </div>
@@ -143,9 +157,11 @@ function Avatar({ name, logo }) {
     <div
       className={`w-10 h-10 rounded-[10px] text-[#1C2B8A] flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden ${logo?.url ? "bg-transparent border-none" : "bg-[#1C2B8A22] border border-[#1C2B8A44]"}`}
     >
-      {logo?.url
-        ? <img src={logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
-        : initials}
+      {logo?.url ? (
+        <img src={logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
+      ) : (
+        initials
+      )}
     </div>
   );
 }
@@ -157,7 +173,9 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
         <Avatar name={invite.community?.name} logo={invite.community?.logo} />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-medium text-[#111] m-0">{invite.community?.name ?? "Community"}</p>
+            <p className="text-sm font-medium text-[#111] m-0">
+              {invite.community?.name ?? "Community"}
+            </p>
             {invite.createdAt && (
               <span className="text-[11px] text-[#aaa] flex-shrink-0 whitespace-nowrap">
                 {formatRelativeDateTime(invite.createdAt)}
@@ -168,12 +186,18 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
         </div>
       </div>
       <div className="flex gap-2.5">
-        <button onClick={() => onAccept(invite)} disabled={busy}
-          className="flex-1 py-3 rounded border-none bg-brand text-white text-sm font-semibold cursor-pointer">
+        <button
+          onClick={() => onAccept(invite)}
+          disabled={busy}
+          className="flex-1 py-3 rounded border-none bg-brand text-white text-sm font-semibold cursor-pointer"
+        >
           Accept
         </button>
-        <button onClick={() => onReject(invite)} disabled={busy}
-          className="flex-1 py-3 rounded border-[1.5px] border-brand bg-white text-brand text-sm font-semibold cursor-pointer">
+        <button
+          onClick={() => onReject(invite)}
+          disabled={busy}
+          className="flex-1 py-3 rounded border-[1.5px] border-brand bg-white text-brand text-sm font-semibold cursor-pointer"
+        >
           Decline
         </button>
       </div>
@@ -189,14 +213,18 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
 function EmptyState({ icon: Icon, illustration, label, hint, onAction, actionLabel }) {
   return (
     <div className="min-h-[55vh] flex flex-col items-center justify-center gap-2.5 text-center px-6">
-      {illustration
-        ? <img src={illustration} alt="" className="w-20 h-20 object-contain" draggable={false} />
-        : <Icon size={22} strokeWidth={1.6} className="text-[#bbb]" />}
+      {illustration ? (
+        <img src={illustration} alt="" className="w-20 h-20 object-contain" draggable={false} />
+      ) : (
+        <Icon size={22} strokeWidth={1.6} className="text-[#bbb]" />
+      )}
       <p className="text-sm font-semibold text-[#111] m-0">{label}</p>
       {hint && <p className="text-xs text-[#999] m-0 max-w-[240px] leading-relaxed">{hint}</p>}
       {onAction && (
-        <button onClick={onAction}
-          className="mt-1 py-2 px-4 rounded-lg border-[1.5px] border-brand bg-white text-brand text-[13px] font-semibold cursor-pointer">
+        <button
+          onClick={onAction}
+          className="mt-1 py-2 px-4 rounded-lg border-[1.5px] border-brand bg-white text-brand text-[13px] font-semibold cursor-pointer"
+        >
           {actionLabel}
         </button>
       )}
@@ -230,22 +258,38 @@ export default function Notifications() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Payments");
 
-  const { invites, isLoading: invitesLoading, accept, reject, isAccepting, isRejecting, refresh } = useInvites();
   const {
-    notifications, isLoading: notifsLoading, markRead,
-    markAllRead, isMarkingAllRead,
+    invites,
+    isLoading: invitesLoading,
+    accept,
+    reject,
+    isAccepting,
+    isRejecting,
+    refresh,
+  } = useInvites();
+  const {
+    notifications,
+    isLoading: notifsLoading,
+    markRead,
+    markAllRead,
+    isMarkingAllRead,
   } = useNotifications();
 
   const { paymentNotifs, communityNotifs } = useMemo(() => {
-    const payment = [], community = [];
+    const payment = [],
+      community = [];
     for (const n of notifications) {
       (isPaymentNotification(n) ? payment : community).push(n);
     }
     return { paymentNotifs: payment, communityNotifs: community };
   }, [notifications]);
 
-  async function handleAccept(invite) { await accept(invite.id); }
-  async function handleReject(invite) { await reject(invite.id); }
+  async function handleAccept(invite) {
+    await accept(invite.id);
+  }
+  async function handleReject(invite) {
+    await reject(invite.id);
+  }
 
   return (
     <div className="relative overflow-hidden min-h-screen pb-10">
@@ -294,59 +338,56 @@ export default function Notifications() {
 
       {/* Content */}
       <div className="px-4">
-        {activeTab === "Payments" && (
-          notifsLoading
-            ? <PageLoadingState size={56} padding="36px 24px" />
-            : paymentNotifs.length === 0
-              ? (
-                  <EmptyState
-                    illustration={paymentsEmptyIllustration}
-                    label="No Payment History"
-                    hint="Once you make payment, your transaction history will appear here."
-                  />
-                )
-              : <GroupedNotifications items={paymentNotifs} onTap={markRead} onNavigate={navigate} />
-        )}
+        {activeTab === "Payments" &&
+          (notifsLoading ? (
+            <PageLoadingState size={56} padding="36px 24px" />
+          ) : paymentNotifs.length === 0 ? (
+            <EmptyState
+              illustration={paymentsEmptyIllustration}
+              label="No Payment History"
+              hint="Once you make payment, your transaction history will appear here."
+            />
+          ) : (
+            <GroupedNotifications items={paymentNotifs} onTap={markRead} onNavigate={navigate} />
+          ))}
 
-        {activeTab === "Community" && (
-          notifsLoading
-            ? <PageLoadingState size={56} padding="36px 24px" />
-            : communityNotifs.length === 0
-              ? (
-                  <EmptyState
-                    illustration={communityEmptyIllustration}
-                    label="No community updates yet."
-                    hint="Plans, changes, and activity will appear here."
-                  />
-                )
-              : <GroupedNotifications items={communityNotifs} onTap={markRead} onNavigate={navigate} />
-        )}
+        {activeTab === "Community" &&
+          (notifsLoading ? (
+            <PageLoadingState size={56} padding="36px 24px" />
+          ) : communityNotifs.length === 0 ? (
+            <EmptyState
+              illustration={communityEmptyIllustration}
+              label="No community updates yet."
+              hint="Plans, changes, and activity will appear here."
+            />
+          ) : (
+            <GroupedNotifications items={communityNotifs} onTap={markRead} onNavigate={navigate} />
+          ))}
 
-        {activeTab === "Invites" && (
-          invitesLoading
-            ? <PageLoadingState size={56} padding="36px 24px" />
-            : invites.length === 0
-              ? <EmptyState
-                  illustration={invitesEmptyIllustration}
-                  label="No pending invites."
-                  hint="When an admin invites you to join a community, it'll appear here."
-                  onAction={refresh}
-                  actionLabel="Check Again"
+        {activeTab === "Invites" &&
+          (invitesLoading ? (
+            <PageLoadingState size={56} padding="36px 24px" />
+          ) : invites.length === 0 ? (
+            <EmptyState
+              illustration={invitesEmptyIllustration}
+              label="No pending invites."
+              hint="When an admin invites you to join a community, it'll appear here."
+              onAction={refresh}
+              actionLabel="Check Again"
+            />
+          ) : (
+            <div className="flex flex-col gap-3">
+              {invites.map((invite) => (
+                <InviteCard
+                  key={invite.id}
+                  invite={invite}
+                  onAccept={handleAccept}
+                  onReject={handleReject}
+                  busy={isAccepting || isRejecting}
                 />
-              : (
-                <div className="flex flex-col gap-3">
-                  {invites.map((invite) => (
-                    <InviteCard
-                      key={invite.id}
-                      invite={invite}
-                      onAccept={handleAccept}
-                      onReject={handleReject}
-                      busy={isAccepting || isRejecting}
-                    />
-                  ))}
-                </div>
-              )
-        )}
+              ))}
+            </div>
+          ))}
       </div>
     </div>
   );

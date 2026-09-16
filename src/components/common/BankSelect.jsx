@@ -6,9 +6,7 @@ import { useClickOutside } from "../../hooks/useClickOutside";
 // Exclude entries that point to the generic placeholder image — those banks
 // have no real logo in the package and should fall back to colored initials.
 const BANK_LOGO_BY_CODE = Object.fromEntries(
-  banksData
-    .filter((b) => !b.logo.includes("default-image"))
-    .map((b) => [b.code, b.logo])
+  banksData.filter((b) => !b.logo.includes("default-image")).map((b) => [b.code, b.logo]),
 );
 
 // Resolve logo URL: prefer the logo URL returned by the Paystack banks API
@@ -39,7 +37,13 @@ function BankLogo({ bank, size = 20 }) {
 // bank list runs into the hundreds, so this swaps in a filterable dropdown
 // with the same trigger-button footprint as the <select> it replaces.
 // `onChange` is called with the full { code, name, slug?, logo? } bank object.
-export default function BankSelect({ banks, value, onChange, placeholder = "Choose Bank", triggerClassName = "" }) {
+export default function BankSelect({
+  banks,
+  value,
+  onChange,
+  placeholder = "Choose Bank",
+  triggerClassName = "",
+}) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const rootRef = useRef(null);
@@ -92,7 +96,9 @@ export default function BankSelect({ banks, value, onChange, placeholder = "Choo
           </div>
           <div className="max-h-56 overflow-y-auto">
             {filtered.length === 0 ? (
-              <p className="text-xs text-gray-400 px-3 py-3 text-center">No banks match "{query}"</p>
+              <p className="text-xs text-gray-400 px-3 py-3 text-center">
+                No banks match "{query}"
+              </p>
             ) : (
               filtered.map((b) => (
                 <button
@@ -104,7 +110,9 @@ export default function BankSelect({ banks, value, onChange, placeholder = "Choo
                     setQuery("");
                   }}
                   className={`w-full flex items-center gap-2.5 text-left px-3 py-2 text-xs border-none cursor-pointer transition-colors ${
-                    b.code === value ? "bg-blue-50 font-medium text-brand" : "bg-transparent text-gray-700 hover:bg-gray-50"
+                    b.code === value
+                      ? "bg-blue-50 font-medium text-brand"
+                      : "bg-transparent text-gray-700 hover:bg-gray-50"
                   }`}
                 >
                   <BankLogo bank={b} size={18} />

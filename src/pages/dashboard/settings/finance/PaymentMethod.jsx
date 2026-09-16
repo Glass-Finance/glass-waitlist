@@ -20,7 +20,9 @@ export default function PaymentMethod() {
       <div>
         <div className="bg-surface-container rounded-xl p-5 border border-surface-container-border">
           <p className="text-sm font-semibold text-gray-900 mb-0.5">Payment methods</p>
-          <p className="text-xs text-gray-500 mb-4">Saved cards and bank accounts used for your personal dues payments.</p>
+          <p className="text-xs text-gray-500 mb-4">
+            Saved cards and bank accounts used for your personal dues payments.
+          </p>
           <div className="-mx-5 border-b border-gray-100 mb-4" />
 
           <div className="flex flex-col gap-3">
@@ -37,7 +39,9 @@ export default function PaymentMethod() {
                   <div className="w-9 h-9 rounded-lg flex-shrink-0 border-2 border-dashed border-gray-200" />
                   <div>
                     <p className="text-sm text-gray-400">No saved payment methods yet</p>
-                    <p className="text-xs text-gray-400">These are created automatically the first time you pay.</p>
+                    <p className="text-xs text-gray-400">
+                      These are created automatically the first time you pay.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -49,8 +53,13 @@ export default function PaymentMethod() {
                       <Landmark size={16} className="text-brand" />
                     </div>
                     <div>
-                      <p className="text-sm text-gray-900">{auth.bank ?? "Bank account"} ●●●● {auth.last4}</p>
-                      <p className="text-xs text-gray-500">{auth.channel ?? "—"} · {(auth.status ?? "").toLowerCase() === "active" ? "Active" : auth.status}</p>
+                      <p className="text-sm text-gray-900">
+                        {auth.bank ?? "Bank account"} ●●●● {auth.last4}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {auth.channel ?? "—"} ·{" "}
+                        {(auth.status ?? "").toLowerCase() === "active" ? "Active" : auth.status}
+                      </p>
                     </div>
                   </div>
                   <button

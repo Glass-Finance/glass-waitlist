@@ -42,40 +42,37 @@
          paired with recomputing it (see the CSP note at the top of
          <head> for how). -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebSite",
-          "name": "Glasspay",
-          "url": "https://glasspay.app"
-        },
-        {
-          "@type": "Organization",
-          "name": "Glasspay",
-          "url": "https://glasspay.app",
-          "logo": "https://glasspay.app/Glass.png",
-          "email": "glasspayhq@gmail.com",
-          "sameAs": [
-            "https://x.com/glasspayhq",
-            "https://www.instagram.com/glasspayhq"
-          ]
-        },
-        {
-          "@type": "SoftwareApplication",
-          "name": "Glasspay",
-          "applicationCategory": "FinanceApplication",
-          "operatingSystem": "Web",
-          "url": "https://glasspay.app",
-          "description": "Community finance platform for Nigerian associations, clubs, and schools.",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "NGN"
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "Glasspay",
+            "url": "https://glasspay.app"
+          },
+          {
+            "@type": "Organization",
+            "name": "Glasspay",
+            "url": "https://glasspay.app",
+            "logo": "https://glasspay.app/Glass.png",
+            "email": "glasspayhq@gmail.com",
+            "sameAs": ["https://x.com/glasspayhq", "https://www.instagram.com/glasspayhq"]
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "Glasspay",
+            "applicationCategory": "FinanceApplication",
+            "operatingSystem": "Web",
+            "url": "https://glasspay.app",
+            "description": "Community finance platform for Nigerian associations, clubs, and schools.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "NGN"
+            }
           }
-        }
-      ]
-    }
+        ]
+      }
     </script>
 
     <!-- SEO -->
@@ -132,13 +129,27 @@
          Pendo changing this bootstrap snippet) invalidates the hash and
          needs it recomputed, same as the structured-data block above. -->
     <script>
-    (function(apiKey){
-        (function(p,e,n,d,o){var v,w,x,y,z;o=p[d]=p[d]||{};o._q=o._q||[];
-        v=['initialize','identify','updateOptions','pageLoad','track', 'trackAgent'];for(w=0,x=v.length;w<x;++w)(function(m){
-        o[m]=o[m]||function(){o._q[m===v[0]?'unshift':'push']([m].concat([].slice.call(arguments,0)));};})(v[w]);
-        y=e.createElement(n);y.async=!0;y.src='https://cdn.pendo.io/agent/static/'+apiKey+'/pendo.js';
-        z=e.getElementsByTagName(n)[0];z.parentNode.insertBefore(y,z);})(window,document,'script','pendo');
-    })('35c6c2bb-9b67-4827-a2ca-c46d501329c2');
+      (function (apiKey) {
+        (function (p, e, n, d, o) {
+          var v, w, x, y, z;
+          o = p[d] = p[d] || {};
+          o._q = o._q || [];
+          v = ["initialize", "identify", "updateOptions", "pageLoad", "track", "trackAgent"];
+          for (w = 0, x = v.length; w < x; ++w)
+            (function (m) {
+              o[m] =
+                o[m] ||
+                function () {
+                  o._q[m === v[0] ? "unshift" : "push"]([m].concat([].slice.call(arguments, 0)));
+                };
+            })(v[w]);
+          y = e.createElement(n);
+          y.async = !0;
+          y.src = "https://cdn.pendo.io/agent/static/" + apiKey + "/pendo.js";
+          z = e.getElementsByTagName(n)[0];
+          z.parentNode.insertBefore(y, z);
+        })(window, document, "script", "pendo");
+      })("35c6c2bb-9b67-4827-a2ca-c46d501329c2");
     </script>
   </head>
   <body>

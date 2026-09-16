@@ -13,8 +13,7 @@ export function notificationTarget(n, { memberApp = false } = {}) {
   // The community dashboard resolves its community from ?community= (slug or
   // id) — carry the notification's community along so it opens the right one
   // instead of whatever localStorage last held.
-  const communityRef =
-    n.community?.slug ?? n.communityId ?? n.community?.id ?? null;
+  const communityRef = n.community?.slug ?? n.communityId ?? n.community?.id ?? null;
 
   const exact = notificationTypeTarget(type, { memberApp, communityRef });
   if (exact) return exact;
@@ -22,8 +21,7 @@ export function notificationTarget(n, { memberApp = false } = {}) {
   const text =
     `${n.title ?? n.subject ?? ""} ${n.description ?? n.message ?? n.bodyText ?? n.body ?? ""}`.toUpperCase();
   const upperType = type.toUpperCase();
-  const has = (...words) =>
-    words.some((w) => upperType.includes(w) || text.includes(w));
+  const has = (...words) => words.some((w) => upperType.includes(w) || text.includes(w));
 
   if (memberApp) {
     if (has("AUTO-PAY", "AUTO_PAY", "AUTOPAY", "CARD EXPIR", "SAVED CARD"))
@@ -33,8 +31,7 @@ export function notificationTarget(n, { memberApp = false } = {}) {
     if (has("REMIND", "DUE", "OVERDUE", "PAYMENT")) return "/member/upcoming";
     if (has("INVITE")) return "/member/invites";
     if (has("JOIN", "COMMUNITY", "VERIF")) return "/member/communities";
-    if (has("PROFILE", "PASSWORD", "SECURITY", "ACCOUNT"))
-      return "/member/settings";
+    if (has("PROFILE", "PASSWORD", "SECURITY", "ACCOUNT")) return "/member/settings";
     return null;
   }
 
@@ -48,8 +45,7 @@ export function notificationTarget(n, { memberApp = false } = {}) {
   if (has("PLAN")) return "/dashboard/payments";
   // Payment activity (received/failed/overdue dues) lives on the community
   // dashboard's transactions view, not the plans page.
-  if (has("PAYMENT", "TRANSACTION", "RECEIPT", "DUES", "COLLECT", "PAID"))
-    return adminDash;
+  if (has("PAYMENT", "TRANSACTION", "RECEIPT", "DUES", "COLLECT", "PAID")) return adminDash;
   if (has("MEMBER", "JOIN", "INVITE")) return "/dashboard/members";
   if (has("PROFILE", "PASSWORD", "SECURITY", "ACCOUNT"))
     return "/dashboard/settings/account/profile";

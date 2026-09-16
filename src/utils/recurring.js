@@ -48,8 +48,7 @@ export function scheduleCopy(plan) {
   const unit = FREQ_UNITS[freq] ?? "cycle";
   const every = interval === 1 ? `Every ${unit}` : `Every ${interval} ${unit}s`;
   const day = Number(plan?.billingDay);
-  if (freq === "WEEKLY" && day >= 1 && day <= 7)
-    return `${every} on ${WEEKDAY_NAMES[day - 1]}s`;
+  if (freq === "WEEKLY" && day >= 1 && day <= 7) return `${every} on ${WEEKDAY_NAMES[day - 1]}s`;
   if (freq !== "DAILY" && day) return `${every} on the ${ordinal(day)}`;
   return every;
 }
@@ -63,12 +62,23 @@ export function estimateNextCharge(plan, fromDateStr) {
   if (isNaN(from.getTime())) return null;
   const d = new Date(from);
   switch (freq) {
-    case "DAILY": d.setDate(d.getDate() + interval); break;
-    case "WEEKLY": d.setDate(d.getDate() + 7 * interval); break;
-    case "MONTHLY": d.setMonth(d.getMonth() + interval); break;
-    case "QUARTERLY": d.setMonth(d.getMonth() + 3 * interval); break;
-    case "ANNUALLY": d.setFullYear(d.getFullYear() + interval); break;
-    default: return null;
+    case "DAILY":
+      d.setDate(d.getDate() + interval);
+      break;
+    case "WEEKLY":
+      d.setDate(d.getDate() + 7 * interval);
+      break;
+    case "MONTHLY":
+      d.setMonth(d.getMonth() + interval);
+      break;
+    case "QUARTERLY":
+      d.setMonth(d.getMonth() + 3 * interval);
+      break;
+    case "ANNUALLY":
+      d.setFullYear(d.getFullYear() + interval);
+      break;
+    default:
+      return null;
   }
   return d;
 }

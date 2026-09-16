@@ -48,9 +48,15 @@ function fallbackForStatus(status, requestUrl) {
 // Strings the backend uses as generic placeholders — not useful on their
 // own, so we let the HTTP-status fallback take over instead.
 const GENERIC_MESSAGES = new Set([
-  "error", "bad request", "internal server error",
-  "forbidden", "unauthorized", "not found", "conflict",
-  "unprocessable entity", "too many requests",
+  "error",
+  "bad request",
+  "internal server error",
+  "forbidden",
+  "unauthorized",
+  "not found",
+  "conflict",
+  "unprocessable entity",
+  "too many requests",
 ]);
 
 function isTooGeneric(s) {
@@ -67,7 +73,8 @@ function isTooGeneric(s) {
 const BACKEND_MESSAGE_REWRITES = [
   {
     match: /active default account/i,
-    rewrite: "You'll need to set up your community's payout account before creating payment plans — head to Settings → Finance → Payout Account.",
+    rewrite:
+      "You'll need to set up your community's payout account before creating payment plans — head to Settings → Finance → Payout Account.",
   },
   // The account exists and was selected during onboarding, but still needs
   // manual activation on our side before it can receive payments (this is
@@ -76,7 +83,8 @@ const BACKEND_MESSAGE_REWRITES = [
   // rather than a dead-end error, per the same reasoning.
   {
     match: /community account is not active/i,
-    rewrite: "Your community's payout account is still being activated by our team — this usually takes 24–72 hours. You'll be notified once it's ready and can start creating payment plans.",
+    rewrite:
+      "Your community's payout account is still being activated by our team — this usually takes 24–72 hours. You'll be notified once it's ready and can start creating payment plans.",
   },
   // A payment plan/link only accepts payments while its status is Active —
   // an admin can Pause, Archive, or leave it as an unactivated Draft from
@@ -89,7 +97,8 @@ const BACKEND_MESSAGE_REWRITES = [
     // text -- PaymentSummary.jsx matches on that same substring to decide
     // whether to permanently disable the Make Payment button, so changing
     // the wording here would silently break that check too.
-    rewrite: "This payment plan is not accepting payments right now — it's been paused, closed, or hasn't been activated yet by the community managing it. Contact your community admin to have it reopened.",
+    rewrite:
+      "This payment plan is not accepting payments right now — it's been paused, closed, or hasn't been activated yet by the community managing it. Contact your community admin to have it reopened.",
   },
 ];
 
@@ -106,7 +115,7 @@ function extractServerMessage(data) {
 
   // Support backends that wrap errors under the same { data: {...} }
   // envelope they use for success responses.
-  const payload = (data.data && typeof data.data === "object") ? data.data : data;
+  const payload = data.data && typeof data.data === "object" ? data.data : data;
 
   // NestJS ValidationPipe: message is an array of field errors
   if (Array.isArray(payload.message) && payload.message.length) {

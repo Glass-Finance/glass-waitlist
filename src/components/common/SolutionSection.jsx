@@ -26,16 +26,8 @@ function useTilt(strength = 14) {
     const sheen = sheenRef.current;
     if (!card) return;
 
-    cur.current.rotX = lerp(
-      cur.current.rotX,
-      tgt.current.rotX,
-      hovering.current ? 0.12 : 0.08,
-    );
-    cur.current.rotY = lerp(
-      cur.current.rotY,
-      tgt.current.rotY,
-      hovering.current ? 0.12 : 0.08,
-    );
+    cur.current.rotX = lerp(cur.current.rotX, tgt.current.rotX, hovering.current ? 0.12 : 0.08);
+    cur.current.rotY = lerp(cur.current.rotY, tgt.current.rotY, hovering.current ? 0.12 : 0.08);
 
     const { rotX, rotY } = cur.current;
     const scale = hovering.current ? 1.03 : 1;
@@ -76,11 +68,8 @@ function useTilt(strength = 14) {
       if (!card) return;
       const rect = card.getBoundingClientRect();
       tgt.current.rotX =
-        -((e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2)) *
-        strength;
-      tgt.current.rotY =
-        ((e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2)) *
-        strength;
+        -((e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2)) * strength;
+      tgt.current.rotY = ((e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2)) * strength;
     },
     [strength],
   );
@@ -108,8 +97,7 @@ function useTilt(strength = 14) {
 
 // ─── Feature card ─────────────────────────────────────────────────────────────
 function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
-  const { cardRef, sheenRef, onMouseMove, onMouseEnter, onMouseLeave } =
-    useTilt(14);
+  const { cardRef, sheenRef, onMouseMove, onMouseEnter, onMouseLeave } = useTilt(14);
 
   return (
     <div
@@ -144,9 +132,7 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
             {title}
           </h3>
 
-          <p className="text-[clamp(14px,2vw,14px)] text-black/60 leading-[1.6] m-0">
-            {desc}
-          </p>
+          <p className="text-[clamp(14px,2vw,14px)] text-black/60 leading-[1.6] m-0">{desc}</p>
         </div>
       </div>
 

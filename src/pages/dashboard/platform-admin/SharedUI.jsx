@@ -53,22 +53,24 @@ export function Pager({ page, totalPages, onPage }) {
           {i + 1}
         </button>
       ))}
-      <PagerBtn
-        onClick={() => onPage(page + 1)}
-        disabled={page >= totalPages - 1}
-      >
+      <PagerBtn onClick={() => onPage(page + 1)} disabled={page >= totalPages - 1}>
         <ChevronRight size={13} />
       </PagerBtn>
     </div>
   );
 }
 
-export function TableShell({ isLoading, isEmpty, error, emptyIcon, emptyLabel = "No results found", children }) {
+export function TableShell({
+  isLoading,
+  isEmpty,
+  error,
+  emptyIcon,
+  emptyLabel = "No results found",
+  children,
+}) {
   const is403 = error?.response?.status === 403;
   return (
-    <div
-      className="bg-surface-container rounded-2xl overflow-hidden border border-surface-container-border"
-    >
+    <div className="bg-surface-container rounded-2xl overflow-hidden border border-surface-container-border">
       {isLoading ? (
         <LoadingState className="py-16" />
       ) : error ? (
@@ -77,9 +79,7 @@ export function TableShell({ isLoading, isEmpty, error, emptyIcon, emptyLabel = 
             {is403 ? "Access denied" : "Failed to load"}
           </p>
           <p className="text-xs text-gray-400">
-            {is403
-              ? "Platform admin rights required to view this data."
-              : getErrorMessage(error)}
+            {is403 ? "Platform admin rights required to view this data." : getErrorMessage(error)}
           </p>
         </div>
       ) : isEmpty ? (
@@ -102,15 +102,11 @@ export function SectionHeader({ title, desc, count, isFetching, right }) {
               {count.toLocaleString()}
             </span>
           )}
-          {isFetching && (
-            <RefreshCw size={12} className="text-gray-300 animate-spin" />
-          )}
+          {isFetching && <RefreshCw size={12} className="text-gray-300 animate-spin" />}
         </div>
         <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
       </div>
-      {right && (
-        <div className="flex items-center gap-2 flex-shrink-0">{right}</div>
-      )}
+      {right && <div className="flex items-center gap-2 flex-shrink-0">{right}</div>}
     </div>
   );
 }

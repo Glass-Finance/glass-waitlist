@@ -30,7 +30,14 @@ export default function NavRail() {
       </div>
       {/* Home / communities-overview -- a bare icon, no background box, per
           the real rail's treatment. */}
-      <div style={{ marginBottom: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div
+        style={{
+          marginBottom: 12,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path
             d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"
@@ -125,7 +132,13 @@ export default function NavRail() {
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          <path d="M16 17l5-5-5-5M21 12H9" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M16 17l5-5-5-5M21 12H9"
+            stroke="#fff"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </div>
     </div>

@@ -4,9 +4,7 @@ import { useRef, useEffect } from "react";
 // left out for now -- the only GDG asset we ever had was a GDG *Lagos*
 // logo (wrong chapter, name baked into the image). Add it back once a
 // correct GDG Babcock logo file is dropped into public/logos/.
-const trustedLogos = [
-  { name: "The Babcock Torch", logo: "/logos/babcock-torch.webp" },
-];
+const trustedLogos = [{ name: "The Babcock Torch", logo: "/logos/babcock-torch.webp" }];
 
 export default function TrustedBy() {
   const labelRef = useRef(null);
@@ -21,7 +19,7 @@ export default function TrustedBy() {
           io1.disconnect();
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
 
     const io2 = new IntersectionObserver(
@@ -34,7 +32,7 @@ export default function TrustedBy() {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (labelRef.current) {
@@ -52,7 +50,10 @@ export default function TrustedBy() {
       io2.observe(el);
     });
 
-    return () => { io1.disconnect(); io2.disconnect(); };
+    return () => {
+      io1.disconnect();
+      io2.disconnect();
+    };
   }, []);
 
   return (

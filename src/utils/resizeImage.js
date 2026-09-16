@@ -30,7 +30,10 @@ function loadImage(file) {
  * about the resize fails or if the file is already small/non-resizable
  * (e.g. SVG, which is already tiny and vector so resizing it would be lossy).
  */
-export async function resizeImageFile(file, { maxDimension = MAX_DIMENSION, quality = JPEG_QUALITY } = {}) {
+export async function resizeImageFile(
+  file,
+  { maxDimension = MAX_DIMENSION, quality = JPEG_QUALITY } = {},
+) {
   if (!file?.type?.startsWith("image/") || file.type === "image/svg+xml") {
     return file;
   }
@@ -47,9 +50,7 @@ export async function resizeImageFile(file, { maxDimension = MAX_DIMENSION, qual
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
     const outputType = file.type === "image/png" ? "image/png" : "image/jpeg";
-    const blob = await new Promise((resolve) =>
-      canvas.toBlob(resolve, outputType, quality),
-    );
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, outputType, quality));
     if (!blob || blob.size >= file.size) return file;
 
     const ext = outputType === "image/png" ? "png" : "jpg";

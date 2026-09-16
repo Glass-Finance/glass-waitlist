@@ -14,20 +14,13 @@ import banksData from "nigerian-bank-icons/assets/banks.json";
 
 // Exclude generic placeholder entries — banks without real logos use colored initials.
 const BANK_LOGO_BY_CODE = Object.fromEntries(
-  banksData
-    .filter((b) => !b.logo.includes("default-image"))
-    .map((b) => [b.code, b.logo]),
+  banksData.filter((b) => !b.logo.includes("default-image")).map((b) => [b.code, b.logo]),
 );
 
 // Map common Nigerian bank names to their brand colours
 function bankColorCls(name = "") {
   const n = name.toLowerCase();
-  if (
-    n.includes("guaranty") ||
-    n.includes("guarantee") ||
-    n.includes("gtb") ||
-    n.includes("gt ")
-  )
+  if (n.includes("guaranty") || n.includes("guarantee") || n.includes("gtb") || n.includes("gt "))
     return "bg-[#E05C00]";
   if (n.includes("access")) return "bg-[#C8102E]";
   if (n.includes("zenith")) return "bg-[#841B2D]";
@@ -55,9 +48,7 @@ function BankAvatar({ bankCode, bankName, storedLogoUrl }) {
   // Prefer logo URL stored at account-save time (from Paystack API), then package map.
   // Ignore URLs that are the generic placeholder.
   const logoUrl =
-    (storedLogoUrl && !storedLogoUrl.includes("default-image")
-      ? storedLogoUrl
-      : null) ??
+    (storedLogoUrl && !storedLogoUrl.includes("default-image") ? storedLogoUrl : null) ??
     BANK_LOGO_BY_CODE[bankCode] ??
     null;
   if (logoUrl && !imgFailed) {
@@ -80,7 +71,6 @@ function BankAvatar({ bankCode, bankName, storedLogoUrl }) {
     </div>
   );
 }
-
 
 // Status pill next to the account name — PENDING accounts haven't cleared
 // verification yet, so this shouldn't look identical to a settled one.
@@ -112,21 +102,16 @@ function RemoveAccountModal({ onClose, onConfirm, isDeleting }) {
 
   return (
     <>
-      <div
-        onClick={onClose}
-        className="fixed inset-0 z-70 bg-black/20"
-      />
+      <div onClick={onClose} className="fixed inset-0 z-70 bg-black/20" />
       <div className="fixed inset-0 z-80 flex items-center justify-center p-4">
         <div
           className="w-full max-w-sm rounded-xl p-6 bg-surface-bg"
           onClick={(e) => e.stopPropagation()}
         >
-          <h2 className="text-[16px] font-bold text-gray-900 mb-1.5">
-            Remove payout account?
-          </h2>
+          <h2 className="text-[16px] font-bold text-gray-900 mb-1.5">Remove payout account?</h2>
           <p className="text-sm text-gray-500 mb-6">
-            Glass won't be able to settle collected payments until you add a new
-            payout account. This can't be undone.
+            Glass won't be able to settle collected payments until you add a new payout account.
+            This can't be undone.
           </p>
           <div className="flex justify-end gap-3">
             <button
@@ -158,8 +143,7 @@ function RemoveAccountModal({ onClose, onConfirm, isDeleting }) {
 // ─────────────────────────────────────────────────────────────────────────────
 export default function PaystackAccount() {
   const communityId = useActiveCommunityId();
-  const { account, isLoading, create, update, remove } =
-    useCommunityAccount(communityId);
+  const { account, isLoading, create, update, remove } = useCommunityAccount(communityId);
   const { data: community } = useCommunity(communityId);
   const [showModal, setShowModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
@@ -168,13 +152,8 @@ export default function PaystackAccount() {
   const [removeError, setRemoveError] = useState("");
 
   const bankName =
-    account?.settlementBank ??
-    account?.bankName ??
-    account?.bank ??
-    account?.bankTitle ??
-    "";
-  const bankCode =
-    account?.settlementBankCode ?? account?.bankCode ?? account?.code ?? "";
+    account?.settlementBank ?? account?.bankName ?? account?.bank ?? account?.bankTitle ?? "";
+  const bankCode = account?.settlementBankCode ?? account?.bankCode ?? account?.code ?? "";
   const communityName = community?.name ?? "";
 
   async function handleSave({
@@ -221,21 +200,15 @@ export default function PaystackAccount() {
       {isLoading ? (
         <LoadingState />
       ) : account ? (
-        <div
-          className="bg-surface-container rounded-2xl p-6 border border-surface-container-border"
-        >
-          <p className="text-sm font-bold text-gray-900 mb-0.5">
-            Current Payout Account
-          </p>
+        <div className="bg-surface-container rounded-2xl p-6 border border-surface-container-border">
+          <p className="text-sm font-bold text-gray-900 mb-0.5">Current Payout Account</p>
           <p className="text-xs text-gray-400 mb-4">
             All payments collected from members
-            {communityName ? ` in ${communityName}` : ""} are disbursed to this
-            account.
+            {communityName ? ` in ${communityName}` : ""} are disbursed to this account.
           </p>
           <div className="-mx-6 border-b border-gray-100 mb-5" />
 
-          {(account.status === "REJECTED" ||
-            account.status === "NEED_MORE_INFORMATION") &&
+          {(account.status === "REJECTED" || account.status === "NEED_MORE_INFORMATION") &&
             account.verificationComment && (
               <div
                 className={`flex items-start gap-2.5 rounded-xl px-4 py-3.5 mb-5 ${account.status === "REJECTED" ? "bg-[#FEF3F2]" : "bg-[#FFF7ED]"}`}
@@ -263,18 +236,12 @@ export default function PaystackAccount() {
 
           {/* Bank row + stats — sit directly in the outer card per Figma,
               no separate nested card/background around them. */}
-          <div
-            className="flex items-center justify-between gap-4 pb-4 mb-4 border-b border-stacked-container"
-          >
+          <div className="flex items-center justify-between gap-4 pb-4 mb-4 border-b border-stacked-container">
             <div className="flex items-center gap-3 min-w-0">
               <BankAvatar
                 bankCode={bankCode}
                 bankName={bankName}
-                storedLogoUrl={
-                  account?.settlementBankLogo ??
-                  account?.bankLogo ??
-                  account?.logo
-                }
+                storedLogoUrl={account?.settlementBankLogo ?? account?.bankLogo ?? account?.logo}
               />
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
@@ -284,10 +251,7 @@ export default function PaystackAccount() {
                   <StatusBadge status={account.status} />
                 </div>
                 <p className="text-xs text-gray-400">
-                  {account.accountNumber ??
-                    account.number ??
-                    account.acctNumber ??
-                    "—"}
+                  {account.accountNumber ?? account.number ?? account.acctNumber ?? "—"}
                 </p>
               </div>
             </div>
@@ -310,9 +274,7 @@ export default function PaystackAccount() {
               </button>
             </div>
           </div>
-          {removeError && (
-            <p className="text-xs text-red-600 mb-4 -mt-2">{removeError}</p>
-          )}
+          {removeError && <p className="text-xs text-red-600 mb-4 -mt-2">{removeError}</p>}
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
             <div>
@@ -340,43 +302,30 @@ export default function PaystackAccount() {
             <div>
               <p className="text-xs text-gray-500 mb-1">Account Added</p>
               <p className="text-sm font-bold text-gray-900">
-                {formatDate(
-                  account.createdAt ?? account.addedAt ?? account.dateCreated,
-                )}
+                {formatDate(account.createdAt ?? account.addedAt ?? account.dateCreated)}
               </p>
             </div>
           </div>
         </div>
       ) : (
         // No account yet — prompt to add one
-        <div
-          className="bg-surface-container rounded-2xl p-6 text-center border border-surface-container-border"
-        >
-          <p className="text-sm font-bold text-gray-900 mb-1">
-            No Payout Account Set Up
-          </p>
+        <div className="bg-surface-container rounded-2xl p-6 text-center border border-surface-container-border">
+          <p className="text-sm font-bold text-gray-900 mb-1">No Payout Account Set Up</p>
           <p className="text-xs text-gray-400 mb-5">
-            Add a bank account so Glass can settle your community's collected
-            payments.
+            Add a bank account so Glass can settle your community's collected payments.
           </p>
-          <Button
-            onClick={() => setShowModal(true)}
-            fullWidth={false}
-            className="px-5"
-          >
+          <Button onClick={() => setShowModal(true)} fullWidth={false} className="px-5">
             Add Payout Account
           </Button>
         </div>
       )}
 
       {/* Info notice */}
-      <div
-        className="flex items-start gap-2.5 rounded-xl px-4 py-3.5 bg-[#EEF2FF]"
-      >
+      <div className="flex items-start gap-2.5 rounded-xl px-4 py-3.5 bg-[#EEF2FF]">
         <Info size={14} className="text-brand flex-shrink-0 mt-0.5" />
         <p className="text-xs text-brand leading-relaxed">
-          Payouts are processed automatically based on your payout frequency
-          settings. Changing your account takes effect on the next payout cycle.
+          Payouts are processed automatically based on your payout frequency settings. Changing your
+          account takes effect on the next payout cycle.
         </p>
       </div>
 

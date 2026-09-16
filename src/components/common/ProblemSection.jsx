@@ -55,8 +55,7 @@ export default function ProblemSection({
     );
     if (imageRef.current) {
       imageRef.current.style.clipPath = `inset(${clipInsetStart} 0% 0% 0%)`;
-      imageRef.current.style.transition =
-        "clip-path 0.85s cubic-bezier(0.22,1,0.36,1)";
+      imageRef.current.style.transition = "clip-path 0.85s cubic-bezier(0.22,1,0.36,1)";
       io2.observe(imageRef.current);
     }
 
@@ -91,10 +90,7 @@ export default function ProblemSection({
   }, [clipInsetStart, staggerStep]);
 
   return (
-    <section
-      className="relative isolate overflow-hidden py-20 md:py-28"
-      id="problem"
-    >
+    <section className="relative isolate overflow-hidden py-20 md:py-28" id="problem">
       <div className="max-w-[1140px] mx-auto px-6 relative">
         {/* ── Header — layout identical, text animated ── */}
         <div className="text-center mb-16">
@@ -132,18 +128,13 @@ export default function ProblemSection({
                 className="flex items-start gap-5"
               >
                 <div className="flex-shrink-0 w-[60px] h-[60px] rounded-full bg-white shadow-[0_2px_12px_rgba(28,43,138,0.10)] border border-[#e8eaf5] flex items-center justify-center mt-0.5">
-                  <Icon
-                    className="w-[24px] h-[24px] text-[#1C2B8A]"
-                    strokeWidth={1.8}
-                  />
+                  <Icon className="w-[24px] h-[24px] text-[#1C2B8A]" strokeWidth={1.8} />
                 </div>
                 <div>
                   <h3 className="text-[22px] font-bold text-[#0f1d6e] leading-snug mb-2">
                     {title}
                   </h3>
-                  <p className="text-[17px] text-gray-text leading-relaxed">
-                    {desc}
-                  </p>
+                  <p className="text-[17px] text-gray-text leading-relaxed">{desc}</p>
                 </div>
               </div>
             ))}
@@ -171,10 +162,7 @@ export default function ProblemSection({
               className="rounded-2xl shadow-lg shadow-[#1C2B8A]/10 border border-[#eef0f8] px-5 py-4 flex items-center gap-4 self-start -mt-7 -ml-5 w-[260px] relative z-10 bg-[#EFEFF199] backdrop-blur-sm [-webkit-backdrop-filter:blur(8px)]"
             >
               <div className="w-10 h-10 rounded-xl bg-[#eef0fb] flex items-center justify-center flex-shrink-0">
-                <Lightbulb
-                  className="w-5 h-5 text-[#1C2B8A]"
-                  strokeWidth={1.8}
-                />
+                <Lightbulb className="w-5 h-5 text-[#1C2B8A]" strokeWidth={1.8} />
               </div>
               <div>
                 <p className="text-[15px] font-bold text-[#0f1d6e] leading-tight">

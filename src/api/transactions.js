@@ -16,7 +16,9 @@ import client from "./client";
 // pageNumber until the actual accepted pagination scheme is confirmed --
 // don't guess a third time.
 export const getCommunityObligations = (communityId, params = {}) =>
-  client.get(`/communities/${communityId}/finance/obligations`, { params: { pageSize: 1000, ...params } });
+  client.get(`/communities/${communityId}/finance/obligations`, {
+    params: { pageSize: 1000, ...params },
+  });
 
 // NOT currently paginated -- see the comment on getCommunityObligations
 // above. A community with more than one page's worth of obligations may
@@ -38,10 +40,9 @@ export const getCommunityObligation = (communityId, obligationId) =>
 
 // PATCH /api/v1/communities/{communityIdentifier}/finance/obligations/{obligationId}/extend-due-date
 export const extendObligationDueDate = (communityId, obligationId, dueAt) =>
-  client.patch(
-    `/communities/${communityId}/finance/obligations/${obligationId}/extend-due-date`,
-    { dueAt }
-  );
+  client.patch(`/communities/${communityId}/finance/obligations/${obligationId}/extend-due-date`, {
+    dueAt,
+  });
 
 // GET /api/v1/communities/{communityIdentifier}/finance/transactions
 // See the comment on getCommunityObligations above -- a `pageNumber` param
@@ -49,7 +50,9 @@ export const extendObligationDueDate = (communityId, obligationId, dueAt) =>
 // to return 400 "Illegal Argument Entered", for every community regardless
 // of size. Reverted to a single fetch with no pageNumber.
 export const getCommunityTransactions = (communityId, params = {}) =>
-  client.get(`/communities/${communityId}/finance/transactions`, { params: { pageSize: 1000, ...params } });
+  client.get(`/communities/${communityId}/finance/transactions`, {
+    params: { pageSize: 1000, ...params },
+  });
 
 // NOT currently paginated -- see the comment on getCommunityTransactions
 // above. The backend's own collectedAmount metric only tracks settlements

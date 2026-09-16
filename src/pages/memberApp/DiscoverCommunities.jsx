@@ -1,21 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  ChevronLeft,
-  Search,
-  Users,
-  Loader2,
-  CheckCircle2,
-  Clock,
-} from "lucide-react";
+import { ChevronLeft, Search, Users, Loader2, CheckCircle2, Clock } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMyCommunities } from "../../api/members";
 import { searchPublicCommunities } from "../../api/communities";
 import { submitJoinRequest } from "../../api/invites";
-import {
-  recordPendingJoinRequest,
-  useJoinApprovalWatcher,
-} from "../../hooks/useJoinApproval";
+import { recordPendingJoinRequest, useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import LoadingState from "../../components/common/LoadingState";
 import JoinApprovedModal from "../../components/memberApp/JoinApprovedModal";
@@ -54,9 +44,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
   const alreadyPending = status === "pending";
   const logoUrl = community.logo?.url ?? null;
   const categoryLabel =
-    (Array.isArray(community.category)
-      ? community.category[0]
-      : community.category) ?? "Community";
+    (Array.isArray(community.category) ? community.category[0] : community.category) ?? "Community";
   // Field name unconfirmed against the public search response -- covers
   // every variant used elsewhere in the app (metrics.totalMembers is the
   // one the admin-scoped community endpoints use) so whichever one the
@@ -104,11 +92,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
           className={`w-11 h-11 rounded-[10px] flex-shrink-0 overflow-hidden flex items-center justify-center text-lg ${logoUrl ? "bg-transparent border-none" : "bg-[#F0F0F0] border border-[#E0E0E0]"}`}
         >
           {logoUrl ? (
-            <img
-              src={logoUrl}
-              alt=""
-              className="w-full h-full object-cover"
-            />
+            <img src={logoUrl} alt="" className="w-full h-full object-cover" />
           ) : (
             (community.name?.charAt(0) ?? "C")
           )}
@@ -128,20 +112,15 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
       <div className="px-4 pt-3 pb-4 flex flex-col gap-3">
         {/* Description */}
         {community.description && (
-          <p className="text-sm text-[#555] leading-[1.55]">
-            {community.description}
-          </p>
+          <p className="text-sm text-[#555] leading-[1.55]">{community.description}</p>
         )}
 
-        {(memberCount != null ||
-          community.requiresMemberApproval === false) && (
+        {(memberCount != null || community.requiresMemberApproval === false) && (
           <div className="flex items-center gap-3">
             {memberCount != null && (
               <span className="flex items-center gap-1.5 text-sm text-[#888]">
                 <Users size={15} className="text-[#111]" />
-                <span className="font-bold text-[#111]">
-                  {memberCount.toLocaleString()}
-                </span>
+                <span className="font-bold text-[#111]">{memberCount.toLocaleString()}</span>
                 Members
               </span>
             )}
@@ -176,11 +155,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
                 ? "Join"
                 : "Request To Join"}
         </button>
-        {errorMsg && (
-          <p className="text-[11.5px] text-danger m-0 text-center">
-            {errorMsg}
-          </p>
-        )}
+        {errorMsg && <p className="text-[11.5px] text-danger m-0 text-center">{errorMsg}</p>}
       </div>
     </div>
   );
@@ -192,23 +167,15 @@ function EmptyState({ query }) {
     return (
       <div className="flex flex-col items-center pt-[60px] text-[#aaa]">
         <Search size={32} strokeWidth={1.2} className="mb-2.5" />
-        <p className="text-sm text-center">
-          Search for a community by name
-        </p>
-        <p className="text-xs mt-1 text-center">
-          e.g. "Kings College Alumni"
-        </p>
+        <p className="text-sm text-center">Search for a community by name</p>
+        <p className="text-xs mt-1 text-center">e.g. "Kings College Alumni"</p>
       </div>
     );
   }
   return (
     <div className="flex flex-col items-center pt-[60px] text-[#aaa]">
-      <p className="text-sm text-center">
-        No communities found for "{query}"
-      </p>
-      <p className="text-xs mt-1 text-center">
-        Try a shorter or different search term
-      </p>
+      <p className="text-sm text-center">No communities found for "{query}"</p>
+      <p className="text-xs mt-1 text-center">Try a shorter or different search term</p>
     </div>
   );
 }
@@ -295,9 +262,7 @@ export default function DiscoverCommunities() {
   });
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen pb-10 max-w-[430px] mx-auto"
-    >
+    <div className="relative overflow-hidden min-h-screen pb-10 max-w-[430px] mx-auto">
       <GlassLogoGlow />
       {/* Header — before: padding: "52px 20px 16px" */}
       <div className="flex items-center justify-center relative pt-[35px] px-5 pb-4">
@@ -307,19 +272,14 @@ export default function DiscoverCommunities() {
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
-        <h1 className="text-[18px] leading-6 font-medium text-[#111] m-0">
-          Browse Communities
-        </h1>
+        <h1 className="text-[18px] leading-6 font-medium text-[#111] m-0">Browse Communities</h1>
       </div>
 
       {/* Search input */}
       <div className="px-4 pb-4">
         <div className="flex items-center gap-2.5 bg-white rounded-xl py-3 px-3.5 border-[1.5px] border-[#E0E0E0] focus-within:border-[#002FA7]">
           {isFetching ? (
-            <Loader2
-              size={15}
-              className="animate-spin text-[#1C2B8A] flex-shrink-0"
-            />
+            <Loader2 size={15} className="animate-spin text-[#1C2B8A] flex-shrink-0" />
           ) : (
             <Search size={15} className="text-[#aaa] flex-shrink-0" />
           )}

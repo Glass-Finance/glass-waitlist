@@ -10,9 +10,7 @@ export default function JoinApprovedModal({ entry, onOpen, onDismiss }) {
     >
       <div className="border border-surface-container-border w-full max-w-[340px] bg-surface-bg rounded-[20px] py-7 px-6 text-center shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
         <span className="text-4xl leading-none block mb-3">🎉</span>
-        <p className="text-[17px] font-bold text-[#065F46] mb-1.5">
-          You're in!
-        </p>
+        <p className="text-[17px] font-bold text-[#065F46] mb-1.5">You're in!</p>
         <p className="text-[13.5px] text-[#374151] mb-[22px] leading-relaxed">
           Your request to join <strong>{entry.name}</strong> was approved — you're now a member.
         </p>

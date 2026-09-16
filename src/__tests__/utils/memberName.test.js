@@ -12,13 +12,13 @@ describe("resolveDisplayName", () => {
   });
 
   it("builds first + last from a nested user object", () => {
-    expect(resolveDisplayName({ user: { firstName: "ada", lastName: "lovelace" } }))
-      .toBe("Ada Lovelace");
+    expect(resolveDisplayName({ user: { firstName: "ada", lastName: "lovelace" } })).toBe(
+      "Ada Lovelace",
+    );
   });
 
   it("builds first + last from flat fields when there's no user object", () => {
-    expect(resolveDisplayName({ firstName: "grace", lastName: "hopper" }))
-      .toBe("Grace Hopper");
+    expect(resolveDisplayName({ firstName: "grace", lastName: "hopper" })).toBe("Grace Hopper");
   });
 
   it("falls back to email when no name parts are present (title-cased, matching the pre-existing behavior this was consolidated from)", () => {
@@ -35,15 +35,19 @@ describe("resolveDisplayName", () => {
   });
 
   it("preserves the record's original casing when titleCase is false", () => {
-    expect(resolveDisplayName({ firstName: "ada", lastName: "lovelace" }, "Member", { titleCase: false }))
-      .toBe("ada lovelace");
+    expect(
+      resolveDisplayName({ firstName: "ada", lastName: "lovelace" }, "Member", {
+        titleCase: false,
+      }),
+    ).toBe("ada lovelace");
   });
 });
 
 describe("resolveEmail", () => {
   it("prefers the nested user email over a flat one", () => {
-    expect(resolveEmail({ user: { email: "nested@example.com" }, email: "flat@example.com" }))
-      .toBe("nested@example.com");
+    expect(resolveEmail({ user: { email: "nested@example.com" }, email: "flat@example.com" })).toBe(
+      "nested@example.com",
+    );
   });
 
   it("falls back to a flat email field", () => {
@@ -62,8 +66,7 @@ describe("resolveEmail", () => {
 
 describe("resolvePhone", () => {
   it("prefers the nested user phone over a flat one", () => {
-    expect(resolvePhone({ user: { phoneNumber: "0800" }, phoneNumber: "0900" }))
-      .toBe("0800");
+    expect(resolvePhone({ user: { phoneNumber: "0800" }, phoneNumber: "0900" })).toBe("0800");
   });
 
   it("falls back to a flat phoneNumber field", () => {

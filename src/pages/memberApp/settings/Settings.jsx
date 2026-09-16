@@ -1,5 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, User, Shield, Bell, CreditCard, RefreshCw, Users, LogOut } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  User,
+  Shield,
+  Bell,
+  CreditCard,
+  RefreshCw,
+  Users,
+  LogOut,
+} from "lucide-react";
 import { useAuth } from "../../../store/AuthContext";
 import GlassLogoGlow from "../../../components/memberApp/GlassLogoGlow";
 import { toastSuccess } from "../../../utils/toast";
@@ -8,22 +18,52 @@ const SECTIONS = [
   {
     label: "Account",
     items: [
-      { Icon: User, label: "Profile", desc: "Your name, email and phone number", to: "/member/profile" },
-      { Icon: Shield, label: "Security", desc: "Password and login protection", to: "/member/security" },
-      { Icon: Bell, label: "Notifications", desc: "What you get notified about", to: "/member/notification-settings" },
+      {
+        Icon: User,
+        label: "Profile",
+        desc: "Your name, email and phone number",
+        to: "/member/profile",
+      },
+      {
+        Icon: Shield,
+        label: "Security",
+        desc: "Password and login protection",
+        to: "/member/security",
+      },
+      {
+        Icon: Bell,
+        label: "Notifications",
+        desc: "What you get notified about",
+        to: "/member/notification-settings",
+      },
     ],
   },
   {
     label: "Payments",
     items: [
-      { Icon: CreditCard, label: "Payment Methods", desc: "Saved banks and auto-pay methods", to: "/member/saved-cards" },
-      { Icon: RefreshCw, label: "Auto-Pay", desc: "Plans set to charge automatically", to: "/member/auto-pay" },
+      {
+        Icon: CreditCard,
+        label: "Payment Methods",
+        desc: "Saved banks and auto-pay methods",
+        to: "/member/saved-cards",
+      },
+      {
+        Icon: RefreshCw,
+        label: "Auto-Pay",
+        desc: "Plans set to charge automatically",
+        to: "/member/auto-pay",
+      },
     ],
   },
   {
     label: "Community",
     items: [
-      { Icon: Users, label: "My Communities", desc: "Communities you belong to", to: "/member/communities" },
+      {
+        Icon: Users,
+        label: "My Communities",
+        desc: "Communities you belong to",
+        to: "/member/communities",
+      },
     ],
   },
 ];
@@ -42,9 +82,7 @@ export default function Settings() {
   }
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen pb-10"
-    >
+    <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button

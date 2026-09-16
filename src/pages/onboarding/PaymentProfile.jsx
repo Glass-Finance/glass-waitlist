@@ -43,8 +43,8 @@ function SuccessModal() {
 }
 
 export default function PaymentProfile() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useAuth();
 
   // Falls back to whatever OrganizationProfile persisted right after
@@ -55,23 +55,26 @@ export default function PaymentProfile() {
   const savedProgress = readOnboardingProgress();
   const { email, isPaying, communityId, communitySlug, communityName } =
     location.state ?? savedProgress;
-  const { create: saveAccount, update: updateAccount, account: existingAccount } =
-    useCommunityAccount(communityId);
+  const {
+    create: saveAccount,
+    update: updateAccount,
+    account: existingAccount,
+  } = useCommunityAccount(communityId);
 
-  const [banks,       setBanks]       = useState([]);
+  const [banks, setBanks] = useState([]);
   // Restores whatever was typed here before a reload/forced re-login wiped
   // React state -- the existingAccount prefill effect below still wins once
   // it loads, since it unconditionally overwrites these once the backend
   // confirms an actually-saved account.
-  const [bankCode,    setBankCode]    = useState(savedProgress.bankCode ?? "");
-  const [bankName,    setBankName]    = useState(savedProgress.bankName ?? "");
-  const [bankSlug,    setBankSlug]    = useState(savedProgress.bankSlug ?? "");
-  const [accNumber,   setAccNumber]   = useState(savedProgress.accNumber ?? "");
-  const [accName,     setAccName]     = useState(savedProgress.accName ?? "");
-  const [resolving,   setResolving]   = useState(false);
-  const [manualMode,  setManualMode]  = useState(false);
-  const [saving,      setSaving]      = useState(false);
-  const [error,       setError]       = useState("");
+  const [bankCode, setBankCode] = useState(savedProgress.bankCode ?? "");
+  const [bankName, setBankName] = useState(savedProgress.bankName ?? "");
+  const [bankSlug, setBankSlug] = useState(savedProgress.bankSlug ?? "");
+  const [accNumber, setAccNumber] = useState(savedProgress.accNumber ?? "");
+  const [accName, setAccName] = useState(savedProgress.accName ?? "");
+  const [resolving, setResolving] = useState(false);
+  const [manualMode, setManualMode] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [accNumberTouched, setAccNumberTouched] = useState(false);
 
@@ -79,8 +82,7 @@ export default function PaymentProfile() {
   // a 10-digit account number is the norm but nothing else here validates
   // length as the user goes, so a shorter one just silently never resolves
   // with no feedback at all otherwise.
-  const accNumberIncomplete =
-    accNumberTouched && accNumber.length > 0 && accNumber.length < 10;
+  const accNumberIncomplete = accNumberTouched && accNumber.length > 0 && accNumber.length < 10;
 
   // Fetch banks on mount
   useEffect(() => {
@@ -97,7 +99,12 @@ export default function PaymentProfile() {
         });
         setBanks(unique);
       })
-      .catch((err) => notifyError(err, { context: "Load banks", fallback: "Couldn't load the bank list. Please refresh." }));
+      .catch((err) =>
+        notifyError(err, {
+          context: "Load banks",
+          fallback: "Couldn't load the bank list. Please refresh.",
+        }),
+      );
   }, []);
 
   // Persist as the admin types, so a dropped session before Save loses at
@@ -141,7 +148,7 @@ export default function PaymentProfile() {
         const name =
           data?.data?.accountName ??
           data?.accountName ??
-          (data?.success === false ? null : data?.name ?? null);
+          (data?.success === false ? null : (data?.name ?? null));
         if (name) {
           setAccName(name);
           setManualMode(false);
@@ -185,17 +192,23 @@ export default function PaymentProfile() {
   };
 
   const handleSave = async () => {
-    if (!accName.trim()) { setError("Account name is required."); return; }
-    if (!communityId) { setError("Community ID missing — go back and retry."); return; }
+    if (!accName.trim()) {
+      setError("Account name is required.");
+      return;
+    }
+    if (!communityId) {
+      setError("Community ID missing — go back and retry.");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
       const payload = {
-        settlementBank:     bankName,
+        settlementBank: bankName,
         settlementBankCode: bankCode,
         settlementBankSlug: bankSlug,
-        accountNumber:      accNumber,
-        accountName:        accName.trim(),
+        accountNumber: accNumber,
+        accountName: accName.trim(),
       };
       // Update the account already saved for this community (e.g. a revisit
       // via AddMembers' Back button) instead of creating a second one.
@@ -260,7 +273,9 @@ export default function PaymentProfile() {
                   <ArrowLeft size={15} />
                   {isAuthenticated ? "Back to dashboard" : "Back"}
                 </button>
-                <h2 className="text-lg font-medium text-gray-900 mb-1">Set up your payment Account</h2>
+                <h2 className="text-lg font-medium text-gray-900 mb-1">
+                  Set up your payment Account
+                </h2>
                 <p className="text-sm text-gray-500">
                   This is where Glass will collect and manage dues on behalf of your community.
                 </p>
@@ -268,13 +283,18 @@ export default function PaymentProfile() {
 
               {/* Account number + bank */}
               <div className="mb-5">
-                <label className="text-sm text-gray-700 block mb-1.5">Community Bank Account Number</label>
+                <label className="text-sm text-gray-700 block mb-1.5">
+                  Community Bank Account Number
+                </label>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                   <input
                     type="text"
                     maxLength={10}
                     value={accNumber}
-                    onChange={(e) => { setAccNumber(e.target.value.replace(/\D/g, "")); setAccName(""); }}
+                    onChange={(e) => {
+                      setAccNumber(e.target.value.replace(/\D/g, ""));
+                      setAccName("");
+                    }}
                     onFocus={() => setAccNumberTouched(false)}
                     onBlur={() => setAccNumberTouched(true)}
                     placeholder="Enter Account Number"
@@ -311,10 +331,17 @@ export default function PaymentProfile() {
                     readOnly={!manualMode}
                     onChange={(e) => manualMode && setAccName(e.target.value)}
                     placeholder={manualMode ? "Type account name" : "Account name will appear here"}
-                    className={inputCls + (!manualMode ? " bg-gray-50 cursor-default select-none" : "") + (resolving ? " text-[#9CA3AF]" : "")}
+                    className={
+                      inputCls +
+                      (!manualMode ? " bg-gray-50 cursor-default select-none" : "") +
+                      (resolving ? " text-[#9CA3AF]" : "")
+                    }
                   />
                   {accName && !resolving && !manualMode && (
-                    <Check size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500" />
+                    <Check
+                      size={14}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+                    />
                   )}
                 </div>
               </div>
@@ -326,7 +353,12 @@ export default function PaymentProfile() {
               )}
             </div>
 
-            <Button onClick={handleSave} disabled={resolving || !accName.trim()} loading={saving} className="lg:w-1/2 mx-auto block mt-6">
+            <Button
+              onClick={handleSave}
+              disabled={resolving || !accName.trim()}
+              loading={saving}
+              className="lg:w-1/2 mx-auto block mt-6"
+            >
               {saving ? "Setting up…" : "Set-Up Account"}
             </Button>
             <button

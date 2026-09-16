@@ -57,21 +57,10 @@ function DashboardContent({ isPaying, communityId }) {
     }
   });
 
-  const {
-    balances,
-    members,
-    transactions,
-    activity,
-    community,
-    isLoading,
-    error,
-  } = useCommunityDashboard(communityId);
+  const { balances, members, transactions, activity, community, isLoading, error } =
+    useCommunityDashboard(communityId);
   const { data: currentUser } = useMe();
-  const {
-    plans,
-    isLoading: plansLoading,
-    create: createPlan,
-  } = usePaymentPlans(communityId);
+  const { plans, isLoading: plansLoading, create: createPlan } = usePaymentPlans(communityId);
 
   async function handleCreatePlan(payload) {
     try {
@@ -86,9 +75,7 @@ function DashboardContent({ isPaying, communityId }) {
   // list (that's Payments.jsx, which has its own status filters/badges) --
   // archived/expired plans no longer need attention and would otherwise
   // clutter it indefinitely.
-  const visiblePlans = plans.filter(
-    (p) => p.status !== "ARCHIVED" && p.status !== "EXPIRED",
-  );
+  const visiblePlans = plans.filter((p) => p.status !== "ARCHIVED" && p.status !== "EXPIRED");
 
   // Paying admin's own dues, as a member of this community -- scoped to
   // whichever community this dashboard is currently showing, not whatever
@@ -128,9 +115,7 @@ function DashboardContent({ isPaying, communityId }) {
     return (myAuthorisations ?? []).some((auth) =>
       auth.consents.some(
         (c) =>
-          !c.revoked &&
-          c.paymentLinkTitle === item.name &&
-          c.communityName === item.communityName,
+          !c.revoked && c.paymentLinkTitle === item.name && c.communityName === item.communityName,
       ),
     );
   }
@@ -141,8 +126,7 @@ function DashboardContent({ isPaying, communityId }) {
   }
 
   // ── Getting started checklist ─────────────────────────────────────────────
-  const { account: payoutAccount, isLoading: payoutLoading } =
-    useCommunityAccount(communityId);
+  const { account: payoutAccount, isLoading: payoutLoading } = useCommunityAccount(communityId);
   const gsHasPlans = plans.length > 0;
   // members.total counts everyone, including the owner -- who is auto-added
   // as a member the moment the community is created. Counting them made
@@ -160,14 +144,9 @@ function DashboardContent({ isPaying, communityId }) {
   // account was still being reviewed until they hit a wall trying to
   // create a payment plan.
   const payoutAccountStatus = payoutAccount?.status?.toUpperCase() ?? null;
-  const gsHasPayoutAccount = ["ACTIVE", "VERIFIED"].includes(
-    payoutAccountStatus,
-  );
-  const gsPayoutAccountRejected = ["FAILED", "REJECTED"].includes(
-    payoutAccountStatus,
-  );
-  const gsPayoutAccountPending =
-    !!payoutAccount && !gsHasPayoutAccount && !gsPayoutAccountRejected;
+  const gsHasPayoutAccount = ["ACTIVE", "VERIFIED"].includes(payoutAccountStatus);
+  const gsPayoutAccountRejected = ["FAILED", "REJECTED"].includes(payoutAccountStatus);
+  const gsPayoutAccountPending = !!payoutAccount && !gsHasPayoutAccount && !gsPayoutAccountRejected;
   const showGettingStarted =
     !isLoading &&
     !plansLoading &&
@@ -177,8 +156,7 @@ function DashboardContent({ isPaying, communityId }) {
   // The very-first-load state -- nothing at all yet. Distinct from (and
   // takes priority over) showGettingStarted's banner, which still shows
   // stats/tables alongside it once at least one of plans/members exists.
-  const isFreshCommunity =
-    !isLoading && !plansLoading && !gsHasPlans && !gsHasMembers;
+  const isFreshCommunity = !isLoading && !plansLoading && !gsHasPlans && !gsHasMembers;
 
   function dismissGs() {
     setGsDismissed(true);
@@ -247,8 +225,7 @@ function DashboardContent({ isPaying, communityId }) {
       if (mid && memberNameMap.byMemberId[String(mid)])
         return memberNameMap.byMemberId[String(mid)];
       const uid = tx.member?.user?.id ?? tx.user?.id ?? tx.userId;
-      if (uid && memberNameMap.byUserId[String(uid)])
-        return memberNameMap.byUserId[String(uid)];
+      if (uid && memberNameMap.byUserId[String(uid)]) return memberNameMap.byUserId[String(uid)];
       // 2. Fall back to whatever name fields the transaction itself carries
       const u = tx.member?.user ?? tx.user ?? tx.payer ?? tx.member ?? {};
       const f = u.firstName ?? tx.firstName ?? "";
@@ -266,12 +243,7 @@ function DashboardContent({ isPaying, communityId }) {
       const q = search.toLowerCase();
       list = list.filter((t) => {
         const name = (resolveMemberName(t) ?? "").toLowerCase();
-        const plan = (
-          t.planName ??
-          t.paymentLink?.title ??
-          t.description ??
-          ""
-        ).toLowerCase();
+        const plan = (t.planName ?? t.paymentLink?.title ?? t.description ?? "").toLowerCase();
         const email = (
           t.member?.user?.email ??
           t.user?.email ??
@@ -297,9 +269,7 @@ function DashboardContent({ isPaying, communityId }) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-3">
         <AlertCircle size={32} className="text-red-400" />
-        <p className="text-sm text-gray-500">
-          Couldn't load dashboard data. Please refresh.
-        </p>
+        <p className="text-sm text-gray-500">Couldn't load dashboard data. Please refresh.</p>
       </div>
     );
   }
@@ -329,9 +299,7 @@ function DashboardContent({ isPaying, communityId }) {
             onClose={() => setCreatePlanOpen(false)}
             onCreate={handleCreatePlan}
             creating={createPlan.isPending}
-            createError={
-              createPlan.error ? getErrorMessage(createPlan.error) : null
-            }
+            createError={createPlan.error ? getErrorMessage(createPlan.error) : null}
           />
         )}
       </>
@@ -351,9 +319,7 @@ function DashboardContent({ isPaying, communityId }) {
           </div>
           <div data-tour="dashboard-header-actions" className="flex gap-2.5">
             <button
-              onClick={() =>
-                navigate(`/dashboard/payments?community=${communityId ?? ""}`)
-              }
+              onClick={() => navigate(`/dashboard/payments?community=${communityId ?? ""}`)}
               className="px-4 py-2 rounded text-xs font-medium text-black bg-white border border-[#efeff1] hover:bg-gray-50 transition-all cursor-pointer"
             >
               Create Payment Plan
@@ -371,15 +337,11 @@ function DashboardContent({ isPaying, communityId }) {
             empty state (real members/plans exist), not on first login. */}
         {currentUser && !currentUser.phoneVerified && (
           <button
-            onClick={() =>
-              navigate(`/dashboard/settings/account/profile?verify=phone`)
-            }
+            onClick={() => navigate(`/dashboard/settings/account/profile?verify=phone`)}
             className="w-full flex items-center justify-between gap-3 text-left bg-[#D7E2FF] rounded px-6 py-3 mb-5 border border-[#E0E0EB] cursor-pointer"
           >
             <div>
-              <p className="text-sm font-semibold text-brand m-0">
-                Verify Your Phone Number
-              </p>
+              <p className="text-sm font-semibold text-brand m-0">Verify Your Phone Number</p>
               <p className="text-xs text-brand/80 mt-0.5 mb-0">
                 We will use it for payment reminders and account security.
               </p>
@@ -420,9 +382,7 @@ function DashboardContent({ isPaying, communityId }) {
           <YourPaymentsSection
             rows={myUpcomingFiltered}
             sortDir={myPaymentsSort}
-            onToggleSort={() =>
-              setMyPaymentsSort((d) => (d === "desc" ? "asc" : "desc"))
-            }
+            onToggleSort={() => setMyPaymentsSort((d) => (d === "desc" ? "asc" : "desc"))}
             filter={myPaymentsFilter}
             filterOpen={myPaymentsFilterOpen}
             onToggleFilterOpen={() => setMyPaymentsFilterOpen((o) => !o)}
@@ -439,14 +399,9 @@ function DashboardContent({ isPaying, communityId }) {
           <PaymentPlansCard
             plans={visiblePlans}
             plansLoading={plansLoading}
-            onManageAll={() =>
-              navigate(`/dashboard/payments?community=${communityId ?? ""}`)
-            }
+            onManageAll={() => navigate(`/dashboard/payments?community=${communityId ?? ""}`)}
           />
-          <RecentActivityCard
-            isLoading={activity.isLoading}
-            items={recentActivity}
-          />
+          <RecentActivityCard isLoading={activity.isLoading} items={recentActivity} />
         </div>
 
         {/* Member Payments table */}
@@ -456,31 +411,20 @@ function DashboardContent({ isPaying, communityId }) {
           search={search}
           onSearchChange={setSearch}
           sortDir={sortDir}
-          onToggleSort={() =>
-            setSortDir((d) => (d === "desc" ? "asc" : "desc"))
-          }
-          onExport={() =>
-            runExport(() => exportCommunityTransactions(communityId, {}, "CSV"))
-          }
+          onToggleSort={() => setSortDir((d) => (d === "desc" ? "asc" : "desc"))}
+          onExport={() => runExport(() => exportCommunityTransactions(communityId, {}, "CSV"))}
           isExporting={isExporting}
           communityId={communityId}
           resolveMemberName={resolveMemberName}
           community={community}
           onRowClick={(txId) =>
-            navigate(
-              `/dashboard/transactions/${txId}?community=${communityId ?? ""}`,
-            )
+            navigate(`/dashboard/transactions/${txId}?community=${communityId ?? ""}`)
           }
         />
       </main>
 
       {/* Payment confirmation modal */}
-      {payingItem && (
-        <AdminPaymentModal
-          item={payingItem}
-          onClose={() => setPayingItem(null)}
-        />
-      )}
+      {payingItem && <AdminPaymentModal item={payingItem} onClose={() => setPayingItem(null)} />}
 
       {/* Add member modal */}
       {addMemberOpen && (

@@ -60,9 +60,7 @@ export default function StepContact({ initialEmail, onNext, onGoogleAuth, hasCom
           {hasToken ? "You've Been Invited" : "Create Your Account"}
         </h1>
         {hasToken ? (
-          <p className="text-sm text-gray-500 mt-1">
-            Complete your profile to accept the invite.
-          </p>
+          <p className="text-sm text-gray-500 mt-1">Complete your profile to accept the invite.</p>
         ) : !hasCommunity ? (
           // Reached via the marketing site's contextless "Join A Community"
           // CTA, not a specific invite -- says up front that browsing comes
@@ -98,11 +96,18 @@ export default function StepContact({ initialEmail, onNext, onGoogleAuth, hasCom
           <input
             type="checkbox"
             checked={agreed}
-            onChange={(e) => { setAgreed(e.target.checked); setError(""); }}
+            onChange={(e) => {
+              setAgreed(e.target.checked);
+              setError("");
+            }}
             className="appearance-none w-4 h-4 rounded-sm border border-[#797D86]/40 checked:bg-[#1C2B8A] checked:border-[#1C2B8A] cursor-pointer"
           />
           {agreed && (
-            <Check size={12} strokeWidth={3} className="absolute inset-0 m-auto text-white pointer-events-none" />
+            <Check
+              size={12}
+              strokeWidth={3}
+              className="absolute inset-0 m-auto text-white pointer-events-none"
+            />
           )}
         </span>
         <span className="text-xs md:text-sm text-gray-700">
@@ -145,10 +150,7 @@ export default function StepContact({ initialEmail, onNext, onGoogleAuth, hasCom
 
       <p className="text-sm text-center text-gray-500 pb-2">
         Already Have An Account?{" "}
-        <Link
-          to="/member/app-sign-in"
-          className="font-semibold text-[#1C2B8A]"
-        >
+        <Link to="/member/app-sign-in" className="font-semibold text-[#1C2B8A]">
           Sign In
         </Link>
       </p>

@@ -29,8 +29,8 @@ export default function WhyGlass() {
   const [open, setOpen] = useState(0);
 
   /* Refs for scroll-triggered animations */
-  const itemRefs   = useRef([]);
-  const btnRef     = useRef(null);
+  const itemRefs = useRef([]);
+  const btnRef = useRef(null);
 
   useEffect(() => {
     /* ── Accordion rows: slide up from below, staggered ── */
@@ -43,11 +43,11 @@ export default function WhyGlass() {
           }
         });
       },
-      { threshold: 0.12 }
+      { threshold: 0.12 },
     );
     itemRefs.current.forEach((el, i) => {
       if (!el) return;
-      el.style.transform  = "translateY(36px)";
+      el.style.transform = "translateY(36px)";
       el.style.transition = `transform 0.65s cubic-bezier(0.22,1,0.36,1) ${i * 80}ms`;
       io2.observe(el);
     });
@@ -56,35 +56,35 @@ export default function WhyGlass() {
     const io3 = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) {
-          e.target.style.transform  = "scale(1)";
-          e.target.style.opacity    = "1";
+          e.target.style.transform = "scale(1)";
+          e.target.style.opacity = "1";
           io3.disconnect();
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
     if (btnRef.current) {
-      btnRef.current.style.transform  = "scale(0.88)";
-      btnRef.current.style.opacity    = "0";
-      btnRef.current.style.transition = "transform 0.6s cubic-bezier(0.34,1.56,0.64,1) 200ms, opacity 0.4s ease 200ms";
+      btnRef.current.style.transform = "scale(0.88)";
+      btnRef.current.style.opacity = "0";
+      btnRef.current.style.transition =
+        "transform 0.6s cubic-bezier(0.34,1.56,0.64,1) 200ms, opacity 0.4s ease 200ms";
       io3.observe(btnRef.current);
     }
 
-    return () => { io2.disconnect(); io3.disconnect(); };
+    return () => {
+      io2.disconnect();
+      io3.disconnect();
+    };
   }, []);
 
   return (
     <section className="relative isolate py-20 md:py-28 overflow-hidden font-urbanist">
       <div className="max-w-[1140px] mx-auto px-6 relative z-10">
-
         {/* ── Header ── */}
         <div className="text-center mb-14">
-
           {/* Badge */}
           <div className="mb-6">
-            <span
-              className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full"
-            >
+            <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full">
               FAQ
             </span>
           </div>
@@ -102,7 +102,8 @@ export default function WhyGlass() {
           </h2>
 
           <p className="text-[16px] text-[#9099b2] max-w-[640px] mx-auto leading-relaxed text-center">
-            Everything you need to know about using Glass, from setting up dues to tracking payments and ensuring full transparency.
+            Everything you need to know about using Glass, from setting up dues to tracking payments
+            and ensuring full transparency.
           </p>
         </div>
 
@@ -165,7 +166,6 @@ export default function WhyGlass() {
             </span>
           </a>
         </div>
-
       </div>
     </section>
   );

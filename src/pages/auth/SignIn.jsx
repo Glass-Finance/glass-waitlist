@@ -3,34 +3,17 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Lock, KeyRound } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
-import {
-  verifyMfaLogin,
-  requestLoginOtp,
-  verifyLoginOtp,
-} from "../../services/authService";
-import {
-  getMyInvites,
-  getMyCommunityJoinRequests,
-  submitJoinRequest,
-} from "../../api/invites";
+import { verifyMfaLogin, requestLoginOtp, verifyLoginOtp } from "../../services/authService";
+import { getMyInvites, getMyCommunityJoinRequests, submitJoinRequest } from "../../api/invites";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
-import {
-  notifyError,
-  getErrorMessage,
-  getRetryAfterSeconds,
-} from "../../utils/errorHandler";
+import { notifyError, getErrorMessage, getRetryAfterSeconds } from "../../utils/errorHandler";
 import { getEmailError } from "../../utils/validators";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../utils/phone";
 import { toastInfo, toastSuccess } from "../../utils/toast";
 import { JOIN_COMMUNITY_KEY } from "../../hooks/useJoinCommunityParam";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 import AuthLayout from "../../layouts/AuthLayout";
-import {
-  Label,
-  TextInput,
-  PrimaryButton,
-  ErrorMessage,
-} from "../../components/auth/FormFields";
+import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
 import { MfaChallengeScreen, OtpVerifyScreen } from "./SignInSections";
 
@@ -39,9 +22,7 @@ import { MfaChallengeScreen, OtpVerifyScreen } from "./SignInSections";
 // reconcile. "@" is the one unambiguous signal between the two formats.
 function parseIdentifier(value) {
   const trimmed = value.trim();
-  return trimmed.includes("@")
-    ? { email: trimmed.toLowerCase() }
-    : { phoneNumber: trimmed };
+  return trimmed.includes("@") ? { email: trimmed.toLowerCase() } : { phoneNumber: trimmed };
 }
 
 function validateIdentifier(value) {
@@ -194,9 +175,7 @@ export default function SignIn() {
       setError("");
       // Only live-validate once the field has already been flagged invalid,
       // so a fresh field doesn't turn red before the user's even left it.
-      setFieldErrors((fe) =>
-        fe[field] ? { ...fe, [field]: validateField(field, value) } : fe,
-      );
+      setFieldErrors((fe) => (fe[field] ? { ...fe, [field]: validateField(field, value) } : fe));
     };
   }
 
@@ -253,9 +232,7 @@ export default function SignIn() {
     try {
       const inviteRes = await getMyInvites();
       const inviteData = inviteRes?.data?.data;
-      invites = Array.isArray(inviteData)
-        ? inviteData
-        : (inviteData?.content ?? []);
+      invites = Array.isArray(inviteData) ? inviteData : (inviteData?.content ?? []);
     } catch {
       // fall through with invites = []
     }
@@ -269,9 +246,7 @@ export default function SignIn() {
       // fall through with joinRequests = []
     }
 
-    return invites.length > 0 || joinRequests.length > 0
-      ? "/member/invites"
-      : "/member/home";
+    return invites.length > 0 || joinRequests.length > 0 ? "/member/invites" : "/member/home";
   }
 
   async function handleSignIn() {
@@ -320,10 +295,7 @@ export default function SignIn() {
     setOtpIdentifierError("");
     try {
       const result = await requestLoginOtp(parseIdentifier(otpIdentifier));
-      const seconds = Math.max(
-        0,
-        Math.round((new Date(result.expiresAt) - Date.now()) / 1000),
-      );
+      const seconds = Math.max(0, Math.round((new Date(result.expiresAt) - Date.now()) / 1000));
       setOtpInitialSeconds(seconds);
       setResendCount((c) => c + 1);
       setOtp(["", "", "", "", "", ""]);
@@ -369,10 +341,7 @@ export default function SignIn() {
     setOtpError("");
     try {
       const result = await requestLoginOtp(parseIdentifier(otpIdentifier));
-      const seconds = Math.max(
-        0,
-        Math.round((new Date(result.expiresAt) - Date.now()) / 1000),
-      );
+      const seconds = Math.max(0, Math.round((new Date(result.expiresAt) - Date.now()) / 1000));
       setOtpInitialSeconds(seconds);
       setResendCount((c) => c + 1);
       setOtp(["", "", "", "", "", ""]);
@@ -381,9 +350,7 @@ export default function SignIn() {
       if (retryAfter) {
         setResendCooldown(retryAfter);
         setResendCooldownKey((k) => k + 1);
-        setOtpError(
-          `Too many attempts — try again in ${formatCountdown(retryAfter)}.`,
-        );
+        setOtpError(`Too many attempts — try again in ${formatCountdown(retryAfter)}.`);
       } else {
         setOtpError(getErrorMessage(err, "Couldn't resend. Please try again."));
       }
@@ -480,10 +447,7 @@ export default function SignIn() {
   }
 
   return (
-    <AuthLayout
-      heroTitle="Manage Your Community"
-      heroSubtitle="Finance Effortlessly"
-    >
+    <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
       {/* mt-* + mb-auto (not my-auto) -- the Password tab has noticeably
           more content than One-Time Code (an extra field, a Forgot-password
           link), so pure vertical centering gave the two tabs different top
@@ -494,18 +458,15 @@ export default function SignIn() {
       <div className="w-full max-w-md flex flex-col md:mt-14 mb-auto gap-6">
         {pendingVerificationEmail && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-            <p className="text-xs font-semibold text-amber-800 mb-1">
-              Email verification pending
-            </p>
+            <p className="text-xs font-semibold text-amber-800 mb-1">Email verification pending</p>
             <p className="text-xs text-amber-700 leading-relaxed">
-              You registered with{" "}
-              <span className="font-medium">{pendingVerificationEmail}</span>{" "}
-              but didn't finish verifying. Check your inbox — and spam folder —
-              for the 6-digit code.
+              You registered with <span className="font-medium">{pendingVerificationEmail}</span>{" "}
+              but didn't finish verifying. Check your inbox — and spam folder — for the 6-digit
+              code.
             </p>
             <p className="text-xs text-amber-700 leading-relaxed mt-1">
-              Codes expire after 15 minutes. If yours has expired, go back and
-              register again to receive a fresh one.
+              Codes expire after 15 minutes. If yours has expired, go back and register again to
+              receive a fresh one.
             </p>
             <Link
               to="/member/join"
@@ -516,9 +477,7 @@ export default function SignIn() {
           </div>
         )}
         <div>
-          <h1 className="text-headline text-gray-900 mb-1">
-            Sign In To Your Account
-          </h1>
+          <h1 className="text-headline text-gray-900 mb-1">Sign In To Your Account</h1>
           <p className="text-sm text-gray-500">
             {mode === "otp"
               ? "We'll email or text you a one-time code, no password needed."
@@ -526,11 +485,7 @@ export default function SignIn() {
           </p>
         </div>
 
-        <ModeTabs
-          mode={mode}
-          setMode={switchMode}
-          disabled={loading || otpSending}
-        />
+        <ModeTabs mode={mode} setMode={switchMode} disabled={loading || otpSending} />
 
         {mode === "password" ? (
           <>
@@ -546,9 +501,7 @@ export default function SignIn() {
                 onFocus={() => setActiveField("identifier")}
                 autoComplete="username"
                 disabled={loading}
-                error={
-                  activeField === "identifier" ? fieldErrors.identifier : ""
-                }
+                error={activeField === "identifier" ? fieldErrors.identifier : ""}
               />
               <ErrorMessage message={fieldErrors.identifier} />
             </div>
@@ -580,20 +533,13 @@ export default function SignIn() {
               />
               <ErrorMessage message={fieldErrors.password || error} />
               <div className="flex justify-end mt-1.5">
-                <Link
-                  to="/forgot-password"
-                  className="text-label font-medium text-[#1C2B8A]"
-                >
+                <Link to="/forgot-password" className="text-label font-medium text-[#1C2B8A]">
                   Forgot password?
                 </Link>
               </div>
             </div>
 
-            <PrimaryButton
-              onClick={handleSignIn}
-              loading={loading}
-              disabled={!isReady}
-            >
+            <PrimaryButton onClick={handleSignIn} loading={loading} disabled={!isReady}>
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 size={16} className="animate-spin" />
@@ -647,10 +593,7 @@ export default function SignIn() {
           <div className="flex-1 h-px bg-gray-300" />
         </div>
 
-        <GoogleAuthButton
-          onAuthenticated={handleGoogleAuth}
-          label="signin_with"
-        />
+        <GoogleAuthButton onAuthenticated={handleGoogleAuth} label="signin_with" />
 
         <p className="text-sm text-center text-gray-500 pb-2">
           New to Glass?{" "}

@@ -14,8 +14,7 @@ export function QuickAddMemberModal({
 }) {
   useEscapeToClose(onClose);
   const [email, setEmail] = useState("");
-  const defaultRole =
-    roles.find((role) => role.name === "Community Member") ?? roles[0];
+  const defaultRole = roles.find((role) => role.name === "Community Member") ?? roles[0];
   const [roleId, setRoleId] = useState(defaultRole?.id ?? "");
   const [billingExempt, setBillingExempt] = useState(false);
   const [linkCopied, copyInviteLinkText] = useCopyToClipboard();
@@ -40,9 +39,7 @@ export function QuickAddMemberModal({
       >
         <div className="flex items-start justify-between mb-5">
           <div>
-            <h2 className="text-base font-semibold text-black">
-              Invite Member
-            </h2>
+            <h2 className="text-base font-semibold text-black">Invite Member</h2>
             <p className="text-xs text-gray-400 mt-0.5">
               An invite email will be sent to their address.
             </p>
@@ -58,9 +55,7 @@ export function QuickAddMemberModal({
 
         <div className="flex flex-col gap-3.5">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Email
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
               required
@@ -71,9 +66,7 @@ export function QuickAddMemberModal({
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Role
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Role</label>
             <div className="relative">
               <select
                 value={roleId}
@@ -90,8 +83,7 @@ export function QuickAddMemberModal({
             </div>
             {rolesUnavailable && (
               <p className="text-xs text-red-500 mt-1.5">
-                Couldn't load roles from the server — try closing and reopening
-                this dialog.
+                Couldn't load roles from the server — try closing and reopening this dialog.
               </p>
             )}
           </div>

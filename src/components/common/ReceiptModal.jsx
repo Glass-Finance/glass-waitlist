@@ -1,14 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  X,
-  FileText,
-  Image as ImageIcon,
-  Share2,
-  Check,
-  Copy,
-  CheckCheck,
-} from "lucide-react";
+import { X, FileText, Image as ImageIcon, Share2, Check, Copy, CheckCheck } from "lucide-react";
 import html2canvas from "html2canvas";
 import ctaLogoUrl from "../../assets/cta/ctalogo.webp";
 import { toTitleCase } from "../../utils/format";
@@ -137,8 +129,7 @@ function ReceiptCard({
       ref={cardRef}
       style={{
         width: "100%",
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, sans-serif',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, sans-serif',
         background: "#ffffff",
         // no border-radius anywhere on the outer container
       }}
@@ -194,13 +185,7 @@ function ReceiptCard({
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             {logoB64 ? (
-              <img
-                src={logoB64}
-                width={30}
-                height={30}
-                alt=""
-                style={{ display: "block" }}
-              />
+              <img src={logoB64} width={30} height={30} alt="" style={{ display: "block" }} />
             ) : (
               <div
                 style={{
@@ -284,11 +269,7 @@ function ReceiptCard({
                 width: 15,
                 height: 15,
                 borderRadius: "50%",
-                background: isSuccess
-                  ? "#0ECE7B"
-                  : isFailed
-                    ? "#EF4444"
-                    : "#F59E0B",
+                background: isSuccess ? "#0ECE7B" : isFailed ? "#EF4444" : "#F59E0B",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -346,9 +327,7 @@ function ReceiptCard({
           </span>
         </DetailRow>
 
-        <DetailRow label="Plan">
-          {toTitleCase(tx?.planName ?? tx?.description) ?? "—"}
-        </DetailRow>
+        <DetailRow label="Plan">{toTitleCase(tx?.planName ?? tx?.description) ?? "—"}</DetailRow>
 
         <DetailRow label="Member Details">
           <span
@@ -370,9 +349,7 @@ function ReceiptCard({
             >
               <span>{toTitleCase(payerName) || "—"}</span>
               {maskedEmail && (
-                <span
-                  style={{ fontSize: 11, fontWeight: 500, color: "#94A3B8" }}
-                >
+                <span style={{ fontSize: 11, fontWeight: 500, color: "#94A3B8" }}>
                   {maskedEmail}
                 </span>
               )}
@@ -380,9 +357,7 @@ function ReceiptCard({
           </span>
         </DetailRow>
 
-        <DetailRow label="Transaction Type">
-          {toTitleCase(tx?.channel) || "—"}
-        </DetailRow>
+        <DetailRow label="Transaction Type">{toTitleCase(tx?.channel) || "—"}</DetailRow>
 
         <DetailRow label="Dues Amount">{formatNaira(tx?.amount)}</DetailRow>
 
@@ -412,11 +387,7 @@ function ReceiptCard({
             }}
             aria-label="Copy transaction ID"
           >
-            {copied ? (
-              <CheckCheck size={13} color="#15803d" />
-            ) : (
-              <Copy size={13} />
-            )}
+            {copied ? <CheckCheck size={13} color="#15803d" /> : <Copy size={13} />}
           </button>
         </DetailRow>
       </div>
@@ -539,8 +510,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
     if (saving) return;
     setSaving("pdf");
     try {
-      const { downloadReceiptPdf } =
-        await import("../../utils/generateReceipt");
+      const { downloadReceiptPdf } = await import("../../utils/generateReceipt");
       await downloadReceiptPdf(tx, { payerName, payerEmail });
     } finally {
       setSaving(null);
@@ -561,11 +531,9 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
         try {
           await navigator.share({
             files: [
-              new File(
-                [blob],
-                `glass-receipt-${tx?.reference ?? tx?.id ?? ""}.png`,
-                { type: "image/png" },
-              ),
+              new File([blob], `glass-receipt-${tx?.reference ?? tx?.id ?? ""}.png`, {
+                type: "image/png",
+              }),
             ],
             title: "Payment Receipt",
           });
@@ -605,10 +573,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
       }}
     >
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-xs"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-xs" onClick={onClose} />
 
       {/* Sheet — full-width bottom sheet on mobile (the member app, where
           this is meant to feel native); a normal capped-width centered
@@ -625,9 +590,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
 
         {/* Title row */}
         <div className="flex items-center justify-between pt-2 px-5 pb-3 flex-shrink-0">
-          <span className="text-[15px] font-bold text-[#0F172A]">
-            Payment Receipt
-          </span>
+          <span className="text-[15px] font-bold text-[#0F172A]">Payment Receipt</span>
           <button
             onClick={onClose}
             className="bg-black/[0.06] border-none rounded-full w-8 h-8 flex items-center justify-center cursor-pointer text-[#475569] flex-shrink-0"

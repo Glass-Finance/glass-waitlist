@@ -45,12 +45,8 @@ export default function PaymentPlansCard({ plans, plansLoading, onManageAll }) {
             const totalCount = p.totalCount ?? 0;
             const collected = p.amountCollected ?? 0;
             const expected = p.expectedAmount ?? 0;
-            const pct =
-              expected > 0
-                ? Math.min(100, Math.round((collected / expected) * 100))
-                : 0;
-            const barColorCls =
-              BAR_COLOR_CLASSES[idx % BAR_COLOR_CLASSES.length];
+            const pct = expected > 0 ? Math.min(100, Math.round((collected / expected) * 100)) : 0;
+            const barColorCls = BAR_COLOR_CLASSES[idx % BAR_COLOR_CLASSES.length];
             return (
               <div
                 key={p.id}
@@ -78,9 +74,7 @@ export default function PaymentPlansCard({ plans, plansLoading, onManageAll }) {
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <p className="text-[11px] text-gray-400 text-right mt-1">
-                  {pct}% Collected
-                </p>
+                <p className="text-[11px] text-gray-400 text-right mt-1">{pct}% Collected</p>
               </div>
             );
           })}

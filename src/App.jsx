@@ -1,11 +1,5 @@
 import { Suspense, lazy, useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import LoadingScreen from "./components/LoadingScreen";
 import { isAppHost, MARKETING_ORIGIN } from "./utils/deviceRedirect";
 
@@ -38,9 +32,7 @@ const MobileRequired = lazy(() => import("./pages/auth/member/MobileRequired"));
 // ── Onboarding pages ──────────────────────────────────────────────────────────
 const ChoosePath = lazy(() => import("./pages/onboarding/ChoosePath"));
 const PayingMember = lazy(() => import("./pages/onboarding/PayingMember"));
-const OrganizationProfile = lazy(
-  () => import("./pages/onboarding/OrganizationProfile"),
-);
+const OrganizationProfile = lazy(() => import("./pages/onboarding/OrganizationProfile"));
 const PaymentProfile = lazy(() => import("./pages/onboarding/PaymentProfile"));
 const AddMembers = lazy(() => import("./pages/onboarding/AddMembers"));
 
@@ -57,95 +49,49 @@ const PayingAdminDashboard = lazy(() =>
 const Payments = lazy(() => import("./pages/dashboard/Payments"));
 const Members = lazy(() => import("./pages/dashboard/Members"));
 const MemberDetail = lazy(() => import("./pages/dashboard/MemberDetail"));
-const AdminTransactionDetail = lazy(
-  () => import("./pages/dashboard/TransactionDetail"),
-);
-const AdminNotifications = lazy(
-  () => import("./pages/dashboard/Notifications"),
-);
+const AdminTransactionDetail = lazy(() => import("./pages/dashboard/TransactionDetail"));
+const AdminNotifications = lazy(() => import("./pages/dashboard/Notifications"));
 const PaymentCallback = lazy(() => import("./pages/dashboard/PaymentCallback"));
 
 // ── Settings ──────────────────────────────────────────────────────────────────
 const Settings = lazy(() => import("./pages/dashboard/settings/Settings"));
-const Profile = lazy(
-  () => import("./pages/dashboard/settings/account/Profile"),
-);
+const Profile = lazy(() => import("./pages/dashboard/settings/account/Profile"));
 const Role = lazy(() => import("./pages/dashboard/settings/account/Role"));
-const NotificationSettings = lazy(
-  () => import("./pages/dashboard/settings/account/Notifications"),
-);
-const Security = lazy(
-  () => import("./pages/dashboard/settings/account/Security"),
-);
-const PaymentMethod = lazy(
-  () => import("./pages/dashboard/settings/finance/PaymentMethod"),
-);
-const AutoPay = lazy(
-  () => import("./pages/dashboard/settings/finance/AutoPay"),
-);
-const PaystackAccount = lazy(
-  () => import("./pages/dashboard/settings/finance/PaystackAccount"),
-);
+const NotificationSettings = lazy(() => import("./pages/dashboard/settings/account/Notifications"));
+const Security = lazy(() => import("./pages/dashboard/settings/account/Security"));
+const PaymentMethod = lazy(() => import("./pages/dashboard/settings/finance/PaymentMethod"));
+const AutoPay = lazy(() => import("./pages/dashboard/settings/finance/AutoPay"));
+const PaystackAccount = lazy(() => import("./pages/dashboard/settings/finance/PaystackAccount"));
 const CommunityProfile = lazy(
   () => import("./pages/dashboard/settings/community/CommunityProfile"),
 );
-const MemberAccess = lazy(
-  () => import("./pages/dashboard/settings/community/MemberAccess"),
-);
-const SystemConfig = lazy(
-  () => import("./pages/dashboard/settings/admin/SystemConfig"),
-);
+const MemberAccess = lazy(() => import("./pages/dashboard/settings/community/MemberAccess"));
+const SystemConfig = lazy(() => import("./pages/dashboard/settings/admin/SystemConfig"));
 const PlatformAdmin = lazy(() => import("./pages/dashboard/PlatformAdmin"));
 
 // ── Member app layout + pages ─────────────────────────────────────────────────
 const MemberAppLayout = lazy(() => import("./layouts/MemberAppLayout"));
 const MemberHome = lazy(() => import("./pages/memberApp/Home"));
-const DiscoverCommunities = lazy(
-  () => import("./pages/memberApp/DiscoverCommunities"),
-);
+const DiscoverCommunities = lazy(() => import("./pages/memberApp/DiscoverCommunities"));
 const MemberTransactions = lazy(() => import("./pages/memberApp/Transactions"));
-const MemberTransactionDetail = lazy(
-  () => import("./pages/memberApp/TransactionDetail"),
-);
+const MemberTransactionDetail = lazy(() => import("./pages/memberApp/TransactionDetail"));
 const MemberUpcoming = lazy(() => import("./pages/memberApp/UpcomingPayments"));
-const MemberNotifications = lazy(
-  () => import("./pages/memberApp/Notifications"),
-);
+const MemberNotifications = lazy(() => import("./pages/memberApp/Notifications"));
 const ManagePayments = lazy(() => import("./pages/memberApp/ManagePayments"));
 const PaymentSummary = lazy(() => import("./pages/memberApp/PaymentSummary"));
 const PaymentSuccess = lazy(() => import("./pages/memberApp/PaymentSuccess"));
 const Invites = lazy(() => import("./pages/memberApp/Invites"));
-const MemberSettings = lazy(
-  () => import("./pages/memberApp/settings/Settings"),
-);
-const MemberProfile = lazy(
-  () => import("./pages/memberApp/settings/account/Profile"),
-);
-const MemberUpdateEmail = lazy(
-  () => import("./pages/memberApp/settings/account/UpdateEmail"),
-);
-const MemberVerifyPhone = lazy(
-  () => import("./pages/memberApp/settings/account/VerifyPhone"),
-);
-const MyCommunities = lazy(
-  () => import("./pages/memberApp/settings/communities/MyCommunities"),
-);
-const MemberSecurity = lazy(
-  () => import("./pages/memberApp/settings/account/Security"),
-);
+const MemberSettings = lazy(() => import("./pages/memberApp/settings/Settings"));
+const MemberProfile = lazy(() => import("./pages/memberApp/settings/account/Profile"));
+const MemberUpdateEmail = lazy(() => import("./pages/memberApp/settings/account/UpdateEmail"));
+const MemberVerifyPhone = lazy(() => import("./pages/memberApp/settings/account/VerifyPhone"));
+const MyCommunities = lazy(() => import("./pages/memberApp/settings/communities/MyCommunities"));
+const MemberSecurity = lazy(() => import("./pages/memberApp/settings/account/Security"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const MemberPassword = lazy(
-  () => import("./pages/memberApp/settings/account/Password"),
-);
-const MemberTwoFactorAuth = lazy(
-  () => import("./pages/memberApp/settings/account/TwoFactorAuth"),
-);
-const MemberAutoPay = lazy(
-  () => import("./pages/memberApp/settings/payments/AutoPay"),
-);
-const MemberSavedCards = lazy(
-  () => import("./pages/memberApp/settings/payments/SavedCards"),
-);
+const MemberPassword = lazy(() => import("./pages/memberApp/settings/account/Password"));
+const MemberTwoFactorAuth = lazy(() => import("./pages/memberApp/settings/account/TwoFactorAuth"));
+const MemberAutoPay = lazy(() => import("./pages/memberApp/settings/payments/AutoPay"));
+const MemberSavedCards = lazy(() => import("./pages/memberApp/settings/payments/SavedCards"));
 const MemberNotificationSettings = lazy(
   () => import("./pages/memberApp/settings/account/Notifications"),
 );
@@ -156,16 +102,22 @@ const MemberNotificationSettings = lazy(
 // No-op anywhere that isn't the real production app host (local dev,
 // preview builds), so these pages stay directly viewable here for testing
 // and for porting into glass-waitlist-v1 — see that repo's README.
-const LANDING_PAGE_PATHS = new Set(["/", "/members", "/privacy", "/terms", "/cookies", "/acceptable-use", "/refund-policy"]);
+const LANDING_PAGE_PATHS = new Set([
+  "/",
+  "/members",
+  "/privacy",
+  "/terms",
+  "/cookies",
+  "/acceptable-use",
+  "/refund-policy",
+]);
 
 function LandingPageRedirect() {
   const location = useLocation();
   useEffect(() => {
     if (!isAppHost()) return;
     if (!LANDING_PAGE_PATHS.has(location.pathname)) return;
-    window.location.replace(
-      `${MARKETING_ORIGIN}${location.pathname}${location.search}`,
-    );
+    window.location.replace(`${MARKETING_ORIGIN}${location.pathname}${location.search}`);
   }, [location]);
   return null;
 }
@@ -224,18 +176,9 @@ function App() {
 
           {/* ── Onboarding — responsive at every step, so no device gate. ── */}
           <Route path="/onboarding/choose-path" element={<ChoosePath />} />
-          <Route
-            path="/onboarding/paying-member"
-            element={<PayingMember />}
-          />
-          <Route
-            path="/onboarding/organization-profile"
-            element={<OrganizationProfile />}
-          />
-          <Route
-            path="/onboarding/payment-profile"
-            element={<PaymentProfile />}
-          />
+          <Route path="/onboarding/paying-member" element={<PayingMember />} />
+          <Route path="/onboarding/organization-profile" element={<OrganizationProfile />} />
+          <Route path="/onboarding/payment-profile" element={<PaymentProfile />} />
           <Route path="/onboarding/members" element={<AddMembers />} />
 
           {/* ── Admin dashboard ── */}
@@ -270,18 +213,12 @@ function App() {
                 <Route path="account" element={null} />
                 <Route path="account/profile" element={<Profile />} />
                 <Route path="account/role" element={<Role />} />
-                <Route
-                  path="account/notifications"
-                  element={<NotificationSettings />}
-                />
+                <Route path="account/notifications" element={<NotificationSettings />} />
                 <Route path="account/security" element={<Security />} />
 
                 {/* Finance — bare path renders the menu list inside Settings.jsx */}
                 <Route path="finance" element={null} />
-                <Route
-                  path="finance/payment-methods"
-                  element={<PaymentMethod />}
-                />
+                <Route path="finance/payment-methods" element={<PaymentMethod />} />
                 <Route path="finance/auto-pay" element={<AutoPay />} />
 
                 {/* Community — bare path renders the menu list inside Settings.jsx */}
@@ -292,14 +229,8 @@ function App() {
                     exists for above. */}
                 <Route element={<CommunityAdminGuard />}>
                   <Route path="finance/paystack" element={<PaystackAccount />} />
-                  <Route
-                    path="community/profile"
-                    element={<CommunityProfile />}
-                  />
-                  <Route
-                    path="community/member-access"
-                    element={<MemberAccess />}
-                  />
+                  <Route path="community/profile" element={<CommunityProfile />} />
+                  <Route path="community/member-access" element={<MemberAccess />} />
                 </Route>
               </Route>
             </Route>
@@ -313,24 +244,15 @@ function App() {
             <Route element={<MemberProtectedRoute />}>
               <Route path="/member" element={<MemberAppLayout />}>
                 <Route index element={<Navigate to="home" replace />} />
-                <Route
-                  path="communities/search"
-                  element={<DiscoverCommunities />}
-                />
+                <Route path="communities/search" element={<DiscoverCommunities />} />
                 <Route path="home" element={<MemberHome />} />
                 <Route path="transactions" element={<MemberTransactions />} />
-                <Route
-                  path="transactions/:transactionId"
-                  element={<MemberTransactionDetail />}
-                />
+                <Route path="transactions/:transactionId" element={<MemberTransactionDetail />} />
                 <Route path="upcoming" element={<MemberUpcoming />} />
                 <Route path="notifications" element={<MemberNotifications />} />
                 <Route path="manage-payments" element={<ManagePayments />} />
                 <Route path="pay/:paymentId" element={<PaymentSummary />} />
-                <Route
-                  path="pay/:paymentId/success"
-                  element={<PaymentSuccess />}
-                />
+                <Route path="pay/:paymentId/success" element={<PaymentSuccess />} />
                 <Route path="invites" element={<Invites />} />
 
                 <Route path="settings" element={<MemberSettings />} />
@@ -340,16 +262,10 @@ function App() {
                 <Route path="communities" element={<MyCommunities />} />
                 <Route path="security" element={<MemberSecurity />} />
                 <Route path="security/password" element={<MemberPassword />} />
-                <Route
-                  path="security/authentication"
-                  element={<MemberTwoFactorAuth />}
-                />
+                <Route path="security/authentication" element={<MemberTwoFactorAuth />} />
                 <Route path="auto-pay" element={<MemberAutoPay />} />
                 <Route path="saved-cards" element={<MemberSavedCards />} />
-                <Route
-                  path="notification-settings"
-                  element={<MemberNotificationSettings />}
-                />
+                <Route path="notification-settings" element={<MemberNotificationSettings />} />
               </Route>
             </Route>
           </Route>

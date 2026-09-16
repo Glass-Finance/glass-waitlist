@@ -68,7 +68,7 @@ beforeEach(() => {
 // over the "No Upcoming Payments"/"No Payment History" empty states) and in
 // text-brand blue. Reference design only shows it once there's something to
 // see, and in gray.
-describe("Home's Upcoming Payments / Payment History \"See All\" links", () => {
+describe('Home\'s Upcoming Payments / Payment History "See All" links', () => {
   it("hides both See All links when there's no data in either section", () => {
     mockPayments({ upcoming: [], history: [] });
     renderHome();
@@ -80,7 +80,15 @@ describe("Home's Upcoming Payments / Payment History \"See All\" links", () => {
 
   it("shows only Upcoming Payments' See All when it has data but History doesn't", () => {
     mockPayments({
-      upcoming: [{ id: "p1", type: "recurring", amount: 2500, name: "Infrastructure Development", dueDate: "2026-09-15" }],
+      upcoming: [
+        {
+          id: "p1",
+          type: "recurring",
+          amount: 2500,
+          name: "Infrastructure Development",
+          dueDate: "2026-09-15",
+        },
+      ],
       history: [],
     });
     renderHome();
@@ -97,7 +105,15 @@ describe("Home's Upcoming Payments / Payment History \"See All\" links", () => {
   it("shows only Payment History's See All when it has data but Upcoming Payments doesn't", () => {
     mockPayments({
       upcoming: [],
-      history: [{ id: "h1", description: "School Fees Support", date: "2026-05-01", amount: 24000, status: "success" }],
+      history: [
+        {
+          id: "h1",
+          description: "School Fees Support",
+          date: "2026-05-01",
+          amount: 24000,
+          status: "success",
+        },
+      ],
     });
     renderHome();
 

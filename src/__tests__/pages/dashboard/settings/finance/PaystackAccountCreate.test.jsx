@@ -84,7 +84,10 @@ describe("PaystackAccount creation flow", () => {
     // during the in-flight window, not just before/after.
     let resolveLookup;
     resolveAccount.mockImplementationOnce(
-      () => new Promise((resolve) => { resolveLookup = resolve; }),
+      () =>
+        new Promise((resolve) => {
+          resolveLookup = resolve;
+        }),
     );
     renderPage();
     await openFormAndFillBankAndNumber();
@@ -103,7 +106,9 @@ describe("PaystackAccount creation flow", () => {
     renderPage();
     await openFormAndFillBankAndNumber();
 
-    await waitFor(() => expect(screen.getByText("Save Changes").disabled).toBe(false), { timeout: 2000 });
+    await waitFor(() => expect(screen.getByText("Save Changes").disabled).toBe(false), {
+      timeout: 2000,
+    });
     screen.getByText("Save Changes").click();
 
     await waitFor(() => expect(createMutateAsync).toHaveBeenCalledTimes(1));
@@ -131,12 +136,16 @@ describe("PaystackAccount creation flow", () => {
 
   it("on a failed create call, shows the server's error and does not silently succeed", async () => {
     createMutateAsync.mockRejectedValueOnce({
-      response: { data: { description: "This bank account is already linked to another community." } },
+      response: {
+        data: { description: "This bank account is already linked to another community." },
+      },
     });
     renderPage();
     await openFormAndFillBankAndNumber();
 
-    await waitFor(() => expect(screen.getByText("Save Changes").disabled).toBe(false), { timeout: 2000 });
+    await waitFor(() => expect(screen.getByText("Save Changes").disabled).toBe(false), {
+      timeout: 2000,
+    });
     screen.getByText("Save Changes").click();
 
     await screen.findByText("This bank account is already linked to another community.");

@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export function useScrollReveal() {
   useEffect(() => {
-    const els = document.querySelectorAll('[data-reveal]');
+    const els = document.querySelectorAll("[data-reveal]");
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -10,14 +10,14 @@ export function useScrollReveal() {
           if (entry.isIntersecting) {
             const delay = entry.target.dataset.delay || 0;
             setTimeout(() => {
-              entry.target.style.opacity = '1';
-              entry.target.style.transform = 'translateY(0) translateX(0) scale(1)';
+              entry.target.style.opacity = "1";
+              entry.target.style.transform = "translateY(0) translateX(0) scale(1)";
             }, Number(delay));
             observer.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.1, rootMargin: '-4% 0px' }
+      { threshold: 0.1, rootMargin: "-4% 0px" },
     );
 
     els.forEach((el) => observer.observe(el));
@@ -27,8 +27,8 @@ export function useScrollReveal() {
       els.forEach((el) => {
         const rect = el.getBoundingClientRect();
         if (rect.top < window.innerHeight) {
-          el.style.opacity = '1';
-          el.style.transform = 'translateY(0) translateX(0) scale(1)';
+          el.style.opacity = "1";
+          el.style.transform = "translateY(0) translateX(0) scale(1)";
         }
       });
     }, 100);

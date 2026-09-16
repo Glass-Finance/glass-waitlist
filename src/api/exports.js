@@ -1,7 +1,7 @@
 import client from "./client";
 
-export const getExportJobs = (params)      => client.get("/exports", { params });
-export const getExportJob  = (exportJobId) => client.get(`/exports/${exportJobId}`);
+export const getExportJobs = (params) => client.get("/exports", { params });
+export const getExportJob = (exportJobId) => client.get(`/exports/${exportJobId}`);
 
 // Community-scoped export triggers (returns an export job immediately; poll
 // getExportJob until status === "COMPLETED" to get the fileData.url)

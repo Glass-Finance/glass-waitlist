@@ -1,5 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMe, updateProfile, updatePassword, updateEmail, requestPhoneUpdate, updatePhone, getMyCommunities, getMyMemberRecord, leaveCommunity } from "../api/members";
+import {
+  getMe,
+  updateProfile,
+  updatePassword,
+  updateEmail,
+  requestPhoneUpdate,
+  updatePhone,
+  getMyCommunities,
+  getMyMemberRecord,
+  leaveCommunity,
+} from "../api/members";
 
 function unwrapList(res) {
   const data = res.data?.data;

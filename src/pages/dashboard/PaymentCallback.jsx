@@ -64,9 +64,7 @@ function AdminPaymentCallback() {
   // paymentPendingRef are only cleared once verification reaches a terminal
   // state — if the session expired mid-payment, they must survive the trip
   // through sign-in so the dashboard can auto-confirm the payment afterwards.
-  const [returnTo] = useState(
-    () => sessionStorage.getItem("paymentReturnTo") ?? null,
-  );
+  const [returnTo] = useState(() => sessionStorage.getItem("paymentReturnTo") ?? null);
   const effectiveReturnTo = returnTo ?? "/dashboard/admin";
 
   // "checking" | "success" | "failed" | "processing" | "unknown" | "signin"
@@ -122,8 +120,7 @@ function AdminPaymentCallback() {
       if (!ctx || !ctx.isRecurring || !ctx.paymentLinkId) return;
       if (ctx.reference && ctx.reference !== ref) return;
       try {
-        if (localStorage.getItem(`glass_autopay_asked_${ctx.paymentLinkId}`))
-          return;
+        if (localStorage.getItem(`glass_autopay_asked_${ctx.paymentLinkId}`)) return;
       } catch {
         return;
       }
@@ -161,8 +158,7 @@ function AdminPaymentCallback() {
 
         if (isTerminal(status)) {
           const s = status.toUpperCase();
-          const finalState =
-            s === "SUCCESS" || s === "SUCCESSFUL" ? "success" : "failed";
+          const finalState = s === "SUCCESS" || s === "SUCCESSFUL" ? "success" : "failed";
           invalidateCaches();
           if (finalState === "success") {
             await maybeOfferAutoPay(reference);
@@ -267,8 +263,7 @@ function AdminPaymentCallback() {
       outerBgCls: "bg-stacked-container",
       innerBgCls: "bg-[#9CA3AF]",
       title: "Still confirming…",
-      subtitle:
-        "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
+      subtitle: "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
       buttonLabel: backLabel,
     },
     signin: {
@@ -308,11 +303,7 @@ function AdminPaymentCallback() {
       <div className="flex-1 flex items-center justify-center px-4 pb-16">
         <div className="w-full bg-surface-container border border-surface-container-border rounded-2xl flex flex-col items-center px-6 md:px-10 py-10 md:py-14 text-center max-w-[560px]">
           {state === "success" ? (
-            <SuccessBadge
-              message={config.title}
-              subMessage={config.subtitle}
-              className="mb-2"
-            />
+            <SuccessBadge message={config.title} subMessage={config.subtitle} className="mb-2" />
           ) : (
             <>
               <div
@@ -325,19 +316,13 @@ function AdminPaymentCallback() {
                 </div>
               </div>
 
-              <h1 className="text-headline text-gray-900 mb-2">
-                {config.title}
-              </h1>
-              <p className="text-title-sm text-gray-500 leading-relaxed mb-2">
-                {config.subtitle}
-              </p>
+              <h1 className="text-headline text-gray-900 mb-2">{config.title}</h1>
+              <p className="text-title-sm text-gray-500 leading-relaxed mb-2">{config.subtitle}</p>
             </>
           )}
 
           {reference && state !== "checking" && (
-            <p className="text-xs text-gray-400 mt-1 mb-6 font-mono break-all">
-              Ref: {reference}
-            </p>
+            <p className="text-xs text-gray-400 mt-1 mb-6 font-mono break-all">Ref: {reference}</p>
           )}
 
           {config.buttonLabel && (

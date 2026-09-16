@@ -22,7 +22,12 @@ export function useExportJob() {
 
   // Stop polling if the component unmounts mid-export (e.g. the admin
   // navigates away) rather than continuing to hit the API in the background.
-  useEffect(() => () => { cancelledRef.current = true; }, []);
+  useEffect(
+    () => () => {
+      cancelledRef.current = true;
+    },
+    [],
+  );
 
   const run = useCallback(async (trigger) => {
     setIsExporting(true);

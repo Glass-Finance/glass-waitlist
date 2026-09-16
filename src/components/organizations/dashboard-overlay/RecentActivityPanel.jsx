@@ -81,7 +81,9 @@ function ActivityIcon({ type, color }) {
 
 export default function RecentActivityPanel() {
   return (
-    <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #E0E0EB", padding: "10px" }}>
+    <div
+      style={{ background: "#fff", borderRadius: 12, border: "1px solid #E0E0EB", padding: "10px" }}
+    >
       <div style={{ fontSize: 12, fontWeight: 700, color: "#000", marginBottom: 8 }}>
         Recent Activity
       </div>
@@ -114,9 +116,7 @@ export default function RecentActivityPanel() {
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ fontSize: 10.5, color: "#374151", margin: 0, lineHeight: 1.5 }}>
-              {a.name && (
-                <strong style={{ color: "#002FA7", fontWeight: 700 }}>{a.name} </strong>
-              )}
+              {a.name && <strong style={{ color: "#002FA7", fontWeight: 700 }}>{a.name} </strong>}
               {a.action}
               {a.detail && (
                 <>

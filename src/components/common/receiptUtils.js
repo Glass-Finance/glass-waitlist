@@ -37,8 +37,7 @@ export function formatHeaderDate(value) {
 
 export function statusLabel(status) {
   const normalized = (status ?? "").toLowerCase();
-  if (normalized === "success" || normalized === "successful")
-    return "Successful";
+  if (normalized === "success" || normalized === "successful") return "Successful";
   if (normalized === "failed") return "Failed";
   return "Pending";
 }

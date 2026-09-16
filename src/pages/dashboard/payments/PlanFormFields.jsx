@@ -10,9 +10,7 @@ export function PayoutAccountField({ accounts, value, onChange }) {
   if (!accounts || accounts.length <= 1) return null;
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-700 mb-1">
-        Payout Account
-      </label>
+      <label className="block text-xs font-medium text-gray-700 mb-1">Payout Account</label>
       <div className="relative">
         <select
           className={`${inputCls} appearance-none !pr-9`}
@@ -42,9 +40,7 @@ export function BillingDayField({ frequency, value, max, onChange }) {
   const day = Number(value);
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-700 mb-1">
-        Billing Day
-      </label>
+      <label className="block text-xs font-medium text-gray-700 mb-1">Billing Day</label>
       {frequency === "WEEKLY" ? (
         <div className="relative">
           <select

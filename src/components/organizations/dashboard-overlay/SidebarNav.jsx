@@ -58,7 +58,12 @@ export default function SidebarNav({ nav }) {
             strokeWidth="1.8"
             strokeLinecap="round"
           />
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path
+            d="M13.73 21a2 2 0 0 1-3.46 0"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
         </svg>
       ),
     },
@@ -170,7 +175,15 @@ export default function SidebarNav({ nav }) {
           }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <rect x="6" y="2" width="12" height="20" rx="2" stroke="currentColor" strokeWidth="1.8" />
+            <rect
+              x="6"
+              y="2"
+              width="12"
+              height="20"
+              rx="2"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            />
             <path d="M11 18h2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
           Member View

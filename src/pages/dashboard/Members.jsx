@@ -25,11 +25,7 @@ import { useCommunity } from "../../hooks/useCommunity";
 import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { useMembersWithPayments } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers, useRoles } from "../../hooks/useCommunityMembers";
-import {
-  useJoinRequests,
-  requesterOf,
-  requestStatusOf,
-} from "../../hooks/useJoinRequests";
+import { useJoinRequests, requesterOf, requestStatusOf } from "../../hooks/useJoinRequests";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { exportCommunityObligations } from "../../api/exports";
 import { useExportJob } from "../../hooks/useExportJob";
@@ -43,11 +39,7 @@ import { roleKeyword } from "../../utils/communityRole";
 import { QuickAddMemberModal } from "./MembersSections";
 
 // Only these three roles should be assignable when inviting members.
-const ALLOWED_ROLE_NAMES = new Set([
-  "Community Owner",
-  "Community Admin",
-  "Community Member",
-]);
+const ALLOWED_ROLE_NAMES = new Set(["Community Owner", "Community Admin", "Community Member"]);
 
 const FALLBACK_ROLES = [
   { id: "COMMUNITY_OWNER", name: "Community Owner" },
@@ -63,8 +55,7 @@ const memberEmail = (m) => resolveEmail(m);
 // roleKeyword rather than comparing roleCode directly -- the live API
 // returns "COMMUNITY_OWNER"/"COMMUNITY_ADMIN", not bare "OWNER"/"ADMIN",
 // so a raw === here silently undercounted admins.
-const isAdminRole = (m) =>
-  ["OWNER", "ADMIN", "MANAGER"].includes(roleKeyword(m.roleCode, m.role));
+const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes(roleKeyword(m.roleCode, m.role));
 
 function statusStyle(paid, total) {
   if (total === 0) return "bg-[#f5f6fa] text-[#6b7280]";
@@ -81,9 +72,7 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
       <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 bg-white rounded-xl border border-surface-container-border shadow-lg z-20 p-4 w-64">
         <div className="flex flex-col gap-3">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Plan
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Plan</label>
             <select
               value={plan}
               onChange={(e) => setPlan(e.target.value)}
@@ -98,9 +87,7 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Status
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
@@ -141,19 +128,14 @@ export default function Members() {
   const [selected, setSelected] = useState([]);
   const [removingMember, setRemovingMember] = useState(null);
 
-  const { members, obligations, isLoading, error } =
-    useMembersWithPayments(communityId);
+  const { members, obligations, isLoading, error } = useMembersWithPayments(communityId);
   const { inviteMember, removeMember } = useCommunityMembers(communityId);
   // Summary only — approving/rejecting (with full requester detail) lives on
   // the Join Requests page, so the review logic exists in exactly one place.
   const { requests: allJoinRequests } = useJoinRequests(communityId);
-  const pendingJoinRequests = allJoinRequests.filter(
-    (r) => requestStatusOf(r) === "PENDING",
-  );
+  const pendingJoinRequests = allJoinRequests.filter((r) => requestStatusOf(r) === "PENDING");
   const { data: rolesData } = useRoles();
-  const filteredRoles = rolesData
-    ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name))
-    : [];
+  const filteredRoles = rolesData ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name)) : [];
   const usingFallbackRoles = !filteredRoles.length;
   const roles = usingFallbackRoles ? FALLBACK_ROLES : filteredRoles;
 
@@ -168,9 +150,7 @@ export default function Members() {
   const [linkCopied, copyInviteLinkText] = useCopyToClipboard();
 
   const planOptions = useMemo(
-    () => [
-      ...new Set(obligations.map((o) => o.paymentLink?.title).filter(Boolean)),
-    ],
+    () => [...new Set(obligations.map((o) => o.paymentLink?.title).filter(Boolean))],
     [obligations],
   );
 
@@ -181,32 +161,23 @@ export default function Members() {
         memberEmail(m).toLowerCase().includes(search.toLowerCase()),
     );
     if (filters.plan) {
-      list = list.filter((m) =>
-        m.obligations.some((o) => o.paymentLink?.title === filters.plan),
-      );
+      list = list.filter((m) => m.obligations.some((o) => o.paymentLink?.title === filters.plan));
     }
     if (filters.status) {
       list = list.filter((m) => {
-        if (filters.status === "Paid")
-          return m.totalCount > 0 && m.paidCount === m.totalCount;
+        if (filters.status === "Paid") return m.totalCount > 0 && m.paidCount === m.totalCount;
         if (filters.status === "Unpaid") return m.paidCount === 0;
         return m.paidCount > 0 && m.paidCount < m.totalCount;
       });
     }
     const sorted = [...list];
-    if (sort === "Name A-Z")
-      sorted.sort((a, b) => memberName(a).localeCompare(memberName(b)));
+    if (sort === "Name A-Z") sorted.sort((a, b) => memberName(a).localeCompare(memberName(b)));
     else if (sort === "Date Joined")
       sorted.sort(
         (a, b) =>
-          new Date(b.joinedAt ?? b.createdAt ?? 0) -
-          new Date(a.joinedAt ?? a.createdAt ?? 0),
+          new Date(b.joinedAt ?? b.createdAt ?? 0) - new Date(a.joinedAt ?? a.createdAt ?? 0),
       );
-    else
-      sorted.sort(
-        (a, b) =>
-          new Date(b.lastPaymentDate ?? 0) - new Date(a.lastPaymentDate ?? 0),
-      );
+    else sorted.sort((a, b) => new Date(b.lastPaymentDate ?? 0) - new Date(a.lastPaymentDate ?? 0));
     return sorted;
   }, [members, search, filters, sort]);
 
@@ -214,9 +185,7 @@ export default function Members() {
   // is created (see AdminDashboard.jsx's gsHasMembers, same reasoning) --
   // counting it made this page show the stats+table view for a
   // brand-new community with zero real members instead of the empty state.
-  const hasRealMembers = members.some(
-    (m) => roleKeyword(m.roleCode, m.role) !== "OWNER",
-  );
+  const hasRealMembers = members.some((m) => roleKeyword(m.roleCode, m.role) !== "OWNER");
   // Per the Figma empty state, the page header (title + Copy Invite
   // Link/Add Member) doesn't show at all when there are no real members --
   // EmptyState is a self-contained full screen with its own action button,
@@ -225,12 +194,8 @@ export default function Members() {
 
   const stats = {
     total: members.length,
-    active: members.filter(
-      (m) => (m.status ?? "ACTIVE").toUpperCase() === "ACTIVE",
-    ).length,
-    inactive: members.filter(
-      (m) => (m.status ?? "").toUpperCase() === "INACTIVE",
-    ).length,
+    active: members.filter((m) => (m.status ?? "ACTIVE").toUpperCase() === "ACTIVE").length,
+    inactive: members.filter((m) => (m.status ?? "").toUpperCase() === "INACTIVE").length,
     admins: members.filter(isAdminRole).length,
   };
 
@@ -248,9 +213,7 @@ export default function Members() {
   }
 
   function toggleSelect(id) {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   }
 
   // Real backend export job (see useExportJob.js) instead of a client-side
@@ -311,13 +274,10 @@ export default function Members() {
           (requester details, approve/reject) lives on the Join Requests page. */}
       {pendingJoinRequests.length > 0 &&
         (() => {
-          const names = pendingJoinRequests
-            .slice(0, 3)
-            .map((r) => requesterOf(r).name);
+          const names = pendingJoinRequests.slice(0, 3).map((r) => requesterOf(r).name);
           const extra = pendingJoinRequests.length - names.length;
           const preview =
-            names.join(", ") +
-            (extra > 0 ? ` and ${extra} other${extra === 1 ? "" : "s"}` : "");
+            names.join(", ") + (extra > 0 ? ` and ${extra} other${extra === 1 ? "" : "s"}` : "");
           return (
             <button
               onClick={() => navigate("/dashboard/join-requests")}
@@ -330,9 +290,7 @@ export default function Members() {
                     {pendingJoinRequests.length} pending join{" "}
                     {pendingJoinRequests.length === 1 ? "request" : "requests"}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5 m-0 truncate">
-                    {preview}
-                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5 m-0 truncate">{preview}</p>
                 </div>
               </div>
               <span className="flex items-center gap-1 text-xs font-semibold text-brand flex-shrink-0">
@@ -398,9 +356,7 @@ export default function Members() {
       {!isEmpty && (
         <div className="bg-surface-container rounded-xl border border-surface-container-border">
           <div className="flex items-center justify-between px-5 py-4">
-            <span className="text-sm font-medium text-black">
-              Member Payments
-            </span>
+            <span className="text-sm font-medium text-black">Member Payments</span>
             <button
               onClick={exportCsv}
               disabled={isExporting}
@@ -446,10 +402,7 @@ export default function Members() {
                 </button>
                 {sortOpen && (
                   <>
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setSortOpen(false)}
-                    />
+                    <div className="fixed inset-0 z-10" onClick={() => setSortOpen(false)} />
                     <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-surface-container-border shadow-lg z-20 overflow-hidden min-w-[150px]">
                       {SORT_OPTIONS.map((o) => (
                         <button
@@ -479,9 +432,7 @@ export default function Members() {
                 >
                   {chip.label}
                   <button
-                    onClick={() =>
-                      setFilters((f) => ({ ...f, [chip.key]: "" }))
-                    }
+                    onClick={() => setFilters((f) => ({ ...f, [chip.key]: "" }))}
                     className="bg-transparent border-none cursor-pointer p-0 flex items-center"
                   >
                     <X size={10} className="text-gray-400" />
@@ -504,14 +455,9 @@ export default function Members() {
                   <th className="hidden sm:table-cell px-5 py-2.5 w-8">
                     <input
                       type="checkbox"
-                      checked={
-                        selected.length === filtered.length &&
-                        filtered.length > 0
-                      }
+                      checked={selected.length === filtered.length && filtered.length > 0}
                       onChange={(e) =>
-                        setSelected(
-                          e.target.checked ? filtered.map((m) => m.id) : [],
-                        )
+                        setSelected(e.target.checked ? filtered.map((m) => m.id) : [])
                       }
                     />
                   </th>
@@ -553,19 +499,13 @@ export default function Members() {
                   </tr>
                 ) : error ? (
                   <tr>
-                    <td
-                      colSpan={8}
-                      className="px-5 py-8 text-center text-xs text-red-500"
-                    >
+                    <td colSpan={8} className="px-5 py-8 text-center text-xs text-red-500">
                       Couldn't load members.
                     </td>
                   </tr>
                 ) : filtered.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={8}
-                      className="px-5 py-8 text-center text-xs text-gray-400"
-                    >
+                    <td colSpan={8} className="px-5 py-8 text-center text-xs text-gray-400">
                       No members found.
                     </td>
                   </tr>
@@ -587,22 +527,16 @@ export default function Members() {
                         <td className="px-5 py-3">
                           <button
                             onClick={() =>
-                              navigate(
-                                `/dashboard/members/${m.id}?community=${communityId}`,
-                              )
+                              navigate(`/dashboard/members/${m.id}?community=${communityId}`)
                             }
                             className="text-xs font-semibold text-brand hover:underline bg-transparent border-none cursor-pointer p-0"
                           >
                             {memberName(m)}
                           </button>
                         </td>
-                        <td className="px-5 py-3 text-xs text-gray-600">
-                          {m.planCount}
-                        </td>
+                        <td className="px-5 py-3 text-xs text-gray-600">{m.planCount}</td>
                         <td className="px-5 py-3">
-                          <span
-                            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s}`}
-                          >
+                          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s}`}>
                             {m.paidCount}/{m.totalCount} Paid
                           </span>
                         </td>
@@ -650,9 +584,7 @@ export default function Members() {
           onClose={() => setModalOpen(false)}
           onAdd={handleAdd}
           adding={inviteMember.isPending}
-          error={
-            inviteMember.error ? getErrorMessage(inviteMember.error) : null
-          }
+          error={inviteMember.error ? getErrorMessage(inviteMember.error) : null}
           roles={roles}
           rolesUnavailable={usingFallbackRoles}
           inviteLink={

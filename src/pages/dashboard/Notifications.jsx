@@ -2,24 +2,15 @@ import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { Bell } from "lucide-react";
-import {
-  useNotifications,
-  useAllNotifications,
-} from "../../hooks/useNotifications";
+import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useAuth } from "../../store/AuthContext";
 import { notificationAction } from "../../utils/notificationRouting";
-import {
-  notificationCategory,
-  isSelfAccountType,
-} from "../../utils/notificationTypes";
+import { notificationCategory, isSelfAccountType } from "../../utils/notificationTypes";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import notificationsIllustration from "../../assets/dashboard/empty-states/notifications-illustration.webp";
-import {
-  NotificationDetailModal,
-  ChronologicalList,
-} from "./NotificationsSections";
+import { NotificationDetailModal, ChronologicalList } from "./NotificationsSections";
 
 // notificationCategory() maps the backend's exact notificationType enum to a
 // tab — precise for every documented type. This heuristic only runs for
@@ -59,9 +50,7 @@ function categorizeHeuristic(n) {
 }
 
 function categorize(n) {
-  return (
-    notificationCategory(n.notificationType ?? n.type) ?? categorizeHeuristic(n)
-  );
+  return notificationCategory(n.notificationType ?? n.type) ?? categorizeHeuristic(n);
 }
 
 const SECTION_CONFIG = {
@@ -122,14 +111,8 @@ function useNotificationDetail(notifications, markRead) {
 // into.
 function AllCommunitiesNotifications() {
   usePageTitle("Notifications");
-  const {
-    notifications,
-    isLoading,
-    unreadCount,
-    markRead,
-    markAllRead,
-    isMarkingAllRead,
-  } = useAllNotifications();
+  const { notifications, isLoading, unreadCount, markRead, markAllRead, isMarkingAllRead } =
+    useAllNotifications();
   const detail = useNotificationDetail(notifications, markRead);
 
   return (
@@ -138,9 +121,7 @@ function AllCommunitiesNotifications() {
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
           <div>
             <h1 className="text-xl font-bold text-black mb-1">Notifications</h1>
-            <p className="text-sm text-gray-400">
-              Updates across every community you manage.
-            </p>
+            <p className="text-sm text-gray-400">Updates across every community you manage.</p>
           </div>
           {unreadCount > 0 && (
             <button
@@ -166,11 +147,7 @@ function AllCommunitiesNotifications() {
             className="py-16"
           />
         ) : (
-          <ChronologicalList
-            items={notifications}
-            onMarkRead={markRead}
-            onOpen={detail.open}
-          />
+          <ChronologicalList items={notifications} onMarkRead={markRead} onOpen={detail.open} />
         )}
       </div>
 
@@ -190,22 +167,14 @@ function AllCommunitiesNotifications() {
 
 function CommunityNotifications() {
   usePageTitle("Notifications");
-  const {
-    notifications,
-    isLoading,
-    unreadCount,
-    markRead,
-    markAllRead,
-    isMarkingAllRead,
-  } = useNotifications();
+  const { notifications, isLoading, unreadCount, markRead, markAllRead, isMarkingAllRead } =
+    useNotifications();
   const [tab, setTab] = useState("All");
   const detail = useNotificationDetail(notifications, markRead);
 
   const byCategory = useMemo(
     () => ({
-      payment: notifications.filter((n) =>
-        ["payment", "urgent"].includes(categorize(n)),
-      ),
+      payment: notifications.filter((n) => ["payment", "urgent"].includes(categorize(n))),
       member: notifications.filter((n) => categorize(n) === "member"),
     }),
     [notifications],
@@ -231,9 +200,7 @@ function CommunityNotifications() {
         <div className="mb-5 flex-shrink-0">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
             <div>
-              <h1 className="text-xl font-bold text-black mb-1">
-                Notifications
-              </h1>
+              <h1 className="text-xl font-bold text-black mb-1">Notifications</h1>
               <p className="text-sm text-gray-400">
                 Stay on top of payments, member activity, and alerts.
               </p>
@@ -308,11 +275,7 @@ function CommunityNotifications() {
             className="py-12"
           />
         ) : (
-          <ChronologicalList
-            items={tabItems}
-            onMarkRead={markRead}
-            onOpen={detail.open}
-          />
+          <ChronologicalList items={tabItems} onMarkRead={markRead} onOpen={detail.open} />
         )}
       </div>
 

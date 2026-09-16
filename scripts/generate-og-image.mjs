@@ -58,12 +58,14 @@ const WORDMARK_GAP = 22;
 const trimmedLogo = await sharp(LOGO_PATH).trim().toBuffer({ resolveWithObject: true });
 const whiteLogo = await sharp(trimmedLogo.data)
   .ensureAlpha()
-  .composite([{
-    input: Buffer.from([255, 255, 255, 255]),
-    raw: { width: 1, height: 1, channels: 4 },
-    tile: true,
-    blend: "in",
-  }])
+  .composite([
+    {
+      input: Buffer.from([255, 255, 255, 255]),
+      raw: { width: 1, height: 1, channels: 4 },
+      tile: true,
+      blend: "in",
+    },
+  ])
   .png()
   .toBuffer();
 const logo = await sharp(whiteLogo).resize({ height: LOGO_HEIGHT }).toBuffer();
@@ -79,7 +81,11 @@ await sharp(bg)
   .composite([
     { input: Buffer.from(legibilityOverlay) },
     { input: logo, left: LOGO_LEFT, top: LOGO_TOP },
-    { input: Buffer.from(wordmarkSvg), left: LOGO_LEFT + logoMeta.width + WORDMARK_GAP, top: LOGO_TOP - 8 },
+    {
+      input: Buffer.from(wordmarkSvg),
+      left: LOGO_LEFT + logoMeta.width + WORDMARK_GAP,
+      top: LOGO_TOP - 8,
+    },
     { input: Buffer.from(textSvg) },
   ])
   .png()

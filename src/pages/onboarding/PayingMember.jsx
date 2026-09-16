@@ -16,12 +16,12 @@ export default function PayingMember() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
-  const email    = location.state?.email;
+  const email = location.state?.email;
   const [selected, setSelected] = useState("yes");
 
   const options = [
-    { id: "yes", label: "Yes, I Will pay dues",          icon: PayingMemberIcon    },
-    { id: "no",  label: "No, I'm exempt from payments",  icon: ExemptPaymentIcon   },
+    { id: "yes", label: "Yes, I Will pay dues", icon: PayingMemberIcon },
+    { id: "no", label: "No, I'm exempt from payments", icon: ExemptPaymentIcon },
   ];
 
   const go = (skip = false) =>
@@ -63,7 +63,8 @@ export default function PayingMember() {
             Are you a paying member of this community?
           </h1>
           <p className="text-sm text-gray-500 max-w-sm mx-auto">
-            Some admins manage communities without contributing financially. Let us know so we set up your account correctly.
+            Some admins manage communities without contributing financially. Let us know so we set
+            up your account correctly.
           </p>
         </div>
 
@@ -77,14 +78,26 @@ export default function PayingMember() {
                 className={`flex-1 relative flex flex-row lg:flex-col items-center text-left lg:text-center gap-4 lg:gap-0 px-5 lg:px-6 py-5 lg:py-8 rounded-2xl bg-white transition-all duration-200 cursor-pointer border ${isSelected ? "border-2 border-brand" : "border-white"}`}
               >
                 <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] lg:bg-transparent lg:rounded-none lg:w-12 lg:h-12 lg:mb-3 lg:mt-2">
-                  <img src={opt.icon} alt={opt.label} className="w-6 h-6 lg:w-12 lg:h-12 object-contain" />
+                  <img
+                    src={opt.icon}
+                    alt={opt.label}
+                    className="w-6 h-6 lg:w-12 lg:h-12 object-contain"
+                  />
                 </div>
-                <span className="flex-1 min-w-0 lg:flex-none text-sm font-medium text-gray-900">{opt.label}</span>
+                <span className="flex-1 min-w-0 lg:flex-none text-sm font-medium text-gray-900">
+                  {opt.label}
+                </span>
                 <div className="flex-shrink-0 lg:absolute lg:top-3 lg:left-3">
                   {isSelected ? (
                     <div className="w-6 h-6 rounded-full flex items-center justify-center bg-brand">
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path
+                          d="M2 6l3 3 5-5"
+                          stroke="white"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </div>
                   ) : (

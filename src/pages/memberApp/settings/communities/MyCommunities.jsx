@@ -7,14 +7,19 @@ import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
 import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
 
 function getInitials(name = "") {
-  return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("");
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join("");
 }
 
 function setActiveMemberCommunity(c) {
   try {
     localStorage.setItem(
       "glass_member_community",
-      JSON.stringify({ id: c.id, slug: c.slug, name: c.name })
+      JSON.stringify({ id: c.id, slug: c.slug, name: c.name }),
     );
   } catch {
     /* ignore */
@@ -48,11 +53,10 @@ function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
           <div className="w-[52px] h-[52px] rounded-full bg-[#FEF2F2] flex items-center justify-center mb-1">
             <AlertTriangle size={24} className="text-danger" />
           </div>
-          <p className="text-[17px] font-bold text-[#111] m-0">
-            Leave {community?.name}?
-          </p>
+          <p className="text-[17px] font-bold text-[#111] m-0">Leave {community?.name}?</p>
           <p className="text-[13.5px] text-[#6B7280] m-0 leading-[1.55] max-w-[320px]">
-            You'll lose access to this community's payment history and upcoming dues from your account, and you'll need a new invite to rejoin. This can't be undone from your side.
+            You'll lose access to this community's payment history and upcoming dues from your
+            account, and you'll need a new invite to rejoin. This can't be undone from your side.
           </p>
         </div>
         <div className="flex flex-col gap-2.5 mt-6">
@@ -167,14 +171,21 @@ export default function MyCommunities() {
                   className={`w-11 h-11 rounded-xl text-white flex items-center justify-center font-bold text-[13px] flex-shrink-0 overflow-hidden ${c.logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
                 >
                   {c.logo?.url ? (
-                    <img src={c.logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
+                    <img
+                      src={c.logo.url}
+                      alt=""
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     getInitials(c.name) || "?"
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-[#111] m-0">{c.name}</p>
-                  <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">{c.owned ? "Admin" : "Member"}</p>
+                  <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">
+                    {c.owned ? "Admin" : "Member"}
+                  </p>
                 </div>
                 {!c.owned ? (
                   <button

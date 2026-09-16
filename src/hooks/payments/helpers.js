@@ -8,9 +8,7 @@ export function unwrapList(res) {
 
 export function deriveStatus(obligation) {
   if (obligation.status === "PAID") return "paid";
-  const days = Math.ceil(
-    (new Date(obligation.dueDate) - new Date()) / 86400000,
-  );
+  const days = Math.ceil((new Date(obligation.dueDate) - new Date()) / 86400000);
   if (days < 0) return "overdue";
   if (days <= 7) return "due_soon";
   return "upcoming";

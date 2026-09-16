@@ -3,7 +3,10 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/dashboard/Sidebar";
 import Topbar from "../components/dashboard/Topbar";
 import DashboardTour from "../components/dashboard/DashboardTour";
-import { DASHBOARD_TOUR_SEEN_KEY, COMMUNITIES_HOME_STEPS } from "../components/dashboard/dashboardTourSteps";
+import {
+  DASHBOARD_TOUR_SEEN_KEY,
+  COMMUNITIES_HOME_STEPS,
+} from "../components/dashboard/dashboardTourSteps";
 import AutoPayPrompt from "../components/common/AutoPayPrompt";
 import KeyboardShortcutsProvider from "../components/dashboard/KeyboardShortcutsProvider";
 import KeyboardShortcutsHelp from "../components/dashboard/KeyboardShortcutsHelp";
@@ -47,7 +50,11 @@ export default function DashboardLayout() {
 
   function closeTour() {
     setTourOpen(false);
-    try { localStorage.setItem(DASHBOARD_TOUR_SEEN_KEY, "1"); } catch { /* ignore */ }
+    try {
+      localStorage.setItem(DASHBOARD_TOUR_SEEN_KEY, "1");
+    } catch {
+      /* ignore */
+    }
   }
 
   // Auto-Pay prompt handoff for the redirect-based (Paystack-hosted) admin
@@ -74,7 +81,9 @@ export default function DashboardLayout() {
     if (autoPayPrompt?.paymentLinkId) {
       try {
         localStorage.setItem(`glass_autopay_asked_${autoPayPrompt.paymentLinkId}`, "1");
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
     setAutoPayPrompt(null);
   }
@@ -113,9 +122,7 @@ export default function DashboardLayout() {
             technique the onboarding pages already rely on for this exact
             problem: bg-page-default is a landscape image sized for this
             aspect ratio, shown with bg-contain (never crops) + bg-center. */}
-        <div
-          className="flex-1 flex flex-col overflow-hidden bg-contain bg-center bg-no-repeat bg-page-default"
-        >
+        <div className="flex-1 flex flex-col overflow-hidden bg-contain bg-center bg-no-repeat bg-page-default">
           {/* Topbar */}
           <Topbar
             isCommunitiesHome={isCommunitiesHome}

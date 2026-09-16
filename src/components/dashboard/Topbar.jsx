@@ -32,7 +32,6 @@ function getInitials(user) {
   return (user.email ?? "?").slice(0, 2).toUpperCase();
 }
 
-
 function getDisplayName(user) {
   if (!user) return "Loading...";
   if (user.firstName) {
@@ -59,15 +58,14 @@ export default function Topbar({
   const communityId = useActiveCommunityId();
 
   // Panel uses all-community notifications so the dropdown is universal
-  const { notifications, isLoading, unreadCount, markRead, markAllRead } =
-    useAllNotifications();
+  const { notifications, isLoading, unreadCount, markRead, markAllRead } = useAllNotifications();
 
   // Build a communityId/slug → community lookup for the panel cards
   const { data: communitiesData } = useCommunities();
   const communityMap = useMemo(() => {
     const map = new Map();
     for (const c of communitiesData?.communities ?? []) {
-      if (c.id)   map.set(c.id,   c);
+      if (c.id) map.set(c.id, c);
       if (c.slug) map.set(c.slug, c);
     }
     return map;
@@ -132,7 +130,10 @@ export default function Topbar({
   const searchPaymentLinks = results?.paymentLinks?.content ?? [];
   const searchSettlements = results?.settlements?.content ?? [];
   const hasSearchResults =
-    searchMembers.length || searchTransactions.length || searchPaymentLinks.length || searchSettlements.length;
+    searchMembers.length ||
+    searchTransactions.length ||
+    searchPaymentLinks.length ||
+    searchSettlements.length;
 
   // ── Communities Home: filter the already-loaded community list by name,
   // no API call needed. Query open state is driven the same way as the API
@@ -165,16 +166,20 @@ export default function Topbar({
       try {
         localStorage.setItem(
           "glass_member_community",
-          JSON.stringify({ id: community.id, slug: community.slug, name: community.name })
+          JSON.stringify({ id: community.id, slug: community.slug, name: community.name }),
         );
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       navigate("/member/home");
       return;
     }
     const id = community.slug ?? community.id;
     try {
       localStorage.setItem("glass_community", JSON.stringify(community));
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     const isPaying = await resolveIsPayingAdmin(id);
     navigate(`/dashboard/${isPaying ? "admin/paying" : "admin"}?community=${id}`);
   }
@@ -192,7 +197,11 @@ export default function Topbar({
       </button>
 
       {/* Search */}
-      <div data-tour="topbar-search" className="relative flex-1 max-w-[420px] hidden md:block" ref={searchRef}>
+      <div
+        data-tour="topbar-search"
+        className="relative flex-1 max-w-[420px] hidden md:block"
+        ref={searchRef}
+      >
         <div className="flex items-center gap-2 bg-gray-100 rounded-md px-3.5 py-2.5 focus-within:ring-1 focus-within:ring-[var(--color-brand)]">
           {searching ? (
             <Loader2 size={13} className="text-gray-400 flex-shrink-0 animate-spin" />
@@ -202,7 +211,9 @@ export default function Topbar({
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => { if (results || isCommunitiesHome) setSearchOpen(true); }}
+            onFocus={() => {
+              if (results || isCommunitiesHome) setSearchOpen(true);
+            }}
             placeholder={isCommunitiesHome ? "Search your communities..." : searchPlaceholder}
             className="flex-1 bg-transparent border-none outline-none text-xs text-gray-600 placeholder-gray-400"
           />
@@ -211,10 +222,14 @@ export default function Topbar({
         {searchOpen && query.trim().length >= 2 && isCommunitiesHome && (
           <div className="absolute left-0 top-full mt-1.5 w-full bg-white rounded-xl border border-surface-container-border shadow-lg z-50 max-h-[420px] overflow-y-auto">
             {!hasCommunityResults ? (
-              <p className="text-xs text-gray-400 px-4 py-4">No communities match "{query.trim()}"</p>
+              <p className="text-xs text-gray-400 px-4 py-4">
+                No communities match "{query.trim()}"
+              </p>
             ) : (
               <div className="py-2">
-                <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Communities</p>
+                <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                  Communities
+                </p>
                 {matchedCommunities.map((c) => (
                   <button
                     key={c.id}
@@ -222,7 +237,9 @@ export default function Topbar({
                     className="w-full flex items-center justify-between gap-2.5 px-4 py-2 hover:bg-gray-50 text-left bg-transparent border-none cursor-pointer"
                   >
                     <span className="text-xs font-medium text-gray-900 truncate">{c.name}</span>
-                    <span className="text-[11px] text-gray-400 flex-shrink-0">{c.owned ? "Owner" : isCommunityAdmin(c) ? "Admin" : "Member"}</span>
+                    <span className="text-[11px] text-gray-400 flex-shrink-0">
+                      {c.owned ? "Owner" : isCommunityAdmin(c) ? "Admin" : "Member"}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -238,14 +255,20 @@ export default function Topbar({
               <>
                 {searchMembers.length > 0 && (
                   <div className="py-2">
-                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Members</p>
+                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                      Members
+                    </p>
                     {searchMembers.map((m) => (
                       <button
                         key={m.id}
-                        onClick={() => goToResult(`/dashboard/members/${m.id}?community=${communityId}`)}
+                        onClick={() =>
+                          goToResult(`/dashboard/members/${m.id}?community=${communityId}`)
+                        }
                         className="w-full flex items-center justify-between gap-2.5 px-4 py-2 hover:bg-gray-50 text-left bg-transparent border-none cursor-pointer"
                       >
-                        <span className="text-xs font-medium text-gray-900">{toTitleCase(`${m.firstName ?? ""} ${m.lastName ?? ""}`.trim())}</span>
+                        <span className="text-xs font-medium text-gray-900">
+                          {toTitleCase(`${m.firstName ?? ""} ${m.lastName ?? ""}`.trim())}
+                        </span>
                         <span className="text-[11px] text-gray-400">{m.email}</span>
                       </button>
                     ))}
@@ -253,22 +276,30 @@ export default function Topbar({
                 )}
                 {searchTransactions.length > 0 && (
                   <div className="py-2 border-t border-gray-50">
-                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Transactions</p>
+                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                      Transactions
+                    </p>
                     {searchTransactions.map((t) => (
                       <button
                         key={t.id}
                         onClick={() => goToResult(`/dashboard/payments?community=${communityId}`)}
                         className="w-full flex items-center justify-between gap-2.5 px-4 py-2 hover:bg-gray-50 text-left bg-transparent border-none cursor-pointer"
                       >
-                        <span className="text-xs font-medium text-gray-900 truncate">{t.memberName ?? t.paymentLinkTitle ?? t.internalReference}</span>
-                        <span className="text-[11px] text-gray-400 flex-shrink-0">{formatNaira(t.amount)}</span>
+                        <span className="text-xs font-medium text-gray-900 truncate">
+                          {t.memberName ?? t.paymentLinkTitle ?? t.internalReference}
+                        </span>
+                        <span className="text-[11px] text-gray-400 flex-shrink-0">
+                          {formatNaira(t.amount)}
+                        </span>
                       </button>
                     ))}
                   </div>
                 )}
                 {searchPaymentLinks.length > 0 && (
                   <div className="py-2 border-t border-gray-50">
-                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Payment Links</p>
+                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                      Payment Links
+                    </p>
                     {searchPaymentLinks.map((p) => (
                       <button
                         key={p.id}
@@ -283,11 +314,18 @@ export default function Topbar({
                 )}
                 {searchSettlements.length > 0 && (
                   <div className="py-2 border-t border-gray-50">
-                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Settlements</p>
+                    <p className="px-4 pb-1 text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                      Settlements
+                    </p>
                     {searchSettlements.map((s) => (
-                      <div key={s.id} className="flex items-center justify-between gap-2.5 px-4 py-2">
+                      <div
+                        key={s.id}
+                        className="flex items-center justify-between gap-2.5 px-4 py-2"
+                      >
                         <span className="text-xs font-medium text-gray-900">{s.status}</span>
-                        <span className="text-[11px] text-gray-400">{formatNaira(s.netAmount)}</span>
+                        <span className="text-[11px] text-gray-400">
+                          {formatNaira(s.netAmount)}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -354,9 +392,7 @@ export default function Topbar({
             )}
           </div>
           <div className="text-left hidden sm:block">
-            <p className="text-xs font-bold text-[#000000] leading-tight">
-              {displayName}
-            </p>
+            <p className="text-xs font-bold text-[#000000] leading-tight">{displayName}</p>
             <p className="text-[11px] text-gray-400 leading-tight">{email}</p>
           </div>
         </button>

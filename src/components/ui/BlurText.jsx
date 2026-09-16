@@ -2,10 +2,7 @@ import { motion } from "motion/react";
 import { useEffect, useRef, useState, useMemo } from "react";
 
 const buildKeyframes = (from, steps) => {
-  const keys = new Set([
-    ...Object.keys(from),
-    ...steps.flatMap((s) => Object.keys(s)),
-  ]);
+  const keys = new Set([...Object.keys(from), ...steps.flatMap((s) => Object.keys(s))]);
   const keyframes = {};
   keys.forEach((k) => {
     keyframes[k] = [from[k], ...steps.map((s) => s[k])];
@@ -17,8 +14,7 @@ const buildKeyframes = (from, steps) => {
 // layer per word and tanks scroll performance. Skip blur entirely on
 // narrow screens and use a plain opacity+translate reveal instead.
 const isMobileScreen =
-  typeof window !== "undefined" &&
-  window.matchMedia("(max-width: 640px)").matches;
+  typeof window !== "undefined" && window.matchMedia("(max-width: 640px)").matches;
 
 const BlurText = ({
   text = "",
@@ -102,16 +98,16 @@ const BlurText = ({
 
         return (
           <motion.span
-            className={isMobileScreen
-              ? "inline-block will-change-[transform,opacity]"
-              : "inline-block will-change-[transform,filter,opacity]"}
+            className={
+              isMobileScreen
+                ? "inline-block will-change-[transform,opacity]"
+                : "inline-block will-change-[transform,filter,opacity]"
+            }
             key={index}
             initial={fromSnapshot}
             animate={inView ? animateKeyframes : fromSnapshot}
             transition={spanTransition}
-            onAnimationComplete={
-              index === elements.length - 1 ? onAnimationComplete : undefined
-            }
+            onAnimationComplete={index === elements.length - 1 ? onAnimationComplete : undefined}
           >
             {segment === " " ? "\u00A0" : segment}
             {animateBy === "words" && index < elements.length - 1 && "\u00A0"}

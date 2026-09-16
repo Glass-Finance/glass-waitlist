@@ -13,11 +13,7 @@ import {
   CreditCard,
   ChevronRight,
 } from "lucide-react";
-import {
-  formatNaira as sharedFormatNaira,
-  formatDateShort,
-  toTitleCase,
-} from "../../utils/format";
+import { formatNaira as sharedFormatNaira, formatDateShort, toTitleCase } from "../../utils/format";
 import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
 import { useInvites } from "../../hooks/useInvites";
 import { useGlobalOverview } from "../../hooks/usePayments";
@@ -30,10 +26,7 @@ import {
 } from "../../utils/notificationContent";
 import { notificationsListDestination } from "../../utils/notificationRouting";
 import { useAuth } from "../../store/AuthContext";
-import {
-  resolveIsPayingAdmin,
-  isCommunityAdmin,
-} from "../../utils/communityRole";
+import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingState from "../../components/common/LoadingState";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
@@ -74,13 +67,9 @@ function CardSkeleton() {
 // which community they belong to.
 
 function obligationStatusChip(o) {
-  const days = o.dueDate
-    ? Math.ceil((new Date(o.dueDate) - new Date()) / 86400000)
-    : null;
-  if (days != null && days < 0)
-    return { label: "Overdue", cls: "bg-[#FEF2F2] text-danger" };
-  if (days != null && days <= 7)
-    return { label: "Due soon", cls: "bg-[#FFFBEB] text-[#B45309]" };
+  const days = o.dueDate ? Math.ceil((new Date(o.dueDate) - new Date()) / 86400000) : null;
+  if (days != null && days < 0) return { label: "Overdue", cls: "bg-[#FEF2F2] text-danger" };
+  if (days != null && days <= 7) return { label: "Due soon", cls: "bg-[#FFFBEB] text-[#B45309]" };
   return { label: "Upcoming", cls: "bg-[#EEF2FF] text-brand" };
 }
 
@@ -110,9 +99,7 @@ function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
 }
 
 function OverviewEmpty({ text }) {
-  return (
-    <p className="text-[11px] text-gray-400 px-4 py-5 text-center">{text}</p>
-  );
+  return <p className="text-[11px] text-gray-400 px-4 py-5 text-center">{text}</p>;
 }
 
 function GlobalOverview() {
@@ -141,12 +128,7 @@ function GlobalOverview() {
 
   // Nothing to roll up yet (brand-new account) — the community grid and its
   // empty state carry the page fine on their own.
-  if (
-    !isLoading &&
-    !upcomingTop.length &&
-    !activityTop.length &&
-    !notifTop.length
-  ) {
+  if (!isLoading && !upcomingTop.length && !activityTop.length && !notifTop.length) {
     return null;
   }
 
@@ -186,10 +168,7 @@ function GlobalOverview() {
                       {toTitleCase(o.name)}
                     </p>
                     <p className="text-[11px] text-gray-400 mt-0.5 truncate">
-                      {[
-                        o.communityName,
-                        o.dueDate ? `Due ${formatDateShort(o.dueDate)}` : null,
-                      ]
+                      {[o.communityName, o.dueDate ? `Due ${formatDateShort(o.dueDate)}` : null]
                         .filter(Boolean)
                         .join(" · ")}
                     </p>
@@ -223,10 +202,7 @@ function GlobalOverview() {
             <OverviewEmpty text="No transactions yet." />
           ) : (
             activityTop.map((t) => (
-              <div
-                key={t.id}
-                className="flex items-center justify-between gap-3 px-4 py-2.5"
-              >
+              <div key={t.id} className="flex items-center justify-between gap-3 px-4 py-2.5">
                 <div className="min-w-0">
                   <p className="text-xs font-medium text-gray-900 truncate">
                     {toTitleCase(t.description)}
@@ -278,8 +254,7 @@ function GlobalOverview() {
             notifTop.map((n) => {
               const details = extractNotificationDetails(n, { communityMap });
               const amount = formatNairaAmount(details.amount);
-              const messageText =
-                n.message ?? n.description ?? n.bodyText ?? null;
+              const messageText = n.message ?? n.description ?? n.bodyText ?? null;
               // Scoped to the community this notification actually came from
               // (same resolution + routing the topbar bell dropdown uses) --
               // not whatever community happens to be active/last-visited.
@@ -303,9 +278,7 @@ function GlobalOverview() {
                       {n.title ?? n.subject ?? "Notification"}
                     </p>
                     {messageText && (
-                      <p className="text-[11px] text-gray-500 mt-0.5 truncate">
-                        {messageText}
-                      </p>
+                      <p className="text-[11px] text-gray-500 mt-0.5 truncate">{messageText}</p>
                     )}
                     <p className="text-[11px] text-gray-400 mt-0.5">
                       {[
@@ -323,12 +296,7 @@ function GlobalOverview() {
           )}
         </OverviewCard>
       </div>
-      {payingItem && (
-        <AdminPaymentModal
-          item={payingItem}
-          onClose={() => setPayingItem(null)}
-        />
-      )}
+      {payingItem && <AdminPaymentModal item={payingItem} onClose={() => setPayingItem(null)} />}
     </>
   );
 }
@@ -356,9 +324,7 @@ export default function CommunitiesHome() {
   }
 
   const communities = data?.communities ?? [];
-  const pendingInvites = invites.filter(
-    (i) => (i.status ?? "PENDING").toUpperCase() === "PENDING",
-  );
+  const pendingInvites = invites.filter((i) => (i.status ?? "PENDING").toUpperCase() === "PENDING");
 
   async function handleAcceptInvite(inviteId) {
     setRespondingId(inviteId);
@@ -381,8 +347,7 @@ export default function CommunitiesHome() {
   const sorted = [...communities].sort((a, b) => {
     if (sort === "A-Z") return (a.name ?? "").localeCompare(b.name ?? "");
     if (sort === "Z-A") return (b.name ?? "").localeCompare(a.name ?? "");
-    if (sort === "Newest First")
-      return new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0);
+    if (sort === "Newest First") return new Date(b.createdAt ?? 0) - new Date(a.createdAt ?? 0);
     return 0; // Recently Viewed — keep API order
   });
 
@@ -409,9 +374,7 @@ export default function CommunitiesHome() {
     const id = community.slug ?? community.id;
     localStorage.setItem("glass_community", JSON.stringify(community));
     const isPaying = await resolveIsPayingAdmin(id);
-    navigate(
-      `/dashboard/${isPaying ? "admin/paying" : "admin"}?community=${id}`,
-    );
+    navigate(`/dashboard/${isPaying ? "admin/paying" : "admin"}?community=${id}`);
   }
 
   return (
@@ -419,20 +382,14 @@ export default function CommunitiesHome() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-7 pt-7 pb-5">
         <div>
-          <h1 className="text-lg font-semibold text-[#000000]">
-            Your Communities
-          </h1>
+          <h1 className="text-lg font-semibold text-[#000000]">Your Communities</h1>
           {user?.firstName && (
-            <p className="text-xs text-gray-400 mt-0.5">
-              Welcome back, {user.firstName}
-            </p>
+            <p className="text-xs text-gray-400 mt-0.5">Welcome back, {user.firstName}</p>
           )}
         </div>
         <div data-tour="communities-home-actions" className="flex gap-2.5">
           <button
-            onClick={() =>
-              navigate("/onboarding/choose-path", { state: { intent: "join" } })
-            }
+            onClick={() => navigate("/onboarding/choose-path", { state: { intent: "join" } })}
             className="h-10 px-3.5 rounded-lg border border-[#E0E0EB] text-brand bg-white text-xs font-medium hover:bg-gray-50 transition-all flex items-center justify-center"
           >
             Join Community
@@ -457,8 +414,7 @@ export default function CommunitiesHome() {
             </div>
             <div className="flex flex-col divide-y divide-blue-100">
               {pendingInvites.map((invite) => {
-                const isResponding =
-                  respondingId === invite.id && (isAccepting || isRejecting);
+                const isResponding = respondingId === invite.id && (isAccepting || isRejecting);
                 return (
                   <div
                     key={invite.id}
@@ -466,15 +422,11 @@ export default function CommunitiesHome() {
                   >
                     <div className="min-w-0">
                       <p className="text-xs font-medium text-gray-900 truncate">
-                        {invite.community?.name ??
-                          invite.community?.slug ??
-                          "A community"}
+                        {invite.community?.name ?? invite.community?.slug ?? "A community"}
                       </p>
                       <p className="text-[11px] text-gray-500 mt-0.5">
                         invited you to join
-                        {invite.roleCode
-                          ? ` as ${invite.roleCode.toLowerCase()}`
-                          : ""}
+                        {invite.roleCode ? ` as ${invite.roleCode.toLowerCase()}` : ""}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
@@ -526,9 +478,7 @@ export default function CommunitiesHome() {
                     setSortOpen(false);
                   }}
                   className={`w-full px-4 py-2.5 text-left text-xs transition-all ${
-                    sort === opt
-                      ? "bg-blue-50 font-medium"
-                      : "text-gray-600 hover:bg-gray-50"
+                    sort === opt ? "bg-blue-50 font-medium" : "text-gray-600 hover:bg-gray-50"
                   }`}
                 >
                   {opt}
@@ -547,9 +497,7 @@ export default function CommunitiesHome() {
               key={v.id}
               onClick={() => setView(v.id)}
               className={`w-8 h-8 flex items-center justify-center transition-all ${i === 0 ? "border-0 border-r border-gray-200" : "border-none"} ${
-                view === v.id
-                  ? "bg-blue-50 text-brand"
-                  : "bg-white text-gray-600"
+                view === v.id ? "bg-blue-50 text-brand" : "bg-white text-gray-600"
               }`}
             >
               {v.icon}
@@ -562,9 +510,7 @@ export default function CommunitiesHome() {
       {error && (
         <div className="mx-4 md:mx-7 mb-5 flex items-center gap-2 px-4 py-3 rounded-lg bg-red-50 border border-red-100">
           <AlertCircle size={16} className="text-red-400 flex-shrink-0" />
-          <p className="text-sm text-red-500">
-            Couldn't load communities. Please refresh.
-          </p>
+          <p className="text-sm text-red-500">Couldn't load communities. Please refresh.</p>
         </div>
       )}
 
@@ -572,9 +518,7 @@ export default function CommunitiesHome() {
       <div
         data-tour="communities-grid"
         className={`px-4 md:px-7 pb-10 grid gap-4 ${
-          view === "grid"
-            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-            : "grid-cols-1"
+          view === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"
         }`}
       >
         {isLoading ? (
@@ -584,9 +528,7 @@ export default function CommunitiesHome() {
             <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center">
               <Users size={24} className="text-brand" />
             </div>
-            <p className="text-sm font-medium text-gray-700">
-              No communities yet
-            </p>
+            <p className="text-sm font-medium text-gray-700">No communities yet</p>
             <p className="text-xs text-gray-400 text-center max-w-xs">
               Create or join a community to get started.
             </p>

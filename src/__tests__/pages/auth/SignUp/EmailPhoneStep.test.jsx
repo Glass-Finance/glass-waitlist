@@ -14,11 +14,7 @@ function renderStep() {
   const onNext = vi.fn();
   render(
     <MemoryRouter>
-      <EmailPhoneStep
-        onNext={onNext}
-        onSwitch={vi.fn()}
-        onGoogleAuth={vi.fn()}
-      />
+      <EmailPhoneStep onNext={onNext} onSwitch={vi.fn()} onGoogleAuth={vi.fn()} />
     </MemoryRouter>,
   );
   return onNext;
@@ -52,9 +48,7 @@ describe("EmailPhoneStep's Continue button", () => {
     fillValidForm();
     fireEvent.click(screen.getByText("Continue"));
 
-    expect(
-      screen.getByText("Please Accept Our Terms to Continue"),
-    ).toBeDefined();
+    expect(screen.getByText("Please Accept Our Terms to Continue")).toBeDefined();
     expect(onNext).not.toHaveBeenCalled();
   });
 });

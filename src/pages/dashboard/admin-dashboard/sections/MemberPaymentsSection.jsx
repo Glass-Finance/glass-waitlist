@@ -131,9 +131,7 @@ export default function MemberPaymentsSection({
                         </span>
                       </div>
                     </td>
-                    <td className="px-5 py-3 text-xs text-black">
-                      {formatNaira(tx.amount)}
-                    </td>
+                    <td className="px-5 py-3 text-xs text-black">{formatNaira(tx.amount)}</td>
                     <td className="hidden md:table-cell px-5 py-3 text-xs text-black">
                       {formatDate(tx.paidAt ?? tx.createdAt)}
                     </td>
@@ -146,9 +144,7 @@ export default function MemberPaymentsSection({
                         "—"}
                     </td>
                     <td className="px-5 py-3">
-                      <span
-                        className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.cls}`}
-                      >
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${s.cls}`}>
                         {s.label}
                       </span>
                     </td>
@@ -167,11 +163,14 @@ export default function MemberPaymentsSection({
                             channel: tx.channel,
                             reference: tx.internalReference ?? tx.id,
                             status: tx.status,
-                            payerPhoto: tx.member?.profileImage?.url ?? tx.user?.profileImage?.url ?? null,
+                            payerPhoto:
+                              tx.member?.profileImage?.url ?? tx.user?.profileImage?.url ?? null,
                             feeMinor:
                               tx.feeMinor ??
                               tx.fee ??
-                              (tx.amountPaid != null && tx.amount != null && tx.amountPaid > tx.amount
+                              (tx.amountPaid != null &&
+                              tx.amount != null &&
+                              tx.amountPaid > tx.amount
                                 ? tx.amountPaid - tx.amount
                                 : null),
                           }}
@@ -179,7 +178,11 @@ export default function MemberPaymentsSection({
                           payerEmail={tx.member?.user?.email ?? tx.user?.email ?? tx.email}
                           disabled={!isPaid}
                           iconSize={11}
-                          title={isPaid ? "Download receipt" : "Receipts are only available for successful payments"}
+                          title={
+                            isPaid
+                              ? "Download receipt"
+                              : "Receipts are only available for successful payments"
+                          }
                           buttonClassName={`w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center ${isPaid ? "text-gray-500 hover:bg-gray-50 cursor-pointer" : "text-gray-300 cursor-not-allowed opacity-40"}`}
                         />
                         <button

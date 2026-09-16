@@ -7,8 +7,7 @@ export function isAuthorisationExpired(auth) {
   if (!year || !month) return false;
   const now = new Date();
   // Cards are valid through the last day of their expiry month.
-  return year < now.getFullYear() ||
-    (year === now.getFullYear() && month < now.getMonth() + 1);
+  return year < now.getFullYear() || (year === now.getFullYear() && month < now.getMonth() + 1);
 }
 
 // Confirmed with backend: a saved authorisation's consent is scoped per
@@ -23,7 +22,10 @@ export function isAuthorisationExpired(auth) {
 // wrong card whenever a payer has more than one recurring plan with
 // different saved cards. Matches ManagePayments.jsx's existing findAuth()
 // logic; centralised here so checkout screens stay consistent with it.
-export function findAuthorisationForPlan(authorisations, { paymentLinkId, title, communityName } = {}) {
+export function findAuthorisationForPlan(
+  authorisations,
+  { paymentLinkId, title, communityName } = {},
+) {
   for (const auth of authorisations ?? []) {
     if ((auth.status ?? "").toUpperCase() !== "ACTIVE") continue;
     const match = (auth.consents ?? []).find((c) => {

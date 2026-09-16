@@ -31,11 +31,7 @@ export default function StepConnector({ p1, p2, bendY, stepRef }) {
     offset: ["start 70%", "end 5%"],
   });
   const progress = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const sectionOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.03, 0.97, 1],
-    [0, 1, 1, 0],
-  );
+  const sectionOpacity = useTransform(scrollYProgress, [0, 0.03, 0.97, 1], [0, 1, 1, 0]);
 
   // Update the leading dot position imperatively on each progress change
   useEffect(() => {
@@ -81,7 +77,11 @@ export default function StepConnector({ p1, p2, bendY, stepRef }) {
               strokeWidth={STROKE_W[i]}
               strokeLinecap="round"
               fill="none"
-              className={i === 0 ? "[filter:drop-shadow(0_0_2px_rgba(0,47,167,0.9))_drop-shadow(0_0_5px_rgba(79,70,229,0.45))]" : ""}
+              className={
+                i === 0
+                  ? "[filter:drop-shadow(0_0_2px_rgba(0,47,167,0.9))_drop-shadow(0_0_5px_rgba(79,70,229,0.45))]"
+                  : ""
+              }
               style={{ pathLength: progress }}
             />
           </g>

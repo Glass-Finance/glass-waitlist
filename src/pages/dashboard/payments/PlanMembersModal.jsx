@@ -65,26 +65,17 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
   }
 
   function statusStyle(s) {
-    if (s === "PAID")
-      return { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" };
-    if (s === "OVERDUE")
-      return { cls: "bg-[#fff1f2] text-[#e11d48]", label: "Overdue" };
-    if (s === "DUE")
-      return { cls: "bg-[#fffbeb] text-[#b45309]", label: "Due" };
-    if (s === "WAIVED")
-      return { cls: "bg-[#f5f6fa] text-[#6b7280]", label: "Waived" };
-    if (s === "NONE")
-      return { cls: "bg-[#f5f6fa] text-[#9ca3af]", label: "N/A" };
+    if (s === "PAID") return { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" };
+    if (s === "OVERDUE") return { cls: "bg-[#fff1f2] text-[#e11d48]", label: "Overdue" };
+    if (s === "DUE") return { cls: "bg-[#fffbeb] text-[#b45309]", label: "Due" };
+    if (s === "WAIVED") return { cls: "bg-[#f5f6fa] text-[#6b7280]", label: "Waived" };
+    if (s === "NONE") return { cls: "bg-[#f5f6fa] text-[#9ca3af]", label: "N/A" };
     return { cls: "bg-[#fffbeb] text-[#b45309]", label: "Pending" };
   }
 
   const filtered = planMembers.filter((m) => {
     const q = search.toLowerCase();
-    if (
-      q &&
-      !getName(m).toLowerCase().includes(q) &&
-      !getEmail(m).toLowerCase().includes(q)
-    )
+    if (q && !getName(m).toLowerCase().includes(q) && !getEmail(m).toLowerCase().includes(q))
       return false;
     if (statusFilter === "Paid" && getStatus(m) !== "PAID") return false;
     if (statusFilter === "Unpaid" && getStatus(m) === "PAID") return false;
@@ -94,10 +85,7 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
 
   const paidCount = planMembers.filter((m) => getStatus(m) === "PAID").length;
   const totalCount = planMembers.length;
-  const totalCollected = planMembers.reduce(
-    (sum, m) => sum + getAmountPaid(m),
-    0,
-  );
+  const totalCollected = planMembers.reduce((sum, m) => sum + getAmountPaid(m), 0);
 
   // Real backend export job (see useExportJob.js) instead of a client-side
   // CSV -- that silently capped at whatever page of members was already
@@ -107,13 +95,7 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
   // filter by an arbitrary client-side member-id list.
   const { run: runExport, isExporting } = useExportJob();
   function exportCsv() {
-    runExport(() =>
-      exportCommunityObligations(
-        communityId,
-        { paymentLinkId: plan.id },
-        "CSV",
-      ),
-    );
+    runExport(() => exportCommunityObligations(communityId, { paymentLinkId: plan.id }, "CSV"));
   }
 
   return (
@@ -174,14 +156,9 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
             </button>
             {filterOpen && (
               <>
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setFilterOpen(false)}
-                />
+                <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)} />
                 <div className="absolute left-0 top-full mt-2 bg-white rounded-xl border border-surface-container-border shadow-lg z-20 p-4 w-52">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">
-                    Status
-                  </label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
@@ -223,26 +200,15 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
                 <th className="px-5 py-2.5 w-8">
                   <input
                     type="checkbox"
-                    checked={
-                      selected.length === filtered.length && filtered.length > 0
-                    }
+                    checked={selected.length === filtered.length && filtered.length > 0}
                     onChange={(e) =>
                       setSelected(
-                        e.target.checked
-                          ? filtered.map((m) => m.memberId ?? getName(m))
-                          : [],
+                        e.target.checked ? filtered.map((m) => m.memberId ?? getName(m)) : [],
                       )
                     }
                   />
                 </th>
-                {[
-                  "Member",
-                  "Email",
-                  "Status",
-                  "Paid",
-                  "Total Due",
-                  "Date Joined",
-                ].map((h) => (
+                {["Member", "Email", "Status", "Paid", "Total Due", "Date Joined"].map((h) => (
                   <th
                     key={h}
                     className="px-4 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap"
@@ -286,9 +252,7 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
                           checked={selected.includes(key)}
                           onChange={() =>
                             setSelected((p) =>
-                              p.includes(key)
-                                ? p.filter((x) => x !== key)
-                                : [...p, key],
+                              p.includes(key) ? p.filter((x) => x !== key) : [...p, key],
                             )
                           }
                         />
@@ -296,9 +260,7 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
                       <td className="px-4 py-3 text-xs font-semibold text-brand whitespace-nowrap">
                         {getName(m)}
                       </td>
-                      <td className="px-4 py-3 text-xs text-gray-500">
-                        {getEmail(m)}
-                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-500">{getEmail(m)}</td>
                       <td className="px-4 py-3">
                         <span
                           className={`text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap ${s.cls}`}

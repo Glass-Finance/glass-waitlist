@@ -14,11 +14,28 @@ import { ONBOARDING_STEPS } from "../../utils/onboardingSteps";
 function StepIcon({ id }) {
   switch (id) {
     case "organization":
-      return <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></>;
+      return (
+        <>
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </>
+      );
     case "payment":
-      return <><rect x="2" y="5" width="20" height="14" rx="2" /><line x1="2" y1="10" x2="22" y2="10" /></>;
+      return (
+        <>
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <line x1="2" y1="10" x2="22" y2="10" />
+        </>
+      );
     case "members":
-      return <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>;
+      return (
+        <>
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </>
+      );
     default:
       return null;
   }
@@ -49,16 +66,47 @@ export default function OnboardingStepsSidebar({ activeStepId, completedStepIds 
                       ? "bg-white border-2 border-brand text-brand"
                       : "bg-white border border-outline-on-surface text-gray-400"
                 }`}
-                style={isActive && !isCompleted ? { boxShadow: "0 0 0 4px rgba(0,47,167,0.15)" } : undefined}
+                style={
+                  isActive && !isCompleted
+                    ? { boxShadow: "0 0 0 4px rgba(0,47,167,0.15)" }
+                    : undefined
+                }
               >
-                {isCompleted
-                  ? <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><StepIcon id={step.id} /></svg>}
+                {isCompleted ? (
+                  <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
+                    <path
+                      d="M2 6l3 3 5-5"
+                      stroke="white"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <StepIcon id={step.id} />
+                  </svg>
+                )}
               </div>
-              {!isLast && <div className={`w-px my-1 min-h-10 ${isCompleted ? "bg-brand" : "bg-outline-on-surface"}`} />}
+              {!isLast && (
+                <div
+                  className={`w-px my-1 min-h-10 ${isCompleted ? "bg-brand" : "bg-outline-on-surface"}`}
+                />
+              )}
             </div>
             <div className="pt-1.5 pb-10">
-              <span className={`text-sm font-medium ${isActive ? "text-[#000000]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}>
+              <span
+                className={`text-sm font-medium ${isActive ? "text-[#000000]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}
+              >
                 {step.label}
               </span>
             </div>

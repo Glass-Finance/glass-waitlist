@@ -126,25 +126,17 @@ export default function PaymentLinksSection() {
                 className={`hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
               >
                 <td className="px-4 py-3 max-w-[180px]">
-                  <p className="text-[12px] font-semibold text-gray-900 truncate">
-                    {l.title}
-                  </p>
-                  <p className="text-[10px] text-gray-400 font-mono truncate">
-                    {l.referenceCode}
-                  </p>
+                  <p className="text-[12px] font-semibold text-gray-900 truncate">{l.title}</p>
+                  <p className="text-[10px] text-gray-400 font-mono truncate">{l.referenceCode}</p>
                 </td>
                 <td className="px-4 py-3 max-w-[140px]">
-                  <p className="text-[11px] text-gray-600 truncate">
-                    {l.community?.name}
-                  </p>
+                  <p className="text-[11px] text-gray-600 truncate">{l.community?.name}</p>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <StatusBadge status={l.paymentType} />
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <span className="text-[12px] text-gray-700">
-                    {fmt(l.amount, l.currency)}
-                  </span>
+                  <span className="text-[12px] text-gray-700">{fmt(l.amount, l.currency)}</span>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <span className="text-[12px] text-gray-700">
@@ -164,9 +156,7 @@ export default function PaymentLinksSection() {
                   <StatusBadge status={l.status} />
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <span className="text-[11px] text-gray-500">
-                    {fmtDate(l.createdAt)}
-                  </span>
+                  <span className="text-[11px] text-gray-500">{fmtDate(l.createdAt)}</span>
                 </td>
               </tr>
             ))}

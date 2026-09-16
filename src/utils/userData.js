@@ -3,7 +3,8 @@
 // or an object depending on the field.
 export function parseUserData(profile) {
   try {
-    const ud = typeof profile?.userData === "string" ? JSON.parse(profile.userData) : profile?.userData;
+    const ud =
+      typeof profile?.userData === "string" ? JSON.parse(profile.userData) : profile?.userData;
     return ud ?? {};
   } catch {
     return {};

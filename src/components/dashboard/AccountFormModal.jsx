@@ -82,9 +82,7 @@ export default function AccountFormModal({
           setAccName(name);
           setManualMode(false);
         } else {
-          setResolveError(
-            "Couldn't auto-verify this account. Enter the account name manually.",
-          );
+          setResolveError("Couldn't auto-verify this account. Enter the account name manually.");
           setManualMode(true);
         }
       } catch (err) {
@@ -116,10 +114,7 @@ export default function AccountFormModal({
     <>
       {/* Backdrop — matches ModalShell's treatment used everywhere else
           (0.35 opacity + blur, not a heavier flat 0.55 dark overlay). */}
-      <div
-        onClick={onClose}
-        className="fixed inset-0 z-70 bg-black/20"
-      />
+      <div onClick={onClose} className="fixed inset-0 z-70 bg-black/20" />
 
       {/* Modal — centred */}
       <div className="fixed inset-0 z-80 flex items-center justify-center p-4">
@@ -179,9 +174,7 @@ export default function AccountFormModal({
 
             {/* Row 2 — resolved account name (editable when auto-resolve fails) */}
             <div>
-              <label className="block text-xs text-gray-600 mb-1.5">
-                Account Name
-              </label>
+              <label className="block text-xs text-gray-600 mb-1.5">Account Name</label>
               <div className="relative">
                 <input
                   type="text"
@@ -190,7 +183,9 @@ export default function AccountFormModal({
                   onChange={(e) => manualMode && setAccName(e.target.value)}
                   placeholder={manualMode ? "Type account name" : ""}
                   className={
-                    inputCls + (manualMode ? "" : " cursor-default select-none") + (resolving ? " !text-[#999]" : " !text-[#111]")
+                    inputCls +
+                    (manualMode ? "" : " cursor-default select-none") +
+                    (resolving ? " !text-[#999]" : " !text-[#111]")
                   }
                 />
                 {accName && !resolving && !manualMode && (
@@ -203,18 +198,14 @@ export default function AccountFormModal({
             </div>
 
             {resolveError && (
-              <p
-                className={`text-xs ${manualMode ? "text-[#B45309]" : "text-danger"}`}
-              >
+              <p className={`text-xs ${manualMode ? "text-[#B45309]" : "text-danger"}`}>
                 {resolveError}
               </p>
             )}
           </div>
 
           {/* Save error — shown when the API call itself fails (e.g. backend 502) */}
-          {saveError && (
-            <p className="text-xs text-red-600 mt-4">{saveError}</p>
-          )}
+          {saveError && <p className="text-xs text-red-600 mt-4">{saveError}</p>}
 
           {/* Footer */}
           <div className="flex justify-end mt-4">

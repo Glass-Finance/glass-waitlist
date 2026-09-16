@@ -50,11 +50,15 @@ function SettlementDetailModal({ settlementId, onClose }) {
               </div>
               <div className="bg-white rounded-xl p-3 border border-surface-container-border">
                 <p className="text-[10px] text-gray-400 mb-0.5">Fees + Deductions</p>
-                <p className="text-sm font-bold text-gray-900">{fmt((data.fees ?? 0) + (data.deductions ?? 0), data.currency)}</p>
+                <p className="text-sm font-bold text-gray-900">
+                  {fmt((data.fees ?? 0) + (data.deductions ?? 0), data.currency)}
+                </p>
               </div>
               <div className="bg-white rounded-xl p-3 border border-surface-container-border">
                 <p className="text-[10px] text-gray-400 mb-0.5">Variance</p>
-                <p className={`text-sm font-bold ${data.variance ? "text-red-600" : "text-gray-900"}`}>
+                <p
+                  className={`text-sm font-bold ${data.variance ? "text-red-600" : "text-gray-900"}`}
+                >
                   {fmt(data.variance, data.currency)}
                 </p>
               </div>
@@ -72,11 +76,16 @@ function SettlementDetailModal({ settlementId, onClose }) {
             )}
 
             {transactions.length === 0 ? (
-              <p className="text-xs text-gray-400 py-4 text-center">No transactions linked to this settlement.</p>
+              <p className="text-xs text-gray-400 py-4 text-center">
+                No transactions linked to this settlement.
+              </p>
             ) : (
               <div className="flex flex-col gap-2">
                 {transactions.map((t) => (
-                  <div key={t.id} className="bg-white rounded-lg p-3 flex items-center justify-between gap-3 border border-surface-container-border">
+                  <div
+                    key={t.id}
+                    className="bg-white rounded-lg p-3 flex items-center justify-between gap-3 border border-surface-container-border"
+                  >
                     <div className="min-w-0">
                       <p className="text-xs font-mono text-gray-700 truncate">{t.reference}</p>
                       <p className="text-[10px] text-gray-400">{fmtDateTime(t.paidAt)}</p>
@@ -87,7 +96,9 @@ function SettlementDetailModal({ settlementId, onClose }) {
                       ) : (
                         <ShieldAlert size={13} className="text-red-500" />
                       )}
-                      <span className="text-xs font-semibold text-gray-900">{fmt(t.net, t.currency)}</span>
+                      <span className="text-xs font-semibold text-gray-900">
+                        {fmt(t.net, t.currency)}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -145,12 +156,18 @@ export default function SettlementsSection() {
           <>
             <SearchBar
               value={search}
-              onChange={(v) => { setSearch(v); debouncedSet(v); }}
+              onChange={(v) => {
+                setSearch(v);
+                debouncedSet(v);
+              }}
               placeholder="Search settlements…"
             />
             <FilterSelect
               value={status}
-              onChange={(v) => { setStatus(v); setPage(0); }}
+              onChange={(v) => {
+                setStatus(v);
+                setPage(0);
+              }}
               options={[
                 { value: "ALL", label: "All statuses" },
                 { value: "PENDING", label: "Pending" },
@@ -186,11 +203,16 @@ export default function SettlementsSection() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-stacked-container">
-              {["Settlement", "Gross", "Fees", "Net", "Status", "Variance", "Settled At"].map((h) => (
-                <th key={h} className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">
-                  {h}
-                </th>
-              ))}
+              {["Settlement", "Gross", "Fees", "Net", "Status", "Variance", "Settled At"].map(
+                (h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap"
+                  >
+                    {h}
+                  </th>
+                ),
+              )}
             </tr>
           </thead>
           <tbody>
@@ -201,17 +223,29 @@ export default function SettlementsSection() {
                 className={`hover:bg-gray-50 transition-colors cursor-pointer ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
-                  <p className="text-[12px] font-mono text-gray-700">{s.gatewaySettlementId ?? s.id}</p>
+                  <p className="text-[12px] font-mono text-gray-700">
+                    {s.gatewaySettlementId ?? s.id}
+                  </p>
                   <p className="text-[10px] text-gray-400">{s.matchedTransactionCount ?? 0} txns</p>
                 </td>
                 <td className="px-4 py-3 text-xs text-gray-700">{fmt(s.gross, s.currency)}</td>
-                <td className="px-4 py-3 text-xs text-gray-700">{fmt((s.fees ?? 0) + (s.deductions ?? 0), s.currency)}</td>
-                <td className="px-4 py-3 text-xs font-semibold text-gray-900">{fmt(s.net, s.currency)}</td>
-                <td className="px-4 py-3"><StatusBadge status={s.status} /></td>
-                <td className={`px-4 py-3 text-xs ${s.variance ? "text-red-600 font-semibold" : "text-gray-400"}`}>
+                <td className="px-4 py-3 text-xs text-gray-700">
+                  {fmt((s.fees ?? 0) + (s.deductions ?? 0), s.currency)}
+                </td>
+                <td className="px-4 py-3 text-xs font-semibold text-gray-900">
+                  {fmt(s.net, s.currency)}
+                </td>
+                <td className="px-4 py-3">
+                  <StatusBadge status={s.status} />
+                </td>
+                <td
+                  className={`px-4 py-3 text-xs ${s.variance ? "text-red-600 font-semibold" : "text-gray-400"}`}
+                >
                   {fmt(s.variance, s.currency)}
                 </td>
-                <td className="px-4 py-3 text-[11px] text-gray-500 whitespace-nowrap">{fmtDateTime(s.settledAt)}</td>
+                <td className="px-4 py-3 text-[11px] text-gray-500 whitespace-nowrap">
+                  {fmtDateTime(s.settledAt)}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -227,7 +261,10 @@ export default function SettlementsSection() {
       />
 
       {openSettlementId && (
-        <SettlementDetailModal settlementId={openSettlementId} onClose={() => setOpenSettlementId(null)} />
+        <SettlementDetailModal
+          settlementId={openSettlementId}
+          onClose={() => setOpenSettlementId(null)}
+        />
       )}
     </div>
   );

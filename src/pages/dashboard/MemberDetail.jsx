@@ -3,10 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { UserMinus, Phone, MessageCircle, CreditCard } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
-import {
-  useMembersWithPayments,
-  useMemberPaymentLinks,
-} from "../../hooks/useMembersWithPayments";
+import { useMembersWithPayments, useMemberPaymentLinks } from "../../hooks/useMembersWithPayments";
 import { useCommunityMembers } from "../../hooks/useCommunityMembers";
 import { useCommunity } from "../../hooks/useCommunity";
 import ReceiptDownloadButton from "../../components/dashboard/ReceiptDownloadButton";
@@ -15,11 +12,7 @@ import EmptyState from "../../components/common/EmptyState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import StatCard from "../../components/dashboard/StatCard";
 import { formatNaira, formatDate } from "../../utils/format";
-import {
-  resolveDisplayName,
-  resolveEmail,
-  resolvePhone,
-} from "../../utils/memberName";
+import { resolveDisplayName, resolveEmail, resolvePhone } from "../../utils/memberName";
 
 const TABS = ["All Plans", "Payment History", "Contact Details"];
 
@@ -34,9 +27,7 @@ function PlanCard({ plan }) {
   return (
     <div className="bg-surface-container rounded-md border border-surface-container-border p-4">
       <div className="flex items-start justify-between mb-2">
-        <p className="text-sm font-medium text-black pt-0.5">
-          {plan.paymentLink?.title ?? "Plan"}
-        </p>
+        <p className="text-sm font-medium text-black pt-0.5">{plan.paymentLink?.title ?? "Plan"}</p>
         <span
           className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${isPaid ? "text-[#059669] bg-[#ecfdf5]" : "text-[#e11d48] bg-[#fff1f2]"}`}
         >
@@ -44,13 +35,9 @@ function PlanCard({ plan }) {
         </span>
       </div>
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-md font-semibold text-gray-900">
-          {formatNaira(plan.amount)}
-        </span>
+        <span className="text-md font-semibold text-gray-900">{formatNaira(plan.amount)}</span>
         <span className="text-[11px] font-bold px-2 py-0.5 rounded-full text-[#7c3aed] bg-[#f3eeff]">
-          {isRecurring
-            ? (plan.recurringPlan?.frequency ?? "Recurring")
-            : "One-Time"}
+          {isRecurring ? (plan.recurringPlan?.frequency ?? "Recurring") : "One-Time"}
         </span>
       </div>
       <p className="text-xs text-gray-400">
@@ -76,10 +63,7 @@ export default function MemberDetail() {
   // (ALL_MEMBERS, their group, or explicit selection), unlike planCount on
   // `member` above which assumes every active community plan applies to
   // every member.
-  const { paymentLinks: memberPaymentLinks } = useMemberPaymentLinks(
-    communityId,
-    member?.id,
-  );
+  const { paymentLinks: memberPaymentLinks } = useMemberPaymentLinks(communityId, member?.id);
 
   function handleRemove() {
     if (!member) return;
@@ -110,23 +94,16 @@ export default function MemberDetail() {
   const successfulTxs = member.transactions.filter((t) =>
     ["SUCCESS", "SUCCESSFUL", "PAID"].includes((t.status ?? "").toUpperCase()),
   );
-  const totalPaid = successfulTxs.reduce(
-    (sum, t) => sum + (t.amount ?? t.amountPaid ?? 0),
-    0,
-  );
+  const totalPaid = successfulTxs.reduce((sum, t) => sum + (t.amount ?? t.amountPaid ?? 0), 0);
 
   // Distinct plans (one card per payment link, latest obligation for that
   // link). Obligations carry the per-cycle amount/due-date/paid-status. An
   // active link without an obligation is shown as pending until the backend
   // creates the authoritative obligation record.
-  const obligationsByLinkId = new Map(
-    member.obligations.map((o) => [o.paymentLink?.id, o]),
-  );
+  const obligationsByLinkId = new Map(member.obligations.map((o) => [o.paymentLink?.id, o]));
   const syntheticPlans = memberPaymentLinks
     .filter(
-      (link) =>
-        (link.status ?? "").toUpperCase() === "ACTIVE" &&
-        !obligationsByLinkId.has(link.id),
+      (link) => (link.status ?? "").toUpperCase() === "ACTIVE" && !obligationsByLinkId.has(link.id),
     )
     .map((link) => ({
       id: link.id,
@@ -145,9 +122,7 @@ export default function MemberDetail() {
         <div>
           <h1 className="text-lg font-bold text-black">
             <button
-              onClick={() =>
-                navigate(`/dashboard/members?community=${communityId}`)
-              }
+              onClick={() => navigate(`/dashboard/members?community=${communityId}`)}
               className="text-gray-400 font-medium bg-transparent border-none p-0 cursor-pointer hover:text-gray-600 hover:underline"
             >
               Members
@@ -171,10 +146,7 @@ export default function MemberDetail() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
         <StatCard label="Total Amount Paid" value={formatNaira(totalPaid)} />
         <StatCard label="Active Plans" value={String(distinctPlans.length)} />
-        <StatCard
-          label="Plans Yet to pay"
-          value={String(member.totalCount - member.paidCount)}
-        />
+        <StatCard label="Plans Yet to pay" value={String(member.totalCount - member.paidCount)} />
         <StatCard label="Failed Payments" value={String(member.failedCount)} />
       </div>
 
@@ -209,22 +181,13 @@ export default function MemberDetail() {
       {tab === "Payment History" && (
         <div className="bg-surface-container rounded-xl border border-surface-container-border">
           <div className="flex items-center justify-between px-5 py-4">
-            <span className="text-sm font-medium text-black">
-              Member Payments
-            </span>
+            <span className="text-sm font-medium text-black">Member Payments</span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="border-y border-gray-100">
-                  {[
-                    "Plan",
-                    "Amount",
-                    "Status",
-                    "Method",
-                    "Date",
-                    "Actions",
-                  ].map((h) => (
+                  {["Plan", "Amount", "Status", "Method", "Date", "Actions"].map((h) => (
                     <th
                       key={h}
                       className="px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap"
@@ -240,8 +203,8 @@ export default function MemberDetail() {
                     <td colSpan={6} className="px-5 py-4">
                       <div className="border-2 border-dashed border-gray-200 rounded-lg py-3 px-3 text-center">
                         <span className="text-xs text-gray-400">
-                          No payments yet — this member's payment history will
-                          show up here once they make their first payment.
+                          No payments yet — this member's payment history will show up here once
+                          they make their first payment.
                         </span>
                       </div>
                     </td>
@@ -258,9 +221,7 @@ export default function MemberDetail() {
                       <tr
                         key={t.id}
                         onClick={() =>
-                          navigate(
-                            `/dashboard/transactions/${t.id}?community=${communityId}`,
-                          )
+                          navigate(`/dashboard/transactions/${t.id}?community=${communityId}`)
                         }
                         className="border-b border-gray-50 cursor-pointer hover:bg-gray-50 transition-colors"
                       >
@@ -277,21 +238,15 @@ export default function MemberDetail() {
                             {isPaid ? "Paid" : statusLabel}
                           </span>
                         </td>
-                        <td className="px-5 py-3 text-sm text-gray-500">
-                          {t.channel ?? "—"}
-                        </td>
+                        <td className="px-5 py-3 text-sm text-gray-500">{t.channel ?? "—"}</td>
                         <td className="px-5 py-3 text-sm text-gray-500">
                           {formatDate(t.paidAt ?? t.createdAt)}
                         </td>
-                        <td
-                          className="px-5 py-3"
-                          onClick={(e) => e.stopPropagation()}
-                        >
+                        <td className="px-5 py-3" onClick={(e) => e.stopPropagation()}>
                           <ReceiptDownloadButton
                             tx={{
                               amount: t.amount,
-                              description:
-                                t.paymentLink?.title ?? t.description,
+                              description: t.paymentLink?.title ?? t.description,
                               communityName: community?.name,
                               communityLogo: community?.logo,
                               date: t.paidAt ?? t.createdAt,
@@ -310,9 +265,7 @@ export default function MemberDetail() {
                               feeMinor:
                                 t.feeMinor ??
                                 t.fee ??
-                                (t.amountPaid != null &&
-                                t.amount != null &&
-                                t.amountPaid > t.amount
+                                (t.amountPaid != null && t.amount != null && t.amountPaid > t.amount
                                   ? t.amountPaid - t.amount
                                   : null),
                             }}
@@ -344,16 +297,14 @@ export default function MemberDetail() {
             <table className="w-full text-sm border-collapse">
               <thead>
                 <tr className="border-y border-gray-100">
-                  {["Name", "Phone", "Email", "Date Joined", "Actions"].map(
-                    (h) => (
-                      <th
-                        key={h}
-                        className="px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap"
-                      >
-                        {h}
-                      </th>
-                    ),
-                  )}
+                  {["Name", "Phone", "Email", "Date Joined", "Actions"].map((h) => (
+                    <th
+                      key={h}
+                      className="px-5 py-2.5 text-left text-xs font-semibold text-gray-400 whitespace-nowrap"
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -361,12 +312,8 @@ export default function MemberDetail() {
                   <td className="px-5 py-3 text-sm font-semibold text-brand">
                     {memberName(member)}
                   </td>
-                  <td className="px-5 py-3 text-sm text-gray-600">
-                    {memberPhone(member)}
-                  </td>
-                  <td className="px-5 py-3 text-sm text-gray-600">
-                    {memberEmail(member)}
-                  </td>
+                  <td className="px-5 py-3 text-sm text-gray-600">{memberPhone(member)}</td>
+                  <td className="px-5 py-3 text-sm text-gray-600">{memberEmail(member)}</td>
                   <td className="px-5 py-3 text-sm text-gray-500">
                     {formatDate(member.joinedAt ?? member.createdAt)}
                   </td>

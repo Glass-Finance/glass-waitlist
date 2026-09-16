@@ -16,10 +16,7 @@ export default function StepIndicator({ stepId }) {
         Step {current} of {total}
       </p>
       <div className="w-full h-1 rounded-full bg-gray-200 overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all bg-brand"
-          style={{ width: `${pct}%` }}
-        />
+        <div className="h-full rounded-full transition-all bg-brand" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

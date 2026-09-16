@@ -10,11 +10,11 @@ import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
 function frequencyLabel(freq) {
   const f = (freq ?? "").toUpperCase();
-  if (f === "MONTHLY")   return "/month";
-  if (f === "WEEKLY")    return "/week";
+  if (f === "MONTHLY") return "/month";
+  if (f === "WEEKLY") return "/week";
   if (f === "QUARTERLY") return "/quarter";
   if (f.includes("YEAR") || f === "ANNUALLY") return "/year";
-  if (f === "DAILY")     return "/day";
+  if (f === "DAILY") return "/day";
   return "";
 }
 
@@ -22,8 +22,16 @@ function frequencyLabel(freq) {
 function CardIcon({ cardType }) {
   const type = (cardType ?? "").toUpperCase();
   // Mastercard: red + orange circles; Visa: blue circle; default: grey
-  const leftCls = type.includes("MASTER") ? "bg-[#EB001B]" : type.includes("VISA") ? "bg-[#1A1F71]" : "bg-[#999]";
-  const rightCls = type.includes("MASTER") ? "bg-[#F79E1B]" : type.includes("VISA") ? "bg-[#00B1EA]" : "bg-[#bbb]";
+  const leftCls = type.includes("MASTER")
+    ? "bg-[#EB001B]"
+    : type.includes("VISA")
+      ? "bg-[#1A1F71]"
+      : "bg-[#999]";
+  const rightCls = type.includes("MASTER")
+    ? "bg-[#F79E1B]"
+    : type.includes("VISA")
+      ? "bg-[#00B1EA]"
+      : "bg-[#bbb]";
   return (
     <div className="relative w-[30px] h-5 flex-shrink-0">
       <div className={`absolute left-0 w-5 h-5 rounded-full opacity-90 ${leftCls}`} />
@@ -54,7 +62,10 @@ function FilterDropdown({ value, onChange }) {
             {FILTER_OPTIONS.map((opt) => (
               <button
                 key={opt}
-                onClick={() => { onChange(opt); setOpen(false); }}
+                onClick={() => {
+                  onChange(opt);
+                  setOpen(false);
+                }}
                 className={`block w-full text-left py-[11px] px-4 text-[13px] cursor-pointer border-none ${value === opt ? "bg-[#F0F2FA] text-brand font-semibold" : "bg-white text-[#333] font-normal"}`}
               >
                 {opt}
@@ -71,9 +82,10 @@ function FilterDropdown({ value, onChange }) {
 function PlanCard({ plan, auth, onToggle }) {
   const isOn = !!auth;
   const cardLabel = auth?.last4 ? `***${auth.last4}` : null;
-  const expiry = auth?.expMonth && auth?.expYear
-    ? `${String(auth.expMonth).padStart(2, "0")}/${String(auth.expYear).slice(-2)}`
-    : null;
+  const expiry =
+    auth?.expMonth && auth?.expYear
+      ? `${String(auth.expMonth).padStart(2, "0")}/${String(auth.expYear).slice(-2)}`
+      : null;
 
   return (
     <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden">
@@ -82,9 +94,11 @@ function PlanCard({ plan, auth, onToggle }) {
         {/* Row 1: logo + Recurring badge */}
         <div className="flex items-center justify-between mb-3">
           <div className="w-11 h-11 rounded-[10px] bg-[#F0F4FF] flex items-center justify-center overflow-hidden flex-shrink-0">
-            {plan.logo?.url
-              ? <img src={plan.logo.url} alt="" className="w-full h-full object-cover" />
-              : <span className="text-lg font-bold text-[#1C2B8A]">{plan.logoText ?? "P"}</span>}
+            {plan.logo?.url ? (
+              <img src={plan.logo.url} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-lg font-bold text-[#1C2B8A]">{plan.logoText ?? "P"}</span>
+            )}
           </div>
           <span className="text-xs font-semibold text-brand bg-[#E8EEFF] py-1 px-3 rounded-full">
             Recurring
@@ -94,7 +108,9 @@ function PlanCard({ plan, auth, onToggle }) {
         {/* Row 2: amount */}
         <p className="text-xl font-bold text-[#111] mt-0 mx-0 mb-1">
           {formatNaira(plan.amount)}
-          <span className="text-[13px] font-normal text-[#888]">{frequencyLabel(plan.frequency)}</span>
+          <span className="text-[13px] font-normal text-[#888]">
+            {frequencyLabel(plan.frequency)}
+          </span>
         </p>
 
         {/* Row 3: plan name + auto-pay toggle */}
@@ -121,12 +137,11 @@ function PlanCard({ plan, auth, onToggle }) {
             <div className="flex items-center gap-2.5">
               <CardIcon cardType={auth?.cardType ?? auth?.channel} />
               <span className="text-sm font-medium text-[#333]">
-                {cardLabel}{expiry ? ` | ${expiry}` : ""}
+                {cardLabel}
+                {expiry ? ` | ${expiry}` : ""}
               </span>
             </div>
-            <button
-              className="text-sm font-semibold text-brand bg-transparent border-none cursor-pointer"
-            >
+            <button className="text-sm font-semibold text-brand bg-transparent border-none cursor-pointer">
               Change
             </button>
           </>
@@ -143,7 +158,12 @@ export default function ManagePayments() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState("All");
   const { data, isLoading: paymentsLoading } = usePayments();
-  const { data: authorisations, isLoading: authsLoading, toggleAutoPay, isRemoving } = useManagePayments();
+  const {
+    data: authorisations,
+    isLoading: authsLoading,
+    toggleAutoPay,
+    isRemoving,
+  } = useManagePayments();
   const [turningOff, setTurningOff] = useState(null); // { plan, auth }
 
   const isLoading = paymentsLoading || authsLoading;
@@ -200,7 +220,7 @@ export default function ManagePayments() {
 
   const filtered = recurringPlans.filter((plan) => {
     const auth = findAuth(plan);
-    if (filter === "Auto-Pay On")  return !!auth;
+    if (filter === "Auto-Pay On") return !!auth;
     if (filter === "Auto-Pay Off") return !auth;
     return true;
   });

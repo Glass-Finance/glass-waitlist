@@ -16,15 +16,13 @@ export default class ErrorBoundary extends Component {
   render() {
     if (this.state.error) {
       return (
-        <div
-          className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-cover bg-center bg-page-default"
-        >
+        <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-cover bg-center bg-page-default">
           <img src={GlassLogo} alt="Glass" className="w-10 h-10 object-contain mb-8" />
 
           <h1 className="text-[22px] font-bold text-gray-900 mb-2">Something went wrong</h1>
           <p className="text-sm text-gray-500 max-w-[320px] leading-relaxed mb-8">
-            An unexpected error occurred. Try refreshing the page — if it keeps happening,
-            contact support.
+            An unexpected error occurred. Try refreshing the page — if it keeps happening, contact
+            support.
           </p>
 
           <div className="flex gap-3">

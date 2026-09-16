@@ -12,7 +12,12 @@ import { formatNaira, formatDateShort } from "../../../../utils/format";
 
 export default function AutoPay() {
   const { data, isLoading: paymentsLoading } = usePayments();
-  const { data: authorisations, isLoading: authsLoading, toggleAutoPay, isRemoving } = useManagePayments();
+  const {
+    data: authorisations,
+    isLoading: authsLoading,
+    toggleAutoPay,
+    isRemoving,
+  } = useManagePayments();
   const [turningOff, setTurningOff] = useState(null); // { plan, auth }
 
   // Recurring upcoming obligations, deduped by plan (obligations recur per cycle)
@@ -114,20 +119,25 @@ export default function AutoPay() {
               const expired = auth ? isAuthorisationExpired(auth) : false;
               const inactive = auth && (auth.status ?? "").toUpperCase() !== "ACTIVE";
               return (
-                <div key={plan.paymentLinkId ?? `${plan.name}-${plan.communityName}`} className="flex items-center justify-between py-4">
+                <div
+                  key={plan.paymentLinkId ?? `${plan.name}-${plan.communityName}`}
+                  className="flex items-center justify-between py-4"
+                >
                   <div>
                     <p className="text-[13px] font-medium text-gray-900">{plan.name}</p>
                     <p className="text-xs text-gray-500 mt-0.5">
                       {[
                         plan.communityName,
                         plan.amount != null ? formatNaira(plan.amount) : null,
-                        plan.dueDate
-                          ? `Next due ${formatDateShort(plan.dueDate)}`
-                          : null,
-                      ].filter(Boolean).join(" · ")}
+                        plan.dueDate ? `Next due ${formatDateShort(plan.dueDate)}` : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
                     </p>
                     {!auth && (
-                      <p className="text-[11px] text-gray-400 mt-1">Pay once and save your method to enable Auto-Pay</p>
+                      <p className="text-[11px] text-gray-400 mt-1">
+                        Pay once and save your method to enable Auto-Pay
+                      </p>
                     )}
                     {expired && (
                       <p className="text-[11px] text-red-500 mt-1">
@@ -138,12 +148,17 @@ export default function AutoPay() {
                     )}
                     {!expired && inactive && (
                       <p className="text-[11px] text-amber-600 mt-1">
-                        Your saved payment method is no longer active, so automatic
-                        charges may fail. Pay once with a new method to re-enable Auto-Pay.
+                        Your saved payment method is no longer active, so automatic charges may
+                        fail. Pay once with a new method to re-enable Auto-Pay.
                       </p>
                     )}
                   </div>
-                  <Toggle on={!!auth} onChange={() => handleToggle(plan, auth)} disabled={!auth} showLabel />
+                  <Toggle
+                    on={!!auth}
+                    onChange={() => handleToggle(plan, auth)}
+                    disabled={!auth}
+                    showLabel
+                  />
                 </div>
               );
             })
@@ -155,10 +170,10 @@ export default function AutoPay() {
       <div className="flex items-start gap-2.5 px-4 py-3 rounded-md bg-amber-50 border border-amber-200">
         <AlertTriangle size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
         <p className="text-xs text-amber-800">
-          Auto-Pay charges your saved payment method on each due date, and you'll
-          get an in-app and email reminder 3 days before every charge. If a charge
-          fails (an expired card, insufficient funds, or a declined transaction),
-          the payment stays due and you'll be notified so you can pay manually.
+          Auto-Pay charges your saved payment method on each due date, and you'll get an in-app and
+          email reminder 3 days before every charge. If a charge fails (an expired card,
+          insufficient funds, or a declined transaction), the payment stays due and you'll be
+          notified so you can pay manually.
         </p>
       </div>
 

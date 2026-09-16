@@ -36,8 +36,7 @@ const FREQUENCY_STYLE = {
 };
 
 export function freqStyle(row) {
-  if (row.type !== "recurring")
-    return { cls: "bg-[#F3EEFF] text-[#7c3aed]", label: "One-Time" };
+  if (row.type !== "recurring") return { cls: "bg-[#F3EEFF] text-[#7c3aed]", label: "One-Time" };
   return (
     FREQUENCY_STYLE[(row.frequency ?? "").toUpperCase()] ?? {
       cls: "bg-[#F3EEFF] text-[#7c3aed]",

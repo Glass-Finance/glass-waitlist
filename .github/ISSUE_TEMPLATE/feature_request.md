@@ -11,6 +11,7 @@ A clear description of the problem or gap.
 What you'd like to see built.
 
 **Who does this affect?**
+
 - [ ] Community owners (admin dashboard)
 - [ ] Members (member app)
 - [ ] Platform (super admin)

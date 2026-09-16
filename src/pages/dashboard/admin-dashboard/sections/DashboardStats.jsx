@@ -27,23 +27,15 @@ export default function DashboardStats({ stats, isLoading }) {
           className="min-h-[132px] md:min-h-[108px] flex flex-col justify-between bg-surface-container rounded-lg p-4 border border-surface-container-border"
         >
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500 font-medium">
-              {s.label}
-            </span>
+            <span className="text-sm text-gray-500 font-medium">{s.label}</span>
             <Info size={15} className="text-brand" />
           </div>
           <div className="flex items-center gap-3">
-            <img
-              src={s.icon}
-              alt={s.label}
-              className="w-8 h-8 object-contain flex-shrink-0"
-            />
+            <img src={s.icon} alt={s.label} className="w-8 h-8 object-contain flex-shrink-0" />
             {isLoading ? (
               <Skeleton className="h-6 w-16" />
             ) : (
-              <span className="text-xl font-bold text-black">
-                {s.value}
-              </span>
+              <span className="text-xl font-bold text-black">{s.value}</span>
             )}
           </div>
         </div>

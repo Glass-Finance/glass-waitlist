@@ -67,12 +67,13 @@ export default function SendReminderModal({ plan, onClose, onSend, sending }) {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-2">
-              Send via
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-2">Send via</label>
             <div className="flex flex-col gap-2">
               {REMINDER_CHANNELS.map((c) => (
-                <label key={c.value} className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer">
+                <label
+                  key={c.value}
+                  className="flex items-center gap-2 text-xs text-gray-700 cursor-pointer"
+                >
                   <input
                     type="checkbox"
                     checked={channels.has(c.value)}
@@ -84,14 +85,13 @@ export default function SendReminderModal({ plan, onClose, onSend, sending }) {
               ))}
             </div>
             {!canSend && (
-              <p className="text-[11px] text-red-500 mt-1.5">
-                Choose at least one channel.
-              </p>
+              <p className="text-[11px] text-red-500 mt-1.5">Choose at least one channel.</p>
             )}
           </div>
 
           <div className="px-4 py-3 rounded-xl bg-blue-50 border border-blue-100 text-xs text-gray-500">
-            Sends immediately, then repeats on this schedule until the member pays or the plan closes.
+            Sends immediately, then repeats on this schedule until the member pays or the plan
+            closes.
           </div>
         </div>
 

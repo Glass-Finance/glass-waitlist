@@ -11,7 +11,12 @@ export function useShortcutsHelp() {
 // "g h". `description`/`group` are omitted (null) for internal-only
 // bindings (e.g. a single modal's own Escape-to-close) that shouldn't
 // clutter the help overlay.
-export function useRegisterShortcut(keys, description, handler, { group = "General", enabled = true } = {}) {
+export function useRegisterShortcut(
+  keys,
+  description,
+  handler,
+  { group = "General", enabled = true } = {},
+) {
   // Depending on the whole context object (not just `register`) here would
   // be a real infinite loop, not just a wasted render: `registry`/`helpOpen`
   // change on every registration, which changes the context's value object,

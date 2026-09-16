@@ -63,17 +63,16 @@ export default function OtpBoxes({
   function handleChange(e) {
     const digits = e.target.value.replace(/\D/g, "").slice(0, length);
     const next = Array(length).fill("");
-    digits.split("").forEach((ch, i) => { next[i] = ch; });
+    digits.split("").forEach((ch, i) => {
+      next[i] = ch;
+    });
     onChange(next);
   }
 
   const digits = Array.from({ length }, (_, i) => code[i] ?? "");
 
   return (
-    <div
-      className={`relative ${className}`}
-      onClick={() => !disabled && inputRef.current?.focus()}
-    >
+    <div className={`relative ${className}`} onClick={() => !disabled && inputRef.current?.focus()}>
       <style>{AUTOFILL_OVERRIDE_CSS}</style>
       <input
         ref={inputRef}

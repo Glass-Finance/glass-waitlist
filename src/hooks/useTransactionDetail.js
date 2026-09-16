@@ -38,7 +38,10 @@ function shapeDetail(raw) {
     communitySlug: raw.community?.slug,
     communityLogo: raw.community?.logo,
     date: raw.paidAt ?? raw.createdAt,
-    status: (() => { const s = (raw.status ?? "").toLowerCase(); return s === "successful" ? "success" : s; })(),
+    status: (() => {
+      const s = (raw.status ?? "").toLowerCase();
+      return s === "successful" ? "success" : s;
+    })(),
     planName: raw.paymentLink?.title,
     channel: raw.channel,
     reference: raw.internalReference,

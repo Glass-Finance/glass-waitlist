@@ -140,7 +140,7 @@ createRoot(document.getElementById("root")).render(
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <AuthProvider>
           <ErrorBoundary>
-          <App />
+            <App />
           </ErrorBoundary>
           <RealtimeBridge />
           <SpeedInsights />
@@ -161,16 +161,13 @@ createRoot(document.getElementById("root")).render(
                 fontSize: "13px",
               },
               classNames: {
-                toast:
-                  "rounded-2xl! border! border-gray-100! shadow-lg! bg-white! text-gray-900!",
+                toast: "rounded-2xl! border! border-gray-100! shadow-lg! bg-white! text-gray-900!",
                 title: "font-medium! text-gray-900!",
                 description: "text-xs! text-gray-500!",
                 closeButton:
                   "bg-white! border! border-gray-200! text-gray-400! hover:text-gray-600!",
-                actionButton:
-                  "bg-brand! text-white! rounded-full! text-xs! font-semibold!",
-                cancelButton:
-                  "bg-gray-100! text-gray-600! rounded-full! text-xs! font-semibold!",
+                actionButton: "bg-brand! text-white! rounded-full! text-xs! font-semibold!",
+                cancelButton: "bg-gray-100! text-gray-600! rounded-full! text-xs! font-semibold!",
                 error: "border-l-4! border-l-red-500!",
                 success: "border-l-4! border-l-emerald-500!",
                 warning: "border-l-4! border-l-amber-500!",

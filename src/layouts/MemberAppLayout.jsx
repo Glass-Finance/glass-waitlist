@@ -14,9 +14,7 @@ export default function MemberAppLayout() {
 
   return (
     <div className="flex justify-center items-start min-h-dvh bg-surface-bg bg-cover bg-center bg-no-repeat bg-mobile-auth-default">
-      <div
-        className="relative w-full max-w-[390px] min-h-dvh"
-      >
+      <div className="relative w-full max-w-[390px] min-h-dvh">
         {/* Content — window scrolls naturally; paddingBottom clears the fixed nav */}
         <main className="pb-[88px]">
           <Outlet />
@@ -37,9 +35,7 @@ export default function MemberAppLayout() {
           aria-label="Main navigation"
         >
           <div className="mx-auto max-w-[390px] px-3 pb-3">
-            <div
-              className="rounded-2xl bg-white border border-surface-container-border shadow-[0_2px_20px_rgba(0,0,0,0.1)]"
-            >
+            <div className="rounded-2xl bg-white border border-surface-container-border shadow-[0_2px_20px_rgba(0,0,0,0.1)]">
               <ul className="flex items-center justify-around px-2 py-2">
                 {TABS.map(({ to, label, Icon }) => {
                   const isActive =

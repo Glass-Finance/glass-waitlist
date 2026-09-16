@@ -48,5 +48,11 @@ const steps = [
 
 export default function GetStarted() {
   const navigate = useNavigate();
-  return <HowItWorksSection steps={steps} onCtaClick={() => goToApp("/sign-up", navigate)} ctaLabel="Get Started Free" />;
+  return (
+    <HowItWorksSection
+      steps={steps}
+      onCtaClick={() => goToApp("/sign-up", navigate)}
+      ctaLabel="Get Started Free"
+    />
+  );
 }

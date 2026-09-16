@@ -44,7 +44,9 @@ async function fetchActivity(id) {
 async function fetchTransactions(id) {
   // Paginated server-side — request a large page so the "Recent Activity"
   // sort below isn't silently working off a single default-sized page.
-  const res = await client.get(`/communities/${id}/finance/transactions`, { params: { pageSize: 1000 } });
+  const res = await client.get(`/communities/${id}/finance/transactions`, {
+    params: { pageSize: 1000 },
+  });
   return res.data.data;
 }
 
@@ -79,9 +81,7 @@ export function useCommunityDashboard(communityId) {
     gcTime: 1000 * 60 * 15,
     refetchOnMount: "always",
     select: (data) => {
-      const list = Array.isArray(data)
-        ? data
-        : (data?.content ?? data?.members ?? []);
+      const list = Array.isArray(data) ? data : (data?.content ?? data?.members ?? []);
       return list;
     },
   });
@@ -97,12 +97,8 @@ export function useCommunityDashboard(communityId) {
     gcTime: 1000 * 60 * 10,
     refetchOnMount: "always",
     select: (data) => {
-      const list = Array.isArray(data)
-        ? data
-        : (data?.content ?? data?.transactions ?? []);
-      return [...list].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-      );
+      const list = Array.isArray(data) ? data : (data?.content ?? data?.transactions ?? []);
+      return [...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     },
   });
 
@@ -129,14 +125,9 @@ export function useCommunityDashboard(communityId) {
   });
 
   const isLoading =
-    communityQuery.isLoading ||
-    membersQuery.isLoading ||
-    transactionsQuery.isLoading;
+    communityQuery.isLoading || membersQuery.isLoading || transactionsQuery.isLoading;
 
-  const error =
-    communityQuery.error ||
-    membersQuery.error ||
-    transactionsQuery.error;
+  const error = communityQuery.error || membersQuery.error || transactionsQuery.error;
 
   // ── Stat-card friendly shape, pulled straight from community.metrics ────────
   const metrics = communityQuery.data?.metrics ?? {};
@@ -158,9 +149,7 @@ export function useCommunityDashboard(communityId) {
     list: membersQuery.data ?? [],
     // Prefer the actual fetched list count — community metrics can lag after
     // member deletions. Fall back to metrics only while the list is loading.
-    total: membersQuery.data != null
-      ? membersQuery.data.length
-      : (metrics.totalMembers ?? 0),
+    total: membersQuery.data != null ? membersQuery.data.length : (metrics.totalMembers ?? 0),
     inactive: metrics.inactiveMembers ?? 0,
     overdue: metrics.overdueMembers ?? 0,
   };

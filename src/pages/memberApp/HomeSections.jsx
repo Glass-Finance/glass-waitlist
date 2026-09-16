@@ -1,12 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  Bell,
-  Check,
-  ChevronDown,
-  ChevronRight,
-  Clock,
-  Mail,
-} from "lucide-react";
+import { Bell, Check, ChevronDown, ChevronRight, Clock, Mail } from "lucide-react";
 import noCommunityIcon from "../../assets/auth/no-community.webp";
 import paymentsDueIcon from "../../assets/memberApp/icon-payments-due.webp";
 import upcomingPaymentsIcon from "../../assets/memberApp/icon-upcoming-payments.webp";
@@ -97,15 +90,9 @@ export function CommunitySwitcher({
                     (c.name ?? "?").charAt(0).toUpperCase()
                   )}
                 </div>
-                <span className="flex-1 min-w-0 text-sm text-[#111] truncate">
-                  {c.name}
-                </span>
+                <span className="flex-1 min-w-0 text-sm text-[#111] truncate">{c.name}</span>
                 {isActive && (
-                  <Check
-                    size={15}
-                    strokeWidth={2.5}
-                    className="text-brand flex-shrink-0"
-                  />
+                  <Check size={15} strokeWidth={2.5} className="text-brand flex-shrink-0" />
                 )}
               </button>
             );
@@ -137,23 +124,15 @@ export function HeroCard({ nextDue, onPay, error, onRefresh }) {
         <div
           className={`absolute inset-0 rounded-lg border-[1.5px] pointer-events-none ${isError ? "border-danger" : "border-brand"}`}
           style={{
-            maskImage:
-              "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
-            WebkitMaskImage:
-              "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
+            maskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
           }}
         />
         <div className="pt-10 px-6 pb-5 flex flex-col items-center">
           {isError ? (
             <div className="w-14 h-14 rounded-full flex items-center justify-center bg-danger-tint">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="9"
-                  stroke="#EF4444"
-                  strokeWidth="1.8"
-                />
+                <circle cx="12" cy="12" r="9" stroke="#EF4444" strokeWidth="1.8" />
                 <path
                   d="M12 8v4M12 16h.01"
                   stroke="#EF4444"
@@ -163,20 +142,14 @@ export function HeroCard({ nextDue, onPay, error, onRefresh }) {
               </svg>
             </div>
           ) : (
-            <img
-              src={paymentsDueIcon}
-              alt=""
-              className="w-14 h-14 object-contain"
-            />
+            <img src={paymentsDueIcon} alt="" className="w-14 h-14 object-contain" />
           )}
         </div>
 
         <div className="text-center flex flex-col items-center px-6 pt-2 pb-8">
           {isError ? (
             <>
-              <p className="text-lg text-[#111] font-bold mb-1.5">
-                Couldn't load payments
-              </p>
+              <p className="text-lg text-[#111] font-bold mb-1.5">Couldn't load payments</p>
               <p className="text-[13px] text-[#9CA3AF] m-0 leading-normal">
                 Check your connection and try again.
               </p>
@@ -211,10 +184,8 @@ export function HeroCard({ nextDue, onPay, error, onRefresh }) {
       <div
         className={`absolute inset-0 rounded-lg border-[1.5px] pointer-events-none ${isOverdue ? "border-danger" : "border-brand"}`}
         style={{
-          maskImage:
-            "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
-          WebkitMaskImage:
-            "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
+          maskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 15%, transparent 55%)",
         }}
       />
       <div className="pt-5 px-5 flex flex-col items-center">
@@ -225,9 +196,7 @@ export function HeroCard({ nextDue, onPay, error, onRefresh }) {
           {isRecurring ? "Recurring" : "One-time"}
         </div>
 
-        <p className="text-[13px] text-[#6B7280] mb-1.5 font-normal">
-          Next Payment Due
-        </p>
+        <p className="text-[13px] text-[#6B7280] mb-1.5 font-normal">Next Payment Due</p>
         <p className="text-[42px] font-bold text-[#111827] tracking-[-1px] leading-none mb-3.5">
           {formatNaira(nextDue.amount)}
         </p>
@@ -259,33 +228,23 @@ export function HeroCard({ nextDue, onPay, error, onRefresh }) {
 export function UpcomingRow({ payment, onPay }) {
   const isRecurring = payment.type === "recurring";
   const badgeLabel = isRecurring ? "Recurring" : "One-time";
-  const badgeCls = isRecurring
-    ? "text-[#1C2B8A] bg-[#E8ECF8]"
-    : "text-[#9C27B0] bg-[#F3E5F5]";
+  const badgeCls = isRecurring ? "text-[#1C2B8A] bg-[#E8ECF8]" : "text-[#9C27B0] bg-[#F3E5F5]";
 
   return (
     <div className="py-3.5 px-3 my-4 rounded-lg bg-white flex items-center justify-between gap-3">
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-0.5 mb-1.5">
-          <span className="text-[17px] font-bold text-[#111]">
-            {formatNaira(payment.amount)}
-          </span>
+          <span className="text-[17px] font-bold text-[#111]">{formatNaira(payment.amount)}</span>
         </div>
-        <p className="text-[13px] text-[#333] font-normal mb-1">
-          {payment.name}
-        </p>
+        <p className="text-[13px] text-[#333] font-normal mb-1">{payment.name}</p>
         <div className="flex items-center gap-1 text-[#999]">
           <Clock size={11} strokeWidth={1.8} />
-          <span className="text-xs">
-            Due: {formatDateShort(payment.dueDate)}
-          </span>
+          <span className="text-xs">Due: {formatDateShort(payment.dueDate)}</span>
         </div>
       </div>
 
       <div className="flex flex-col items-end gap-4 flex-shrink-0">
-        <span
-          className={`text-[11px] font-semibold py-[3px] px-2.5 rounded-full ${badgeCls}`}
-        >
+        <span className={`text-[11px] font-semibold py-[3px] px-2.5 rounded-full ${badgeCls}`}>
           {badgeLabel}
         </span>
         <button
@@ -307,15 +266,11 @@ export function HistoryRow({ item, onOpen }) {
       className="flex items-center justify-between py-[13px] border-b border-[#F0F0F0] cursor-pointer"
     >
       <div>
-        <p className="text-sm font-medium text-[#111] mb-[3px]">
-          {item.description}
-        </p>
+        <p className="text-sm font-medium text-[#111] mb-[3px]">{item.description}</p>
         <p className="text-xs text-[#999]">{formatDateShort(item.date)}</p>
       </div>
       <div className="flex flex-col items-end gap-1">
-        <span className="text-sm font-bold text-[#111]">
-          {formatNaira(item.amount)}
-        </span>
+        <span className="text-sm font-bold text-[#111]">{formatNaira(item.amount)}</span>
         <span
           className={`text-[11px] font-semibold py-0.5 px-2.5 rounded-full ${isSuccess ? "text-[#059669] bg-[#ECFDF5]" : "text-danger bg-[#FEF2F2]"}`}
         >
@@ -329,11 +284,7 @@ export function HistoryRow({ item, onOpen }) {
 export function NoCommunityState({ navigate }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-6 pt-[60px] pb-20 text-center">
-      <img
-        src={noCommunityIcon}
-        alt=""
-        className="w-28 h-28 object-contain mb-7 flex-shrink-0"
-      />
+      <img src={noCommunityIcon} alt="" className="w-28 h-28 object-contain mb-7 flex-shrink-0" />
 
       <p className="text-lg font-semibold text-[#111] mb-2.5 leading-snug">
         You're not part of any community yet.
@@ -342,10 +293,7 @@ export function NoCommunityState({ navigate }) {
         Join a community or check your invitations to get started.
       </p>
 
-      <Button
-        onClick={() => navigate("/member/communities/search")}
-        className="mb-4"
-      >
+      <Button onClick={() => navigate("/member/communities/search")} className="mb-4">
         Join A Community
       </Button>
 
@@ -362,11 +310,7 @@ export function NoCommunityState({ navigate }) {
 export function NothingHappeningState({ navigate }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-6 pt-[60px] pb-20 text-center">
-      <img
-        src={noCommunityIcon}
-        alt=""
-        className="w-28 h-28 object-contain mb-7 flex-shrink-0"
-      />
+      <img src={noCommunityIcon} alt="" className="w-28 h-28 object-contain mb-7 flex-shrink-0" />
 
       <p className="text-lg font-semibold text-[#111] mb-2.5 leading-snug">
         Nothing happening here yet.
@@ -375,10 +319,7 @@ export function NothingHappeningState({ navigate }) {
         Check out your other communities to see what's happening.
       </p>
 
-      <Button
-        onClick={() => navigate("/member/communities/search")}
-        className="mb-4"
-      >
+      <Button onClick={() => navigate("/member/communities/search")} className="mb-4">
         Browse Communities
       </Button>
 
@@ -400,12 +341,9 @@ export function PendingApprovalState({ navigate, community }) {
       </div>
       <p className="text-xl font-bold text-[#111] mb-2.5">Request Pending</p>
       <p className="text-sm text-[#888] mb-2 leading-relaxed max-w-[260px]">
-        Your request to join {community?.name ?? "this community"} is awaiting
-        admin approval.
+        Your request to join {community?.name ?? "this community"} is awaiting admin approval.
       </p>
-      <p className="text-[13px] text-[#aaa] mb-9">
-        You'll get access once it's approved.
-      </p>
+      <p className="text-[13px] text-[#aaa] mb-9">You'll get access once it's approved.</p>
       <button
         onClick={() => navigate("/member/communities/search")}
         className="bg-transparent border-[1.5px] border-brand rounded-[10px] py-3 px-6 text-brand font-semibold cursor-pointer"
@@ -490,14 +428,8 @@ export function MemberHomeHeader({
 export function EmptyUpcomingState() {
   return (
     <div className="flex flex-col items-center px-4 pt-7 pb-5 text-center gap-0">
-      <img
-        src={upcomingPaymentsIcon}
-        alt=""
-        className="w-[52px] h-[52px] object-contain mb-3.5"
-      />
-      <p className="text-[17px] font-normal text-[#111] mb-1.5">
-        No Upcoming Payments
-      </p>
+      <img src={upcomingPaymentsIcon} alt="" className="w-[52px] h-[52px] object-contain mb-3.5" />
+      <p className="text-[17px] font-normal text-[#111] mb-1.5">No Upcoming Payments</p>
       <p className="text-[13px] text-[#9CA3AF] m-0 leading-[1.55] max-w-[270px]">
         New Dues from community will show up here once scheduled
       </p>
@@ -508,14 +440,8 @@ export function EmptyUpcomingState() {
 export function EmptyHistoryState() {
   return (
     <div className="flex flex-col items-center px-4 pt-7 pb-5 text-center gap-0">
-      <img
-        src={paymentHistoryIcon}
-        alt=""
-        className="w-[52px] h-[52px] object-contain mb-3.5"
-      />
-      <p className="text-[17px] font-normal text-[#111] mb-1.5">
-        No Payment History
-      </p>
+      <img src={paymentHistoryIcon} alt="" className="w-[52px] h-[52px] object-contain mb-3.5" />
+      <p className="text-[17px] font-normal text-[#111] mb-1.5">No Payment History</p>
       <p className="text-[13px] text-[#9CA3AF] m-0 leading-[1.55] max-w-[230px]">
         Once you make your transaction history will appear here.
       </p>
@@ -532,9 +458,7 @@ export function ProfileNudge({ navigate, user }) {
       className="w-[calc(100%-40px)] mx-5 mb-4 flex items-center gap-3 text-left bg-[#D7E2FF] rounded-2xl px-4 py-3.5 border-none cursor-pointer"
     >
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-brand m-0">
-          Verify Your Phone Number
-        </p>
+        <p className="text-sm font-semibold text-brand m-0">Verify Your Phone Number</p>
         <p className="text-[13px] text-brand/80 mt-0.5 mb-0 leading-snug">
           We will use it for payment reminders and account security.
         </p>

@@ -6,32 +6,30 @@ import BlurText from "./ui/BlurText";
 
 const links = {
   Product: [
-    { label: "Features",     href: "/#solution"     },
+    { label: "Features", href: "/#solution" },
     { label: "How It Works", href: "/#how-it-works" },
-    { label: "Pricing",      href: "/#pricing"      },
-    { label: "Integrations", href: null             },
+    { label: "Pricing", href: "/#pricing" },
+    { label: "Integrations", href: null },
   ],
   "Use Cases": [
-    { label: "Schools",                href: null },
-    { label: "Religious Organizations",href: null },
-    { label: "Clubs",                  href: null },
-    { label: "Professional Bodies",    href: null },
+    { label: "Schools", href: null },
+    { label: "Religious Organizations", href: null },
+    { label: "Clubs", href: null },
+    { label: "Professional Bodies", href: null },
   ],
-  Resources: [
-    { label: "Help Centre", href: "mailto:glasspayhq@gmail.com" },
-  ],
+  Resources: [{ label: "Help Centre", href: "mailto:glasspayhq@gmail.com" }],
   Company: [
-    { label: "About",    href: null                          },
-    { label: "Team",     href: null                          },
-    { label: "Careers",  href: null                          },
-    { label: "Contact",  href: "mailto:glasspayhq@gmail.com" },
+    { label: "About", href: null },
+    { label: "Team", href: null },
+    { label: "Careers", href: null },
+    { label: "Contact", href: "mailto:glasspayhq@gmail.com" },
   ],
   Legal: [
-    { label: "Privacy",         href: "/privacy"       },
-    { label: "Terms",           href: "/terms"         },
-    { label: "Cookie Policy",   href: "/cookies"        },
-    { label: "Acceptable Use",  href: "/acceptable-use" },
-    { label: "Refund Policy",   href: "/refund-policy"  },
+    { label: "Privacy", href: "/privacy" },
+    { label: "Terms", href: "/terms" },
+    { label: "Cookie Policy", href: "/cookies" },
+    { label: "Acceptable Use", href: "/acceptable-use" },
+    { label: "Refund Policy", href: "/refund-policy" },
   ],
 };
 
@@ -42,9 +40,7 @@ export default function Footer() {
     <footer className="relative isolate bg-[#0d1a6e] text-white">
       {/* ── CTA ── */}
       <div className="relative pt-20 md:pt-28 pb-20 overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(30,50,160,0.35)_0%,transparent_70%)]"
-        />
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(30,50,160,0.35)_0%,transparent_70%)]" />
         <div className="relative z-10 max-w-[860px] mx-auto px-6 text-center">
           <h2 className="text-[clamp(30px,5vw,54px)] font-bold text-white leading-tight tracking-tight mb-5">
             <BlurText
@@ -83,10 +79,7 @@ export default function Footer() {
       <div className="max-w-[1140px] mx-auto px-6 pt-14 pb-8">
         {/* Brand */}
         <div className="mb-6">
-          <a
-            href="/"
-            className="inline-flex items-center gap-2 no-underline mb-3"
-          >
+          <a href="/" className="inline-flex items-center gap-2 no-underline mb-3">
             <img src={logo} alt="Glass" className="w-7 h-7" />
             <span className="font-bold text-[20px] text-white">Glass</span>
           </a>
@@ -131,8 +124,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="border-t border-white/10 pt-7 text-center">
           <p className="text-[13px] text-white/50">
-            Copyright © {new Date().getFullYear()} Glass Limited | Made for
-            Nigerian communities
+            Copyright © {new Date().getFullYear()} Glass Limited | Made for Nigerian communities
           </p>
         </div>
       </div>

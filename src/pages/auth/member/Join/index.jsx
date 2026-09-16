@@ -44,7 +44,9 @@ export default function Join() {
           if (status !== "APPROVED") {
             recordPendingJoinRequest({ id: null, slug: community, name: null });
           }
-          toastSuccess("Join request sent", { description: "The community admin will review it shortly." });
+          toastSuccess("Join request sent", {
+            description: "The community admin will review it shortly.",
+          });
         })
         .catch((err) => notifyError(err, { context: "Join community" }))
         .finally(() => navigate("/member/invites", { replace: true }));
@@ -64,7 +66,9 @@ export default function Join() {
     try {
       const pending = sessionStorage.getItem(PENDING_KEY);
       return pending ? JSON.parse(pending).email : "";
-    } catch { return ""; }
+    } catch {
+      return "";
+    }
   });
   // Email/phone collected in StepContact, carried forward into StepProfile's
   // register() call. Seeded from joinEmail when arriving via CheckEmail.jsx's
@@ -113,7 +117,9 @@ export default function Join() {
       if (status !== "APPROVED") {
         recordPendingJoinRequest({ id: null, slug: community, name: null });
       }
-      toastSuccess("Join request sent", { description: "The community admin will review it shortly." });
+      toastSuccess("Join request sent", {
+        description: "The community admin will review it shortly.",
+      });
     } catch (err) {
       notifyError(err, { context: "Join community" });
     }
@@ -303,9 +309,7 @@ export default function Join() {
               onBack={() => setStep(STEPS.CONTACT)}
             />
           )}
-          {step === STEPS.PROFILE && (
-            <StepProfile onSubmit={handleProfileSubmit} />
-          )}
+          {step === STEPS.PROFILE && <StepProfile onSubmit={handleProfileSubmit} />}
           {step === STEPS.OTP && (
             <StepOTP email={email} onVerified={handleVerified} onBack={handleBack} />
           )}

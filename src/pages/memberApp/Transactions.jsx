@@ -49,10 +49,7 @@ function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
 
       {open && (
         <>
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setOpen(false)}
-          />
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="border border-surface-container-border absolute left-0 bg-white rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.1)] z-20 min-w-[140px] overflow-hidden [top:calc(100%+6px)]">
             {options.map((opt) => (
               <button
@@ -81,9 +78,7 @@ function TxRow({ tx, onOpen }) {
       className="flex items-center justify-between gap-2 py-3.5 px-5 border-b border-stacked-container cursor-pointer"
     >
       <div className="min-w-0">
-        <p className="text-[15px] font-medium text-[#111827] m-0">
-          {toTitleCase(tx.description)}
-        </p>
+        <p className="text-[15px] font-medium text-[#111827] m-0">{toTitleCase(tx.description)}</p>
         <p className="text-[13px] text-[#9ca3af] mt-0.5 mx-0 mb-0">
           {tx.communityName}
           {tx.communityName ? " · " : ""}
@@ -142,7 +137,7 @@ export default function Transactions() {
   }, [monthOptions, selectedMonth]);
 
   const filtered = transactions.filter(
-    (tx) => statusFilter === "All Status" || transactionStatusLabel(tx.status) === statusFilter
+    (tx) => statusFilter === "All Status" || transactionStatusLabel(tx.status) === statusFilter,
   );
 
   // Group by month, then keep only the currently-selected month's group —
@@ -159,9 +154,7 @@ export default function Transactions() {
   }, [filtered, selectedMonth]);
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen max-w-[430px] mx-auto pb-10"
-    >
+    <div className="relative overflow-hidden min-h-screen max-w-[430px] mx-auto pb-10">
       <GlassLogoGlow />
       {/* ── Top bar ── */}
       <div className="pt-6 px-5 pb-4 flex items-center gap-3 sticky top-0 z-40">
@@ -193,9 +186,7 @@ export default function Transactions() {
         <PageLoadingState label="Loading your payment history…" size={56} padding="36px 24px" />
       ) : error ? (
         <div className="text-center py-8">
-          <p className="text-danger text-sm mb-3">
-            Couldn't load transactions.
-          </p>
+          <p className="text-danger text-sm mb-3">Couldn't load transactions.</p>
           <button
             onClick={() => refetch()}
             className="bg-transparent border border-[#FCA5A5] rounded-full text-[#EF4444] text-xs font-semibold cursor-pointer py-1.5 px-4.5"
@@ -206,8 +197,21 @@ export default function Transactions() {
       ) : groups.length === 0 ? (
         <div className="mx-3 py-12 px-6 text-center flex flex-col items-center gap-2">
           <div className="w-[52px] h-[52px] rounded-full bg-stacked-container flex items-center justify-center mb-1">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#9CA3AF"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 12V22H4V12" />
+              <path d="M22 7H2v5h20V7z" />
+              <path d="M12 22V7" />
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
             </svg>
           </div>
           <p className="text-sm font-semibold text-[#374151] m-0">No transactions yet</p>
@@ -220,16 +224,10 @@ export default function Transactions() {
             className="bg-surface-container rounded-2xl mx-3 mt-0 mb-3 overflow-hidden"
           >
             <div className="py-3 px-5 flex items-center gap-1.5 border-b border-stacked-container">
-              <span className="text-sm font-bold text-[#2563eb]">
-                {label}
-              </span>
+              <span className="text-sm font-bold text-[#2563eb]">{label}</span>
             </div>
             {txs.map((tx) => (
-              <TxRow
-                key={tx.id}
-                tx={tx}
-                onOpen={(t) => navigate(`/member/transactions/${t.id}`)}
-              />
+              <TxRow key={tx.id} tx={tx} onOpen={(t) => navigate(`/member/transactions/${t.id}`)} />
             ))}
           </div>
         ))

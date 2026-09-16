@@ -94,14 +94,20 @@ function CreateCommunityAccountModal({ onClose }) {
                 className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-left bg-transparent hover:bg-gray-50 transition-colors cursor-pointer border-none"
               >
                 {c.logo?.url ? (
-                  <img src={c.logo.url} alt="" className="w-7 h-7 rounded-lg object-cover flex-shrink-0" />
+                  <img
+                    src={c.logo.url}
+                    alt=""
+                    className="w-7 h-7 rounded-lg object-cover flex-shrink-0"
+                  />
                 ) : (
                   <div className="w-7 h-7 rounded-lg bg-brand-tint flex items-center justify-center text-brand font-bold text-[10px] flex-shrink-0">
                     {(c.name ?? "C")[0].toUpperCase()}
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="text-[12px] font-semibold text-gray-900 leading-tight truncate">{c.name}</p>
+                  <p className="text-[12px] font-semibold text-gray-900 leading-tight truncate">
+                    {c.name}
+                  </p>
                   <p className="text-[10px] text-gray-400 font-mono">{c.slug}</p>
                 </div>
               </button>
@@ -142,22 +148,16 @@ const REVIEW_DECISIONS = [
 
 function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
   const { data, isLoading, error } = useQuery({
-    queryKey: [
-      "resolve-account",
-      account.settlementBankCode,
-      account.accountNumber,
-    ],
+    queryKey: ["resolve-account", account.settlementBankCode, account.accountNumber],
     queryFn: () =>
-      resolveBankAccount(
-        account.settlementBankCode,
-        account.accountNumber,
-      ).then((r) => r.data?.data),
+      resolveBankAccount(account.settlementBankCode, account.accountNumber).then(
+        (r) => r.data?.data,
+      ),
     staleTime: 0, // always re-check live, never cache a stale Paystack lookup
   });
   const nameMatches =
     data?.accountName &&
-    data.accountName.trim().toLowerCase() ===
-      account.accountName?.trim().toLowerCase();
+    data.accountName.trim().toLowerCase() === account.accountName?.trim().toLowerCase();
 
   const [decision, setDecision] = useState(null);
   const [comment, setComment] = useState("");
@@ -166,11 +166,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
   const chosen = REVIEW_DECISIONS.find((d) => d.value === decision);
 
   return (
-    <ModalShell
-      title="Review Payout Account"
-      subtitle={account.accountNumber}
-      onClose={onClose}
-    >
+    <ModalShell title="Review Payout Account" subtitle={account.accountNumber} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -181,22 +177,17 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
       >
         {isLoading ? (
           <div className="flex items-center gap-2 text-xs text-gray-500">
-            <Loader2 size={14} className="animate-spin" /> Checking with
-            Paystack…
+            <Loader2 size={14} className="animate-spin" /> Checking with Paystack…
           </div>
         ) : error ? (
           <p className="text-xs text-red-500">
-            Couldn't resolve this account with Paystack. Double-check the
-            account number and bank code before deciding.
+            Couldn't resolve this account with Paystack. Double-check the account number and bank
+            code before deciding.
           </p>
         ) : (
-          <div
-            className={`rounded-lg p-4 ${nameMatches ? "bg-[#ECFDF5]" : "bg-[#FEF2F2]"}`}
-          >
+          <div className={`rounded-lg p-4 ${nameMatches ? "bg-[#ECFDF5]" : "bg-[#FEF2F2]"}`}>
             <p className="text-xs text-gray-500 mb-1">On file:</p>
-            <p className="text-sm font-semibold text-gray-900 mb-3">
-              {account.accountName}
-            </p>
+            <p className="text-sm font-semibold text-gray-900 mb-3">{account.accountName}</p>
             <p className="text-xs text-gray-500 mb-1">Paystack says:</p>
             <p
               className={`text-sm font-semibold ${nameMatches ? "text-green-700" : "text-red-600"}`}
@@ -205,17 +196,14 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
             </p>
             {!nameMatches && (
               <p className="text-[11px] text-red-500 mt-2">
-                Names don't match — confirm this is really the same account
-                before accepting.
+                Names don't match — confirm this is really the same account before accepting.
               </p>
             )}
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Decision
-          </label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Decision</label>
           <div className="grid grid-cols-3 gap-2">
             {REVIEW_DECISIONS.map(({ value, label, Icon, activeCls }) => (
               <button
@@ -263,12 +251,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
           </button>
           <button
             type="submit"
-            disabled={
-              !decision ||
-              submitting ||
-              isLoading ||
-              (commentRequired && !comment.trim())
-            }
+            disabled={!decision || submitting || isLoading || (commentRequired && !comment.trim())}
             className={`flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none ${chosen?.solidCls ?? "bg-[#9CA3AF]"}`}
           >
             {submitting ? (
@@ -318,8 +301,7 @@ export default function AccountsSection() {
   const review = useMutation({
     mutationFn: ({ communityId, accountId, decision, comment }) =>
       reviewCommunityAccount(communityId, accountId, { decision, comment }),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["admin-community-accounts"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-community-accounts"] }),
     meta: {
       successMessage: (vars) =>
         vars.decision === "ACCEPT"
@@ -385,14 +367,7 @@ export default function AccountsSection() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-stacked-container">
-              {[
-                "Bank",
-                "Account Number",
-                "Account Name",
-                "Status",
-                "Default",
-                "",
-              ].map((h) => (
+              {["Bank", "Account Number", "Account Name", "Status", "Default", ""].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap"
@@ -409,22 +384,14 @@ export default function AccountsSection() {
                 className={`group hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
-                  <p className="text-[12px] font-semibold text-gray-900">
-                    {a.settlementBank}
-                  </p>
-                  <p className="text-[10px] text-gray-400 font-mono">
-                    {a.settlementBankCode}
-                  </p>
+                  <p className="text-[12px] font-semibold text-gray-900">{a.settlementBank}</p>
+                  <p className="text-[10px] text-gray-400 font-mono">{a.settlementBankCode}</p>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="text-[12px] text-gray-700 font-mono">
-                    {a.accountNumber}
-                  </span>
+                  <span className="text-[12px] text-gray-700 font-mono">{a.accountNumber}</span>
                 </td>
                 <td className="px-4 py-3">
-                  <span className="text-[12px] text-gray-700">
-                    {a.accountName}
-                  </span>
+                  <span className="text-[12px] text-gray-700">{a.accountName}</span>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <StatusBadge status={a.status} />
@@ -483,9 +450,7 @@ export default function AccountsSection() {
           }}
         />
       )}
-      {creatingAccount && (
-        <CreateCommunityAccountModal onClose={() => setCreatingAccount(false)} />
-      )}
+      {creatingAccount && <CreateCommunityAccountModal onClose={() => setCreatingAccount(false)} />}
     </div>
   );
 }

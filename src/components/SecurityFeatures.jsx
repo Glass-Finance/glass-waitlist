@@ -45,9 +45,7 @@ export default function SecurityFeatures() {
           const { rotate, y } = TILTS[idx];
 
           entry.target.style.transform =
-            window.innerWidth >= 1024
-              ? `rotateZ(${rotate}deg) translateY(${y}px)`
-              : "none";
+            window.innerWidth >= 1024 ? `rotateZ(${rotate}deg) translateY(${y}px)` : "none";
 
           observer.unobserve(entry.target);
         });
@@ -63,10 +61,7 @@ export default function SecurityFeatures() {
   }, []);
 
   return (
-    <section
-      className="relative isolate overflow-hidden py-20 md:py-28"
-      id="security"
-    >
+    <section className="relative isolate overflow-hidden py-20 md:py-28" id="security">
       <div className="relative z-10 max-w-[1140px] mx-auto px-6">
         {/* ── Header ── */}
         <div className="mb-8 md:mb-16 text-center">
@@ -106,7 +101,8 @@ export default function SecurityFeatures() {
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.65, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              We protect your funds with encryption in transit and at rest, strict access controls, and continuous security monitoring.
+              We protect your funds with encryption in transit and at rest, strict access controls,
+              and continuous security monitoring.
             </motion.p>
           </div>
         </div>
@@ -148,14 +144,10 @@ export default function SecurityFeatures() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-lg font-bold text-[#1C2B8A] mb-3 leading-[1.25]">
-                  {title}
-                </h3>
+                <h3 className="text-lg font-bold text-[#1C2B8A] mb-3 leading-[1.25]">{title}</h3>
 
                 {/* Description */}
-                <p className="text-sm text-black/50 leading-[1.65] m-0 max-w-[260px]">
-                  {desc}
-                </p>
+                <p className="text-sm text-black/50 leading-[1.65] m-0 max-w-[260px]">{desc}</p>
               </div>
             );
           })}

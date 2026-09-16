@@ -46,8 +46,7 @@ export function useCommunityAccount(communityId) {
 
   // Update an existing account's bank details
   const update = useMutation({
-    mutationFn: ({ accountId, payload }) =>
-      updateCommunityAccount(communityId, accountId, payload),
+    mutationFn: ({ accountId, payload }) => updateCommunityAccount(communityId, accountId, payload),
     onSuccess: invalidate,
     meta: { successMessage: "Payout account updated" },
   });

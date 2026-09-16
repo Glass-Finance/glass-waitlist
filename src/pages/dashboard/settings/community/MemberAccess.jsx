@@ -28,9 +28,7 @@ function MemberActionsMenu({ open, onToggle, onClose, busy, actions }) {
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={onClose} />
-          <div
-            className="absolute right-0 top-full mt-1 z-20 bg-white rounded-xl overflow-hidden min-w-[190px] border border-surface-container-border shadow-[0_4px_16px_rgba(0,0,0,0.12)]"
-          >
+          <div className="absolute right-0 top-full mt-1 z-20 bg-white rounded-xl overflow-hidden min-w-[190px] border border-surface-container-border shadow-[0_4px_16px_rgba(0,0,0,0.12)]">
             {actions.map((a) => (
               <button
                 key={a.label}
@@ -82,9 +80,7 @@ export default function MemberAccess() {
   const memberRoleId = findRoleId(rolesData, "MEMBER") ?? FALLBACK_MEMBER_ROLE.id;
   const adminRoleId = findRoleId(rolesData, "ADMIN");
 
-  const inviteLink = communitySlug
-    ? `${APP_ORIGIN}/member/join?community=${communitySlug}`
-    : null;
+  const inviteLink = communitySlug ? `${APP_ORIGIN}/member/join?community=${communitySlug}` : null;
 
   const handleCopy = () => copy(inviteLink);
 
@@ -109,7 +105,6 @@ export default function MemberAccess() {
 
   return (
     <div className="flex flex-col gap-4 w-full">
-
       {/* Joining & visibility */}
       <div className="bg-surface-container rounded-2xl p-5 border border-surface-container-border">
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Joining &amp; visibility</p>
@@ -123,9 +118,8 @@ export default function MemberAccess() {
             <p className="text-xs font-medium text-gray-900 m-0">Require approval to join</p>
             <p className="text-xs text-gray-500 mt-0.5 m-0">
               New join requests wait in{" "}
-              <span className="font-medium text-gray-700">Join Requests</span> until
-              an admin approves them. When off, anyone can join instantly from
-              Discover or an invite link.
+              <span className="font-medium text-gray-700">Join Requests</span> until an admin
+              approves them. When off, anyone can join instantly from Discover or an invite link.
             </p>
           </div>
           <Toggle
@@ -140,8 +134,8 @@ export default function MemberAccess() {
           <div className="min-w-0 pr-4">
             <p className="text-xs font-medium text-gray-900 m-0">Show in Discover</p>
             <p className="text-xs text-gray-500 mt-0.5 m-0">
-              List this community in the public Discover Communities search.
-              When off, people can only join through your invite link.
+              List this community in the public Discover Communities search. When off, people can
+              only join through your invite link.
             </p>
           </div>
           <Toggle
@@ -166,9 +160,7 @@ export default function MemberAccess() {
               <QRCodeCanvas value={inviteLink} size={96} />
             </div>
           )}
-          <div
-            className="flex items-center justify-between px-4 py-3 rounded-xl flex-1 min-w-0 bg-[#EEF2FF] border border-[#C7D2FE]"
-          >
+          <div className="flex items-center justify-between px-4 py-3 rounded-xl flex-1 min-w-0 bg-[#EEF2FF] border border-[#C7D2FE]">
             <span className="text-sm text-gray-700 font-medium truncate">
               {inviteLink ?? "Select a community to generate an invite link"}
             </span>
@@ -187,7 +179,9 @@ export default function MemberAccess() {
       {/* Admin Management */}
       <div className="bg-surface-container rounded-2xl p-5 border border-surface-container-border">
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Admin management</p>
-        <p className="text-xs text-gray-500 mb-4">Promote members to admin or revoke admin access.</p>
+        <p className="text-xs text-gray-500 mb-4">
+          Promote members to admin or revoke admin access.
+        </p>
         <div className="-mx-5 border-b border-gray-100 mb-4" />
         {!rolesLoading && !adminRoleId && (
           <p className="text-xs text-red-500 mb-3">
@@ -204,7 +198,9 @@ export default function MemberAccess() {
             <div className="flex items-center justify-between py-3">
               <div>
                 <p className="text-sm text-gray-400">No members yet</p>
-                <p className="text-xs text-gray-400">Share the invite link above to start bringing members into this community.</p>
+                <p className="text-xs text-gray-400">
+                  Share the invite link above to start bringing members into this community.
+                </p>
               </div>
               <span className="w-14 h-5 rounded-full border-2 border-dashed border-gray-200 flex-shrink-0" />
             </div>
@@ -229,9 +225,7 @@ export default function MemberAccess() {
                 {!isOwnerRole(member) && (
                   <MemberActionsMenu
                     open={openMenuId === member.id}
-                    onToggle={() =>
-                      setOpenMenuId((id) => (id === member.id ? null : member.id))
-                    }
+                    onToggle={() => setOpenMenuId((id) => (id === member.id ? null : member.id))}
                     onClose={() => setOpenMenuId(null)}
                     busy={removeMember.isPending || updateMember.isPending}
                     actions={[
@@ -277,7 +271,11 @@ export default function MemberAccess() {
                 : `This removes ${memberName(pendingAction.member)} from this community. They'll lose access to community payment plans and dashboard data tied to this community; this can't be undone.`
           }
           confirmLabel={
-            pendingAction.type === "demote" ? "Demote" : pendingAction.type === "promote" ? "Promote" : "Remove"
+            pendingAction.type === "demote"
+              ? "Demote"
+              : pendingAction.type === "promote"
+                ? "Promote"
+                : "Remove"
           }
           danger={pendingAction.type !== "promote"}
           confirming={updateMember.isPending || removeMember.isPending}
@@ -302,4 +300,4 @@ export default function MemberAccess() {
       )}
     </div>
   );
-}
+}

@@ -76,8 +76,7 @@ export function isMobileSession() {
 // origin Vite is serving on (http://localhost:5173), so invite links
 // copied during development actually resolve instead of going to a
 // hardcoded domain that may not be live.
-export const APP_ORIGIN =
-  import.meta.env.VITE_APP_URL ?? window.location.origin;
+export const APP_ORIGIN = import.meta.env.VITE_APP_URL ?? window.location.origin;
 
 // ── Marketing / app domain separation ────────────────────────────────────────
 // glasspay.app + www serve the marketing site only; the application lives on
@@ -104,8 +103,7 @@ export function isMarketingHost() {
 // window.location.origin, since this app is never itself served from the
 // marketing domain (unlike APP_ORIGIN's fallback, which covers same-origin
 // local dev).
-export const MARKETING_ORIGIN =
-  import.meta.env.VITE_MARKETING_URL ?? "https://glasspay.app";
+export const MARKETING_ORIGIN = import.meta.env.VITE_MARKETING_URL ?? "https://glasspay.app";
 
 // True only on the real production app deployment — never in local dev or
 // a preview build, so the landing pages stay directly viewable there for
@@ -137,4 +135,3 @@ export function buildMobileUrl(path) {
 export function mobileRequiredPath(targetPath) {
   return `/member/mobile-required?to=${encodeURIComponent(targetPath)}`;
 }
-

@@ -79,7 +79,10 @@ export default function Role() {
         <div className="bg-surface-container rounded-2xl p-6 border border-surface-container-border">
           <div className="flex flex-col gap-3">
             {[0, 1].map((i) => (
-              <div key={i} className="flex items-start gap-3 px-4 py-4 rounded-xl bg-gray-100 animate-pulse border-[1.5px] border-surface-container-border">
+              <div
+                key={i}
+                className="flex items-start gap-3 px-4 py-4 rounded-xl bg-gray-100 animate-pulse border-[1.5px] border-surface-container-border"
+              >
                 <div className="w-5 h-5 rounded-full bg-gray-200 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <div className="h-3.5 w-32 bg-gray-200 rounded mb-2" />
@@ -104,9 +107,9 @@ export default function Role() {
         <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-4">
           <p className="text-sm font-medium text-amber-800 mb-1">No member record found</p>
           <p className="text-xs text-amber-700 leading-relaxed">
-            Your account doesn't have a member record in this community yet. This usually means
-            you haven't been added as a paying member. Ask another admin to add you, or switch to
-            a community where you have a member record.
+            Your account doesn't have a member record in this community yet. This usually means you
+            haven't been added as a paying member. Ask another admin to add you, or switch to a
+            community where you have a member record.
           </p>
         </div>
       </div>
@@ -132,7 +135,9 @@ export default function Role() {
             </span>
           )}
         </div>
-        <p className="text-xs text-gray-500 mb-4">Define Your Membership and Payment participation</p>
+        <p className="text-xs text-gray-500 mb-4">
+          Define Your Membership and Payment participation
+        </p>
         <div className="-mx-6 border-b border-gray-100 mb-4" />
 
         <div className="flex flex-col gap-3">
@@ -148,7 +153,13 @@ export default function Role() {
                   ${saving ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
               >
                 {isSelected ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 mt-0.5">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="flex-shrink-0 mt-0.5"
+                  >
                     <rect x="0.5" y="0.5" width="23" height="23" rx="11.5" stroke="#002FA7" />
                     <circle cx="12" cy="12" r="8" fill="#002FA7" />
                   </svg>
@@ -166,9 +177,7 @@ export default function Role() {
       </div>
 
       {/* Save error */}
-      {saveError && (
-        <p className="text-xs text-red-500">{saveError}</p>
-      )}
+      {saveError && <p className="text-xs text-red-500">{saveError}</p>}
 
       {/* Warning banner -- yellow, matching the Figma spec exactly (#FFFFE5). */}
       <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-[#FFFFE5]">

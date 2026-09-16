@@ -13,9 +13,7 @@ export function intervalUnitLabel(frequency, interval) {
 export function billingDayLabel(frequency, billingDay) {
   const day = Number(billingDay);
   if (!day) return "—";
-  return frequency === "WEEKLY"
-    ? (WEEKDAYS[day - 1] ?? String(day))
-    : `The ${ordinal(day)}`;
+  return frequency === "WEEKLY" ? (WEEKDAYS[day - 1] ?? String(day)) : `The ${ordinal(day)}`;
 }
 
 // <input type="number"> silently increments/decrements its value on

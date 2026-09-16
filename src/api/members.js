@@ -5,8 +5,7 @@ import client from "./client";
 // ─────────────────────────────────────────────────────────────────────────────
 
 // GET /api/v1/user/me — current authenticated user
-export const getMe = () =>
-  client.get("/user/me");
+export const getMe = () => client.get("/user/me");
 
 // PATCH /api/v1/user/profile
 // { userData: { firstName, lastName, profileImageFileId, ... } } -- phoneNumber
@@ -49,12 +48,10 @@ export const deleteAccount = (token) => client.delete("/user/me", { data: { toke
 
 // GET /api/v1/communities/me — all communities the user belongs to
 // Extra axios config (e.g. _skipAuthRedirect) merges in — see verifyPayment.
-export const getMyCommunities = (config = {}) =>
-  client.get("/communities/me", config);
+export const getMyCommunities = (config = {}) => client.get("/communities/me", config);
 
 // GET /api/v1/communities/{communityIdentifier} — single community
-export const getCommunity = (communityId) =>
-  client.get(`/communities/${communityId}`);
+export const getCommunity = (communityId) => client.get(`/communities/${communityId}`);
 
 // GET /api/v1/communities/{communityIdentifier}/members/me
 // — current user's member record within a community
@@ -62,8 +59,7 @@ export const getMyMemberRecord = (communityId) =>
   client.get(`/communities/${communityId}/members/me`);
 
 // PATCH /api/v1/communities/{communityIdentifier}/leave
-export const leaveCommunity = (communityId) =>
-  client.patch(`/communities/${communityId}/leave`);
+export const leaveCommunity = (communityId) => client.patch(`/communities/${communityId}/leave`);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FINANCE — member obligations (upcoming / dues)
@@ -104,16 +100,13 @@ export const getMyAuthorisations = (config = {}) =>
   client.get("/finance/authorizations", { params: { pageSize: 100 }, ...config });
 
 // GET /api/v1/finance/authorizations/{authorizationId}
-export const getAuthorisation = (authId) =>
-  client.get(`/finance/authorizations/${authId}`);
+export const getAuthorisation = (authId) => client.get(`/finance/authorizations/${authId}`);
 
 // DELETE /api/v1/finance/authorizations/{authorizationId} — disable auto-pay
-export const deleteAuthorisation = (authId) =>
-  client.delete(`/finance/authorizations/${authId}`);
+export const deleteAuthorisation = (authId) => client.delete(`/finance/authorizations/${authId}`);
 
 // GET /api/v1/finance/banks — list Nigerian banks from Paystack
-export const getBanks = () =>
-  client.get("/finance/banks");
+export const getBanks = () => client.get("/finance/banks");
 
 // GET /api/v1/finance/resolve-account?bankCode=&accountNumber=
 export const resolveAccount = (bankCode, accountNumber) =>
@@ -144,12 +137,10 @@ export const verifyPayment = (reference, config = {}) =>
 
 // GET /api/v1/payment-links — list visible payment links (member-accessible)
 // Accepts query params: communityIdentifier, status, paymentType, audience, etc.
-export const getPaymentLinks = (params = {}) =>
-  client.get("/payment-links", { params });
+export const getPaymentLinks = (params = {}) => client.get("/payment-links", { params });
 
 // GET /api/v1/payment-links/{paymentLinkIdentifier}
-export const getPaymentLink = (id) =>
-  client.get(`/payment-links/${id}`);
+export const getPaymentLink = (id) => client.get(`/payment-links/${id}`);
 
 // GET /api/v1/communities/{communityIdentifier}/payment-links
 // NOT actually member-accessible despite the name/URL being shared with the
@@ -168,24 +159,19 @@ export const getMemberCommunityPaymentLinks = (communityIdentifier) =>
 // ─────────────────────────────────────────────────────────────────────────────
 
 // GET /api/v1/notifications — fetch all user notifications
-export const getNotifications = () =>
-  client.get("/notifications");
+export const getNotifications = () => client.get("/notifications");
 
 // GET /api/v1/notifications/unread-count
-export const getUnreadCount = () =>
-  client.get("/notifications/unread-count");
+export const getUnreadCount = () => client.get("/notifications/unread-count");
 
 // PATCH /api/v1/notifications/{notificationId}/read
-export const markAsRead = (notificationId) =>
-  client.patch(`/notifications/${notificationId}/read`);
+export const markAsRead = (notificationId) => client.patch(`/notifications/${notificationId}/read`);
 
 // PATCH /api/v1/notifications/read-all
-export const markAllAsRead = () =>
-  client.patch("/notifications/read-all");
+export const markAllAsRead = () => client.patch("/notifications/read-all");
 
 // GET /api/v1/notifications/preferences
-export const getNotificationPreferences = () =>
-  client.get("/notifications/preferences");
+export const getNotificationPreferences = () => client.get("/notifications/preferences");
 
 // PATCH /api/v1/notifications/preferences
 export const updateNotificationPreferences = (payload) =>

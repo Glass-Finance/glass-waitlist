@@ -36,7 +36,10 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
     confirmPassword: "",
   });
   const [fieldErrors, setFieldErrors] = useState({
-    firstName: "", lastName: "", password: "", confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const handleChange = (e) => {
@@ -44,10 +47,16 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
     setForm((f) => ({ ...f, [name]: value }));
     setFieldErrors((fe) => {
       const next = { ...fe };
-      if (fe[name]) next[name] = validateField(name, value, name === "password" ? form.confirmPassword : form.password);
+      if (fe[name])
+        next[name] = validateField(
+          name,
+          value,
+          name === "password" ? form.confirmPassword : form.password,
+        );
       // Editing password after confirmPassword was already checked needs
       // confirmPassword re-checked against the fresh value.
-      if (name === "password" && fe.confirmPassword) next.confirmPassword = validateField("confirmPassword", form.confirmPassword, value);
+      if (name === "password" && fe.confirmPassword)
+        next.confirmPassword = validateField("confirmPassword", form.confirmPassword, value);
       return next;
     });
   };
@@ -56,7 +65,11 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
     const { name, value } = e.target;
     setFieldErrors((fe) => ({
       ...fe,
-      [name]: validateField(name, value, name === "password" ? form.confirmPassword : form.password),
+      [name]: validateField(
+        name,
+        value,
+        name === "password" ? form.confirmPassword : form.password,
+      ),
     }));
   };
 
@@ -98,17 +111,13 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
   return (
     <div className="w-full max-w-md flex flex-col md:mt-14 mb-auto">
       <div className="mb-3">
-        <h1 className="text-headline text-gray-900 mb-1.5">
-          Complete Your Profile
-        </h1>
+        <h1 className="text-headline text-gray-900 mb-1.5">Complete Your Profile</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-12">
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
-            <label className="text-label font-medium text-gray-700">
-              First Name
-            </label>
+            <label className="text-label font-medium text-gray-700">First Name</label>
             <SignUpTextInput
               type="text"
               name="firstName"
@@ -122,9 +131,7 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
             <SignUpFieldError message={fieldErrors.firstName} />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-label font-medium text-gray-700">
-              Last Name
-            </label>
+            <label className="text-label font-medium text-gray-700">Last Name</label>
             <SignUpTextInput
               type="text"
               name="lastName"
@@ -140,9 +147,7 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-label font-medium text-gray-700">
-            Create Password
-          </label>
+          <label className="text-label font-medium text-gray-700">Create Password</label>
           <div className="relative">
             <SignUpTextInput
               key={showPassword ? "text" : "password"}
@@ -169,9 +174,7 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-label font-medium text-gray-700">
-            Confirm Password
-          </label>
+          <label className="text-label font-medium text-gray-700">Confirm Password</label>
           <div className="relative">
             <SignUpTextInput
               type={showConfirm ? "text" : "password"}

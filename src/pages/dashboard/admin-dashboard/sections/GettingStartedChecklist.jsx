@@ -25,9 +25,7 @@ export default function GettingStartedChecklist({
     >
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <p className="text-sm font-semibold text-gray-900">
-            Get your community ready
-          </p>
+          <p className="text-sm font-semibold text-gray-900">Get your community ready</p>
           <p className="text-xs text-gray-500 mt-0.5">
             Complete these steps to start collecting dues.
           </p>
@@ -45,15 +43,9 @@ export default function GettingStartedChecklist({
         {/* Step 1 — always done (they're here) */}
         <div className="flex items-center gap-3">
           <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-            <Check
-              size={11}
-              className="text-emerald-600"
-              strokeWidth={2.5}
-            />
+            <Check size={11} className="text-emerald-600" strokeWidth={2.5} />
           </span>
-          <span className="text-xs text-gray-400 line-through">
-            Create your community
-          </span>
+          <span className="text-xs text-gray-400 line-through">Create your community</span>
         </div>
 
         {/* Step 2 — create a payment plan */}
@@ -62,13 +54,7 @@ export default function GettingStartedChecklist({
             <span
               className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${hasPlans ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}
             >
-              {hasPlans && (
-                <Check
-                  size={11}
-                  className="text-emerald-600"
-                  strokeWidth={2.5}
-                />
-              )}
+              {hasPlans && <Check size={11} className="text-emerald-600" strokeWidth={2.5} />}
             </span>
             <span
               className={`text-xs ${hasPlans ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}
@@ -78,11 +64,7 @@ export default function GettingStartedChecklist({
           </div>
           {!hasPlans && (
             <button
-              onClick={() =>
-                navigate(
-                  `/dashboard/payments?community=${communityId ?? ""}`,
-                )
-              }
+              onClick={() => navigate(`/dashboard/payments?community=${communityId ?? ""}`)}
               className="text-xs font-semibold text-brand bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
             >
               Create plan
@@ -96,13 +78,7 @@ export default function GettingStartedChecklist({
             <span
               className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${hasMembers ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}
             >
-              {hasMembers && (
-                <Check
-                  size={11}
-                  className="text-emerald-600"
-                  strokeWidth={2.5}
-                />
-              )}
+              {hasMembers && <Check size={11} className="text-emerald-600" strokeWidth={2.5} />}
             </span>
             <span
               className={`text-xs ${hasMembers ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}
@@ -159,20 +135,14 @@ export default function GettingStartedChecklist({
           </div>
           {!hasPayoutAccount && (
             <button
-              onClick={() =>
-                navigate("/dashboard/settings/finance/paystack")
-              }
+              onClick={() => navigate("/dashboard/settings/finance/paystack")}
               className={`text-xs font-semibold bg-white px-3 py-1.5 rounded-lg transition-colors cursor-pointer flex-shrink-0 border ${
                 payoutAccountRejected
                   ? "text-red-700 border-red-100 hover:bg-red-50"
                   : "text-brand border-blue-100 hover:bg-blue-50"
               }`}
             >
-              {payoutAccountRejected
-                ? "Review"
-                : payoutAccountPending
-                  ? "View status"
-                  : "Set up"}
+              {payoutAccountRejected ? "Review" : payoutAccountPending ? "View status" : "Set up"}
             </button>
           )}
         </div>

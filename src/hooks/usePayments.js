@@ -16,15 +16,9 @@ export { useGlobalOverview } from "./payments/useGlobalOverview";
 
 export { usePayments } from "./payments/useMainPayments";
 
-export {
-  isAuthorisationExpired,
-  findAuthorisationForPlan,
-} from "./payments/authorisation";
+export { isAuthorisationExpired, findAuthorisationForPlan } from "./payments/authorisation";
 
-export {
-  fetchAuthorisationsOnce,
-  useManagePayments,
-} from "./payments/useManagePayments";
+export { fetchAuthorisationsOnce, useManagePayments } from "./payments/useManagePayments";
 
 export { usePendingPaymentVerification } from "./payments/usePendingPaymentVerification";
 

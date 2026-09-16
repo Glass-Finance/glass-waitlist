@@ -47,7 +47,7 @@ export function useInviteToken() {
           next.delete("token");
           return next;
         },
-        { replace: true }
+        { replace: true },
       );
     }
   }, [searchParams, setSearchParams]);

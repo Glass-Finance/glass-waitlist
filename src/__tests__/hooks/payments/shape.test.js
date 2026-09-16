@@ -51,9 +51,7 @@ describe("shapeObligation", () => {
   });
 
   it("detects a recurring plan via paymentLink.paymentType", () => {
-    expect(
-      shapeObligation({ paymentLink: { paymentType: "RECURRING" } }).type,
-    ).toBe("recurring");
+    expect(shapeObligation({ paymentLink: { paymentType: "RECURRING" } }).type).toBe("recurring");
   });
 
   it("defaults to one-time when neither recurring signal is present", () => {
@@ -149,14 +147,32 @@ describe("shapeAuthorisation", () => {
   it("maps consents and derives revoked from revokedAt", () => {
     const raw = {
       consents: [
-        { consentId: "c1", community: { name: "Club" }, paymentLink: { id: "pl-1", title: "Dues" } },
+        {
+          consentId: "c1",
+          community: { name: "Club" },
+          paymentLink: { id: "pl-1", title: "Dues" },
+        },
         { consentId: "c2", revokedAt: "2026-01-01" },
       ],
     };
     const shaped = shapeAuthorisation(raw);
     expect(shaped.consents).toEqual([
-      { id: "c1", planStatus: undefined, communityName: "Club", paymentLinkTitle: "Dues", paymentLinkId: "pl-1", revoked: false },
-      { id: "c2", planStatus: undefined, communityName: undefined, paymentLinkTitle: undefined, paymentLinkId: null, revoked: true },
+      {
+        id: "c1",
+        planStatus: undefined,
+        communityName: "Club",
+        paymentLinkTitle: "Dues",
+        paymentLinkId: "pl-1",
+        revoked: false,
+      },
+      {
+        id: "c2",
+        planStatus: undefined,
+        communityName: undefined,
+        paymentLinkTitle: undefined,
+        paymentLinkId: null,
+        revoked: true,
+      },
     ]);
   });
 
@@ -176,7 +192,10 @@ describe("normalizeCommunity", () => {
   });
 
   it("lifts name/slug/logo up from a nested member-shaped .community object", () => {
-    const c = { community: { name: "Alumni", slug: "alumni", logo: { url: "x" } }, memberRole: "MEMBER" };
+    const c = {
+      community: { name: "Alumni", slug: "alumni", logo: { url: "x" } },
+      memberRole: "MEMBER",
+    };
     const normalized = normalizeCommunity(c);
     expect(normalized.name).toBe("Alumni");
     expect(normalized.slug).toBe("alumni");

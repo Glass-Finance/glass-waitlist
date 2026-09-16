@@ -75,7 +75,9 @@ export default function CommunityProfile() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm({
       name: community.name ?? "",
-      category: Array.isArray(community.category) ? community.category[0] ?? "" : community.category ?? "",
+      category: Array.isArray(community.category)
+        ? (community.category[0] ?? "")
+        : (community.category ?? ""),
       description: community.description ?? "",
     });
   }, [community]);
@@ -83,10 +85,12 @@ export default function CommunityProfile() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
-    if (name === "name" && nameError) setNameError(value.trim() ? "" : "Community name is required.");
+    if (name === "name" && nameError)
+      setNameError(value.trim() ? "" : "Community name is required.");
   };
 
-  const handleNameBlur = (e) => setNameError(e.target.value.trim() ? "" : "Community name is required.");
+  const handleNameBlur = (e) =>
+    setNameError(e.target.value.trim() ? "" : "Community name is required.");
 
   const handleSave = async () => {
     setError("");
@@ -113,7 +117,10 @@ export default function CommunityProfile() {
     setError("");
     try {
       const resized = await resizeImageFile(file);
-      const uploadRes = await uploadFile.mutateAsync({ file: resized, fileCategory: "COMMUNITY_LOGO" });
+      const uploadRes = await uploadFile.mutateAsync({
+        file: resized,
+        fileCategory: "COMMUNITY_LOGO",
+      });
       const fileData = uploadRes.data?.data ?? uploadRes.data;
       const logoFileId = fileData?.id ?? fileData?.fileId;
       await updateCommunity.mutateAsync({ logoFileId });
@@ -122,35 +129,45 @@ export default function CommunityProfile() {
     }
   };
 
-  const initials = (community?.name ?? "?").split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("");
+  const initials = (community?.name ?? "?")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
 
   return (
-    <div className="flex flex-col gap-4" >
-
+    <div className="flex flex-col gap-4">
       {/* ── Community Information -- heading, logo, and fields all in one
           card, matching Figma (was two separate cards: a bare "Profile"
           heading + logo row, then a second card for the fields). ── */}
-      <div
-        className="bg-surface-container rounded-lg px-5 pt-4 pb-5 border border-surface-container-border"
-      >
+      <div className="bg-surface-container rounded-lg px-5 pt-4 pb-5 border border-surface-container-border">
         <p className="text-sm font-semibold text-gray-900 mb-0.5">Community Information</p>
-        <p className="text-xs text-gray-500 mb-4">This is how your information will appear across glass</p>
+        <p className="text-xs text-gray-500 mb-4">
+          This is how your information will appear across glass
+        </p>
         <div className="-mx-5 border-b border-gray-100 mb-4" />
 
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-xs text-brand flex-shrink-0 overflow-hidden bg-[#D7E2FF]"
-            >
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs text-brand flex-shrink-0 overflow-hidden bg-[#D7E2FF]">
               {logoPreview || community?.logo?.url || community?.logoUrl ? (
-                <img src={logoPreview ?? community?.logo?.url ?? community?.logoUrl} alt="" className="w-full h-full object-cover" />
+                <img
+                  src={logoPreview ?? community?.logo?.url ?? community?.logoUrl}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 initials || "C"
               )}
             </div>
             <div>
-              <p className="text-sm text-gray-900">{isLoading ? "Loading…" : (community?.name ?? "Community")}</p>
-              <p className="text-xs text-gray-500">{community?.slug ? `${INVITE_HOST}/member/join?community=${community.slug}` : ""}</p>
+              <p className="text-sm text-gray-900">
+                {isLoading ? "Loading…" : (community?.name ?? "Community")}
+              </p>
+              <p className="text-xs text-gray-500">
+                {community?.slug ? `${INVITE_HOST}/member/join?community=${community.slug}` : ""}
+              </p>
             </div>
           </div>
           <input
@@ -172,8 +189,15 @@ export default function CommunityProfile() {
         <div className="flex flex-col gap-3">
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1.5">Community Name</label>
-            <input type="text" name="name" value={form.name} onChange={handleChange} onBlur={handleNameBlur} className={inputCls}
-              style={nameError ? { borderColor: "var(--color-danger)" } : undefined} />
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              onBlur={handleNameBlur}
+              className={inputCls}
+              style={nameError ? { borderColor: "var(--color-danger)" } : undefined}
+            />
             {nameError && <p className="text-xs text-danger mt-1">{nameError}</p>}
           </div>
 
@@ -183,8 +207,17 @@ export default function CommunityProfile() {
                 no controllable gap -- appearance-none drops it in favor of a
                 custom triangle with proper right-margin breathing room. */}
             <div className="relative">
-              <select name="category" value={form.category} onChange={handleChange} className={`${inputCls} appearance-none !pr-9`}>
-                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              <select
+                name="category"
+                value={form.category}
+                onChange={handleChange}
+                className={`${inputCls} appearance-none !pr-9`}
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
               </select>
               <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
             </div>
@@ -196,7 +229,13 @@ export default function CommunityProfile() {
                 this field to one line's worth of height despite rows={3},
                 leaving the text pinned near the top with dead space below
                 instead of a proper 3-row box. */}
-            <textarea name="description" value={form.description} onChange={handleChange} rows={3} className={`${inputCls} resize-none !h-auto !min-h-[88px] !py-3`} />
+            <textarea
+              name="description"
+              value={form.description}
+              onChange={handleChange}
+              rows={3}
+              className={`${inputCls} resize-none !h-auto !min-h-[88px] !py-3`}
+            />
           </div>
         </div>
 
@@ -224,33 +263,38 @@ export default function CommunityProfile() {
       {/* ── Delete Community — owners only. Promoted admins manage the
           community but don't get its destructive controls. ── */}
       {community?.owned && (
-      <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
-        <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Community</p>
-        <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
-        <div className="-mx-6 border-b border-gray-100 mb-4" />
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <p className="text-xs text-gray-700">
-            Permanently remove this community and all associated data from Glass.
-          </p>
-          <button
-            onClick={() => setDeleteModal(true)}
-            className="self-start sm:self-auto flex-shrink-0 px-4 py-1.5 rounded-md text-xs font-medium text-red-500 hover:bg-red-50 transition-all cursor-pointer bg-transparent border border-[#FECACA]"
-          >
-            Delete
-          </button>
+        <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
+          <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Community</p>
+          <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
+          <div className="-mx-6 border-b border-gray-100 mb-4" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <p className="text-xs text-gray-700">
+              Permanently remove this community and all associated data from Glass.
+            </p>
+            <button
+              onClick={() => setDeleteModal(true)}
+              className="self-start sm:self-auto flex-shrink-0 px-4 py-1.5 rounded-md text-xs font-medium text-red-500 hover:bg-red-50 transition-all cursor-pointer bg-transparent border border-[#FECACA]"
+            >
+              Delete
+            </button>
+          </div>
         </div>
-      </div>
       )}
 
       {deleteModal && (
-        <div
-          className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/20"
-        >
+        <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/20">
           <div className="bg-surface-bg rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-surface-container-border">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center mb-4 bg-danger-tint"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center mb-4 bg-danger-tint">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#DC2626"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="3 6 5 6 21 6" />
                 <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                 <path d="M10 11v6M14 11v6" />
@@ -260,7 +304,9 @@ export default function CommunityProfile() {
 
             <h3 className="text-base font-semibold text-gray-900 mb-1">Delete Community</h3>
             <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-              This will permanently delete <strong className="text-gray-800">{community?.name}</strong> and all associated members, payments, and data. This cannot be undone.
+              This will permanently delete{" "}
+              <strong className="text-gray-800">{community?.name}</strong> and all associated
+              members, payments, and data. This cannot be undone.
             </p>
 
             <label className="block text-xs font-medium text-gray-700 mb-1.5">
@@ -277,7 +323,11 @@ export default function CommunityProfile() {
 
             <div className="flex gap-2">
               <button
-                onClick={() => { setDeleteModal(false); setDeleteConfirm(""); setDeleteError(""); }}
+                onClick={() => {
+                  setDeleteModal(false);
+                  setDeleteConfirm("");
+                  setDeleteError("");
+                }}
                 className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors bg-stacked-container"
               >
                 Cancel

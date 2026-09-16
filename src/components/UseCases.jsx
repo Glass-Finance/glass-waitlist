@@ -113,9 +113,7 @@ function UseCaseCard({ title, desc, variant, entryDelay }) {
       </h3>
 
       {/* Desc */}
-      <p className="text-lg text-black/50 leading-[1.6] m-0 max-w-[360px]">
-        {desc}
-      </p>
+      <p className="text-lg text-black/50 leading-[1.6] m-0 max-w-[360px]">{desc}</p>
     </div>
   );
 }
@@ -205,7 +203,6 @@ export default function UseCases() {
         className="py-20 md:py-28 relative isolate overflow-hidden"
         id="use-cases"
       >
-
         <div className="max-w-[1140px] mx-auto px-6 relative z-10">
           {/* ── Header ── */}
           <div className="text-center mb-14">

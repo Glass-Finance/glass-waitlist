@@ -66,7 +66,9 @@ export const TextInput = forwardRef(function TextInput(
         className={`w-full rounded-lg border px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${invalid ? "border-danger focus:border-[#002FA7]" : VARIANTS[variant]} ${className}`}
         {...rest}
       />
-      {rightElement && <div className="absolute right-4 top-1/2 -translate-y-1/2">{rightElement}</div>}
+      {rightElement && (
+        <div className="absolute right-4 top-1/2 -translate-y-1/2">{rightElement}</div>
+      )}
     </div>
   );
 });

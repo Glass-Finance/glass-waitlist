@@ -57,7 +57,9 @@ let inviteMember;
 
 beforeEach(() => {
   useActiveCommunityId.mockReturnValue("comm-1");
-  useCommunity.mockReturnValue({ data: { id: "comm-1", name: "Kings College Alumni", slug: "kca" } });
+  useCommunity.mockReturnValue({
+    data: { id: "comm-1", name: "Kings College Alumni", slug: "kca" },
+  });
   useMembersWithPayments.mockReturnValue({
     members: [member()],
     obligations: [],

@@ -2,7 +2,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Profile from "../../../../../pages/dashboard/settings/account/Profile";
-import { useMe, useUpdateProfile, useRequestPhoneUpdate, useUpdatePhone } from "../../../../../hooks/useMyAccount";
+import {
+  useMe,
+  useUpdateProfile,
+  useRequestPhoneUpdate,
+  useUpdatePhone,
+} from "../../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../../hooks/useFileUpload";
 import { useAuth } from "../../../../../store/AuthContext";
 import { deleteAccount, requestAccountDeletionCode } from "../../../../../api/members";
@@ -48,7 +53,13 @@ beforeEach(() => {
   deleteAccount.mockReset();
 
   useMe.mockReturnValue({
-    data: { id: "user-1", firstName: "Amina", lastName: "Bello", email: "amina@example.com", emailVerified: true },
+    data: {
+      id: "user-1",
+      firstName: "Amina",
+      lastName: "Bello",
+      email: "amina@example.com",
+      emailVerified: true,
+    },
   });
   useUpdateProfile.mockReturnValue({ mutateAsync: vi.fn(), isPending: false });
   useRequestPhoneUpdate.mockReturnValue({ mutateAsync: vi.fn(), isPending: false });

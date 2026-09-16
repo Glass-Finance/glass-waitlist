@@ -15,20 +15,9 @@
  *   4. logout()→ calls authService.logout(), clears everything
  */
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-} from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  login as apiLogin,
-  logout as apiLogout,
-  storeAuthSession,
-} from "../services/authService";
+import { login as apiLogin, logout as apiLogout, storeAuthSession } from "../services/authService";
 import { getMe } from "../api/members";
 import client from "../api/client";
 import { parseUserData } from "../utils/userData";
@@ -155,53 +144,56 @@ export function AuthProvider({ children }) {
    *
    * Throws on bad credentials / network error.
    */
-  const login = useCallback(async ({ email, phoneNumber, phoneRegion, password }) => {
-    // authService.login returns data.data (already unwrapped)
-    const authData = await apiLogin({ email, phoneNumber, phoneRegion, password });
-    // {
-    //   accessToken, refreshToken, userId, email,
-    //   platformRole, emailVerified, mfaRequired, mfaChallengeToken
-    // }
+  const login = useCallback(
+    async ({ email, phoneNumber, phoneRegion, password }) => {
+      // authService.login returns data.data (already unwrapped)
+      const authData = await apiLogin({ email, phoneNumber, phoneRegion, password });
+      // {
+      //   accessToken, refreshToken, userId, email,
+      //   platformRole, emailVerified, mfaRequired, mfaChallengeToken
+      // }
 
-    // MFA gate — caller must show TOTP screen, no session stored yet
-    if (authData.mfaRequired) {
-      return {
-        mfaRequired: true,
-        mfaChallengeToken: authData.mfaChallengeToken,
-      };
-    }
+      // MFA gate — caller must show TOTP screen, no session stored yet
+      if (authData.mfaRequired) {
+        return {
+          mfaRequired: true,
+          mfaChallengeToken: authData.mfaChallengeToken,
+        };
+      }
 
-    // Persist tokens using the same helper authService exposes
-    // so keys are guaranteed identical everywhere
-    storeAuthSession(authData);
+      // Persist tokens using the same helper authService exposes
+      // so keys are guaranteed identical everywhere
+      storeAuthSession(authData);
 
-    // Every data hook (communities, notifications, member records, ...)
-    // caches under a query key with no user identity in it, and the
-    // QueryClient is a single instance that outlives any one session — so
-    // without this, logging in as a different account on the same tab
-    // serves the previous account's still-cached data until each query's
-    // own staleTime happens to expire.
-    queryClient.clear();
+      // Every data hook (communities, notifications, member records, ...)
+      // caches under a query key with no user identity in it, and the
+      // QueryClient is a single instance that outlives any one session — so
+      // without this, logging in as a different account on the same tab
+      // serves the previous account's still-cached data until each query's
+      // own staleTime happens to expire.
+      queryClient.clear();
 
-    const user = await buildUser(authData);
+      const user = await buildUser(authData);
 
-    writeUser(user);
-    setToken(authData.accessToken);
-    setUser(user);
+      writeUser(user);
+      setToken(authData.accessToken);
+      setUser(user);
 
-    if (typeof pendo !== "undefined") {
-      pendo.identify({
-        visitor: {
-          id: user.id,
-          email: user.email,
-          platformRoleCode: user.role,
-          emailVerified: user.emailVerified,
-        },
-      });
-    }
+      if (typeof pendo !== "undefined") {
+        pendo.identify({
+          visitor: {
+            id: user.id,
+            email: user.email,
+            platformRoleCode: user.role,
+            emailVerified: user.emailVerified,
+          },
+        });
+      }
 
-    return user;
-  }, [queryClient]);
+      return user;
+    },
+    [queryClient],
+  );
 
   // ── logout ─────────────────────────────────────────────────────────────────
   const logout = useCallback(async () => {
@@ -230,27 +222,30 @@ export function AuthProvider({ children }) {
    * (e.g. after verifyMfaLogin, googleAuth).
    * Pass the raw authData object from the API response.
    */
-  const setSession = useCallback(async (authData) => {
-    storeAuthSession(authData);
-    queryClient.clear(); // see login()'s comment
-    const user = await buildUser(authData);
-    writeUser(user);
-    setToken(authData.accessToken);
-    setUser(user);
+  const setSession = useCallback(
+    async (authData) => {
+      storeAuthSession(authData);
+      queryClient.clear(); // see login()'s comment
+      const user = await buildUser(authData);
+      writeUser(user);
+      setToken(authData.accessToken);
+      setUser(user);
 
-    if (typeof pendo !== "undefined") {
-      pendo.identify({
-        visitor: {
-          id: user.id,
-          email: user.email,
-          platformRoleCode: user.role,
-          emailVerified: user.emailVerified,
-        },
-      });
-    }
+      if (typeof pendo !== "undefined") {
+        pendo.identify({
+          visitor: {
+            id: user.id,
+            email: user.email,
+            platformRoleCode: user.role,
+            emailVerified: user.emailVerified,
+          },
+        });
+      }
 
-    return user;
-  }, [queryClient]);
+      return user;
+    },
+    [queryClient],
+  );
 
   // ── updateUser ─────────────────────────────────────────────────────────────
   // Call after profile edits so the UI reflects the change immediately.
@@ -272,10 +267,7 @@ export function AuthProvider({ children }) {
   // immediately instead of waiting for the next full login.
   const refreshUser = useCallback(async () => {
     try {
-      const [meRes, communitiesRes] = await Promise.all([
-        getMe(),
-        client.get("/communities/me"),
-      ]);
+      const [meRes, communitiesRes] = await Promise.all([getMe(), client.get("/communities/me")]);
       const profile = meRes.data?.data ?? meRes.data;
       const communities = communitiesRes.data?.data?.content ?? [];
       if (!profile) return;
@@ -305,7 +297,7 @@ export function AuthProvider({ children }) {
           visitor: {
             id: profile.id,
             email: profile.email,
-            full_name: [ud.firstName, ud.lastName].filter(Boolean).join(' ') || undefined,
+            full_name: [ud.firstName, ud.lastName].filter(Boolean).join(" ") || undefined,
             accountName: profile.accountName,
             timezone: profile.timezone,
             platformRoleCode: profile.platformRole,

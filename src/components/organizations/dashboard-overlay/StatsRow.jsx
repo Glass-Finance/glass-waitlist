@@ -42,8 +42,24 @@ const STATS = [
           strokeLinecap="round"
         />
         <circle cx="9" cy="7" r="4" stroke="#b45309" strokeWidth="1.8" />
-        <line x1="17" y1="11" x2="23" y2="17" stroke="#b45309" strokeWidth="1.8" strokeLinecap="round" />
-        <line x1="23" y1="11" x2="17" y2="17" stroke="#b45309" strokeWidth="1.8" strokeLinecap="round" />
+        <line
+          x1="17"
+          y1="11"
+          x2="23"
+          y2="17"
+          stroke="#b45309"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        <line
+          x1="23"
+          y1="11"
+          x2="17"
+          y2="17"
+          stroke="#b45309"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
       </svg>
     ),
   },
@@ -91,7 +107,9 @@ const STATS = [
 
 export default function StatsRow() {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8, marginBottom: 12 }}>
+    <div
+      style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 8, marginBottom: 12 }}
+    >
       {STATS.map((s) => (
         <div
           key={s.id}
@@ -123,7 +141,12 @@ export default function StatsRow() {
             {s.label}
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
               <circle cx="12" cy="12" r="10" stroke="#c4c9e0" strokeWidth="1.8" />
-              <path d="M12 8v4M12 16h.01" stroke="#c4c9e0" strokeWidth="1.8" strokeLinecap="round" />
+              <path
+                d="M12 8v4M12 16h.01"
+                stroke="#c4c9e0"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
             </svg>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>

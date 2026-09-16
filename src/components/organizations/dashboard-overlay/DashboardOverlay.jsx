@@ -215,9 +215,7 @@ export default function DashboardOverlay() {
                   className="flex items-start justify-between mb-3.5"
                 >
                   <div>
-                    <div className="text-[15px] font-bold text-black">
-                      Dashboard
-                    </div>
+                    <div className="text-[15px] font-bold text-black">Dashboard</div>
                     <div className="text-[10.5px] text-[#9ca3af] mt-[3px]">
                       A full picture of your community's financial activity.
                     </div>
@@ -234,8 +232,19 @@ export default function DashboardOverlay() {
 
                 <div className="flex items-center justify-between gap-3 px-3.5 py-3 rounded-lg mb-3 bg-[#D7E2FF] border border-[#BFD3FF]">
                   <div className="flex items-start gap-2.5">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 mt-px">
-                      <path d="M12 3l10 18H2L12 3z" stroke="#002FA7" strokeWidth="1.6" strokeLinejoin="round" />
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      className="flex-shrink-0 mt-px"
+                    >
+                      <path
+                        d="M12 3l10 18H2L12 3z"
+                        stroke="#002FA7"
+                        strokeWidth="1.6"
+                        strokeLinejoin="round"
+                      />
                       <path d="M12 10v4" stroke="#002FA7" strokeWidth="1.6" strokeLinecap="round" />
                       <circle cx="12" cy="17" r="0.9" fill="#002FA7" />
                     </svg>
@@ -244,7 +253,8 @@ export default function DashboardOverlay() {
                         Your School Fees Support payment is due in 3 days
                       </div>
                       <div className="text-[10px] text-slate-500 mt-0.5">
-                        ₦5,000 due Apr 1, 2025 · <span className="text-brand font-semibold">Auto-Pay is off</span>
+                        ₦5,000 due Apr 1, 2025 ·{" "}
+                        <span className="text-brand font-semibold">Auto-Pay is off</span>
                       </div>
                     </div>
                   </div>
@@ -253,7 +263,12 @@ export default function DashboardOverlay() {
                       Pay Now
                     </span>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-                      <path d="M18 6L6 18M6 6l12 12" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round" />
+                      <path
+                        d="M18 6L6 18M6 6l12 12"
+                        stroke="#002FA7"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   </div>
                 </div>

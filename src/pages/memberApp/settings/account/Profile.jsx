@@ -17,7 +17,8 @@ import verifiedBadge from "../../../../assets/icons/verified-badge.webp";
 // component instead, which is also where the actual border color/radius
 // spec lives now. Kept separate rather than reusing TextInput's own class
 // string here since these aren't real <input> elements.
-const readOnlyFieldCls = "w-full h-12 min-h-8 py-1 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all";
+const readOnlyFieldCls =
+  "w-full h-12 min-h-8 py-1 px-4 rounded-lg border-[1.5px] border-[#E0E0E0] text-placeholder text-[#111] outline-none box-border transition-all";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -47,9 +48,7 @@ export default function Profile() {
     setSavedForm(loaded);
   }, [user]);
 
-  const isDirty =
-    form.firstName !== savedForm.firstName ||
-    form.lastName !== savedForm.lastName;
+  const isDirty = form.firstName !== savedForm.firstName || form.lastName !== savedForm.lastName;
 
   async function handleSave() {
     setError("");
@@ -57,8 +56,10 @@ export default function Profile() {
       // Only send what changed — the success toast names the updated
       // field(s), so sending everything would always read "Profile updated".
       const userData = {};
-      if (form.firstName !== savedForm.firstName) userData.firstName = toTitleCase(form.firstName.trim());
-      if (form.lastName !== savedForm.lastName) userData.lastName = toTitleCase(form.lastName.trim());
+      if (form.firstName !== savedForm.firstName)
+        userData.firstName = toTitleCase(form.firstName.trim());
+      if (form.lastName !== savedForm.lastName)
+        userData.lastName = toTitleCase(form.lastName.trim());
       await updateProfile.mutateAsync({
         username: user?.username,
         userData,
@@ -97,12 +98,17 @@ export default function Profile() {
 
   const ud = parseUserData(user);
   const photoUrl = ud.profileImage?.url ?? null;
-  const initials = `${form.firstName} ${form.lastName}`.trim().split(" ").filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join("") || "?";
+  const initials =
+    `${form.firstName} ${form.lastName}`
+      .trim()
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase())
+      .join("") || "?";
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen pb-10"
-    >
+    <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
@@ -143,18 +149,32 @@ export default function Profile() {
         <div className="border border-surface-container-border bg-white rounded-2xl p-4 flex flex-col gap-3.5">
           <div>
             <label className="text-xs text-[#888] block mb-1.5">First Name</label>
-            <TextInput value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} />
+            <TextInput
+              value={form.firstName}
+              onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
+            />
           </div>
           <div>
             <label className="text-xs text-[#888] block mb-1.5">Last Name</label>
-            <TextInput value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} />
+            <TextInput
+              value={form.lastName}
+              onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
+            />
           </div>
           <div>
             <label className="text-xs text-[#888] block mb-1.5">Email Address</label>
             <div className="flex items-center gap-2">
-              <div className={`${readOnlyFieldCls} bg-[#F5F5F5] text-[#999] flex items-center justify-between gap-2`}>
+              <div
+                className={`${readOnlyFieldCls} bg-[#F5F5F5] text-[#999] flex items-center justify-between gap-2`}
+              >
                 <span className="truncate">{user?.email ?? ""}</span>
-                {user?.emailVerified && <img src={verifiedBadge} alt="Verified" className="w-[18px] h-[18px] flex-shrink-0" />}
+                {user?.emailVerified && (
+                  <img
+                    src={verifiedBadge}
+                    alt="Verified"
+                    className="w-[18px] h-[18px] flex-shrink-0"
+                  />
+                )}
               </div>
               <button
                 onClick={() => navigate("/member/update-email")}
@@ -169,9 +189,17 @@ export default function Profile() {
           <div>
             <label className="text-xs text-[#888] block mb-1.5">Phone Number</label>
             <div className="flex items-center gap-2">
-              <div className={`${readOnlyFieldCls} bg-[#F5F5F5] text-[#999] flex items-center justify-between gap-2`}>
+              <div
+                className={`${readOnlyFieldCls} bg-[#F5F5F5] text-[#999] flex items-center justify-between gap-2`}
+              >
                 <span className="truncate">{user?.phoneNumber ?? ""}</span>
-                {user?.phoneVerified && <img src={verifiedBadge} alt="Verified" className="w-[18px] h-[18px] flex-shrink-0" />}
+                {user?.phoneVerified && (
+                  <img
+                    src={verifiedBadge}
+                    alt="Verified"
+                    className="w-[18px] h-[18px] flex-shrink-0"
+                  />
+                )}
               </div>
               <button
                 onClick={() => navigate("/member/verify-phone")}

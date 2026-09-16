@@ -39,11 +39,11 @@ function patchAction(action) {
     client.patch(`/communities/${communityId}/payment-links/${paymentLinkId}/${action}`);
 }
 
-export const activatePaymentLink  = patchAction("activate");
-export const pausePaymentLink     = patchAction("pause");
-export const resumePaymentLink    = patchAction("resume");
-export const expirePaymentLink    = patchAction("expire");
-export const archivePaymentLink   = patchAction("archive");
+export const activatePaymentLink = patchAction("activate");
+export const pausePaymentLink = patchAction("pause");
+export const resumePaymentLink = patchAction("resume");
+export const expirePaymentLink = patchAction("expire");
+export const archivePaymentLink = patchAction("archive");
 
 // POST — creates a new payment link from an existing one
 export const duplicatePaymentLink = (communityId, paymentLinkId, payload) =>
