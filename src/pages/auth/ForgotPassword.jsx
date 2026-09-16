@@ -57,7 +57,7 @@ export default function ForgotPassword() {
       return;
     }
     navigate(
-      `/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}&token=${encodeURIComponent(code)}`
+      `/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}&token=${encodeURIComponent(code)}`,
     );
   }
 
@@ -81,7 +81,9 @@ export default function ForgotPassword() {
 
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
-      <div className={`w-full ${step === "otp" ? "max-w-lg gap-12" : "max-w-md gap-6"} flex flex-col md:mt-14 mb-auto`}>
+      <div
+        className={`w-full ${step === "otp" ? "max-w-lg gap-12" : "max-w-md gap-6"} flex flex-col md:mt-14 mb-auto`}
+      >
         {step === "email" ? (
           <>
             <div>
@@ -130,10 +132,12 @@ export default function ForgotPassword() {
             <div>
               <h1 className="text-headline text-gray-900 mb-1">Enter Reset Code</h1>
               <p className="text-sm text-gray-500">
-                We sent a 6-digit code to{" "}
-                <span className="font-medium text-gray-800">{email}</span>.
+                We sent a 6-digit code to <span className="font-medium text-gray-800">{email}</span>
+                .
               </p>
-              <p className={`text-xs mt-1 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
+              <p
+                className={`text-xs mt-1 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
+              >
                 {codeExpired
                   ? "Your code has expired — request a new one below."
                   : `Code expires in ${formatCountdown(secondsLeft)}`}
@@ -150,35 +154,38 @@ export default function ForgotPassword() {
               }}
               className="flex flex-col gap-6"
             >
-            <div>
-              <Label>Verification Code</Label>
-              <div className="mt-1.5">
-                <OtpBoxes
-                  key={resendCount}
-                  value={otp}
-                  onChange={handleOtpChange}
-                  length={6}
-                  autoFocus
-                  renderBoxes={(digits, activeIndex) => (
-                    <div className="flex gap-4 justify-center pointer-events-none">
-                      {digits.map((d, i) => (
-                        <div
-                          key={i}
-                          className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-[22px] font-bold rounded-lg text-[#111827] transition-[border-color] duration-150 border-[1.5px] ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-surface-container-border"}`}
-                        >
-                          {d}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                />
+              <div>
+                <Label>Verification Code</Label>
+                <div className="mt-1.5">
+                  <OtpBoxes
+                    key={resendCount}
+                    value={otp}
+                    onChange={handleOtpChange}
+                    length={6}
+                    autoFocus
+                    renderBoxes={(digits, activeIndex) => (
+                      <div className="flex gap-4 justify-center pointer-events-none">
+                        {digits.map((d, i) => (
+                          <div
+                            key={i}
+                            className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-[22px] font-bold rounded-lg text-[#111827] transition-[border-color] duration-150 border-[1.5px] ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-surface-container-border"}`}
+                          >
+                            {d}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  />
+                </div>
+                <ErrorMessage message={error} />
               </div>
-              <ErrorMessage message={error} />
-            </div>
 
-            <PrimaryButton onClick={handleVerify} disabled={!otpComplete || loading || codeExpired}>
-              Verify Code
-            </PrimaryButton>
+              <PrimaryButton
+                onClick={handleVerify}
+                disabled={!otpComplete || loading || codeExpired}
+              >
+                Verify Code
+              </PrimaryButton>
             </form>
 
             {/* Deliberately outside the <form>: a bare <button> with no

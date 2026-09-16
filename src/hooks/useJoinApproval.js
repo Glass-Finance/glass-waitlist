@@ -49,9 +49,7 @@ export function recordPendingJoinRequest({ id, slug, name }) {
 const PENDING_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
 export function getPendingJoinRequests() {
-  return readPending().filter(
-    (e) => !e.requestedAt || Date.now() - e.requestedAt < PENDING_TTL_MS,
-  );
+  return readPending().filter((e) => !e.requestedAt || Date.now() - e.requestedAt < PENDING_TTL_MS);
 }
 
 function unwrapList(res) {
@@ -112,10 +110,7 @@ export function useJoinApprovalWatcher() {
         const cid = c.id ?? c.community?.id;
         const cslug = c.slug ?? c.community?.slug;
         const status = (c.memberStatus ?? "ACTIVE").toUpperCase();
-        return (
-          status === "ACTIVE" &&
-          ((p.id && cid === p.id) || (p.slug && cslug === p.slug))
-        );
+        return status === "ACTIVE" && ((p.id && cid === p.id) || (p.slug && cslug === p.slug));
       });
       if (activeHit) {
         matched.push({
@@ -171,8 +166,7 @@ export function useJoinApprovalWatcher() {
 
   return {
     approved,
-    dismiss: (entry) =>
-      setApproved((prev) => prev.filter((a) => a !== entry)),
+    dismiss: (entry) => setApproved((prev) => prev.filter((a) => a !== entry)),
     pending,
   };
 }

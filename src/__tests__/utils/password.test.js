@@ -32,7 +32,11 @@ describe("getPasswordChecks", () => {
     const checks = getPasswordChecks("");
     expect(checks.every((c) => c.met === false)).toBe(true);
     expect(checks.map((c) => c.key)).toEqual([
-      "length", "uppercase", "lowercase", "digit", "special",
+      "length",
+      "uppercase",
+      "lowercase",
+      "digit",
+      "special",
     ]);
   });
 
@@ -40,7 +44,11 @@ describe("getPasswordChecks", () => {
     const checks = getPasswordChecks("abcdefgh");
     const met = Object.fromEntries(checks.map((c) => [c.key, c.met]));
     expect(met).toEqual({
-      length: true, uppercase: false, lowercase: true, digit: false, special: false,
+      length: true,
+      uppercase: false,
+      lowercase: true,
+      digit: false,
+      special: false,
     });
   });
 

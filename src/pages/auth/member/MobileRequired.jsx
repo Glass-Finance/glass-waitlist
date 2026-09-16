@@ -19,25 +19,17 @@ export default function MobileRequired() {
   const continueTo = isAdmin ? "/dashboard/home" : "/";
 
   return (
-    <div
-      className="h-screen w-screen flex flex-col overflow-hidden bg-cover bg-center bg-page-default"
-    >
+    <div className="h-screen w-screen flex flex-col overflow-hidden bg-cover bg-center bg-page-default">
       <header className="px-8 py-3 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain" />
-          <span
-            className="font-medium text-gray-900 text-base font-sans"
-          >
-            Glass
-          </span>
+          <span className="font-medium text-gray-900 text-base font-sans">Glass</span>
         </div>
       </header>
 
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-2 overflow-hidden">
         <div className="w-full max-w-xl flex flex-col items-center">
-          <h1
-            className="text-2xl font-bold text-gray-900 mb-1.5 text-center font-sans"
-          >
+          <h1 className="text-2xl font-bold text-gray-900 mb-1.5 text-center font-sans">
             Scan To Continue On Your Phone
           </h1>
           <p className="text-sm text-gray-500 mb-4 text-center">

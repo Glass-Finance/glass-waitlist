@@ -2,7 +2,11 @@ import { useMemo } from "react";
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import KeyboardShortcutsProvider from "../../../components/dashboard/KeyboardShortcutsProvider";
-import { useRegisterShortcut, useRegisterShortcutGroup, useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
+import {
+  useRegisterShortcut,
+  useRegisterShortcutGroup,
+  useEscapeToClose,
+} from "../../../hooks/useKeyboardShortcuts";
 
 afterEach(cleanup);
 

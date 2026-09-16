@@ -37,7 +37,10 @@ const STREAM_URL = `${BASE_URL}/api/v1/realtime/stream`;
 // polling remains as a safety net for anything the stream misses.
 const IGNORE = /heartbeat|ping|keep-?alive|timeout|connected/i;
 const INVALIDATION_RULES = [
-  { match: /transaction|payment/i, keys: [["transactions"], ["obligations"], ["community"], ["notifications"]] },
+  {
+    match: /transaction|payment/i,
+    keys: [["transactions"], ["obligations"], ["community"], ["notifications"]],
+  },
   { match: /obligation/i, keys: [["obligations"], ["community"]] },
   { match: /invite/i, keys: [["invites"], ["communities"], ["notifications"]] },
   // ["community", id] is the admin-side per-community cache (dashboard,
@@ -49,7 +52,10 @@ const INVALIDATION_RULES = [
   // doesn't yet emit a distinct event for "your request was approved" (see
   // useJoinApproval.js) -- this is a no-op until it does, but is correct
   // and ready for whenever it starts.
-  { match: /member|join/i, keys: [["community"], ["communities"], ["join-requests"], ["notifications"]] },
+  {
+    match: /member|join/i,
+    keys: [["community"], ["communities"], ["join-requests"], ["notifications"]],
+  },
   { match: /notification/i, keys: [["notifications"]] },
 ];
 const FALLBACK_KEYS = [["notifications"]];
@@ -61,8 +67,17 @@ const FALLBACK_KEYS = [["notifications"]];
 // the polling safety net until the backend documents them.
 const EVENT_NAMES = [
   "message",
-  ...["notification", "transaction", "payment", "obligation", "member", "invite", "join-request", "update", "event"]
-    .flatMap((n) => [n, n.toUpperCase()]),
+  ...[
+    "notification",
+    "transaction",
+    "payment",
+    "obligation",
+    "member",
+    "invite",
+    "join-request",
+    "update",
+    "event",
+  ].flatMap((n) => [n, n.toUpperCase()]),
 ];
 
 // Opens the realtime SSE stream while the user is authenticated and nudges

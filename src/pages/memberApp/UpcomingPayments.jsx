@@ -21,10 +21,7 @@ function FilterDropdown({ value, onChange }) {
       </button>
       {open && (
         <>
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setOpen(false)}
-          />
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div className="absolute left-0 bg-white rounded-[10px] shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-outline-on-surface z-20 overflow-hidden min-w-[130px] [top:calc(100%+6px)]">
             {FILTER_OPTIONS.map((opt) => (
               <button
@@ -55,13 +52,11 @@ function PaymentRow({ item, onPay, paying }) {
     <div className="border border-surface-container-border py-[18px] px-4 bg-white rounded-2xl flex items-center justify-between gap-3">
       <div className="min-w-0">
         <div className="flex items-baseline gap-1.5 mb-1.5">
-          <span className="text-xl font-bold text-[#111]">
-            {formatNaira(item.amount)}
-          </span>
-          {isRecurring && (
-            <span className="text-[13px] text-[#888]">/month</span>
-          )}
-          <span className={`inline-flex items-center gap-[5px] text-xs font-semibold ml-1 ${badge.cls}`}>
+          <span className="text-xl font-bold text-[#111]">{formatNaira(item.amount)}</span>
+          {isRecurring && <span className="text-[13px] text-[#888]">/month</span>}
+          <span
+            className={`inline-flex items-center gap-[5px] text-xs font-semibold ml-1 ${badge.cls}`}
+          >
             <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${badge.dotCls}`} />
             {badge.label}
           </span>
@@ -69,9 +64,7 @@ function PaymentRow({ item, onPay, paying }) {
         <p className="text-[15px] text-[#111] mt-0 mx-0 mb-[3px] font-medium">
           {toTitleCase(item.name)}
         </p>
-        <p className="text-[13px] text-[#9CA3AF] m-0">
-          Due: {formatDate(item.dueDate)}
-        </p>
+        <p className="text-[13px] text-[#9CA3AF] m-0">Due: {formatDate(item.dueDate)}</p>
       </div>
       <button
         onClick={() => onPay(item)}
@@ -106,9 +99,7 @@ export default function UpcomingPayments() {
   }
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen pb-10"
-    >
+    <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       {/* Header */}
       <div className="relative flex items-center justify-center pt-6 px-5 pb-5">
@@ -118,9 +109,7 @@ export default function UpcomingPayments() {
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
-        <h1 className="text-lg font-medium text-[#111] m-0">
-          Upcoming Payments
-        </h1>
+        <h1 className="text-lg font-medium text-[#111] m-0">Upcoming Payments</h1>
       </div>
 
       {/* Filter */}
@@ -136,9 +125,7 @@ export default function UpcomingPayments() {
           </div>
         ) : loadError ? (
           <div className="border border-surface-container-border bg-white rounded-2xl text-center py-5">
-            <p className="text-danger text-sm mt-0 mx-0 mb-2">
-              Couldn't load upcoming payments.
-            </p>
+            <p className="text-danger text-sm mt-0 mx-0 mb-2">Couldn't load upcoming payments.</p>
             <button
               onClick={refresh}
               className="bg-transparent border-none text-brand text-[13px] font-semibold underline cursor-pointer p-0"
@@ -149,8 +136,17 @@ export default function UpcomingPayments() {
         ) : filtered.length === 0 ? (
           <div className="border border-surface-container-border bg-white rounded-2xl py-12 px-6 text-center flex flex-col items-center gap-2">
             <div className="w-[52px] h-[52px] rounded-full bg-[#D7E2FF] flex items-center justify-center mb-1">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#002FA7" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12l5 5 9-9"/>
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#002FA7"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M5 12l5 5 9-9" />
               </svg>
             </div>
             <p className="text-sm font-semibold text-[#374151] m-0">Nothing due right now</p>
@@ -163,9 +159,7 @@ export default function UpcomingPayments() {
             </button>
           </div>
         ) : (
-          filtered.map((item) => (
-            <PaymentRow key={item.id} item={item} onPay={handlePay} />
-          ))
+          filtered.map((item) => <PaymentRow key={item.id} item={item} onPay={handlePay} />)
         )}
       </div>
     </div>

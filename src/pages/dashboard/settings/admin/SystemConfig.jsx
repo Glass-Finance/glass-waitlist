@@ -19,17 +19,19 @@ import { Button } from "../../../../components/ui/Button";
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const CATEGORY_COLORS = {
-  SCHEDULER:    { bg: "bg-purple-50",  text: "text-purple-700"  },
-  PAYMENT:      { bg: "bg-blue-50",    text: "text-blue-700"    },
-  NOTIFICATION: { bg: "bg-amber-50",   text: "text-amber-700"   },
-  SECURITY:     { bg: "bg-red-50",     text: "text-red-700"     },
-  GENERAL:      { bg: "bg-gray-100",   text: "text-gray-600"    },
+  SCHEDULER: { bg: "bg-purple-50", text: "text-purple-700" },
+  PAYMENT: { bg: "bg-blue-50", text: "text-blue-700" },
+  NOTIFICATION: { bg: "bg-amber-50", text: "text-amber-700" },
+  SECURITY: { bg: "bg-red-50", text: "text-red-700" },
+  GENERAL: { bg: "bg-gray-100", text: "text-gray-600" },
 };
 
 function CategoryBadge({ category }) {
   const c = CATEGORY_COLORS[category] ?? { bg: "bg-gray-100", text: "text-gray-600" };
   return (
-    <span className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full ${c.bg} ${c.text}`}>
+    <span
+      className={`inline-block text-[10px] font-semibold px-2 py-0.5 rounded-full ${c.bg} ${c.text}`}
+    >
       {category}
     </span>
   );
@@ -87,11 +89,11 @@ function EditModal({ config, onClose, onSave, isSaving }) {
   return (
     <div
       className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/20"
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
-      <div
-        className="bg-surface-bg rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border"
-      >
+      <div className="bg-surface-bg rounded-2xl w-full max-w-md shadow-2xl border border-surface-container-border">
         {/* Header */}
         <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <div>
@@ -118,9 +120,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
 
           {/* Value */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-              Value
-            </label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Value</label>
             {isBool ? (
               <div className="flex gap-2">
                 {["true", "false"].map((v) => (
@@ -151,9 +151,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
 
           {/* Name */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-              Display Name
-            </label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Display Name</label>
             <input
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
@@ -164,9 +162,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
 
           {/* Description */}
           <div>
-            <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-              Description
-            </label>
+            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Description</label>
             <textarea
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -191,11 +187,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
               fullWidth={false}
               className="flex-1 flex items-center justify-center gap-1.5"
             >
-              {isSaving ? (
-                <Loader2 size={12} className="animate-spin" />
-              ) : (
-                <Check size={12} />
-              )}
+              {isSaving ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
               {isSaving ? "Saving…" : "Save Changes"}
             </Button>
           </div>
@@ -240,15 +232,13 @@ export default function SystemConfig() {
   const totalElements = data.totalElements;
 
   // Derive categories from the current full page so the tab list stays stable
-  const availableCategories = ["ALL", ...Array.from(
-    new Set(configs.map((c) => c.category).filter(Boolean))
-  ).sort()];
+  const availableCategories = [
+    "ALL",
+    ...Array.from(new Set(configs.map((c) => c.category).filter(Boolean))).sort(),
+  ];
 
   function handleSave(form) {
-    update.mutate(
-      { id: editing.id, payload: form },
-      { onSuccess: () => setEditing(null) }
-    );
+    update.mutate({ id: editing.id, payload: form }, { onSuccess: () => setEditing(null) });
   }
 
   function handleCategoryChange(cat) {
@@ -265,7 +255,9 @@ export default function SystemConfig() {
           <X size={18} className="text-red-500" />
         </div>
         <p className="text-sm font-semibold text-gray-800">Access Denied</p>
-        <p className="text-xs text-gray-400">You don't have permission to view system configurations.</p>
+        <p className="text-xs text-gray-400">
+          You don't have permission to view system configurations.
+        </p>
       </div>
     );
   }
@@ -319,9 +311,7 @@ export default function SystemConfig() {
       </div>
 
       {/* Table */}
-      <div
-        className="bg-surface-container rounded-2xl overflow-hidden border border-surface-container-border"
-      >
+      <div className="bg-surface-container rounded-2xl overflow-hidden border border-surface-container-border">
         {isLoading ? (
           <LoadingState className="py-20" />
         ) : error ? (

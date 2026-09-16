@@ -23,11 +23,7 @@ export default function DuplicatePlanModal({ plan, onClose, onDuplicate, duplica
   }, []);
 
   const isReady =
-    title.trim().length > 0 &&
-    slug &&
-    available !== false &&
-    startDate &&
-    (isRecurring || dueDate);
+    title.trim().length > 0 && slug && available !== false && startDate && (isRecurring || dueDate);
 
   function handleSubmit() {
     const startIso = dateInputToIso(startDate, { clampToNow: true });
@@ -66,8 +62,8 @@ export default function DuplicatePlanModal({ plan, onClose, onDuplicate, duplica
           <div>
             <h2 className="text-base font-semibold text-black">Duplicate Payment Plan</h2>
             <p className="text-xs text-gray-400 mt-0.5">
-              Creates a new plan with {plan.name}'s settings. Amount, audience,
-              and community account carry over automatically.
+              Creates a new plan with {plan.name}'s settings. Amount, audience, and community
+              account carry over automatically.
             </p>
           </div>
           <button
@@ -80,9 +76,7 @@ export default function DuplicatePlanModal({ plan, onClose, onDuplicate, duplica
 
         <div className="flex flex-col gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">
-              New Plan Name
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1.5">New Plan Name</label>
             <input
               className={inputCls}
               value={title}
@@ -93,16 +87,12 @@ export default function DuplicatePlanModal({ plan, onClose, onDuplicate, duplica
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              URL slug
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">URL slug</label>
             <div className="relative">
               <input
                 className={inputCls + " pr-8"}
                 value={slug}
-                onChange={(e) =>
-                  setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
-                }
+                onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
                 placeholder="e.g. alumni-dues-2026"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -118,9 +108,7 @@ export default function DuplicatePlanModal({ plan, onClose, onDuplicate, duplica
               </span>
             </div>
             {available === false && !checking && (
-              <p className="text-xs text-red-500 mt-1">
-                That URL is taken — try another.
-              </p>
+              <p className="text-xs text-red-500 mt-1">That URL is taken — try another.</p>
             )}
           </div>
 

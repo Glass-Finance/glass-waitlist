@@ -58,9 +58,7 @@ export function CommunityCard({ community, onClick }) {
               {memberCount != null && (
                 <div className="flex items-center gap-1 mt-0.5">
                   <Users size={11} className="text-gray-400" />
-                  <span className="text-[10px] text-gray-400">
-                    {memberCount} Members
-                  </span>
+                  <span className="text-[10px] text-gray-400">{memberCount} Members</span>
                 </div>
               )}
             </div>
@@ -90,9 +88,7 @@ export function CommunityCard({ community, onClick }) {
             <span className="text-xs text-gray-500">
               Outstanding:{" "}
               <strong className="text-red-500">
-                {outstanding != null && outstanding > 0
-                  ? formatNaira(outstanding)
-                  : "—"}
+                {outstanding != null && outstanding > 0 ? formatNaira(outstanding) : "—"}
               </strong>
             </span>
           </>
@@ -100,8 +96,7 @@ export function CommunityCard({ community, onClick }) {
           <div className="flex items-center gap-1.5">
             <Clock size={12} className="text-gray-400" />
             <span className="text-xs text-gray-600">
-              Status:{" "}
-              <strong className="text-[#000000]">{memberStatus ?? "—"}</strong>
+              Status: <strong className="text-[#000000]">{memberStatus ?? "—"}</strong>
             </span>
           </div>
         )}

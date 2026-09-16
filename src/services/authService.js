@@ -126,7 +126,14 @@ export async function forgotPassword({ email, phoneNumber, phoneRegion }) {
  * request it -- so this can be completed with either the user's email or
  * phone number, independent of which one requested the code.
  */
-export async function resetPassword({ email, phoneNumber, phoneRegion, token, newPassword, confirmPassword }) {
+export async function resetPassword({
+  email,
+  phoneNumber,
+  phoneRegion,
+  token,
+  newPassword,
+  confirmPassword,
+}) {
   const { data } = await client.post("/auth/password/reset", {
     ...identifierPayload({ email, phoneNumber, phoneRegion }),
     token,
@@ -182,11 +189,11 @@ export async function disableMfaTotp({ code }) {
  * Persist auth tokens + basic user info to localStorage.
  */
 export function storeAuthSession(authData) {
-  if (authData.accessToken)  localStorage.setItem("accessToken",  authData.accessToken);
+  if (authData.accessToken) localStorage.setItem("accessToken", authData.accessToken);
   // Guard against storing the literal string "undefined" if the auth response
   // omits refreshToken — an "undefined" string is truthy and fools the
   // refresh-token check in client.js, causing the next refresh to fail.
   if (authData.refreshToken) localStorage.setItem("refreshToken", authData.refreshToken);
-  if (authData.userId)       localStorage.setItem("userId",       authData.userId);
-  if (authData.email)        localStorage.setItem("userEmail",    authData.email);
+  if (authData.userId) localStorage.setItem("userId", authData.userId);
+  if (authData.email) localStorage.setItem("userEmail", authData.email);
 }

@@ -51,7 +51,12 @@ export default function TopBar() {
               strokeWidth="1.8"
               strokeLinecap="round"
             />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#6b7280" strokeWidth="1.8" strokeLinecap="round" />
+            <path
+              d="M13.73 21a2 2 0 0 1-3.46 0"
+              stroke="#6b7280"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
           </svg>
           <div
             style={{

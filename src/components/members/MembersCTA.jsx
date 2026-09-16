@@ -6,9 +6,7 @@ export default function MembersCTA() {
   const navigate = useNavigate();
 
   function handleJoin() {
-    navigate(
-      isMobileDevice() ? "/member/join" : mobileRequiredPath("/member/join"),
-    );
+    navigate(isMobileDevice() ? "/member/join" : mobileRequiredPath("/member/join"));
   }
 
   return (

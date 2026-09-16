@@ -2,10 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Copy, X, Download, FileSpreadsheet, Check } from "lucide-react";
 import uploadCloudIcon from "../../../assets/icons/upload-cloud.webp";
 import { APP_ORIGIN } from "../../../utils/deviceRedirect";
-import {
-  useCommunityMembers,
-  useRoles,
-} from "../../../hooks/useCommunityMembers";
+import { useCommunityMembers, useRoles } from "../../../hooks/useCommunityMembers";
 import { getEmailError } from "../../../utils/validators";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
 import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
@@ -19,11 +16,7 @@ import {
   parseMemberCSV,
 } from "./addMemberModalUtils";
 
-export default function AddMemberModal({
-  onClose,
-  communityId,
-  communitySlug,
-}) {
+export default function AddMemberModal({ onClose, communityId, communitySlug }) {
   const [tab, setTab] = useState("upload");
   const [linkCopied, copyLinkText] = useCopyToClipboard();
   const [dragOver, setDragOver] = useState(false);
@@ -75,8 +68,7 @@ export default function AddMemberModal({
   const { data: rolesData } = useRoles();
   const roles = (rolesData ?? []).filter((r) => ALLOWED_ROLE_NAMES.has(r.name));
   const finalRoles = roles.length ? roles : FALLBACK_ROLES;
-  const defaultRole =
-    finalRoles.find((r) => r.name === "Community Member") ?? finalRoles[0];
+  const defaultRole = finalRoles.find((r) => r.name === "Community Member") ?? finalRoles[0];
   const [roleId, setRoleId] = useState(defaultRole?.id ?? "");
 
   const inputCls =
@@ -164,9 +156,7 @@ export default function AddMemberModal({
     setUploading(true);
     for (const row of csvRows) {
       if (!row.email) continue;
-      const matchedRole = finalRoles.find(
-        (r) => r.name?.toLowerCase() === row.role?.toLowerCase(),
-      );
+      const matchedRole = finalRoles.find((r) => r.name?.toLowerCase() === row.role?.toLowerCase());
       try {
         await inviteMember.mutateAsync({
           email: row.email,
@@ -214,9 +204,7 @@ export default function AddMemberModal({
     setManualLoading(true);
     try {
       const results = await Promise.allSettled(
-        emails.map((em) =>
-          inviteMember.mutateAsync({ email: em, roleId, billingExempt }),
-        ),
+        emails.map((em) => inviteMember.mutateAsync({ email: em, roleId, billingExempt })),
       );
       const succeeded = results.filter((r) => r.status === "fulfilled").length;
       if (succeeded === 0)
@@ -263,12 +251,10 @@ export default function AddMemberModal({
           {/* Header */}
           <div className="flex items-start justify-between px-3 pt-7 pb-4">
             <div>
-              <h2 className="text-sm font-medium text-gray-900 mb-1">
-                Add your members
-              </h2>
+              <h2 className="text-sm font-medium text-gray-900 mb-1">Add your members</h2>
               <p className="text-sm text-gray-500">
-                Add your members now or invite them to join on their own. You
-                can always add more from your dashboard later.
+                Add your members now or invite them to join on their own. You can always add more
+                from your dashboard later.
               </p>
             </div>
             <button
@@ -283,12 +269,9 @@ export default function AddMemberModal({
             {/* Invite link banner */}
             <div className="flex items-center justify-between px-3 py-4 rounded-xl bg-[#D7E2FF] border border-[#0E628C33]">
               <div>
-                <p className="text-xs text-gray-900 mb-0.5">
-                  Your community is ready to grow.
-                </p>
+                <p className="text-xs text-gray-900 mb-0.5">Your community is ready to grow.</p>
                 <p className="text-xs text-gray-500">
-                  Copy this link and share it with your members to get them on
-                  Glass.
+                  Copy this link and share it with your members to get them on Glass.
                 </p>
               </div>
               <button
@@ -325,9 +308,7 @@ export default function AddMemberModal({
               {/* Upload tab */}
               {tab === "upload" && (
                 <>
-                  <p className="text-sm font-semibold text-gray-900 mb-4">
-                    Upload a CSV
-                  </p>
+                  <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-sm text-gray-500">
                       Upload a CSV file with following sample information
@@ -401,11 +382,7 @@ export default function AddMemberModal({
                       className="hidden"
                       onChange={(e) => handleFile(e.target.files[0])}
                     />
-                    <img
-                      src={uploadCloudIcon}
-                      alt=""
-                      className="w-[30px] h-[30px] mb-3"
-                    />
+                    <img src={uploadCloudIcon} alt="" className="w-[30px] h-[30px] mb-3" />
                     {csvFile ? (
                       <p className="text-xs text-brand font-medium">
                         {csvFile.name} — {csvRows.length} rows
@@ -413,20 +390,14 @@ export default function AddMemberModal({
                     ) : (
                       <p className="text-xs text-gray-500">
                         Drag and Drop CSV here or{" "}
-                        <span className="text-brand font-medium underline">
-                          Browse
-                        </span>
+                        <span className="text-brand font-medium underline">Browse</span>
                       </p>
                     )}
-                    {csvError && (
-                      <p className="text-xs text-red-500 mt-2">{csvError}</p>
-                    )}
+                    {csvError && <p className="text-xs text-red-500 mt-2">{csvError}</p>}
                   </div>
 
                   <div>
-                    <p className="text-xs font-medium text-gray-700 mb-2">
-                      Or Upload from URL
-                    </p>
+                    <p className="text-xs font-medium text-gray-700 mb-2">Or Upload from URL</p>
                     <div className="flex gap-2">
                       <input
                         type="url"
@@ -441,11 +412,7 @@ export default function AddMemberModal({
                       />
                       <button
                         onClick={handleUrlUpload}
-                        disabled={
-                          !fileUrl.trim() ||
-                          urlStage === "fetching" ||
-                          uploading
-                        }
+                        disabled={!fileUrl.trim() || urlStage === "fetching" || uploading}
                         className="px-5 py-2 rounded-lg bg-brand/20 text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50"
                       >
                         Upload
@@ -455,10 +422,7 @@ export default function AddMemberModal({
                     {urlStage === "fetching" && (
                       <div className="mt-3 rounded-lg flex flex-col items-center justify-center py-10 border-2 border-dashed border-brand bg-[#EEF2FF]">
                         <div className="relative w-16 h-16 mb-3">
-                          <svg
-                            viewBox="0 0 64 64"
-                            className="w-16 h-16 -rotate-90"
-                          >
+                          <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90">
                             <circle
                               cx="32"
                               cy="32"
@@ -475,9 +439,7 @@ export default function AddMemberModal({
                               stroke="var(--color-brand)"
                               strokeWidth="6"
                               strokeDasharray={2 * Math.PI * 28}
-                              strokeDashoffset={
-                                2 * Math.PI * 28 * (1 - urlProgress / 100)
-                              }
+                              strokeDashoffset={2 * Math.PI * 28 * (1 - urlProgress / 100)}
                               strokeLinecap="round"
                               className="transition-[stroke-dashoffset] duration-200 ease-linear"
                             />
@@ -486,9 +448,7 @@ export default function AddMemberModal({
                             {Math.round(urlProgress)}%
                           </span>
                         </div>
-                        <p className="text-sm text-gray-700 mb-3">
-                          Uploading File...
-                        </p>
+                        <p className="text-sm text-gray-700 mb-3">Uploading File...</p>
                         <button
                           onClick={clearUrlUpload}
                           className="px-4 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-all bg-white border border-gray-300 cursor-pointer"
@@ -500,20 +460,12 @@ export default function AddMemberModal({
 
                     {urlStage === "complete" && urlFileInfo && (
                       <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-surface-container-border">
-                        <FileSpreadsheet
-                          size={20}
-                          className="text-green-600 flex-shrink-0"
-                        />
+                        <FileSpreadsheet size={20} className="text-green-600 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs text-gray-900 truncate">
-                            {urlFileInfo.name}
-                          </p>
+                          <p className="text-xs text-gray-900 truncate">{urlFileInfo.name}</p>
                           <p className="text-xs text-gray-500 flex items-center gap-1">
-                            {urlFileInfo.sizeLabel} •{" "}
-                            <Check size={11} className="text-green-600" />{" "}
-                            <span className="text-green-600 font-medium">
-                              Complete
-                            </span>
+                            {urlFileInfo.sizeLabel} • <Check size={11} className="text-green-600" />{" "}
+                            <span className="text-green-600 font-medium">Complete</span>
                           </p>
                         </div>
                         <button
@@ -528,14 +480,8 @@ export default function AddMemberModal({
                   </div>
 
                   {csvRows.length > 0 && (
-                    <Button
-                      onClick={handleUploadCSV}
-                      loading={uploading}
-                      className="mt-5"
-                    >
-                      {uploading
-                        ? "Sending invites…"
-                        : `Send Invites to ${csvRows.length} Members`}
+                    <Button onClick={handleUploadCSV} loading={uploading} className="mt-5">
+                      {uploading ? "Sending invites…" : `Send Invites to ${csvRows.length} Members`}
                     </Button>
                   )}
                 </>
@@ -544,9 +490,7 @@ export default function AddMemberModal({
               {/* Manual tab */}
               {tab === "manual" && (
                 <>
-                  <p className="text-sm font-medium text-gray-900 mb-2">
-                    Enter Email(s):
-                  </p>
+                  <p className="text-sm font-medium text-gray-900 mb-2">Enter Email(s):</p>
                   <div
                     className={`rounded-lg p-3 flex flex-wrap items-center gap-2 mb-1 border min-h-[60px] bg-white focus-within:ring-1 focus-within:ring-[var(--color-brand)] ${emailChipError ? "border-danger" : "border-surface-container-border"}`}
                   >
@@ -560,11 +504,7 @@ export default function AddMemberModal({
                         </span>
                         {em}
                         <button
-                          onClick={() =>
-                            setEmails((arr) =>
-                              arr.filter((_, idx) => idx !== i),
-                            )
-                          }
+                          onClick={() => setEmails((arr) => arr.filter((_, idx) => idx !== i))}
                           aria-label={`Remove ${em}`}
                           className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex items-center justify-center"
                         >
@@ -581,11 +521,7 @@ export default function AddMemberModal({
                       }}
                       onKeyDown={handleEmailKeyDown}
                       onBlur={commitEmailChip}
-                      placeholder={
-                        emails.length === 0
-                          ? "Type an email and press Enter"
-                          : ""
-                      }
+                      placeholder={emails.length === 0 ? "Type an email and press Enter" : ""}
                       className="flex-1 min-w-[160px] outline-none text-sm bg-transparent border-none py-1"
                     />
                   </div>
@@ -597,9 +533,7 @@ export default function AddMemberModal({
 
                   <p className="text-sm font-medium text-gray-900 mb-2">
                     Enter Phone Number(s){" "}
-                    <span className="text-gray-400 font-normal">
-                      (Optional):
-                    </span>
+                    <span className="text-gray-400 font-normal">(Optional):</span>
                   </p>
                   <input
                     type="text"
@@ -609,9 +543,7 @@ export default function AddMemberModal({
                     className={`${inputCls} mb-5`}
                   />
 
-                  <p className="text-sm font-medium text-gray-900 mb-2">
-                    Role:
-                  </p>
+                  <p className="text-sm font-medium text-gray-900 mb-2">Role:</p>
                   <div className="relative mb-4">
                     <select
                       value={roleId}
@@ -636,9 +568,7 @@ export default function AddMemberModal({
                     Exempt from billing
                   </label>
 
-                  {manualError && (
-                    <p className="text-xs text-red-500 mb-3">{manualError}</p>
-                  )}
+                  {manualError && <p className="text-xs text-red-500 mb-3">{manualError}</p>}
 
                   <div className="flex justify-end">
                     <Button

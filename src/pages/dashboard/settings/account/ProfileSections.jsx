@@ -39,12 +39,10 @@ export function DeleteAccountModal({
 
         {deleteStep === "warn" ? (
           <>
-            <h3 className="text-base font-semibold text-gray-900 mb-1">
-              Delete Account
-            </h3>
+            <h3 className="text-base font-semibold text-gray-900 mb-1">Delete Account</h3>
             <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-              This will permanently delete your account and all associated data
-              from Glass. This cannot be undone.
+              This will permanently delete your account and all associated data from Glass. This
+              cannot be undone.
             </p>
             <label className="block text-xs font-medium text-gray-700 mb-1.5">
               Type <strong>DELETE</strong> to confirm
@@ -55,9 +53,7 @@ export function DeleteAccountModal({
               placeholder="DELETE"
               className="w-full h-12 min-h-8 border-[1.5px] border-gray-300 px-4 py-1 rounded-lg text-placeholder outline-none focus:border-red-400 mb-4 transition-all"
             />
-            {deleteError && (
-              <p className="text-xs text-red-500 mb-3">{deleteError}</p>
-            )}
+            {deleteError && <p className="text-xs text-red-500 mb-3">{deleteError}</p>}
             <div className="flex gap-2">
               <button
                 onClick={onClose}
@@ -76,19 +72,13 @@ export function DeleteAccountModal({
           </>
         ) : (
           <>
-            <h3 className="text-base font-semibold text-gray-900 mb-1">
-              Enter Verification Code
-            </h3>
+            <h3 className="text-base font-semibold text-gray-900 mb-1">Enter Verification Code</h3>
             <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-              We've sent a code to <strong>{user?.email}</strong>. Enter it
-              below to permanently delete your account.
+              We've sent a code to <strong>{user?.email}</strong>. Enter it below to permanently
+              delete your account.
             </p>
             <div className="mb-4">
-              <OtpBoxes
-                value={deletionCode}
-                onChange={setDeletionCode}
-                disabled={deleteLoading}
-              />
+              <OtpBoxes value={deletionCode} onChange={setDeletionCode} disabled={deleteLoading} />
             </div>
             <div className="flex items-center justify-center mb-4">
               <button
@@ -99,11 +89,7 @@ export function DeleteAccountModal({
                 {resendLoading ? "Resending…" : resendMessage || "Resend code"}
               </button>
             </div>
-            {deleteError && (
-              <p className="text-xs text-red-500 mb-3 text-center">
-                {deleteError}
-              </p>
-            )}
+            {deleteError && <p className="text-xs text-red-500 mb-3 text-center">{deleteError}</p>}
             <div className="flex gap-2">
               <button
                 onClick={onClose}

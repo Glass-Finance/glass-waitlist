@@ -118,7 +118,12 @@ export default function SuccessBadge({ message, subMessage, badgeDelay = 0.1, cl
             width="50"
             height="39"
             viewBox="0 0 44 34"
-            style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)" }}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%,-50%)",
+            }}
           >
             <path
               d="M4 17 L17 29 L40 4"

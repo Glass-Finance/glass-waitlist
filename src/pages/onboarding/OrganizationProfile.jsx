@@ -29,8 +29,14 @@ import { Button } from "../../components/ui/Button";
 const INVITE_HOST = APP_ORIGIN.replace(/^https?:\/\//, "");
 
 const CATEGORIES = [
-  "Alumni Association", "Faith Community", "Professional Association",
-  "Student Club", "University Club", "NGO / Non-profit", "Sports Club", "Other",
+  "Alumni Association",
+  "Faith Community",
+  "Professional Association",
+  "Student Club",
+  "University Club",
+  "NGO / Non-profit",
+  "Sports Club",
+  "Other",
 ];
 
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member"];
@@ -39,9 +45,9 @@ const inputCls =
   "w-full h-12 min-h-8 border bg-stacked-container px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
 
 export default function OrganizationProfile() {
-  const navigate   = useNavigate();
-  const location   = useLocation();
-  const fileRef    = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const fileRef = useRef(null);
   const queryClient = useQueryClient();
 
   // location.state doesn't survive a reload or a forced re-login mid-form
@@ -49,14 +55,15 @@ export default function OrganizationProfile() {
   // to whatever was last persisted for this in-progress signup so a
   // dropped session doesn't also drop everything already typed.
   const savedProgress = readOnboardingProgress();
-  const email      = location.state?.email ?? savedProgress.email ?? "";
-  const isPaying   = location.state?.isPaying ?? savedProgress.isPaying ?? true;
+  const email = location.state?.email ?? savedProgress.email ?? "";
+  const isPaying = location.state?.isPaying ?? savedProgress.isPaying ?? true;
   // Set once the community's actually been created (see handleSubmit) — if
   // present, this is a revisit (e.g. via PaymentProfile's Back button), and
   // submitting again must update that same community instead of creating a
   // second one.
-  const existingCommunityId   = location.state?.communityId ?? savedProgress.communityId ?? null;
-  const existingCommunitySlug = location.state?.communitySlug ?? savedProgress.communitySlug ?? null;
+  const existingCommunityId = location.state?.communityId ?? savedProgress.communityId ?? null;
+  const existingCommunitySlug =
+    location.state?.communitySlug ?? savedProgress.communitySlug ?? null;
   const { updateUser, isAuthenticated } = useAuth();
 
   // Covers users who already have an account (and so already have a
@@ -67,22 +74,27 @@ export default function OrganizationProfile() {
     navigate(isAuthenticated ? "/dashboard/home" : "/onboarding/choose-path", { state: { email } });
   };
 
-  const [dragOver,  setDragOver]  = useState(false);
-  const [logoFile,  setLogoFile]  = useState(null);   // File object -- not persisted, re-picking a logo is a small ask next to losing the whole form
-  const [logoUrl,   setLogoUrl]   = useState(null);   // preview URL
-  const [error,     setError]     = useState("");
-  const [loading,   setLoading]   = useState(false);
-  const [fieldErrors, setFieldErrors] = useState({ communityName: "", category: "", contactEmail: "", slug: "", description: "" });
+  const [dragOver, setDragOver] = useState(false);
+  const [logoFile, setLogoFile] = useState(null); // File object -- not persisted, re-picking a logo is a small ask next to losing the whole form
+  const [logoUrl, setLogoUrl] = useState(null); // preview URL
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({
+    communityName: "",
+    category: "",
+    contactEmail: "",
+    slug: "",
+    description: "",
+  });
 
   const [form, setForm] = useState({
     communityName: savedProgress.form?.communityName ?? "",
-    description:   savedProgress.form?.description ?? "",
-    category:      savedProgress.form?.category ?? "",
-    contactEmail:  savedProgress.form?.contactEmail ?? email,
+    description: savedProgress.form?.description ?? "",
+    category: savedProgress.form?.category ?? "",
+    contactEmail: savedProgress.form?.contactEmail ?? email,
   });
 
-  const { slug, setSlug, available, checking, suggesting, suggestFrom } =
-    useSlug("COMMUNITY");
+  const { slug, setSlug, available, checking, suggesting, suggestFrom } = useSlug("COMMUNITY");
 
   // Restore a previously-entered slug once on mount (setSlug triggers the
   // hook's own debounced availability re-check, same as a manual edit).
@@ -163,10 +175,10 @@ export default function OrganizationProfile() {
       }
 
       const payload = {
-        name:        form.communityName.trim(),
-        slug:        slug.trim(),
+        name: form.communityName.trim(),
+        slug: slug.trim(),
         description: form.description.trim(),
-        category:    [form.category],
+        category: [form.category],
         contactEmail: form.contactEmail.trim(),
         publicVisible: true,
         // Default to approval-required: with the public Discover page, an
@@ -206,16 +218,28 @@ export default function OrganizationProfile() {
       // dropped session on the next two steps can resume instead of
       // stranding a half-configured community with no way back to it.
       saveOnboardingProgress({
-        email, isPaying,
-        communityId: community.id, communitySlug: community.slug, communityName: community.name,
+        email,
+        isPaying,
+        communityId: community.id,
+        communitySlug: community.slug,
+        communityName: community.name,
       });
 
       navigate("/onboarding/payment-profile", {
-        state: { email, isPaying, communityId: community.id, communitySlug: community.slug, communityName: community.name },
+        state: {
+          email,
+          isPaying,
+          communityId: community.id,
+          communitySlug: community.slug,
+          communityName: community.name,
+        },
       });
-
     } catch (err) {
-      setError(notifyError(err, { context: existingCommunityId ? "Update community" : "Create community" }));
+      setError(
+        notifyError(err, {
+          context: existingCommunityId ? "Update community" : "Create community",
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -234,7 +258,9 @@ export default function OrganizationProfile() {
         <div className="flex items-center gap-4">
           <Bell size={20} className="text-gray-400 hidden lg:block" />
           <div className="text-right">
-            <p className="text-sm font-semibold text-gray-900 truncate max-w-[160px] lg:max-w-none">{email}</p>
+            <p className="text-sm font-semibold text-gray-900 truncate max-w-[160px] lg:max-w-none">
+              {email}
+            </p>
           </div>
         </div>
       </header>
@@ -260,24 +286,47 @@ export default function OrganizationProfile() {
                 <ArrowLeft size={15} />
                 {isAuthenticated ? "Back to dashboard" : "Back"}
               </button>
-              <h2 className="text-xl font-medium text-gray-900 mb-1">Tell us about your community</h2>
-              <p className="text-sm text-gray-500">This is how your community will appear to members on Glass.</p>
+              <h2 className="text-xl font-medium text-gray-900 mb-1">
+                Tell us about your community
+              </h2>
+              <p className="text-sm text-gray-500">
+                This is how your community will appear to members on Glass.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Community Name *</label>
-                <input type="text" name="communityName" value={form.communityName} onChange={handleChange}
-                  onBlur={(e) => { if (!slug) suggestFrom(form.communityName); handleFieldBlur("communityName")(e); }}
-                  placeholder="e.g. Babcock University Alumni Association" className={`${inputCls} ${fieldErrors.communityName ? "border-danger" : "border-gray-300"}`} />
-                {fieldErrors.communityName && <span className="text-xs text-danger">{fieldErrors.communityName}</span>}
+                <input
+                  type="text"
+                  name="communityName"
+                  value={form.communityName}
+                  onChange={handleChange}
+                  onBlur={(e) => {
+                    if (!slug) suggestFrom(form.communityName);
+                    handleFieldBlur("communityName")(e);
+                  }}
+                  placeholder="e.g. Babcock University Alumni Association"
+                  className={`${inputCls} ${fieldErrors.communityName ? "border-danger" : "border-gray-300"}`}
+                />
+                {fieldErrors.communityName && (
+                  <span className="text-xs text-danger">{fieldErrors.communityName}</span>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Description *</label>
-                <input type="text" name="description" value={form.description} onChange={handleChange}
+                <input
+                  type="text"
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
                   onBlur={handleFieldBlur("description")}
-                  placeholder="Briefly describe what your community is about" className={`${inputCls} ${fieldErrors.description ? "border-danger" : "border-gray-300"}`} />
-                {fieldErrors.description && <span className="text-xs text-danger">{fieldErrors.description}</span>}
+                  placeholder="Briefly describe what your community is about"
+                  className={`${inputCls} ${fieldErrors.description ? "border-danger" : "border-gray-300"}`}
+                />
+                {fieldErrors.description && (
+                  <span className="text-xs text-danger">{fieldErrors.description}</span>
+                )}
               </div>
             </div>
 
@@ -285,25 +334,60 @@ export default function OrganizationProfile() {
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Category *</label>
                 <div className="relative">
-                  <select name="category" value={form.category} onChange={handleChange} onBlur={handleFieldBlur("category")} className={`${inputCls} appearance-none !pr-9 ${fieldErrors.category ? "border-danger" : "border-gray-300"}`}>
-                    <option value="" disabled>Select a category</option>
-                    {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  <select
+                    name="category"
+                    value={form.category}
+                    onChange={handleChange}
+                    onBlur={handleFieldBlur("category")}
+                    className={`${inputCls} appearance-none !pr-9 ${fieldErrors.category ? "border-danger" : "border-gray-300"}`}
+                  >
+                    <option value="" disabled>
+                      Select a category
+                    </option>
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
                   </select>
                   <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
                 </div>
-                {fieldErrors.category && <span className="text-xs text-danger">{fieldErrors.category}</span>}
+                {fieldErrors.category && (
+                  <span className="text-xs text-danger">{fieldErrors.category}</span>
+                )}
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Community URL slug *</label>
                 <div className="relative">
-                  <input type="text" value={slug}
-                    onChange={(e) => { const v = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""); setSlug(v); setFieldErrors((fe) => (fe.slug ? { ...fe, slug: validateField("slug", v) } : fe)); }}
-                    onBlur={(e) => setFieldErrors((fe) => ({ ...fe, slug: validateField("slug", e.target.value) }))}
-                    placeholder="e.g. babcock-alumni" className={`${inputCls} pr-8 ${fieldErrors.slug ? "border-danger" : "border-gray-300"}`} />
+                  <input
+                    type="text"
+                    value={slug}
+                    onChange={(e) => {
+                      const v = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "");
+                      setSlug(v);
+                      setFieldErrors((fe) =>
+                        fe.slug ? { ...fe, slug: validateField("slug", v) } : fe,
+                      );
+                    }}
+                    onBlur={(e) =>
+                      setFieldErrors((fe) => ({
+                        ...fe,
+                        slug: validateField("slug", e.target.value),
+                      }))
+                    }
+                    placeholder="e.g. babcock-alumni"
+                    className={`${inputCls} pr-8 ${fieldErrors.slug ? "border-danger" : "border-gray-300"}`}
+                  />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2">
-                    {(checking || suggesting) && <Loader2 size={14} className="animate-spin text-gray-400" />}
-                    {!checking && !suggesting && available === true && <Check size={14} className="text-green-600" />}
-                    {!checking && !suggesting && available === false && <XIcon size={14} className="text-red-500" />}
+                    {(checking || suggesting) && (
+                      <Loader2 size={14} className="animate-spin text-gray-400" />
+                    )}
+                    {!checking && !suggesting && available === true && (
+                      <Check size={14} className="text-green-600" />
+                    )}
+                    {!checking && !suggesting && available === false && (
+                      <XIcon size={14} className="text-red-500" />
+                    )}
                   </span>
                 </div>
                 {fieldErrors.slug && (
@@ -313,7 +397,9 @@ export default function OrganizationProfile() {
                   <span className="text-xs text-red-500">That URL is taken — try another.</span>
                 )}
                 {!fieldErrors.slug && available === true && !checking && (
-                  <span className="text-xs text-green-600">{INVITE_HOST}/member/join?community={slug}</span>
+                  <span className="text-xs text-green-600">
+                    {INVITE_HOST}/member/join?community={slug}
+                  </span>
                 )}
               </div>
             </div>
@@ -321,13 +407,21 @@ export default function OrganizationProfile() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">Contact Email *</label>
-                <input type="email" name="contactEmail" value={form.contactEmail} onChange={handleChange}
+                <input
+                  type="email"
+                  name="contactEmail"
+                  value={form.contactEmail}
+                  onChange={handleChange}
                   onBlur={handleFieldBlur("contactEmail")}
-                  placeholder="e.g. contact@babcockalumni.org" className={`${inputCls} ${fieldErrors.contactEmail ? "border-danger" : "border-gray-300"}`} />
+                  placeholder="e.g. contact@babcockalumni.org"
+                  className={`${inputCls} ${fieldErrors.contactEmail ? "border-danger" : "border-gray-300"}`}
+                />
                 {fieldErrors.contactEmail ? (
                   <p className="text-xs text-danger">{fieldErrors.contactEmail}</p>
                 ) : (
-                  <p className="text-xs text-gray-400">Where Glass and members can reach your community.</p>
+                  <p className="text-xs text-gray-400">
+                    Where Glass and members can reach your community.
+                  </p>
                 )}
               </div>
             </div>
@@ -337,18 +431,29 @@ export default function OrganizationProfile() {
               <label className="text-sm font-medium text-gray-700">Community Logo</label>
               <div
                 onClick={() => fileRef.current?.click()}
-                onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOver(true);
+                }}
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleDrop}
                 className={`w-full rounded-xl flex flex-col items-center justify-center py-12 px-6 cursor-pointer transition-all min-h-[200px] border-[1.5px] border-dashed ${dragOver ? "bg-[#EEF2FF] border-brand" : "bg-[#FAFAFA] border-[#C2C2C2]"}`}
               >
-                <input ref={fileRef} type="file" accept="image/png,image/jpeg" className="hidden"
-                  onChange={(e) => handleFile(e.target.files[0])} />
-                {logoUrl
-                  ? <img src={logoUrl} alt="preview" className="h-16 object-contain mb-2" />
-                  : <Upload size={28} className="text-gray-400 mb-3" />}
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/png,image/jpeg"
+                  className="hidden"
+                  onChange={(e) => handleFile(e.target.files[0])}
+                />
+                {logoUrl ? (
+                  <img src={logoUrl} alt="preview" className="h-16 object-contain mb-2" />
+                ) : (
+                  <Upload size={28} className="text-gray-400 mb-3" />
+                )}
                 <p className="text-sm text-gray-500 text-center">
-                  <span className="font-medium underline text-brand">Upload</span> or Drag and Drop Logo Here
+                  <span className="font-medium underline text-brand">Upload</span> or Drag and Drop
+                  Logo Here
                 </p>
                 <p className="text-xs text-gray-400 mt-1">(PNG or JPG, max 2MB.)</p>
               </div>
@@ -356,7 +461,12 @@ export default function OrganizationProfile() {
 
             {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
 
-            <Button type="submit" disabled={checking || available === false} loading={loading} className="lg:w-1/2 mx-auto block">
+            <Button
+              type="submit"
+              disabled={checking || available === false}
+              loading={loading}
+              className="lg:w-1/2 mx-auto block"
+            >
               {loading ? "Creating community..." : "Next"}
             </Button>
             <div className="h-[env(safe-area-inset-bottom,20px)] lg:hidden" />
@@ -366,4 +476,3 @@ export default function OrganizationProfile() {
     </div>
   );
 }
-

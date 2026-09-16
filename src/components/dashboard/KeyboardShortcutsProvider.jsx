@@ -100,9 +100,5 @@ export default function KeyboardShortcutsProvider({ children }) {
     [register, registry, helpOpen],
   );
 
-  return (
-    <ShortcutsContext.Provider value={value}>
-      {children}
-    </ShortcutsContext.Provider>
-  );
+  return <ShortcutsContext.Provider value={value}>{children}</ShortcutsContext.Provider>;
 }

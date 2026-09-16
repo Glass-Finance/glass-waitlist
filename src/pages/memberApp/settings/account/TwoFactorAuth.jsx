@@ -86,13 +86,12 @@ function SetupFlow({ onSuccess, onCancel }) {
             Protect your account with MFA
           </p>
           <p className="text-[13px] text-[#666] m-0 leading-relaxed">
-            Use an authenticator app like Google Authenticator or Authy to generate time-based codes at login.
+            Use an authenticator app like Google Authenticator or Authy to generate time-based codes
+            at login.
           </p>
         </div>
 
-        <Button onClick={startSetup}>
-          Set Up MFA
-        </Button>
+        <Button onClick={startSetup}>Set Up MFA</Button>
         <button
           onClick={onCancel}
           className="p-3 rounded-xl border-[1.5px] border-[#D0D0D0] bg-white text-[#555] text-sm cursor-pointer"
@@ -124,18 +123,14 @@ function SetupFlow({ onSuccess, onCancel }) {
             <p className="text-[11px] font-semibold text-[#999] uppercase tracking-[0.4px] mb-1.5">
               QR URI (scan or paste into your app)
             </p>
-            <p className="text-[11px] text-[#555] break-all m-0 leading-snug">
-              {qrUri}
-            </p>
+            <p className="text-[11px] text-[#555] break-all m-0 leading-snug">{qrUri}</p>
           </div>
         ) : null}
 
         {/* Manual secret */}
         {setupData?.secret && (
           <div>
-            <p className="text-[13px] text-[#666] mb-2">
-              Or enter this key manually:
-            </p>
+            <p className="text-[13px] text-[#666] mb-2">Or enter this key manually:</p>
             <div className="flex items-center gap-2.5 bg-[#F5F5F5] rounded-[10px] py-2.5 px-3.5">
               <code className="flex-1 text-sm font-semibold tracking-[2px] text-[#111] break-all">
                 {setupData.secret}
@@ -156,11 +151,7 @@ function SetupFlow({ onSuccess, onCancel }) {
         <CodeInput value={code} onChange={setCode} disabled={stage === "verifying"} />
         {error && <p className="text-[13px] text-danger m-0">{error}</p>}
 
-        <Button
-          onClick={verifySetup}
-          disabled={code.length !== 6}
-          loading={stage === "verifying"}
-        >
+        <Button onClick={verifySetup} disabled={code.length !== 6} loading={stage === "verifying"}>
           {stage === "verifying" ? "Activating…" : "Activate MFA"}
         </Button>
         <button
@@ -193,15 +184,16 @@ function SetupFlow({ onSuccess, onCancel }) {
         {recoveryCodes.length > 0 && (
           <div className="bg-[#F5F5F5] rounded-xl p-4 border border-gray-200 grid grid-cols-2 gap-2">
             {recoveryCodes.map((rc, i) => (
-              <code key={i} className="text-xs font-mono font-bold text-[#111] bg-white rounded px-2 py-1 border border-gray-200 text-center">
+              <code
+                key={i}
+                className="text-xs font-mono font-bold text-[#111] bg-white rounded px-2 py-1 border border-gray-200 text-center"
+              >
                 {rc}
               </code>
             ))}
           </div>
         )}
-        <Button onClick={onSuccess}>
-          Done
-        </Button>
+        <Button onClick={onSuccess}>Done</Button>
       </div>
     );
   }
@@ -281,13 +273,17 @@ export default function TwoFactorAuth() {
       {/* Header */}
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
-          onClick={() => flow ? setFlow(null) : navigate(-1)}
+          onClick={() => (flow ? setFlow(null) : navigate(-1))}
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
         </button>
         <h1 className="text-lg font-semibold text-[#111] m-0">
-          {flow === "setup" ? "Set Up MFA" : flow === "disable" ? "Disable MFA" : "Multi-Factor Authentication"}
+          {flow === "setup"
+            ? "Set Up MFA"
+            : flow === "disable"
+              ? "Disable MFA"
+              : "Multi-Factor Authentication"}
         </h1>
       </div>
 
@@ -333,9 +329,7 @@ export default function TwoFactorAuth() {
                 Disable MFA
               </button>
             ) : (
-              <Button onClick={() => setFlow("setup")}>
-                Set Up MFA
-              </Button>
+              <Button onClick={() => setFlow("setup")}>Set Up MFA</Button>
             )}
 
             {/* Info note */}
@@ -344,7 +338,8 @@ export default function TwoFactorAuth() {
                 <span className="text-[9px] font-bold text-brand">i</span>
               </div>
               <p className="text-xs text-[#333] m-0 leading-relaxed">
-                With MFA enabled, you'll need to enter a code from your authenticator app every time you sign in. Use Google Authenticator, Authy, or any TOTP-compatible app.
+                With MFA enabled, you'll need to enter a code from your authenticator app every time
+                you sign in. Use Google Authenticator, Authy, or any TOTP-compatible app.
               </p>
             </div>
           </>

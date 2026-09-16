@@ -32,7 +32,6 @@ export function useCommunities(params = {}) {
   });
 }
 
-
 // GET /api/v1/public/communities/search
 // Public directory search — no auth-scoped community membership required,
 // used by members with zero communities to discover ones to request
@@ -111,22 +110,21 @@ export function useCommunitiesWithMetrics(params = {}) {
     const activeMemberList = memberListQueries[i]?.data;
     const txList = txListQueries[i]?.data;
 
-    const computedCollected = txList != null
-      ? txList
-          .filter((t) => SUCCESS_STATUSES.has((t.status ?? "").toUpperCase()))
-          .reduce((sum, t) => sum + (t.amount ?? 0), 0)
-      : null;
+    const computedCollected =
+      txList != null
+        ? txList
+            .filter((t) => SUCCESS_STATUSES.has((t.status ?? "").toUpperCase()))
+            .reduce((sum, t) => sum + (t.amount ?? 0), 0)
+        : null;
 
     return {
       ...c,
       metrics: {
         ...baseMetrics,
-        totalMembers: activeMemberList != null
-          ? activeMemberList.length
-          : (baseMetrics.totalMembers ?? null),
-        collectedAmount: computedCollected != null
-          ? computedCollected
-          : (baseMetrics.collectedAmount ?? null),
+        totalMembers:
+          activeMemberList != null ? activeMemberList.length : (baseMetrics.totalMembers ?? null),
+        collectedAmount:
+          computedCollected != null ? computedCollected : (baseMetrics.collectedAmount ?? null),
       },
     };
   });
@@ -134,6 +132,7 @@ export function useCommunitiesWithMetrics(params = {}) {
   return {
     ...listQuery,
     data: listQuery.data ? { ...listQuery.data, communities: enriched } : listQuery.data,
-    isLoading: listQuery.isLoading || (communities.length > 0 && detailQueries.some((q) => q.isLoading)),
+    isLoading:
+      listQuery.isLoading || (communities.length > 0 && detailQueries.some((q) => q.isLoading)),
   };
 }

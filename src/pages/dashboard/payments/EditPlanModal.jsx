@@ -67,7 +67,8 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
   }, [editBillingDayMax, form.billingDay]);
 
   function handleFieldBlur(field) {
-    return (e) => setFieldErrors((fe) => ({ ...fe, [field]: validatePlanField(field, e.target.value) }));
+    return (e) =>
+      setFieldErrors((fe) => ({ ...fe, [field]: validatePlanField(field, e.target.value) }));
   }
 
   async function handleSave() {
@@ -86,9 +87,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
             recurringPlan: {
               frequency: form.frequency,
               ...(form.interval ? { interval: Number(form.interval) } : {}),
-              ...(!isDaily && form.billingDay
-                ? { billingDay: Number(form.billingDay) }
-                : {}),
+              ...(!isDaily && form.billingDay ? { billingDay: Number(form.billingDay) } : {}),
               ...(form.endAt
                 ? { endAt: dateInputToIso(form.endAt, { endOfDayIfToday: true, clampToNow: true }) }
                 : {}),
@@ -98,9 +97,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
             },
           }
         : {}),
-      ...(form.startDate
-        ? { startAt: dateInputToIso(form.startDate, { clampToNow: true }) }
-        : {}),
+      ...(form.startDate ? { startAt: dateInputToIso(form.startDate, { clampToNow: true }) } : {}),
       // Root-level, matching the confirmed PATCH schema — same shape as
       // create. DISABLED is sent explicitly when off (a real enum member,
       // confirmed via the backend's own validation error).
@@ -110,9 +107,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
             reminderChannels: form.reminderChannels,
           }
         : { reminderFrequency: "DISABLED" }),
-      ...(form.communityAccountId
-        ? { communityAccountId: form.communityAccountId }
-        : {}),
+      ...(form.communityAccountId ? { communityAccountId: form.communityAccountId } : {}),
     };
     await onSave(plan.id, payload);
   }
@@ -127,9 +122,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
       <div className="bg-surface-bg rounded-2xl w-full max-w-md shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-start justify-between mb-5">
           <div>
-            <h2 className="text-base font-semibold text-black">
-              Edit Payment Plan
-            </h2>
+            <h2 className="text-base font-semibold text-black">Edit Payment Plan</h2>
             <p className="text-xs text-gray-400 mt-0.5">
               You can edit or pause any plan at any time.
             </p>
@@ -144,16 +137,16 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
 
         <div className="flex flex-col gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">
-              Plan Name
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1.5">Plan Name</label>
             <input
               className={inputCls}
               value={form.name}
               onChange={(e) => {
                 const value = e.target.value;
                 setForm((f) => ({ ...f, name: value }));
-                setFieldErrors((fe) => (fe.name ? { ...fe, name: validatePlanField("name", value) } : fe));
+                setFieldErrors((fe) =>
+                  fe.name ? { ...fe, name: validatePlanField("name", value) } : fe,
+                );
               }}
               onBlur={handleFieldBlur("name")}
               placeholder="Plan name"
@@ -181,26 +174,26 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
                 onChange={(e) => {
                   const value = e.target.value;
                   setForm((f) => ({ ...f, amount: value }));
-                  setFieldErrors((fe) => (fe.amount ? { ...fe, amount: validatePlanField("amount", value) } : fe));
+                  setFieldErrors((fe) =>
+                    fe.amount ? { ...fe, amount: validatePlanField("amount", value) } : fe,
+                  );
                 }}
                 onBlur={handleFieldBlur("amount")}
                 placeholder="₦0"
                 style={fieldErrors.amount ? { borderColor: "var(--color-danger)" } : undefined}
               />
-              {fieldErrors.amount && <p className="text-xs text-danger mt-1">{fieldErrors.amount}</p>}
+              {fieldErrors.amount && (
+                <p className="text-xs text-danger mt-1">{fieldErrors.amount}</p>
+              )}
             </div>
             {isRecurring && (
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                  Frequency
-                </label>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">Frequency</label>
                 <div className="relative">
                   <select
                     className={`${inputCls} appearance-none !pr-9`}
                     value={form.frequency}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, frequency: e.target.value }))
-                    }
+                    onChange={(e) => setForm((f) => ({ ...f, frequency: e.target.value }))}
                   >
                     {FREQUENCIES.map((o) => (
                       <option key={o.value} value={o.value}>
@@ -216,9 +209,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
 
           {isRecurring && (
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Repeat Every
-              </label>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">Repeat Every</label>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -231,8 +222,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
                     const raw = e.target.value;
                     setForm((f) => ({
                       ...f,
-                      interval:
-                        raw === "" ? "" : String(Math.max(1, Number(raw))),
+                      interval: raw === "" ? "" : String(Math.max(1, Number(raw))),
                     }));
                   }}
                 />
@@ -247,16 +237,12 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
             className={`grid gap-3 ${isRecurring && !isDaily ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"}`}
           >
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Start Date
-              </label>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">Start Date</label>
               <input
                 type="date"
                 className={inputCls}
                 value={form.startDate}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, startDate: e.target.value }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))}
               />
             </div>
             {isRecurring && !isDaily && (
@@ -279,9 +265,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
                 className={inputCls}
                 value={form.endAt}
                 min={form.startDate || undefined}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, endAt: e.target.value }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, endAt: e.target.value }))}
               />
               {initialEndAtValue && !form.endAt && (
                 <p className="text-[11px] text-amber-600 mt-1">
@@ -308,8 +292,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
                     const raw = e.target.value;
                     setForm((f) => ({
                       ...f,
-                      graceDays:
-                        raw === "" ? "" : String(Math.max(0, Number(raw))),
+                      graceDays: raw === "" ? "" : String(Math.max(0, Number(raw))),
                     }));
                   }}
                 />
@@ -322,9 +305,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
                   <select
                     className={`${inputCls} appearance-none !pr-9`}
                     value={form.retryPolicy}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, retryPolicy: e.target.value }))
-                    }
+                    onChange={(e) => setForm((f) => ({ ...f, retryPolicy: e.target.value }))}
                   >
                     {RETRY_POLICIES.map((o) => (
                       <option key={o.value} value={o.value}>
@@ -343,18 +324,14 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
               <input
                 type="checkbox"
                 checked={form.reminderEnabled}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, reminderEnabled: e.target.checked }))
-                }
+                onChange={(e) => setForm((f) => ({ ...f, reminderEnabled: e.target.checked }))}
               />
               Send automatic reminders to unpaid members
             </label>
             {form.reminderEnabled && (
               <div className="flex flex-col gap-2.5 pl-6">
                 <div>
-                  <label className="block text-[11px] text-gray-500 mb-1">
-                    Remind every
-                  </label>
+                  <label className="block text-[11px] text-gray-500 mb-1">Remind every</label>
                   <div className="relative">
                     <select
                       className={`${inputCls} appearance-none !pr-9`}
@@ -373,14 +350,15 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
                   </div>
                 </div>
                 <div>
-                  <label className="block text-[11px] text-gray-500 mb-1.5">
-                    Send via
-                  </label>
+                  <label className="block text-[11px] text-gray-500 mb-1.5">Send via</label>
                   <div className="flex flex-col gap-1.5">
                     {REMINDER_CHANNELS.map((c) => {
                       const checked = form.reminderChannels.includes(c.value);
                       return (
-                        <label key={c.value} className="flex items-center gap-2 text-xs text-gray-700">
+                        <label
+                          key={c.value}
+                          className="flex items-center gap-2 text-xs text-gray-700"
+                        >
                           <input
                             type="checkbox"
                             checked={checked}

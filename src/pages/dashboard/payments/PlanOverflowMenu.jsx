@@ -16,7 +16,14 @@ function MenuItem({ icon, label, onClick, disabled, danger }) {
   );
 }
 
-export default function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onSendReminder, onDuplicate }) {
+export default function PlanOverflowMenu({
+  plan,
+  planPlans,
+  onEdit,
+  onViewMembers,
+  onSendReminder,
+  onDuplicate,
+}) {
   const [open, setOpen] = useState(false);
   const [confirmingEnd, setConfirmingEnd] = useState(false);
   const [confirmingArchive, setConfirmingArchive] = useState(false);

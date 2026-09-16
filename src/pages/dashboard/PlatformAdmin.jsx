@@ -64,9 +64,7 @@ export default function PlatformAdmin() {
       </div>
 
       <div className="overflow-x-auto mb-8">
-        <div
-          className="flex gap-1 bg-stacked-container rounded-xl p-1 w-fit border border-[#f0f0f0]"
-        >
+        <div className="flex gap-1 bg-stacked-container rounded-xl p-1 w-fit border border-[#f0f0f0]">
           {TABS.map(({ id, label, Icon }) => {
             const active = activeTab === id;
             return (

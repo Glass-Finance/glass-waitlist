@@ -23,9 +23,7 @@ function SendNotificationModal({ onClose }) {
   const queryClient = useQueryClient();
   const [targetMode, setTargetMode] = useState("emails");
   const [targets, setTargets] = useState("");
-  const [notificationType, setNotificationType] = useState(
-    "GENERAL_ANNOUNCEMENT",
-  );
+  const [notificationType, setNotificationType] = useState("GENERAL_ANNOUNCEMENT");
   const [channels, setChannels] = useState(["IN_APP"]);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
@@ -41,9 +39,7 @@ function SendNotificationModal({ onClose }) {
   });
 
   function toggleChannel(ch) {
-    setChannels((cs) =>
-      cs.includes(ch) ? cs.filter((c) => c !== ch) : [...cs, ch],
-    );
+    setChannels((cs) => (cs.includes(ch) ? cs.filter((c) => c !== ch) : [...cs, ch]));
   }
 
   // Recipients are free-typed, not picked from a list -- surfacing the
@@ -66,7 +62,6 @@ function SendNotificationModal({ onClose }) {
     });
   }
 
-
   if (confirming) {
     return (
       <ModalShell title="Confirm Send" onClose={onClose}>
@@ -88,7 +83,9 @@ function SendNotificationModal({ onClose }) {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-gray-500">Type</span>
-              <span className="text-xs font-semibold text-gray-900">{notificationType.replace(/_/g, " ")}</span>
+              <span className="text-xs font-semibold text-gray-900">
+                {notificationType.replace(/_/g, " ")}
+              </span>
             </div>
             <div className="pt-1 border-t border-white">
               <p className="text-[11px] text-gray-500 mb-0.5">{title}</p>
@@ -133,9 +130,7 @@ function SendNotificationModal({ onClose }) {
       >
         {/* Target mode */}
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Recipients
-          </label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Recipients</label>
           <div className="flex gap-2 mb-2">
             {[
               { val: "emails", label: "By Email" },
@@ -162,9 +157,7 @@ function SendNotificationModal({ onClose }) {
             required
             className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-800 outline-none resize-none font-mono transition-colors focus:border-[#002FA7]"
             placeholder={
-              targetMode === "emails"
-                ? "user@example.com, another@example.com"
-                : "uuid1, uuid2"
+              targetMode === "emails" ? "user@example.com, another@example.com" : "uuid1, uuid2"
             }
           />
           <p className="text-[11px] text-gray-400 mt-1">
@@ -174,30 +167,26 @@ function SendNotificationModal({ onClose }) {
 
         {/* Type */}
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Type
-          </label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Type</label>
           <div className="relative">
-          <select
-            value={notificationType}
-            onChange={(e) => setNotificationType(e.target.value)}
-            className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-700 outline-none focus:border-[#002FA7] appearance-none !pr-9"
-          >
-            {NOTIF_TYPES.map((t) => (
-              <option key={t} value={t}>
-                {t.replace(/_/g, " ")}
-              </option>
-            ))}
-          </select>
-          <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+            <select
+              value={notificationType}
+              onChange={(e) => setNotificationType(e.target.value)}
+              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-700 outline-none focus:border-[#002FA7] appearance-none !pr-9"
+            >
+              {NOTIF_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t.replace(/_/g, " ")}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
           </div>
         </div>
 
         {/* Channels */}
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Channels
-          </label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Channels</label>
           <div className="flex gap-2 flex-wrap">
             {NOTIF_CHANNELS.map((ch) => (
               <button
@@ -218,9 +207,7 @@ function SendNotificationModal({ onClose }) {
 
         {/* Title */}
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Title
-          </label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Title</label>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -232,9 +219,7 @@ function SendNotificationModal({ onClose }) {
 
         {/* Message */}
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Message
-          </label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Message</label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -317,22 +302,16 @@ export default function NotificationsSection() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-stacked-container">
-              {[
-                "Type",
-                "Channels",
-                "Recipients",
-                "Delivered",
-                "Failed",
-                "Status",
-                "Created",
-              ].map((h) => (
-                <th
-                  key={h}
-                  className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap"
-                >
-                  {h}
-                </th>
-              ))}
+              {["Type", "Channels", "Recipients", "Delivered", "Failed", "Status", "Created"].map(
+                (h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap"
+                  >
+                    {h}
+                  </th>
+                ),
+              )}
             </tr>
           </thead>
           <tbody>
@@ -357,9 +336,7 @@ export default function NotificationsSection() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-[12px] text-gray-700">
-                      {j.recipientCount ?? "—"}
-                    </span>
+                    <span className="text-[12px] text-gray-700">{j.recipientCount ?? "—"}</span>
                   </td>
                   <td className="px-4 py-3">
                     <span className="text-[12px] font-medium text-green-600">
@@ -381,9 +358,7 @@ export default function NotificationsSection() {
                     </span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="text-[11px] text-gray-500">
-                      {fmtDate(j.createdAt)}
-                    </span>
+                    <span className="text-[11px] text-gray-500">{fmtDate(j.createdAt)}</span>
                   </td>
                 </tr>
               );
@@ -399,9 +374,7 @@ export default function NotificationsSection() {
         totalPages={data?.totalPages ?? 1}
         onPage={setPage}
       />
-      {showCreate && (
-        <SendNotificationModal onClose={() => setShowCreate(false)} />
-      )}
+      {showCreate && <SendNotificationModal onClose={() => setShowCreate(false)} />}
     </div>
   );
 }

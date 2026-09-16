@@ -6,12 +6,10 @@ import client from "./client";
 
 // GET /api/v1/communities/invites/me
 // — list all invites for the authenticated user (used on empty state screen)
-export const getMyInvites = () =>
-  client.get("/communities/invites/me");
+export const getMyInvites = () => client.get("/communities/invites/me");
 
 // GET /api/v1/communities/invites/{inviteId}
-export const getInvite = (inviteId) =>
-  client.get(`/communities/invites/${inviteId}`);
+export const getInvite = (inviteId) => client.get(`/communities/invites/${inviteId}`);
 
 // GET /api/v1/communities/{communityIdentifier}/invites
 // — admin: list all invites for a community (filterable by status)
@@ -31,12 +29,10 @@ export const bulkCreateCommunityInvites = (communityId, payload) =>
   client.post(`/communities/${communityId}/invites/bulk`, payload);
 
 // PATCH /api/v1/communities/invites/{inviteId}/accept
-export const acceptInvite = (inviteId) =>
-  client.patch(`/communities/invites/${inviteId}/accept`);
+export const acceptInvite = (inviteId) => client.patch(`/communities/invites/${inviteId}/accept`);
 
 // PATCH /api/v1/communities/invites/{inviteId}/reject
-export const rejectInvite = (inviteId) =>
-  client.patch(`/communities/invites/${inviteId}/reject`);
+export const rejectInvite = (inviteId) => client.patch(`/communities/invites/${inviteId}/reject`);
 
 // PATCH /api/v1/communities/{communityIdentifier}/invites/{inviteId}/revoke
 // (admin only)
@@ -54,5 +50,4 @@ export const submitJoinRequest = (communityId) =>
 
 // GET /api/v1/communities/join-requests/me
 // (Bare /join-requests/me is not documented — removed.)
-export const getMyCommunityJoinRequests = () =>
-  client.get("/communities/join-requests/me");
+export const getMyCommunityJoinRequests = () => client.get("/communities/join-requests/me");

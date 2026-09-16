@@ -16,9 +16,7 @@ export default function SavedCards() {
   }
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen pb-10"
-    >
+    <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button

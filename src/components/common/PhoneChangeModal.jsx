@@ -24,7 +24,15 @@ function maskPhone(phone) {
 // this — onSubmitOtp only handles the confirming PATCH /user/phone call,
 // same "send before you mount" contract EmailChangeModal uses.
 // onSubmitOtp(otpString) — called with the 6-digit code to confirm the change
-export default function PhoneChangeModal({ newPhone, isUpdate, onSubmitOtp, onVerified, onWrongNumber, onResend, onClose }) {
+export default function PhoneChangeModal({
+  newPhone,
+  isUpdate,
+  onSubmitOtp,
+  onVerified,
+  onWrongNumber,
+  onResend,
+  onClose,
+}) {
   const [step, setStep] = useState("otp"); // "otp" | "success"
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
@@ -45,7 +53,12 @@ export default function PhoneChangeModal({ newPhone, isUpdate, onSubmitOtp, onVe
       setStep("success");
       setTimeout(() => onVerified(), 1800);
     } catch (err) {
-      setError(notifyError(err, { context: "Verify phone", fallback: "Invalid or expired code. Please try again." }));
+      setError(
+        notifyError(err, {
+          context: "Verify phone",
+          fallback: "Invalid or expired code. Please try again.",
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -61,7 +74,13 @@ export default function PhoneChangeModal({ newPhone, isUpdate, onSubmitOtp, onVe
       setOtp(["", "", "", "", "", ""]);
       setError("");
     } catch (err) {
-      setResendMessage(notifyError(err, { context: "Resend code", fallback: "Could not resend. Please try again.", silent: true }));
+      setResendMessage(
+        notifyError(err, {
+          context: "Resend code",
+          fallback: "Could not resend. Please try again.",
+          silent: true,
+        }),
+      );
     } finally {
       setResending(false);
     }
@@ -71,7 +90,11 @@ export default function PhoneChangeModal({ newPhone, isUpdate, onSubmitOtp, onVe
     return (
       <ModalShell onClose={onVerified}>
         <SuccessBadge
-          message={isUpdate ? "Your Phone Number Has Been Updated!" : "Your Phone Number Has Been Verified!"}
+          message={
+            isUpdate
+              ? "Your Phone Number Has Been Updated!"
+              : "Your Phone Number Has Been Verified!"
+          }
         />
       </ModalShell>
     );
@@ -82,10 +105,15 @@ export default function PhoneChangeModal({ newPhone, isUpdate, onSubmitOtp, onVe
       <h1 className="text-headline text-gray-900 mb-3">Enter the Code we Sent</h1>
       <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code that was sent to</p>
       <p className="text-sm font-semibold text-gray-900 mb-2">{maskPhone(newPhone)}</p>
-      <button onClick={onWrongNumber} className="text-sm font-medium hover:underline text-[#1B2FE8]">
+      <button
+        onClick={onWrongNumber}
+        className="text-sm font-medium hover:underline text-[#1B2FE8]"
+      >
         Wrong number?
       </button>
-      <p className={`text-xs mt-2 mb-6 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
+      <p
+        className={`text-xs mt-2 mb-6 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
+      >
         {codeExpired
           ? "Your code has expired — request a new one below."
           : `Code expires in ${formatCountdown(secondsLeft)}`}
@@ -133,7 +161,11 @@ export default function PhoneChangeModal({ newPhone, isUpdate, onSubmitOtp, onVe
 
       <p className="text-center text-sm mt-5 text-gray-500">
         Didn't get OTP?{" "}
-        <button onClick={handleResend} disabled={resending} className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]">
+        <button
+          onClick={handleResend}
+          disabled={resending}
+          className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]"
+        >
           {resending ? "Resending..." : "Resend"}
         </button>
       </p>

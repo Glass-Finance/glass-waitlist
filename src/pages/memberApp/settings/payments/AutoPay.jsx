@@ -2,7 +2,11 @@ import { useMemo, useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { usePayments, useManagePayments, isAuthorisationExpired } from "../../../../hooks/usePayments";
+import {
+  usePayments,
+  useManagePayments,
+  isAuthorisationExpired,
+} from "../../../../hooks/usePayments";
 import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
 import Toggle from "../../../../components/common/Toggle";
 import ConfirmSheet from "../../../../components/memberApp/ConfirmSheet";
@@ -11,7 +15,12 @@ import { formatNaira } from "../../../../utils/format";
 export default function AutoPay() {
   const navigate = useNavigate();
   const { data, isLoading: paymentsLoading } = usePayments();
-  const { data: authorisations, isLoading: authsLoading, toggleAutoPay, isRemoving } = useManagePayments();
+  const {
+    data: authorisations,
+    isLoading: authsLoading,
+    toggleAutoPay,
+    isRemoving,
+  } = useManagePayments();
   const [turningOff, setTurningOff] = useState(null); // { plan, auth }
 
   // Build a flat list of plans: all recurring upcoming obligations, deduped by plan ID
@@ -89,9 +98,7 @@ export default function AutoPay() {
   const isLoading = paymentsLoading || authsLoading;
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen pb-10"
-    >
+    <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
@@ -133,7 +140,9 @@ export default function AutoPay() {
                   <div className="min-w-0 pr-3">
                     <p className="text-[15px] font-medium text-[#111] m-0">{plan.name}</p>
                     <p className="text-[13px] text-[#999] mt-[3px] mx-0 mb-0">
-                      {[plan.communityName, plan.amount != null ? formatNaira(plan.amount) : null].filter(Boolean).join(" · ")}
+                      {[plan.communityName, plan.amount != null ? formatNaira(plan.amount) : null]
+                        .filter(Boolean)
+                        .join(" · ")}
                     </p>
                     {expired && (
                       <p className="text-[11px] text-danger mt-1 mx-0 mb-0 leading-[1.4]">
@@ -144,8 +153,8 @@ export default function AutoPay() {
                     )}
                     {!expired && inactive && (
                       <p className="text-[11px] text-[#D97706] mt-1 mx-0 mb-0 leading-[1.4]">
-                        Your saved payment method is no longer active, so automatic
-                        charges may fail. Pay once with a new method to re-enable Auto-Pay.
+                        Your saved payment method is no longer active, so automatic charges may
+                        fail. Pay once with a new method to re-enable Auto-Pay.
                       </p>
                     )}
                   </div>
@@ -161,10 +170,10 @@ export default function AutoPay() {
             <span className="text-[9px] font-bold text-brand">i</span>
           </div>
           <p className="text-xs text-[#333] m-0 leading-[1.5]">
-            Auto-Pay charges your saved method on each due date, and you'll get an
-            in-app and email reminder 3 days before every charge. If a charge fails
-            (an expired card, insufficient funds, or a declined transaction), the
-            payment stays due and you'll be notified so you can pay manually.
+            Auto-Pay charges your saved method on each due date, and you'll get an in-app and email
+            reminder 3 days before every charge. If a charge fails (an expired card, insufficient
+            funds, or a declined transaction), the payment stays due and you'll be notified so you
+            can pay manually.
           </p>
         </div>
       </div>

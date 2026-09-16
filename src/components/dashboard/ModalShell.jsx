@@ -19,7 +19,9 @@ export default function ModalShell({ title, subtitle, onClose, children }) {
   // Escape-to-close -- every dashboard modal built on this shell gets this
   // for free; hand-rolled modals elsewhere in the app don't have it yet.
   useEffect(() => {
-    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    const handler = (e) => {
+      if (e.key === "Escape") onClose();
+    };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
@@ -38,9 +40,7 @@ export default function ModalShell({ title, subtitle, onClose, children }) {
           <div className="flex items-start justify-between px-6 pt-5 pb-4 border-b border-gray-100">
             <div>
               <h2 className="text-sm font-bold text-gray-900">{title}</h2>
-              {subtitle && (
-                <p className="text-[11px] text-gray-400 mt-0.5">{subtitle}</p>
-              )}
+              {subtitle && <p className="text-[11px] text-gray-400 mt-0.5">{subtitle}</p>}
             </div>
             <button
               onClick={onClose}

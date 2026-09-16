@@ -22,14 +22,11 @@ function CommissionModal({ community, onClose }) {
   const [useDefault, setUseDefault] = useState(!community.commissionRate);
   const [rate, setRate] = useState(String(community.commissionRate ?? ""));
   const [cap, setCap] = useState(
-    community.commissionCapMinor
-      ? String(Math.round(community.commissionCapMinor / 100))
-      : "",
+    community.commissionCapMinor ? String(Math.round(community.commissionCapMinor / 100)) : "",
   );
 
   const mutation = useMutation({
-    mutationFn: (payload) =>
-      setCommissionOverride(community.slug ?? community.id, payload),
+    mutationFn: (payload) => setCommissionOverride(community.slug ?? community.id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-communities"] });
       onClose();
@@ -49,13 +46,8 @@ function CommissionModal({ community, onClose }) {
     );
   }
 
-
   return (
-    <ModalShell
-      title="Commission Override"
-      subtitle={community.name}
-      onClose={onClose}
-    >
+    <ModalShell title="Commission Override" subtitle={community.name} onClose={onClose}>
       <form onSubmit={submit} className="px-6 py-5 flex flex-col gap-4">
         <label className="flex items-center gap-3 cursor-pointer">
           <input
@@ -64,9 +56,7 @@ function CommissionModal({ community, onClose }) {
             onChange={(e) => setUseDefault(e.target.checked)}
             className="w-4 h-4 accent-brand"
           />
-          <span className="text-xs font-semibold text-gray-700">
-            Use platform default rate
-          </span>
+          <span className="text-xs font-semibold text-gray-700">Use platform default rate</span>
         </label>
 
         {!useDefault && (
@@ -74,9 +64,7 @@ function CommissionModal({ community, onClose }) {
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                 Rate{" "}
-                <span className="font-normal text-gray-400">
-                  (basis points — 100 bps = 1%)
-                </span>
+                <span className="font-normal text-gray-400">(basis points — 100 bps = 1%)</span>
               </label>
               <input
                 type="number"
@@ -95,10 +83,7 @@ function CommissionModal({ community, onClose }) {
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                Cap{" "}
-                <span className="font-normal text-gray-400">
-                  (₦, leave blank for no cap)
-                </span>
+                Cap <span className="font-normal text-gray-400">(₦, leave blank for no cap)</span>
               </label>
               <input
                 type="number"
@@ -150,8 +135,7 @@ function CommunitySettingsModal({ community, onClose }) {
   const [publicVisible, setPublicVisible] = useState(!!community.publicVisible);
 
   const mutation = useMutation({
-    mutationFn: (payload) =>
-      updateCommunitySettings(community.slug ?? community.id, payload),
+    mutationFn: (payload) => updateCommunitySettings(community.slug ?? community.id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-communities"] });
       onClose();
@@ -165,11 +149,7 @@ function CommunitySettingsModal({ community, onClose }) {
   }
 
   return (
-    <ModalShell
-      title="Joining & Visibility"
-      subtitle={community.name}
-      onClose={onClose}
-    >
+    <ModalShell title="Joining & Visibility" subtitle={community.name} onClose={onClose}>
       <form onSubmit={submit} className="px-6 py-5 flex flex-col gap-1">
         <div className="flex items-center justify-between py-3 border-b border-gray-100">
           <div className="min-w-0 pr-4">
@@ -292,14 +272,7 @@ export default function CommunitiesSection() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-stacked-container">
-              {[
-                "Community",
-                "Status",
-                "Commission",
-                "Members",
-                "Created",
-                "",
-              ].map((h) => (
+              {["Community", "Status", "Commission", "Members", "Created", ""].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap"
@@ -332,9 +305,7 @@ export default function CommunitiesSection() {
                       <p className="text-[12px] font-semibold text-gray-900 leading-tight">
                         {c.name}
                       </p>
-                      <p className="text-[10px] text-gray-400 font-mono">
-                        {c.slug}
-                      </p>
+                      <p className="text-[10px] text-gray-400 font-mono">{c.slug}</p>
                     </div>
                   </div>
                 </td>
@@ -354,9 +325,7 @@ export default function CommunitiesSection() {
                       )}
                     </div>
                   ) : (
-                    <span className="text-[11px] text-gray-400">
-                      Platform default
-                    </span>
+                    <span className="text-[11px] text-gray-400">Platform default</span>
                   )}
                 </td>
                 <td className="px-4 py-3">
@@ -365,9 +334,7 @@ export default function CommunitiesSection() {
                   </span>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <span className="text-[11px] text-gray-500">
-                    {fmtDate(c.createdAt)}
-                  </span>
+                  <span className="text-[11px] text-gray-500">{fmtDate(c.createdAt)}</span>
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
@@ -399,10 +366,7 @@ export default function CommunitiesSection() {
         onPage={setPage}
       />
       {editingCommission && (
-        <CommissionModal
-          community={editingCommission}
-          onClose={() => setEditingCommission(null)}
-        />
+        <CommissionModal community={editingCommission} onClose={() => setEditingCommission(null)} />
       )}
       {editingSettings && (
         <CommunitySettingsModal

@@ -6,15 +6,15 @@ import { Button } from "../../../components/ui/Button";
 import GlassLogoGlow from "../../../components/memberApp/GlassLogoGlow";
 
 export default function CheckEmail() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const email     = location.state?.email || "";
+  const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || "";
   // Carries the email into the QR so scanning it pre-fills Join's contact
   // step instead of dropping the person on a blank form -- see
   // useJoinEmailParam. There's no backend endpoint to actually send a
   // continuation link, so this is the only context this handoff can carry.
-  const joinUrl   = buildMobileUrl(
-    email ? `/member/join?email=${encodeURIComponent(email)}` : "/member/join"
+  const joinUrl = buildMobileUrl(
+    email ? `/member/join?email=${encodeURIComponent(email)}` : "/member/join",
   );
 
   return (
@@ -25,16 +25,13 @@ export default function CheckEmail() {
       <header className="px-8 py-3 flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain" />
-          <span className="font-medium text-gray-900 text-base font-sans">
-            Glass
-          </span>
+          <span className="font-medium text-gray-900 text-base font-sans">Glass</span>
         </div>
       </header>
 
       {/* Centered content */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-2 overflow-hidden">
         <div className="w-full max-w-xl flex flex-col items-center">
-
           <h1 className="text-2xl font-bold text-gray-900 mb-1.5 text-center font-sans">
             Scan To Join From Your Phone
           </h1>
@@ -44,14 +41,9 @@ export default function CheckEmail() {
 
           <QRCodeCanvas value={joinUrl} size={170} color="#000000" />
 
-          <Button
-            onClick={() => navigate("/")}
-            fullWidth={false}
-            className="w-[170px] mt-4"
-          >
+          <Button onClick={() => navigate("/")} fullWidth={false} className="w-[170px] mt-4">
             Continue
           </Button>
-
         </div>
       </main>
     </div>

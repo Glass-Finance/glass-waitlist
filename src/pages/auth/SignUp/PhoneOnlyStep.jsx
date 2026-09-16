@@ -54,9 +54,7 @@ export default function PhoneOnlyStep({ initialPhone, onNext, onCancel }) {
   return (
     <div className="w-full max-w-md flex flex-col md:mt-14 mb-auto">
       <div className="mb-3">
-        <h1 className="text-headline text-gray-900 mb-1.5">
-          Update Your Phone Number
-        </h1>
+        <h1 className="text-headline text-gray-900 mb-1.5">Update Your Phone Number</h1>
         <p className="text-sm text-gray-500">
           We'll send a new verification code to the corrected number.
         </p>
@@ -64,9 +62,7 @@ export default function PhoneOnlyStep({ initialPhone, onNext, onCancel }) {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="flex flex-col gap-1.5">
-          <label className="text-label font-medium text-gray-700">
-            Phone Number
-          </label>
+          <label className="text-label font-medium text-gray-700">Phone Number</label>
           <SignUpTextInput
             type="tel"
             value={phone}

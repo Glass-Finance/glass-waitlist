@@ -1,11 +1,6 @@
 import { Loader2, ShieldCheck } from "lucide-react";
 import AuthLayout from "../../layouts/AuthLayout";
-import {
-  Label,
-  TextInput,
-  PrimaryButton,
-  ErrorMessage,
-} from "../../components/auth/FormFields";
+import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
 import OtpBoxes from "../../components/common/OtpBoxes";
 
 export function MfaChallengeScreen({
@@ -18,10 +13,7 @@ export function MfaChallengeScreen({
   onBack,
 }) {
   return (
-    <AuthLayout
-      heroTitle="Manage Your Community"
-      heroSubtitle="Finance Effortlessly"
-    >
+    <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
       <div className="w-full max-w-md flex flex-col md:mt-14 mb-auto gap-6">
         <div className="flex flex-col items-center gap-3 text-center">
           <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
@@ -45,9 +37,7 @@ export function MfaChallengeScreen({
             maxLength={6}
             placeholder="000000"
             value={mfaCode}
-            onChange={(e) =>
-              setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))
-            }
+            onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
             onKeyDown={(e) => e.key === "Enter" && onVerify()}
             autoComplete="one-time-code"
             disabled={loading}
@@ -56,11 +46,7 @@ export function MfaChallengeScreen({
           <ErrorMessage message={error} />
         </div>
 
-        <PrimaryButton
-          onClick={onVerify}
-          loading={loading}
-          disabled={mfaCode.length !== 6}
-        >
+        <PrimaryButton onClick={onVerify} loading={loading} disabled={mfaCode.length !== 6}>
           {loading ? (
             <span className="flex items-center justify-center gap-2">
               <Loader2 size={16} className="animate-spin" />
@@ -98,18 +84,11 @@ export function OtpVerifyScreen({
   formatCountdown,
 }) {
   return (
-    <AuthLayout
-      heroTitle="Manage Your Community"
-      heroSubtitle="Finance Effortlessly"
-    >
+    <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
       <div className="w-full max-w-xl flex flex-col md:mt-14 mb-auto gap-12">
         <div>
-          <h1 className="text-headline text-gray-900 mb-3 font-sans">
-            Enter Your Code
-          </h1>
-          <p className="text-sm text-gray-500 mb-0.5">
-            Enter the 6-digit code sent to
-          </p>
+          <h1 className="text-headline text-gray-900 mb-3 font-sans">Enter Your Code</h1>
+          <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code sent to</p>
           <p className="text-sm font-semibold text-gray-900">{otpIdentifier}</p>
           <button
             onClick={onBackToIdentifier}
@@ -143,9 +122,7 @@ export function OtpVerifyScreen({
                     {digit}
                   </div>
                 ))}
-                <span className="text-gray-400 text-lg font-medium px-1 flex-shrink-0">
-                  —
-                </span>
+                <span className="text-gray-400 text-lg font-medium px-1 flex-shrink-0">—</span>
                 {digits.slice(3, 6).map((digit, index) => {
                   const position = index + 3;
                   return (
@@ -161,9 +138,7 @@ export function OtpVerifyScreen({
             )}
           />
 
-          {otpError && (
-            <p className="text-sm text-red-500 text-center -mt-2">{otpError}</p>
-          )}
+          {otpError && <p className="text-sm text-red-500 text-center -mt-2">{otpError}</p>}
           <PrimaryButton
             onClick={onVerify}
             loading={otpVerifying}

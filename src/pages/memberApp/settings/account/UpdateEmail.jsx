@@ -94,12 +94,20 @@ export default function UpdateEmail() {
     setOtpError("");
     setVerifying(true);
     try {
-      await updateEmail.mutateAsync({ email: email.trim().toLowerCase(), emailVerificationOtp: otp.join("") });
+      await updateEmail.mutateAsync({
+        email: email.trim().toLowerCase(),
+        emailVerificationOtp: otp.join(""),
+      });
       await refreshUser();
       setStep("success");
       setTimeout(() => navigate(-1), 1800);
     } catch (err) {
-      setOtpError(notifyError(err, { context: "Verify email", fallback: "Invalid or expired code. Please try again." }));
+      setOtpError(
+        notifyError(err, {
+          context: "Verify email",
+          fallback: "Invalid or expired code. Please try again.",
+        }),
+      );
     } finally {
       setVerifying(false);
     }
@@ -115,7 +123,13 @@ export default function UpdateEmail() {
       setOtp(["", "", "", "", "", ""]);
       setOtpError("");
     } catch (err) {
-      setResendMessage(notifyError(err, { context: "Resend code", fallback: "Could not resend. Please try again.", silent: true }));
+      setResendMessage(
+        notifyError(err, {
+          context: "Resend code",
+          fallback: "Could not resend. Please try again.",
+          silent: true,
+        }),
+      );
     } finally {
       setResending(false);
     }
@@ -142,7 +156,10 @@ export default function UpdateEmail() {
               <TextInput
                 type="email"
                 value={email}
-                onChange={(e) => { setEmail(e.target.value); setFieldError(""); }}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setFieldError("");
+                }}
                 autoFocus
                 error={fieldError}
               />
@@ -172,23 +189,35 @@ export default function UpdateEmail() {
             <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6">
               <OtpBoxes key={resendCount} value={otp} onChange={setOtp} length={6} autoFocus />
               {otpError && <p className="text-sm text-red-500 text-center -mt-2">{otpError}</p>}
-              <Button type="submit" disabled={codeExpired || otp.some((d) => !d)} loading={verifying}>
+              <Button
+                type="submit"
+                disabled={codeExpired || otp.some((d) => !d)}
+                loading={verifying}
+              >
                 {verifying ? "Verifying…" : "Continue"}
               </Button>
             </form>
 
-            <p className={`text-xs mt-3 text-center ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
+            <p
+              className={`text-xs mt-3 text-center ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
+            >
               {codeExpired
                 ? "Your code has expired — request a new one below."
                 : `Code expires in ${formatCountdown(secondsLeft)}`}
             </p>
             <p className="text-center text-sm mt-5 text-gray-500">
               Didn't get OTP?{" "}
-              <button onClick={handleResend} disabled={resending} className="font-semibold hover:underline disabled:opacity-60 text-brand bg-transparent border-none cursor-pointer p-0">
+              <button
+                onClick={handleResend}
+                disabled={resending}
+                className="font-semibold hover:underline disabled:opacity-60 text-brand bg-transparent border-none cursor-pointer p-0"
+              >
                 {resending ? "Resending…" : "Resend"}
               </button>
             </p>
-            {resendMessage && <p className="text-center text-xs text-gray-400 mt-1">{resendMessage}</p>}
+            {resendMessage && (
+              <p className="text-center text-xs text-gray-400 mt-1">{resendMessage}</p>
+            )}
           </div>
         </>
       )}

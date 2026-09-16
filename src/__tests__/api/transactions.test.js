@@ -36,10 +36,9 @@ describe("fetchAllCommunityTransactions", () => {
 
     expect(result).toEqual([tx("t1"), tx("t2")]);
     expect(client.get).toHaveBeenCalledTimes(1);
-    expect(client.get).toHaveBeenCalledWith(
-      "/communities/community-1/finance/transactions",
-      { params: { pageSize: 1000 } },
-    );
+    expect(client.get).toHaveBeenCalledWith("/communities/community-1/finance/transactions", {
+      params: { pageSize: 1000 },
+    });
   });
 
   it("unwraps a plain-array response with no envelope", async () => {
@@ -59,9 +58,8 @@ describe("fetchAllCommunityObligations", () => {
 
     expect(result).toEqual([{ id: "o1" }]);
     expect(client.get).toHaveBeenCalledTimes(1);
-    expect(client.get).toHaveBeenCalledWith(
-      "/communities/community-1/finance/obligations",
-      { params: { pageSize: 1000 } },
-    );
+    expect(client.get).toHaveBeenCalledWith("/communities/community-1/finance/obligations", {
+      params: { pageSize: 1000 },
+    });
   });
 });

@@ -27,9 +27,7 @@ export default function GlassLogoGlow({ className = "" }) {
         alt=""
         className="absolute left-[-15%] bottom-[-10%] w-[85%] max-w-[420px]"
       />
-      <div
-        className="absolute inset-0 bg-surface-overlay backdrop-blur-[var(--blur-logo-overlay)] [-webkit-backdrop-filter:blur(var(--blur-logo-overlay))]"
-      />
+      <div className="absolute inset-0 bg-surface-overlay backdrop-blur-[var(--blur-logo-overlay)] [-webkit-backdrop-filter:blur(var(--blur-logo-overlay))]" />
     </div>
   );
 }

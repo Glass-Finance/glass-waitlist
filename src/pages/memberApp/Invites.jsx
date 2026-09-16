@@ -55,7 +55,9 @@ export default function Invites() {
         }
       })
       .catch(() => {
-        setStaleNotice("That invite is no longer available — it may have expired or already been handled.");
+        setStaleNotice(
+          "That invite is no longer available — it may have expired or already been handled.",
+        );
       });
   }, []);
 
@@ -74,9 +76,7 @@ export default function Invites() {
   }
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen pb-10"
-    >
+    <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       {/* Header */}
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
@@ -87,9 +87,7 @@ export default function Invites() {
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-[#333]" />
         </button>
-        <h1 className="text-[17px] font-semibold text-[#111] m-0">
-          Invitations
-        </h1>
+        <h1 className="text-[17px] font-semibold text-[#111] m-0">Invitations</h1>
       </div>
 
       <div className="px-4">
@@ -113,9 +111,7 @@ export default function Invites() {
               className="w-20 h-20 object-contain"
               draggable={false}
             />
-            <p className="text-sm font-semibold text-[#333] m-0">
-              No invitations yet
-            </p>
+            <p className="text-sm font-semibold text-[#333] m-0">No invitations yet</p>
             <p className="text-[13px] text-[#888] m-0 max-w-[260px] leading-[1.5]">
               If your admin has already added you, you're good to go — head to your home screen.
             </p>
@@ -149,9 +145,7 @@ export default function Invites() {
                     <p className="text-sm font-semibold text-[#111] m-0 whitespace-nowrap overflow-hidden text-ellipsis">
                       {invite.community?.name ?? "Community"}
                     </p>
-                    <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">
-                      Invited you to join
-                    </p>
+                    <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">Invited you to join</p>
                   </div>
                 </div>
 

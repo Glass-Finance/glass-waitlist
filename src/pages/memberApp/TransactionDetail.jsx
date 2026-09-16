@@ -13,9 +13,13 @@ import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 function StatusPill({ status }) {
   const { label, ...s } = transactionStatusStyle(status);
   return (
-    <span className={`inline-flex items-center gap-1.5 text-sm font-semibold rounded-lg py-1.5 px-3.5 ${s.cls}`}>
+    <span
+      className={`inline-flex items-center gap-1.5 text-sm font-semibold rounded-lg py-1.5 px-3.5 ${s.cls}`}
+    >
       {label === "Success" && (
-        <span className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${s.dotCls}`}>
+        <span
+          className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${s.dotCls}`}
+        >
           <Check size={11} color="#fff" strokeWidth={3} />
         </span>
       )}
@@ -53,9 +57,7 @@ export default function TransactionDetail() {
   }
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen pb-10 max-w-[430px] mx-auto"
-    >
+    <div className="relative overflow-hidden min-h-screen pb-10 max-w-[430px] mx-auto">
       <GlassLogoGlow />
       {/* Header */}
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
@@ -86,9 +88,15 @@ export default function TransactionDetail() {
             <StatusPill status={tx.status} />
             <p className="text-[13px] text-[#9CA3AF] m-0">
               {tx.date
-                ? new Date(tx.date).toLocaleString("en-NG", {
-                    month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit",
-                  }).replace(",", " •")
+                ? new Date(tx.date)
+                    .toLocaleString("en-NG", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })
+                    .replace(",", " •")
                 : "—"}
             </p>
           </div>
@@ -102,11 +110,7 @@ export default function TransactionDetail() {
             <Row label="Community:">
               <span className="flex items-center gap-2">
                 {tx.communityLogo?.url && (
-                  <img
-                    src={tx.communityLogo.url}
-                    alt=""
-                    className="w-8 h-8 object-cover"
-                  />
+                  <img src={tx.communityLogo.url} alt="" className="w-8 h-8 object-cover" />
                 )}
                 {tx.communityName ?? "—"}
               </span>
@@ -115,9 +119,7 @@ export default function TransactionDetail() {
               {toTitleCase(tx.planName ?? tx.description) ?? "—"}
             </Row>
             {(tx.transactionType || tx.channel) && (
-              <Row label="Transaction Type:">
-                {toTitleCase(tx.transactionType ?? tx.channel)}
-              </Row>
+              <Row label="Transaction Type:">{toTitleCase(tx.transactionType ?? tx.channel)}</Row>
             )}
             <Row label="Dues Amount:">{formatNaira(tx.amount)}</Row>
             {/* Always shown, never conditional -- transparency about the

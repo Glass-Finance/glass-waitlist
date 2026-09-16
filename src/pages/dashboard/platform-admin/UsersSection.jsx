@@ -12,13 +12,7 @@ import {
 } from "../../../api/admin";
 import { unwrap, pageParams, fmtDateTime } from "./shared";
 import { useDebounce } from "../../../hooks/useDebounce";
-import {
-  SectionHeader,
-  SearchBar,
-  FilterSelect,
-  TableShell,
-  TableFooter,
-} from "./SharedUI";
+import { SectionHeader, SearchBar, FilterSelect, TableShell, TableFooter } from "./SharedUI";
 
 function SuspendModal({ user, onClose }) {
   const queryClient = useQueryClient();
@@ -45,9 +39,7 @@ function SuspendModal({ user, onClose }) {
         className="px-6 py-5 flex flex-col gap-4"
       >
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Reason
-          </label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Reason</label>
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
@@ -91,8 +83,8 @@ function UnsuspendModal({ user, onClose, onConfirm, unsuspending }) {
     <ModalShell title="Unsuspend User" subtitle={user.email} onClose={onClose}>
       <div className="px-6 py-5 flex flex-col gap-4">
         <p className="text-xs text-gray-600 leading-relaxed">
-          This restores <strong>{user.email}</strong>'s access to the
-          Platform. They'll be able to sign in and use their Account again.
+          This restores <strong>{user.email}</strong>'s access to the Platform. They'll be able to
+          sign in and use their Account again.
         </p>
         <div className="flex gap-3 pt-1">
           <button
@@ -135,14 +127,12 @@ function MarkForDeletionModal({ user, onClose, onConfirm, marking }) {
         className="px-6 py-5 flex flex-col gap-4"
       >
         <p className="text-xs text-gray-600 leading-relaxed">
-          Schedules <strong>{user.email}</strong>'s account for deletion. It
-          enters the standard grace period before anything is permanently
-          removed -- use Anonymize afterward to skip the wait.
+          Schedules <strong>{user.email}</strong>'s account for deletion. It enters the standard
+          grace period before anything is permanently removed -- use Anonymize afterward to skip the
+          wait.
         </p>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Reason
-          </label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Reason</label>
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
@@ -168,11 +158,7 @@ function MarkForDeletionModal({ user, onClose, onConfirm, marking }) {
             disabled={marking || !reason.trim()}
             className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-[#e11d48]"
           >
-            {marking ? (
-              <Loader2 size={12} className="animate-spin" />
-            ) : (
-              <Trash2 size={12} />
-            )}
+            {marking ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
             {marking ? "Marking…" : "Mark for Deletion"}
           </button>
         </div>
@@ -195,15 +181,12 @@ function AnonymizeModal({ user, onClose, onConfirm, anonymizing }) {
         className="px-6 py-5 flex flex-col gap-4"
       >
         <p className="text-xs text-gray-600 leading-relaxed">
-          Immediately scrubs <strong>{user.email}</strong>'s personal data,
-          bypassing the grace period. <strong>This cannot be undone.</strong>{" "}
-          Only works on an account already marked for deletion -- if it
-          isn't, this will be rejected.
+          Immediately scrubs <strong>{user.email}</strong>'s personal data, bypassing the grace
+          period. <strong>This cannot be undone.</strong> Only works on an account already marked
+          for deletion -- if it isn't, this will be rejected.
         </p>
         <div>
-          <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-            Reason
-          </label>
+          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Reason</label>
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
@@ -229,11 +212,7 @@ function AnonymizeModal({ user, onClose, onConfirm, anonymizing }) {
             disabled={anonymizing || !reason.trim()}
             className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-[#7f1d1d]"
           >
-            {anonymizing ? (
-              <Loader2 size={12} className="animate-spin" />
-            ) : (
-              <EyeOff size={12} />
-            )}
+            {anonymizing ? <Loader2 size={12} className="animate-spin" /> : <EyeOff size={12} />}
             {anonymizing ? "Anonymizing…" : "Anonymize Now"}
           </button>
         </div>
@@ -343,15 +322,7 @@ export default function UsersSection() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-stacked-container">
-              {[
-                "User",
-                "Role",
-                "Status",
-                "Verified",
-                "Last Login",
-                "Communities",
-                "",
-              ].map((h) => (
+              {["User", "Role", "Status", "Verified", "Last Login", "Communities", ""].map((h) => (
                 <th
                   key={h}
                   className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap"
@@ -404,9 +375,7 @@ export default function UsersSection() {
                   </span>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <span className="text-[11px] text-gray-500">
-                    {fmtDateTime(u.lastLoginAt)}
-                  </span>
+                  <span className="text-[11px] text-gray-500">{fmtDateTime(u.lastLoginAt)}</span>
                 </td>
                 <td className="px-4 py-3">
                   <span className="text-[12px] text-gray-600">
@@ -460,9 +429,7 @@ export default function UsersSection() {
         totalPages={data?.totalPages ?? 1}
         onPage={setPage}
       />
-      {suspending && (
-        <SuspendModal user={suspending} onClose={() => setSuspending(null)} />
-      )}
+      {suspending && <SuspendModal user={suspending} onClose={() => setSuspending(null)} />}
       {unsuspending && (
         <UnsuspendModal
           user={unsuspending}

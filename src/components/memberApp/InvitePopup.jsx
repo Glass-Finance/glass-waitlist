@@ -26,12 +26,7 @@ function CommunityAvatar({ name, logo }) {
       className={`w-[72px] h-[72px] rounded-[18px] text-white flex items-center justify-center text-2xl font-bold overflow-hidden mx-auto mt-0 mb-5 ${logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
     >
       {logo?.url ? (
-        <img
-          src={logo.url}
-          alt=""
-          decoding="async"
-          className="w-full h-full object-cover"
-        />
+        <img src={logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
       ) : (
         initials
       )}
@@ -47,9 +42,7 @@ export default function InvitePopup() {
   const pendingInvites = (invites ?? []).filter(
     (i) => (i.status ?? "").toUpperCase() === "PENDING",
   );
-  const unseenInvites = pendingInvites.filter(
-    (i) => !getDismissedIds().has(String(i.id)),
-  );
+  const unseenInvites = pendingInvites.filter((i) => !getDismissedIds().has(String(i.id)));
 
   useEffect(() => {
     // `visible` isn't purely derived -- it can also be set false by a
@@ -88,10 +81,7 @@ export default function InvitePopup() {
       {/* Modal card */}
       <div className="w-full max-w-[360px] bg-surface-bg rounded-2xl pt-9 px-6 pb-7 text-center">
         {/* Community avatar */}
-        <CommunityAvatar
-          name={invite.community?.name}
-          logo={invite.community?.logo}
-        />
+        <CommunityAvatar name={invite.community?.name} logo={invite.community?.logo} />
 
         {/* Heading */}
         <p className="text-lg font-bold text-[#111] mt-0 mx-0 mb-2 leading-[1.3]">
@@ -130,7 +120,10 @@ export default function InvitePopup() {
         {/* Multiple invites — view all */}
         {remaining > 1 && (
           <button
-            onClick={() => { handleLater(); navigate("/member/notifications"); }}
+            onClick={() => {
+              handleLater();
+              navigate("/member/notifications");
+            }}
             className="block w-full bg-transparent border-none text-[#999] text-xs cursor-pointer pt-1"
           >
             +{remaining - 1} more invite{remaining - 1 > 1 ? "s" : ""} · View all

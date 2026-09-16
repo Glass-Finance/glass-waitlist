@@ -9,15 +9,11 @@ export default function UnpaidObligationAlert({
   onDismiss,
   hasActiveAutoPay,
 }) {
-  const dueList = myUpcoming.filter(
-    (o) => (o.status ?? "").toUpperCase() !== "PAID",
-  );
+  const dueList = myUpcoming.filter((o) => (o.status ?? "").toUpperCase() !== "PAID");
   const due = dueList[0];
   if (!due) return null;
   const othersDue = dueList.length - 1;
-  const daysLeft = due.dueDate
-    ? Math.ceil((new Date(due.dueDate) - new Date()) / 86400000)
-    : null;
+  const daysLeft = due.dueDate ? Math.ceil((new Date(due.dueDate) - new Date()) / 86400000) : null;
 
   return (
     <div className="flex items-start justify-between px-4 py-4 rounded-md mb-5 bg-[#D7E2FF] border border-blue-100">
@@ -48,8 +44,7 @@ export default function UnpaidObligationAlert({
           </p>
           {othersDue > 0 && (
             <p className="text-xs text-brand font-medium mt-1">
-              + {othersDue} other payment{othersDue === 1 ? "" : "s"} due
-              — see Your Payments below.
+              + {othersDue} other payment{othersDue === 1 ? "" : "s"} due — see Your Payments below.
             </p>
           )}
         </div>

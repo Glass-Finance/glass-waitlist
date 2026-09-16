@@ -53,17 +53,12 @@ export default function StepProfile({ onSubmit }) {
   }
 
   const isReady =
-    form.firstName.trim() &&
-    form.lastName.trim() &&
-    form.password &&
-    form.confirmPassword;
+    form.firstName.trim() && form.lastName.trim() && form.password && form.confirmPassword;
 
   return (
     <div className="flex flex-col gap-12">
       <div>
-        <h1 className="text-headline text-gray-900">
-          Complete Your Profile
-        </h1>
+        <h1 className="text-headline text-gray-900">Complete Your Profile</h1>
       </div>
 
       <div className="flex gap-3">
@@ -144,7 +139,8 @@ export default function StepProfile({ onSubmit }) {
       {accountExists && (
         <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
           <p className="text-xs text-gray-700 leading-relaxed">
-            You already have a Glass account with this email. Sign in and your invite will be waiting for you.
+            You already have a Glass account with this email. Sign in and your invite will be
+            waiting for you.
           </p>
           <Link
             to="/member/app-sign-in?return=/member/invites"
@@ -157,11 +153,7 @@ export default function StepProfile({ onSubmit }) {
 
       <ErrorMessage message={error} />
 
-      <PrimaryButton
-        onClick={handleSubmit}
-        loading={loading}
-        disabled={!isReady}
-      >
+      <PrimaryButton onClick={handleSubmit} loading={loading} disabled={!isReady}>
         {loading ? "Creating Account..." : "Create Account"}
       </PrimaryButton>
     </div>

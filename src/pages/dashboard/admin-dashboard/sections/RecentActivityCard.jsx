@@ -5,9 +5,7 @@ import { timeAgo } from "../helpers";
 export default function RecentActivityCard({ isLoading, items }) {
   return (
     <div className="bg-surface-container rounded-xl border border-surface-container-border p-4">
-      <span className="text-sm font-medium text-black block mb-4">
-        Recent Activity
-      </span>
+      <span className="text-sm font-medium text-black block mb-4">Recent Activity</span>
 
       {isLoading ? (
         <div className="flex flex-col gap-3">
@@ -36,17 +34,9 @@ export default function RecentActivityCard({ isLoading, items }) {
           const event = a.event ?? "";
           const failed = a.result === "FAILED";
           const isPmt = event.includes("PAYMENT");
-          const aColor = failed
-            ? "#e11d48"
-            : isPmt
-              ? "#059669"
-              : "var(--color-brand)";
+          const aColor = failed ? "#e11d48" : isPmt ? "#059669" : "var(--color-brand)";
           const aBgCls = failed ? "bg-[#fff1f2]" : isPmt ? "bg-[#ecfdf5]" : "bg-brand-tint";
-          const type = isPmt
-            ? "payment"
-            : event.includes("MEMBER")
-              ? "member"
-              : undefined;
+          const type = isPmt ? "payment" : event.includes("MEMBER") ? "member" : undefined;
           const actorName = toTitleCase(
             [a.actor?.firstName, a.actor?.lastName].filter(Boolean).join(" "),
           );
@@ -63,23 +53,13 @@ export default function RecentActivityCard({ isLoading, items }) {
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-gray-700 leading-relaxed">
                   {actorName && !a.description?.startsWith(actorName) && (
-                    <strong className="text-brand font-semibold">
-                      {actorName}{" "}
-                    </strong>
+                    <strong className="text-brand font-semibold">{actorName} </strong>
                   )}
-                  {a.description ??
-                    event.replaceAll("_", " ").toLowerCase() ??
-                    "activity"}
+                  {a.description ?? event.replaceAll("_", " ").toLowerCase() ?? "activity"}
                 </p>
                 <div className="flex items-center gap-1 mt-1">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="#9ca3af"
-                      strokeWidth="1.8"
-                    />
+                    <circle cx="12" cy="12" r="10" stroke="#9ca3af" strokeWidth="1.8" />
                     <path
                       d="M12 6v6l4 2"
                       stroke="#9ca3af"
@@ -87,9 +67,7 @@ export default function RecentActivityCard({ isLoading, items }) {
                       strokeLinecap="round"
                     />
                   </svg>
-                  <span className="text-[11px] text-gray-400">
-                    {timeAgo(a.occurredAt)}
-                  </span>
+                  <span className="text-[11px] text-gray-400">{timeAgo(a.occurredAt)}</span>
                 </div>
               </div>
             </div>

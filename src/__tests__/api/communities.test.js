@@ -33,10 +33,9 @@ describe("fetchAllCommunityMembers", () => {
 
     await fetchAllCommunityMembers("community-1");
 
-    expect(client.get).toHaveBeenCalledWith(
-      "/communities/community-1/members",
-      { params: { status: "ACTIVE" } },
-    );
+    expect(client.get).toHaveBeenCalledWith("/communities/community-1/members", {
+      params: { status: "ACTIVE" },
+    });
     expect(client.get).toHaveBeenCalledTimes(1);
   });
 

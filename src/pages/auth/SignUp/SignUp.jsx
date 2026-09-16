@@ -64,10 +64,7 @@ export default function SignUp() {
   };
 
   return (
-    <AuthLayout
-      heroTitle="Manage Your Community"
-      heroSubtitle="Finance Effortlessly"
-    >
+    <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
       {step === 1 && (
         <EmailPhoneStep
           initialEmail={email}
@@ -77,16 +74,15 @@ export default function SignUp() {
         />
       )}
       {step === 1.5 && (
-        <PhoneOTPStep
-          phone={phone}
-          onVerified={handlePhoneVerified}
-          onBack={() => setStep(1.6)}
-        />
+        <PhoneOTPStep phone={phone} onVerified={handlePhoneVerified} onBack={() => setStep(1.6)} />
       )}
       {step === 1.6 && (
         <PhoneOnlyStep
           initialPhone={phone}
-          onNext={(newPhone) => { setPhone(newPhone); setStep(1.5); }}
+          onNext={(newPhone) => {
+            setPhone(newPhone);
+            setStep(1.5);
+          }}
           onCancel={() => setStep(1.5)}
         />
       )}
@@ -99,11 +95,7 @@ export default function SignUp() {
         />
       )}
       {step === 3 && (
-        <OTPStep
-          email={email}
-          onVerified={handleVerified}
-          onBack={() => setStep(1)}
-        />
+        <OTPStep email={email} onVerified={handleVerified} onBack={() => setStep(1)} />
       )}
     </AuthLayout>
   );

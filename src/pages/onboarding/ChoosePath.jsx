@@ -17,19 +17,25 @@ export default function ChoosePath() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
-  const email    = location.state?.email ?? "";
+  const email = location.state?.email ?? "";
   // Entry points that specifically mean "join" (e.g. Communities Home's
   // Join Community button) pass this so the option isn't stuck defaulting
   // to Create -- see CommunitiesHome.jsx.
   const [selected, setSelected] = useState(location.state?.intent === "join" ? "join" : "create");
 
   const options = [
-    { id: "create", title: "Create Community",
+    {
+      id: "create",
+      title: "Create Community",
       description: "No existing members or records. Start building your community on Glass.",
-      icon: CreateCommunityIcon },
-    { id: "join",   title: "Join Community",
+      icon: CreateCommunityIcon,
+    },
+    {
+      id: "join",
+      title: "Join Community",
       description: "Your community already exists. Join Now.",
-      icon: JoinCommunityIcon },
+      icon: JoinCommunityIcon,
+    },
   ];
 
   const handleContinue = () => {
@@ -77,8 +83,12 @@ export default function ChoosePath() {
       <main className="relative flex-1 flex flex-col items-center justify-center px-6 lg:px-8 pb-10">
         <StepIndicator stepId="choose-path" />
         <div className="text-center mb-8">
-          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">What would you like to do?</h1>
-          <p className="text-sm text-gray-500">Are you setting up a community, or joining one you've been invited to?</p>
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+            What would you like to do?
+          </h1>
+          <p className="text-sm text-gray-500">
+            Are you setting up a community, or joining one you've been invited to?
+          </p>
         </div>
 
         <div className="flex flex-col lg:flex-row lg:justify-center gap-3 lg:gap-5 mb-8 w-full max-w-[500px] lg:max-w-none items-stretch">
@@ -91,17 +101,29 @@ export default function ChoosePath() {
                 className={`relative flex flex-row lg:flex-col items-center text-left lg:text-center gap-4 lg:gap-0 px-5 lg:px-10 py-5 lg:py-8 rounded-2xl transition-all duration-200 cursor-pointer w-full lg:w-[380px] border bg-white ${isSelected ? "border-2 border-brand" : "border-white"}`}
               >
                 <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] lg:bg-transparent lg:rounded-none lg:w-14 lg:h-14 lg:mt-6 lg:mb-5">
-                  <img src={option.icon} alt={option.title} className="w-6 h-6 lg:w-14 lg:h-14 object-contain" />
+                  <img
+                    src={option.icon}
+                    alt={option.title}
+                    className="w-6 h-6 lg:w-14 lg:h-14 object-contain"
+                  />
                 </div>
                 <div className="flex-1 min-w-0 lg:flex-none">
-                  <h3 className="font-semibold text-gray-900 text-base mb-1 lg:mb-2">{option.title}</h3>
+                  <h3 className="font-semibold text-gray-900 text-base mb-1 lg:mb-2">
+                    {option.title}
+                  </h3>
                   <p className="text-sm text-gray-500 leading-relaxed">{option.description}</p>
                 </div>
                 <div className="flex-shrink-0 lg:absolute lg:top-4 lg:left-4">
                   {isSelected ? (
                     <div className="w-6 h-6 rounded-full flex items-center justify-center bg-brand">
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M2 6l3 3 5-5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path
+                          d="M2 6l3 3 5-5"
+                          stroke="white"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </div>
                   ) : (
@@ -116,14 +138,13 @@ export default function ChoosePath() {
         <div className="flex items-start gap-1.5 mb-6 w-full max-w-[500px]">
           <Info size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
           <p className="text-xs text-gray-500 leading-snug text-left">
-            This choice isn't final — whichever option you pick now, you can still create or join additional communities later from your dashboard.
+            This choice isn't final — whichever option you pick now, you can still create or join
+            additional communities later from your dashboard.
           </p>
         </div>
 
         <div className="flex flex-col items-center gap-4 w-full max-w-[500px]">
-          <Button onClick={handleContinue}>
-            Continue
-          </Button>
+          <Button onClick={handleContinue}>Continue</Button>
           <button
             onClick={() => navigate("/dashboard/home")}
             className="text-sm font-medium hover:underline bg-transparent border-none cursor-pointer text-brand"

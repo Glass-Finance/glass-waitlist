@@ -3,17 +3,25 @@ import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { ChevronLeft, ChevronRight, Lock, ShieldCheck } from "lucide-react";
 
 const ITEMS = [
-  { Icon: Lock, label: "Password", desc: "Change your account password", to: "/member/security/password" },
-  { Icon: ShieldCheck, label: "Multi-Factor Authentication", desc: "Secure your account with an authenticator app", to: "/member/security/authentication" },
+  {
+    Icon: Lock,
+    label: "Password",
+    desc: "Change your account password",
+    to: "/member/security/password",
+  },
+  {
+    Icon: ShieldCheck,
+    label: "Multi-Factor Authentication",
+    desc: "Secure your account with an authenticator app",
+    to: "/member/security/authentication",
+  },
 ];
 
 export default function Security() {
   const navigate = useNavigate();
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen pb-10"
-    >
+    <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button

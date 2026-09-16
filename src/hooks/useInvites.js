@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMyInvites, acceptInvite, rejectInvite, getMyCommunityJoinRequests } from "../api/invites";
+import {
+  getMyInvites,
+  acceptInvite,
+  rejectInvite,
+  getMyCommunityJoinRequests,
+} from "../api/invites";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/v1/communities/invites/me returns objects shaped like:
@@ -18,9 +23,7 @@ export function useInvites() {
       const data = res.data?.data;
       // Paginated envelope: { content: [...] }
       const list = Array.isArray(data) ? data : (data?.content ?? []);
-      return [...list].sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-      );
+      return [...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     },
     staleTime: 1000 * 60,
   });
@@ -36,8 +39,7 @@ export function useInvites() {
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.previous)
-        queryClient.setQueryData(["invites", "me"], ctx.previous);
+      if (ctx?.previous) queryClient.setQueryData(["invites", "me"], ctx.previous);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["invites", "me"] });
@@ -57,8 +59,7 @@ export function useInvites() {
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.previous)
-        queryClient.setQueryData(["invites", "me"], ctx.previous);
+      if (ctx?.previous) queryClient.setQueryData(["invites", "me"], ctx.previous);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["invites", "me"] });
@@ -74,8 +75,7 @@ export function useInvites() {
     reject: (inviteId) => rejectMutation.mutateAsync(inviteId),
     isAccepting: acceptMutation.isPending,
     isRejecting: rejectMutation.isPending,
-    refresh: () =>
-      queryClient.invalidateQueries({ queryKey: ["invites", "me"] }),
+    refresh: () => queryClient.invalidateQueries({ queryKey: ["invites", "me"] }),
   };
 }
 

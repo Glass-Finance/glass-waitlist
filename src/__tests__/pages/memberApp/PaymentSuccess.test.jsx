@@ -5,10 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import PaymentSuccess from "../../../pages/memberApp/PaymentSuccess";
 import { verifyPayment } from "../../../api/members";
 import { beginAuthGrace } from "../../../api/client";
-import {
-  settleLocalPaymentForReference,
-  useManagePayments,
-} from "../../../hooks/usePayments";
+import { settleLocalPaymentForReference, useManagePayments } from "../../../hooks/usePayments";
 
 vi.mock("../../../api/members", () => ({ verifyPayment: vi.fn() }));
 vi.mock("../../../api/client", () => ({ beginAuthGrace: vi.fn() }));
@@ -32,9 +29,7 @@ vi.mock("../../../components/common/SuccessBadge", () => ({
   default: ({ message }) => <div>{message}</div>,
 }));
 vi.mock("../../../components/ui/Button", () => ({
-  Button: ({ children, onClick }) => (
-    <button onClick={onClick}>{children}</button>
-  ),
+  Button: ({ children, onClick }) => <button onClick={onClick}>{children}</button>,
 }));
 
 function renderPaymentSuccess() {
@@ -44,9 +39,7 @@ function renderPaymentSuccess() {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter
-        initialEntries={["/member/pay/ob-1/success?reference=ref-1"]}
-      >
+      <MemoryRouter initialEntries={["/member/pay/ob-1/success?reference=ref-1"]}>
         <PaymentSuccess />
       </MemoryRouter>
     </QueryClientProvider>,
@@ -97,9 +90,6 @@ describe("PaymentSuccess payment verification", () => {
 
     expect(verifyPayment).toHaveBeenCalledTimes(2);
     expect(screen.getByText("Transaction Successful")).toBeDefined();
-    expect(settleLocalPaymentForReference).toHaveBeenCalledWith(
-      "ref-1",
-      "tx-1",
-    );
+    expect(settleLocalPaymentForReference).toHaveBeenCalledWith("ref-1", "tx-1");
   });
 });

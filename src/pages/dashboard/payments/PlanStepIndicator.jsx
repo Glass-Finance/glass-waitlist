@@ -16,10 +16,7 @@ export default function PlanStepIndicator({ current }) {
         const done = s.n < current,
           active = s.n === current;
         return (
-          <div
-            key={s.n}
-            className={`flex items-center ${i < steps.length - 1 ? "flex-1" : ""}`}
-          >
+          <div key={s.n} className={`flex items-center ${i < steps.length - 1 ? "flex-1" : ""}`}>
             <div className="flex flex-col items-center gap-1 flex-shrink-0">
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center font-medium text-xs border
@@ -34,9 +31,7 @@ export default function PlanStepIndicator({ current }) {
               </span>
             </div>
             {i < steps.length - 1 && (
-              <div
-                className={`flex-1 h-0.5 mx-2 mb-4 ${done ? "bg-brand" : "bg-gray-200"}`}
-              />
+              <div className={`flex-1 h-0.5 mx-2 mb-4 ${done ? "bg-brand" : "bg-gray-200"}`} />
             )}
           </div>
         );

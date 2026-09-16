@@ -10,8 +10,13 @@ const EMAIL_FORMAT_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // likely a typo ("gmial.com") than someone's genuine, deliberately-chosen
 // address at a similarly-spelled but different domain.
 const TYPO_CHECK_DOMAINS = [
-  "gmail.com", "yahoo.com", "outlook.com", "hotmail.com",
-  "icloud.com", "protonmail.com", "yandex.com",
+  "gmail.com",
+  "yahoo.com",
+  "outlook.com",
+  "hotmail.com",
+  "icloud.com",
+  "protonmail.com",
+  "yandex.com",
 ];
 
 // Accepted outright, but short enough (or unusual enough) that fuzzy-
@@ -20,8 +25,16 @@ const TYPO_CHECK_DOMAINS = [
 // yahoo.com — and mail.com/email.com are real, independent providers that
 // just happen to be a one-letter edit away from gmail.com.
 const OTHER_KNOWN_DOMAINS = [
-  "aol.com", "live.com", "zoho.com", "gmail.co.uk", "yahoo.co.uk",
-  "ymail.com", "mail.com", "email.com", "rocketmail.com", "fastmail.com",
+  "aol.com",
+  "live.com",
+  "zoho.com",
+  "gmail.co.uk",
+  "yahoo.co.uk",
+  "ymail.com",
+  "mail.com",
+  "email.com",
+  "rocketmail.com",
+  "fastmail.com",
 ];
 
 // Optimal-string-alignment distance: Levenshtein plus adjacent-transposition
@@ -35,15 +48,8 @@ function editDistance(a, b) {
   for (let i = 1; i <= a.length; i++) {
     for (let j = 1; j <= b.length; j++) {
       const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-      dp[i][j] = Math.min(
-        dp[i - 1][j] + 1,
-        dp[i][j - 1] + 1,
-        dp[i - 1][j - 1] + cost,
-      );
-      if (
-        i > 1 && j > 1 &&
-        a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]
-      ) {
+      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
         dp[i][j] = Math.min(dp[i][j], dp[i - 2][j - 2] + 1);
       }
     }
@@ -68,7 +74,10 @@ export function getEmailError(value) {
   let closestDist = Infinity;
   for (const known of TYPO_CHECK_DOMAINS) {
     const dist = editDistance(domain, known);
-    if (dist < closestDist) { closestDist = dist; closest = known; }
+    if (dist < closestDist) {
+      closestDist = dist;
+      closest = known;
+    }
   }
   if (closest && closestDist > 0 && closestDist <= 2) {
     return `Enter a valid email address — did you mean "${closest}"?`;

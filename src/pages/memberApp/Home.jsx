@@ -4,10 +4,7 @@ import { useState, useEffect } from "react";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import AutoPayPrompt from "../../components/common/AutoPayPrompt";
-import {
-  usePayments,
-  usePendingPaymentVerification,
-} from "../../hooks/usePayments";
+import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
 import { useMyCommunities } from "../../hooks/useMyAccount";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
@@ -31,9 +28,7 @@ import { toTitleCase } from "../../utils/format";
 function firstName(user) {
   try {
     const userData =
-      typeof user?.userData === "string"
-        ? JSON.parse(user.userData)
-        : user?.userData;
+      typeof user?.userData === "string" ? JSON.parse(user.userData) : user?.userData;
     if (userData?.firstName) return toTitleCase(userData.firstName);
   } catch {
     // ignore
@@ -62,8 +57,7 @@ export default function Home() {
     invites.filter((i) => (i.status ?? "").toUpperCase() === "PENDING").length +
     joinRequests.length;
 
-  const { approved: approvedJoins, dismiss: dismissJoin } =
-    useJoinApprovalWatcher();
+  const { approved: approvedJoins, dismiss: dismissJoin } = useJoinApprovalWatcher();
   const activeApproval = approvedJoins[0] ?? null;
 
   function openApprovedCommunity(entry) {
@@ -96,10 +90,7 @@ export default function Home() {
   function dismissAutoPayPrompt() {
     if (autoPayPrompt?.paymentLinkId) {
       try {
-        localStorage.setItem(
-          `glass_autopay_asked_${autoPayPrompt.paymentLinkId}`,
-          "1",
-        );
+        localStorage.setItem(`glass_autopay_asked_${autoPayPrompt.paymentLinkId}`, "1");
       } catch {
         // ignore
       }
@@ -119,8 +110,7 @@ export default function Home() {
   const communityName = data?.community?.name ?? "Your Community";
   const communityInitial = communityName.charAt(0).toUpperCase();
   const communityLogo = data?.community?.logo;
-  const activeCommunityIdentifier =
-    data?.community?.slug ?? data?.community?.id ?? null;
+  const activeCommunityIdentifier = data?.community?.slug ?? data?.community?.id ?? null;
   const [menuOpen, setMenuOpen] = useState(false);
 
   const { data: rawMyCommunities = [] } = useMyCommunities();
@@ -160,10 +150,7 @@ export default function Home() {
     try {
       if (!localStorage.getItem("glass_member_community")) {
         const { name, slug, id } = data.community;
-        localStorage.setItem(
-          "glass_member_community",
-          JSON.stringify({ name, slug, id }),
-        );
+        localStorage.setItem("glass_member_community", JSON.stringify({ name, slug, id }));
       }
     } catch {
       // ignore
@@ -242,48 +229,33 @@ export default function Home() {
 
         {!hasNoCommunity && !showNothingHappening && (
           <div className="pt-1 px-5 pb-5">
-            <h1 className="text-2xl font-medium text-[#111] m-0">
-              Hi {firstName(data?.user)},
-            </h1>
+            <h1 className="text-2xl font-medium text-[#111] m-0">Hi {firstName(data?.user)},</h1>
             <p className="text-[13px] text-[#888] mt-[3px] font-normal">
               Here's Your Community At A Glance
             </p>
           </div>
         )}
 
-        {!hasNoCommunity &&
-          !showNothingHappening &&
-          data?.user &&
-          !data.user.phoneVerified && (
-            <ProfileNudge navigate={navigate} user={data.user} />
-          )}
+        {!hasNoCommunity && !showNothingHappening && data?.user && !data.user.phoneVerified && (
+          <ProfileNudge navigate={navigate} user={data.user} />
+        )}
 
         {isLoading ? (
           <PageLoadingState label="Loading your community…" />
         ) : hasPendingCommunity ? (
-          <PendingApprovalState
-            navigate={navigate}
-            community={pendingCommunity}
-          />
+          <PendingApprovalState navigate={navigate} community={pendingCommunity} />
         ) : hasNoCommunity ? (
           <NoCommunityState navigate={navigate} />
         ) : showNothingHappening ? (
           <NothingHappeningState navigate={navigate} />
         ) : (
           <>
-            <HeroCard
-              nextDue={nextDue}
-              onPay={handlePay}
-              error={error}
-              onRefresh={refresh}
-            />
+            <HeroCard nextDue={nextDue} onPay={handlePay} error={error} onRefresh={refresh} />
 
             <div className="mx-4 mt-4 bg-surface-container rounded-lg px-4 pt-4 pb-1 border border-surface-container-border">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-normal text-[#111]">
-                    Upcoming Payments
-                  </span>
+                  <span className="text-sm font-normal text-[#111]">Upcoming Payments</span>
                   {totalUpcomingCount > 0 && (
                     <span className="text-[11px] font-bold text-[#1C2B8A] bg-[#E4E7F9] rounded-full py-px px-[7px] leading-normal">
                       {totalUpcomingCount}
@@ -303,17 +275,13 @@ export default function Home() {
               {upcoming.length === 0 && totalUpcomingCount === 0 ? (
                 <EmptyUpcomingState />
               ) : (
-                upcoming.map((p) => (
-                  <UpcomingRow key={p.id} payment={p} onPay={handlePay} />
-                ))
+                upcoming.map((p) => <UpcomingRow key={p.id} payment={p} onPay={handlePay} />)
               )}
             </div>
 
             <div className="mx-4 mt-4 bg-surface-container rounded-lg px-4 pt-4 pb-1 border border-surface-container-border">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-normal text-[#111]">
-                  Payment History
-                </span>
+                <span className="text-sm font-normal text-[#111]">Payment History</span>
                 {history.length > 0 && (
                   <button
                     onClick={() => navigate("/member/transactions")}

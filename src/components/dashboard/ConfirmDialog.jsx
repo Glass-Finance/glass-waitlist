@@ -21,9 +21,7 @@ export default function ConfirmDialog({
   return (
     <ModalShell title={title} subtitle={subtitle} onClose={onClose}>
       <div className="px-6 py-5 flex flex-col gap-4">
-        {description && (
-          <p className="text-xs text-gray-600 leading-relaxed">{description}</p>
-        )}
+        {description && <p className="text-xs text-gray-600 leading-relaxed">{description}</p>}
         <div className="flex gap-3 pt-1">
           <button
             type="button"

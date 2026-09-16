@@ -62,9 +62,7 @@ function normalizeLinkToObligation(link) {
 // ─── Saved-method icon ────────────────────────────────────────────────────────
 function MethodIcon() {
   return (
-    <div
-      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#EEF2FF]"
-    >
+    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#EEF2FF]">
       <Landmark size={16} className="text-[#1C2B8A]" />
     </div>
   );
@@ -79,8 +77,16 @@ export default function PaymentSummary() {
   const viaLink = searchParams.get("via") === "link";
   const [error, setError] = useState("");
 
-  const { data: obligationData, isLoading: obligationLoading, error: obligationError } = useObligation(!viaLink ? paymentId : null);
-  const { data: linkRaw, isLoading: linkLoading, error: linkError } = usePaymentLinkData(viaLink ? paymentId : null);
+  const {
+    data: obligationData,
+    isLoading: obligationLoading,
+    error: obligationError,
+  } = useObligation(!viaLink ? paymentId : null);
+  const {
+    data: linkRaw,
+    isLoading: linkLoading,
+    error: linkError,
+  } = usePaymentLinkData(viaLink ? paymentId : null);
 
   const obligation = viaLink ? normalizeLinkToObligation(linkRaw) : obligationData;
   const isLoading = viaLink ? linkLoading : obligationLoading;
@@ -210,11 +216,7 @@ export default function PaymentSummary() {
         <p className="text-sm text-gray-600">
           {getErrorMessage(loadError, "Couldn't load this payment. It may no longer be available.")}
         </p>
-        <Button
-          onClick={() => navigate(-1)}
-          fullWidth={false}
-          className="px-4"
-        >
+        <Button onClick={() => navigate(-1)} fullWidth={false} className="px-4">
           Go back
         </Button>
       </div>
@@ -229,9 +231,7 @@ export default function PaymentSummary() {
   const isTestMode = import.meta.env.VITE_TEST_MODE === "true";
 
   return (
-    <div
-      className="relative flex flex-col min-h-screen overflow-hidden max-w-[430px] mx-auto"
-    >
+    <div className="relative flex flex-col min-h-screen overflow-hidden max-w-[430px] mx-auto">
       <GlassLogoGlow />
       {/* ── Top bar ── */}
       <div className="flex items-center px-4 pt-5 pb-4 relative">
@@ -248,15 +248,19 @@ export default function PaymentSummary() {
 
       {/* ── Test mode banner ── */}
       {isTestMode && (
-        <div
-          className="mx-4 mb-3 rounded-xl px-4 py-3 bg-[#FFFBEB] border-[1.5px] border-[#FCD34D]"
-        >
-          <p className="text-[12px] font-bold text-amber-800 mb-1.5">🧪 Test Mode — No real money is charged</p>
-          <p className="text-[11px] text-amber-700 mb-2">Use the card details below to complete this payment:</p>
+        <div className="mx-4 mb-3 rounded-xl px-4 py-3 bg-[#FFFBEB] border-[1.5px] border-[#FCD34D]">
+          <p className="text-[12px] font-bold text-amber-800 mb-1.5">
+            🧪 Test Mode — No real money is charged
+          </p>
+          <p className="text-[11px] text-amber-700 mb-2">
+            Use the card details below to complete this payment:
+          </p>
           <div className="rounded-lg px-3 py-2.5 flex flex-col gap-1 bg-[#FEF3C7]">
             <div className="flex justify-between text-[11px]">
               <span className="text-amber-700">Card number</span>
-              <span className="font-mono font-bold text-amber-900 tracking-wide">4084 0840 8408 4081</span>
+              <span className="font-mono font-bold text-amber-900 tracking-wide">
+                4084 0840 8408 4081
+              </span>
             </div>
             <div className="flex justify-between text-[11px]">
               <span className="text-amber-700">Expiry</span>
@@ -287,7 +291,12 @@ export default function PaymentSummary() {
               className={`w-11 h-11 flex items-center justify-center flex-shrink-0 ${communityLogo?.url ? "bg-transparent" : "bg-[#f0f4ff]"}`}
             >
               {communityLogo?.url ? (
-                <img src={communityLogo.url} alt="" decoding="async" className="object-contain w-full h-full" />
+                <img
+                  src={communityLogo.url}
+                  alt=""
+                  decoding="async"
+                  className="object-contain w-full h-full"
+                />
               ) : (
                 <span className="text-[10px] font-bold text-[#1C2B8A]">{communityInitials}</span>
               )}
@@ -301,7 +310,8 @@ export default function PaymentSummary() {
                 <div className="flex items-center gap-2.5">
                   <MethodIcon />
                   <span className="text-[14px] font-medium text-gray-900">
-                    {toTitleCase(savedMethod.cardType ?? savedMethod.bank ?? "Card")} ●●●{savedMethod.last4}
+                    {toTitleCase(savedMethod.cardType ?? savedMethod.bank ?? "Card")} ●●●
+                    {savedMethod.last4}
                     {savedMethod.expMonth && savedMethod.expYear
                       ? ` | ${String(savedMethod.expMonth).padStart(2, "0")}/${String(savedMethod.expYear).slice(-2)}`
                       : ""}
@@ -330,17 +340,17 @@ export default function PaymentSummary() {
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
               <span className="flex items-center gap-1.5 text-[12px] text-gray-600">
                 Automatic Payment
-                <span title={isRecurring
-                  ? "Save this card and charge it automatically each cycle. Turn off to pay this cycle only."
-                  : "Save this method and reuse it automatically for future payments."}
+                <span
+                  title={
+                    isRecurring
+                      ? "Save this card and charge it automatically each cycle. Turn off to pay this cycle only."
+                      : "Save this method and reuse it automatically for future payments."
+                  }
                 >
                   <Info size={12} className="text-gray-400" />
                 </span>
               </span>
-              <Toggle
-                on={saveMethod}
-                onChange={setSaveMethod}
-              />
+              <Toggle on={saveMethod} onChange={setSaveMethod} />
             </div>
           </div>
         </div>
@@ -351,14 +361,16 @@ export default function PaymentSummary() {
 
           <div className="flex items-center justify-between mb-3">
             <span className="text-[13px] text-gray-500">Plan:</span>
-            <span className="text-[14px] text-gray-900">{toTitleCase(obligation?.paymentLink?.title) ?? "—"}</span>
+            <span className="text-[14px] text-gray-900">
+              {toTitleCase(obligation?.paymentLink?.title) ?? "—"}
+            </span>
           </div>
 
-          <div className={`flex items-center justify-between ${isRecurring ? "mb-3" : "mb-2.5 pb-3 border-b border-gray-100"}`}>
+          <div
+            className={`flex items-center justify-between ${isRecurring ? "mb-3" : "mb-2.5 pb-3 border-b border-gray-100"}`}
+          >
             <span className="text-[13px] text-gray-500">Payment Schedule:</span>
-            <span
-              className="text-[12px] font-semibold px-3 py-0.5 rounded-full bg-[#EEF1FB] text-[#1C2B8A]"
-            >
+            <span className="text-[12px] font-semibold px-3 py-0.5 rounded-full bg-[#EEF1FB] text-[#1C2B8A]">
               {isRecurring
                 ? toTitleCase((obligation?.recurringPlan?.frequency ?? "Recurring").toLowerCase())
                 : "One-Time"}
@@ -374,18 +386,17 @@ export default function PaymentSummary() {
             </div>
           )}
 
-          {isRecurring && (() => {
-            const next = estimateNextCharge(obligation.recurringPlan, obligation?.dueDate);
-            if (!next) return null;
-            return (
-              <div className="flex items-center justify-between mb-2.5 pb-3 border-b border-gray-100">
-                <span className="text-[13px] text-gray-500">Next charge (est.):</span>
-                <span className="text-[13px] text-gray-900">
-                  {formatDate(next)}
-                </span>
-              </div>
-            );
-          })()}
+          {isRecurring &&
+            (() => {
+              const next = estimateNextCharge(obligation.recurringPlan, obligation?.dueDate);
+              if (!next) return null;
+              return (
+                <div className="flex items-center justify-between mb-2.5 pb-3 border-b border-gray-100">
+                  <span className="text-[13px] text-gray-500">Next charge (est.):</span>
+                  <span className="text-[13px] text-gray-900">{formatDate(next)}</span>
+                </div>
+              );
+            })()}
 
           {/* The platform fee isn't known until the real charge happens
               (see handlePay) -- no fee breakdown to show ahead of that. */}
@@ -396,10 +407,9 @@ export default function PaymentSummary() {
 
           {isRecurring && (
             <p className="text-[12px] text-gray-400 mt-3 pt-3 border-t border-gray-100 leading-relaxed">
-              Today you're paying the current cycle. After that,{" "}
-              {fmt(obligation?.amount)} renews{" "}
-              {scheduleCopy(obligation.recurringPlan).toLowerCase()} until the
-              plan ends or you turn off Auto-Pay in Settings.
+              Today you're paying the current cycle. After that, {fmt(obligation?.amount)} renews{" "}
+              {scheduleCopy(obligation.recurringPlan).toLowerCase()} until the plan ends or you turn
+              off Auto-Pay in Settings.
             </p>
           )}
         </div>

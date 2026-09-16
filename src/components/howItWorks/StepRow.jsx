@@ -2,8 +2,7 @@ import { useRef, useEffect } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 
 const isMobileScreen =
-  typeof window !== "undefined" &&
-  window.matchMedia("(max-width: 768px)").matches;
+  typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
 
 const ICON_POP_CSS = `
 @keyframes iconPop {
@@ -64,71 +63,79 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
 
   return (
     <>
-    <style>{ICON_POP_CSS}</style>
-    <motion.div ref={innerRef} style={{ opacity: rowOpacity, y: rowY }}>
-      {/* ── Mobile — label overlaps top-left of image ── */}
-      <div className="flex flex-col md:hidden relative">
-        <div className="relative w-full rounded-lg overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
-          <img
-            src={step.img}
-            alt={step.label}
-            className="w-full h-auto block"
-            draggable={false}
-            loading="lazy"
-            decoding="async"
-          />
-          <div className={`absolute bottom-3 right-3 flex items-center gap-2 rounded-full py-2 px-3.5 border border-white/90 shadow-[0_4px_20px_rgba(15,29,110,0.14)] ${glassSurfaceCls}`}>
-            <span className="w-[7px] h-[7px] rounded-full bg-brand flex-shrink-0 inline-block" />
-            <span className="text-xs font-bold text-[#0f1d6e]">
-              {step.badge}
-            </span>
+      <style>{ICON_POP_CSS}</style>
+      <motion.div ref={innerRef} style={{ opacity: rowOpacity, y: rowY }}>
+        {/* ── Mobile — label overlaps top-left of image ── */}
+        <div className="flex flex-col md:hidden relative">
+          <div className="relative w-full rounded-lg overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
+            <img
+              src={step.img}
+              alt={step.label}
+              className="w-full h-auto block"
+              draggable={false}
+              loading="lazy"
+              decoding="async"
+            />
+            <div
+              className={`absolute bottom-3 right-3 flex items-center gap-2 rounded-full py-2 px-3.5 border border-white/90 shadow-[0_4px_20px_rgba(15,29,110,0.14)] ${glassSurfaceCls}`}
+            >
+              <span className="w-[7px] h-[7px] rounded-full bg-brand flex-shrink-0 inline-block" />
+              <span className="text-xs font-bold text-[#0f1d6e]">{step.badge}</span>
+            </div>
+          </div>
+          <div
+            className={`absolute -top-5 -left-2.5 w-[130px] rounded-xl py-3.5 px-3 flex flex-col items-center text-center z-20 ${glassCardCls}`}
+          >
+            <img
+              ref={iconRef}
+              src={step.stepIcon}
+              alt=""
+              className="w-8 h-8 object-contain mb-2"
+              loading="lazy"
+              decoding="async"
+            />
+            <p className="text-xs font-bold text-[#0f1d6e] leading-[1.3] m-0">{step.label}</p>
           </div>
         </div>
-        <div
-          className={`absolute -top-5 -left-2.5 w-[130px] rounded-xl py-3.5 px-3 flex flex-col items-center text-center z-20 ${glassCardCls}`}
-        >
-          <img
-            ref={iconRef}
-            src={step.stepIcon}
-            alt=""
-            className="w-8 h-8 object-contain mb-2"
-            loading="lazy"
-            decoding="async"
-          />
-          <p className="text-xs font-bold text-[#0f1d6e] leading-[1.3] m-0">
-            {step.label}
-          </p>
-        </div>
-      </div>
 
-      {/* ── Desktop — fixed-width row, pushed to alternating edges ── */}
-      <div
-        className={`hidden md:flex relative items-center w-[min(720px,100%)] ${hugRight ? "ml-auto" : "mr-auto"}`}
-      >
+        {/* ── Desktop — fixed-width row, pushed to alternating edges ── */}
         <div
-          className={`flex-shrink-0 w-[190px] rounded-2xl p-5 z-20 flex flex-col items-center text-center mr-[-30px] ${glassCardCls}`}
+          className={`hidden md:flex relative items-center w-[min(720px,100%)] ${hugRight ? "ml-auto" : "mr-auto"}`}
         >
-          <img
-            ref={iconRef}
-            src={step.stepIcon}
-            alt=""
-            className="w-10 h-10 object-contain mb-2.5"
-            loading="lazy"
-            decoding="async"
-          />
-          <p className="text-[13px] font-bold text-[#0f1d6e] leading-snug">{step.label}</p>
-        </div>
-        <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
-          <img src={step.img} alt={step.label} className="w-full h-auto block" draggable={false} loading="lazy" decoding="async" />
-          <div ref={badgeRef} className={`absolute bottom-4 right-4 flex items-center gap-2 rounded-full py-2.5 px-[18px] border border-white/90 shadow-[0_4px_20px_rgba(15,29,110,0.14)] ${glassSurfaceCls}`}>
-            <span className="w-2 h-2 rounded-full bg-brand flex-shrink-0 inline-block" />
-            <span className="text-xs font-bold text-[#0f1d6e]">{step.badge}</span>
+          <div
+            className={`flex-shrink-0 w-[190px] rounded-2xl p-5 z-20 flex flex-col items-center text-center mr-[-30px] ${glassCardCls}`}
+          >
+            <img
+              ref={iconRef}
+              src={step.stepIcon}
+              alt=""
+              className="w-10 h-10 object-contain mb-2.5"
+              loading="lazy"
+              decoding="async"
+            />
+            <p className="text-[13px] font-bold text-[#0f1d6e] leading-snug">{step.label}</p>
           </div>
+          <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
+            <img
+              src={step.img}
+              alt={step.label}
+              className="w-full h-auto block"
+              draggable={false}
+              loading="lazy"
+              decoding="async"
+            />
+            <div
+              ref={badgeRef}
+              className={`absolute bottom-4 right-4 flex items-center gap-2 rounded-full py-2.5 px-[18px] border border-white/90 shadow-[0_4px_20px_rgba(15,29,110,0.14)] ${glassSurfaceCls}`}
+            >
+              <span className="w-2 h-2 rounded-full bg-brand flex-shrink-0 inline-block" />
+              <span className="text-xs font-bold text-[#0f1d6e]">{step.badge}</span>
+            </div>
+          </div>
+          <div className="absolute top-3 right-[-8px] w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/8 bg-[#EEF1FB]/45 -z-10" />
+          <div className="absolute top-6 right-[-15px] w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/4 bg-[#E8ECF8]/28 -z-20" />
         </div>
-        <div className="absolute top-3 right-[-8px] w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/8 bg-[#EEF1FB]/45 -z-10" />
-        <div className="absolute top-6 right-[-15px] w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/4 bg-[#E8ECF8]/28 -z-20" />
-      </div>
-    </motion.div>
+      </motion.div>
     </>
   );
 }

@@ -67,9 +67,7 @@ export default function Password() {
   }
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen pb-10"
-    >
+    <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
@@ -112,11 +110,7 @@ export default function Password() {
         {error && <p className="text-[13px] text-danger mt-3 mx-1 mb-0">{error}</p>}
         {success && <p className="text-[13px] text-[#059669] mt-3 mx-1 mb-0">Password updated.</p>}
 
-        <Button
-          onClick={handleSubmit}
-          loading={updatePassword.isPending}
-          className="mt-4"
-        >
+        <Button onClick={handleSubmit} loading={updatePassword.isPending} className="mt-4">
           {updatePassword.isPending ? "Updating…" : "Update Password"}
         </Button>
       </div>

@@ -50,10 +50,7 @@ export default function Payments() {
 
   const stats = useMemo(
     () => ({
-      collected: plans.reduce(
-        (sum, plan) => sum + (plan.amountCollected ?? 0),
-        0,
-      ),
+      collected: plans.reduce((sum, plan) => sum + (plan.amountCollected ?? 0), 0),
       active: plans.filter((p) => p.status === "ACTIVE").length,
       yetToPay: plans.reduce((sum, plan) => sum + (plan.unpaidCount ?? 0), 0),
       failed: plans.filter((p) => p.status === "EXPIRED").length,
@@ -191,11 +188,7 @@ export default function Payments() {
           className="py-10"
         />
       ) : filtered.length === 0 ? (
-        <EmptyState
-          icon={Wallet}
-          title="No plans match this filter"
-          className="py-10"
-        />
+        <EmptyState icon={Wallet} title="No plans match this filter" className="py-10" />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {filtered.map((plan, i) => (
@@ -220,11 +213,7 @@ export default function Payments() {
           onClose={() => setCreateOpen(false)}
           onCreate={handleCreate}
           creating={planPlans.create.isPending}
-          createError={
-            planPlans.create.error
-              ? getErrorMessage(planPlans.create.error)
-              : null
-          }
+          createError={planPlans.create.error ? getErrorMessage(planPlans.create.error) : null}
         />
       )}
       {editingPlan && (

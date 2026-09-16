@@ -8,11 +8,7 @@ import {
   useUpdatePhone,
 } from "../../../../hooks/useMyAccount";
 import { useFileUpload } from "../../../../hooks/useFileUpload";
-import {
-  updateEmail,
-  deleteAccount,
-  requestAccountDeletionCode,
-} from "../../../../api/members";
+import { updateEmail, deleteAccount, requestAccountDeletionCode } from "../../../../api/members";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { getEmailError } from "../../../../utils/validators";
 import { useEscapeToClose } from "../../../../hooks/useKeyboardShortcuts";
@@ -132,8 +128,7 @@ export default function Profile() {
     }
   }
 
-  const profileImageUrl =
-    parseUserData(user).profileImage?.url ?? user?.profileImage?.url ?? null;
+  const profileImageUrl = parseUserData(user).profileImage?.url ?? user?.profileImage?.url ?? null;
 
   useEffect(() => {
     if (!user) return;
@@ -163,8 +158,7 @@ export default function Profile() {
   }, []);
 
   function validateField(field, value) {
-    if (field === "firstName" && !value.trim())
-      return "First name is required.";
+    if (field === "firstName" && !value.trim()) return "First name is required.";
     if (field === "lastName" && !value.trim()) return "Last name is required.";
     return "";
   }
@@ -172,9 +166,7 @@ export default function Profile() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((f) => ({ ...f, [name]: value }));
-    setFieldErrors((fe) =>
-      fe[name] ? { ...fe, [name]: validateField(name, value) } : fe,
-    );
+    setFieldErrors((fe) => (fe[name] ? { ...fe, [name]: validateField(name, value) } : fe));
   };
 
   const handleFieldBlur = (e) => {
@@ -183,9 +175,7 @@ export default function Profile() {
     setFieldErrors((fe) => ({ ...fe, [name]: validateField(name, value) }));
   };
 
-  const isDirty =
-    form.firstName !== savedForm.firstName ||
-    form.lastName !== savedForm.lastName;
+  const isDirty = form.firstName !== savedForm.firstName || form.lastName !== savedForm.lastName;
 
   const handleSave = async () => {
     setError("");
@@ -201,8 +191,7 @@ export default function Profile() {
       const userData = {};
       const firstName = toTitleCase(form.firstName.trim());
       const lastName = toTitleCase(form.lastName.trim());
-      if (form.firstName !== savedForm.firstName)
-        userData.firstName = firstName;
+      if (form.firstName !== savedForm.firstName) userData.firstName = firstName;
       if (form.lastName !== savedForm.lastName) userData.lastName = lastName;
       await updateProfile.mutateAsync({ username: user?.username, userData });
       await refreshUser();
@@ -238,10 +227,7 @@ export default function Profile() {
       setEmailModalOpen(true);
     } catch (err) {
       setEmailFieldError(
-        getErrorMessage(
-          err,
-          "Couldn't send a code to that address. Please try again.",
-        ),
+        getErrorMessage(err, "Couldn't send a code to that address. Please try again."),
       );
     } finally {
       setEmailSending(false);
@@ -275,10 +261,7 @@ export default function Profile() {
       setPhoneModalOpen(true);
     } catch (err) {
       setPhoneFieldError(
-        getErrorMessage(
-          err,
-          "Couldn't send a code to that number. Please try again.",
-        ),
+        getErrorMessage(err, "Couldn't send a code to that number. Please try again."),
       );
     } finally {
       setPhoneSending(false);
@@ -325,8 +308,7 @@ export default function Profile() {
     }
   };
 
-  const displayName =
-    `${form.firstName} ${form.lastName}`.trim() || user?.email || "—";
+  const displayName = `${form.firstName} ${form.lastName}`.trim() || user?.email || "—";
   const initials =
     displayName
       .split(" ")
@@ -340,12 +322,8 @@ export default function Profile() {
       {view === "profile" && (
         <>
           <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
-            <p className="text-sm font-semibold text-gray-900 mb-0.5">
-              Profile
-            </p>
-            <p className="text-xs text-gray-500 mb-4">
-              Manage your personal information
-            </p>
+            <p className="text-sm font-semibold text-gray-900 mb-0.5">Profile</p>
+            <p className="text-xs text-gray-500 mb-4">Manage your personal information</p>
             <div className="-mx-6 border-b border-gray-100 mb-5" />
 
             <div className="flex items-center gap-3 mb-5">
@@ -454,16 +432,8 @@ export default function Profile() {
                       setPhoneFieldError("");
                       setView("phone");
                     }}
-                    title={
-                      isPhoneUpdate
-                        ? "Update phone number"
-                        : "Verify phone number"
-                    }
-                    aria-label={
-                      isPhoneUpdate
-                        ? "Update phone number"
-                        : "Verify phone number"
-                    }
+                    title={isPhoneUpdate ? "Update phone number" : "Verify phone number"}
+                    aria-label={isPhoneUpdate ? "Update phone number" : "Verify phone number"}
                     className="flex-shrink-0 w-12 h-12 rounded-lg border-[1.5px] border-gray-300 bg-white text-brand cursor-pointer flex items-center justify-center"
                   >
                     <Pencil size={15} />
@@ -484,11 +454,7 @@ export default function Profile() {
                     : "text-brand hover:bg-brand hover:text-white border border-brand"
                 }`}
               >
-                {saved
-                  ? "Saved!"
-                  : updateProfile.isPending
-                    ? "Saving…"
-                    : "Save Changes"}
+                {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
               </button>
             </div>
           </div>
@@ -511,9 +477,7 @@ export default function Profile() {
 
           <div className="bg-surface-container rounded-xl border border-surface-container-border">
             <div className="px-6 py-4 border-b border-gray-100">
-              <p className="text-sm font-bold text-gray-900">
-                Update Your Email
-              </p>
+              <p className="text-sm font-bold text-gray-900">Update Your Email</p>
             </div>
             <div className="p-6">
               <div className="flex flex-col gap-1.5 max-w-md">
@@ -528,9 +492,7 @@ export default function Profile() {
                   className={`${inputCls} ${emailFieldError ? "border-danger" : "border-gray-300"}`}
                   autoFocus
                 />
-                {emailFieldError && (
-                  <p className="text-xs text-danger mt-1">{emailFieldError}</p>
-                )}
+                {emailFieldError && <p className="text-xs text-danger mt-1">{emailFieldError}</p>}
               </div>
             </div>
           </div>
@@ -562,16 +524,14 @@ export default function Profile() {
           <div className="bg-surface-container rounded-xl border border-surface-container-border">
             <div className="px-6 py-4 border-b border-gray-100">
               <p className="text-sm font-bold text-gray-900">
-                {isPhoneUpdate
-                  ? "Update Your Phone Number"
-                  : "Verify Your Phone Number"}
+                {isPhoneUpdate ? "Update Your Phone Number" : "Verify Your Phone Number"}
               </p>
             </div>
             <div className="p-6">
               {!isPhoneUpdate && (
                 <p className="text-xs text-gray-500 mb-4">
-                  We will use this number to send payments reminders and updates
-                  via WhatsApp or SMS.
+                  We will use this number to send payments reminders and updates via WhatsApp or
+                  SMS.
                 </p>
               )}
               <div className="flex flex-col gap-1.5 max-w-md">
@@ -586,22 +546,17 @@ export default function Profile() {
                   className={`${inputCls} ${phoneFieldError ? "border-danger" : "border-gray-300"}`}
                   autoFocus
                 />
-                {phoneFieldError && (
-                  <p className="text-xs text-danger mt-1">{phoneFieldError}</p>
-                )}
+                {phoneFieldError && <p className="text-xs text-danger mt-1">{phoneFieldError}</p>}
               </div>
             </div>
           </div>
 
           {!isPhoneUpdate && (
             <div className="flex items-start gap-2.5 px-4 py-3.5 rounded-xl bg-[#D7E2FF]">
-              <ShieldCheck
-                size={18}
-                className="text-brand flex-shrink-0 mt-0.5"
-              />
+              <ShieldCheck size={18} className="text-brand flex-shrink-0 mt-0.5" />
               <p className="text-sm text-brand leading-snug m-0">
-                Your number is only used for payment reminders and account
-                recovery. We will never share it.
+                Your number is only used for payment reminders and account recovery. We will never
+                share it.
               </p>
             </div>
           )}
@@ -614,11 +569,7 @@ export default function Profile() {
               size="sm"
               className="px-10 min-w-[320px]"
             >
-              {phoneSending
-                ? "Sending Code…"
-                : isPhoneUpdate
-                  ? "Update Phone Number"
-                  : "Verify"}
+              {phoneSending ? "Sending Code…" : isPhoneUpdate ? "Update Phone Number" : "Verify"}
             </Button>
           </div>
         </>
@@ -646,9 +597,7 @@ export default function Profile() {
           onSubmitOtp={handleConfirmPhoneOtp}
           onVerified={handlePhoneVerified}
           onWrongNumber={handleWrongPhone}
-          onResend={() =>
-            requestPhoneUpdate.mutateAsync({ phoneNumber: phoneDraft.trim() })
-          }
+          onResend={() => requestPhoneUpdate.mutateAsync({ phoneNumber: phoneDraft.trim() })}
           onClose={handleWrongPhone}
         />
       )}
@@ -674,17 +623,12 @@ export default function Profile() {
 
       {view === "profile" && (
         <div className="bg-surface-container rounded-lg p-6 border border-surface-container-border">
-          <p className="text-sm font-medium text-gray-900 mb-0.5">
-            Delete Account
-          </p>
-          <p className="text-xs text-gray-500 mb-4">
-            Permanent actions that cannot be undone.
-          </p>
+          <p className="text-sm font-medium text-gray-900 mb-0.5">Delete Account</p>
+          <p className="text-xs text-gray-500 mb-4">Permanent actions that cannot be undone.</p>
           <div className="-mx-6 border-b border-gray-100 mb-4" />
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <p className="text-xs text-gray-700">
-              Permanently remove your account and all associated data from
-              Glass.
+              Permanently remove your account and all associated data from Glass.
             </p>
             <button
               onClick={() => setDeleteModal(true)}

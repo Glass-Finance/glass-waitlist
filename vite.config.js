@@ -13,8 +13,13 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (!id.includes("node_modules")) return;
-          if (/node_modules[\\/](react|react-dom|react-router-dom)[\\/]/.test(id)) return "react-vendor";
-          if (id.includes("node_modules/@tanstack/react-query") || id.includes("node_modules\\@tanstack\\react-query")) return "query-vendor";
+          if (/node_modules[\\/](react|react-dom|react-router-dom)[\\/]/.test(id))
+            return "react-vendor";
+          if (
+            id.includes("node_modules/@tanstack/react-query") ||
+            id.includes("node_modules\\@tanstack\\react-query")
+          )
+            return "query-vendor";
         },
       },
     },

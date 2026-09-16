@@ -57,7 +57,8 @@ export function useNotifications() {
   // query entirely -- the queryKey below picks up the corrected id and
   // refetches automatically once resolution catches up.
   const communityId = activeSlugOrId
-    ? (communities.find((c) => c.slug === activeSlugOrId || c.id === activeSlugOrId)?.id ?? activeSlugOrId)
+    ? (communities.find((c) => c.slug === activeSlugOrId || c.id === activeSlugOrId)?.id ??
+      activeSlugOrId)
     : null;
   // For the client-side filter below -- a plain n.communityId equality
   // check turned out too strict against real data (not every notification
@@ -71,14 +72,14 @@ export function useNotifications() {
   const queryClient = useQueryClient();
   const realtimeConnected = useRealtimeConnected();
 
-  const listKey  = ["notifications", communityId, "list"];
+  const listKey = ["notifications", communityId, "list"];
 
   // ── Main list ──────────────────────────────────────────────────────────────
   const query = useQuery({
     queryKey: listKey,
     queryFn: () => fetchNotifications(communityId),
     staleTime: 1000 * 20,
-    gcTime:    1000 * 60 * 5,
+    gcTime: 1000 * 60 * 5,
     refetchInterval: realtimeConnected ? POLL_STREAM_UP : POLL_STREAM_DOWN,
     refetchIntervalInBackground: false,
     // Overrides the app-wide false: coming back to the tab (or the app on
@@ -120,7 +121,7 @@ export function useNotifications() {
   // returns a global total and cannot be scoped per community).
   const unreadCount = useMemo(
     () => (query.data ?? []).filter((n) => !n.readFlag).length,
-    [query.data]
+    [query.data],
   );
 
   // ── Mark one read ──────────────────────────────────────────────────────────
@@ -134,10 +135,10 @@ export function useNotifications() {
           ? {
               ...old,
               content: old.content.map((n) =>
-                n.id === notificationId ? { ...n, readFlag: true } : n
+                n.id === notificationId ? { ...n, readFlag: true } : n,
               ),
             }
-          : old
+          : old,
       );
       return { previous };
     },
@@ -159,9 +160,7 @@ export function useNotifications() {
       await queryClient.cancelQueries({ queryKey: listKey });
       const previous = queryClient.getQueryData(listKey);
       queryClient.setQueryData(listKey, (old) =>
-        old
-          ? { ...old, content: old.content.map((n) => ({ ...n, readFlag: true })) }
-          : old
+        old ? { ...old, content: old.content.map((n) => ({ ...n, readFlag: true })) } : old,
       );
       return { previous };
     },
@@ -174,12 +173,12 @@ export function useNotifications() {
   });
 
   return {
-    notifications:    query.data ?? [],
-    isLoading:        query.isLoading,
-    error:            query.error,
+    notifications: query.data ?? [],
+    isLoading: query.isLoading,
+    error: query.error,
     unreadCount,
-    markRead:         (id) => markReadMutation.mutate(id),
-    markAllRead:      () => markAllReadMutation.mutate(),
+    markRead: (id) => markReadMutation.mutate(id),
+    markAllRead: () => markAllReadMutation.mutate(),
     isMarkingAllRead: markAllReadMutation.isPending,
   };
 }
@@ -196,7 +195,7 @@ export function useAllNotifications() {
     queryKey: listKey,
     queryFn: () => fetchNotifications(null),
     staleTime: 1000 * 20,
-    gcTime:    1000 * 60 * 5,
+    gcTime: 1000 * 60 * 5,
     refetchInterval: realtimeConnected ? POLL_STREAM_UP : POLL_STREAM_DOWN,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
@@ -212,11 +211,20 @@ export function useAllNotifications() {
       await queryClient.cancelQueries({ queryKey: listKey });
       const previous = queryClient.getQueryData(listKey);
       queryClient.setQueryData(listKey, (old) =>
-        old ? { ...old, content: old.content.map((n) => n.id === notificationId ? { ...n, readFlag: true } : n) } : old
+        old
+          ? {
+              ...old,
+              content: old.content.map((n) =>
+                n.id === notificationId ? { ...n, readFlag: true } : n,
+              ),
+            }
+          : old,
       );
       return { previous };
     },
-    onError: (_e, _v, ctx) => { if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous); },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous);
+    },
     // Prefix match, not just this listKey -- both PATCH endpoints are
     // global, so a community-scoped page's cached list needs to refetch too.
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
@@ -228,25 +236,27 @@ export function useAllNotifications() {
       await queryClient.cancelQueries({ queryKey: listKey });
       const previous = queryClient.getQueryData(listKey);
       queryClient.setQueryData(listKey, (old) =>
-        old ? { ...old, content: old.content.map((n) => ({ ...n, readFlag: true })) } : old
+        old ? { ...old, content: old.content.map((n) => ({ ...n, readFlag: true })) } : old,
       );
       return { previous };
     },
-    onError: (_e, _v, ctx) => { if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous); },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous);
+    },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
   const unreadCount = useMemo(
     () => (query.data ?? []).filter((n) => !n.readFlag).length,
-    [query.data]
+    [query.data],
   );
 
   return {
-    notifications:    query.data ?? [],
-    isLoading:        query.isLoading,
+    notifications: query.data ?? [],
+    isLoading: query.isLoading,
     unreadCount,
-    markRead:         (id) => markReadMutation.mutate(id),
-    markAllRead:      () => markAllReadMutation.mutate(),
+    markRead: (id) => markReadMutation.mutate(id),
+    markAllRead: () => markAllReadMutation.mutate(),
     isMarkingAllRead: markAllReadMutation.isPending,
   };
 }
@@ -271,10 +281,7 @@ function readPrefsMirror() {
 
 function writePrefsMirror(patch) {
   try {
-    localStorage.setItem(
-      PREFS_MIRROR_KEY,
-      JSON.stringify({ ...readPrefsMirror(), ...patch }),
-    );
+    localStorage.setItem(PREFS_MIRROR_KEY, JSON.stringify({ ...readPrefsMirror(), ...patch }));
   } catch {
     /* ignore */
   }

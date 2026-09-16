@@ -1,8 +1,4 @@
-import {
-  formatNaira,
-  formatDateShort,
-  toTitleCase,
-} from "../../../utils/format";
+import { formatNaira, formatDateShort, toTitleCase } from "../../../utils/format";
 import { PLAN_STATUS, FREQUENCIES } from "./constants";
 import { formatCompact } from "./helpers";
 import PlanOverflowMenu from "./PlanOverflowMenu";
@@ -29,8 +25,7 @@ export default function PlanCard({
   const totalCount = plan.totalCount ?? 0;
   const collected = plan.amountCollected ?? 0;
   const expected = plan.expectedAmount ?? 0;
-  const pct =
-    expected > 0 ? Math.min(100, Math.round((collected / expected) * 100)) : 0;
+  const pct = expected > 0 ? Math.min(100, Math.round((collected / expected) * 100)) : 0;
 
   return (
     <div className="bg-surface-container rounded-2xl border border-surface-container-border p-5 flex flex-col gap-4">
@@ -39,9 +34,7 @@ export default function PlanCard({
         <span
           className={`text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1.5 ${ps.cls}`}
         >
-          <span
-            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${ps.dotCls}`}
-          />
+          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${ps.dotCls}`} />
           {ps.label}
         </span>
         <PlanOverflowMenu
@@ -55,9 +48,7 @@ export default function PlanCard({
       </div>
 
       {/* Name */}
-      <p className="text-[15px] font-semibold text-black leading-snug">
-        {toTitleCase(plan.name)}
-      </p>
+      <p className="text-[15px] font-semibold text-black leading-snug">{toTitleCase(plan.name)}</p>
 
       {/* Amount + frequency + collected */}
       <div className="flex items-center justify-between gap-2">
@@ -70,10 +61,8 @@ export default function PlanCard({
           </span>
         </div>
         <span className="text-xs text-gray-400 flex-shrink-0">
-          <span className="font-semibold text-gray-600">
-            {formatCompact(collected)}
-          </span>
-          /{formatCompact(expected)} Collected
+          <span className="font-semibold text-gray-600">{formatCompact(collected)}</span>/
+          {formatCompact(expected)} Collected
         </span>
       </div>
 

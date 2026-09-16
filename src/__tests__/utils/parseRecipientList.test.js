@@ -19,7 +19,9 @@ describe("parseRecipientList", () => {
 
   it("splits on a mix of commas and newlines", () => {
     expect(parseRecipientList("a@x.com,\nb@x.com\nc@x.com")).toEqual([
-      "a@x.com", "b@x.com", "c@x.com",
+      "a@x.com",
+      "b@x.com",
+      "c@x.com",
     ]);
   });
 

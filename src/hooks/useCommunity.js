@@ -1,9 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  getCommunity,
-  updateCommunity,
-  updateCommunitySettings,
-} from "../api/communities";
+import { getCommunity, updateCommunity, updateCommunitySettings } from "../api/communities";
 
 export function useCommunity(communityId) {
   return useQuery({

@@ -26,7 +26,13 @@ function maskEmail(email) {
 // the code the same way registration does. Untested against the live
 // backend yet; adjust here first if the real contract differs.
 // onSubmitOtp(otpString) — called with the 6-digit code to confirm the change
-export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, onWrongEmail, onClose }) {
+export default function EmailChangeModal({
+  newEmail,
+  onSubmitOtp,
+  onVerified,
+  onWrongEmail,
+  onClose,
+}) {
   const [step, setStep] = useState("otp"); // "otp" | "success"
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
@@ -47,7 +53,12 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
       setStep("success");
       setTimeout(() => onVerified(), 1800);
     } catch (err) {
-      setError(notifyError(err, { context: "Verify email", fallback: "Invalid or expired code. Please try again." }));
+      setError(
+        notifyError(err, {
+          context: "Verify email",
+          fallback: "Invalid or expired code. Please try again.",
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -63,7 +74,13 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
       setOtp(["", "", "", "", "", ""]);
       setError("");
     } catch (err) {
-      setResendMessage(notifyError(err, { context: "Resend code", fallback: "Could not resend. Please try again.", silent: true }));
+      setResendMessage(
+        notifyError(err, {
+          context: "Resend code",
+          fallback: "Could not resend. Please try again.",
+          silent: true,
+        }),
+      );
     } finally {
       setResending(false);
     }
@@ -85,7 +102,9 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
       <button onClick={onWrongEmail} className="text-sm font-medium hover:underline text-[#1B2FE8]">
         Wrong email?
       </button>
-      <p className={`text-xs mt-2 mb-6 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
+      <p
+        className={`text-xs mt-2 mb-6 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
+      >
         {codeExpired
           ? "Your code has expired — request a new one below."
           : `Code expires in ${formatCountdown(secondsLeft)}`}
@@ -133,7 +152,11 @@ export default function EmailChangeModal({ newEmail, onSubmitOtp, onVerified, on
 
       <p className="text-center text-sm mt-5 text-gray-500">
         Didn't get OTP?{" "}
-        <button onClick={handleResend} disabled={resending} className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]">
+        <button
+          onClick={handleResend}
+          disabled={resending}
+          className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]"
+        >
           {resending ? "Resending..." : "Resend"}
         </button>
       </p>

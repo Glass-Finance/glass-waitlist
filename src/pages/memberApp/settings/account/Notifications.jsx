@@ -6,7 +6,9 @@ import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 
 function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
   return (
-    <div className={`flex items-center justify-between py-3.5 px-4 ${last ? "border-none" : "border-b border-[#F2F2F2]"}`}>
+    <div
+      className={`flex items-center justify-between py-3.5 px-4 ${last ? "border-none" : "border-b border-[#F2F2F2]"}`}
+    >
       <div className="min-w-0 pr-3">
         <p className="text-sm font-medium text-[#111] m-0">{label}</p>
         {desc && <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">{desc}</p>}
@@ -31,7 +33,9 @@ function Section({ title, children }) {
 
 function SkeletonRow({ last }) {
   return (
-    <div className={`flex items-center justify-between p-4 ${last ? "border-none" : "border-b border-[#F2F2F2]"}`}>
+    <div
+      className={`flex items-center justify-between p-4 ${last ? "border-none" : "border-b border-[#F2F2F2]"}`}
+    >
       <div>
         <div className="w-[140px] h-[13px] rounded-md bg-[#EBEBEB] mb-1.5" />
         <div className="w-[200px] h-[11px] rounded-md bg-[#F2F2F2]" />
@@ -52,9 +56,7 @@ export default function Notifications() {
   const rowDisabled = !!error;
 
   return (
-    <div
-      className="relative overflow-hidden min-h-screen pb-10"
-    >
+    <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       {/* Header */}
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
@@ -71,9 +73,7 @@ export default function Notifications() {
         {/* Error state */}
         {error && !isLoading && (
           <div className="bg-[#FFF0F0] border border-[#FECACA] rounded-xl py-3.5 px-4 mb-5 flex items-center justify-between">
-            <p className="text-[13px] text-danger m-0">
-              Couldn't load preferences.
-            </p>
+            <p className="text-[13px] text-danger m-0">Couldn't load preferences.</p>
             <button
               onClick={() => window.location.reload()}
               className="bg-transparent border-none cursor-pointer text-danger flex items-center gap-1 text-xs font-semibold p-0"
@@ -197,7 +197,8 @@ export default function Notifications() {
             <span className="text-[9px] font-bold text-brand">i</span>
           </div>
           <p className="text-xs text-[#333] m-0 leading-[1.5]">
-            Changes take effect immediately. Critical security alerts are always sent regardless of your preferences.
+            Changes take effect immediately. Critical security alerts are always sent regardless of
+            your preferences.
           </p>
         </div>
       </div>

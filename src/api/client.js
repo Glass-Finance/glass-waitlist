@@ -123,20 +123,22 @@ client.interceptors.response.use(
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           pendingQueue.push({ resolve, reject });
-        }).then((newToken) => {
-          originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          return client(originalRequest);
-        }).catch((err) => Promise.reject(err));
+        })
+          .then((newToken) => {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            return client(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
       }
 
       isRefreshing = true;
 
       try {
         // POST /api/v1/auth/token/refresh — body: { refreshToken, deviceInfo }
-        const res = await axios.post(
-          `${client.defaults.baseURL}/auth/token/refresh`,
-          { refreshToken, deviceInfo: navigator.userAgent }
-        );
+        const res = await axios.post(`${client.defaults.baseURL}/auth/token/refresh`, {
+          refreshToken,
+          deviceInfo: navigator.userAgent,
+        });
 
         // Some backend versions return { data: { accessToken } } (standard
         // envelope) and others return { accessToken } directly. Handle both.
@@ -162,8 +164,7 @@ client.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
-
 
 export default client;

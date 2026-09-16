@@ -132,9 +132,7 @@ describe("host detection + navigation", () => {
     // test's job is to verify buildMobileUrl prefixes correctly, not to
     // pin a specific production value that has nothing to do with the
     // prefixing logic itself.
-    expect(buildMobileUrl("/member/join?x=1")).toBe(
-      `${APP_ORIGIN}/member/join?x=1`,
-    );
+    expect(buildMobileUrl("/member/join?x=1")).toBe(`${APP_ORIGIN}/member/join?x=1`);
   });
 
   it("mobileRequiredPath encodes the target path as a query param", () => {

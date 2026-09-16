@@ -91,12 +91,8 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
       audience: "ALL_MEMBERS",
       visibility: "PUBLIC",
       amountMode: "FIXED",
-      ...(form.description?.trim()
-        ? { description: form.description.trim() }
-        : {}),
-      ...(form.communityAccountId
-        ? { communityAccountId: form.communityAccountId }
-        : {}),
+      ...(form.description?.trim() ? { description: form.description.trim() } : {}),
+      ...(form.communityAccountId ? { communityAccountId: form.communityAccountId } : {}),
       ...(planType === "recurring"
         ? {
             recurringPlan: {
@@ -148,9 +144,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
       <div className="bg-surface-bg rounded-2xl w-full max-w-xl shadow-2xl max-h-[90vh] flex flex-col">
         <div className="flex items-start justify-between px-6 pt-5">
           <div>
-            <h2 className="text-base font-semibold text-black">
-              Create Payment Plan
-            </h2>
+            <h2 className="text-base font-semibold text-black">Create Payment Plan</h2>
             <p className="text-xs text-gray-400 mt-0.5">
               You can edit or pause any plan at any time.
             </p>
@@ -165,7 +159,11 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
         <div className="px-6 py-4 flex-1 overflow-hidden flex flex-col">
           {success ? (
             <div className="text-center py-10">
-              <SuccessBadge message="Plan Created!" subMessage="Members have been notified." className="mb-6" />
+              <SuccessBadge
+                message="Plan Created!"
+                subMessage="Members have been notified."
+                className="mb-6"
+              />
 
               <button
                 onClick={onClose}
@@ -178,9 +176,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
             <>
               <PlanStepIndicator current={step} />
               <div className="flex-1 overflow-y-auto scrollbar-neutral">
-                {step === 1 && (
-                  <Step1 value={planType} onChange={setPlanType} />
-                )}
+                {step === 1 && <Step1 value={planType} onChange={setPlanType} />}
                 {step === 2 && (
                   <Step2
                     planType={planType}
@@ -201,9 +197,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
                   />
                 )}
               </div>
-              {createError && (
-                <p className="text-xs text-red-500 mt-2">{createError}</p>
-              )}
+              {createError && <p className="text-xs text-red-500 mt-2">{createError}</p>}
             </>
           )}
         </div>
@@ -217,14 +211,14 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
             </button>
             <Button
               onClick={() => {
-                if (step === 2) { handleStep2Continue(); return; }
+                if (step === 2) {
+                  handleStep2Continue();
+                  return;
+                }
                 step < 3 ? setStep((s) => s + 1) : handleSubmit();
               }}
               disabled={
-                !canContinue ||
-                creating ||
-                slugState.checking ||
-                slugState.available === false
+                !canContinue || creating || slugState.checking || slugState.available === false
               }
               loading={creating}
               fullWidth={false}
@@ -239,4 +233,3 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
     </div>
   );
 }
-

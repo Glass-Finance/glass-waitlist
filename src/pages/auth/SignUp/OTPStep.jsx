@@ -18,10 +18,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
   const [resendMessage, setResendMessage] = useState("");
   const [resendCount, setResendCount] = useState(0);
 
-  const secondsLeft = useCountdown(
-    OTP_VALIDITY_SECONDS,
-    `${email}-${resendCount}`,
-  );
+  const secondsLeft = useCountdown(OTP_VALIDITY_SECONDS, `${email}-${resendCount}`);
   const codeExpired = secondsLeft <= 0;
 
   const handleSubmit = async (e) => {
@@ -68,14 +65,8 @@ export default function OTPStep({ email, onVerified, onBack }) {
   return (
     <div className="w-full max-w-xl flex flex-col md:mt-14 mb-auto gap-12">
       <div>
-        <h1
-          className="text-headline text-gray-900 mb-3 font-sans"
-        >
-          Verification Code Sent
-        </h1>
-        <p className="text-sm text-gray-500 mb-0.5">
-          Enter the 6-digit code that was sent to
-        </p>
+        <h1 className="text-headline text-gray-900 mb-3 font-sans">Verification Code Sent</h1>
+        <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code that was sent to</p>
         <p className="text-sm font-semibold text-gray-900">{email}</p>
         <button
           onClick={onBack}
@@ -83,9 +74,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
         >
           Wrong email?
         </button>
-        <p
-          className={`text-xs mt-2 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
-        >
+        <p className={`text-xs mt-2 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
           {codeExpired
             ? "Your code has expired — request a new one below."
             : `Code expires in ${formatCountdown(secondsLeft)}`}
@@ -95,7 +84,10 @@ export default function OTPStep({ email, onVerified, onBack }) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <OtpBoxes
           value={otp}
-          onChange={(next) => { setOtp(next); setError(""); }}
+          onChange={(next) => {
+            setOtp(next);
+            setError("");
+          }}
           length={6}
           autoFocus
           renderBoxes={(digits, activeIndex) => (
@@ -124,23 +116,15 @@ export default function OTPStep({ email, onVerified, onBack }) {
           )}
         />
 
-        {error && (
-          <p className="text-sm text-red-500 text-center -mt-2">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-500 text-center -mt-2">{error}</p>}
 
-        <Button
-          type="submit"
-          disabled={codeExpired || otp.some((d) => !d)}
-          loading={loading}
-        >
+        <Button type="submit" disabled={codeExpired || otp.some((d) => !d)} loading={loading}>
           {loading ? "Verifying..." : "Continue"}
         </Button>
       </form>
 
       <div>
-        <p
-          className="text-center text-sm text-gray-text"
-        >
+        <p className="text-center text-sm text-gray-text">
           Didn't get OTP?{" "}
           <button
             onClick={handleResend}
@@ -150,11 +134,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
             {resending ? "Resending..." : "Resend"}
           </button>
         </p>
-        {resendMessage && (
-          <p className="text-center text-xs text-gray-400 mt-1">
-            {resendMessage}
-          </p>
-        )}
+        {resendMessage && <p className="text-center text-xs text-gray-400 mt-1">{resendMessage}</p>}
       </div>
     </div>
   );

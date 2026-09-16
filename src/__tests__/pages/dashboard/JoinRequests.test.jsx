@@ -89,7 +89,10 @@ describe("JoinRequests approve/reject flow", () => {
     // calls out ("so approving one request doesn't freeze the rest").
     let resolveFirst;
     approve.mockImplementationOnce(
-      () => new Promise((resolve) => { resolveFirst = resolve; }),
+      () =>
+        new Promise((resolve) => {
+          resolveFirst = resolve;
+        }),
     );
     mockRequests([
       pendingRequest({ id: "req-1", requestedUser: { firstName: "Amina", lastName: "Bello" } }),
@@ -100,7 +103,9 @@ describe("JoinRequests approve/reject flow", () => {
     const approveButtons = await screen.findAllByText("Approve");
     approveButtons[0].click();
 
-    await waitFor(() => { expect(approveButtons[0].disabled).toBe(true); });
+    await waitFor(() => {
+      expect(approveButtons[0].disabled).toBe(true);
+    });
     // The second row's Approve button must still be clickable while the
     // first row's mutation is in flight.
     expect(approveButtons[1].disabled).toBe(false);

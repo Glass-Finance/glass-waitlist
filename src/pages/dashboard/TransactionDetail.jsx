@@ -17,7 +17,9 @@ function StatusPill({ status }) {
       className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-sm font-semibold ${s.cls}`}
     >
       {label === "Success" && (
-        <span className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${s.dotCls}`}>
+        <span
+          className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${s.dotCls}`}
+        >
           <Check size={11} color="#fff" strokeWidth={3} />
         </span>
       )}
@@ -90,26 +92,28 @@ export default function TransactionDetail() {
       ) : (
         <div className="max-w-xl flex flex-col gap-4">
           {/* Amount card */}
-          <div
-            className="bg-surface-container rounded-xl border border-surface-container-border px-8 py-9 flex flex-col items-center gap-3"
-          >
+          <div className="bg-surface-container rounded-xl border border-surface-container-border px-8 py-9 flex flex-col items-center gap-3">
             <p className="text-4xl font-bold text-gray-900 tracking-[-0.5px]">
               {formatNaira(tx.amount, { decimals: 2 })}
             </p>
             <StatusPill status={tx.status} />
             <p className="text-sm text-gray-400">
               {tx.date
-                ? new Date(tx.date).toLocaleString("en-NG", {
-                    month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit",
-                  }).replace(",", " •")
+                ? new Date(tx.date)
+                    .toLocaleString("en-NG", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })
+                    .replace(",", " •")
                 : "—"}
             </p>
           </div>
 
           {/* Details card */}
-          <div
-            className="bg-surface-container rounded-xl border border-surface-container-border px-6 py-4"
-          >
+          <div className="bg-surface-container rounded-xl border border-surface-container-border px-6 py-4">
             <p className="text-sm font-semibold text-black mb-1">Transaction Details</p>
 
             <Row label="Community">
@@ -125,7 +129,11 @@ export default function TransactionDetail() {
               <Row label="Member">
                 <span className="inline-flex items-center gap-2 justify-end">
                   {tx.payerPhoto ? (
-                    <img src={tx.payerPhoto} alt="" className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
+                    <img
+                      src={tx.payerPhoto}
+                      alt=""
+                      className="w-6 h-6 rounded-full object-cover flex-shrink-0"
+                    />
                   ) : (
                     <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white bg-gradient-to-br from-[#7C3AED] to-brand">
                       {getInitials(tx.payerName)}
@@ -135,7 +143,9 @@ export default function TransactionDetail() {
                 </span>
               </Row>
             )}
-            <Row label="Transaction Type">{toTitleCase(tx.transactionType ?? tx.channel) || "—"}</Row>
+            <Row label="Transaction Type">
+              {toTitleCase(tx.transactionType ?? tx.channel) || "—"}
+            </Row>
             <Row label="Dues Amount">{formatNaira(tx.amount)}</Row>
             {/* Always shown, never conditional -- transparency about the
                 fee is the point. The value can still be "—": Glass's fee

@@ -12,9 +12,7 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
       {/* Background — separate mobile/desktop images (different aspect
           ratios), swapped by breakpoint visibility rather than one shared
           background-image, since the two assets aren't the same crop. */}
-      <div
-        className="absolute inset-0 md:hidden bg-cover bg-center bg-no-repeat bg-mobile-auth-default"
-      />
+      <div className="absolute inset-0 md:hidden bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
       <div
         className="hidden md:block absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${AuthBackground})` }}
@@ -65,16 +63,12 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
             <div className="flex absolute inset-0 items-center justify-center z-10 px-8">
               <div className="text-center">
                 {heroTitle && (
-                  <h1
-                    className="text-white font-normal leading-tight text-[clamp(1.75rem,2vw,1.75rem)]"
-                  >
+                  <h1 className="text-white font-normal leading-tight text-[clamp(1.75rem,2vw,1.75rem)]">
                     {heroTitle}
                   </h1>
                 )}
                 {heroSubtitle && (
-                  <h2
-                    className="text-white font-normal leading-tight mt-2 text-[clamp(1.75rem,2vw,1.75rem)]"
-                  >
+                  <h2 className="text-white font-normal leading-tight mt-2 text-[clamp(1.75rem,2vw,1.75rem)]">
                     {heroSubtitle}
                   </h2>
                 )}

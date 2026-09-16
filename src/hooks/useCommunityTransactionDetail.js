@@ -27,13 +27,20 @@ function shapeDetail(raw) {
     communitySlug: raw.community?.slug,
     communityLogo: raw.community?.logo,
     date: raw.paidAt ?? raw.createdAt,
-    status: (() => { const s = (raw.status ?? "").toLowerCase(); return s === "successful" ? "success" : s; })(),
+    status: (() => {
+      const s = (raw.status ?? "").toLowerCase();
+      return s === "successful" ? "success" : s;
+    })(),
     planName: raw.paymentLink?.title,
     channel: raw.channel,
     reference: raw.internalReference,
-    payerName: [raw.member?.firstName ?? raw.user?.firstName, raw.member?.lastName ?? raw.user?.lastName]
-      .filter(Boolean)
-      .join(" ") || raw.member?.email || raw.user?.email || null,
+    payerName:
+      [raw.member?.firstName ?? raw.user?.firstName, raw.member?.lastName ?? raw.user?.lastName]
+        .filter(Boolean)
+        .join(" ") ||
+      raw.member?.email ||
+      raw.user?.email ||
+      null,
     payerEmail: raw.member?.email ?? raw.user?.email ?? null,
     payerPhoto: raw.member?.profileImage?.url ?? raw.user?.profileImage?.url ?? null,
     // platformFee is a real, confirmed field on this response -- prefer it

@@ -26,7 +26,8 @@ export default function ResetPassword() {
 
   function validateField(field, value, otherValue) {
     if (field === "newPassword") {
-      if (!isPasswordValid(value)) return `Must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`;
+      if (!isPasswordValid(value))
+        return `Must include: ${PASSWORD_REQUIREMENTS_TEXT.toLowerCase()}`;
     }
     if (field === "confirmPassword") {
       if (!value) return "Please confirm your new password.";
@@ -44,10 +45,16 @@ export default function ResetPassword() {
         const next = { ...fe };
         // Only live-validate a field once it's already flagged, so a fresh
         // field doesn't turn red before the user's even left it.
-        if (fe[field]) next[field] = validateField(field, value, field === "newPassword" ? form.confirmPassword : form.newPassword);
+        if (fe[field])
+          next[field] = validateField(
+            field,
+            value,
+            field === "newPassword" ? form.confirmPassword : form.newPassword,
+          );
         // Editing newPassword after confirmPassword was already checked
         // needs confirmPassword re-checked against the new value too.
-        if (field === "newPassword" && fe.confirmPassword) next.confirmPassword = validateField("confirmPassword", form.confirmPassword, value);
+        if (field === "newPassword" && fe.confirmPassword)
+          next.confirmPassword = validateField("confirmPassword", form.confirmPassword, value);
         return next;
       });
     };
@@ -57,14 +64,22 @@ export default function ResetPassword() {
     return (e) => {
       setFieldErrors((fe) => ({
         ...fe,
-        [field]: validateField(field, e.target.value, field === "newPassword" ? form.confirmPassword : form.newPassword),
+        [field]: validateField(
+          field,
+          e.target.value,
+          field === "newPassword" ? form.confirmPassword : form.newPassword,
+        ),
       }));
     };
   }
 
   async function handleSubmit() {
     const newPasswordError = validateField("newPassword", form.newPassword, form.confirmPassword);
-    const confirmPasswordError = validateField("confirmPassword", form.confirmPassword, form.newPassword);
+    const confirmPasswordError = validateField(
+      "confirmPassword",
+      form.confirmPassword,
+      form.newPassword,
+    );
     if (newPasswordError || confirmPasswordError) {
       setFieldErrors({ newPassword: newPasswordError, confirmPassword: confirmPasswordError });
       return;
@@ -72,7 +87,12 @@ export default function ResetPassword() {
     setLoading(true);
     setError("");
     try {
-      await resetPassword({ email, token, newPassword: form.newPassword, confirmPassword: form.confirmPassword });
+      await resetPassword({
+        email,
+        token,
+        newPassword: form.newPassword,
+        confirmPassword: form.confirmPassword,
+      });
       toastSuccess("Password reset — sign in with your new password");
       navigate("/sign-in", { replace: true });
     } catch (err) {

@@ -24,7 +24,9 @@ try {
 // Strip HTML comments before matching so an explanatory comment that
 // mentions "<script>" in prose can't be mistaken for a real tag.
 const withoutComments = html.replace(/<!--[\s\S]*?-->/g, "");
-const inlineScripts = [...withoutComments.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g)];
+const inlineScripts = [
+  ...withoutComments.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g),
+];
 
 if (inlineScripts.length === 0) {
   console.log("No inline <script> tags (without src) found in dist/index.html.");

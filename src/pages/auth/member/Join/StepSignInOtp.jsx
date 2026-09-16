@@ -89,12 +89,20 @@ export default function StepSignInOtp({ email, onVerified, onUseDifferentEmail }
         // component comment above), which can't have MFA configured yet in
         // practice -- a defensive message instead of a built-out challenge
         // screen, pointing at the one place that already handles it.
-        setError("This account has extra security enabled. Please use the full sign-in page to continue.");
+        setError(
+          "This account has extra security enabled. Please use the full sign-in page to continue.",
+        );
         return;
       }
       onVerified(result);
     } catch (err) {
-      setError(notifyError(err, { context: "Verify login code", fallback: "That code didn't work. Please try again.", silent: true }));
+      setError(
+        notifyError(err, {
+          context: "Verify login code",
+          fallback: "That code didn't work. Please try again.",
+          silent: true,
+        }),
+      );
       setDigits(Array(OTP_LENGTH).fill(""));
       setOtpAttempt((a) => a + 1);
     } finally {
@@ -113,21 +121,18 @@ export default function StepSignInOtp({ email, onVerified, onUseDifferentEmail }
   return (
     <div className="flex flex-col gap-12">
       <div>
-        <h1 className="text-headline text-gray-900 mb-5">
-          You Already Have An Account
-        </h1>
+        <h1 className="text-headline text-gray-900 mb-5">You Already Have An Account</h1>
         <p className="text-sm text-gray-500 mb-1">
           {sending ? "Sending a sign-in code to" : "Enter the 6-digit code sent to"}
         </p>
         <p className="font-semibold text-sm text-gray-900 mb-1">{email}</p>
-        <button
-          onClick={onUseDifferentEmail}
-          className="text-sm font-medium mt-1 text-[#1C2B8A]"
-        >
+        <button onClick={onUseDifferentEmail} className="text-sm font-medium mt-1 text-[#1C2B8A]">
           Not you?
         </button>
         {resendCount > 0 && (
-          <p className={`text-xs mt-2 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
+          <p
+            className={`text-xs mt-2 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
+          >
             {codeExpired
               ? "Your code has expired — request a new one below."
               : `Code expires in ${formatCountdown(secondsLeft)}`}
@@ -153,7 +158,11 @@ export default function StepSignInOtp({ email, onVerified, onUseDifferentEmail }
 
         <ErrorMessage message={error} />
 
-        <PrimaryButton onClick={handleVerify} loading={loading} disabled={!allFilled || codeExpired || sending}>
+        <PrimaryButton
+          onClick={handleVerify}
+          loading={loading}
+          disabled={!allFilled || codeExpired || sending}
+        >
           {loading ? "Verifying..." : "Continue"}
         </PrimaryButton>
       </form>

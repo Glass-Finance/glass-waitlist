@@ -44,7 +44,10 @@ export function toastProgress(title, etaText) {
  *     secondaryAction: { label: "It's me", onClick: confirmSession },
  *   })
  */
-export function toastWarning(title, { description, primaryAction, secondaryAction, duration } = {}) {
+export function toastWarning(
+  title,
+  { description, primaryAction, secondaryAction, duration } = {},
+) {
   return toast.warning(title, {
     description,
     duration: duration ?? 15000,

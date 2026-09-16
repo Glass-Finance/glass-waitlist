@@ -1,6 +1,15 @@
 import {
-  AlertTriangle, UserX, Clock, CheckCircle2, UserPlus, Receipt,
-  Settings, UserMinus, Bell, Landmark, Undo2,
+  AlertTriangle,
+  UserX,
+  Clock,
+  CheckCircle2,
+  UserPlus,
+  Receipt,
+  Settings,
+  UserMinus,
+  Bell,
+  Landmark,
+  Undo2,
 } from "lucide-react";
 
 // Exact notificationType enum + per-type rules, sourced from the backend's
@@ -108,39 +117,39 @@ export function isSelfAccountType(type) {
 // bg/fg are a light-tint/solid-tone pair per semantic bucket: red for
 // failures/urgent, amber for due-soon, green for success, indigo for new/
 // info, gray for neutral account-level notices.
-const RED    = { bg: "#FEE2E2", fg: "#DC2626" };
-const AMBER  = { bg: "#FEF3C7", fg: "#D97706" };
-const GREEN  = { bg: "#D1FAE5", fg: "#059669" };
+const RED = { bg: "#FEE2E2", fg: "#DC2626" };
+const AMBER = { bg: "#FEF3C7", fg: "#D97706" };
+const GREEN = { bg: "#D1FAE5", fg: "#059669" };
 const INDIGO = { bg: "#E0E7FF", fg: "#4F46E5" };
-const GRAY   = { bg: "#F3F4F6", fg: "#6B7280" };
+const GRAY = { bg: "#F3F4F6", fg: "#6B7280" };
 
 const NOTIFICATION_VISUAL = {
   // Payment lifecycle
-  PAYMENT_REQUEST_CREATED:        { icon: Receipt,      ...INDIGO },
-  PAYMENT_DUE:                    { icon: Clock,         ...AMBER },
-  PAYMENT_REMINDER_DUE:           { icon: Clock,         ...AMBER },
-  PAYMENT_OVERDUE:                { icon: AlertTriangle, ...RED },
-  PAYMENT_REMINDER_OVERDUE:       { icon: AlertTriangle, ...RED },
-  PAYMENT_RECEIVED:               { icon: CheckCircle2,  ...GREEN },
-  PAYMENT_FAILED:                 { icon: AlertTriangle, ...RED },
-  PAYMENT_AUTHORIZATION_DISABLED: { icon: Landmark,      ...GRAY },
-  REFUND_REQUESTED:               { icon: Undo2,         ...RED },
-  SETTLEMENT_COMPLETED:           { icon: CheckCircle2,  ...GREEN },
-  RECONCILIATION_FINDINGS:        { icon: AlertTriangle, ...RED },
+  PAYMENT_REQUEST_CREATED: { icon: Receipt, ...INDIGO },
+  PAYMENT_DUE: { icon: Clock, ...AMBER },
+  PAYMENT_REMINDER_DUE: { icon: Clock, ...AMBER },
+  PAYMENT_OVERDUE: { icon: AlertTriangle, ...RED },
+  PAYMENT_REMINDER_OVERDUE: { icon: AlertTriangle, ...RED },
+  PAYMENT_RECEIVED: { icon: CheckCircle2, ...GREEN },
+  PAYMENT_FAILED: { icon: AlertTriangle, ...RED },
+  PAYMENT_AUTHORIZATION_DISABLED: { icon: Landmark, ...GRAY },
+  REFUND_REQUESTED: { icon: Undo2, ...RED },
+  SETTLEMENT_COMPLETED: { icon: CheckCircle2, ...GREEN },
+  RECONCILIATION_FINDINGS: { icon: AlertTriangle, ...RED },
 
   // Community / membership
-  JOIN_REQUEST_CREATED:           { icon: UserPlus,      ...INDIGO },
-  JOIN_REQUEST_APPROVED:          { icon: CheckCircle2,  ...GREEN },
-  JOIN_REQUEST_REJECTED:          { icon: UserX,         ...GRAY },
-  JOIN_REQUEST_REVOKED:           { icon: UserMinus,     ...GRAY },
-  COMMUNITY_INVITE_SENT:          { icon: UserPlus,      ...INDIGO },
-  COMMUNITY_INVITE_ACCEPTED:      { icon: CheckCircle2,  ...GREEN },
-  COMMUNITY_INVITE_REVOKED:       { icon: UserMinus,     ...GRAY },
-  COMMUNITY_INVITE_EXPIRED:       { icon: Clock,         ...GRAY },
-  COMMUNITY_ACCOUNT_VERIFIED:     { icon: CheckCircle2,  ...GREEN },
-  COMMUNITY_SETTINGS_CHANGED:     { icon: Settings,      ...GRAY },
+  JOIN_REQUEST_CREATED: { icon: UserPlus, ...INDIGO },
+  JOIN_REQUEST_APPROVED: { icon: CheckCircle2, ...GREEN },
+  JOIN_REQUEST_REJECTED: { icon: UserX, ...GRAY },
+  JOIN_REQUEST_REVOKED: { icon: UserMinus, ...GRAY },
+  COMMUNITY_INVITE_SENT: { icon: UserPlus, ...INDIGO },
+  COMMUNITY_INVITE_ACCEPTED: { icon: CheckCircle2, ...GREEN },
+  COMMUNITY_INVITE_REVOKED: { icon: UserMinus, ...GRAY },
+  COMMUNITY_INVITE_EXPIRED: { icon: Clock, ...GRAY },
+  COMMUNITY_ACCOUNT_VERIFIED: { icon: CheckCircle2, ...GREEN },
+  COMMUNITY_SETTINGS_CHANGED: { icon: Settings, ...GRAY },
 
-  GENERAL:                        { icon: Bell,          ...GRAY },
+  GENERAL: { icon: Bell, ...GRAY },
 };
 
 export function notificationVisual(type) {

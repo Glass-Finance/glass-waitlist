@@ -25,9 +25,7 @@ import PlanReview from "./PlanReview";
 export function Step1({ value, onChange }) {
   return (
     <div>
-      <p className="text-xs text-gray-500 mb-5">
-        Choose the type of plan you want to create
-      </p>
+      <p className="text-xs text-gray-500 mb-5">Choose the type of plan you want to create</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {[
           {
@@ -70,11 +68,7 @@ export function Step1({ value, onChange }) {
               {/* Plain black glyph, no colored background tile -- confirmed
                   against the actual exported Figma icons (fill="black"),
                   not recolored/boxed the way an earlier pass assumed. */}
-              <img
-                src={opt.icon}
-                alt=""
-                className="w-8 h-8 object-contain mt-5 mb-3"
-              />
+              <img src={opt.icon} alt="" className="w-8 h-8 object-contain mt-5 mb-3" />
               <p className="font-semibold text-gray-900 text-base mb-1">{opt.title}</p>
               {/* text-xs, not text-sm -- per direct feedback the
                   description read too large next to the title. */}
@@ -87,9 +81,16 @@ export function Step1({ value, onChange }) {
   );
 }
 
-export function Step2({ planType, form, onChange, slugState, accounts, fieldErrors = {}, onFieldBlur }) {
-  const { slug, setSlug, available, checking, suggesting, suggestFrom } =
-    slugState;
+export function Step2({
+  planType,
+  form,
+  onChange,
+  slugState,
+  accounts,
+  fieldErrors = {},
+  onFieldBlur,
+}) {
+  const { slug, setSlug, available, checking, suggesting, suggestFrom } = slugState;
 
   const isDaily = form.frequency === "DAILY";
 
@@ -118,30 +119,27 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
   return (
     <div className="pr-1 space-y-3.5">
       <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1">
-          Plan Name
-        </label>
+        <label className="block text-xs font-medium text-gray-700 mb-1">Plan Name</label>
         <input
           className={inputCls}
           value={form.name || ""}
           placeholder="Enter plan name"
           onChange={(e) => onChange("name", e.target.value)}
-          onBlur={(e) => { if (!slug) suggestFrom(form.name); onFieldBlur?.("name")(e); }}
+          onBlur={(e) => {
+            if (!slug) suggestFrom(form.name);
+            onFieldBlur?.("name")(e);
+          }}
           style={fieldErrors.name ? { borderColor: "var(--color-danger)" } : undefined}
         />
         {fieldErrors.name && <p className="text-xs text-danger mt-1">{fieldErrors.name}</p>}
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1">
-          URL slug
-        </label>
+        <label className="block text-xs font-medium text-gray-700 mb-1">URL slug</label>
         <div className="relative">
           <input
             className={inputCls + " pr-8"}
             value={slug}
-            onChange={(e) =>
-              setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
-            }
+            onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
             placeholder="e.g. alumni-dues-2026"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -157,15 +155,11 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
           </span>
         </div>
         {available === false && !checking && (
-          <p className="text-xs text-red-500 mt-1">
-            That URL is taken — try another.
-          </p>
+          <p className="text-xs text-red-500 mt-1">That URL is taken — try another.</p>
         )}
       </div>
       <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1">
-          Description
-        </label>
+        <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
         <textarea
           className={textareaCls}
           value={form.description || ""}
@@ -180,9 +174,7 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
-            Amount
-          </label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Amount</label>
           <input
             type="number"
             onWheel={blurOnWheel}
@@ -197,9 +189,7 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
         </div>
         {planType === "recurring" && (
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Frequency
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Frequency</label>
             <div className="relative">
               <select
                 className={`${inputCls} appearance-none !pr-9`}
@@ -226,9 +216,7 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
           defaults to 1 (i.e. every single cycle) when left blank. */}
       {planType === "recurring" && form.frequency && (
         <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
-            Repeat Every
-          </label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Repeat Every</label>
           <div className="flex items-center gap-2">
             <input
               type="number"
@@ -255,9 +243,7 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
-            Start Date
-          </label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Start Date</label>
           <input
             type="date"
             className={inputCls}
@@ -322,10 +308,7 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
               placeholder="0"
               onChange={(e) => {
                 const raw = e.target.value;
-                onChange(
-                  "graceDays",
-                  raw === "" ? "" : String(Math.max(0, Number(raw))),
-                );
+                onChange("graceDays", raw === "" ? "" : String(Math.max(0, Number(raw))));
               }}
             />
             <p className="text-[11px] text-gray-400 mt-1">
@@ -333,9 +316,7 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
             </p>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
-              Retry Policy
-            </label>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Retry Policy</label>
             <div className="relative">
               <select
                 className={`${inputCls} appearance-none !pr-9`}
@@ -370,9 +351,7 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
         {(form.reminderEnabled ?? true) && (
           <div className="flex flex-col gap-2.5 pl-6">
             <div>
-              <label className="block text-[11px] text-gray-500 mb-1">
-                Remind every
-              </label>
+              <label className="block text-[11px] text-gray-500 mb-1">Remind every</label>
               <div className="relative">
                 <select
                   className={`${inputCls} appearance-none !pr-9`}
@@ -389,9 +368,7 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
               </div>
             </div>
             <div>
-              <label className="block text-[11px] text-gray-500 mb-1.5">
-                Send via
-              </label>
+              <label className="block text-[11px] text-gray-500 mb-1.5">Send via</label>
               <div className="flex flex-col gap-1.5">
                 {REMINDER_CHANNELS.map((c) => {
                   const checked = (form.reminderChannels ?? []).includes(c.value);
@@ -404,9 +381,7 @@ export function Step2({ planType, form, onChange, slugState, accounts, fieldErro
                           const current = form.reminderChannels ?? [];
                           onChange(
                             "reminderChannels",
-                            checked
-                              ? current.filter((v) => v !== c.value)
-                              : [...current, c.value],
+                            checked ? current.filter((v) => v !== c.value) : [...current, c.value],
                           );
                         }}
                       />

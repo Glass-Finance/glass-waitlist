@@ -59,16 +59,12 @@ export default function EmailPhoneStep({ initialEmail, onNext, onSwitch, onGoogl
   return (
     <div className="w-full max-w-md flex flex-col md:mt-14">
       <div className="mb-3">
-        <h1 className="text-headline text-gray-900 mb-1.5">
-          Create Your Account
-        </h1>
+        <h1 className="text-headline text-gray-900 mb-1.5">Create Your Account</h1>
       </div>
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
         <div className="flex flex-col gap-1.5">
-          <label className="text-label font-medium text-gray-700">
-            Email Address
-          </label>
+          <label className="text-label font-medium text-gray-700">Email Address</label>
           <SignUpTextInput
             type="email"
             value={email}
@@ -90,11 +86,18 @@ export default function EmailPhoneStep({ initialEmail, onNext, onSwitch, onGoogl
             <input
               type="checkbox"
               checked={agreed}
-              onChange={(e) => { setAgreed(e.target.checked); setError(""); }}
+              onChange={(e) => {
+                setAgreed(e.target.checked);
+                setError("");
+              }}
               className="appearance-none w-4 h-4 rounded-sm border border-[#797D86]/40 checked:bg-[#2535c3] checked:border-[#2535c3] cursor-pointer"
             />
             {agreed && (
-              <Check size={12} strokeWidth={3} className="absolute inset-0 m-auto text-white pointer-events-none" />
+              <Check
+                size={12}
+                strokeWidth={3}
+                className="absolute inset-0 m-auto text-white pointer-events-none"
+              />
             )}
           </span>
           <span className="text-xs md:text-sm text-gray-700">

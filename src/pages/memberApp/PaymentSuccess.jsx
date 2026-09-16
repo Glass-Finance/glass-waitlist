@@ -4,10 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Check, X, Loader2, Clock, Share2 } from "lucide-react";
 import { verifyPayment } from "../../api/members";
 import { beginAuthGrace } from "../../api/client";
-import {
-  settleLocalPaymentForReference,
-  useManagePayments,
-} from "../../hooks/usePayments";
+import { settleLocalPaymentForReference, useManagePayments } from "../../hooks/usePayments";
 import { useTransactionDetail } from "../../hooks/useTransactionDetail";
 import { useAuth } from "../../store/AuthContext";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
@@ -50,9 +47,7 @@ export default function PaymentSuccess() {
   // App.jsx's /payment/callback), where the session can die mid-payment
   // while the payer was away on Paystack's page; clearing early would lose
   // the recovery trail through re-login (see the "signin" state below).
-  const [returnTo] = useState(
-    () => sessionStorage.getItem("paymentReturnTo") ?? null,
-  );
+  const [returnTo] = useState(() => sessionStorage.getItem("paymentReturnTo") ?? null);
 
   // "checking" | "success" | "failed" | "processing" | "unknown"
   const [state, setState] = useState(reference ? "checking" : "unknown");
@@ -81,9 +76,7 @@ export default function PaymentSuccess() {
     { skipAuthRedirect: true },
   );
   const payerName = toTitleCase(
-    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
-      user?.email ||
-      "",
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "",
   );
 
   // Per the UI designer's spec: on returning to Home after a payment,
@@ -100,9 +93,7 @@ export default function PaymentSuccess() {
     skipAuthRedirect: true,
   });
   const hasAutoPayConsent = (authorisations ?? []).some((auth) =>
-    (auth.consents ?? []).some(
-      (c) => !c.revoked && c.paymentLinkId === tx?.paymentLinkId,
-    ),
+    (auth.consents ?? []).some((c) => !c.revoked && c.paymentLinkId === tx?.paymentLinkId),
   );
   // authsLoading guards against a false positive if "Back to Home" is
   // tapped before this fetch (a separate request from the transaction
@@ -230,10 +221,7 @@ export default function PaymentSuccess() {
   // "set once" convention as glass_notifications_cleared_at) so it doesn't
   // nag on every future payment for the same plan once answered either way.
   function goHome() {
-    if (
-      shouldOfferAutoPay &&
-      !localStorage.getItem(`glass_autopay_asked_${tx.paymentLinkId}`)
-    ) {
+    if (shouldOfferAutoPay && !localStorage.getItem(`glass_autopay_asked_${tx.paymentLinkId}`)) {
       try {
         sessionStorage.setItem(
           "glass_autopay_prompt",
@@ -268,13 +256,8 @@ export default function PaymentSuccess() {
       sub: tx ? (
         <>
           Your Payment of{" "}
-          <strong className="text-gray-700">
-            {formatNaira(tx.amount, { decimals: 2 })}
-          </strong>{" "}
-          for{" "}
-          <strong className="text-gray-700">
-            {toTitleCase(tx.planName ?? tx.description)}
-          </strong>{" "}
+          <strong className="text-gray-700">{formatNaira(tx.amount, { decimals: 2 })}</strong> for{" "}
+          <strong className="text-gray-700">{toTitleCase(tx.planName ?? tx.description)}</strong>{" "}
           was successful.
         </>
       ) : (
@@ -289,9 +272,7 @@ export default function PaymentSuccess() {
       sub: "Something went wrong with this payment. Please try again.",
       action: {
         label: returnTo ? "Back to Dashboard" : "Try again",
-        to:
-          returnTo ??
-          (paymentId ? `/member/pay/${paymentId}` : "/member/upcoming"),
+        to: returnTo ?? (paymentId ? `/member/pay/${paymentId}` : "/member/upcoming"),
       },
     },
     processing: {
@@ -353,9 +334,7 @@ export default function PaymentSuccess() {
               {content.icon}
             </div>
 
-            <p className="text-headline text-gray-800 mt-1 text-center">
-              {content.text}
-            </p>
+            <p className="text-headline text-gray-800 mt-1 text-center">{content.text}</p>
 
             {content.sub && (
               <p className="text-title-sm text-gray-500 text-center -mt-1 max-w-[280px]">
@@ -373,21 +352,13 @@ export default function PaymentSuccess() {
               disabled={!tx}
               className="w-full px-8 py-3.5 rounded-full text-button font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-brand border-[1.5px] border-brand"
             >
-              {txLoading ? (
-                <Loader2 size={15} className="animate-spin" />
-              ) : (
-                <Share2 size={15} />
-              )}
+              {txLoading ? <Loader2 size={15} className="animate-spin" /> : <Share2 size={15} />}
               {txLoading ? "Preparing receipt…" : "Share Receipt"}
             </button>
           </div>
         ) : (
           content.action && (
-            <Button
-              onClick={() => goTo(content.action.to)}
-              fullWidth={false}
-              className="mt-3 px-8"
-            >
+            <Button onClick={() => goTo(content.action.to)} fullWidth={false} className="mt-3 px-8">
               {content.action.label}
             </Button>
           )

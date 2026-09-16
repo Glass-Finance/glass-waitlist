@@ -20,14 +20,8 @@ export default function PageLoadingState({
       <div className="mb-5">
         <BrandedSpinner size={size} />
       </div>
-      <p className="text-[15px] font-semibold text-[#333] m-0">
-        {label}
-      </p>
-      {subtitle && (
-        <p className="text-[13px] text-[#999] mt-1.5 mx-0 mb-0">
-          {subtitle}
-        </p>
-      )}
+      <p className="text-[15px] font-semibold text-[#333] m-0">{label}</p>
+      {subtitle && <p className="text-[13px] text-[#999] mt-1.5 mx-0 mb-0">{subtitle}</p>}
     </div>
   );
 }

@@ -36,7 +36,12 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
       const result = await verifyPhoneOtp({ phoneNumber: phone, otp: otp.join("") });
       onVerified(result.confirmToken);
     } catch (err) {
-      setError(notifyError(err, { context: "Verify phone OTP", fallback: "Invalid or expired code. Please try again." }));
+      setError(
+        notifyError(err, {
+          context: "Verify phone OTP",
+          fallback: "Invalid or expired code. Please try again.",
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -52,7 +57,13 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
       setOtp(["", "", "", "", "", ""]);
       setError("");
     } catch (err) {
-      setResendMessage(notifyError(err, { context: "Resend phone OTP", fallback: "Could not resend. Please try again.", silent: true }));
+      setResendMessage(
+        notifyError(err, {
+          context: "Resend phone OTP",
+          fallback: "Could not resend. Please try again.",
+          silent: true,
+        }),
+      );
     } finally {
       setResending(false);
     }
@@ -61,14 +72,13 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
   return (
     <div className="w-full max-w-xl flex flex-col md:mt-14 mb-auto gap-12">
       <div>
-        <h1 className="text-headline text-gray-900 mb-3 font-sans">
-          Verification Code Sent
-        </h1>
-        <p className="text-sm text-gray-500 mb-0.5">
-          Enter the 6-digit code that was sent to
-        </p>
+        <h1 className="text-headline text-gray-900 mb-3 font-sans">Verification Code Sent</h1>
+        <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code that was sent to</p>
         <p className="text-sm font-semibold text-gray-900">{phone}</p>
-        <button onClick={onBack} className="text-sm font-medium mt-1 hover:underline text-[#1B2FE8]">
+        <button
+          onClick={onBack}
+          className="text-sm font-medium mt-1 hover:underline text-[#1B2FE8]"
+        >
           Wrong number?
         </button>
         <p className={`text-xs mt-2 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
@@ -82,7 +92,10 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
         <OtpBoxes
           key={resendCount}
           value={otp}
-          onChange={(next) => { setOtp(next); setError(""); }}
+          onChange={(next) => {
+            setOtp(next);
+            setError("");
+          }}
           length={6}
           autoFocus
           renderBoxes={(digits, activeIndex) => (
@@ -113,11 +126,7 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
 
         {error && <p className="text-sm text-red-500 text-center -mt-2">{error}</p>}
 
-        <Button
-          type="submit"
-          disabled={codeExpired || otp.some((d) => !d)}
-          loading={loading}
-        >
+        <Button type="submit" disabled={codeExpired || otp.some((d) => !d)} loading={loading}>
           {loading ? "Verifying..." : "Continue"}
         </Button>
       </form>
@@ -125,7 +134,11 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
       <div>
         <p className="text-center text-sm text-gray-text">
           Didn't get OTP?{" "}
-          <button onClick={handleResend} disabled={resending} className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]">
+          <button
+            onClick={handleResend}
+            disabled={resending}
+            className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]"
+          >
             {resending ? "Resending..." : "Resend"}
           </button>
         </p>

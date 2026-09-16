@@ -1,6 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { Bell, User } from "lucide-react";
-import { extractNotificationDetails, formatNairaAmount, resolveCommunity as resolveNotificationCommunity, resolveNotificationBody } from "../../utils/notificationContent";
+import {
+  extractNotificationDetails,
+  formatNairaAmount,
+  resolveCommunity as resolveNotificationCommunity,
+  resolveNotificationBody,
+} from "../../utils/notificationContent";
 import { notificationsListDestination } from "../../utils/notificationRouting";
 import { isSelfAccountType, notificationVisual } from "../../utils/notificationTypes";
 import { useAuth } from "../../store/AuthContext";
@@ -53,7 +58,11 @@ function NotifAvatar({ n }) {
   if (isSelf && user?.profileImage?.url) {
     return (
       <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden mt-px">
-        <img src={user.profileImage.url} alt={selfName ?? ""} className="w-full h-full object-cover" />
+        <img
+          src={user.profileImage.url}
+          alt={selfName ?? ""}
+          className="w-full h-full object-cover"
+        />
       </div>
     );
   }
@@ -74,13 +83,17 @@ function NotifAvatar({ n }) {
 }
 
 function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
-  const isRead    = n.readFlag ?? n.isRead ?? false;
-  const title     = n.title ?? n.subject ?? "Notification";
-  const details   = extractNotificationDetails(n, { communityMap });
-  const body      = resolveNotificationBody(n, details, n.message ?? n.description ?? n.bodyText ?? n.body ?? null);
-  const time      = formatTimestamp(n.createdAt ?? n.timestamp);
+  const isRead = n.readFlag ?? n.isRead ?? false;
+  const title = n.title ?? n.subject ?? "Notification";
+  const details = extractNotificationDetails(n, { communityMap });
+  const body = resolveNotificationBody(
+    n,
+    details,
+    n.message ?? n.description ?? n.bodyText ?? n.body ?? null,
+  );
+  const time = formatTimestamp(n.createdAt ?? n.timestamp);
   const community = resolveCommunity(n, communityMap);
-  const commName  = community?.name ?? community?.communityName ?? n.communityName ?? null;
+  const commName = community?.name ?? community?.communityName ?? n.communityName ?? null;
 
   return (
     <button
@@ -98,7 +111,9 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
             {commName}
           </p>
         )}
-        <p className={`text-[11.5px] m-0 leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap ${isRead ? "font-medium text-[#666]" : "font-semibold text-[#111]"}`}>
+        <p
+          className={`text-[11.5px] m-0 leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap ${isRead ? "font-medium text-[#666]" : "font-semibold text-[#111]"}`}
+        >
           {title}
         </p>
         {body && (
@@ -110,16 +125,12 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
           {time}
           {(() => {
             const amount = formatNairaAmount(details.amount);
-            return amount ? (
-              <span className="text-[#111] font-semibold"> · {amount}</span>
-            ) : null;
+            return amount ? <span className="text-[#111] font-semibold"> · {amount}</span> : null;
           })()}
         </p>
       </div>
 
-      {!isRead && (
-        <div className="w-[7px] h-[7px] rounded-full bg-brand flex-shrink-0 mt-1" />
-      )}
+      {!isRead && <div className="w-[7px] h-[7px] rounded-full bg-brand flex-shrink-0 mt-1" />}
     </button>
   );
 }
@@ -191,9 +202,7 @@ export default function NotificationsPanel({
         ) : (
           buckets.map(({ label, items }) => (
             <div key={label}>
-              <p className="text-[10.5px] font-normal text-[#999] pt-3 px-4 pb-1.5 m-0">
-                {label}
-              </p>
+              <p className="text-[10.5px] font-normal text-[#999] pt-3 px-4 pb-1.5 m-0">{label}</p>
               <div className="flex flex-col gap-1 px-2.5">
                 {items.map((n) => (
                   <NotifCard
@@ -201,7 +210,10 @@ export default function NotificationsPanel({
                     n={n}
                     communityMap={communityMap}
                     onMarkRead={onMarkRead}
-                    onNavigate={(to) => { onClose?.(); navigate(to); }}
+                    onNavigate={(to) => {
+                      onClose?.();
+                      navigate(to);
+                    }}
                   />
                 ))}
               </div>

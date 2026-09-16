@@ -1,10 +1,6 @@
 // Shape the raw obligation response into what the UI expects
 export function shapeObligation(raw) {
-  const plType = (
-    raw.paymentLink?.paymentType ??
-    raw.paymentLink?.type ??
-    ""
-  ).toUpperCase();
+  const plType = (raw.paymentLink?.paymentType ?? raw.paymentLink?.type ?? "").toUpperCase();
   return {
     id: raw.id,
     amount: raw.amount,
@@ -15,10 +11,8 @@ export function shapeObligation(raw) {
     communitySlug: raw.community?.slug,
     dueDate: raw.dueAt,
     // recurringPlan field + paymentType on the link both indicate a recurring plan
-    type:
-      raw.recurringPlan || plType === "RECURRING" ? "recurring" : "one-time",
-    frequency:
-      raw.paymentLink?.frequency ?? raw.paymentLink?.billingFrequency ?? null,
+    type: raw.recurringPlan || plType === "RECURRING" ? "recurring" : "one-time",
+    frequency: raw.paymentLink?.frequency ?? raw.paymentLink?.billingFrequency ?? null,
     status: (() => {
       const s = (raw.status ?? "PENDING").toUpperCase();
       return s === "SUCCESSFUL" ? "PAID" : s;
@@ -48,15 +42,8 @@ export function shapePaymentLink(raw, fallbackCommunitySlug) {
     communityName: raw.community?.name,
     communitySlug: raw.community?.slug ?? fallbackCommunitySlug,
     dueDate: raw.dueAt ?? null,
-    type:
-      raw.paymentType === "RECURRING" || raw.recurringPlan
-        ? "recurring"
-        : "one-time",
-    frequency:
-      raw.recurringPlan?.frequency ??
-      raw.frequency ??
-      raw.billingFrequency ??
-      null,
+    type: raw.paymentType === "RECURRING" || raw.recurringPlan ? "recurring" : "one-time",
+    frequency: raw.recurringPlan?.frequency ?? raw.frequency ?? raw.billingFrequency ?? null,
     billingDay: raw.recurringPlan?.billingDay ?? raw.billingDay ?? null,
     status: "PENDING",
     linkStatus: (raw.status ?? "").toUpperCase(),

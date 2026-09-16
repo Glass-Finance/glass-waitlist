@@ -7,12 +7,7 @@ import {
   getPaymentLinks,
 } from "../../api/members";
 import { unwrapList, deriveStatus } from "./helpers";
-import {
-  shapeObligation,
-  shapePaymentLink,
-  shapeTransaction,
-  normalizeCommunity,
-} from "./shape";
+import { shapeObligation, shapePaymentLink, shapeTransaction, normalizeCommunity } from "./shape";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main hook — Home screen data
@@ -92,9 +87,7 @@ export function usePayments(preferredCommunityIdentifier) {
   // falling back to the first community returned by the API.
   const storedCommunity = (() => {
     try {
-      return JSON.parse(
-        localStorage.getItem("glass_member_community") ?? "null",
-      );
+      return JSON.parse(localStorage.getItem("glass_member_community") ?? "null");
     } catch {
       return null;
     }
@@ -116,8 +109,7 @@ export function usePayments(preferredCommunityIdentifier) {
     if (!identifier) return null;
     return activeCommunities.find(
       (c) =>
-        (c.slug ?? c.community?.slug) === identifier ||
-        (c.id ?? c.community?.id) === identifier,
+        (c.slug ?? c.community?.slug) === identifier || (c.id ?? c.community?.id) === identifier,
     );
   }
 
@@ -126,18 +118,13 @@ export function usePayments(preferredCommunityIdentifier) {
   const rawActiveCommunity =
     findByIdentifier(preferredCommunityIdentifier) ??
     (storedCommunity
-      ? (findByIdentifier(storedCommunity.slug ?? storedCommunity.id) ??
-        activeCommunities[0])
+      ? (findByIdentifier(storedCommunity.slug ?? storedCommunity.id) ?? activeCommunities[0])
       : activeCommunities[0]);
 
-  const communitySlug =
-    rawActiveCommunity?.slug ?? rawActiveCommunity?.community?.slug ?? null;
+  const communitySlug = rawActiveCommunity?.slug ?? rawActiveCommunity?.community?.slug ?? null;
   // Use id as fallback identifier when no slug exists
   const communityIdentifier =
-    communitySlug ??
-    rawActiveCommunity?.id ??
-    rawActiveCommunity?.community?.id ??
-    null;
+    communitySlug ?? rawActiveCommunity?.id ?? rawActiveCommunity?.community?.id ?? null;
 
   // GET /payment-links is the member-accessible endpoint (visibility-gated).
   // Filter by communityIdentifier so members only see their active community's links.
@@ -145,9 +132,7 @@ export function usePayments(preferredCommunityIdentifier) {
     queryKey: ["payment-links", communityIdentifier],
     queryFn: async () => {
       const res = await getPaymentLinks(
-        communityIdentifier
-          ? { communityIdentifier, status: "ACTIVE" }
-          : { status: "ACTIVE" },
+        communityIdentifier ? { communityIdentifier, status: "ACTIVE" } : { status: "ACTIVE" },
       );
       return unwrapList(res).map((raw) =>
         shapePaymentLink(raw, communitySlug ?? communityIdentifier),
@@ -163,14 +148,10 @@ export function usePayments(preferredCommunityIdentifier) {
 
   // Scope to the active community when one is known
   const obligations = communitySlug
-    ? allObligations.filter(
-        (o) => !o.communitySlug || o.communitySlug === communitySlug,
-      )
+    ? allObligations.filter((o) => !o.communitySlug || o.communitySlug === communitySlug)
     : allObligations;
   const transactions = communitySlug
-    ? allTransactions.filter(
-        (t) => !t.communitySlug || t.communitySlug === communitySlug,
-      )
+    ? allTransactions.filter((t) => !t.communitySlug || t.communitySlug === communitySlug)
     : allTransactions;
 
   // Sort obligations: overdue first, then by dueDate ascending
@@ -206,8 +187,7 @@ export function usePayments(preferredCommunityIdentifier) {
   // back (not always populated by the backend), fall back to the logo we got
   // from the communities list — which always returns it.
   const activeLogo = normalizeCommunity(rawActiveCommunity)?.logo ?? null;
-  const enrichLogo = (item) =>
-    item.logo?.url ? item : { ...item, logo: activeLogo };
+  const enrichLogo = (item) => (item.logo?.url ? item : { ...item, logo: activeLogo });
 
   const upcoming = [...unpaidObligations, ...unmatchedLinks].map(enrichLogo);
 
@@ -237,16 +217,13 @@ export function usePayments(preferredCommunityIdentifier) {
       userQuery.isLoading ||
       communitiesQuery.isLoading ||
       paymentLinksQuery.isLoading,
-    hasNoCommunity:
-      !communitiesQuery.isLoading && activeCommunities.length === 0,
+    hasNoCommunity: !communitiesQuery.isLoading && activeCommunities.length === 0,
     communityCount: activeCommunities.length,
     hasPendingCommunity:
       !communitiesQuery.isLoading &&
       activeCommunities.length === 0 &&
       pendingCommunities.length > 0,
-    pendingCommunity: pendingCommunities[0]
-      ? normalizeCommunity(pendingCommunities[0])
-      : null,
+    pendingCommunity: pendingCommunities[0] ? normalizeCommunity(pendingCommunities[0]) : null,
     // Only obligations + communities are truly blocking for the Upcoming
     // Payments view. Transactions and user-profile failures are secondary:
     // missing transactions means the "already paid" filter is conservative,

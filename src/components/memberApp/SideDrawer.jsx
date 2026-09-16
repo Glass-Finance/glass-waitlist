@@ -50,15 +50,9 @@ export default function SideDrawer({ open, onClose }) {
         <div className="flex items-center justify-between pt-5 px-5 pb-4">
           <div className="flex items-center gap-1.5">
             <div>
-              <img
-                src="/Glass.webp"
-                alt="Glass"
-                className="w-[30px] h-[30px]"
-              />
+              <img src="/Glass.webp" alt="Glass" className="w-[30px] h-[30px]" />
             </div>
-            <span className="text-lg font-medium text-[#111]">
-              Glass
-            </span>
+            <span className="text-lg font-medium text-[#111]">Glass</span>
           </div>
 
           <button
@@ -84,9 +78,7 @@ export default function SideDrawer({ open, onClose }) {
               className="flex items-center gap-3 py-3.5 px-3 rounded-xl border-none bg-transparent cursor-pointer w-full text-left"
             >
               <Icon size={20} strokeWidth={1.6} className="text-[#444]" />
-              <span className="text-[15px] font-normal text-[#222]">
-                {label}
-              </span>
+              <span className="text-[15px] font-normal text-[#222]">{label}</span>
             </button>
           ))}
 
@@ -94,13 +86,14 @@ export default function SideDrawer({ open, onClose }) {
             <>
               <div className="h-px bg-[#0000000D] my-1 mx-0" />
               <button
-                onClick={() => { onClose(); navigate("/dashboard/home"); }}
+                onClick={() => {
+                  onClose();
+                  navigate("/dashboard/home");
+                }}
                 className="flex items-center gap-3 py-3.5 px-3 rounded-xl border-none bg-transparent cursor-pointer w-full text-left"
               >
                 <LayoutDashboard size={20} strokeWidth={1.6} className="text-brand" />
-                <span className="text-[15px] font-normal text-brand">
-                  Admin Dashboard
-                </span>
+                <span className="text-[15px] font-normal text-brand">Admin Dashboard</span>
               </button>
             </>
           )}
@@ -112,9 +105,7 @@ export default function SideDrawer({ open, onClose }) {
           className="flex items-center gap-3 pt-5 px-6 border-none bg-transparent cursor-pointer text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#D32F2F] pb-[max(env(safe-area-inset-bottom,0px)_+_32px,56px)]"
         >
           <LogOut size={18} strokeWidth={1.8} className="text-[#D32F2F]" />
-          <span className="text-[15px] font-medium text-[#D32F2F]">
-            Log Out
-          </span>
+          <span className="text-[15px] font-medium text-[#D32F2F]">Log Out</span>
         </button>
       </div>
     </>

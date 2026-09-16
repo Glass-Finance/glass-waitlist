@@ -18,12 +18,11 @@ export default function AutoPayPrompt({ prompt, onDismiss, onEnable }) {
       onClick={(e) => e.target === e.currentTarget && onDismiss()}
     >
       <div className="w-full max-w-[430px] bg-surface-bg rounded-[20px] px-6 py-7 shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
-        <h2 className="text-[19px] font-bold text-[#111] mb-2.5">
-          Turn on Auto-Pay
-        </h2>
+        <h2 className="text-[19px] font-bold text-[#111] mb-2.5">Turn on Auto-Pay</h2>
         <p className="text-sm text-[#555] leading-[1.55] mb-6">
           Would you like us to charge {formatNaira(prompt.amount)} automatically for{" "}
-          <strong className="text-[#111]">{prompt.planName}</strong> {frequencyAdverb(prompt.frequency)}?
+          <strong className="text-[#111]">{prompt.planName}</strong>{" "}
+          {frequencyAdverb(prompt.frequency)}?
         </p>
         <div className="flex gap-2.5 justify-end">
           <button

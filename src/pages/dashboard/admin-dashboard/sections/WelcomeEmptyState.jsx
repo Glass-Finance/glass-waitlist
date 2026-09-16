@@ -13,12 +13,7 @@ import { Button } from "../../../../components/ui/Button";
 export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
   return (
     <div className="flex flex-col items-center py-16 px-6">
-      <img
-        src={inviteIllustration}
-        alt=""
-        className="w-[280px] h-auto mb-6"
-        draggable={false}
-      />
+      <img src={inviteIllustration} alt="" className="w-[280px] h-auto mb-6" draggable={false} />
       <h1 className="text-xl leading-7 font-normal text-gray-900 text-center mb-1.5">
         Welcome to Glass!
       </h1>

@@ -5,8 +5,7 @@ import client from "./client";
 // ─────────────────────────────────────────────────────────────────────────────
 
 // GET /api/v1/slugs/verify?type=&slug=
-export const verifySlug = (type, slug) =>
-  client.get("/slugs/verify", { params: { type, slug } });
+export const verifySlug = (type, slug) => client.get("/slugs/verify", { params: { type, slug } });
 
 // GET /api/v1/slugs/options?type=&name=
 export const getSlugOptions = (type, name) =>

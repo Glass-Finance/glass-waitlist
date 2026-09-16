@@ -13,15 +13,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  Bell,
-  Download,
-  Copy,
-  Check,
-  X,
-  FileSpreadsheet,
-  ArrowLeft,
-} from "lucide-react";
+import { Bell, Download, Copy, Check, X, FileSpreadsheet, ArrowLeft } from "lucide-react";
 import GlassLogo from "../../assets/Glass.webp";
 import uploadCloudIcon from "../../assets/icons/upload-cloud.webp";
 import SuccessBadge from "../../components/common/SuccessBadge";
@@ -30,10 +22,7 @@ import { APP_ORIGIN } from "../../utils/deviceRedirect";
 import { toastProgress, toastSuccess } from "../../utils/toast";
 import { useRoles } from "../../hooks/useCommunityMembers";
 import { bulkCreateCommunityInvites } from "../../api/invites";
-import {
-  readOnboardingProgress,
-  clearOnboardingProgress,
-} from "../../utils/onboardingProgress";
+import { readOnboardingProgress, clearOnboardingProgress } from "../../utils/onboardingProgress";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 import OnboardingStepsSidebar from "../../components/onboarding/OnboardingStepsSidebar";
 import { useAuth } from "../../store/AuthContext";
@@ -111,9 +100,7 @@ function UploadMembersTab({
     <>
       <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 mb-4">
-        <p className="text-sm text-gray-500">
-          Upload a CSV file with following sample information
-        </p>
+        <p className="text-sm text-gray-500">Upload a CSV file with following sample information</p>
         <button
           onClick={downloadTemplate}
           className="flex items-center gap-1.5 text-xs font-medium text-brand hover:opacity-80 bg-transparent border-none cursor-pointer"
@@ -131,10 +118,7 @@ function UploadMembersTab({
           <thead>
             <tr className="bg-gray-50">
               {HEADERS.map((h) => (
-                <th
-                  key={h}
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500"
-                >
+                <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500">
                   {h}
                 </th>
               ))}
@@ -186,9 +170,7 @@ function UploadMembersTab({
 
       {/* URL upload */}
       <div>
-        <p className="text-xs font-medium text-gray-700 mb-2">
-          Or Upload from URL
-        </p>
+        <p className="text-xs font-medium text-gray-700 mb-2">Or Upload from URL</p>
         <div className="flex gap-2">
           <input
             type="url"
@@ -212,10 +194,7 @@ function UploadMembersTab({
 
         {urlStage === "fetching" && (
           <div className="mt-3 flex items-center gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
-            <FileSpreadsheet
-              size={20}
-              className="text-gray-400 flex-shrink-0"
-            />
+            <FileSpreadsheet size={20} className="text-gray-400 flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs text-gray-900 truncate">
                 {fileUrl.split("/").pop() || "file.csv"}
@@ -227,9 +206,7 @@ function UploadMembersTab({
                 />
               </div>
             </div>
-            <span className="text-xs text-gray-500 flex-shrink-0">
-              {Math.round(urlProgress)}%
-            </span>
+            <span className="text-xs text-gray-500 flex-shrink-0">{Math.round(urlProgress)}%</span>
             <button
               onClick={clearUrlUpload}
               aria-label="Cancel upload"
@@ -242,17 +219,11 @@ function UploadMembersTab({
 
         {urlStage === "complete" && urlFileInfo && (
           <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
-            <FileSpreadsheet
-              size={20}
-              className="text-green-600 flex-shrink-0"
-            />
+            <FileSpreadsheet size={20} className="text-green-600 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-gray-900 truncate">
-                {urlFileInfo.name}
-              </p>
+              <p className="text-xs text-gray-900 truncate">{urlFileInfo.name}</p>
               <p className="text-xs text-gray-500 flex items-center gap-1">
-                {urlFileInfo.sizeLabel} •{" "}
-                <Check size={11} className="text-green-600" />{" "}
+                {urlFileInfo.sizeLabel} • <Check size={11} className="text-green-600" />{" "}
                 <span className="text-green-600 font-medium">Complete</span>
               </p>
             </div>
@@ -320,16 +291,13 @@ function ManualMembersTab({
           onChange={(e) => setEmailInput(e.target.value)}
           onKeyDown={handleEmailKeyDown}
           onBlur={commitEmailChip}
-          placeholder={
-            emails.length === 0 ? "Type an email and press Enter" : ""
-          }
+          placeholder={emails.length === 0 ? "Type an email and press Enter" : ""}
           className="flex-1 min-w-[160px] outline-none text-sm bg-transparent border-none py-1"
         />
       </div>
 
       <p className="text-sm font-medium text-gray-900 mb-2">
-        Enter Phone Number(s){" "}
-        <span className="text-gray-400 font-normal">(Optional):</span>
+        Enter Phone Number(s) <span className="text-gray-400 font-normal">(Optional):</span>
       </p>
       <input
         type="text"
@@ -406,9 +374,7 @@ export default function AddMembers() {
   const { isAuthenticated } = useAuth();
   const fileRef = useRef(null);
   const { data: rolesData, isLoading: rolesLoading } = useRoles();
-  const roles = rolesData
-    ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name))
-    : [];
+  const roles = rolesData ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name)) : [];
   const finalRoles = roles.length ? roles : FALLBACK_ROLES;
 
   // Same fallback as PaymentProfile.jsx -- location.state doesn't survive a
@@ -436,8 +402,7 @@ export default function AddMembers() {
   // Set default to "Community Member" once roles resolve
   useEffect(() => {
     if (finalRoles.length && !selectedRoleId) {
-      const memberRole =
-        finalRoles.find((r) => r.name === "Community Member") ?? finalRoles[0];
+      const memberRole = finalRoles.find((r) => r.name === "Community Member") ?? finalRoles[0];
       // Defaults once roles resolve; selectedRoleId is also user-editable
       // via the role picker afterward.
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -518,8 +483,7 @@ export default function AddMembers() {
       setEmails((arr) => arr.slice(0, -1));
     }
   }
-  const removeEmailChip = (i) =>
-    setEmails((arr) => arr.filter((_, idx) => idx !== i));
+  const removeEmailChip = (i) => setEmails((arr) => arr.filter((_, idx) => idx !== i));
 
   async function handleUrlUpload() {
     const url = fileUrl.trim();
@@ -577,10 +541,7 @@ export default function AddMembers() {
         setError("Roles are still loading — please wait a moment.");
         return;
       }
-      const toastId = toastProgress(
-        "Sending invites…",
-        "Usually takes 5–10 seconds",
-      );
+      const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
       await bulkCreateCommunityInvites(communityId, {
         invites: emails.map((email) => ({
           email,
@@ -588,10 +549,9 @@ export default function AddMembers() {
           billingExempt,
         })),
       });
-      toastSuccess(
-        `${emails.length} invite${emails.length === 1 ? "" : "s"} sent`,
-        { id: toastId },
-      );
+      toastSuccess(`${emails.length} invite${emails.length === 1 ? "" : "s"} sent`, {
+        id: toastId,
+      });
       setEmails([]);
       setPhoneNumbers("");
       setShowSuccess(true);
@@ -599,8 +559,7 @@ export default function AddMembers() {
       setError(
         notifyError(err, {
           context: "Send invites",
-          fallback:
-            "Failed to send invites. You can add members from the dashboard later.",
+          fallback: "Failed to send invites. You can add members from the dashboard later.",
         }),
       );
     } finally {
@@ -639,24 +598,19 @@ export default function AddMembers() {
         return;
       }
 
-      const toastId = toastProgress(
-        "Sending invites…",
-        "Usually takes 5–10 seconds",
-      );
+      const toastId = toastProgress("Sending invites…", "Usually takes 5–10 seconds");
       await bulkCreateCommunityInvites(communityId, {
         invites: filled.map((m) => ({ email: m.email, roleId: m.roleId })),
       });
-      toastSuccess(
-        `${filled.length} invite${filled.length === 1 ? "" : "s"} sent`,
-        { id: toastId },
-      );
+      toastSuccess(`${filled.length} invite${filled.length === 1 ? "" : "s"} sent`, {
+        id: toastId,
+      });
       setShowSuccess(true);
     } catch (err) {
       setError(
         notifyError(err, {
           context: "Send invites",
-          fallback:
-            "Failed to send invites. You can invite members from the dashboard later.",
+          fallback: "Failed to send invites. You can invite members from the dashboard later.",
         }),
       );
     } finally {
@@ -699,9 +653,7 @@ export default function AddMembers() {
         </div>
         <div className="flex items-center gap-4">
           <Bell size={20} className="text-gray-400 hidden lg:block" />
-          <p className="text-sm text-gray-600 truncate max-w-[160px] lg:max-w-none">
-            {email}
-          </p>
+          <p className="text-sm text-gray-600 truncate max-w-[160px] lg:max-w-none">{email}</p>
         </div>
       </header>
 
@@ -712,10 +664,7 @@ export default function AddMembers() {
         </div>
 
         {/* Sidebar */}
-        <OnboardingStepsSidebar
-          activeStepId="members"
-          completedStepIds={COMPLETED_STEP_IDS}
-        />
+        <OnboardingStepsSidebar activeStepId="members" completedStepIds={COMPLETED_STEP_IDS} />
 
         {/* Main */}
         <main className="flex-1 lg:overflow-y-auto py-6 px-4 lg:py-10 lg:px-12">
@@ -729,24 +678,19 @@ export default function AddMembers() {
                 <ArrowLeft size={15} />
                 {isAuthenticated ? "Back to dashboard" : "Back"}
               </button>
-              <h2 className="text-base font-medium text-gray-900 mb-1">
-                Add your members
-              </h2>
+              <h2 className="text-base font-medium text-gray-900 mb-1">Add your members</h2>
               <p className="text-sm text-gray-500">
-                Add members now or invite them to join. You can always add more
-                from your dashboard later.
+                Add members now or invite them to join. You can always add more from your dashboard
+                later.
               </p>
             </div>
 
             {/* Invite banner */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 px-5 py-4 rounded-xl mb-6 bg-[#D7E2FF] border border-[#0E628C33]">
               <div>
-                <p className="text-xs text-gray-900 mb-0.5">
-                  Your community is ready to grow.
-                </p>
+                <p className="text-xs text-gray-900 mb-0.5">Your community is ready to grow.</p>
                 <p className="text-xs text-gray-500">
-                  Copy this link and share it with your members to get them on
-                  Glass.
+                  Copy this link and share it with your members to get them on Glass.
                 </p>
               </div>
               <button
@@ -838,11 +782,7 @@ export default function AddMembers() {
       </div>
 
       {showSuccess && (
-        <SuccessModal
-          communityName={communityName}
-          onDashboard={goToDashboard}
-          onCopy={copyLink}
-        />
+        <SuccessModal communityName={communityName} onDashboard={goToDashboard} onCopy={copyLink} />
       )}
     </div>
   );

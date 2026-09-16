@@ -68,7 +68,7 @@ export function usePaymentPlans(communityId) {
     },
     enabled,
     staleTime: 1000 * 60 * 2,
-    gcTime:    1000 * 60 * 30,
+    gcTime: 1000 * 60 * 30,
     refetchOnMount: "always",
   });
 
@@ -87,7 +87,8 @@ export function usePaymentPlans(communityId) {
   });
 
   const update = useMutation({
-    mutationFn: ({ paymentLinkId, payload }) => updatePaymentLink(communityId, paymentLinkId, payload),
+    mutationFn: ({ paymentLinkId, payload }) =>
+      updatePaymentLink(communityId, paymentLinkId, payload),
     onSuccess: invalidate,
     meta: { successMessage: "Payment plan updated", silentError: true },
   });

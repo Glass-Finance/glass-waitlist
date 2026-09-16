@@ -1,10 +1,5 @@
 import { formatNaira, formatDate } from "../../../utils/format";
-import {
-  FREQUENCIES,
-  REMINDER_FREQUENCIES,
-  REMINDER_CHANNELS,
-  RETRY_POLICIES,
-} from "./constants";
+import { FREQUENCIES, REMINDER_FREQUENCIES, REMINDER_CHANNELS, RETRY_POLICIES } from "./constants";
 import { billingDayLabel, intervalUnitLabel, payoutAccountLabel } from "./helpers";
 
 export default function PlanReview({ planType, form, slug, accounts }) {
@@ -20,13 +15,23 @@ export default function PlanReview({ planType, form, slug, accounts }) {
       value: form.amount ? formatNaira(Number(form.amount)) : "—",
     },
     ...(accounts && accounts.length > 1
-      ? [{ label: "Payout Account", value: payoutAccountLabel(accounts.find((account) => account.id === form.communityAccountId)) }]
+      ? [
+          {
+            label: "Payout Account",
+            value: payoutAccountLabel(
+              accounts.find((account) => account.id === form.communityAccountId),
+            ),
+          },
+        ]
       : []),
     ...(planType === "recurring"
       ? [
           {
             label: "Frequency",
-            value: (FREQUENCIES.find((frequency) => frequency.value === form.frequency)?.label ?? form.frequency) || "—",
+            value:
+              (FREQUENCIES.find((frequency) => frequency.value === form.frequency)?.label ??
+                form.frequency) ||
+              "—",
           },
           {
             label: "Repeats Every",
@@ -39,7 +44,9 @@ export default function PlanReview({ planType, form, slug, accounts }) {
           { label: "Grace Period", value: `${form.graceDays || 0} day(s)` },
           {
             label: "Retry Policy",
-            value: RETRY_POLICIES.find((retry) => retry.value === (form.retryPolicy || "NO_RETRY"))?.label ?? "No retry",
+            value:
+              RETRY_POLICIES.find((retry) => retry.value === (form.retryPolicy || "NO_RETRY"))
+                ?.label ?? "No retry",
           },
         ]
       : [

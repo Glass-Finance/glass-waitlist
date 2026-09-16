@@ -24,8 +24,7 @@ export const updateCommunitySettings = (communityId, payload) =>
   client.patch(`/communities/${communityId}/settings`, payload);
 
 // DELETE /api/v1/communities/{communityIdentifier}
-export const deleteCommunity = (communityId) =>
-  client.delete(`/communities/${communityId}`);
+export const deleteCommunity = (communityId) => client.delete(`/communities/${communityId}`);
 
 // ─── Members ──────────────────────────────────────────────────────────────────
 
@@ -144,7 +143,6 @@ export const setDefaultCommunityAccount = (communityId, accountId) =>
 // DELETE /api/v1/communities/{communityIdentifier}/account/{accountId}
 export const deleteCommunityAccount = (communityId, accountId) =>
   client.delete(`/communities/${communityId}/account/${accountId}`);
-
 
 // ─── Finance — obligations ────────────────────────────────────────────────────
 

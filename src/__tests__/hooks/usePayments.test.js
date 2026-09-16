@@ -23,8 +23,9 @@ describe("authoritative obligation status", () => {
       shapeObligation({ id: "waived", status: "WAIVED" }),
     ];
 
-    expect(
-      unpaidObligations(obligations).map((obligation) => obligation.id),
-    ).toEqual(["due", "waived"]);
+    expect(unpaidObligations(obligations).map((obligation) => obligation.id)).toEqual([
+      "due",
+      "waived",
+    ]);
   });
 });

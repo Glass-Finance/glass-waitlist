@@ -1,9 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllCommunityMembers } from "../api/communities";
-import {
-  fetchAllCommunityObligations,
-  fetchAllCommunityTransactions,
-} from "../api/transactions";
+import { fetchAllCommunityObligations, fetchAllCommunityTransactions } from "../api/transactions";
 import { getCommunityPaymentLinks } from "../api/payments";
 
 function unwrapList(res) {
@@ -63,8 +60,7 @@ export function useMembersWithPayments(communityId) {
   // on the member's own Home/Upcoming screens.
   const paymentLinksQuery = useQuery({
     queryKey: ["community", communityId, "payment-links"],
-    queryFn: async () =>
-      unwrapList(await getCommunityPaymentLinks(communityId)),
+    queryFn: async () => unwrapList(await getCommunityPaymentLinks(communityId)),
     enabled,
     staleTime: 1000 * 60 * 2,
   });
@@ -77,20 +73,14 @@ export function useMembersWithPayments(communityId) {
     .map((p) => p.id);
 
   const enriched = members.map((member) => {
-    const memberObligations = obligations.filter((o) =>
-      memberIdsMatch(member, o.member ?? o.user),
-    );
+    const memberObligations = obligations.filter((o) => memberIdsMatch(member, o.member ?? o.user));
     const memberTransactions = transactions
       .filter((t) => memberIdsMatch(member, t.member ?? t.user))
       .sort(
-        (a, b) =>
-          new Date(b.paidAt ?? b.createdAt ?? 0) -
-          new Date(a.paidAt ?? a.createdAt ?? 0),
+        (a, b) => new Date(b.paidAt ?? b.createdAt ?? 0) - new Date(a.paidAt ?? a.createdAt ?? 0),
       );
 
-    const planIds = new Set(
-      memberObligations.map((o) => o.paymentLink?.id ?? o.recurringPlan?.id),
-    );
+    const planIds = new Set(memberObligations.map((o) => o.paymentLink?.id ?? o.recurringPlan?.id));
 
     const paidCount = memberObligations.filter(
       (o) => (o.status ?? "").toUpperCase() === "PAID",
@@ -116,10 +106,7 @@ export function useMembersWithPayments(communityId) {
       paidCount,
       totalCount,
       failedCount,
-      lastPaymentDate:
-        memberTransactions[0]?.paidAt ??
-        memberTransactions[0]?.createdAt ??
-        null,
+      lastPaymentDate: memberTransactions[0]?.paidAt ?? memberTransactions[0]?.createdAt ?? null,
       obligations: memberObligations,
       transactions: memberTransactions,
     };
@@ -160,8 +147,7 @@ export function useMemberPaymentLinks(communityId, memberId) {
   const enabled = !!communityId && !!memberId;
   const query = useQuery({
     queryKey: ["community", communityId, "payment-links", "member", memberId],
-    queryFn: async () =>
-      unwrapList(await getCommunityPaymentLinks(communityId, { memberId })),
+    queryFn: async () => unwrapList(await getCommunityPaymentLinks(communityId, { memberId })),
     enabled,
     staleTime: 1000 * 60 * 2,
   });

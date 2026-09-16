@@ -1,4 +1,18 @@
-import { LayoutDashboard, Building2, Search, Plus, ListChecks, Receipt, Settings, Users, Clock, Grid, HelpCircle, UserPlus, Menu } from "lucide-react";
+import {
+  LayoutDashboard,
+  Building2,
+  Search,
+  Plus,
+  ListChecks,
+  Receipt,
+  Settings,
+  Users,
+  Clock,
+  Grid,
+  HelpCircle,
+  UserPlus,
+  Menu,
+} from "lucide-react";
 
 export const DASHBOARD_TOUR_SEEN_KEY = "glass_dashboard_tour_seen";
 

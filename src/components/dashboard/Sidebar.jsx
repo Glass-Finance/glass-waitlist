@@ -34,17 +34,9 @@ import { useNotifications } from "../../hooks/useNotifications";
 import { useAuth } from "../../store/AuthContext";
 import { useCommunities } from "../../hooks/useCommunities";
 import { useMyMemberRecord } from "../../hooks/useMyAccount";
-import {
-  resolveIsPayingAdmin,
-  isCommunityAdmin,
-} from "../../utils/communityRole";
+import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
 import { toastSuccess } from "../../utils/toast";
-import {
-  MobileOverlay,
-  SidebarLogo,
-  LogoutButton,
-  UserIdentity,
-} from "./SidebarPrimitives";
+import { MobileOverlay, SidebarLogo, LogoutButton, UserIdentity } from "./SidebarPrimitives";
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
 // `path` is the route under /dashboard; "home" maps to the per-community
@@ -167,18 +159,14 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       ? null
       : (() => {
           try {
-            const stored = JSON.parse(
-              localStorage.getItem("glass_community") ?? "{}",
-            );
+            const stored = JSON.parse(localStorage.getItem("glass_community") ?? "{}");
             return stored.slug ?? stored.id ?? null;
           } catch {
             return null;
           }
         })());
 
-  const resolvedCommunity = urlSlug
-    ? (communities.find((c) => c.slug === urlSlug) ?? null)
-    : null;
+  const resolvedCommunity = urlSlug ? (communities.find((c) => c.slug === urlSlug) ?? null) : null;
   // Falls back to the first community this admin manages when neither the
   // URL nor localStorage resolves one -- reachable by landing on a
   // per-community page (e.g. Notifications, via a self-account
@@ -189,9 +177,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   // logo/overview button or the notification's own action button.
   const activeCommunity =
     resolvedCommunity ??
-    (!onCommunitiesOverview
-      ? (communities.filter(isCommunityAdmin)[0] ?? null)
-      : null);
+    (!onCommunitiesOverview ? (communities.filter(isCommunityAdmin)[0] ?? null) : null);
 
   // Keeps localStorage's "last active community" snapshot in sync with
   // whatever got resolved above (including the fallback) -- other pages
@@ -200,9 +186,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   useEffect(() => {
     if (!activeCommunity) return;
     try {
-      const stored = JSON.parse(
-        localStorage.getItem("glass_community") ?? "{}",
-      );
+      const stored = JSON.parse(localStorage.getItem("glass_community") ?? "{}");
       if (stored.slug === activeCommunity.slug) return;
     } catch {
       /* fall through and (re)write it */
@@ -212,9 +196,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
   // Use the cached member record to derive paying status — same data source
   // as Role.jsx, so no extra network call and no race condition.
-  const { data: myMemberRecord } = useMyMemberRecord(
-    activeCommunity?.slug ?? null,
-  );
+  const { data: myMemberRecord } = useMyMemberRecord(activeCommunity?.slug ?? null);
   const activeCommunityIsPaying = myMemberRecord?.billingExempt === false;
 
   // "g h"/"g p"/etc. — mirrors exactly what a click on each nav item does,
@@ -241,13 +223,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         },
       };
     }).filter(Boolean);
-  }, [
-    isPlatformAdmin,
-    activeCommunity,
-    activeCommunityIsPaying,
-    navigate,
-    onCloseMobile,
-  ]);
+  }, [isPlatformAdmin, activeCommunity, activeCommunityIsPaying, navigate, onCloseMobile]);
   useRegisterShortcutGroup(navShortcuts, "Navigation");
 
   // ── Handle logout ──────────────────────────────────────────────────────────
@@ -302,9 +278,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           <div className="bg-white md:bg-surface-container md:border-r md:border-surface-container-border w-[220px] flex flex-col">
             <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] min-h-14 flex items-center">
               <div>
-                <div className="text-xs font-bold text-brand leading-[1.3]">
-                  Platform Admin
-                </div>
+                <div className="text-xs font-bold text-brand leading-[1.3]">Platform Admin</div>
                 <span className="inline-block mt-[3px] text-[9px] font-bold text-[#7c3aed] bg-[#f5f3ff] rounded-full py-px px-[7px]">
                   Platform Admin
                 </span>
@@ -333,10 +307,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 },
               ].map(({ icon: Icon, label, path, match }) => {
                 const isActive = location.pathname.startsWith(match);
-                const badge =
-                  label === "Notifications" && unreadCount > 0
-                    ? unreadCount
-                    : 0;
+                const badge = label === "Notifications" && unreadCount > 0 ? unreadCount : 0;
                 return (
                   <button
                     key={path}
@@ -438,11 +409,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   }}
                 />
               ) : (
-                <img
-                  src="/home-outline.webp"
-                  alt=""
-                  className="w-4 h-[18px] object-contain"
-                />
+                <img src="/home-outline.webp" alt="" className="w-4 h-[18px] object-contain" />
               )}
             </button>
           </div>
@@ -456,17 +423,11 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               space is left in the rail, which made the tour's spotlight
               highlight that entire empty area instead of just the avatar
               list. This wrapper shrinks to fit its actual content. */}
-            <div
-              data-tour="community-switcher"
-              className="flex flex-col gap-2 items-center w-full"
-            >
+            <div data-tour="community-switcher" className="flex flex-col gap-2 items-center w-full">
               {loading ? (
                 // Skeleton
                 [0, 1].map((i) => (
-                  <div
-                    key={i}
-                    className="w-9 h-9 rounded-sm bg-white/10 animate-pulse"
-                  />
+                  <div key={i} className="w-9 h-9 rounded-sm bg-white/10 animate-pulse" />
                 ))
               ) : communities.filter(isCommunityAdmin).length === 0 ? (
                 <div className="w-9 h-9 rounded-sm bg-white/10 flex items-center justify-center">
@@ -495,10 +456,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                       )}
                       <button
                         onClick={async () => {
-                          localStorage.setItem(
-                            "glass_community",
-                            JSON.stringify(c),
-                          );
+                          localStorage.setItem("glass_community", JSON.stringify(c));
                           const isPaying = await resolveIsPayingAdmin(c.slug);
                           navigate(communityPath(c.slug, "admin", isPaying));
                           onCloseMobile?.();
@@ -576,9 +534,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 </div>
               ) : (
                 <div className="min-w-0 flex-1">
-                  <div className="text-xs font-bold text-black leading-[1.3]">
-                    Your Communities
-                  </div>
+                  <div className="text-xs font-bold text-black leading-[1.3]">Your Communities</div>
                 </div>
               )}
             </div>
@@ -598,19 +554,12 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   // active community — matches the blue-rail community picker
                   // being the only way to get into a community's admin area.
                   const href = activeCommunity
-                    ? communityPath(
-                        activeCommunity.slug,
-                        path,
-                        activeCommunityIsPaying,
-                      )
+                    ? communityPath(activeCommunity.slug, path, activeCommunityIsPaying)
                     : segment === "home"
                       ? "/dashboard/home"
                       : null;
                   const isDisabled = !href;
-                  const badge =
-                    segment === "notifications" && unreadCount > 0
-                      ? unreadCount
-                      : 0;
+                  const badge = segment === "notifications" && unreadCount > 0 ? unreadCount : 0;
 
                   return (
                     <button
@@ -719,19 +668,14 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
               {memberViewHint && (
                 <div className="absolute left-2 right-2 bg-[#1f2937] text-[#f9fafb] text-[11px] leading-relaxed py-2 px-2.5 rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.15)] z-10 pointer-events-none [bottom:calc(100%-4px)]">
-                  Ask another admin to invite you to their community, then come
-                  back here.
+                  Ask another admin to invite you to their community, then come back here.
                   <div className="absolute -bottom-[5px] left-[18px] w-2.5 h-2.5 bg-[#1f2937] rotate-45 rounded-sm" />
                 </div>
               )}
             </div>
 
             {/* Bottom — user info strip */}
-            <UserIdentity
-              user={user}
-              initials={userInitials}
-              displayName={userDisplayName}
-            />
+            <UserIdentity user={user} initials={userInitials} displayName={userDisplayName} />
           </div>
         )}
       </div>

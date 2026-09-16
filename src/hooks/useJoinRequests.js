@@ -17,8 +17,7 @@ function unwrap(res) {
 // shifts, including the userData JSON blob GET /user/me style profiles use.
 // Shared by the Join Requests page and the Members-page summary banner.
 export function requesterOf(r) {
-  const u =
-    r.requestedUser ?? r.user ?? r.member ?? r.requester ?? r.requestedBy ?? r;
+  const u = r.requestedUser ?? r.user ?? r.member ?? r.requester ?? r.requestedBy ?? r;
   const ud = parseUserData(u);
   const firstName = toTitleCase(u.firstName ?? ud.firstName ?? "");
   const lastName = toTitleCase(u.lastName ?? ud.lastName ?? "");
@@ -26,8 +25,9 @@ export function requesterOf(r) {
   const phone = u.phoneNumber ?? ud.phone ?? r.phoneNumber ?? null;
   const image = ud.profileImage ?? u.profileImage?.url ?? u.avatarUrl ?? null;
   const name = `${firstName} ${lastName}`.trim() || email || "Unknown requester";
-  const initials = (`${firstName.charAt(0)}${lastName.charAt(0)}` ||
-    (email ?? "?").slice(0, 2)).toUpperCase();
+  const initials = (
+    `${firstName.charAt(0)}${lastName.charAt(0)}` || (email ?? "?").slice(0, 2)
+  ).toUpperCase();
   return { name, email, phone, image, initials };
 }
 

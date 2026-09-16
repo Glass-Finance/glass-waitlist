@@ -67,9 +67,7 @@ export function AdminPaymentModal({ item, onClose }) {
     communityName: item.communityName,
   });
   const isRecurring = item.type === "recurring";
-  const communityInitials = (item.communityName ?? "C")
-    .slice(0, 2)
-    .toUpperCase();
+  const communityInitials = (item.communityName ?? "C").slice(0, 2).toUpperCase();
   // Confirmed with backend: savePaymentMethod is optional at the API level
   // for every payment, recurring or not -- forcing it on here (an earlier
   // frontend-only choice) silently enrolled every recurring payer in
@@ -89,10 +87,7 @@ export function AdminPaymentModal({ item, onClose }) {
     setError("");
     try {
       // Store current URL so /payment/callback can send the admin back here
-      sessionStorage.setItem(
-        "paymentReturnTo",
-        window.location.pathname + window.location.search,
-      );
+      sessionStorage.setItem("paymentReturnTo", window.location.pathname + window.location.search);
       const res = await initiatePayment.mutateAsync({
         paymentLinkId: item.paymentLinkId,
         payload: {
@@ -137,10 +132,14 @@ export function AdminPaymentModal({ item, onClose }) {
         // redundant (savedMethod/hasAutoPayConsent below reflect the
         // pre-payment authorisations list, which wouldn't show a
         // just-created consent yet).
-        const justAskedNotTo = isRecurring && item.paymentLinkId && !effectiveSaveMethod && !savedMethod;
+        const justAskedNotTo =
+          isRecurring && item.paymentLinkId && !effectiveSaveMethod && !savedMethod;
         const alreadyAsked = (() => {
-          try { return !!localStorage.getItem(`glass_autopay_asked_${item.paymentLinkId}`); }
-          catch { return false; }
+          try {
+            return !!localStorage.getItem(`glass_autopay_asked_${item.paymentLinkId}`);
+          } catch {
+            return false;
+          }
         })();
         if (justAskedNotTo && !alreadyAsked) {
           setAutoPayPrompt({
@@ -154,15 +153,17 @@ export function AdminPaymentModal({ item, onClose }) {
         }
       }
     } catch (err) {
-      setError(
-        getErrorMessage(err, "Could not start payment. Please try again."),
-      );
+      setError(getErrorMessage(err, "Could not start payment. Please try again."));
     }
   }
 
   function dismissAutoPayPrompt() {
     if (autoPayPrompt?.paymentLinkId) {
-      try { localStorage.setItem(`glass_autopay_asked_${autoPayPrompt.paymentLinkId}`, "1"); } catch { /* ignore */ }
+      try {
+        localStorage.setItem(`glass_autopay_asked_${autoPayPrompt.paymentLinkId}`, "1");
+      } catch {
+        /* ignore */
+      }
     }
     setAutoPayPrompt(null);
     onClose();
@@ -188,9 +189,7 @@ export function AdminPaymentModal({ item, onClose }) {
       className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/20"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div
-        className="w-full max-w-[560px] max-h-[90vh] overflow-y-auto rounded-lg bg-stacked-container shadow-2xl border border-surface-container-border"
-      >
+      <div className="w-full max-w-[560px] max-h-[90vh] overflow-y-auto rounded-lg bg-stacked-container shadow-2xl border border-surface-container-border">
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-6 py-4">
           <span className="text-lg font-medium text-gray-900">Transaction Details</span>
@@ -205,19 +204,11 @@ export function AdminPaymentModal({ item, onClose }) {
         {/* ── Community + payment method + Auto-Pay toggle ── */}
         <div className="mx-6 rounded-lg bg-white px-4">
           <div className="flex items-center gap-3 py-3 border-b border-gray-200">
-            <div
-              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 border border-surface-container-border bg-[#f0f4ff]"
-            >
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 border border-surface-container-border bg-[#f0f4ff]">
               {item.logo?.url ? (
-                <img
-                  src={item.logo.url}
-                  alt=""
-                  className="w-full h-full object-cover rounded-lg"
-                />
+                <img src={item.logo.url} alt="" className="w-full h-full object-cover rounded-lg" />
               ) : (
-                <span className="text-[11px] font-bold text-brand">
-                  {communityInitials}
-                </span>
+                <span className="text-[11px] font-bold text-brand">{communityInitials}</span>
               )}
             </div>
             <span className="text-sm font-medium text-gray-900">
@@ -230,7 +221,8 @@ export function AdminPaymentModal({ item, onClose }) {
               <div className="flex items-center gap-2.5">
                 <Landmark size={16} className="text-brand" />
                 <span className="text-sm font-medium text-gray-900">
-                  {toTitleCase(savedMethod.cardType ?? savedMethod.bank ?? "Card")} ●●●●{savedMethod.last4}
+                  {toTitleCase(savedMethod.cardType ?? savedMethod.bank ?? "Card")} ●●●●
+                  {savedMethod.last4}
                   {savedMethod.expMonth && savedMethod.expYear
                     ? ` | ${String(savedMethod.expMonth).padStart(2, "0")}/${String(savedMethod.expYear).slice(-2)}`
                     : ""}
@@ -275,23 +267,21 @@ export function AdminPaymentModal({ item, onClose }) {
           <div className="flex flex-col gap-2.5">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Plan</span>
-              <span className="text-sm font-medium text-gray-900">
-                {item.name ?? "—"}
-              </span>
+              <span className="text-sm font-medium text-gray-900">{item.name ?? "—"}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Payment Schedule</span>
               <span className="text-[11px] font-semibold px-3 py-0.5 rounded-full bg-[#EEF1FB] text-brand">
-                {isRecurring ? toTitleCase((item.frequency ?? "Recurring").toLowerCase()) : "One-Time"}
+                {isRecurring
+                  ? toTitleCase((item.frequency ?? "Recurring").toLowerCase())
+                  : "One-Time"}
               </span>
             </div>
             {/* The platform fee isn't known until the real charge happens
                 (see handlePay) -- no fee breakdown to show ahead of that. */}
             <div className="flex items-center justify-between pt-1">
               <span className="text-sm text-gray-500">Amount</span>
-              <span className="text-sm font-medium text-gray-900">
-                {formatNaira(item.amount)}
-              </span>
+              <span className="text-sm font-medium text-gray-900">{formatNaira(item.amount)}</span>
             </div>
           </div>
         </div>
