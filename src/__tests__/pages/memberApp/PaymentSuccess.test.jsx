@@ -92,4 +92,57 @@ describe("PaymentSuccess payment verification", () => {
     expect(screen.getByText("Transaction Successful")).toBeDefined();
     expect(settleLocalPaymentForReference).toHaveBeenCalledWith("ref-1", "tx-1");
   });
+
+    it("does not settle the payment when verification remains failed", async () => {
+    verifyPayment.mockResolvedValue({
+      data: { data: { status: "FAILED" } },
+    });
+
+    renderPaymentSuccess();
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(verifyPayment).toHaveBeenCalledTimes(1);
+    expect(settleLocalPaymentForReference).not.toHaveBeenCalled();
+    expect(screen.getByText("Confirming payment…")).toBeDefined();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1500);
+    });
+
+    expect(verifyPayment).toHaveBeenCalledTimes(2);
+    expect(settleLocalPaymentForReference).not.toHaveBeenCalled();
+    expect(screen.getByText("Confirming payment…")).toBeDefined();
+  });
+
+  it("settles with the transaction id returned by verification", async () => {
+    verifyPayment.mockResolvedValueOnce({
+      data: {
+        data: {
+          status: "SUCCESSFUL",
+          transactionId: "transaction-456",
+        },
+      },
+    });
+
+    renderPaymentSuccess();
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(verifyPayment).toHaveBeenCalledWith(
+      "ref-1",
+      { _skipAuthRedirect: true },
+    );
+
+    expect(settleLocalPaymentForReference).toHaveBeenCalledWith(
+      "ref-1",
+      "transaction-456",
+    );
+
+    expect(screen.getByText("Transaction Successful")).toBeDefined();
+  });
 });
