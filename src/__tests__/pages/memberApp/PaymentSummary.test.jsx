@@ -113,7 +113,7 @@ describe("PaymentSummary charge timing", () => {
     expect(secondKey).toBe(firstKey);
   });
 
-    it("generates a genuinely different idempotency key for a fresh mount (a new, separate payment attempt)", async () => {
+  it("generates a genuinely different idempotency key for a fresh mount (a new, separate payment attempt)", async () => {
     mutateAsync.mockRejectedValue(new Error("network error"));
     const { unmount } = renderPaymentSummary();
 

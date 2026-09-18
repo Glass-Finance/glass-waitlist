@@ -5,10 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import PaymentSummary from "../../../pages/memberApp/PaymentSummary";
 import { getObligation } from "../../../api/members";
-import {
-  useInitiatePayment,
-  useManagePayments,
-} from "../../../hooks/usePayments";
+import { useInitiatePayment, useManagePayments } from "../../../hooks/usePayments";
 
 vi.mock("../../../api/members", async () => {
   const actual = await vi.importActual("../../../api/members");
@@ -99,10 +96,7 @@ function renderPaymentSummary() {
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={["/member/pay/obl-1"]}>
         <Routes>
-          <Route
-            path="/member/pay/:paymentId"
-            element={<PaymentSummary />}
-          />
+          <Route path="/member/pay/:paymentId" element={<PaymentSummary />} />
         </Routes>
       </MemoryRouter>
     </QueryClientProvider>,
@@ -120,7 +114,6 @@ describe("PaymentSummary payment initiation flow", () => {
   });
 
   it("sends the correct payment payload when Make Payment is clicked", async () => {
-
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
@@ -145,7 +138,6 @@ describe("PaymentSummary payment initiation flow", () => {
   });
 
   it("reuses the same idempotency key when payment initiation is retried", async () => {
-
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
@@ -154,8 +146,7 @@ describe("PaymentSummary payment initiation flow", () => {
 
     await screen.findByText("Payment failed");
 
-    const firstKey =
-      mutateAsync.mock.calls[0][0].payload.idempotencyKey;
+    const firstKey = mutateAsync.mock.calls[0][0].payload.idempotencyKey;
 
     expect(firstKey).toBeTruthy();
 
@@ -165,14 +156,12 @@ describe("PaymentSummary payment initiation flow", () => {
       expect(mutateAsync).toHaveBeenCalledTimes(2);
     });
 
-    const secondKey =
-      mutateAsync.mock.calls[1][0].payload.idempotencyKey;
+    const secondKey = mutateAsync.mock.calls[1][0].payload.idempotencyKey;
 
     expect(secondKey).toBe(firstKey);
   });
 
   it("generates a new idempotency key for a fresh payment mount", async () => {
-
     renderPaymentSummary();
 
     let payButton = await screen.findByText("Make Payment");
@@ -181,8 +170,7 @@ describe("PaymentSummary payment initiation flow", () => {
 
     await screen.findByText("Payment failed");
 
-    const firstAttemptKey =
-      mutateAsync.mock.calls[0][0].payload.idempotencyKey;
+    const firstAttemptKey = mutateAsync.mock.calls[0][0].payload.idempotencyKey;
 
     cleanup();
 
@@ -194,8 +182,7 @@ describe("PaymentSummary payment initiation flow", () => {
 
     await screen.findByText("Payment failed");
 
-    const secondAttemptKey =
-      mutateAsync.mock.calls[1][0].payload.idempotencyKey;
+    const secondAttemptKey = mutateAsync.mock.calls[1][0].payload.idempotencyKey;
 
     expect(secondAttemptKey).not.toBe(firstAttemptKey);
   });

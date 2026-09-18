@@ -47,10 +47,7 @@ describe("members API", () => {
 
       const result = await initiatePayment("link-1", payload);
 
-      expect(client.post).toHaveBeenCalledWith(
-        "/payments/pay/payment-links/link-1",
-        payload,
-      );
+      expect(client.post).toHaveBeenCalledWith("/payments/pay/payment-links/link-1", payload);
 
       expect(result.data.data.reference).toBe("ref-1");
     });
@@ -70,15 +67,11 @@ describe("members API", () => {
 
       await verifyPayment("ref-123");
 
-      expect(client.post).toHaveBeenCalledWith(
-        "/payments/callback/verify",
-        null,
-        {
-          params: {
-            reference: "ref-123",
-          },
+      expect(client.post).toHaveBeenCalledWith("/payments/callback/verify", null, {
+        params: {
+          reference: "ref-123",
         },
-      );
+      });
     });
 
     it("preserves callback-specific axios config", async () => {
@@ -86,16 +79,12 @@ describe("members API", () => {
         _skipAuthRedirect: true,
       });
 
-      expect(client.post).toHaveBeenCalledWith(
-        "/payments/callback/verify",
-        null,
-        {
-          params: {
-            reference: "ref-456",
-          },
-          _skipAuthRedirect: true,
+      expect(client.post).toHaveBeenCalledWith("/payments/callback/verify", null, {
+        params: {
+          reference: "ref-456",
         },
-      );
+        _skipAuthRedirect: true,
+      });
     });
   });
 
@@ -103,40 +92,31 @@ describe("members API", () => {
     it("requests member obligations with the explicit page size", async () => {
       await getMyObligations();
 
-      expect(client.get).toHaveBeenCalledWith(
-        "/finance/obligations/me",
-        {
-          params: {
-            pageSize: 200,
-          },
+      expect(client.get).toHaveBeenCalledWith("/finance/obligations/me", {
+        params: {
+          pageSize: 200,
         },
-      );
+      });
     });
 
     it("requests member transactions with the explicit page size", async () => {
       await getMyTransactions();
 
-      expect(client.get).toHaveBeenCalledWith(
-        "/finance/transactions/me",
-        {
-          params: {
-            pageSize: 200,
-          },
+      expect(client.get).toHaveBeenCalledWith("/finance/transactions/me", {
+        params: {
+          pageSize: 200,
         },
-      );
+      });
     });
 
     it("requests member authorisations with the explicit page size", async () => {
       await getMyAuthorisations();
 
-      expect(client.get).toHaveBeenCalledWith(
-        "/finance/authorizations",
-        {
-          params: {
-            pageSize: 100,
-          },
+      expect(client.get).toHaveBeenCalledWith("/finance/authorizations", {
+        params: {
+          pageSize: 100,
         },
-      );
+      });
     });
 
     it("merges extra config into the authorisations request", async () => {
@@ -144,15 +124,12 @@ describe("members API", () => {
         _skipAuthRedirect: true,
       });
 
-      expect(client.get).toHaveBeenCalledWith(
-        "/finance/authorizations",
-        {
-          params: {
-            pageSize: 100,
-          },
-          _skipAuthRedirect: true,
+      expect(client.get).toHaveBeenCalledWith("/finance/authorizations", {
+        params: {
+          pageSize: 100,
         },
-      );
+        _skipAuthRedirect: true,
+      });
     });
   });
 });

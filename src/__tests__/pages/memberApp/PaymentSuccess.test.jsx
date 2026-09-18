@@ -139,5 +139,4 @@ describe("PaymentSuccess payment verification", () => {
 
     expect(screen.getByText("Transaction Successful")).toBeDefined();
   });
-  
 });

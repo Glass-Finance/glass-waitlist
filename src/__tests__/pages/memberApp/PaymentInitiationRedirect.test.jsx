@@ -55,14 +55,8 @@ function renderPaymentSummary() {
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={["/member/pay/obl-1"]}>
         <Routes>
-          <Route
-            path="/member/pay/:paymentId"
-            element={<PaymentSummary />}
-          />
-          <Route
-            path="/member/pay/:paymentId/success"
-            element={<div>Payment Success</div>}
-          />
+          <Route path="/member/pay/:paymentId" element={<PaymentSummary />} />
+          <Route path="/member/pay/:paymentId/success" element={<div>Payment Success</div>} />
         </Routes>
       </MemoryRouter>
     </QueryClientProvider>,
@@ -107,7 +101,6 @@ describe("PaymentSummary payment authorization redirect", () => {
   });
 
   it("initiates the payment with the expected payment data", async () => {
-
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
@@ -126,7 +119,6 @@ describe("PaymentSummary payment authorization redirect", () => {
   });
 
   it("stashes the pending payment context before redirecting", async () => {
-
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
@@ -144,7 +136,6 @@ describe("PaymentSummary payment authorization redirect", () => {
   });
 
   it("does not record the payment locally before authorization completes", async () => {
-
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
@@ -156,7 +147,6 @@ describe("PaymentSummary payment authorization redirect", () => {
   });
 
   it("stores the return destination and pending reference", async () => {
-
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
@@ -169,7 +159,6 @@ describe("PaymentSummary payment authorization redirect", () => {
   });
 
   it("does not navigate to the in-app success page before authorization completes", async () => {
-
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
