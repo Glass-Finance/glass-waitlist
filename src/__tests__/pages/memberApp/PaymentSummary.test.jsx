@@ -112,4 +112,22 @@ describe("PaymentSummary charge timing", () => {
     const secondKey = mutateAsync.mock.calls[1][0].payload.idempotencyKey;
     expect(secondKey).toBe(firstKey);
   });
+
+    it("generates a genuinely different idempotency key for a fresh mount (a new, separate payment attempt)", async () => {
+    mutateAsync.mockRejectedValue(new Error("network error"));
+    const { unmount } = renderPaymentSummary();
+
+    (await screen.findByText("Make Payment")).click();
+    await waitFor(() => expect(mutateAsync).toHaveBeenCalledTimes(1));
+    const firstAttemptKey = mutateAsync.mock.calls[0][0].payload.idempotencyKey;
+
+    unmount(); // simulates navigating away and back -- a real new attempt, not a re-render
+
+    renderPaymentSummary();
+    (await screen.findByText("Make Payment")).click();
+    await waitFor(() => expect(mutateAsync).toHaveBeenCalledTimes(2));
+    const secondAttemptKey = mutateAsync.mock.calls[1][0].payload.idempotencyKey;
+
+    expect(secondAttemptKey).not.toBe(firstAttemptKey);
+  });
 });
