@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -108,13 +107,12 @@ describe("PaymentSummary payment authorization redirect", () => {
   });
 
   it("initiates the payment with the expected payment data", async () => {
-    const user = userEvent.setup();
 
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
 
-    await user.click(payButton);
+    fireEvent.click(payButton);
 
     expect(mutateAsync).toHaveBeenCalledTimes(1);
 
@@ -128,15 +126,14 @@ describe("PaymentSummary payment authorization redirect", () => {
   });
 
   it("stashes the pending payment context before redirecting", async () => {
-    const user = userEvent.setup();
 
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
 
-    await user.click(payButton);
+    fireEvent.click(payButton);
 
-    expect(stashPendingPaymentCtx).toHaveBeenCalledTimes(1);
+    await vi.waitFor(() => expect(stashPendingPaymentCtx).toHaveBeenCalledTimes(1));
 
     expect(stashPendingPaymentCtx).toHaveBeenCalledWith({
       reference: "ref-123",
@@ -147,42 +144,37 @@ describe("PaymentSummary payment authorization redirect", () => {
   });
 
   it("does not record the payment locally before authorization completes", async () => {
-    const user = userEvent.setup();
 
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
 
-    await user.click(payButton);
+    fireEvent.click(payButton);
 
     expect(recordLocalPayment).not.toHaveBeenCalled();
     expect(recordLocalFee).not.toHaveBeenCalled();
   });
 
   it("stores the return destination and pending reference", async () => {
-    const user = userEvent.setup();
 
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
 
-    await user.click(payButton);
+    fireEvent.click(payButton);
 
-    expect(sessionStorage.getItem("paymentReturnTo")).toBe(
-      "/member/home",
-    );
+    await vi.waitFor(() => expect(sessionStorage.getItem("paymentReturnTo")).toBe("/member/home"));
 
     expect(sessionStorage.getItem("paymentPendingRef")).toBe("ref-123");
   });
 
   it("does not navigate to the in-app success page before authorization completes", async () => {
-    const user = userEvent.setup();
 
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
 
-    await user.click(payButton);
+    fireEvent.click(payButton);
 
     expect(screen.queryByText("Payment Success")).toBeNull();
   });

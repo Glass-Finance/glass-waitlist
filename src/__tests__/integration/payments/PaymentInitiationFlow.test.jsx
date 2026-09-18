@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -121,13 +120,12 @@ describe("PaymentSummary payment initiation flow", () => {
   });
 
   it("sends the correct payment payload when Make Payment is clicked", async () => {
-    const user = userEvent.setup();
 
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
 
-    await user.click(payButton);
+    fireEvent.click(payButton);
 
     await screen.findByText("Payment failed");
 
@@ -147,13 +145,12 @@ describe("PaymentSummary payment initiation flow", () => {
   });
 
   it("reuses the same idempotency key when payment initiation is retried", async () => {
-    const user = userEvent.setup();
 
     renderPaymentSummary();
 
     const payButton = await screen.findByText("Make Payment");
 
-    await user.click(payButton);
+    fireEvent.click(payButton);
 
     await screen.findByText("Payment failed");
 
@@ -162,7 +159,7 @@ describe("PaymentSummary payment initiation flow", () => {
 
     expect(firstKey).toBeTruthy();
 
-    await user.click(screen.getByText("Make Payment"));
+    fireEvent.click(screen.getByText("Make Payment"));
 
     await vi.waitFor(() => {
       expect(mutateAsync).toHaveBeenCalledTimes(2);
@@ -175,13 +172,12 @@ describe("PaymentSummary payment initiation flow", () => {
   });
 
   it("generates a new idempotency key for a fresh payment mount", async () => {
-    const user = userEvent.setup();
 
     renderPaymentSummary();
 
     let payButton = await screen.findByText("Make Payment");
 
-    await user.click(payButton);
+    fireEvent.click(payButton);
 
     await screen.findByText("Payment failed");
 
@@ -194,7 +190,7 @@ describe("PaymentSummary payment initiation flow", () => {
 
     payButton = await screen.findByText("Make Payment");
 
-    await user.click(payButton);
+    fireEvent.click(payButton);
 
     await screen.findByText("Payment failed");
 

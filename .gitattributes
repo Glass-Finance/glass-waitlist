@@ -1,0 +1,16 @@
+# Enforce LF line endings for all text files, regardless of platform or
+# editor settings. Without this, Windows checkouts can convert files to
+# CRLF on clone/pull, which then fails `prettier --check` (Prettier
+# defaults to LF) even though the actual committed content is correctly
+# formatted -- every file in the repo can appear "wrong" at once, which is
+# exactly this symptom, not a real formatting problem.
+* text=auto eol=lf
+
+# Binary files that should never be line-ending-normalized.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ico binary

@@ -93,7 +93,7 @@ describe("PaymentSuccess payment verification", () => {
     expect(settleLocalPaymentForReference).toHaveBeenCalledWith("ref-1", "tx-1");
   });
 
-    it("does not settle the payment when verification remains failed", async () => {
+  it("does not settle the payment when verification remains failed", async () => {
     verifyPayment.mockResolvedValue({
       data: { data: { status: "FAILED" } },
     });
@@ -133,15 +133,9 @@ describe("PaymentSuccess payment verification", () => {
       await Promise.resolve();
     });
 
-    expect(verifyPayment).toHaveBeenCalledWith(
-      "ref-1",
-      { _skipAuthRedirect: true },
-    );
+    expect(verifyPayment).toHaveBeenCalledWith("ref-1", { _skipAuthRedirect: true });
 
-    expect(settleLocalPaymentForReference).toHaveBeenCalledWith(
-      "ref-1",
-      "transaction-456",
-    );
+    expect(settleLocalPaymentForReference).toHaveBeenCalledWith("ref-1", "transaction-456");
 
     expect(screen.getByText("Transaction Successful")).toBeDefined();
   });

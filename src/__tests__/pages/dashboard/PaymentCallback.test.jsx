@@ -6,10 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import PaymentCallback from "../../../pages/dashboard/PaymentCallback";
 import { beginAuthGrace } from "../../../api/client";
 import { verifyPayment } from "../../../api/members";
-import {
-  settleLocalPaymentForReference,
-  peekPendingPaymentCtx,
-} from "../../../hooks/usePayments";
+import { settleLocalPaymentForReference, peekPendingPaymentCtx } from "../../../hooks/usePayments";
 
 vi.mock("../../../api/client", () => ({
   beginAuthGrace: vi.fn(),
@@ -50,9 +47,7 @@ vi.mock("../../../components/common/SuccessBadge", () => ({
 }));
 
 vi.mock("../../../components/ui/Button", () => ({
-  Button: ({ children, onClick }) => (
-    <button onClick={onClick}>{children}</button>
-  ),
+  Button: ({ children, onClick }) => <button onClick={onClick}>{children}</button>,
 }));
 
 function renderCallback(initialEntry = "/payment/callback?reference=ref-1") {
@@ -105,10 +100,7 @@ describe("PaymentCallback", () => {
     renderCallback("/payment/callback?reference=ref-1");
 
     await waitFor(() => {
-      expect(verifyPayment).toHaveBeenCalledWith(
-        "ref-1",
-        { _skipAuthRedirect: true },
-      );
+      expect(verifyPayment).toHaveBeenCalledWith("ref-1", { _skipAuthRedirect: true });
     });
   });
 
@@ -136,8 +128,6 @@ describe("PaymentCallback", () => {
     });
   });
 
- 
-  
   it("does not settle the local payment when verification fails", async () => {
     verifyPayment.mockRejectedValueOnce({
       response: {
@@ -150,13 +140,9 @@ describe("PaymentCallback", () => {
     renderCallback("/payment/callback?reference=ref-failed");
 
     await waitFor(() => {
-      expect(verifyPayment).toHaveBeenCalledWith(
-        "ref-failed",
-        { _skipAuthRedirect: true },
-      );
+      expect(verifyPayment).toHaveBeenCalledWith("ref-failed", { _skipAuthRedirect: true });
     });
 
     expect(settleLocalPaymentForReference).not.toHaveBeenCalled();
   });
 });
-
