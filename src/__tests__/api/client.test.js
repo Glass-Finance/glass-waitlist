@@ -39,7 +39,7 @@ function jsonResponse(config, status, data) {
 }
 
 describe("client.js auth-refresh interceptor", () => {
-  let client, beginAuthGrace, PRE_AUTH_PATHS;
+  let client, beginAuthGrace, PRE_AUTH_PATHS, setSessionRestoring;
   let originalLocation;
 
   beforeEach(async () => {
@@ -47,13 +47,18 @@ describe("client.js auth-refresh interceptor", () => {
     mockAxiosPost.mockReset();
     localStorage.clear();
     sessionStorage.clear();
-    window.__glassIsRestoring = false;
 
     originalLocation = window.location;
     delete window.location;
     window.location = { ...originalLocation, href: "", pathname: "/dashboard" };
 
-    ({ default: client, beginAuthGrace, PRE_AUTH_PATHS } = await import("../../api/client"));
+    ({
+      default: client,
+      beginAuthGrace,
+      PRE_AUTH_PATHS,
+      setSessionRestoring,
+    } = await import("../../api/client"));
+    setSessionRestoring(false);
   });
 
   afterEach(() => {

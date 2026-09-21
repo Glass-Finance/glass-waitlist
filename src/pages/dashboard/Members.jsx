@@ -35,7 +35,7 @@ import StatCard from "../../components/dashboard/StatCard";
 import { formatDate } from "../../utils/format";
 import { resolveDisplayName, resolveEmail } from "../../utils/memberName";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
-import { roleKeyword } from "../../utils/communityRole";
+import { roleKeyword, isCommunityAdmin } from "../../utils/communityRole";
 import { QuickAddMemberModal } from "./MembersSections";
 
 // Only these three roles should be assignable when inviting members.
@@ -51,11 +51,9 @@ const SORT_OPTIONS = ["Recently Paid", "Name A-Z", "Date Joined"];
 
 const memberName = (m) => resolveDisplayName(m);
 const memberEmail = (m) => resolveEmail(m);
-// Matches AuthContext's hasAdminCommunity check, which goes through
-// roleKeyword rather than comparing roleCode directly -- the live API
-// returns "COMMUNITY_OWNER"/"COMMUNITY_ADMIN", not bare "OWNER"/"ADMIN",
-// so a raw === here silently undercounted admins.
-const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes(roleKeyword(m.roleCode, m.role));
+// Shared with AuthContext's hasAdminCommunity check — the single
+// backend-derived definition of "administers this community".
+const isAdminRole = (m) => isCommunityAdmin(m);
 
 function statusStyle(paid, total) {
   if (total === 0) return "bg-[#f5f6fa] text-[#6b7280]";

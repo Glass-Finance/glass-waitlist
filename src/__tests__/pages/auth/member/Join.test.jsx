@@ -40,6 +40,7 @@ beforeEach(() => {
   sessionStorage.clear();
   useAuth.mockReturnValue({
     setSession: vi.fn(),
+    storeSessionIfPresent: vi.fn(),
     isAuthenticated: false,
     loading: false,
   });

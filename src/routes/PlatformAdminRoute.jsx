@@ -3,11 +3,11 @@ import { useAuth } from "../store/AuthContext";
 import LoadingScreen from "../components/LoadingScreen";
 
 export default function PlatformAdminRoute() {
-  const { token, user, isPlatformAdmin, loading } = useAuth();
+  const { token, user, sessionVerified, isPlatformAdmin, loading } = useAuth();
 
   if (loading || (token && !user)) return <LoadingScreen />;
 
-  if (!token || !isPlatformAdmin) {
+  if (!token || !sessionVerified || !isPlatformAdmin) {
     return <Navigate to="/dashboard/home" replace />;
   }
 

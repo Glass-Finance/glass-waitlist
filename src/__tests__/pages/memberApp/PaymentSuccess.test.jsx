@@ -78,14 +78,24 @@ describe("PaymentSuccess payment verification", () => {
 
     renderPaymentSuccess();
 
+    // Flush the mount-time verification effect. A single
+    // `await Promise.resolve()` is only one microtask tick — under full-suite
+    // CPU contention the async verify chain (await mock → setState) needs
+    // more, so advance the fake clock instead, which drains both timers and
+    // the resulting microtask queue.
     await act(async () => {
-      await Promise.resolve();
+      await vi.advanceTimersByTimeAsync(0);
     });
     expect(verifyPayment).toHaveBeenCalledTimes(1);
     expect(screen.getByText("Confirming payment…")).toBeDefined();
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1500);
+    });
+    // The fired poll timer resolves verifyPayment asynchronously — flush the
+    // continuation before asserting on its setState outcome.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     expect(verifyPayment).toHaveBeenCalledTimes(2);
@@ -101,7 +111,7 @@ describe("PaymentSuccess payment verification", () => {
     renderPaymentSuccess();
 
     await act(async () => {
-      await Promise.resolve();
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     expect(verifyPayment).toHaveBeenCalledTimes(1);
@@ -110,6 +120,9 @@ describe("PaymentSuccess payment verification", () => {
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1500);
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     expect(verifyPayment).toHaveBeenCalledTimes(2);
@@ -130,7 +143,12 @@ describe("PaymentSuccess payment verification", () => {
     renderPaymentSuccess();
 
     await act(async () => {
-      await Promise.resolve();
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    // Same post-resolution flush as above: the settle call happens in the
+    // promise continuation after verifyPayment resolves.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
     });
 
     expect(verifyPayment).toHaveBeenCalledWith("ref-1", { _skipAuthRedirect: true });

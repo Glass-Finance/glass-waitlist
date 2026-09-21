@@ -19,18 +19,11 @@ import { useAuth } from "../../../store/AuthContext";
 export default function SignUp() {
   usePageTitle("Create your account");
   const navigate = useNavigate();
-  const { setSession } = useAuth();
+  const { storeSessionIfPresent } = useAuth();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [phoneConfirmToken, setPhoneConfirmToken] = useState("");
-
-  // Some backends issue a session immediately on register, others only
-  // after email verification — store it the moment either response
-  // actually includes a token, instead of assuming which step does it.
-  const maybeStoreSession = (authData) => {
-    if (authData?.accessToken) setSession(authData);
-  };
 
   const handleEmailPhone = ({ email: submittedEmail, phone: submittedPhone }) => {
     setEmail(submittedEmail);
@@ -46,14 +39,17 @@ export default function SignUp() {
     setStep(2);
   };
 
-  const handleRegistered = (registeredEmail, authData) => {
-    maybeStoreSession(authData);
+  const handleRegistered = async (registeredEmail, authData) => {
+    // Awaited: some backends issue a session immediately on register, others
+    // only after email verification — either way, settle it before advancing
+    // so the next step never renders on pre-session state.
+    await storeSessionIfPresent(authData);
     setEmail(registeredEmail);
     setStep(3);
   };
 
-  const handleVerified = (authData) => {
-    maybeStoreSession(authData);
+  const handleVerified = async (authData) => {
+    await storeSessionIfPresent(authData);
     navigate("/onboarding/choose-path", { state: { email } });
   };
 

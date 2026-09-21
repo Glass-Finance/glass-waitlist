@@ -2,6 +2,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import GlassLogo from "../../../assets/Glass.webp";
 import QRCodeCanvas from "../../../components/common/QRCodeCanvas";
 import { buildMobileUrl } from "../../../utils/deviceRedirect";
+import { isSafeReturnPath } from "../../../utils/returnPath";
 import { useAuth } from "../../../store/AuthContext";
 import { Button } from "../../../components/ui/Button";
 
@@ -9,7 +10,11 @@ export default function MobileRequired() {
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
   const [searchParams] = useSearchParams();
-  const target = searchParams.get("to") || "/member/app-sign-in";
+  // The QR encodes an app URL for the phone to open — only honor internal
+  // member destinations, falling back to sign-in. External/protocol-relative
+  // values can never navigate away: buildMobileUrl prefixes the app origin,
+  // and this check rejects them before a QR is even rendered.
+  const target = isSafeReturnPath(searchParams.get("to")) ?? "/member/app-sign-in";
   const url = buildMobileUrl(target);
 
   // Admins have a real desktop home to go to; a pure member doesn't --
