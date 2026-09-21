@@ -234,7 +234,7 @@ describe("CommunityAdminGuard -- the cross-tenant access boundary", () => {
     expect(screen.queryByText("Protected content")).toBeNull();
   });
 
-  it("lets an actual owner/admin/manager of the active community through", () => {
+  it("lets an actual owner/admin of the active community through", () => {
     useActiveCommunityId.mockReturnValue("comm-A");
     useCommunities.mockReturnValue({
       data: { communities: [{ id: "comm-A", slug: "comm-A", owned: true }] },
@@ -246,16 +246,51 @@ describe("CommunityAdminGuard -- the cross-tenant access boundary", () => {
     screen.getByText("Protected content");
   });
 
-  it("blocks a plain member (not owner/admin/manager) of the active community", () => {
+  it("lets a promoted COMMUNITY_ADMIN (not owner) of the active community through", () => {
     useActiveCommunityId.mockReturnValue("comm-A");
     useCommunities.mockReturnValue({
-      data: { communities: [{ id: "comm-A", slug: "comm-A", owned: false, memberRole: "MEMBER" }] },
+      data: {
+        communities: [
+          { id: "comm-A", slug: "comm-A", owned: false, memberRole: "COMMUNITY_ADMIN" },
+        ],
+      },
+      isLoading: false,
+      isFetching: false,
+    });
+    renderGuarded(<CommunityAdminGuard />);
+
+    screen.getByText("Protected content");
+  });
+
+  it("blocks a plain member (not owner/admin) of the active community", () => {
+    useActiveCommunityId.mockReturnValue("comm-A");
+    useCommunities.mockReturnValue({
+      data: {
+        communities: [
+          { id: "comm-A", slug: "comm-A", owned: false, memberRole: "COMMUNITY_MEMBER" },
+        ],
+      },
       isLoading: false,
       isFetching: false,
     });
     renderGuarded(<CommunityAdminGuard />);
 
     screen.getByText("Dashboard home");
+  });
+
+  it("blocks read-only staff roles (TREASURER) and unknown codes from admin routes", () => {
+    useActiveCommunityId.mockReturnValue("comm-A");
+    useCommunities.mockReturnValue({
+      data: {
+        communities: [{ id: "comm-A", slug: "comm-A", owned: false, memberRole: "TREASURER" }],
+      },
+      isLoading: false,
+      isFetching: false,
+    });
+    renderGuarded(<CommunityAdminGuard />);
+
+    screen.getByText("Dashboard home");
+    expect(screen.queryByText("Protected content")).toBeNull();
   });
 
   it("waits for a background refetch rather than bouncing a freshly-created community's own admin (the isLoading-vs-isFetching distinction)", () => {
