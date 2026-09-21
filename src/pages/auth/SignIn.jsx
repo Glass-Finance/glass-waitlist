@@ -5,8 +5,9 @@ import { Eye, EyeOff, Loader2, Lock, KeyRound } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { verifyMfaLogin, requestLoginOtp, verifyLoginOtp } from "../../services/authService";
 import { getMyInvites, getMyCommunityJoinRequests, submitJoinRequest } from "../../api/invites";
-import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
+import { isMobileDevice } from "../../utils/deviceRedirect";
 import { notifyError, getErrorMessage, getRetryAfterSeconds } from "../../utils/errorHandler";
+import { resolvePostAuthDestination } from "../../utils/postAuthDestination";
 import { getEmailError } from "../../utils/validators";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../utils/phone";
 import { toastInfo, toastSuccess } from "../../utils/toast";
@@ -181,23 +182,20 @@ export default function SignIn() {
 
   // Shared by password sign-in and Google sign-in: resolves the destination
   // by the *resulting* role/device, since neither knows in advance whether
-  // this is a community owner or a mobile-only member.
+  // this is a community owner or a mobile-only member. Pure routing math
+  // lives in resolvePostAuthDestination (unit-tested); this wrapper only
+  // performs the async side work (community submit, invite lookups) and
+  // consumes the one-shot session flags before delegating.
   async function resolveDestination(user) {
-    if (user?.isPlatformAdmin) return "/dashboard/admin-panel";
-    if (user?.isAdmin) return "/dashboard/home";
-
-    // The member app is mobile-only — a non-admin signing in from a
-    // desktop/tablet gets the QR handoff instead of a layout that was
-    // never built for that viewport.
-    if (!isMobileDevice()) return mobileRequiredPath("/member/app-sign-in");
-
     // A community's generic shareable "Invite Link" (?community=, see
     // useJoinCommunityParam) has no personal token — clicking it as a user
     // who *already has an account but wasn't signed in* lands here via
     // Join.jsx's "Sign in to accept the invite" link with ?return=/member/invites
     // already set, which used to short-circuit the very next check below
     // before the join request was ever actually submitted. Submit it here,
-    // before that shortcut, so it isn't silently dropped.
+    // before that shortcut, so it isn't silently dropped. Falls through to
+    // the normal chain below (unlike Join's own flow, which routes to
+    // /member/invites immediately after submitting).
     const pendingCommunity = sessionStorage.getItem(JOIN_COMMUNITY_KEY);
     if (pendingCommunity) {
       sessionStorage.removeItem(JOIN_COMMUNITY_KEY);
@@ -211,42 +209,45 @@ export default function SignIn() {
       }
     }
 
-    // Honor a ?return= param set by /invite landing page (or any deep link).
-    // Only trust paths that start with /member/ to prevent open redirect.
     const returnTo = new URLSearchParams(location.search).get("return");
-    if (returnTo && returnTo.startsWith("/member/")) return returnTo;
 
     // If the session expired mid-payment (while the user was on Paystack's
     // page), PaymentSummary stored the reference before navigating away.
     // Re-login should land them on the callback to finish verifying.
     const pendingRef = sessionStorage.getItem("paymentPendingRef");
-    if (pendingRef) {
-      sessionStorage.removeItem("paymentPendingRef");
-      return `/payment/callback?reference=${pendingRef}`;
-    }
+    if (pendingRef) sessionStorage.removeItem("paymentPendingRef");
 
     // login() has already succeeded by the time we get here -- a failure in
     // either of these two lookups must not surface as "Incorrect email or
     // password" (handleSignIn's catch would otherwise blame the wrong step).
-    let invites = [];
-    try {
-      const inviteRes = await getMyInvites();
-      const inviteData = inviteRes?.data?.data;
-      invites = Array.isArray(inviteData) ? inviteData : (inviteData?.content ?? []);
-    } catch {
-      // fall through with invites = []
+    // Admins return before this point inside the helper's role branches, so
+    // these member-only lookups only run for member sessions, as before.
+    let hasPendingInvites = false;
+    if (!user?.isPlatformAdmin && !user?.isAdmin && isMobileDevice()) {
+      try {
+        const inviteRes = await getMyInvites();
+        const inviteData = inviteRes?.data?.data;
+        const invites = Array.isArray(inviteData) ? inviteData : (inviteData?.content ?? []);
+        if (invites.length > 0) {
+          hasPendingInvites = true;
+        } else {
+          const joinReqRes = await getMyCommunityJoinRequests();
+          const data = joinReqRes?.data?.data;
+          const joinRequests = Array.isArray(data) ? data : (data?.content ?? []);
+          hasPendingInvites = joinRequests.length > 0;
+        }
+      } catch {
+        // fall through with hasPendingInvites = false
+      }
     }
 
-    let joinRequests = [];
-    try {
-      const joinReqRes = await getMyCommunityJoinRequests();
-      const data = joinReqRes?.data?.data;
-      joinRequests = Array.isArray(data) ? data : (data?.content ?? []);
-    } catch {
-      // fall through with joinRequests = []
-    }
-
-    return invites.length > 0 || joinRequests.length > 0 ? "/member/invites" : "/member/home";
+    return resolvePostAuthDestination({
+      user,
+      isMobile: isMobileDevice(),
+      returnTo,
+      pendingPaymentRef: pendingRef,
+      hasPendingInvites,
+    }).to;
   }
 
   async function handleSignIn() {

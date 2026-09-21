@@ -2,13 +2,8 @@
 // Thin wrappers around the Authentication API endpoints.
 
 import client from "../api/client";
-
-// Builds the { email } or { phoneNumber, phoneRegion } identifier shape the
-// backend's auth endpoints require -- callers pass whatever they collected
-// and this picks exactly one, since the backend rejects both/neither.
-function identifierPayload({ email, phoneNumber, phoneRegion }) {
-  return email ? { email } : { phoneNumber, phoneRegion };
-}
+import { getRefreshToken, persistSession } from "../store/sessionStorage";
+import { identifierPayload, buildPasswordResetPayload } from "./authPayloads";
 
 /**
  * Register a new account.
@@ -101,7 +96,7 @@ export async function verifyLoginOtp({ email, phoneNumber, phoneRegion, token })
  * Log out — invalidates the refresh token server-side.
  */
 export async function logout() {
-  const refreshToken = localStorage.getItem("refreshToken");
+  const refreshToken = getRefreshToken();
   if (!refreshToken) return;
   const { data } = await client.post("/auth/logout", { refreshToken });
   return data;
@@ -134,12 +129,17 @@ export async function resetPassword({
   newPassword,
   confirmPassword,
 }) {
-  const { data } = await client.post("/auth/password/reset", {
-    ...identifierPayload({ email, phoneNumber, phoneRegion }),
-    token,
-    newPassword,
-    confirmPassword,
-  });
+  const { data } = await client.post(
+    "/auth/password/reset",
+    buildPasswordResetPayload({
+      email,
+      phoneNumber,
+      phoneRegion,
+      token,
+      newPassword,
+      confirmPassword,
+    }),
+  );
   return data;
 }
 
@@ -186,14 +186,37 @@ export async function disableMfaTotp({ code }) {
 }
 
 /**
+ * Whether an error is the backend's "email already registered" response for
+ * POST /auth/register. The backend throws BadRequestException → HTTP 400
+ * (never 409). Isolated here so the message match doesn't spread through
+ * components. Registration-only: do not reuse for forgot-password flows,
+ * which must stay account-enumeration-safe.
+ */
+export function isEmailAlreadyRegisteredError(err) {
+  if (err?.response?.status !== 400) return false;
+  // Backend error envelope carries the specific message in `description`
+  // alongside a generic `message` — scan both (plus nested/data shapes).
+  const payload = err?.response?.data ?? {};
+  const nested = payload?.data && typeof payload.data === "object" ? payload.data : {};
+  const candidates = [
+    payload.message,
+    payload.description,
+    payload.error,
+    nested.message,
+    nested.description,
+    typeof payload.data === "string" ? payload.data : null,
+  ];
+  return candidates.some(
+    (text) =>
+      typeof text === "string" && text.toLowerCase().includes("email is already registered"),
+  );
+}
+
+/**
  * Persist auth tokens + basic user info to localStorage.
+ * Single owner is src/store/sessionStorage.js — kept here as a thin
+ * backwards-compatible wrapper so existing imports keep working.
  */
 export function storeAuthSession(authData) {
-  if (authData.accessToken) localStorage.setItem("accessToken", authData.accessToken);
-  // Guard against storing the literal string "undefined" if the auth response
-  // omits refreshToken — an "undefined" string is truthy and fools the
-  // refresh-token check in client.js, causing the next refresh to fail.
-  if (authData.refreshToken) localStorage.setItem("refreshToken", authData.refreshToken);
-  if (authData.userId) localStorage.setItem("userId", authData.userId);
-  if (authData.email) localStorage.setItem("userEmail", authData.email);
+  persistSession(authData);
 }

@@ -10,13 +10,17 @@ import LoadingScreen from "../components/LoadingScreen";
  */
 export default function ProtectedRoute({ requiredRole, signInPath = "/sign-in" }) {
   const location = useLocation();
-  const { token, isAdmin, isMember, loading } = useAuth();
+  const { token, sessionVerified, isAdmin, isMember, loading } = useAuth();
 
+  // An unverified session (token present but not yet confirmed by the
+  // backend, or confirmation failed) is treated as unauthenticated — it
+  // redirects rather than rendering protected content or hanging on a
+  // loading screen that no in-flight verification will resolve.
   if (loading) {
     return <LoadingScreen />;
   }
 
-  if (!token) {
+  if (!token || !sessionVerified) {
     return <Navigate to={signInPath} state={{ from: location }} replace />;
   }
 

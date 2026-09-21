@@ -82,7 +82,7 @@ function shapeDetail(raw) {
 // skipAuthRedirect: the payment-success screens (PaymentCallback.jsx,
 // PaymentSuccess.jsx) fetch this the instant verification lands on
 // "success" -- right when the app may still be mid-token-refresh after a
-// real Paystack redirect (see client.js's window.__glassIsRestoring and
+// real Paystack redirect (see client.js's session-restoring flag and
 // verifyPayment's own _skipAuthRedirect). Without opting out here too, a
 // transient 401 on *this* particular call bypassed that protection and hard-
 // redirected straight to sign-in a beat after the user already saw "Payment

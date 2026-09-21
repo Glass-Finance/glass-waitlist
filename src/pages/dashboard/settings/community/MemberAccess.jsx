@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Copy, Check, MoreVertical } from "lucide-react";
-import { roleKeyword } from "../../../../utils/communityRole";
+import { roleKeyword, isCommunityAdmin, findRoleId } from "../../../../utils/communityRole";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunityMembers, useRoles } from "../../../../hooks/useCommunityMembers";
 import { useCommunity, useUpdateCommunitySettings } from "../../../../hooks/useCommunity";
@@ -53,19 +53,6 @@ function MemberActionsMenu({ open, onToggle, onClose, busy, actions }) {
 
 const FALLBACK_MEMBER_ROLE = { id: "MEMBER", name: "Member" };
 
-// The role name field's exact casing/wording isn't guaranteed by the
-// backend, and an exact-match lookup that fails leaves the Promote button
-// silently disabled forever (no error, nothing to click) -- so try the
-// stable roleCode/code enum first, then fall back to a looser name match.
-function findRoleId(roles, code) {
-  const list = roles ?? [];
-  return (
-    list.find((r) => (r.code ?? r.roleCode ?? "").toUpperCase() === code)?.id ??
-    list.find((r) => (r.name ?? "").trim().toLowerCase() === code.toLowerCase())?.id ??
-    list.find((r) => (r.name ?? "").toLowerCase().includes(code.toLowerCase()))?.id
-  );
-}
-
 export default function MemberAccess() {
   // useActiveCommunityId() returns the community slug (preferred over id)
   // since both the Sidebar and CommunitiesHome set ?community= to the slug.
@@ -77,8 +64,8 @@ export default function MemberAccess() {
   const { data: rolesData, isLoading: rolesLoading } = useRoles();
   const { data: community, isLoading: communityLoading } = useCommunity(communitySlug);
   const updateSettings = useUpdateCommunitySettings(communitySlug);
-  const memberRoleId = findRoleId(rolesData, "MEMBER") ?? FALLBACK_MEMBER_ROLE.id;
-  const adminRoleId = findRoleId(rolesData, "ADMIN");
+  const memberRoleId = findRoleId(rolesData, "COMMUNITY_MEMBER") ?? FALLBACK_MEMBER_ROLE.id;
+  const adminRoleId = findRoleId(rolesData, "COMMUNITY_ADMIN");
 
   const inviteLink = communitySlug ? `${APP_ORIGIN}/member/join?community=${communitySlug}` : null;
 
@@ -88,20 +75,20 @@ export default function MemberAccess() {
   // names in whatever case the backend returned them.
   const memberName = (m) => resolveDisplayName(m, "Member", { titleCase: false });
   const memberEmail = (m) => resolveEmail(m);
-  // Role strings vary by endpoint ("ADMIN"/"COMMUNITY_ADMIN"/"Community
-  // Admin") — match by keyword via roleKeyword, never exact-match. Exact
-  // matching here previously made promoted admins read as plain members,
-  // so they could be promoted again but never demoted.
+  // Membership payloads carry canonical backend role codes
+  // (COMMUNITY_OWNER/COMMUNITY_ADMIN/…); roleKeyword matches them exactly.
+  // Exact matching previously made promoted admins read as plain members
+  // when codes were compared raw, so they could be promoted again but never
+  // demoted — the shared helper is the single definition now.
   const memberRoleKw = (m) => roleKeyword(m.roleCode, m.memberRole, m.role) ?? "MEMBER";
   function memberRoleLabel(m) {
     const kw = memberRoleKw(m);
     if (kw === "OWNER") return "Owner";
     if (kw === "ADMIN") return "Admin";
-    if (kw === "MANAGER") return "Manager";
     return "Member";
   }
   const isOwnerRole = (m) => memberRoleKw(m) === "OWNER";
-  const isAdminRole = (m) => ["OWNER", "ADMIN", "MANAGER"].includes(memberRoleKw(m));
+  const isAdminRole = (m) => isCommunityAdmin(m);
 
   return (
     <div className="flex flex-col gap-4 w-full">

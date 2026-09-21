@@ -16,9 +16,10 @@ export default function CommunityAdminGuard() {
   const communityId = useActiveCommunityId();
   const { data, isLoading, isFetching } = useCommunities();
 
-  // No community resolved yet — nothing community-scoped to protect here;
-  // the page itself is responsible for its own empty state.
-  if (!communityId) return <Outlet />;
+  // Fail closed: without a resolved community there is no way to prove the
+  // user administers the community these routes act on, so redirect to the
+  // community list (which owns the empty state) instead of rendering through.
+  if (!communityId) return <Navigate to="/dashboard/home" replace />;
 
   if (isLoading) return <LoadingScreen />;
 

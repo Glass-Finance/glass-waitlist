@@ -4,12 +4,14 @@ import { useInviteToken } from "../../../../hooks/useInviteToken";
 import { useJoinCommunityParam } from "../../../../hooks/useJoinCommunityParam";
 import { useJoinEmailParam } from "../../../../hooks/useJoinEmailParam";
 import { recordPendingJoinRequest } from "../../../../hooks/useJoinApproval";
-import { register } from "../../../../services/authService";
+import { register, isEmailAlreadyRegisteredError } from "../../../../services/authService";
+import { buildRegisterPayload } from "../../../../services/authPayloads";
 import PhoneOTPStep from "../../SignUp/PhoneOTPStep";
 import { submitJoinRequest } from "../../../../api/invites";
 import { notifyError } from "../../../../utils/errorHandler";
 import { toastSuccess } from "../../../../utils/toast";
 import { useAuth } from "../../../../store/AuthContext";
+import { resolvePostAuthDestination } from "../../../../utils/postAuthDestination";
 import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
 import AuthLayout from "../../../../layouts/AuthLayout";
 import { STEPS, PENDING_KEY } from "./constants";
@@ -26,7 +28,7 @@ export default function Join() {
   const { token, consumeToken } = useInviteToken();
   const { community, consumeCommunity } = useJoinCommunityParam();
   const joinEmail = useJoinEmailParam();
-  const { setSession, isAuthenticated, loading: authLoading } = useAuth();
+  const { storeSessionIfPresent, setSession, isAuthenticated, loading: authLoading } = useAuth();
 
   // A user who already has a session (e.g. they're a member of another
   // community, or just left themselves logged in) shouldn't be forced
@@ -89,14 +91,6 @@ export default function Join() {
     return STEPS.CONTACT;
   });
 
-  // Some backends issue a session immediately on register, others only
-  // after email verification — store it the moment either response
-  // actually includes a token, instead of assuming which step does it
-  // (matches the admin SignUp flow's same pattern).
-  function maybeStoreSession(authData) {
-    if (authData?.accessToken) setSession(authData);
-  }
-
   // The community's own generic, shareable "Invite Link" (?community=) has
   // no personal token to send at registration, unlike a personalized
   // invite — it goes through its own join-request call once the account
@@ -128,54 +122,61 @@ export default function Join() {
 
   function finishAndRoute() {
     consumeToken();
-    if (community) {
-      submitCommunityJoinAndRoute();
-      return;
-    }
-    // A personalized invite grants access immediately (unlike the
-    // join-request path above, which has its own confirmation toast) — say
-    // so explicitly rather than silently dropping the new member onto Home
-    // with no context for what just happened.
-    if (token) {
-      toastSuccess("You're in!", { description: "Welcome to the community." });
-      navigate("/member/home", { replace: true });
-      return;
-    }
-    // Neither a personal token nor a community slug -- this account was
-    // created via the marketing site's contextless "Join A Community" CTA,
-    // not a specific invite. /member/invites would just be empty; send them
-    // straight to browsing instead of a dead end they'd have to find their
-    // own way out of via Home's empty state. This is also the one path with
-    // no other confirmation moment (the community-slug and token branches
-    // above both have their own), and DiscoverCommunities' own header is
-    // just "Browse Communities" with no acknowledgment that signup actually
-    // succeeded -- worth saying so explicitly here instead of silently
-    // landing them on a search box with no idea whether it worked.
-    toastSuccess("Account created!", { description: "Find a community to join below." });
-    navigate("/member/communities/search", { replace: true });
+    // Register path: the token's invite work completes with the new
+    // account (invites are email-bound server-side), so a personal invite
+    // grants immediate access. The Google path below differs (see
+    // handleGoogleAuth) because /auth/google cannot carry the token.
+    routeForJoin({ viaGoogle: false });
   }
 
   // Google already proves the user owns this email, so registration is
-  // immediate — no OTP step needed. Note: the invite token isn't sent to
-  // /auth/google today (it only takes a credential), so it's never
-  // actually applied here — unlike finishAndRoute() above (used after the
-  // regular register()+OTP flow, which does send the token), a pending
-  // invite needs /member/invites to accept it manually instead of
-  // /member/home, the opposite direction of finishAndRoute()'s ternary.
+  // immediate — no OTP step needed. The backend's /auth/google accepts only
+  // a credential (no inviteToken), so a pending invite still needs
+  // /member/invites to accept it manually. The invite token is deliberately
+  // NOT consumed here: if Google auth fails, the token stays available for
+  // a retry or the regular register flow instead of being lost. It is
+  // consumed only by finishAndRoute()'s register path, which is the single
+  // place the token's invite work actually completes.
   function handleGoogleAuth() {
-    consumeToken();
+    routeForJoin({ viaGoogle: true });
+  }
+
+  // Shared Join routing behind both post-auth branches. A community slug
+  // goes through its join-request call first; everything else resolves
+  // through the pure destination helper with the Join funnel's fallback
+  // (contextless signups browse instead of landing on an empty invites
+  // page). Toasts stay here — the helper resolves destinations only.
+  function routeForJoin({ viaGoogle }) {
     if (community) {
       submitCommunityJoinAndRoute();
       return;
     }
-    if (token) {
-      navigate("/member/invites", { replace: true });
-      return;
+    const dest = resolvePostAuthDestination({
+      isMobile: true, // this route is device-gated upstream
+      inviteToken: token,
+      viaGoogle,
+      fallback: "/member/communities/search",
+    });
+    if (!viaGoogle && token) {
+      // A personalized invite grants access immediately (unlike the
+      // join-request path above, which has its own confirmation toast) — say
+      // so explicitly rather than silently dropping the new member onto Home
+      // with no context for what just happened.
+      toastSuccess("You're in!", { description: "Welcome to the community." });
+    } else if (!token) {
+      // Neither a personal token nor a community slug -- this account was
+      // created via the marketing site's contextless "Join A Community" CTA,
+      // not a specific invite. /member/invites would just be empty; send them
+      // straight to browsing instead of a dead end they'd have to find their
+      // own way out of via Home's empty state. This is also the one path with
+      // no other confirmation moment (the community-slug branch above has
+      // its own), and DiscoverCommunities' own header is just
+      // "Browse Communities" with no acknowledgment that signup actually
+      // succeeded -- worth saying so explicitly here instead of silently
+      // landing them on a search box with no idea whether it worked.
+      toastSuccess("Account created!", { description: "Find a community to join below." });
     }
-    // Same missing-confirmation gap as finishAndRoute()'s equivalent branch
-    // above -- kept in sync with it.
-    toastSuccess("Account created!", { description: "Find a community to join below." });
-    navigate("/member/communities/search", { replace: true });
+    navigate(dest.to, { replace: true });
   }
 
   function handleContactNext({ email: enteredEmail, phone }) {
@@ -216,38 +217,39 @@ export default function Join() {
     firstName,
     lastName,
     password,
-    confirmPassword,
     loading: setLoading,
     setError,
     setAccountExists,
   }) {
     try {
-      const payload = {
+      // Backend RegisterRequest: firstName, lastName, email, password, plus
+      // phoneNumber/phoneConfirmToken only when a verified number exists.
+      // No confirmPassword, no inviteToken — neither field exists server-side
+      // (invite access is email-bound and completed via /member/invites).
+      const payload = buildRegisterPayload({
         email: contact.email,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         password,
-        confirmPassword,
-        ...(token && { inviteToken: token }),
-        // phoneConfirmToken is required whenever phoneNumber is present --
-        // contact.phone is empty today since StepContact no longer collects
-        // it, so this branch is unused until phone-at-signup comes back.
         ...(contact.phone && { phoneNumber: contact.phone, phoneConfirmToken }),
-      };
+      });
       const authData = await register(payload);
-      maybeStoreSession(authData);
+      // Awaited: settle the session (if the backend issued one here) before
+      // advancing to the OTP step — see AuthContext.storeSessionIfPresent.
+      await storeSessionIfPresent(authData);
       sessionStorage.setItem(PENDING_KEY, JSON.stringify({ email: contact.email }));
       setEmail(contact.email);
       setStep(STEPS.OTP);
     } catch (err) {
       // The invited email already belongs to a registered account (e.g.
-      // someone who's already a member of another community) — the
-      // backend returns a 409 for this rather than a validation error.
-      // Registering them again isn't the right path; they need to sign in
-      // instead, at which point resolveDestination() in SignIn.jsx already
-      // routes anyone with a pending invite to /member/invites, so the
-      // invite still gets honored without needing this token.
-      if (err?.response?.status === 409) {
+      // someone who's already a member of another community) — the backend
+      // returns HTTP 400 "Email is already registered" for this (a
+      // BadRequestException, never 409). Registering them again isn't the
+      // right path; they need to sign in instead, at which point
+      // resolveDestination() in SignIn.jsx already routes anyone with a
+      // pending invite to /member/invites, so the invite still gets honored
+      // without needing this token.
+      if (isEmailAlreadyRegisteredError(err)) {
         setAccountExists?.(true);
         setError("");
       } else {
