@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { register } from "../../../services/authService";
+import { buildRegisterPayload } from "../../../services/authPayloads";
 import { notifyError } from "../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import PasswordChecklist from "../../../components/auth/PasswordChecklist";
@@ -88,18 +89,20 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
     }
     setLoading(true);
     try {
-      const result = await register({
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email,
-        password: form.password,
-        // Phone stays optional at registration -- phoneConfirmToken is only
-        // required (and only sent) when a number was actually verified in
-        // the phone OTP step. Omitting phoneRegion: numbers collected here
-        // are always entered in international format already (see
-        // PHONE_FORMAT_HINT), so there's no separate region field to send.
-        ...(phone && { phoneNumber: phone, phoneConfirmToken }),
-      });
+      const result = await register(
+        buildRegisterPayload({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email,
+          password: form.password,
+          // Phone stays optional at registration -- phoneConfirmToken is only
+          // required (and only sent) when a number was actually verified in
+          // the phone OTP step. Omitting phoneRegion: numbers collected here
+          // are always entered in international format already (see
+          // PHONE_FORMAT_HINT), so there's no separate region field to send.
+          ...(phone && { phoneNumber: phone, phoneConfirmToken }),
+        }),
+      );
       onNext(email, result);
     } catch (err) {
       setError(notifyError(err, { context: "Register" }));

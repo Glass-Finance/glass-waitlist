@@ -4,7 +4,8 @@ import { useInviteToken } from "../../../../hooks/useInviteToken";
 import { useJoinCommunityParam } from "../../../../hooks/useJoinCommunityParam";
 import { useJoinEmailParam } from "../../../../hooks/useJoinEmailParam";
 import { recordPendingJoinRequest } from "../../../../hooks/useJoinApproval";
-import { register } from "../../../../services/authService";
+import { register, isEmailAlreadyRegisteredError } from "../../../../services/authService";
+import { buildRegisterPayload } from "../../../../services/authPayloads";
 import PhoneOTPStep from "../../SignUp/PhoneOTPStep";
 import { submitJoinRequest } from "../../../../api/invites";
 import { notifyError } from "../../../../utils/errorHandler";
@@ -208,24 +209,22 @@ export default function Join() {
     firstName,
     lastName,
     password,
-    confirmPassword,
     loading: setLoading,
     setError,
     setAccountExists,
   }) {
     try {
-      const payload = {
+      // Backend RegisterRequest: firstName, lastName, email, password, plus
+      // phoneNumber/phoneConfirmToken only when a verified number exists.
+      // No confirmPassword, no inviteToken — neither field exists server-side
+      // (invite access is email-bound and completed via /member/invites).
+      const payload = buildRegisterPayload({
         email: contact.email,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         password,
-        confirmPassword,
-        ...(token && { inviteToken: token }),
-        // phoneConfirmToken is required whenever phoneNumber is present --
-        // contact.phone is empty today since StepContact no longer collects
-        // it, so this branch is unused until phone-at-signup comes back.
         ...(contact.phone && { phoneNumber: contact.phone, phoneConfirmToken }),
-      };
+      });
       const authData = await register(payload);
       // Awaited: settle the session (if the backend issued one here) before
       // advancing to the OTP step — see AuthContext.storeSessionIfPresent.
@@ -235,13 +234,14 @@ export default function Join() {
       setStep(STEPS.OTP);
     } catch (err) {
       // The invited email already belongs to a registered account (e.g.
-      // someone who's already a member of another community) — the
-      // backend returns a 409 for this rather than a validation error.
-      // Registering them again isn't the right path; they need to sign in
-      // instead, at which point resolveDestination() in SignIn.jsx already
-      // routes anyone with a pending invite to /member/invites, so the
-      // invite still gets honored without needing this token.
-      if (err?.response?.status === 409) {
+      // someone who's already a member of another community) — the backend
+      // returns HTTP 400 "Email is already registered" for this (a
+      // BadRequestException, never 409). Registering them again isn't the
+      // right path; they need to sign in instead, at which point
+      // resolveDestination() in SignIn.jsx already routes anyone with a
+      // pending invite to /member/invites, so the invite still gets honored
+      // without needing this token.
+      if (isEmailAlreadyRegisteredError(err)) {
         setAccountExists?.(true);
         setError("");
       } else {

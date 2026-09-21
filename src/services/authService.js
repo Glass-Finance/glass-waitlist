@@ -3,13 +3,7 @@
 
 import client from "../api/client";
 import { getRefreshToken, persistSession } from "../store/sessionStorage";
-
-// Builds the { email } or { phoneNumber, phoneRegion } identifier shape the
-// backend's auth endpoints require -- callers pass whatever they collected
-// and this picks exactly one, since the backend rejects both/neither.
-function identifierPayload({ email, phoneNumber, phoneRegion }) {
-  return email ? { email } : { phoneNumber, phoneRegion };
-}
+import { identifierPayload, buildPasswordResetPayload } from "./authPayloads";
 
 /**
  * Register a new account.
@@ -135,12 +129,17 @@ export async function resetPassword({
   newPassword,
   confirmPassword,
 }) {
-  const { data } = await client.post("/auth/password/reset", {
-    ...identifierPayload({ email, phoneNumber, phoneRegion }),
-    token,
-    newPassword,
-    confirmPassword,
-  });
+  const { data } = await client.post(
+    "/auth/password/reset",
+    buildPasswordResetPayload({
+      email,
+      phoneNumber,
+      phoneRegion,
+      token,
+      newPassword,
+      confirmPassword,
+    }),
+  );
   return data;
 }
 
@@ -184,6 +183,33 @@ export async function enableMfaTotp({ code }) {
 export async function disableMfaTotp({ code }) {
   const { data } = await client.post("/auth/mfa/totp/disable", { code });
   return data.data;
+}
+
+/**
+ * Whether an error is the backend's "email already registered" response for
+ * POST /auth/register. The backend throws BadRequestException → HTTP 400
+ * (never 409). Isolated here so the message match doesn't spread through
+ * components. Registration-only: do not reuse for forgot-password flows,
+ * which must stay account-enumeration-safe.
+ */
+export function isEmailAlreadyRegisteredError(err) {
+  if (err?.response?.status !== 400) return false;
+  // Backend error envelope carries the specific message in `description`
+  // alongside a generic `message` — scan both (plus nested/data shapes).
+  const payload = err?.response?.data ?? {};
+  const nested = payload?.data && typeof payload.data === "object" ? payload.data : {};
+  const candidates = [
+    payload.message,
+    payload.description,
+    payload.error,
+    nested.message,
+    nested.description,
+    typeof payload.data === "string" ? payload.data : null,
+  ];
+  return candidates.some(
+    (text) =>
+      typeof text === "string" && text.toLowerCase().includes("email is already registered"),
+  );
 }
 
 /**
