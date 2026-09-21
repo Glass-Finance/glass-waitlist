@@ -86,11 +86,15 @@ const EVENT_NAMES = [
 // native EventSource auto-retry is deliberately not used, since it would
 // replay the same (single-use, already-spent) ticket.
 export default function useRealtimeStream() {
-  const { isAuthenticated } = useAuth();
+  // Gate on verification, not mere token presence: an unverified token
+  // (still restoring, or failed verification) must never mint an SSE
+  // ticket — guards treat it as unauthenticated for the same reason.
+  const { isAuthenticated, sessionVerified } = useAuth();
   const queryClient = useQueryClient();
+  const canStream = isAuthenticated && sessionVerified;
 
   useEffect(() => {
-    if (!isAuthenticated) return undefined;
+    if (!canStream) return undefined;
 
     let disposed = false;
     let es = null;
@@ -179,5 +183,5 @@ export default function useRealtimeStream() {
       setStreamConnected(false);
       window.removeEventListener("online", handleOnline);
     };
-  }, [isAuthenticated, queryClient]);
+  }, [canStream, queryClient]);
 }

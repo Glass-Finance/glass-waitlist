@@ -2,6 +2,7 @@
 // Thin wrappers around the Authentication API endpoints.
 
 import client from "../api/client";
+import { getRefreshToken, persistSession } from "../store/sessionStorage";
 
 // Builds the { email } or { phoneNumber, phoneRegion } identifier shape the
 // backend's auth endpoints require -- callers pass whatever they collected
@@ -101,7 +102,7 @@ export async function verifyLoginOtp({ email, phoneNumber, phoneRegion, token })
  * Log out — invalidates the refresh token server-side.
  */
 export async function logout() {
-  const refreshToken = localStorage.getItem("refreshToken");
+  const refreshToken = getRefreshToken();
   if (!refreshToken) return;
   const { data } = await client.post("/auth/logout", { refreshToken });
   return data;
@@ -187,13 +188,9 @@ export async function disableMfaTotp({ code }) {
 
 /**
  * Persist auth tokens + basic user info to localStorage.
+ * Single owner is src/store/sessionStorage.js — kept here as a thin
+ * backwards-compatible wrapper so existing imports keep working.
  */
 export function storeAuthSession(authData) {
-  if (authData.accessToken) localStorage.setItem("accessToken", authData.accessToken);
-  // Guard against storing the literal string "undefined" if the auth response
-  // omits refreshToken — an "undefined" string is truthy and fools the
-  // refresh-token check in client.js, causing the next refresh to fail.
-  if (authData.refreshToken) localStorage.setItem("refreshToken", authData.refreshToken);
-  if (authData.userId) localStorage.setItem("userId", authData.userId);
-  if (authData.email) localStorage.setItem("userEmail", authData.email);
+  persistSession(authData);
 }

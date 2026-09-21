@@ -1,4 +1,10 @@
 import axios from "axios";
+import {
+  getAccessToken,
+  getRefreshToken,
+  applyRefreshedTokens,
+  clearSessionStorage,
+} from "../store/sessionStorage";
 
 // VITE_API_BASE_URL is the bare origin (e.g. https://api.glasspay.app) —
 // /api/v1 must always be appended, with or without the env var set.
@@ -12,30 +18,65 @@ const client = axios.create({
 
 // ── Attach JWT to every request ───────────────────────────────────────────────
 client.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
+  const token = getAccessToken();
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// ── Refresh-token queue ────────────────────────────────────────────────────────
-// Prevents multiple simultaneous 401s from firing multiple refresh calls.
-let isRefreshing = false;
-let pendingQueue = [];
+// ── Refresh-token single-flight ─────────────────────────────────────────────
+// One shared promise per refresh cycle: the first 401 to arrive creates it,
+// concurrent 401s await the same promise instead of firing their own
+// refresh calls. The promise is cleared in `finally` so the next expiry
+// cycle starts fresh. Backend contract is unchanged:
+// POST /api/v1/auth/token/refresh — body: { refreshToken, deviceInfo }.
+let refreshPromise = null;
 
-function resolveQueue(newToken) {
-  pendingQueue.forEach(({ resolve }) => resolve(newToken));
-  pendingQueue = [];
+function doRefresh(refreshToken) {
+  // Raw axios (not `client`) so the refresh call itself never re-enters
+  // this interceptor.
+  return axios
+    .post(`${client.defaults.baseURL}/auth/token/refresh`, {
+      refreshToken,
+      deviceInfo: navigator.userAgent,
+    })
+    .then((res) => {
+      // Some backend versions return { data: { accessToken } } (standard
+      // envelope) and others return { accessToken } directly. Handle both.
+      const data = res.data?.data ?? res.data;
+      if (!data?.accessToken) throw new Error("No access token in refresh response");
+      applyRefreshedTokens(data);
+      return data.accessToken;
+    });
 }
 
-function rejectQueue(err) {
-  pendingQueue.forEach(({ reject }) => reject(err));
-  pendingQueue = [];
+function getRefreshPromise(refreshToken) {
+  if (!refreshPromise) {
+    refreshPromise = doRefresh(refreshToken).finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
+}
+
+// Set while AuthContext is running its own startup hydration. A 401 during
+// that phase should NOT immediately log the user out — it is likely a
+// transient network hiccup or an expired access token that is about to be
+// swapped out. Module-local (not window.__glassIsRestoring): AuthContext
+// drives it via setSessionRestoring().
+let isSessionRestoring = false;
+
+export function setSessionRestoring(value) {
+  isSessionRestoring = value;
+}
+
+export function isSessionRestoringActive() {
+  return isSessionRestoring;
 }
 
 // Callers can open a short window (see beginAuthGrace below) where a 401
 // is treated as transient rather than a real sign-out, the same reasoning
-// AuthContext.restore()'s window.__glassIsRestoring already applies to its
-// own startup phase: right after landing back from a real Paystack redirect,
+// AuthContext's restore phase (see setSessionRestoring) already applies to
+// its own startup: right after landing back from a real Paystack redirect,
 // the access token can be genuinely stale for a beat even though the
 // session itself is fine, and hard-signing the payer out the moment they
 // tap "Back to Home" -- right after watching their payment succeed -- reads
@@ -48,24 +89,19 @@ export function beginAuthGrace(ms = 6000) {
 }
 
 function clearSessionAndRedirect() {
-  // AuthContext.restore() sets this flag while it is running its own
-  // refreshUser() call on startup. A 401 during that phase should NOT
+  // AuthContext sets the restoring flag while it is running its own
+  // hydration call on startup. A 401 during that phase should NOT
   // immediately log the user out — it is likely a transient network hiccup
   // or an expired access token that is about to be swapped out. Suppressing
   // the redirect here lets restore() complete and the component tree render;
   // if the session is truly dead the next real API call (e.g. verifyPayment
   // in PaymentCallback) will trigger clearSessionAndRedirect again without
   // the flag set and the user will be taken to sign-in at that point.
-  if (window.__glassIsRestoring) return;
+  if (isSessionRestoring) return;
   if (Date.now() < authGraceUntil) return;
 
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("glass_user");
-  localStorage.removeItem("refreshToken");
-  // Same reasoning as AuthContext.jsx's clearSession -- don't leave a stale
-  // last-selected-community pointer for whoever uses this device next.
-  localStorage.removeItem("glass_community");
-  localStorage.removeItem("glass_member_community");
+  // Single owner of the key list — identical set to AuthContext logout.
+  clearSessionStorage();
 
   // window.location.href below is a hard navigation — it wipes any toast
   // shown right before it along with all other JS state. sessionStorage
@@ -106,7 +142,7 @@ client.interceptors.response.use(
 
     // Only attempt refresh on 401, and only once per request
     if (error.response?.status === 401 && !originalRequest._retry && !isPreAuthRequest) {
-      const refreshToken = localStorage.getItem("refreshToken");
+      const refreshToken = getRefreshToken();
 
       // No refresh token available — nothing to do but log out. Requests
       // that opt out via _skipAuthRedirect (the payment callback page, which
@@ -119,45 +155,15 @@ client.interceptors.response.use(
 
       originalRequest._retry = true;
 
-      // If a refresh is already in flight, queue this request behind it
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          pendingQueue.push({ resolve, reject });
-        })
-          .then((newToken) => {
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-            return client(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
-      }
-
-      isRefreshing = true;
-
+      // Single-flight: every concurrent 401 awaits the same refresh
+      // promise. Each waiter keeps its own _skipAuthRedirect semantics —
+      // a queued opt-out request never triggers the hard redirect, even
+      // though it shared the refresh attempt.
       try {
-        // POST /api/v1/auth/token/refresh — body: { refreshToken, deviceInfo }
-        const res = await axios.post(`${client.defaults.baseURL}/auth/token/refresh`, {
-          refreshToken,
-          deviceInfo: navigator.userAgent,
-        });
-
-        // Some backend versions return { data: { accessToken } } (standard
-        // envelope) and others return { accessToken } directly. Handle both.
-        const data = res.data?.data ?? res.data;
-        if (!data?.accessToken) throw new Error("No access token in refresh response");
-
-        localStorage.setItem("accessToken", data.accessToken);
-        if (data.refreshToken) {
-          localStorage.setItem("refreshToken", data.refreshToken);
-        }
-
-        resolveQueue(data.accessToken);
-        isRefreshing = false;
-
-        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+        const newToken = await getRefreshPromise(refreshToken);
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return client(originalRequest);
       } catch (refreshError) {
-        isRefreshing = false;
-        rejectQueue(refreshError);
         if (!originalRequest._skipAuthRedirect) clearSessionAndRedirect();
         return Promise.reject(refreshError);
       }
