@@ -9,13 +9,14 @@ import LoadingScreen from "../components/LoadingScreen";
  */
 export default function MemberProtectedRoute() {
   const location = useLocation();
-  const { token, loading } = useAuth();
+  const { token, sessionVerified, loading } = useAuth();
 
+  // See ProtectedRoute — an unverified token is not an authenticated session.
   if (loading) {
     return <LoadingScreen />;
   }
 
-  if (!token) {
+  if (!token || !sessionVerified) {
     return <Navigate to="/member/app-sign-in" state={{ from: location }} replace />;
   }
 

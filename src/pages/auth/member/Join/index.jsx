@@ -26,7 +26,7 @@ export default function Join() {
   const { token, consumeToken } = useInviteToken();
   const { community, consumeCommunity } = useJoinCommunityParam();
   const joinEmail = useJoinEmailParam();
-  const { setSession, isAuthenticated, loading: authLoading } = useAuth();
+  const { storeSessionIfPresent, setSession, isAuthenticated, loading: authLoading } = useAuth();
 
   // A user who already has a session (e.g. they're a member of another
   // community, or just left themselves logged in) shouldn't be forced
@@ -88,14 +88,6 @@ export default function Join() {
     if (joinEmail && !token) return STEPS.SIGNIN_OTP;
     return STEPS.CONTACT;
   });
-
-  // Some backends issue a session immediately on register, others only
-  // after email verification — store it the moment either response
-  // actually includes a token, instead of assuming which step does it
-  // (matches the admin SignUp flow's same pattern).
-  function maybeStoreSession(authData) {
-    if (authData?.accessToken) setSession(authData);
-  }
 
   // The community's own generic, shareable "Invite Link" (?community=) has
   // no personal token to send at registration, unlike a personalized
@@ -235,7 +227,9 @@ export default function Join() {
         ...(contact.phone && { phoneNumber: contact.phone, phoneConfirmToken }),
       };
       const authData = await register(payload);
-      maybeStoreSession(authData);
+      // Awaited: settle the session (if the backend issued one here) before
+      // advancing to the OTP step — see AuthContext.storeSessionIfPresent.
+      await storeSessionIfPresent(authData);
       sessionStorage.setItem(PENDING_KEY, JSON.stringify({ email: contact.email }));
       setEmail(contact.email);
       setStep(STEPS.OTP);

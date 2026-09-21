@@ -117,6 +117,12 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Whether the current token + role state has been verified against the
+  // backend (login/setSession's buildUser check, or restore's refreshUser).
+  // Guards treat an unverified session as unauthenticated — a token merely
+  // being present in localStorage proves nothing until the server confirms
+  // it, and cached roles in glass_user are client-writable.
+  const [sessionVerified, setSessionVerified] = useState(false);
   const queryClient = useQueryClient();
   // Prevents the token-change effect from firing a second refreshUser()
   // while restore() is already in the middle of one.
@@ -128,6 +134,7 @@ export function AuthProvider({ children }) {
       if (e.key === KEY_TOKEN && !e.newValue) {
         setToken(null);
         setUser(null);
+        setSessionVerified(false);
       }
     };
     window.addEventListener("storage", onStorage);
@@ -178,6 +185,7 @@ export function AuthProvider({ children }) {
       writeUser(user);
       setToken(authData.accessToken);
       setUser(user);
+      setSessionVerified(true);
 
       if (typeof pendo !== "undefined") {
         pendo.identify({
@@ -206,6 +214,7 @@ export function AuthProvider({ children }) {
       queryClient.clear(); // see login()'s comment — same staleness risk in reverse
       setToken(null);
       setUser(null);
+      setSessionVerified(false);
       // Pendo's install snippet only pre-stubs initialize/identify/
       // updateOptions/pageLoad/track/trackAgent — clearSession isn't in
       // that list, so it's only real once the CDN script actually loads.
@@ -230,6 +239,7 @@ export function AuthProvider({ children }) {
       writeUser(user);
       setToken(authData.accessToken);
       setUser(user);
+      setSessionVerified(true);
 
       if (typeof pendo !== "undefined") {
         pendo.identify({
@@ -247,8 +257,30 @@ export function AuthProvider({ children }) {
     [queryClient],
   );
 
+  // ── storeSessionIfPresent ──────────────────────────────────────────────────
+  // Centralized "persist this auth response if it actually carries a
+  // session" helper — replaces the duplicated maybeStoreSession closures
+  // that lived in SignUp.jsx and Join/index.jsx. Always await it before
+  // navigating: setSession() resolves admin standing via buildUser() first,
+  // so navigating early routes on pre-session state.
+  // Returns true when a session was stored, false when authData carries none.
+  const storeSessionIfPresent = useCallback(
+    async (authData) => {
+      if (!authData?.accessToken) return false;
+      await setSession(authData);
+      return true;
+    },
+    [setSession],
+  );
+
   // ── updateUser ─────────────────────────────────────────────────────────────
   // Call after profile edits so the UI reflects the change immediately.
+  // NOTE: privilege fields (isAdmin/isPlatformAdmin/role) must never be set
+  // through here — admin standing is derived server-side at login/restore.
+  // The single exception is OrganizationProfile's post-creation
+  // updateUser({ isAdmin: true }): the backend just made this user an admin
+  // by creating their community, but the cached communities list predates it,
+  // so routing would bounce without this explicit, auditable override.
   const updateUser = useCallback((patch) => {
     setUser((prev) => {
       if (!prev) return prev;
@@ -265,6 +297,10 @@ export function AuthProvider({ children }) {
   // only exist on GET /user/me. Fetch it once we have a token, and let
   // callers (e.g. after a profile save) re-call this to pick up changes
   // immediately instead of waiting for the next full login.
+  // Returns true when the session was re-verified against the backend,
+  // false when verification failed — in which case the previous user state
+  // is left untouched and the caller decides what to do (restore() fails
+  // closed; post-login enrichment keeps the just-verified login state).
   const refreshUser = useCallback(async () => {
     try {
       const [meRes, communitiesRes] = await Promise.all([getMe(), client.get("/communities/me")]);
@@ -327,18 +363,20 @@ export function AuthProvider({ children }) {
         }
         pendo.identify(pendoPayload);
       }
+      return true;
     } catch {
-      // Keep whatever we already had (e.g. from login) rather than wiping it.
+      // Do NOT fall back to stale state here — the caller (restore())
+      // treats a false return as "unverifiable" and fails closed.
+      return false;
     }
   }, []);
 
-  // Restore session on mount. `loading` gates ProtectedRoute's very first
-  // isAdmin check, so it can't flip to false until the *real* isAdmin is
-  // confirmed — the cached value in localStorage can be stale (e.g. admin
-  // status changed in another tab/session since the last login), and
-  // ProtectedRoute would otherwise redirect away using that stale value
-  // via a hard <Navigate> before refreshUser() ever got a chance to correct
-  // it, with no way to self-heal afterward.
+  // Restore session on mount. Until refreshUser() confirms the cached
+  // token + roles against the backend, nothing renders as authenticated:
+  // the cached glass_user is client-writable, so routing on it before
+  // verification would honor stale or tampered admin standing. A failed
+  // refresh fails closed — cached tokens/roles are dropped rather than
+  // preserved, so guards redirect to sign-in instead of rendering on them.
   useEffect(() => {
     async function restore() {
       const storedToken = localStorage.getItem(KEY_TOKEN);
@@ -351,7 +389,15 @@ export function AuthProvider({ children }) {
       setToken(storedToken);
       setUser(readStoredUser());
       try {
-        await refreshUser();
+        const verified = await refreshUser();
+        if (verified) {
+          setSessionVerified(true);
+        } else {
+          clearSession();
+          setToken(null);
+          setUser(null);
+          setSessionVerified(false);
+        }
       } finally {
         window.__glassIsRestoring = false;
         isRestoringRef.current = false;
@@ -378,6 +424,7 @@ export function AuthProvider({ children }) {
     user,
     token,
     loading,
+    sessionVerified,
     isAuthenticated: !!token,
     isPlatformAdmin,
     isAdmin,
@@ -387,6 +434,7 @@ export function AuthProvider({ children }) {
     login,
     logout,
     setSession,
+    storeSessionIfPresent,
     updateUser,
     refreshUser,
   };
