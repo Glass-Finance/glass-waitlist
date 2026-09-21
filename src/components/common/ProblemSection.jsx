@@ -9,6 +9,7 @@
 import { useEffect, useRef } from "react";
 import { Lightbulb } from "lucide-react";
 import BlurText from "../ui/BlurText";
+import CloudImage from "./CloudImage";
 
 export default function ProblemSection({
   image,
@@ -147,12 +148,13 @@ export default function ProblemSection({
               ref={imageRef}
               className="relative rounded-2xl overflow-hidden w-full shadow-xl shadow-[#1C2B8A]/15 aspect-[458/250]"
             >
-              <img
-                src={image}
+              <CloudImage
+                publicId={image.publicId}
                 alt={imageAlt}
-                className="absolute inset-0 w-full h-full object-cover object-[50%_40%]"
-                loading="lazy"
-                decoding="async"
+                width={image.width}
+                className="absolute inset-0"
+                imgClassName="object-[50%_40%]"
+                draggable={false}
               />
             </div>
 

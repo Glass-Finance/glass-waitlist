@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import GlassLogo from "../assets/Glass.webp";
+import CloudImage from "../components/common/CloudImage";
 import { usePageTitle } from "../hooks/usePageTitle";
 
 export default function NotFound() {
@@ -9,7 +9,13 @@ export default function NotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-cover bg-center bg-page-default">
       {/* Logo — no container */}
-      <img src={GlassLogo} alt="Glass" className="w-10 h-10 object-contain mb-10" />
+      <CloudImage
+        publicId="glass/Glass"
+        alt="Glass"
+        width={80}
+        objectFit="contain"
+        className="w-10 h-10 mb-10"
+      />
 
       {/* 404 */}
       <p className="font-black leading-none tracking-tighter mb-5 select-none text-[clamp(96px,20vw,160px)] text-brand opacity-[0.12]">

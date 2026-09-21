@@ -1,8 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import AuthPanel from "../assets/auth/auth-panel.webp";
-import glassLogo from "../assets/cta/ctalogo.webp";
-import glassIcon from "../assets/Glass.webp";
-import AuthBackground from "../assets/auth/auth-background.webp";
+import CloudImage from "../components/common/CloudImage";
+import { cldUrl } from "../lib/cloudinary";
 
 export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
   const navigate = useNavigate();
@@ -11,11 +9,14 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
     <div className="h-screen w-screen flex flex-col md:flex-row overflow-hidden bg-surface-bg md:p-1 relative">
       {/* Background — separate mobile/desktop images (different aspect
           ratios), swapped by breakpoint visibility rather than one shared
-          background-image, since the two assets aren't the same crop. */}
+          background-image, since the two assets aren't the same crop.
+          Desktop waves come from Cloudinary (glass/auth/auth-background);
+          the mobile backdrop stays local (bg-mobile-auth-default) — see
+          docs/cloudinary.md for what's still bundled. */}
       <div className="absolute inset-0 md:hidden bg-cover bg-center bg-no-repeat bg-mobile-auth-default" />
       <div
         className="hidden md:block absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${AuthBackground})` }}
+        style={{ backgroundImage: `url(${cldUrl("glass/auth/auth-background", { width: 1920 })})` }}
       />
 
       {/* ── Mobile header ──
@@ -28,7 +29,13 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
           className="flex items-center gap-2 px-6 pt-5 pb-4 cursor-pointer w-fit"
           onClick={() => navigate("/")}
         >
-          <img src={glassIcon} alt="" className="h-7 w-7 object-contain" />
+          <CloudImage
+            publicId="glass/Glass"
+            alt=""
+            width={56}
+            objectFit="contain"
+            className="h-7 w-7"
+          />
           <span className="text-lg font-medium text-gray-900">Glass</span>
         </div>
         <div className="h-px bg-gray-200" />
@@ -37,12 +44,13 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
       {/* ── Hero panel — desktop only ── */}
       <div className="hidden md:block md:w-[46%] md:h-full flex-shrink-0 relative z-10">
         <div className="relative w-full h-full md:rounded-xl overflow-hidden">
-          <img
-            src={AuthPanel}
+          <CloudImage
+            publicId="glass/auth/auth-panel"
             alt="Glass Finance"
-            className="absolute inset-0 w-full h-full object-cover"
-            fetchpriority="high"
-            decoding="async"
+            width={1200}
+            priority
+            className="absolute inset-0"
+            draggable={false}
           />
 
           {/* Logo — no wrapping card per design; the backdrop-blur overlay
@@ -51,9 +59,10 @@ export default function AuthLayout({ heroTitle, heroSubtitle, children }) {
               composite). Still clickable back to the landing page. The
               Figma dev-mode footprint (72x62.73) read too large at 100%
               zoom on a real screen, so sized down from that -- h-11 (44px)
-              instead. */}
+              instead. Intrinsic-aspect logo, so rendered as a responsive
+              <img> (CloudImage needs a fixed width box). */}
           <img
-            src={glassLogo}
+            src={cldUrl("glass/cta/ctalogo", { width: 96 })}
             alt="Glass Logo"
             className="absolute top-[42.5px] left-8 z-10 h-11 w-auto object-contain cursor-pointer"
             onClick={() => navigate("/")}

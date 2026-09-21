@@ -11,21 +11,14 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import BlurText from "../ui/BlurText";
-
-import icon1 from "../../assets/cta/soccer.webp";
-import icon2 from "../../assets/cta/basketball-hoop.webp";
-import icon3 from "../../assets/cta/people.webp";
-import icon4 from "../../assets/cta/bible.webp";
-import icon5 from "../../assets/cta/runner.webp";
-import icon6 from "../../assets/cta/graduation-cap.webp";
-import logo from "../../assets/cta/ctalogo.webp";
+import CloudImage from "./CloudImage";
 
 /* ─── Icon layout config ───────────────────────────────────────────── */
 const icons = [
   /* ── LEFT SIDE ── */
   {
     id: "soccer",
-    src: icon1,
+    publicId: "glass/cta/soccer",
     /* top-left — further out */
     style: { top: "8%", left: "4.5%" },
     size: 62,
@@ -36,7 +29,7 @@ const icons = [
   },
   {
     id: "hoop",
-    src: icon2,
+    publicId: "glass/cta/basketball-hoop",
     /* mid-left — CLOSER to text */
     style: { top: "50%", left: "11%", transform: "translateY(-50%)" },
     size: 66,
@@ -47,7 +40,7 @@ const icons = [
   },
   {
     id: "people",
-    src: icon3,
+    publicId: "glass/cta/people",
     /* bottom-left — further out */
     style: { bottom: "8%", left: "4.5%" },
     size: 60,
@@ -60,7 +53,7 @@ const icons = [
   /* ── RIGHT SIDE ── */
   {
     id: "bible",
-    src: icon4,
+    publicId: "glass/cta/bible",
     /* top-right — further out */
     style: { top: "8%", right: "4.5%" },
     size: 62,
@@ -71,7 +64,7 @@ const icons = [
   },
   {
     id: "runner",
-    src: icon5,
+    publicId: "glass/cta/runner",
     /* mid-right — CLOSER to text */
     style: { top: "50%", right: "11%", transform: "translateY(-50%)" },
     size: 66,
@@ -82,7 +75,7 @@ const icons = [
   },
   {
     id: "grad",
-    src: icon6,
+    publicId: "glass/cta/graduation-cap",
     /* bottom-right — further out */
     style: { bottom: "8%", right: "4.5%" },
     size: 60,
@@ -163,13 +156,13 @@ function FloatingIcon({ icon, inView }) {
       }}
       ref={elRef}
     >
-      <img
-        src={icon.src}
+      <CloudImage
+        publicId={icon.publicId}
         alt=""
+        width={icon.size * 2}
+        objectFit="contain"
         draggable={false}
-        className="w-full h-full object-contain block"
-        loading="lazy"
-        decoding="async"
+        className="w-full h-full block"
       />
     </div>
   );
@@ -257,12 +250,12 @@ export default function CTASection({
 
         {/* ── Glass logo ── */}
         <div className="mb-[18px] relative z-[5]">
-          <img
-            src={logo}
+          <CloudImage
+            publicId="glass/cta/ctalogo"
             alt="Glass"
-            className="w-[34px] h-[34px] object-contain opacity-[0.88]"
-            loading="lazy"
-            decoding="async"
+            width={68}
+            objectFit="contain"
+            className="w-[34px] h-[34px] opacity-[0.88]"
           />
         </div>
 

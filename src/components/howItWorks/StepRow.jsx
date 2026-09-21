@@ -1,5 +1,7 @@
 import { useRef, useEffect } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
+import { cldUrl, cldSrcSet, widthsFor } from "../../lib/cloudinary";
+import CloudImage from "../common/CloudImage";
 
 const isMobileScreen =
   typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
@@ -69,7 +71,9 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
         <div className="flex flex-col md:hidden relative">
           <div className="relative w-full rounded-lg overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
             <img
-              src={step.img}
+              src={cldUrl(step.img.publicId, { width: step.img.width })}
+              srcSet={cldSrcSet(step.img.publicId, widthsFor(step.img.width))}
+              sizes="100vw"
               alt={step.label}
               className="w-full h-auto block"
               draggable={false}
@@ -86,13 +90,13 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
           <div
             className={`absolute -top-5 -left-2.5 w-[130px] rounded-xl py-3.5 px-3 flex flex-col items-center text-center z-20 ${glassCardCls}`}
           >
-            <img
-              ref={iconRef}
-              src={step.stepIcon}
+            <CloudImage
+              publicId={step.stepIcon.publicId}
               alt=""
-              className="w-8 h-8 object-contain mb-2"
-              loading="lazy"
-              decoding="async"
+              width={step.stepIcon.width}
+              objectFit="contain"
+              imgRef={iconRef}
+              className="w-8 h-8 mb-2"
             />
             <p className="text-xs font-bold text-[#0f1d6e] leading-[1.3] m-0">{step.label}</p>
           </div>
@@ -105,19 +109,21 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
           <div
             className={`flex-shrink-0 w-[190px] rounded-2xl p-5 z-20 flex flex-col items-center text-center mr-[-30px] ${glassCardCls}`}
           >
-            <img
-              ref={iconRef}
-              src={step.stepIcon}
+            <CloudImage
+              publicId={step.stepIcon.publicId}
               alt=""
-              className="w-10 h-10 object-contain mb-2.5"
-              loading="lazy"
-              decoding="async"
+              width={step.stepIcon.width}
+              objectFit="contain"
+              imgRef={iconRef}
+              className="w-10 h-10 mb-2.5"
             />
             <p className="text-[13px] font-bold text-[#0f1d6e] leading-snug">{step.label}</p>
           </div>
           <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
             <img
-              src={step.img}
+              src={cldUrl(step.img.publicId, { width: step.img.width })}
+              srcSet={cldSrcSet(step.img.publicId, widthsFor(step.img.width))}
+              sizes="(min-width: 768px) 720px, 100vw"
               alt={step.label}
               className="w-full h-auto block"
               draggable={false}

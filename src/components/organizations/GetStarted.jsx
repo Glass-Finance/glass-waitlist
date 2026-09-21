@@ -2,47 +2,38 @@ import { useNavigate } from "react-router-dom";
 import { goToApp } from "../../utils/deviceRedirect";
 import HowItWorksSection from "../howItWorks/HowItWorksSection";
 
-import work1 from "../../assets/work/org-create-community.webp";
-import work2 from "../../assets/work/org-add-members.webp";
-import work3 from "../../assets/work/org-set-payment-schedule.webp";
-import work4 from "../../assets/work/org-go-live.webp";
-import stepIcon1 from "../../assets/icon/step-1.webp";
-import stepIcon2 from "../../assets/icon/step-2.webp";
-import stepIcon3 from "../../assets/icon/step-3.webp";
-import stepIcon4 from "../../assets/icon/step-4.webp";
-
 const steps = [
   {
     num: "01",
     label: "Create Your Community",
     desc: "Set up your organisation in minutes — no paperwork, no bank visits.",
     badge: "Set Up With Few Clicks",
-    img: work1,
-    stepIcon: stepIcon1,
+    img: { publicId: "glass/work/org-create-community", width: 1440 },
+    stepIcon: { publicId: "glass/icon/step-1", width: 80 },
   },
   {
     num: "02",
     label: "Add Members",
     desc: "Invite by phone or email, or bulk-import your roster via CSV instantly.",
     badge: "Upload CSV For Bulk Addition",
-    img: work2,
-    stepIcon: stepIcon2,
+    img: { publicId: "glass/work/org-add-members", width: 1440 },
+    stepIcon: { publicId: "glass/icon/step-2", width: 80 },
   },
   {
     num: "03",
     label: "Set Payment Schedule",
     desc: "Define dues, set deadlines — monthly, yearly, or custom. Glass reconciles everything.",
     badge: "Set Your Dues Structure",
-    img: work3,
-    stepIcon: stepIcon3,
+    img: { publicId: "glass/work/org-set-payment-schedule", width: 1440 },
+    stepIcon: { publicId: "glass/icon/step-3", width: 80 },
   },
   {
     num: "04",
     label: "Go Live!",
     desc: "Activate your community. Payments run automatically, receipts sent instantly.",
     badge: "Activate Your Community",
-    img: work4,
-    stepIcon: stepIcon4,
+    img: { publicId: "glass/work/org-go-live", width: 1440 },
+    stepIcon: { publicId: "glass/icon/step-4", width: 80 },
   },
 ];
 

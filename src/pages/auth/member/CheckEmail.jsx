@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import GlassLogo from "../../../assets/Glass.webp";
+import CloudImage from "../../../components/common/CloudImage";
 import QRCodeCanvas from "../../../components/common/QRCodeCanvas";
 import { buildMobileUrl } from "../../../utils/deviceRedirect";
 import { Button } from "../../../components/ui/Button";
@@ -24,7 +24,13 @@ export default function CheckEmail() {
       {/* Glass logo top left */}
       <header className="px-8 py-3 flex-shrink-0">
         <div className="flex items-center gap-2">
-          <img src={GlassLogo} alt="Glass" className="w-6 h-6 object-contain" />
+          <CloudImage
+            publicId="glass/Glass"
+            alt="Glass"
+            width={48}
+            objectFit="contain"
+            className="w-6 h-6"
+          />
           <span className="font-medium text-gray-900 text-base font-sans">Glass</span>
         </div>
       </header>

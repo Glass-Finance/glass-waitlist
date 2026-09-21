@@ -1,24 +1,21 @@
 import { useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import BlurText from "./ui/BlurText";
-
-import icon1 from "../assets/security/transparency.webp";
-import icon2 from "../assets/security/ndpr-compliant.webp";
-import icon3 from "../assets/security/encryption.webp";
+import CloudImage from "./common/CloudImage";
 
 const cards = [
   {
-    icon: icon1,
+    publicId: "glass/security/transparency",
     title: "Transparency",
     desc: "Every kobo is accounted for. No hidden fees or missing funds.",
   },
   {
-    icon: icon2,
+    publicId: "glass/security/ndpr-compliant",
     title: "NDPR Compliant",
     desc: "Fully licensed and compliant with Nigerian Data Protection Regulations.",
   },
   {
-    icon: icon3,
+    publicId: "glass/security/encryption",
     title: "Encryption",
     desc: "All data and transactions are encrypted. Your records are private.",
   },
@@ -109,7 +106,7 @@ export default function SecurityFeatures() {
 
         {/* ── Cards ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-14 xl:gap-20 mb-14 justify-items-center items-start">
-          {cards.map(({ icon, title, desc }, i) => {
+          {cards.map(({ publicId, title, desc }, i) => {
             const { rotate, y } = TILTS[i];
 
             return (
@@ -133,12 +130,12 @@ export default function SecurityFeatures() {
 
                   {/* White circle */}
                   <div className="w-[78px] h-[78px] rounded-full bg-white shadow-[0_0_0_6px_rgba(255,255,255,0.35),0_4px_20px_rgba(28,43,138,0.1)] flex items-center justify-center relative z-[1]">
-                    <img
-                      src={icon}
+                    <CloudImage
+                      publicId={publicId}
                       alt={title}
-                      className="w-7 h-7 object-contain"
-                      loading="lazy"
-                      decoding="async"
+                      width={84}
+                      objectFit="contain"
+                      className="w-7 h-7"
                     />
                   </div>
                 </div>

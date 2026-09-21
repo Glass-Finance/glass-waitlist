@@ -1,37 +1,29 @@
-import icon1 from "../../assets/icon/frame-reminder.webp";
-import icon2 from "../../assets/icon/frame-payment.webp";
-import icon3 from "../../assets/icon/frame-receipt.webp";
-import icon4 from "../../assets/icon/frame-flexible.webp";
-import featurePayment from "../../assets/solution/payment.webp";
-import featureReminder from "../../assets/solution/reminder.webp";
-import featureInstant from "../../assets/solution/instant.webp";
-import featureFlexible from "../../assets/solution/flexible.webp";
 import SolutionSection from "../common/SolutionSection";
 
 const features = [
   {
-    icon: icon2,
+    icon: { publicId: "glass/icon/frame-payment", width: 100 },
     title: "One-Click Payments",
     desc: "Pay your dues in seconds from any device. No more manual transfers.",
-    illustration: featurePayment,
+    illustration: { publicId: "glass/solution/payment", width: 800 },
   },
   {
-    icon: icon1,
+    icon: { publicId: "glass/icon/frame-reminder", width: 100 },
     title: "Smart Reminders",
     desc: "Get reminders via SMS, WhatsApp, and Email so you never miss a deadline.",
-    illustration: featureReminder,
+    illustration: { publicId: "glass/solution/reminder", width: 800 },
   },
   {
-    icon: icon3,
+    icon: { publicId: "glass/icon/frame-receipt", width: 100 },
     title: "Generate Instant Proof",
     desc: "View your full history and download official receipts immediately after paying.",
-    illustration: featureInstant,
+    illustration: { publicId: "glass/solution/instant", width: 800 },
   },
   {
-    icon: icon4,
+    icon: { publicId: "glass/icon/frame-flexible", width: 100 },
     title: "Flexible Options",
     desc: "Pay exactly how you want — via Card, Bank Transfer, or USSD.",
-    illustration: featureFlexible,
+    illustration: { publicId: "glass/solution/flexible", width: 800 },
   },
 ];
 

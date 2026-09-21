@@ -1,16 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import BlurText from "./ui/BlurText";
-import iconSchools from "../assets/usecase/icon-schools.webp";
-import iconProfessional from "../assets/usecase/icon-professional.webp";
-import iconClubs from "../assets/usecase/icon-clubs.webp";
-import iconReligious from "../assets/usecase/icon-religious.webp";
+import CloudImage from "./common/CloudImage";
 
-// ─── Card icon map — uses your imported images ────────────────────────────────
+// ─── Card icon map — Cloudinary public ids (see docs/cloudinary.md) ────────
 const CARD_ICONS = {
-  schools: iconSchools,
-  professional: iconProfessional,
-  clubs: iconClubs,
-  religious: iconReligious,
+  schools: "glass/usecase/icon-schools",
+  professional: "glass/usecase/icon-professional",
+  clubs: "glass/usecase/icon-clubs",
+  religious: "glass/usecase/icon-religious",
 };
 
 // ─── Corner accent — inline SVG (not a raster image), so it stays crisp at any
@@ -98,13 +95,13 @@ function UseCaseCard({ title, desc, variant, entryDelay }) {
       {/* Bottom-right corner line — same accent, rotated 180° */}
       <CornerAccent className="absolute bottom-0 right-0 w-20 h-20 rotate-180" />
 
-      {/* Icon circle — your imported image */}
-      <img
-        src={CARD_ICONS[variant]}
+      {/* Icon circle */}
+      <CloudImage
+        publicId={CARD_ICONS[variant]}
         alt={title}
-        className="w-[72px] h-[72px] object-contain mb-1"
-        loading="lazy"
-        decoding="async"
+        width={144}
+        objectFit="contain"
+        className="w-[72px] h-[72px] mb-1"
       />
 
       {/* Title */}

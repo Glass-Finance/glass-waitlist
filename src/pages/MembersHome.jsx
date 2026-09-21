@@ -1,4 +1,5 @@
 import { useSeoMeta } from "../hooks/useSeoMeta";
+import { cldUrl } from "../lib/cloudinary";
 import Navbar from "../components/Navbar";
 import MembersHero from "../components/members/MembersHero";
 import MembersHowItWorks from "../components/members/MembersHowItWorks";
@@ -26,7 +27,10 @@ export default function MembersHome() {
           scrolling away. Every section between Hero and Footer needs a
           transparent background of its own for this to show through. */}
       <div
-        className="fixed inset-0 z-0 pointer-events-none bg-cover bg-center bg-no-repeat bg-solution-glow"
+        className="fixed inset-0 z-0 pointer-events-none bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(${cldUrl("glass/solution/solution-glow", { width: 1600, dpr: 2 })})`,
+        }}
         aria-hidden="true"
       />
       <Navbar />

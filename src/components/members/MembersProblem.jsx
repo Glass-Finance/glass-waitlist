@@ -1,5 +1,4 @@
 import { Clock, CreditCard, Eye } from "lucide-react";
-import Problem from "../../assets/problem/problem2.webp";
 import SharedProblemSection from "../common/ProblemSection";
 
 const problems = [
@@ -23,7 +22,7 @@ const problems = [
 export default function MembersProblem() {
   return (
     <SharedProblemSection
-      image={Problem}
+      image={{ publicId: "glass/problem/problem2", width: 1280 }}
       problems={problems}
       headline="Paying Dues Shouldn't Be A Hassle"
       subtext="Without a central place to pay, receipts pile up in chats and members fall behind without realising it."

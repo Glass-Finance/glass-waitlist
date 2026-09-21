@@ -1,4 +1,4 @@
-import GlassLogo from "../../assets/Glass.webp";
+import CloudImage from "./CloudImage";
 
 // The app's one branded loading indicator -- a spinning ring around the
 // logo mark, previously only used for the full-screen route-transition
@@ -13,10 +13,11 @@ export default function BrandedSpinner({ size = 64 }) {
       style={{ width: size, height: size }}
     >
       <div className="absolute inset-0 rounded-full border-[1.5px] border-[#1C2B8A]/10 border-t-[#1C2B8A] animate-spin" />
-      <img
-        src={GlassLogo}
+      <CloudImage
+        publicId="glass/Glass"
         alt=""
-        className="object-contain"
+        width={logoSize * 2}
+        objectFit="contain"
         style={{ width: logoSize, height: logoSize }}
       />
     </div>
