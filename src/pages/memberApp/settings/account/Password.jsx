@@ -55,9 +55,13 @@ export default function Password() {
       return;
     }
     try {
+      // PATCH /api/v1/user/password requires { oldPassword, newPassword,
+      // confirmPassword } — all three, verified server-side. The
+      // new/confirm match above is UI-only; the backend enforces it too.
       await updatePassword.mutateAsync({
-        currentPassword: form.currentPassword,
+        oldPassword: form.currentPassword,
         newPassword: form.newPassword,
+        confirmPassword: form.confirmPassword,
       });
       setSuccess(true);
       setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
