@@ -11,6 +11,7 @@ import { submitJoinRequest } from "../../../../api/invites";
 import { notifyError } from "../../../../utils/errorHandler";
 import { toastSuccess } from "../../../../utils/toast";
 import { useAuth } from "../../../../store/AuthContext";
+import { resolvePostAuthDestination } from "../../../../utils/postAuthDestination";
 import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
 import AuthLayout from "../../../../layouts/AuthLayout";
 import { STEPS, PENDING_KEY } from "./constants";
@@ -121,54 +122,61 @@ export default function Join() {
 
   function finishAndRoute() {
     consumeToken();
-    if (community) {
-      submitCommunityJoinAndRoute();
-      return;
-    }
-    // A personalized invite grants access immediately (unlike the
-    // join-request path above, which has its own confirmation toast) — say
-    // so explicitly rather than silently dropping the new member onto Home
-    // with no context for what just happened.
-    if (token) {
-      toastSuccess("You're in!", { description: "Welcome to the community." });
-      navigate("/member/home", { replace: true });
-      return;
-    }
-    // Neither a personal token nor a community slug -- this account was
-    // created via the marketing site's contextless "Join A Community" CTA,
-    // not a specific invite. /member/invites would just be empty; send them
-    // straight to browsing instead of a dead end they'd have to find their
-    // own way out of via Home's empty state. This is also the one path with
-    // no other confirmation moment (the community-slug and token branches
-    // above both have their own), and DiscoverCommunities' own header is
-    // just "Browse Communities" with no acknowledgment that signup actually
-    // succeeded -- worth saying so explicitly here instead of silently
-    // landing them on a search box with no idea whether it worked.
-    toastSuccess("Account created!", { description: "Find a community to join below." });
-    navigate("/member/communities/search", { replace: true });
+    // Register path: the token's invite work completes with the new
+    // account (invites are email-bound server-side), so a personal invite
+    // grants immediate access. The Google path below differs (see
+    // handleGoogleAuth) because /auth/google cannot carry the token.
+    routeForJoin({ viaGoogle: false });
   }
 
   // Google already proves the user owns this email, so registration is
-  // immediate — no OTP step needed. Note: the invite token isn't sent to
-  // /auth/google today (it only takes a credential), so it's never
-  // actually applied here — unlike finishAndRoute() above (used after the
-  // regular register()+OTP flow, which does send the token), a pending
-  // invite needs /member/invites to accept it manually instead of
-  // /member/home, the opposite direction of finishAndRoute()'s ternary.
+  // immediate — no OTP step needed. The backend's /auth/google accepts only
+  // a credential (no inviteToken), so a pending invite still needs
+  // /member/invites to accept it manually. The invite token is deliberately
+  // NOT consumed here: if Google auth fails, the token stays available for
+  // a retry or the regular register flow instead of being lost. It is
+  // consumed only by finishAndRoute()'s register path, which is the single
+  // place the token's invite work actually completes.
   function handleGoogleAuth() {
-    consumeToken();
+    routeForJoin({ viaGoogle: true });
+  }
+
+  // Shared Join routing behind both post-auth branches. A community slug
+  // goes through its join-request call first; everything else resolves
+  // through the pure destination helper with the Join funnel's fallback
+  // (contextless signups browse instead of landing on an empty invites
+  // page). Toasts stay here — the helper resolves destinations only.
+  function routeForJoin({ viaGoogle }) {
     if (community) {
       submitCommunityJoinAndRoute();
       return;
     }
-    if (token) {
-      navigate("/member/invites", { replace: true });
-      return;
+    const dest = resolvePostAuthDestination({
+      isMobile: true, // this route is device-gated upstream
+      inviteToken: token,
+      viaGoogle,
+      fallback: "/member/communities/search",
+    });
+    if (!viaGoogle && token) {
+      // A personalized invite grants access immediately (unlike the
+      // join-request path above, which has its own confirmation toast) — say
+      // so explicitly rather than silently dropping the new member onto Home
+      // with no context for what just happened.
+      toastSuccess("You're in!", { description: "Welcome to the community." });
+    } else if (!token) {
+      // Neither a personal token nor a community slug -- this account was
+      // created via the marketing site's contextless "Join A Community" CTA,
+      // not a specific invite. /member/invites would just be empty; send them
+      // straight to browsing instead of a dead end they'd have to find their
+      // own way out of via Home's empty state. This is also the one path with
+      // no other confirmation moment (the community-slug branch above has
+      // its own), and DiscoverCommunities' own header is just
+      // "Browse Communities" with no acknowledgment that signup actually
+      // succeeded -- worth saying so explicitly here instead of silently
+      // landing them on a search box with no idea whether it worked.
+      toastSuccess("Account created!", { description: "Find a community to join below." });
     }
-    // Same missing-confirmation gap as finishAndRoute()'s equivalent branch
-    // above -- kept in sync with it.
-    toastSuccess("Account created!", { description: "Find a community to join below." });
-    navigate("/member/communities/search", { replace: true });
+    navigate(dest.to, { replace: true });
   }
 
   function handleContactNext({ email: enteredEmail, phone }) {
