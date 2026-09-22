@@ -307,6 +307,18 @@ body {
     transform: translateY(0);
   }
 }
+/* Checkmark "writing itself": stroke-dashoffset runs from the path's full
+   dash length (--check-dash, set inline by SuccessBadge so the keyframes
+   can't drift from CHECK_DASH) to 0. Ease matches the old rAF loop's
+   1-(1-p)^3 ease-out (cubic-bezier 0.215,0.61,0.355,1). */
+@keyframes successCheckDraw {
+  from {
+    stroke-dashoffset: var(--check-dash, 186);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
 
 /* Keyframe Animations */
 @keyframes fadeIn {
