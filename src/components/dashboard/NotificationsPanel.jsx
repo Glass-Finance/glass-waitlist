@@ -191,7 +191,7 @@ export default function NotificationsPanel({
           <button
             onClick={onClearAll}
             disabled={notifications.length === 0 || isClearingAll}
-            className="text-[11px] font-normal text-[#002FA7] bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
+            className="text-[11px] font-normal text-red-500 bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
           >
             Clear All
           </button>

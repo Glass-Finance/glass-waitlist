@@ -145,7 +145,7 @@ function AllCommunitiesNotifications() {
               <button
                 onClick={() => clearAll()}
                 disabled={isClearingAll}
-                className="self-start flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-brand bg-transparent border border-brand hover:opacity-80 border-solid cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                className="self-start flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-red-500 bg-transparent border border-red-500 hover:opacity-80 border-solid cursor-pointer disabled:opacity-40 disabled:cursor-default"
               >
                 Clear All
               </button>
@@ -243,7 +243,7 @@ function CommunityNotifications() {
               <button
                 onClick={() => clearAll()}
                 disabled={isClearingAll || notifications.length === 0}
-                className="px-4 py-2 rounded text-xs font-medium text-brand bg-transparent border border-brand hover:opacity-80 border-solid cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                className="px-4 py-2 rounded text-xs font-medium text-red-500 bg-transparent border border-red-500 hover:opacity-80 border-solid cursor-pointer disabled:opacity-40 disabled:cursor-default"
               >
                 Clear All
               </button>
