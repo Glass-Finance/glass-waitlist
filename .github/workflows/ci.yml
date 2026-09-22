@@ -11,6 +11,12 @@ jobs:
     name: Lint & Build
     runs-on: ubuntu-latest
 
+    env:
+      # Inlined at build time by Vite; the build guard refuses to run without
+      # it (a missing value compiles every image URL to res.cloudinary.com/
+      # undefined/... and ships a blank page). Public value, not a secret.
+      VITE_CLOUDINARY_CLOUD_NAME: ece5jmhy
+
     steps:
       - uses: actions/checkout@v4
 

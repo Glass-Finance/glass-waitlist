@@ -19,10 +19,23 @@
 // suite consistent.
 function cloudName() {
   const name = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  if (!name && import.meta.env.DEV) {
-    // Loud in dev, silent in prod build — a missing env var here means every
-    // image on the page breaks, so this should never fail quietly.
-    console.error("VITE_CLOUDINARY_CLOUD_NAME is not set — Cloudinary images will 404.");
+  if (!name) {
+    if (import.meta.env.DEV) {
+      // Loud but non-blocking in dev — you can still iterate on layout while
+      // images are 404ing, which is enough to notice and fix it.
+      console.error("VITE_CLOUDINARY_CLOUD_NAME is not set — Cloudinary images will 404.");
+    } else {
+      // Production build: a missing name compiles every URL to
+      // res.cloudinary.com/undefined/... and ships a blank page with no build
+      // error — exactly how the live site broke. scripts/check-build-env.mjs
+      // makes that unreachable via `npm run build`; this throw is the
+      // belt-and-braces backstop for anything that bypasses it (e.g.
+      // `npx vite build`), so it fails loudly instead of silently.
+      throw new Error(
+        "VITE_CLOUDINARY_CLOUD_NAME is missing — refusing to render broken image URLs. " +
+          "Set it in the build environment (Vercel project settings) and rebuild.",
+      );
+    }
   }
   return name;
 }
