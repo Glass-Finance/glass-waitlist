@@ -25,7 +25,7 @@ The only code difference between a component here and its `glass-waitlist-v1` co
 - **Vite 8** for dev/build (Rolldown-based bundler)
 - **Tailwind CSS 4** (CSS-first config, no `tailwind.config.js`)
 - **TanStack React Query 5** for server state (fetching, caching, mutations)
-- **Axios** for HTTP, with an interceptor-based auth-refresh flow
+- **Axios** for HTTP, with an interceptor-based auth-refresh flow (session lifecycle, role contracts, and auth payload notes live in `docs/authentication.md`)
 - **Framer Motion / GSAP / OGL** for animation on the public marketing pages
 - **ESLint 9** for linting
 - **Vitest** for unit tests (jsdom environment), run in CI on every push/PR
@@ -118,4 +118,4 @@ Before starting work, fetch and rebase onto the latest `main` when appropriate. 
 
 - Tailwind v4 uses its CSS-first config — theme overrides live in `@theme` blocks in `src/index.css`, not in a `tailwind.config.js`.
 - The community-admin dashboard (`src/pages/dashboard`) is the largest and most actively developed part of the app.
-- Unit tests (`npm run test`) cover the highest-risk pure logic — payment/obligation status resolution, formatting helpers, role matching, recurring-schedule math — colocated as `*.test.js` next to the file they cover. Most UI/flow changes still need manual verification by running the app; the suite isn't (yet) a substitute for exercising the affected flow.
+- Unit tests (`npm run test`) cover the highest-risk pure logic — payment/obligation status resolution, formatting helpers, role matching, recurring-schedule math — under `src/__tests__/`, mirroring the `src/` tree it covers (see `docs/testing-strategy.md`). Most UI/flow changes still need manual verification by running the app; the suite isn't (yet) a substitute for exercising the affected flow.
