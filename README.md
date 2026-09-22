@@ -30,6 +30,7 @@ The only code difference between a component here and its `glass-waitlist-v1` co
 - **ESLint 9** for linting
 - **Vitest** for unit tests (jsdom environment), run in CI on every push/PR
 - **Sentry** for crash/error reporting, gated behind an optional env var (disabled unless configured)
+- **Cloudinary** for all image delivery across the public landing pages and auth screens. URL-building lives in `src/lib/cloudinary.js` — see the environment variable below and the build guard in `scripts/check-build-env.mjs`.
 
 ## Getting started
 
@@ -43,12 +44,13 @@ The app runs at `http://localhost:3000` by default (see `vite.config.js`).
 
 ### Environment variables
 
-| Variable                | Required                | Purpose                                                                                                                                                                                                                                        |
-| ----------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `VITE_API_BASE_URL`     | Yes                     | Origin of the backend API (e.g. `https://api.glasspay.app`). The client appends `/api/v1` itself.                                                                                                                                              |
-| `VITE_GOOGLE_CLIENT_ID` | Only for Google sign-in | OAuth 2.0 Web client ID from Google Cloud Console, used by the "Continue with Google" buttons on sign-up/sign-in. Add your dev origin (e.g. `http://localhost:3000`) under "Authorized JavaScript origins" for it to work locally.             |
-| `VITE_APP_URL`          | No                      | Public origin of the app itself (e.g. `https://app.glasspay.app`), used to build cross-device links (the "open this on your phone" desktop-required flow). Falls back to `window.location.origin` if unset, so it's safe to skip in local dev. |
-| `VITE_SENTRY_DSN`       | No                      | Enables crash/error reporting (`src/utils/monitoring.js`) via Sentry. Leave unset to run with monitoring disabled — the default for local dev.                                                                                                 |
+| Variable                     | Required                | Purpose                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_API_BASE_URL`          | Yes                     | Origin of the backend API (e.g. `https://api.glasspay.app`). The client appends `/api/v1` itself.                                                                                                                                                                                                                                                                                                    |
+| `VITE_CLOUDINARY_CLOUD_NAME` | Yes                     | Cloudinary cloud name for image delivery (e.g. `ece5jmhy`). Required at **build time** — `import.meta.env.VITE_*` values are inlined by Vite, so if it's missing every image URL compiles to `res.cloudinary.com/undefined/...` and the site renders blank. `scripts/check-build-env.mjs` runs before `npm run build` and fails the build if it's absent (CI sets it in `.github/workflows/ci.yml`). |
+| `VITE_GOOGLE_CLIENT_ID`      | Only for Google sign-in | OAuth 2.0 Web client ID from Google Cloud Console, used by the "Continue with Google" buttons on sign-up/sign-in. Add your dev origin (e.g. `http://localhost:3000`) under "Authorized JavaScript origins" for it to work locally.                                                                                                                                                                   |
+| `VITE_APP_URL`               | No                      | Public origin of the app itself (e.g. `https://app.glasspay.app`), used to build cross-device links (the "open this on your phone" desktop-required flow). Falls back to `window.location.origin` if unset, so it's safe to skip in local dev.                                                                                                                                                       |
+| `VITE_SENTRY_DSN`            | No                      | Enables crash/error reporting (`src/utils/monitoring.js`) via Sentry. Leave unset to run with monitoring disabled — the default for local dev.                                                                                                                                                                                                                                                       |
 
 This repo is frontend-only — it talks to a separate backend service and does not run one itself.
 
@@ -61,16 +63,16 @@ There's no separate local/mock backend to stand up — `VITE_API_BASE_URL` point
 
 ## Scripts
 
-| Command                | Description                                                     |
-| ---------------------- | --------------------------------------------------------------- |
-| `npm run dev`          | Start the Vite dev server                                       |
-| `npm run build`        | Type-check-free production build to `dist/`                     |
-| `npm run lint`         | Run ESLint over the project                                     |
-| `npm run format`       | Format supported source, configuration, and documentation files |
-| `npm run format:check` | Verify formatting without changing files                        |
-| `npm run test`         | Run the Vitest suite once (also runs in CI)                     |
-| `npm run test:watch`   | Run Vitest in watch mode                                        |
-| `npm run preview`      | Serve the production build locally                              |
+| Command                | Description                                                                                                                                           |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`          | Start the Vite dev server                                                                                                                             |
+| `npm run build`        | Production build to `dist/` — runs `scripts/check-build-env.mjs` first and fails if required env vars (e.g. `VITE_CLOUDINARY_CLOUD_NAME`) are missing |
+| `npm run lint`         | Run ESLint over the project                                                                                                                           |
+| `npm run format`       | Format supported source, configuration, and documentation files                                                                                       |
+| `npm run format:check` | Verify formatting without changing files                                                                                                              |
+| `npm run test`         | Run the Vitest suite once (also runs in CI)                                                                                                           |
+| `npm run test:watch`   | Run Vitest in watch mode                                                                                                                              |
+| `npm run preview`      | Serve the production build locally                                                                                                                    |
 
 ## Project structure
 
