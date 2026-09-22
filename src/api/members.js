@@ -170,6 +170,9 @@ export const markAsRead = (notificationId) => client.patch(`/notifications/${not
 // PATCH /api/v1/notifications/read-all
 export const markAllAsRead = () => client.patch("/notifications/read-all");
 
+// DELETE /api/v1/notifications — clear all of the current user's notifications
+export const clearAllNotifications = () => client.delete("/notifications");
+
 // GET /api/v1/notifications/preferences
 export const getNotificationPreferences = () => client.get("/notifications/preferences");
 

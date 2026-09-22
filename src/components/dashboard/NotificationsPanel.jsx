@@ -157,6 +157,8 @@ export default function NotificationsPanel({
   communityMap,
   onMarkRead,
   onMarkAllRead,
+  onClearAll,
+  isClearingAll,
   onClose,
 }) {
   const navigate = useNavigate();
@@ -178,13 +180,22 @@ export default function NotificationsPanel({
             </span>
           )}
         </p>
-        <button
-          onClick={onMarkAllRead}
-          disabled={count === 0}
-          className="text-[11px] font-normal text-[#002FA7] bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
-        >
-          Mark All As Read
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onMarkAllRead}
+            disabled={count === 0}
+            className="text-[11px] font-normal text-[#002FA7] bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
+          >
+            Mark All As Read
+          </button>
+          <button
+            onClick={onClearAll}
+            disabled={notifications.length === 0 || isClearingAll}
+            className="text-[11px] font-normal text-[#002FA7] bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
+          >
+            Clear All
+          </button>
+        </div>
       </div>
 
       {/* Body */}

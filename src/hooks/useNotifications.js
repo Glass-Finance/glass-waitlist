@@ -40,6 +40,12 @@ async function markAllRead() {
   return res.data;
 }
 
+// DELETE /api/v1/notifications — clear all of the current user's notifications
+async function clearAll() {
+  const res = await client.delete("/notifications");
+  return res.data;
+}
+
 export function useNotifications() {
   const activeSlugOrId = useActiveCommunityId();
   const { data: communitiesData } = useCommunities();
@@ -172,6 +178,26 @@ export function useNotifications() {
     },
   });
 
+  // ── Clear all (DELETE /notifications) ──────────────────────────────────────
+  // Distinct from marking read: this removes every notification for the
+  // user, not just their unread state. Same global-invalidation rule as
+  // above — a notification cleared here is gone from every cached list.
+  const clearAllMutation = useMutation({
+    mutationFn: clearAll,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: listKey });
+      const previous = queryClient.getQueryData(listKey);
+      queryClient.setQueryData(listKey, (old) => (old ? { ...old, content: [] } : old));
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
+
   return {
     notifications: query.data ?? [],
     isLoading: query.isLoading,
@@ -180,6 +206,8 @@ export function useNotifications() {
     markRead: (id) => markReadMutation.mutate(id),
     markAllRead: () => markAllReadMutation.mutate(),
     isMarkingAllRead: markAllReadMutation.isPending,
+    clearAll: () => clearAllMutation.mutate(),
+    isClearingAll: clearAllMutation.isPending,
   };
 }
 
@@ -246,6 +274,21 @@ export function useAllNotifications() {
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
+  // ── Clear all (DELETE /notifications) ──────────────────────────────────────
+  const clearAllMutation = useMutation({
+    mutationFn: clearAll,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: listKey });
+      const previous = queryClient.getQueryData(listKey);
+      queryClient.setQueryData(listKey, (old) => (old ? { ...old, content: [] } : old));
+      return { previous };
+    },
+    onError: (_e, _v, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+  });
+
   const unreadCount = useMemo(
     () => (query.data ?? []).filter((n) => !n.readFlag).length,
     [query.data],
@@ -258,6 +301,8 @@ export function useAllNotifications() {
     markRead: (id) => markReadMutation.mutate(id),
     markAllRead: () => markAllReadMutation.mutate(),
     isMarkingAllRead: markAllReadMutation.isPending,
+    clearAll: () => clearAllMutation.mutate(),
+    isClearingAll: clearAllMutation.isPending,
   };
 }
 
