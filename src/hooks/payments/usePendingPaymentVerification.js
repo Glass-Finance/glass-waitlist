@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { verifyPayment } from "../../api/members";
 import { toastSuccess } from "../../utils/toast";
 import { settleLocalPaymentForReference } from "./localCache";
+import { isVerificationSuccessStatus } from "../../utils/paymentStatus";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Pending payment verification — covers payers who never reach the callback
@@ -28,7 +29,7 @@ export function usePendingPaymentVerification() {
         queryClient.invalidateQueries({ queryKey: ["payment-links"] });
         queryClient.invalidateQueries({ queryKey: ["authorisations"] });
         queryClient.invalidateQueries({ queryKey: ["community"] });
-        if (status === "SUCCESS" || status === "SUCCESSFUL") {
+        if (isVerificationSuccessStatus(status)) {
           settleLocalPaymentForReference(reference);
           toastSuccess("Payment confirmed", { reference });
         }

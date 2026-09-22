@@ -16,6 +16,7 @@ import LoadingScreen from "../../components/LoadingScreen";
 import { Button } from "../../components/ui/Button";
 import MemberPaymentConfirm from "../memberApp/PaymentSuccess";
 import SuccessBadge from "../../components/common/SuccessBadge";
+import { isVerificationSuccessStatus, isFailedStatus } from "../../utils/paymentStatus";
 
 // The backend's verify endpoint is async: it queues a verification job and
 // returns the current DB status (often still "INITIATED"). The job updates the
@@ -26,8 +27,7 @@ const POLL_INTERVAL_MS = 1500;
 const MAX_POLLS = 20;
 
 function isTerminal(status) {
-  const s = (status ?? "").toUpperCase();
-  return s === "SUCCESS" || s === "SUCCESSFUL" || s === "FAILED";
+  return isVerificationSuccessStatus(status) || isFailedStatus(status);
 }
 
 // Paystack's own callback_url points here for every payment, admin and
@@ -157,8 +157,7 @@ function AdminPaymentCallback() {
         if (cancelled) return;
 
         if (isTerminal(status)) {
-          const s = status.toUpperCase();
-          const finalState = s === "SUCCESS" || s === "SUCCESSFUL" ? "success" : "failed";
+          const finalState = isVerificationSuccessStatus(status) ? "success" : "failed";
           invalidateCaches();
           if (finalState === "success") {
             await maybeOfferAutoPay(reference);

@@ -8,6 +8,7 @@ import {
 } from "../../api/members";
 import { unwrapList, deriveStatus } from "./helpers";
 import { shapeObligation, shapePaymentLink, shapeTransaction, normalizeCommunity } from "./shape";
+import { isPaidObligationStatus } from "../../utils/paymentStatus";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main hook — Home screen data
@@ -167,7 +168,7 @@ export function usePayments(preferredCommunityIdentifier) {
 
   const unpaidObligations = sorted.filter((o) => {
     const linkIsActive = o.linkStatus === "ACTIVE" || !o.linkStatus;
-    return linkIsActive && o.status !== "PAID";
+    return linkIsActive && !isPaidObligationStatus(o.status);
   });
 
   // Payment links that are ACTIVE (or have no status set) and have no

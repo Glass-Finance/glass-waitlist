@@ -1,6 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { toTitleCase, formatDate } from "../../../../utils/format";
 import { formatNaira, statusStyle, freqStyle } from "../helpers";
+import { isPaidObligationStatus } from "../../../../utils/paymentStatus";
 
 export default function YourPaymentsSection({
   rows,
@@ -81,7 +82,7 @@ export default function YourPaymentsSection({
               </tr>
             ) : (
               rows.map((row) => {
-                const isPaid = row.status === "PAID" || row.status === "SUCCESSFUL";
+                const isPaid = isPaidObligationStatus(row.status);
                 const s = statusStyle(isPaid ? "paid" : "unpaid");
                 const f = freqStyle(row);
                 return (

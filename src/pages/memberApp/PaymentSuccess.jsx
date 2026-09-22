@@ -12,13 +12,13 @@ import ReceiptModal from "../../components/common/ReceiptModal";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { Button } from "../../components/ui/Button";
 import SuccessBadge from "../../components/common/SuccessBadge";
+import { isVerificationSuccessStatus, isFailedStatus } from "../../utils/paymentStatus";
 
 const POLL_INTERVAL_MS = 1500;
 const MAX_POLLS = 20;
 
 function isTerminal(status) {
-  const s = (status ?? "").toUpperCase();
-  return s === "SUCCESS" || s === "SUCCESSFUL";
+  return isVerificationSuccessStatus(status);
 }
 
 // A FAILED reported at any single poll isn't necessarily final: a transfer
@@ -30,7 +30,7 @@ function isTerminal(status) {
 // only settle on "failed" once polling genuinely runs out -- see
 // lastStatusRef below.
 function isFailed(status) {
-  return (status ?? "").toUpperCase() === "FAILED";
+  return isFailedStatus(status);
 }
 
 export default function PaymentSuccess() {

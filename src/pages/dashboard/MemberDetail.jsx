@@ -13,6 +13,7 @@ import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import StatCard from "../../components/dashboard/StatCard";
 import { formatNaira, formatDate } from "../../utils/format";
 import { resolveDisplayName, resolveEmail, resolvePhone } from "../../utils/memberName";
+import { isSuccessfulStatus, isPaidObligationStatus } from "../../utils/paymentStatus";
 
 const TABS = ["All Plans", "Payment History", "Contact Details"];
 
@@ -22,8 +23,7 @@ const memberPhone = (m) => resolvePhone(m);
 
 function PlanCard({ plan }) {
   const isRecurring = !!plan.recurringPlan;
-  const s = (plan.status ?? "").toUpperCase();
-  const isPaid = s === "PAID";
+  const isPaid = isPaidObligationStatus(plan.status);
   return (
     <div className="bg-surface-container rounded-md border border-surface-container-border p-4">
       <div className="flex items-start justify-between mb-2">
@@ -91,9 +91,7 @@ export default function MemberDetail() {
     );
   }
 
-  const successfulTxs = member.transactions.filter((t) =>
-    ["SUCCESS", "SUCCESSFUL", "PAID"].includes((t.status ?? "").toUpperCase()),
-  );
+  const successfulTxs = member.transactions.filter((t) => isSuccessfulStatus(t.status));
   const totalPaid = successfulTxs.reduce((sum, t) => sum + (t.amount ?? t.amountPaid ?? 0), 0);
 
   // Distinct plans (one card per payment link, latest obligation for that

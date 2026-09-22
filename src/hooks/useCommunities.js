@@ -3,6 +3,7 @@ import client from "../api/client";
 import { getCommunity, fetchAllCommunityMembers } from "../api/communities";
 import { fetchAllCommunityTransactions } from "../api/transactions";
 import { searchPublicCommunities } from "../api/communities";
+import { isSuccessfulStatus } from "../utils/paymentStatus";
 
 // GET /api/v1/communities/me
 // Returns a PAGINATED envelope: { content: [...], pageNumber, pageSize, totalElements, totalPages, last }
@@ -103,8 +104,6 @@ export function useCommunitiesWithMetrics(params = {}) {
     })),
   });
 
-  const SUCCESS_STATUSES = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
-
   const enriched = communities.map((c, i) => {
     const baseMetrics = detailQueries[i]?.data?.metrics ?? c.metrics ?? {};
     const activeMemberList = memberListQueries[i]?.data;
@@ -113,7 +112,7 @@ export function useCommunitiesWithMetrics(params = {}) {
     const computedCollected =
       txList != null
         ? txList
-            .filter((t) => SUCCESS_STATUSES.has((t.status ?? "").toUpperCase()))
+            .filter((t) => isSuccessfulStatus(t.status))
             .reduce((sum, t) => sum + (t.amount ?? 0), 0)
         : null;
 
