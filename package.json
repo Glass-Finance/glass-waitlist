@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/check-build-env.mjs && vite build",
+    "build": "node scripts/check-build-env.mjs && vite build && node scripts/verify-cloudinary-build.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",

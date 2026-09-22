@@ -13,9 +13,11 @@ jobs:
 
     env:
       # Inlined at build time by Vite; the build guard refuses to run without
-      # it (a missing value compiles every image URL to res.cloudinary.com/
-      # undefined/... and ships a blank page). Public value, not a secret.
+      # them (a missing cloud compiles every image URL to res.cloudinary.com/
+      # undefined/... and ships a blank page; a missing API base points the
+      # app at the wrong backend). Public values, not secrets.
       VITE_CLOUDINARY_CLOUD_NAME: ece5jmhy
+      VITE_API_BASE_URL: https://api.glasspay.app
 
     steps:
       - uses: actions/checkout@v4

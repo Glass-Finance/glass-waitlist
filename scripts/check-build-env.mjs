@@ -3,11 +3,11 @@
 // Build-time guard: refuse to build if a required VITE_* variable is missing.
 //
 // Why this exists: import.meta.env.VITE_* values are inlined by Vite at build
-// time, not read at runtime. If VITE_CLOUDINARY_CLOUD_NAME is absent when
-// `vite build` runs, every image URL silently compiles to
-// res.cloudinary.com/undefined/..., the deployed page renders blank, and
-// nothing in the build fails — which is exactly how the live site shipped
-// broken. Exiting non-zero here fails the build loudly instead.
+// time, not read at runtime. If a required variable is absent when `vite build`
+// runs, the deployed bundle ships broken — VITE_CLOUDINARY_CLOUD_NAME compiles
+// every image URL to res.cloudinary.com/undefined/... (blank page),
+// VITE_API_BASE_URL points the app at the wrong backend — and nothing in the
+// build fails. Exiting non-zero here fails the build loudly instead.
 //
 // Source of the value, by environment:
 //   - Local:     .env (loaded via dotenv)
@@ -16,7 +16,7 @@
 
 import "dotenv/config";
 
-const REQUIRED = ["VITE_CLOUDINARY_CLOUD_NAME"];
+const REQUIRED = ["VITE_CLOUDINARY_CLOUD_NAME", "VITE_API_BASE_URL"];
 
 const missing = REQUIRED.filter((name) => !process.env[name]);
 
@@ -28,7 +28,8 @@ if (missing.length > 0) {
       ...missing.map((name) => `    - ${name}`),
       "",
       "  VITE_* variables are inlined at build time; building without them",
-      "  ships a broken bundle (every Cloudinary image 404s -> blank page).",
+      "  ships a broken bundle (Cloudinary images 404 -> blank page, wrong",
+      "  API base, etc).",
       "",
       "  Fix:",
       "    local  -> add it to .env (see .env.example)",
