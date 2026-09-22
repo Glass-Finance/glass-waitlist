@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { captureRenderError } from "../utils/monitoring";
-import GlassLogo from "../assets/Glass.webp";
+import CloudImage from "./common/CloudImage";
 
 export default class ErrorBoundary extends Component {
   state = { error: null };
@@ -17,7 +17,13 @@ export default class ErrorBoundary extends Component {
     if (this.state.error) {
       return (
         <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-cover bg-center bg-page-default">
-          <img src={GlassLogo} alt="Glass" className="w-10 h-10 object-contain mb-8" />
+          <CloudImage
+            publicId="glass/Glass"
+            alt="Glass"
+            width={80}
+            objectFit="contain"
+            className="w-10 h-10 mb-8"
+          />
 
           <h1 className="text-[22px] font-bold text-gray-900 mb-2">Something went wrong</h1>
           <p className="text-sm text-gray-500 max-w-[320px] leading-relaxed mb-8">

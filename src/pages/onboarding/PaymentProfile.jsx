@@ -14,7 +14,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bell, Check, ArrowLeft } from "lucide-react";
-import GlassLogo from "../../assets/Glass.webp";
+import CloudImage from "../../components/common/CloudImage";
 import SuccessBadge from "../../components/common/SuccessBadge";
 import { getBanks, resolveAccount } from "../../api/members";
 import { notifyError, getErrorMessage } from "../../utils/errorHandler";
@@ -242,7 +242,13 @@ export default function PaymentProfile() {
 
       <header className="relative flex items-center justify-between px-4 lg:px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
         <div className="flex items-center gap-2">
-          <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
+          <CloudImage
+            publicId="glass/Glass"
+            alt="Glass"
+            width={56}
+            objectFit="contain"
+            className="w-7 h-7"
+          />
           <span className="font-medium text-base text-gray-900">Glass</span>
         </div>
         <div className="flex items-center gap-4">

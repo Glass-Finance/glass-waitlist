@@ -8,7 +8,10 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import BlurText from "../ui/BlurText";
-import lightBg from "../../assets/solution/bg-light.webp";
+import CloudImage from "./CloudImage";
+import { cldUrl, cldSrcSet, widthsFor } from "../../lib/cloudinary";
+
+const lightBg = { publicId: "glass/solution/bg-light", width: 1200 };
 
 // ─── Per-card tilt hook ───────────────────────────────────────────────────────
 function useTilt(strength = 14) {
@@ -119,12 +122,12 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
 
       {/* Icon + text */}
       <div className="flex items-start gap-3 [padding:clamp(16px,3vw,28px)_clamp(14px,2.5vw,20px)_0px]">
-        <img
-          src={icon}
+        <CloudImage
+          publicId={icon.publicId}
           alt=""
-          className="[width:clamp(36px,5vw,50px)] [height:clamp(36px,5vw,50px)] object-contain flex-shrink-0"
-          loading="lazy"
-          decoding="async"
+          width={icon.width}
+          objectFit="contain"
+          className="[width:clamp(36px,5vw,50px)] [height:clamp(36px,5vw,50px)] flex-shrink-0"
         />
         <div className="min-w-0">
           {/* Title types first */}
@@ -144,17 +147,18 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
           off short of the card's real bottom edge (#151). The clamp still
           sets the natural/minimum size when no stretch is happening. */}
       <div className="solution-illus relative flex-1 [min-height:clamp(160px,45vw,240px)] overflow-hidden">
-        <img
-          src={lightBg}
+        <CloudImage
+          publicId={lightBg.publicId}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
+          width={lightBg.width}
+          className="absolute inset-0 opacity-30"
           draggable={false}
-          loading="lazy"
-          decoding="async"
         />
         <div className="solution-fade absolute top-0 left-0 right-0 h-[18%] bg-[linear-gradient(to_bottom,#EFEFF1_0%,rgba(239,239,241,0.7)_55%,transparent_100%)] pointer-events-none z-[5]" />
         <img
-          src={illustration}
+          src={cldUrl(illustration.publicId, { width: illustration.width })}
+          srcSet={cldSrcSet(illustration.publicId, widthsFor(illustration.width))}
+          sizes="(min-width: 768px) 50vw, 85vw"
           alt={title}
           className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-auto object-contain z-10"
           draggable={false}

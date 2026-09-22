@@ -1,0 +1,736 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./support.js"></script>
+  </head>
+  <body>
+    <x-dc>
+      <helmet>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+          body {
+            margin: 0;
+            background: #fafaf9;
+          }
+          a {
+            color: #2547d0;
+            text-decoration: none;
+          }
+          a:hover {
+            color: #1c2b8a;
+          }
+          @keyframes gp-tap {
+            0% {
+              transform: scale(0.4);
+              opacity: 0;
+            }
+            30% {
+              transform: scale(1);
+              opacity: 1;
+            }
+            100% {
+              transform: scale(1.15);
+              opacity: 0;
+            }
+          }
+        </style>
+      </helmet>
+      <div
+        style="
+          min-height: 100vh;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          overflow: hidden;
+          font-family: Helvetica, Arial, sans-serif;
+        "
+      >
+        <div style="position: relative; width: 876px; height: 791px; flex-shrink: 0">
+          <img
+            src="uploads/iphone.png"
+            alt="Hand holding phone"
+            style="position: absolute; inset: 0; width: 876px; height: 791px"
+          />
+          <!-- live screen, homography-mapped onto the photo's screen quad -->
+          <div
+            style="position:absolute; left:0; top:0; width:393px; height:852px; transform-origin:0 0; transform: {{ screenTransform }}; border-radius:56px; overflow:hidden; background:#F7F8FC; outline: {{ debugOutline }};"
+          >
+            <!-- scrolling home page -->
+            <div
+              ref="{{ homeRef }}"
+              style="transform: translateY({{ homeScroll }}px); transition: transform 2.2s cubic-bezier(0.45,0,0.2,1); will-change:transform;"
+            >
+              <!-- top bar -->
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  padding: 64px 20px 20px 20px;
+                "
+              >
+                <div style="display: flex; align-items: center; gap: 15px; min-width: 0">
+                  <div style="display: flex; flex-direction: column; gap: 5px; width: 24px">
+                    <div style="height: 2.5px; background: #222; border-radius: 2px"></div>
+                    <div style="height: 2.5px; background: #222; border-radius: 2px"></div>
+                    <div style="height: 2.5px; background: #222; border-radius: 2px"></div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 7px">
+                    <div
+                      style="
+                        width: 28px;
+                        height: 28px;
+                        border-radius: 6px;
+                        background: #1c2b8a;
+                        color: #fff;
+                        font-size: 11px;
+                        font-weight: 700;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      "
+                    >
+                      K
+                    </div>
+                    <span
+                      style="font-size: 14px; font-weight: 500; color: #111; white-space: nowrap"
+                      >Kings College Community</span
+                    >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M6 9l6 6 6-6"
+                        stroke="#666"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <div
+                  style="
+                    position: relative;
+                    width: 38px;
+                    height: 38px;
+                    border-radius: 50%;
+                    background: #fff;
+                    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-shrink: 0;
+                  "
+                >
+                  <svg
+                    width="17"
+                    height="17"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#333"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                  </svg>
+                  <span
+                    style="
+                      position: absolute;
+                      top: 4px;
+                      right: 4px;
+                      min-width: 15px;
+                      height: 15px;
+                      padding: 0 3px;
+                      border-radius: 8px;
+                      background: #ef4444;
+                      color: #fff;
+                      font-size: 9px;
+                      font-weight: 700;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      border: 1.5px solid #fff;
+                      box-sizing: border-box;
+                    "
+                    >2</span
+                  >
+                </div>
+              </div>
+              <!-- greeting -->
+              <div style="padding: 4px 20px 20px 20px">
+                <h1 style="font-size: 24px; font-weight: 500; color: #111; margin: 0">Hi David,</h1>
+                <p style="font-size: 13px; color: #888; margin: 3px 0 0 0">
+                  Here's Your Community At A Glance
+                </p>
+              </div>
+              <!-- hero card -->
+              <div
+                style="
+                  margin: 0 16px;
+                  border-radius: 16px;
+                  overflow: hidden;
+                  background: #fff;
+                  border: 1px solid #ecedf3;
+                  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+                "
+              >
+                <div
+                  style="
+                    border-top: 1.5px solid #2547d0;
+                    border-left: 1.5px solid #2547d0;
+                    border-right: 1.5px solid #2547d0;
+                    border-radius: 16px 16px 0 0;
+                    padding: 20px 20px 0 20px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                  "
+                >
+                  <div
+                    style="
+                      border: 1px solid #ecedf3;
+                      margin-bottom: 14px;
+                      padding: 6px 18px;
+                      border-radius: 999px;
+                      color: #374151;
+                      font-size: 12px;
+                      font-weight: 500;
+                      display: flex;
+                      align-items: center;
+                      gap: 6px;
+                    "
+                  >
+                    <span
+                      style="width: 6px; height: 6px; border-radius: 50%; background: #7c3aed"
+                    ></span>
+                    Recurring
+                  </div>
+                  <p style="font-size: 13px; color: #6b7280; margin: 0 0 6px 0">Next Payment Due</p>
+                  <p
+                    style="
+                      font-size: 42px;
+                      font-weight: 700;
+                      color: #111827;
+                      letter-spacing: -1px;
+                      line-height: 1;
+                      margin: 0 0 14px 0;
+                    "
+                  >
+                    ₦15,000
+                  </p>
+                </div>
+                <div
+                  style="
+                    padding: 0 20px 20px 20px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                  "
+                >
+                  <div
+                    style="
+                      padding: 6px 16px;
+                      border-radius: 8px;
+                      background: #d7e2ff;
+                      color: #2547d0;
+                      font-size: 12px;
+                      margin-bottom: 10px;
+                    "
+                  >
+                    Alumni Contribution
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 5px;
+                      margin-bottom: 18px;
+                      font-size: 12px;
+                      color: #9ca3af;
+                    "
+                  >
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#9CA3AF"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                    >
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 6v6l4 2"></path>
+                    </svg>
+                    <span>Due: June 1, 2025</span>
+                  </div>
+                  <div
+                    style="
+                      width: 100%;
+                      padding: 14px 0;
+                      border-radius: 6px;
+                      background: #2547d0;
+                      color: #fff;
+                      font-size: 15px;
+                      font-weight: 600;
+                      text-align: center;
+                    "
+                  >
+                    Pay Now
+                  </div>
+                </div>
+              </div>
+              <!-- upcoming payments -->
+              <div
+                style="
+                  margin: 16px 16px 0 16px;
+                  background: #f1f2f7;
+                  border-radius: 16px;
+                  padding: 16px 16px 4px 16px;
+                  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+                "
+              >
+                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px">
+                  <span style="font-size: 14px; font-weight: 600; color: #111"
+                    >Upcoming Payments</span
+                  >
+                  <span
+                    style="
+                      font-size: 11px;
+                      font-weight: 700;
+                      color: #1c2b8a;
+                      background: #e4e7f9;
+                      border-radius: 999px;
+                      padding: 1px 7px;
+                    "
+                    >3</span
+                  >
+                </div>
+                <sc-for list="{{ upcoming }}" as="p" hint-placeholder-count="3">
+                  <div
+                    style="
+                      padding: 14px 12px;
+                      margin: 16px 0;
+                      border-radius: 8px;
+                      background: #fff;
+                      display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                      gap: 12px;
+                    "
+                  >
+                    <div style="flex: 1; min-width: 0">
+                      <div
+                        style="font-size: 17px; font-weight: 700; color: #111; margin-bottom: 6px"
+                      >
+                        {{ p.amount }}
+                      </div>
+                      <p style="font-size: 13px; color: #333; margin: 0 0 4px 0">{{ p.name }}</p>
+                      <div style="display: flex; align-items: center; gap: 4px; color: #999">
+                        <svg
+                          width="11"
+                          height="11"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#999"
+                          stroke-width="1.8"
+                          stroke-linecap="round"
+                        >
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <path d="M12 6v6l4 2"></path>
+                        </svg>
+                        <span style="font-size: 12px">Due: {{ p.due }}</span>
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: flex-end;
+                        gap: 16px;
+                        flex-shrink: 0;
+                      "
+                    >
+                      <span
+                        style="font-size:11px; font-weight:600; padding:3px 10px; border-radius:999px; color: {{ p.badgeColor }}; background: {{ p.badgeBg }};"
+                        >{{ p.badge }}</span
+                      >
+                      <div
+                        style="
+                          padding: 7px 16px;
+                          border-radius: 6px;
+                          border: 1.5px solid #2547d0;
+                          background: #fff;
+                          color: #2547d0;
+                          font-size: 12px;
+                          font-weight: 600;
+                          white-space: nowrap;
+                        "
+                      >
+                        Pay Now
+                      </div>
+                    </div>
+                  </div>
+                </sc-for>
+                <div
+                  style="
+                    padding: 4px 0 10px 0;
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #1c2b8a;
+                    text-align: center;
+                  "
+                >
+                  View All
+                </div>
+              </div>
+              <!-- payment history -->
+              <div
+                style="
+                  margin: 16px 16px 40px 16px;
+                  background: #f1f2f7;
+                  border-radius: 16px;
+                  padding: 16px 16px 4px 16px;
+                  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 4px;
+                  "
+                >
+                  <span style="font-size: 14px; font-weight: 600; color: #111"
+                    >Payment History</span
+                  >
+                  <span style="font-size: 13px; font-weight: 600; color: #2547d0">See All</span>
+                </div>
+                <sc-for list="{{ history }}" as="h" hint-placeholder-count="4">
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                      padding: 13px 0;
+                      border-bottom: 1px solid #e4e5ec;
+                    "
+                  >
+                    <div>
+                      <p style="font-size: 14px; font-weight: 500; color: #111; margin: 0 0 3px 0">
+                        {{ h.description }}
+                      </p>
+                      <p style="font-size: 12px; color: #999; margin: 0">{{ h.date }}</p>
+                    </div>
+                    <div
+                      style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px"
+                    >
+                      <span style="font-size: 14px; font-weight: 700; color: #111"
+                        >{{ h.amount }}</span
+                      >
+                      <span
+                        style="
+                          font-size: 11px;
+                          font-weight: 600;
+                          padding: 2px 10px;
+                          border-radius: 999px;
+                          color: #059669;
+                          background: #ecfdf5;
+                        "
+                        >Success</span
+                      >
+                    </div>
+                  </div>
+                </sc-for>
+                <div style="height: 10px"></div>
+              </div>
+            </div>
+            <!-- side drawer + scrim -->
+            <div
+              style="position:absolute; inset:0; background:rgba(10,12,30,0.35); opacity: {{ scrimOpacity }}; transition: opacity 420ms ease; pointer-events:none;"
+            ></div>
+            <img
+              src="uploads/Frame 2121454513.png"
+              alt=""
+              style="position:absolute; left:0; top:0; width:334px; height:100%; object-fit:cover; object-position:top left; background:#fff; transform: {{ txDrawer }}; transition: transform 440ms cubic-bezier(0.32,0.72,0.3,1); box-shadow:24px 0 48px rgba(0,0,0,0.16); will-change:transform;"
+            />
+            <!-- navigation overlay screens (real app exports) -->
+            <img
+              src="uploads/Payment Success Screen.png"
+              alt=""
+              style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; background:#F7F8FC; transform: {{ txDetails }}; transition: transform 480ms cubic-bezier(0.32,0.72,0.3,1); box-shadow:-24px 0 48px rgba(0,0,0,0.14); will-change:transform;"
+            />
+            <img
+              src="uploads/iPhone 16 - 11 (4).png"
+              alt=""
+              style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; background:#F7F8FC; transform: {{ txSummary }}; transition: transform 480ms cubic-bezier(0.32,0.72,0.3,1); box-shadow:-24px 0 48px rgba(0,0,0,0.14); will-change:transform;"
+            />
+            <img
+              src="uploads/iPhone 16 - 29 (2).png"
+              alt=""
+              style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; background:#F7F8FC; transform: {{ txSuccess }}; transition: transform 480ms cubic-bezier(0.32,0.72,0.3,1); box-shadow:-24px 0 48px rgba(0,0,0,0.14); will-change:transform;"
+            />
+            <img
+              src="uploads/Frame 2121454729.png"
+              alt=""
+              style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; background:#F7F8FC; transform: {{ txSettings }}; transition: transform 480ms cubic-bezier(0.32,0.72,0.3,1); box-shadow:-24px 0 48px rgba(0,0,0,0.14); will-change:transform;"
+            />
+            <img
+              src="uploads/Frame 2121454738.png"
+              alt=""
+              style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; background:#F7F8FC; transform: {{ txAutopay }}; transition: transform 480ms cubic-bezier(0.32,0.72,0.3,1); box-shadow:-24px 0 48px rgba(0,0,0,0.14); will-change:transform;"
+            />
+            <img
+              src="uploads/iPhone 16 - 17 (3).png"
+              alt=""
+              style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; background:#F7F8FC; transform: {{ txManage }}; transition: transform 480ms cubic-bezier(0.32,0.72,0.3,1); box-shadow:-24px 0 48px rgba(0,0,0,0.14); will-change:transform;"
+            />
+            <img
+              src="uploads/Frame 2121454732.png"
+              alt=""
+              style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; background:#F7F8FC; transform: {{ txProfile }}; transition: transform 480ms cubic-bezier(0.32,0.72,0.3,1); box-shadow:-24px 0 48px rgba(0,0,0,0.14); will-change:transform;"
+            />
+            <img
+              src="uploads/Frame 2121454730 (1).png"
+              alt=""
+              style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; background:#F7F8FC; transform: {{ txCommunities }}; transition: transform 480ms cubic-bezier(0.32,0.72,0.3,1); box-shadow:-24px 0 48px rgba(0,0,0,0.14); will-change:transform;"
+            />
+            <!-- notification center (bell) with tab crossfade -->
+            <div
+              style="position:absolute; inset:0; background:#F7F8FC; transform: {{ txNotif }}; transition: transform 480ms cubic-bezier(0.32,0.72,0.3,1); box-shadow:-24px 0 48px rgba(0,0,0,0.14); will-change:transform;"
+            >
+              <img
+                src="uploads/Invites (8).png"
+                alt=""
+                style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; opacity: {{ opNotifPayments }}; transition: opacity 220ms ease;"
+              />
+              <img
+                src="uploads/Invites (7).png"
+                alt=""
+                style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; opacity: {{ opNotifCommunity }}; transition: opacity 220ms ease;"
+              />
+              <img
+                src="uploads/Invites (6).png"
+                alt=""
+                style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center; opacity: {{ opNotifInvites }}; transition: opacity 220ms ease;"
+              />
+            </div>
+            <!-- receipt sheet (slides up) -->
+            <div
+              style="position:absolute; inset:0; background:#E9EBF2; transform: {{ txReceipt }}; transition: transform 520ms cubic-bezier(0.32,0.72,0.3,1); box-shadow:0 -24px 48px rgba(0,0,0,0.18); will-change:transform; display:flex; align-items:flex-start; justify-content:center; padding-top:70px; box-sizing:border-box;"
+            >
+              <img
+                src="uploads/Frame 2121455112 (1).png"
+                alt=""
+                style="
+                  width: 361px;
+                  height: auto;
+                  border-radius: 12px;
+                  box-shadow: 0 8px 30px rgba(20, 24, 60, 0.18);
+                "
+              />
+            </div>
+            <!-- tap indicator -->
+            <sc-if value="{{ tapOn }}" hint-placeholder-val="{{ false }}">
+              <div
+                style="position:absolute; left: {{ tapX }}px; top: {{ tapY }}px; width:44px; height:44px; margin:-22px 0 0 -22px; border-radius:50%; background:rgba(28,43,138,0.30); border:2px solid rgba(255,255,255,0.75); animation: gp-tap 0.6s ease-out forwards; pointer-events:none; z-index:20;"
+              ></div>
+            </sc-if>
+            <!-- fixed status bar + dynamic island -->
+            <div
+              style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 58px;
+                pointer-events: none;
+                z-index: 30;
+              "
+            >
+              <div
+                style="
+                  position: absolute;
+                  top: 11px;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  width: 125px;
+                  height: 37px;
+                  border-radius: 20px;
+                  background: #0a0a0c;
+                "
+              ></div>
+              <span
+                style="
+                  position: absolute;
+                  top: 20px;
+                  left: 42px;
+                  font-size: 15px;
+                  font-weight: 600;
+                  color: #111;
+                "
+                >9:41</span
+              >
+              <div
+                style="
+                  position: absolute;
+                  top: 24px;
+                  right: 30px;
+                  width: 25px;
+                  height: 12px;
+                  border: 1px solid rgba(0, 0, 0, 0.4);
+                  border-radius: 4px;
+                "
+              >
+                <div
+                  style="
+                    position: absolute;
+                    inset: 2px 6px 2px 2px;
+                    background: #111;
+                    border-radius: 1.5px;
+                  "
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </x-dc>
+    <script
+      type="text/x-dc"
+      data-dc-script
+      data-props='{"debug":{"editor":"boolean","default":false,"tsType":"boolean"}}'
+    >
+      class Component extends DCLogic {
+        state = { homeScroll: 0, ov: { details:false, summary:false, success:false, settings:false, autopay:false, drawer:false, manage:false, receipt:false, profile:false, communities:false, notif:false }, notifTab: 'payments', tap: null };
+        homeRef = (el) => { this.homeEl = el; };
+        homography(w, h, c) {
+          const adj = m => [m[4]*m[8]-m[5]*m[7], m[2]*m[7]-m[1]*m[8], m[1]*m[5]-m[2]*m[4],
+            m[5]*m[6]-m[3]*m[8], m[0]*m[8]-m[2]*m[6], m[2]*m[3]-m[0]*m[5],
+            m[3]*m[7]-m[4]*m[6], m[1]*m[6]-m[0]*m[7], m[0]*m[4]-m[1]*m[3]];
+          const mm = (a,b) => { const r=[]; for(let i=0;i<3;i++) for(let j=0;j<3;j++){ let s=0; for(let k=0;k<3;k++) s+=a[3*i+k]*b[3*k+j]; r[3*i+j]=s; } return r; };
+          const mv = (m,v) => [m[0]*v[0]+m[1]*v[1]+m[2]*v[2], m[3]*v[0]+m[4]*v[1]+m[5]*v[2], m[6]*v[0]+m[7]*v[1]+m[8]*v[2]];
+          const b2p = (x1,y1,x2,y2,x3,y3,x4,y4) => { const m=[x1,x2,x3, y1,y2,y3, 1,1,1]; const v=mv(adj(m),[x4,y4,1]); return mm(m,[v[0],0,0, 0,v[1],0, 0,0,v[2]]); };
+          const s = b2p(0,0, w,0, 0,h, w,h);
+          const d = b2p(c[0],c[1], c[2],c[3], c[4],c[5], c[6],c[7]);
+          let t = mm(d, adj(s));
+          t = t.map(x => x/t[8]);
+          const m3 = [t[0],t[3],0,t[6], t[1],t[4],0,t[7], 0,0,1,0, t[2],t[5],0,t[8]];
+          return 'matrix3d(' + m3.join(',') + ')';
+        }
+        componentDidMount() { this.timers = []; this.loop(); }
+        componentWillUnmount() { (this.timers||[]).forEach(clearTimeout); }
+        at(t, fn) { this.timers.push(setTimeout(fn, t)); }
+        tapAt(x, y) {
+          this.setState({ tap: { x, y } });
+          this.timers.push(setTimeout(() => this.setState({ tap: null }), 650));
+        }
+        nav(name, on) { this.setState(s => ({ ov: { ...s.ov, [name]: on } })); }
+        loop() {
+          (this.timers||[]).forEach(clearTimeout);
+          this.timers = [];
+          // 0. check notifications from the bell
+          this.at(1000, () => this.tapAt(355, 78));
+          this.at(1450, () => { this.setState({ notifTab: 'payments' }); this.nav('notif', true); });
+          this.at(3200, () => { this.tapAt(196, 136); this.setState({ notifTab: 'community' }); });
+          this.at(5000, () => { this.tapAt(318, 136); this.setState({ notifTab: 'invites' }); });
+          this.at(7300, () => this.tapAt(40, 68));
+          this.at(7750, () => this.nav('notif', false));
+          // 1. browse home: scroll to bottom, open a history transaction
+          this.at(8500, () => {
+            const h = this.homeEl ? this.homeEl.scrollHeight : 1600;
+            this.setState({ homeScroll: -Math.max(0, h - 852) });
+          });
+          this.at(11600, () => this.tapAt(196, 620));
+          this.at(12100, () => this.nav('details', true));
+          // 1b. share receipt from transaction details
+          this.at(14300, () => this.tapAt(196, 708));
+          this.at(14800, () => this.nav('receipt', true));
+          this.at(17600, () => this.nav('receipt', false));
+          this.at(18400, () => this.tapAt(40, 62));
+          this.at(18850, () => this.nav('details', false));
+          // 2. back up, pay the due: summary -> success -> receipt
+          this.at(19400, () => this.setState({ homeScroll: 0 }));
+          this.at(21900, () => this.tapAt(196, 430));
+          this.at(22400, () => this.nav('summary', true));
+          this.at(24600, () => this.tapAt(196, 545));
+          this.at(25100, () => this.nav('success', true));
+          this.at(27500, () => this.tapAt(196, 776));
+          this.at(28000, () => this.nav('receipt', true));
+          this.at(30800, () => this.nav('receipt', false));
+          this.at(31600, () => this.tapAt(196, 706));
+          this.at(32050, () => { this.nav('success', false); this.nav('summary', false); });
+          // 3. menu -> drawer -> manage payments
+          this.at(33200, () => this.tapAt(30, 78));
+          this.at(33650, () => this.nav('drawer', true));
+          this.at(35200, () => this.tapAt(100, 180));
+          this.at(35700, () => { this.nav('drawer', false); this.nav('manage', true); });
+          this.at(38100, () => this.tapAt(40, 62));
+          this.at(38550, () => this.nav('manage', false));
+          // 4. menu -> drawer -> settings -> profile / my communities / auto-pay
+          this.at(39600, () => this.tapAt(30, 78));
+          this.at(40050, () => this.nav('drawer', true));
+          this.at(41600, () => this.tapAt(72, 236));
+          this.at(42100, () => { this.nav('drawer', false); this.nav('settings', true); });
+          this.at(44300, () => this.tapAt(196, 233));
+          this.at(44800, () => this.nav('profile', true));
+          this.at(47000, () => this.tapAt(40, 62));
+          this.at(47450, () => this.nav('profile', false));
+          this.at(48200, () => this.tapAt(196, 784));
+          this.at(48700, () => this.nav('communities', true));
+          this.at(50900, () => this.tapAt(40, 62));
+          this.at(51350, () => this.nav('communities', false));
+          this.at(52100, () => this.tapAt(196, 612));
+          this.at(52600, () => this.nav('autopay', true));
+          this.at(55000, () => this.tapAt(40, 62));
+          this.at(55450, () => this.nav('autopay', false));
+          this.at(56050, () => this.nav('settings', false));
+          this.at(57300, () => this.loop());
+        }
+        renderVals() {
+          const corners = [628,29, 856,5, 476,566, 703,560];
+          const ov = this.state.ov;
+          const tx = on => on ? 'translateX(0px)' : 'translateX(105%)';
+          return {
+            screenTransform: this.homography(393, 852, corners),
+            debugOutline: (this.props.debug ?? false) ? '2px solid red' : 'none',
+            homeScroll: this.state.homeScroll,
+            homeRef: this.homeRef,
+            txDrawer: ov.drawer ? 'translateX(0px)' : 'translateX(-105%)',
+            scrimOpacity: ov.drawer ? 1 : 0,
+            txDetails: tx(ov.details),
+            txSummary: tx(ov.summary),
+            txSuccess: tx(ov.success),
+            txSettings: tx(ov.settings),
+            txAutopay: tx(ov.autopay),
+            txManage: tx(ov.manage),
+            txProfile: tx(ov.profile),
+            txCommunities: tx(ov.communities),
+            txNotif: tx(ov.notif),
+            opNotifPayments: this.state.notifTab === 'payments' ? 1 : 0,
+            opNotifCommunity: this.state.notifTab === 'community' ? 1 : 0,
+            opNotifInvites: this.state.notifTab === 'invites' ? 1 : 0,
+            txReceipt: ov.receipt ? 'translateY(0px)' : 'translateY(105%)',
+            tapOn: !!this.state.tap,
+            tapX: this.state.tap ? this.state.tap.x : 0,
+            tapY: this.state.tap ? this.state.tap.y : 0,
+            upcoming: [
+              { amount:'₦2,500/month', name:'Infrastructure Development', due:'Jun 15, 2025', badge:'Recurring', badgeColor:'#1C2B8A', badgeBg:'#E8ECF8' },
+              { amount:'₦8,000', name:'School Fees Support', due:'Jun 15, 2025', badge:'One-time', badgeColor:'#9C27B0', badgeBg:'#F3E5F5' },
+              { amount:'₦5,000/month', name:'Sports Complex Levy', due:'Jul 1, 2025', badge:'Recurring', badgeColor:'#1C2B8A', badgeBg:'#E8ECF8' },
+            ],
+            history: [
+              { description:'Alumni Contribution', date:'May 1, 2025', amount:'₦15,000' },
+              { description:'Infrastructure Development', date:'Apr 15, 2025', amount:'₦2,500' },
+              { description:'Alumni Contribution', date:'Apr 1, 2025', amount:'₦15,000' },
+              { description:'Infrastructure Development', date:'Mar 15, 2025', amount:'₦2,500' },
+            ],
+          };
+        }
+      }
+    </script>
+  </body>
+</html>

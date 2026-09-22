@@ -5,7 +5,10 @@ import { Reveal } from "./Reveal";
 import { motion } from "motion/react";
 import { useEffect } from "react";
 import { ScaledDashboard } from "./dashboard-overlay";
-const waveBg = "/hero.webp";
+import { cldUrl } from "../../lib/cloudinary";
+
+/* Hero waves — Cloudinary (public id glass/hero/hero, see docs/cloudinary.md) */
+const waveBg = cldUrl("glass/hero/hero", { width: 1920 });
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 export default function Hero() {

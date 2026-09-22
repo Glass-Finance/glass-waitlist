@@ -3,10 +3,21 @@ import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
-import waveBg from "../../assets/hero/hero.webp";
-import iphone from "../../assets/hero/iphone.webp";
+import { cldUrl, cldSrcSet, widthsFor } from "../../lib/cloudinary";
 import BlurText from "../ui/BlurText";
 import VariableProximity from "../ui/VariableProximity";
+
+/* Wave background and phone mockup — Cloudinary (glass/hero/hero,
+   glass/hero/iphone, see docs/cloudinary.md). The iphone is rendered in a
+   raw <img> because both copies scale to their container width (w-full
+   h-auto), not a fixed box — the LQIP component needs an explicit
+   height-per-width box and can't drive intrinsic aspect ratio. */
+const waveBg = cldUrl("glass/hero/hero", { width: 1920 });
+const IPHONE = {
+  src: cldUrl("glass/hero/iphone", { width: 1240 }),
+  srcSet: cldSrcSet("glass/hero/iphone", widthsFor(1240)),
+  sizes: "(min-width: 640px) 55vw, 330px",
+};
 
 export default function MembersHero() {
   const navigate = useNavigate();
@@ -192,7 +203,9 @@ export default function MembersHero() {
                 the initial viewport, "lazy" here just means "skip if
                 hidden," not "defer until scrolled to." */}
               <img
-                src={iphone}
+                src={IPHONE.src}
+                srcSet={IPHONE.srcSet}
+                sizes={IPHONE.sizes}
                 alt="Glass app on iPhone"
                 className="relative block w-full z-10 object-contain"
                 draggable={false}
@@ -263,7 +276,9 @@ export default function MembersHero() {
               {/* See the desktop copy of this <img> above for why
                 loading="lazy" is deliberate here, not an oversight. */}
               <img
-                src={iphone}
+                src={IPHONE.src}
+                srcSet={IPHONE.srcSet}
+                sizes={IPHONE.sizes}
                 alt="Glass app on iPhone"
                 className="relative z-10 w-full block drop-shadow-[0_16px_40px_rgba(120,10,160,0.5)]"
                 draggable={false}

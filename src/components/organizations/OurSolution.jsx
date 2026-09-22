@@ -1,37 +1,29 @@
-import icon1 from "../../assets/icon/frame-reminder.webp";
-import icon2 from "../../assets/icon/frame-payment.webp";
-import icon3 from "../../assets/icon/frame-receipt.webp";
-import icon4 from "../../assets/icon/frame-flexible.webp";
-import featureAutomate from "../../assets/solution/automate.webp";
-import featureRecover from "../../assets/solution/recover.webp";
-import featureProof from "../../assets/solution/proof.webp";
-import featureMonitor from "../../assets/solution/monitor.webp";
 import SolutionSection from "../common/SolutionSection";
 
 const features = [
   {
-    icon: icon2,
+    icon: { publicId: "glass/icon/frame-payment", width: 100 },
     title: "Automate Recurring Payments",
     desc: "Members link their cards once, and dues are deducted automatically.",
-    illustration: featureAutomate,
+    illustration: { publicId: "glass/solution/automate", width: 800 },
   },
   {
-    icon: icon1,
+    icon: { publicId: "glass/icon/frame-reminder", width: 100 },
     title: "Auto-recover failed payments",
     desc: "When a payment fails, Glass retries securely and sends gentle SMS reminders",
-    illustration: featureRecover,
+    illustration: { publicId: "glass/solution/recover", width: 800 },
   },
   {
-    icon: icon3,
+    icon: { publicId: "glass/icon/frame-receipt", width: 100 },
     title: "Generate Instant Proof",
     desc: "Auto-issued receipts and reconciled transaction logs.",
-    illustration: featureProof,
+    illustration: { publicId: "glass/solution/proof", width: 800 },
   },
   {
-    icon: icon4,
+    icon: { publicId: "glass/icon/frame-flexible", width: 100 },
     title: "Monitor Payments in Real Time",
     desc: "See who has paid, who hasn't, and your total balance instantly",
-    illustration: featureMonitor,
+    illustration: { publicId: "glass/solution/monitor", width: 800 },
   },
 ];
 

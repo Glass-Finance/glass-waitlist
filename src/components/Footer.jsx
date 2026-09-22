@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import { goToApp } from "../utils/deviceRedirect";
-import logo from "../assets/cta/ctalogo.webp";
+import CloudImage from "./common/CloudImage";
 import BlurText from "./ui/BlurText";
 
 const links = {
@@ -80,7 +80,13 @@ export default function Footer() {
         {/* Brand */}
         <div className="mb-6">
           <a href="/" className="inline-flex items-center gap-2 no-underline mb-3">
-            <img src={logo} alt="Glass" className="w-7 h-7" />
+            <CloudImage
+              publicId="glass/cta/ctalogo"
+              alt="Glass"
+              width={56}
+              objectFit="contain"
+              className="w-7 h-7"
+            />
             <span className="font-bold text-[20px] text-white">Glass</span>
           </a>
           <a

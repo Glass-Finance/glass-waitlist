@@ -2,37 +2,30 @@ import { useNavigate } from "react-router-dom";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import HowItWorksSection from "../howItWorks/HowItWorksSection";
 
-import work1 from "../../assets/work/member-get-invited.webp";
-import work2 from "../../assets/work/member-create-account.webp";
-import work3 from "../../assets/work/member-set-up-payment.webp";
-import stepIcon1 from "../../assets/icon/step-1.webp";
-import stepIcon2 from "../../assets/icon/step-2.webp";
-import stepIcon3 from "../../assets/icon/step-3.webp";
-
 const steps = [
   {
     num: "01",
     label: "Get Invited",
     desc: "Receive an invite link from your admin via WhatsApp or SMS. One tap and you're in.",
     badge: "Instant Access",
-    img: work1,
-    stepIcon: stepIcon1,
+    img: { publicId: "glass/work/member-get-invited", width: 1440 },
+    stepIcon: { publicId: "glass/icon/step-1", width: 80 },
   },
   {
     num: "02",
     label: "Create Account",
     desc: "Sign up in under 60 seconds. Verify your phone — no long forms, no waiting.",
     badge: "No Long Forms",
-    img: work2,
-    stepIcon: stepIcon2,
+    img: { publicId: "glass/work/member-create-account", width: 1440 },
+    stepIcon: { publicId: "glass/icon/step-2", width: 80 },
   },
   {
     num: "03",
     label: "Set Up Payment",
     desc: "Add your card, bank, or USSD once. Glass stores it securely — never re-enter it.",
     badge: "Set Your Dues Structure",
-    img: work3,
-    stepIcon: stepIcon3,
+    img: { publicId: "glass/work/member-set-up-payment", width: 1440 },
+    stepIcon: { publicId: "glass/icon/step-3", width: 80 },
   },
 ];
 

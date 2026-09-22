@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import GlassLogo from "../../assets/Glass.webp";
+import CloudImage from "../common/CloudImage";
 
 export default function LegalPageLayout({ title, effectiveDate, lastUpdated, children }) {
   return (
@@ -7,7 +7,13 @@ export default function LegalPageLayout({ title, effectiveDate, lastUpdated, chi
       <header className="border-b border-gray-100">
         <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
           <Link to="/" className="inline-flex items-center gap-2 no-underline">
-            <img src={GlassLogo} alt="Glass" className="w-6 h-6" />
+            <CloudImage
+              publicId="glass/Glass"
+              alt="Glass"
+              width={48}
+              objectFit="contain"
+              className="w-6 h-6"
+            />
             <span className="font-bold text-lg text-gray-900">Glass</span>
           </Link>
           <Link

@@ -5,9 +5,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Info } from "lucide-react";
-import GlassLogo from "../../assets/Glass.webp";
-import CreateCommunityIcon from "../../assets/auth/create-community.webp";
-import JoinCommunityIcon from "../../assets/auth/join-community.webp";
+import CloudImage from "../../components/common/CloudImage";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { useAuth } from "../../store/AuthContext";
@@ -28,13 +26,13 @@ export default function ChoosePath() {
       id: "create",
       title: "Create Community",
       description: "No existing members or records. Start building your community on Glass.",
-      icon: CreateCommunityIcon,
+      icon: "glass/auth/create-community",
     },
     {
       id: "join",
       title: "Join Community",
       description: "Your community already exists. Join Now.",
-      icon: JoinCommunityIcon,
+      icon: "glass/auth/join-community",
     },
   ];
 
@@ -75,7 +73,13 @@ export default function ChoosePath() {
 
       <header className="relative flex items-center px-6 lg:px-8 py-5 flex-shrink-0">
         <div className="flex items-center gap-2">
-          <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
+          <CloudImage
+            publicId="glass/Glass"
+            alt="Glass"
+            width={56}
+            objectFit="contain"
+            className="w-7 h-7"
+          />
           <span className="font-medium text-gray-900 text-base">Glass</span>
         </div>
       </header>
@@ -101,10 +105,12 @@ export default function ChoosePath() {
                 className={`relative flex flex-row lg:flex-col items-center text-left lg:text-center gap-4 lg:gap-0 px-5 lg:px-10 py-5 lg:py-8 rounded-2xl transition-all duration-200 cursor-pointer w-full lg:w-[380px] border bg-white ${isSelected ? "border-2 border-brand" : "border-white"}`}
               >
                 <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] lg:bg-transparent lg:rounded-none lg:w-14 lg:h-14 lg:mt-6 lg:mb-5">
-                  <img
-                    src={option.icon}
+                  <CloudImage
+                    publicId={option.icon}
                     alt={option.title}
-                    className="w-6 h-6 lg:w-14 lg:h-14 object-contain"
+                    width={112}
+                    objectFit="contain"
+                    className="w-6 h-6 lg:w-14 lg:h-14"
                   />
                 </div>
                 <div className="flex-1 min-w-0 lg:flex-none">

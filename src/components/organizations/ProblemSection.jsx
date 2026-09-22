@@ -1,5 +1,4 @@
 import { Clock, Eye } from "lucide-react";
-import Problem from "../../assets/problem/problem.webp";
 import SharedProblemSection from "../common/ProblemSection";
 
 const problems = [
@@ -18,7 +17,7 @@ const problems = [
 export default function ProblemSection() {
   return (
     <SharedProblemSection
-      image={Problem}
+      image={{ publicId: "glass/problem/problem", width: 1280 }}
       problems={problems}
       headline="Still spending weekends chasing payments?"
       subtext="Without centralized visibility, time is wasted and trust begins to weaken."

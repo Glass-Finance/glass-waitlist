@@ -250,10 +250,6 @@ body {
   background-image: url("./assets/problem/problem-glow.webp");
 }
 
-.bg-solution-glow {
-  background-image: url("./assets/solution/solution-glow.webp");
-}
-
 /* ── Success badge animation ──────────────────────────────────────────────
    Used by SuccessBadge.jsx (email/phone verified, email updated,
    transaction successful, etc.) -- see

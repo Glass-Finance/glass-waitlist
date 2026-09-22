@@ -12,7 +12,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Bell, Upload, Check, X as XIcon, Loader2, ArrowLeft } from "lucide-react";
-import GlassLogo from "../../assets/Glass.webp";
+import CloudImage from "../../components/common/CloudImage";
 import { createCommunity, updateCommunity } from "../../api/communities";
 import { uploadFile } from "../../api/files";
 import { useSlug } from "../../hooks/useSlug";
@@ -252,7 +252,13 @@ export default function OrganizationProfile() {
       {/* Navbar */}
       <header className="relative flex items-center justify-between px-4 lg:px-8 py-4 bg-surface-container border-b border-outline-on-surface flex-shrink-0">
         <div className="flex items-center gap-2">
-          <img src={GlassLogo} alt="Glass" className="w-7 h-7 object-contain" />
+          <CloudImage
+            publicId="glass/Glass"
+            alt="Glass"
+            width={56}
+            objectFit="contain"
+            className="w-7 h-7"
+          />
           <span className="font-medium text-base text-gray-900">Glass</span>
         </div>
         <div className="flex items-center gap-4">
