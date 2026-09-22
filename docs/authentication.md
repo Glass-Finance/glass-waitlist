@@ -4,7 +4,7 @@
 
 Authentication is coordinated by `AuthContext` and `src/services/authService.js`. Password, passwordless OTP, Google OAuth, registration, email/phone verification, password reset, and TOTP endpoints are called through the shared Axios client.
 
-Successful sessions store `accessToken`, `refreshToken`, basic user identifiers, and the serialized user snapshot in browser `localStorage`. The Axios request interceptor sends the access token as a Bearer token. A `401` response can trigger a refresh-token request; concurrent failed requests wait in a queue. Failed refresh clears the local session and redirects to the appropriate sign-in route.
+Successful sessions store `accessToken`, `refreshToken`, basic user identifiers, and the serialized user snapshot in browser `localStorage`, plus a monotonic session epoch (`glass_session_epoch`). The Axios request interceptor sends the access token as a Bearer token. A `401` response triggers a refresh-token request that is single-flight in-tab (shared promise) and lease-elected cross-tab (one owner per cycle, losers wait for the published result), so concurrent tabs never present the same rotating token twice. Refreshes verify the session epoch before applying tokens, so a logout that wins the race is never undone. Failed refresh clears the local session and redirects to the appropriate sign-in route.
 
 The context restores a session on startup, clears React Query caches on login/logout, and listens for access-token removal in another browser tab. Short-lived invite, redirect, and verification state uses `sessionStorage` where the relevant flow requires it.
 
