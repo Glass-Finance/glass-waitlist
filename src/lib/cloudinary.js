@@ -12,12 +12,19 @@
 // walks src/assets and uploads every image to the same cloud, deriving
 // public ids from the relative path (see docs/cloudinary.md).
 
-const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-
-if (!CLOUD_NAME && import.meta.env.DEV) {
-  // Loud in dev, silent in prod build — a missing env var here means every
-  // image on the page breaks, so this should never fail quietly.
-  console.error("VITE_CLOUDINARY_CLOUD_NAME is not set — Cloudinary images will 404.");
+// Read the cloud name lazily, not at module scope. Were it captured at import
+// time, Vitest's `stubEnv` (which runs after the module graph loads) could
+// never override it — the URL tests would read `undefined` in CI, where no
+// .env file exists. Reading on every call keeps dev, prod build and the test
+// suite consistent.
+function cloudName() {
+  const name = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  if (!name && import.meta.env.DEV) {
+    // Loud in dev, silent in prod build — a missing env var here means every
+    // image on the page breaks, so this should never fail quietly.
+    console.error("VITE_CLOUDINARY_CLOUD_NAME is not set — Cloudinary images will 404.");
+  }
+  return name;
 }
 
 /**
@@ -38,7 +45,7 @@ export function cldUrl(publicId, opts = {}) {
   if (dpr) parts.push(`dpr_${dpr}`);
   if (blur) parts.push("e_blur:1200", "q_auto:low", "w_32");
 
-  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${parts.join(",")}/${publicId}`;
+  return `https://res.cloudinary.com/${cloudName()}/image/upload/${parts.join(",")}/${publicId}`;
 }
 
 /**
