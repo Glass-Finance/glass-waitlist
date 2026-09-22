@@ -20,6 +20,12 @@ export const SESSION_KEYS = [
 export const KEY_TOKEN = "accessToken";
 export const KEY_REFRESH_TOKEN = "refreshToken";
 export const KEY_USER = "glass_user";
+// Monotonic session generation. Bumped on every session end (clear) and
+// every newly persisted session, so a stale async operation (e.g. an
+// in-flight refresh) can detect that its generation is over before writing
+// tokens back. Lives in localStorage so all tabs observe the same value.
+// Deliberately NOT part of SESSION_KEYS: it must survive clearing.
+export const KEY_EPOCH = "glass_session_epoch";
 
 export function getAccessToken() {
   try {
@@ -55,11 +61,34 @@ export function writeStoredUser(user) {
   }
 }
 
+export function getSessionEpoch() {
+  try {
+    const raw = localStorage.getItem(KEY_EPOCH);
+    if (raw == null) return 0;
+    const n = Number.parseInt(raw, 10);
+    return Number.isFinite(n) && n >= 0 ? n : 0;
+  } catch {
+    return 0;
+  }
+}
+
+export function bumpSessionEpoch() {
+  const next = getSessionEpoch() + 1;
+  try {
+    localStorage.setItem(KEY_EPOCH, String(next));
+  } catch {
+    // ignore — callers still set React state
+  }
+  return next;
+}
+
 /**
  * Persist tokens + basic identity from an auth response.
  * Never writes the literal string "undefined": a missing refreshToken
  * must leave the previous value alone so the refresh check in client.js
  * sees a real absence rather than a truthy "undefined" string.
+ * Starts a new session generation: any stale in-flight operation from a
+ * previous generation must not overwrite these tokens (see client.js).
  */
 export function persistSession(authData) {
   if (!authData) return;
@@ -68,6 +97,7 @@ export function persistSession(authData) {
     if (authData.refreshToken) localStorage.setItem(KEY_REFRESH_TOKEN, authData.refreshToken);
     if (authData.userId) localStorage.setItem("userId", authData.userId);
     if (authData.email) localStorage.setItem("userEmail", authData.email);
+    bumpSessionEpoch();
   } catch {
     // ignore — callers still set React state
   }
@@ -112,5 +142,9 @@ export function clearSessionStorage() {
   } catch {
     // ignore
   }
+  // Invalidate the generation FIRST from the perspective of in-flight work:
+  // any refresh started before this clear must observe the mismatch and
+  // refuse to write tokens back (see client.js doRefresh).
+  bumpSessionEpoch();
   emitSessionEnd();
 }
