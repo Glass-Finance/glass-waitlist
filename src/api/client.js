@@ -2,9 +2,15 @@ import axios from "axios";
 import {
   getAccessToken,
   getRefreshToken,
+  getSessionEpoch,
   applyRefreshedTokens,
   clearSessionStorage,
 } from "../store/sessionStorage";
+import {
+  coordinateRefresh,
+  RefreshEpochChangedError,
+  REQUEST_TIMEOUT_MS,
+} from "./refreshCoordinator";
 
 // VITE_API_BASE_URL is the bare origin (e.g. https://api.glasspay.app) —
 // /api/v1 must always be appended, with or without the env var set.
@@ -13,7 +19,9 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 const client = axios.create({
   baseURL: `${BASE_URL}/api/v1`,
   headers: { "Content-Type": "application/json" },
-  timeout: 15000,
+  // Shared with refreshCoordinator.js: the lease TTL and waiter bounds are
+  // derived from this value, so a timeout change propagates automatically.
+  timeout: REQUEST_TIMEOUT_MS,
 });
 
 // ── Attach JWT to every request ───────────────────────────────────────────────
@@ -24,14 +32,15 @@ client.interceptors.request.use((config) => {
 });
 
 // ── Refresh-token single-flight ─────────────────────────────────────────────
-// One shared promise per refresh cycle: the first 401 to arrive creates it,
-// concurrent 401s await the same promise instead of firing their own
-// refresh calls. The promise is cleared in `finally` so the next expiry
-// cycle starts fresh. Backend contract is unchanged:
+// One shared promise per refresh cycle per tab (see refreshCoordinator.js
+// for the cross-tab election that sits in front of it): the first 401 to
+// arrive creates it, concurrent 401s await the same promise instead of
+// firing their own refresh calls. The promise is cleared in `finally` so
+// the next expiry cycle starts fresh. Backend contract is unchanged:
 // POST /api/v1/auth/token/refresh — body: { refreshToken, deviceInfo }.
 let refreshPromise = null;
 
-function doRefresh(refreshToken) {
+function doRefresh(refreshToken, epoch) {
   // Raw axios (not `client`) so the refresh call itself never re-enters
   // this interceptor.
   return axios
@@ -44,14 +53,23 @@ function doRefresh(refreshToken) {
       // envelope) and others return { accessToken } directly. Handle both.
       const data = res.data?.data ?? res.data;
       if (!data?.accessToken) throw new Error("No access token in refresh response");
+      // Generation guard (Finding 2): the session may have ended (logout,
+      // external clear) while this request was in flight. Never write
+      // tokens from a stale generation back into storage — that would
+      // resurrect a logged-out session.
+      if (getSessionEpoch() !== epoch) throw new RefreshEpochChangedError();
       applyRefreshedTokens(data);
       return data.accessToken;
     });
 }
 
-function getRefreshPromise(refreshToken) {
+function getRefreshPromise(refreshToken, epoch) {
   if (!refreshPromise) {
-    refreshPromise = doRefresh(refreshToken).finally(() => {
+    refreshPromise = coordinateRefresh({
+      epoch,
+      refreshToken,
+      execute: () => doRefresh(refreshToken, epoch),
+    }).finally(() => {
       refreshPromise = null;
     });
   }
@@ -158,12 +176,17 @@ client.interceptors.response.use(
       // Single-flight: every concurrent 401 awaits the same refresh
       // promise. Each waiter keeps its own _skipAuthRedirect semantics —
       // a queued opt-out request never triggers the hard redirect, even
-      // though it shared the refresh attempt.
+      // though it shared the refresh attempt. The epoch is captured now so
+      // a session that ends mid-refresh (logout) is observed, not undone:
+      // waiters from a stale generation reject with the original error and
+      // never re-clear or redirect.
+      const epoch = getSessionEpoch();
       try {
-        const newToken = await getRefreshPromise(refreshToken);
+        const newToken = await getRefreshPromise(refreshToken, epoch);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return client(originalRequest);
       } catch (refreshError) {
+        if (getSessionEpoch() !== epoch) return Promise.reject(error);
         if (!originalRequest._skipAuthRedirect) clearSessionAndRedirect();
         return Promise.reject(refreshError);
       }
