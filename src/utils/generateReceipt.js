@@ -119,6 +119,10 @@ function drawGradientBand(doc, x, y, w, h, [r1, g1, b1], [r2, g2, b2], steps = 4
 // ─────────────────────────────────────────────────────────────────────────────
 // PDF receipt — clean document layout, branded gradient header band.
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @param {any} tx
+ * @param {{ payerName?: string, payerEmail?: string }} [opts]
+ */
 export async function downloadReceiptPdf(tx, { payerName, payerEmail } = {}) {
   const avatar = await fetchImageAsB64(tx.payerPhoto);
   const doc = new jsPDF({ unit: "pt", format: "a4" });

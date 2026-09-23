@@ -203,6 +203,8 @@ export function getRetryAfterSeconds(error) {
  * Usage:
  *   try { ... } catch (err) { setError(notifyError(err)); }
  *   try { ... } catch (err) { notifyError(err, { context: "Creating community" }); }
+ * @param {any} error
+ * @param {{ fallback?: string, context?: string, silent?: boolean }} [options]
  */
 export function notifyError(error, { fallback, context, silent = false } = {}) {
   const message = getErrorMessage(error, fallback);
@@ -233,6 +235,8 @@ export function notifyError(error, { fallback, context, silent = false } = {}) {
  *     () => initiatePayment.mutateAsync({...}),
  *     { context: "Initiating payment", successMessage: "Payment started" }
  *   );
+ * @param {() => Promise<unknown>} action
+ * @param {{ context?: string, successMessage?: string, fallback?: string }} [options]
  */
 export async function runWithErrorHandling(action, { context, successMessage, fallback } = {}) {
   try {

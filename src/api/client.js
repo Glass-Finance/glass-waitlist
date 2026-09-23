@@ -38,6 +38,7 @@ client.interceptors.request.use((config) => {
 // firing their own refresh calls. The promise is cleared in `finally` so
 // the next expiry cycle starts fresh. Backend contract is unchanged:
 // POST /api/v1/auth/token/refresh — body: { refreshToken, deviceInfo }.
+/** @type {Promise<string> | null} */
 let refreshPromise = null;
 
 function doRefresh(refreshToken, epoch) {

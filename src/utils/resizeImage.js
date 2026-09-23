@@ -47,6 +47,7 @@ export async function resizeImageFile(
     canvas.width = Math.round(img.width * scale);
     canvas.height = Math.round(img.height * scale);
     const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
     const outputType = file.type === "image/png" ? "image/png" : "image/jpeg";

@@ -14,6 +14,8 @@ import { toast } from "sonner";
  * something the user might want to verify later (a payment, a transfer).
  *   toastSuccess("Payment sent", { reference: "TXN-88213" })
  *   toastSuccess("Member added")
+ * @param {string} title
+ * @param {{ description?: string, reference?: string, id?: string }} [opts]
  */
 export function toastSuccess(title, { description, reference, id } = {}) {
   return toast.success(title, {
@@ -43,6 +45,8 @@ export function toastProgress(title, etaText) {
  *     primaryAction: { label: "This wasn't me", onClick: blockSession },
  *     secondaryAction: { label: "It's me", onClick: confirmSession },
  *   })
+ * @param {string} title
+ * @param {{ description?: string, primaryAction?: any, secondaryAction?: any, duration?: number }} [opts]
  */
 export function toastWarning(
   title,
@@ -60,6 +64,8 @@ export function toastWarning(
  * Informational — lower-stakes updates (an incoming payment, an invite)
  * that read better with a relative timestamp for context.
  *   toastInfo("Jane Doe sent you ₦5,000", { timestamp: "2 mins ago" })
+ * @param {string} title
+ * @param {{ description?: string, timestamp?: string }} [opts]
  */
 export function toastInfo(title, { description, timestamp } = {}) {
   return toast.info(title, {

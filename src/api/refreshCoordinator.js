@@ -164,6 +164,7 @@ export function publishRefreshResult(result) {
  * Throws RefreshFailedError if the owner attempted and failed — the caller
  * must propagate, never retry (retrying a rejected token risks backend
  * reuse detection).
+ * @param {{ epoch?: number, since?: number, knownLease?: object|null, pollMs?: number, maxWaitMs?: number }} [opts]
  */
 export function waitForRefreshResult({
   epoch,
@@ -174,7 +175,9 @@ export function waitForRefreshResult({
 } = {}) {
   return new Promise((resolve, reject) => {
     let settled = false;
+    /** @type {ReturnType<typeof setInterval> | null} */
     let timer = null;
+    /** @type {ReturnType<typeof setTimeout> | null} */
     let deadlineTimer = null;
     let seenLiveLease = isLeaseLive(knownLease);
 
@@ -264,6 +267,7 @@ export function waitForRefreshResult({
  * - Losers wait; on takeover signal they loop back and attempt election
  *   (bounded rounds — crashed owners recover, live owners are never
  *   disturbed).
+ * @param {{ epoch?: number, refreshToken?: string|null, execute?: () => Promise<string>, maxRounds?: number, leaseOptions?: object, waitOptions?: object }} [opts]
  */
 export async function coordinateRefresh({
   epoch,

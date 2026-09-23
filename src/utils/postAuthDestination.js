@@ -20,6 +20,8 @@
  * Returns { to: string } for direct navigation, or
  * { joinCommunity: string } when the caller must first submit the pending
  * community join request, then route to /member/invites itself.
+ *
+ * @param {{ user?: { isPlatformAdmin?: boolean, isAdmin?: boolean }|null, isMobile?: boolean, returnTo?: string, pendingCommunity?: string, pendingPaymentRef?: string, inviteToken?: string, viaGoogle?: boolean, hasPendingInvites?: boolean, fallback?: string }} [opts]
  */
 import { isSafeReturnPath } from "./returnPath";
 import { mobileRequiredPath } from "./deviceRedirect";
@@ -31,6 +33,9 @@ export const DASHBOARD_HOME = "/dashboard/home";
 export const ADMIN_PANEL = "/dashboard/admin-panel";
 export const DISCOVER_COMMUNITIES = "/member/communities/search";
 
+/**
+ * @param {{ user?: { isPlatformAdmin?: boolean, isAdmin?: boolean }|null, isMobile?: boolean, returnTo?: string, pendingCommunity?: string, pendingPaymentRef?: string, inviteToken?: string, viaGoogle?: boolean, hasPendingInvites?: boolean, fallback?: string }} [opts]
+ */
 export function resolvePostAuthDestination({
   user,
   isMobile = true,
