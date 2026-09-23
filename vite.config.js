@@ -6,6 +6,15 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    // Baseline measurement only — no thresholds enforced yet (see
+    // docs/testing-strategy.md). Enable per-run via `npm run test:coverage`.
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "text-summary", "html", "lcov", "json-summary"],
+      reportsDirectory: "coverage",
+      include: ["src/**/*.{js,jsx}"],
+      exclude: ["**/__tests__/**", "**/*.{test,spec}.{js,jsx,ts,tsx}", "src/main.jsx"],
+    },
   },
   build: {
     target: "esnext",
