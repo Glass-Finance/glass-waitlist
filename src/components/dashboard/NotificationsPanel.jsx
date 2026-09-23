@@ -1,5 +1,7 @@
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, User } from "lucide-react";
+import { Bell, MoreVertical, User } from "lucide-react";
+import { useClickOutside } from "../../hooks/useClickOutside";
 import {
   extractNotificationDetails,
   formatNairaAmount,
@@ -165,6 +167,14 @@ export default function NotificationsPanel({
   const count = unreadCount ?? notifications.filter((n) => !(n.readFlag ?? n.isRead)).length;
   const buckets = groupByDay(notifications);
 
+  // The header actions (Mark All As Read / Clear All) collapse into a 3-dot
+  // overflow menu on mobile so they don't crowd the narrow panel header; the
+  // inline buttons stay for desktop. Matches the `md` mobile boundary used
+  // across the dashboard chrome (hamburger/sidebar drawer).
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const actionsRef = useRef(null);
+  useClickOutside(actionsRef, () => setActionsOpen(false), actionsOpen);
+
   return (
     <div
       className="absolute right-0 w-[390px] bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.14)] z-50 overflow-hidden [top:calc(100%+10px)] [max-width:calc(100vw-16px)]"
@@ -181,20 +191,64 @@ export default function NotificationsPanel({
           )}
         </p>
         <div className="flex items-center gap-3">
-          <button
-            onClick={onMarkAllRead}
-            disabled={count === 0}
-            className="text-[11px] font-normal text-[#002FA7] bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
-          >
-            Mark All As Read
-          </button>
-          <button
-            onClick={onClearAll}
-            disabled={notifications.length === 0 || isClearingAll}
-            className="text-[11px] font-normal text-red-500 bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
-          >
-            Clear All
-          </button>
+          {/* Desktop: inline actions */}
+          <div className="hidden md:flex items-center gap-3">
+            <button
+              onClick={onMarkAllRead}
+              disabled={count === 0}
+              className="text-[11px] font-normal text-[#002FA7] bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
+            >
+              Mark All As Read
+            </button>
+            <button
+              onClick={onClearAll}
+              disabled={notifications.length === 0 || isClearingAll}
+              className="text-[11px] font-normal text-red-500 bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
+            >
+              Clear All
+            </button>
+          </div>
+
+          {/* Mobile: 3-dot overflow menu */}
+          <div className="relative md:hidden" ref={actionsRef}>
+            <button
+              onClick={() => setActionsOpen((o) => !o)}
+              aria-label="Notification actions"
+              aria-expanded={actionsOpen}
+              className="flex items-center justify-center w-7 h-7 rounded-full text-[#666] bg-transparent border-none cursor-pointer hover:bg-[#F0F0F0] transition-colors"
+            >
+              <MoreVertical size={16} />
+            </button>
+            {actionsOpen && (
+              <div
+                className="absolute right-0 top-full mt-1 w-[172px] bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.14)] border border-[#EFEFEF] py-1 z-20"
+                role="menu"
+              >
+                <button
+                  onClick={() => {
+                    onMarkAllRead();
+                    setActionsOpen(false);
+                  }}
+                  disabled={count === 0}
+                  role="menuitem"
+                  className="w-full text-left px-3.5 py-2.5 text-[11.5px] font-medium text-[#002FA7] bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7] disabled:opacity-40 disabled:cursor-default"
+                >
+                  Mark All As Read
+                </button>
+                <button
+                  onClick={() => {
+                    onClearAll();
+                    setActionsOpen(false);
+                  }}
+                  disabled={notifications.length === 0 || isClearingAll}
+                  role="menuitem"
+                  className="w-full text-left px-3.5 py-2.5 text-[11.5px] font-medium text-red-500 bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7] disabled:opacity-40 disabled:cursor-default"
+                >
+                  Clear All
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
