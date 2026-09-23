@@ -27,4 +27,4 @@ Covered journeys — 8 tests across 4 specs:
 - **Payment callback** (`payment-callback.e2e.js`): `POST /payments/callback/verify` settling into the success state and the FAILED error state, asserted admin-side where FAILED is terminal rather than the member screen's 30s re-poll.
 - **Admin mutation** (`admin-mutation.e2e.js`): suspend-user confirmation modal (reason required) → `PATCH /admin/users/{id}/suspend` with the exact body → refetched row shows Suspended + success toast.
 
-CI deliberately runs no E2E job — the workflow stays untouched; these run locally/PR-verification. Component/unit coverage (Vitest) remains the CI gate.
+CI runs the suite in the existing workflow (`.github/workflows/ci.yml`): two extra steps — after `npm ci`, `npx playwright install --with-deps chromium` (Chromium only), and after `npm run test`, `npm run test:e2e`. No secrets, backend, database, or Paystack account are involved — every API call and the provider redirect are stubbed locally. Component/unit coverage (Vitest) remains part of the same CI gate.

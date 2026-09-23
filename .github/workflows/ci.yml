@@ -28,6 +28,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Chromium only — the Playwright config has no projects, so the suite
+      # runs on the default browser alone. No backend, database, Paystack
+      # account, or secrets: the e2e/ dispatcher stubs every API call.
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
       - name: Format check
         run: npm run format:check
 
@@ -39,6 +45,11 @@ jobs:
 
       - name: Test
         run: npm run test
+
+      # Spawns its own `npm run dev` on port 3000 via playwright.config.js's
+      # webServer, so no preview/build artifact is needed here.
+      - name: E2E test
+        run: npm run test:e2e
 
       - name: Build
         run: npm run build
