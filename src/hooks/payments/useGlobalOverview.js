@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMyObligations, getMyTransactions } from "../../api/members";
-import { unwrapList, deriveStatus } from "./helpers";
-import { shapeObligation, shapeTransaction } from "./shape";
+import { getMyObligations } from "../../api/members";
+import { unwrapList, deriveStatus, fetchMyTransactions } from "./helpers";
+import { shapeObligation } from "./shape";
 import { isPaidObligationStatus } from "../../utils/paymentStatus";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -29,16 +29,10 @@ export function useGlobalOverview() {
   });
 
   const transactionsQuery = useQuery({
+    // Same canonical queryFn as usePayments/useTransactions — see
+    // fetchMyTransactions in ./helpers.
     queryKey: ["transactions"],
-    queryFn: async () => {
-      try {
-        const res = await getMyTransactions();
-        return unwrapList(res).map(shapeTransaction);
-      } catch (err) {
-        if (err?.response?.status === 404) return [];
-        throw err;
-      }
-    },
+    queryFn: fetchMyTransactions,
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 30,
     refetchOnMount: "always",

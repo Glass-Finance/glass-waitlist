@@ -64,6 +64,10 @@ export function shapeTransaction(raw) {
     description: raw.description ?? raw.paymentLink?.title ?? "Payment",
     communityName: raw.community?.name,
     communitySlug: raw.community?.slug,
+    // Kept so useTransactions' logo enrichment (which prefers /communities/me
+    // and falls back to this value) behaves exactly as it did before this
+    // shape became the canonical one for ["transactions"].
+    communityLogo: raw.community?.logo,
     date: raw.paidAt ?? raw.createdAt,
     // The backend's enum is SUCCESSFUL — normalise to "success" here so the
     // paid checks in this file (and everywhere else consuming shaped

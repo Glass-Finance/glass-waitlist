@@ -28,6 +28,30 @@ async function fetchNotifications(communityId) {
   return res.data.data;
 }
 
+// ── The unscoped notification list ───────────────────────────────────────────
+// ["notifications", "all", "list"] caches exactly ONE payload, produced by
+// exactly ONE query function: the raw /notifications envelope above. Every
+// observer of this key must pair fetchAllNotifications with
+// selectNotificationItems so each consumer derives its own view *without*
+// writing a differently-shaped value back into the shared entry.
+//
+// Before this existed, useJoinApprovalWatcher pointed the same key at its own
+// queryFn that returned the unwrapped array. Whichever observer fetched first
+// won the entry, so the Topbar/CommunitiesHome/Notifications envelope readers
+// could receive a bare array (select sees no .content → renders nothing) while
+// the watcher could receive the envelope — and `notifications.some(...)` there
+// then threw a TypeError, breaking join-approval detection outright.
+export function fetchAllNotifications() {
+  return fetchNotifications(null);
+}
+
+// Module-level (stable) so React Query memoizes the derived array instead of
+// producing a new one on every render. Tolerates a bare-array payload too, so
+// a backend that stops paging can't silently turn into an empty list.
+export function selectNotificationItems(data) {
+  return Array.isArray(data) ? data : (data?.content ?? []);
+}
+
 // PATCH /api/v1/notifications/{notificationId}/read
 async function markOneRead(notificationId) {
   const res = await client.patch(`/notifications/${notificationId}/read`);
@@ -193,16 +217,16 @@ export function useAllNotifications() {
 
   const query = useQuery({
     queryKey: listKey,
-    queryFn: () => fetchNotifications(null),
+    queryFn: fetchAllNotifications,
     staleTime: 1000 * 20,
     gcTime: 1000 * 60 * 5,
     refetchInterval: realtimeConnected ? POLL_STREAM_UP : POLL_STREAM_DOWN,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: true,
-    select: (data) => {
-      const notifications = data?.content ?? [];
-      return [...notifications].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    },
+    select: (data) =>
+      [...selectNotificationItems(data)].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+      ),
   });
 
   const markReadMutation = useMutation({

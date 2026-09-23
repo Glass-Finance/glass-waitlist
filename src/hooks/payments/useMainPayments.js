@@ -1,13 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  getMyObligations,
-  getMyTransactions,
-  getMe,
-  getMyCommunities,
-  getPaymentLinks,
-} from "../../api/members";
-import { unwrapList, deriveStatus } from "./helpers";
-import { shapeObligation, shapePaymentLink, shapeTransaction, normalizeCommunity } from "./shape";
+import { getMyObligations, getMe, getMyCommunities, getPaymentLinks } from "../../api/members";
+import { unwrapList, deriveStatus, fetchMyTransactions } from "./helpers";
+import { shapeObligation, shapePaymentLink, normalizeCommunity } from "./shape";
 import { isPaidObligationStatus } from "../../utils/paymentStatus";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -44,16 +38,11 @@ export function usePayments(preferredCommunityIdentifier) {
   });
 
   const transactionsQuery = useQuery({
+    // Shared canonical queryFn — see fetchMyTransactions in ./helpers. Do not
+    // re-shape the response here: useTransactions and useGlobalOverview read
+    // the same cache entry.
     queryKey: ["transactions"],
-    queryFn: async () => {
-      try {
-        const res = await getMyTransactions();
-        return unwrapList(res).map(shapeTransaction);
-      } catch (err) {
-        if (err?.response?.status === 404) return [];
-        throw err;
-      }
-    },
+    queryFn: fetchMyTransactions,
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 30,
   });

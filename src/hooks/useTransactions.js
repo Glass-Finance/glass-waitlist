@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMyTransactions, getMyCommunities } from "../api/members";
+import { getMyCommunities } from "../api/members";
+import { fetchMyTransactions } from "./payments/helpers";
 
 function unwrapList(res) {
   const data = res.data?.data;
@@ -7,42 +8,16 @@ function unwrapList(res) {
   return data?.content ?? [];
 }
 
-function shapeTransaction(raw) {
-  return {
-    id: raw.id,
-    amount: raw.amount,
-    amountPaid: raw.amountPaid,
-    description: raw.description ?? raw.paymentLink?.title ?? "Payment",
-    communityName: raw.community?.name,
-    communitySlug: raw.community?.slug,
-    communityLogo: raw.community?.logo,
-    date: raw.paidAt ?? raw.createdAt,
-    status: (() => {
-      const s = (raw.status ?? "").toLowerCase();
-      return s === "successful" ? "success" : s;
-    })(),
-    type: raw.recurringPlan ? "recurring" : "one-time",
-    planName: raw.paymentLink?.title,
-    channel: raw.channel,
-    currency: raw.currency ?? "NGN",
-    reference: raw.internalReference,
-    // No dedicated fee field exists on the transaction record -- same as the
-    // initiate-payment response, whose "Platform Fee" (PaymentSummary.jsx)
-    // is derived as billedAmount - amount rather than a raw field. Mirrors
-    // that here using amountPaid (the actual charged total) vs amount (the
-    // due amount), guarded against a nonsensical negative fee.
-    feeMinor:
-      raw.feeMinor ??
-      raw.fee ??
-      (raw.amountPaid != null && raw.amount != null && raw.amountPaid > raw.amount
-        ? raw.amountPaid - raw.amount
-        : null),
-    logoColor: "#1C2B8A",
-    logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
-  };
-}
-
 // ─── All transactions (Payment History page) ──────────────────────────────────
+// ["transactions"] is one shared cache entry (also observed by usePayments'
+// Home history and useGlobalOverview's recent activity), so it goes through
+// the single canonical queryFn/shape — see fetchMyTransactions in
+// ./payments/helpers. This hook used to keep a private shaper for that same
+// key; two shapers on one key meant the shape the page got depended on which
+// observer fetched first. Ordering is a view concern of this page, so the
+// newest-first sort happens below instead of inside the shared queryFn, which
+// has to stay identical for every observer.
+//
 // The transactions endpoint doesn't reliably nest the community's logo on
 // each record (only name/slug) -- same gap usePayments() already works
 // around for obligations/links. Enrich from /communities/me here too, so
@@ -50,12 +25,7 @@ function shapeTransaction(raw) {
 export function useTransactions() {
   const transactionsQuery = useQuery({
     queryKey: ["transactions"],
-    queryFn: async () => {
-      const res = await getMyTransactions();
-      return unwrapList(res)
-        .map(shapeTransaction)
-        .sort((a, b) => new Date(b.date) - new Date(a.date));
-    },
+    queryFn: fetchMyTransactions,
     staleTime: 1000 * 60 * 2,
   });
 
@@ -75,11 +45,17 @@ export function useTransactions() {
     ]),
   );
 
-  const data = (transactionsQuery.data ?? []).map((tx) =>
-    tx.communityLogo?.url || !tx.communitySlug
-      ? tx
-      : { ...tx, communityLogo: logoBySlug.get(tx.communitySlug) ?? tx.communityLogo },
-  );
+  // Enrich first (a logo lookup never changes `date`), then sort newest-first
+  // here — the shared ["transactions"] queryFn must stay identical for every
+  // observer, and this page's month grouping relies on the list arriving
+  // already ordered.
+  const data = (transactionsQuery.data ?? [])
+    .map((tx) =>
+      tx.communityLogo?.url || !tx.communitySlug
+        ? tx
+        : { ...tx, communityLogo: logoBySlug.get(tx.communitySlug) ?? tx.communityLogo },
+    )
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return {
     data,

@@ -57,7 +57,16 @@ export function usePaymentPlans(communityId) {
   const enabled = !!communityId;
 
   const query = useQuery({
-    queryKey: ["community", communityId, "payment-links"],
+    // "plans" discriminator: this hook and useMembersWithPayments both read
+    // GET .../payment-links for the same community, but they are not the same
+    // resource in the cache — this one sends includeMetrics=true and maps the
+    // response through shapePlan (plan/summary objects for the Payments table
+    // and dashboard cards), while useMembersWithPayments caches the raw
+    // PaymentLink list under ["community", id, "payment-links"] and only reads
+    // id/status off it. Sharing one key meant whichever queryFn fetched first
+    // decided the shape for both, so plan consumers could be handed raw links
+    // (no name/amountCollected/paidCount) and vice versa.
+    queryKey: ["community", communityId, "payment-links", "plans"],
     queryFn: async () => {
       // includeMetrics is a real, confirmed query param on this endpoint
       // (PaymentLinkQueryDto) -- without it the list response's per-item
@@ -72,6 +81,10 @@ export function usePaymentPlans(communityId) {
     refetchOnMount: "always",
   });
 
+  // Deliberately left as the payment-links PREFIX, not the "plans" key: it now
+  // has to reach this hook's ["…", "payment-links", "plans"] entry *and* keep
+  // covering the raw member-payment list plus ["…", "member", memberId] under
+  // the same prefix — exactly the set it invalidated before the split.
   function invalidate() {
     queryClient.invalidateQueries({ queryKey: ["community", communityId, "payment-links"] });
   }
