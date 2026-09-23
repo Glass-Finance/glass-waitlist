@@ -3,11 +3,11 @@
 // Build-time guard: refuse to build if a required VITE_* variable is missing.
 //
 // Why this exists: import.meta.env.VITE_* values are inlined by Vite at build
-// time, not read at runtime. If VITE_CLOUDINARY_CLOUD_NAME is absent when
-// `vite build` runs, every image URL silently compiles to
-// res.cloudinary.com/undefined/..., the deployed page renders blank, and
-// nothing in the build fails — which is exactly how the live site shipped
-// broken. Exiting non-zero here fails the build loudly instead.
+// time, not read at runtime. If a required variable is absent when `vite build`
+// runs, the deployed bundle ships broken — VITE_CLOUDINARY_CLOUD_NAME compiles
+// every image URL to res.cloudinary.com/undefined/... (blank page),
+// VITE_API_BASE_URL points the app at the wrong backend — and nothing in the
+// build fails. Exiting non-zero here fails the build loudly instead.
 //
 // Source of the value, by environment:
 //   - Local:     .env (loaded via dotenv)
@@ -16,19 +16,48 @@
 
 import "dotenv/config";
 
-const REQUIRED = ["VITE_CLOUDINARY_CLOUD_NAME"];
+const REQUIRED = ["VITE_CLOUDINARY_CLOUD_NAME", "VITE_API_BASE_URL"];
+// Fail-closed money switch: must be the literal string "true" or "false".
+// Unset used to mean "live money" (PaymentSummary reads === "true"), so a
+// forgotten env var silently charged real amounts. Refusing to build until
+// an explicit value exists removes that default.
+const EXPLICIT = ["VITE_TEST_MODE"];
 
 const missing = REQUIRED.filter((name) => !process.env[name]);
 
-if (missing.length > 0) {
+const invalidExplicit = EXPLICIT.filter((name) => {
+  const v = process.env[name];
+  return v !== "true" && v !== "false";
+});
+
+if (missing.length > 0 || invalidExplicit.length > 0) {
   console.error(
     [
       "",
-      "  Build aborted: missing required environment variable(s):",
-      ...missing.map((name) => `    - ${name}`),
-      "",
+      ...(missing.length > 0
+        ? [
+            "  Build aborted: missing required environment variable(s):",
+            ...missing.map((name) => `    - ${name}`),
+            "",
+          ]
+        : []),
+      ...(invalidExplicit.length > 0
+        ? [
+            '  Build aborted: VITE_TEST_MODE must be set explicitly to "true" or "false":',
+            ...invalidExplicit.map(
+              (name) =>
+                `    - ${name}=${JSON.stringify(process.env[name] ?? null)} (needs \"true\" or \"false\")`,
+            ),
+            "",
+            "  Unset used to mean live money (PaymentSummary only shows the",
+            '  test banner when the value is the string "true"). Fail-closed:',
+            "  no build ships until someone states which mode this deploy is.",
+            "",
+          ]
+        : []),
       "  VITE_* variables are inlined at build time; building without them",
-      "  ships a broken bundle (every Cloudinary image 404s -> blank page).",
+      "  ships a broken bundle (Cloudinary images 404 -> blank page, wrong",
+      "  API base, wrong payment mode, etc).",
       "",
       "  Fix:",
       "    local  -> add it to .env (see .env.example)",
@@ -41,5 +70,7 @@ if (missing.length > 0) {
 }
 
 console.log(
-  `  env check passed: ${REQUIRED.map((name) => `${name}=${process.env[name]}`).join(", ")}`,
+  `  env check passed: ${[...REQUIRED, ...EXPLICIT]
+    .map((name) => `${name}=${process.env[name]}`)
+    .join(", ")}`,
 );

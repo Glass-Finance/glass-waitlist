@@ -90,10 +90,15 @@ function parseReference(text) {
 // (case-insensitive substring), preferring the longest name that actually
 // appears so a short generic name doesn't win over a more specific one
 // contained in the same text.
+/**
+ * @param {string} text
+ * @param {any} communityMap
+ */
 export function resolveCommunityByName(text, communityMap) {
   if (!communityMap || typeof communityMap.values !== "function") return null;
   const lower = text.toLowerCase();
   const seen = new Set();
+  /** @type {any} */
   let best = null;
   for (const c of communityMap.values()) {
     const key = c?.id ?? c?.slug ?? c?.name;
@@ -150,6 +155,10 @@ function resolveCommunityLogo(n, communityMap) {
   return resolveCommunity(n, communityMap)?.logo?.url ?? null;
 }
 
+/**
+ * @param {any} n
+ * @param {{ communityMap?: any }} [opts]
+ */
 export function extractNotificationDetails(n, { communityMap } = {}) {
   const text = textOf(n);
   const content = n.content && typeof n.content === "object" ? n.content : {};

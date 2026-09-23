@@ -11,6 +11,7 @@ import {
 import { useEscapeToClose } from "../../hooks/useKeyboardShortcuts";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { formatNaira as sharedFormatNaira, toTitleCase } from "../../utils/format";
+import { paymentsDisabled } from "../../lib/flags";
 import Toggle from "../common/Toggle";
 import AutoPayPrompt from "../common/AutoPayPrompt";
 import { Button } from "../ui/Button";
@@ -82,8 +83,15 @@ export function AdminPaymentModal({ item, onClose }) {
   // once the backend says the link isn't accepting payments, retrying hits
   // the same wall every time, so the button should stop inviting it.
   const isLinkInactive = /not accepting payments/i.test(error);
+  // Build-time kill switch (VITE_FLAGS) -- mirrors PaymentSummary; see
+  // src/lib/flags.js and docs/runbooks/incident-rollback.md.
+  const killSwitch = paymentsDisabled();
 
   async function handlePay() {
+    if (killSwitch) {
+      setError("Payments are temporarily unavailable. Please try again later.");
+      return;
+    }
     setError("");
     try {
       // Store current URL so /payment/callback can send the admin back here
@@ -293,7 +301,7 @@ export function AdminPaymentModal({ item, onClose }) {
         <div className="px-6 pb-4 flex items-center justify-end">
           <Button
             onClick={handlePay}
-            disabled={isLinkInactive}
+            disabled={isLinkInactive || killSwitch}
             loading={initiatePayment.isPending || redirecting}
             fullWidth={false}
             className="w-[262px] flex items-center justify-center gap-2"
@@ -303,6 +311,8 @@ export function AdminPaymentModal({ item, onClose }) {
                 <Loader2 size={14} className="animate-spin" />{" "}
                 {redirecting ? "Opening secure payment…" : "Processing…"}
               </>
+            ) : killSwitch ? (
+              "Payments Temporarily Unavailable"
             ) : isLinkInactive ? (
               "Payment Unavailable"
             ) : (

@@ -17,6 +17,13 @@ test-results
 
 .env
 
+# Test/tooling output
+coverage/
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

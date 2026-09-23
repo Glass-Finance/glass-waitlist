@@ -20,6 +20,9 @@ const CookiePolicy = lazy(() => import("./pages/legal/CookiePolicy"));
 const AcceptableUsePolicy = lazy(() => import("./pages/legal/AcceptableUsePolicy"));
 const RefundPolicy = lazy(() => import("./pages/legal/RefundPolicy"));
 
+// ── Dev-only visual QA (never bundled in production) ─────────────────────────
+const SuccessPreview = lazy(() => import("./pages/dev/SuccessPreview"));
+
 // ── Auth pages ────────────────────────────────────────────────────────────────
 const SignUp = lazy(() => import("./pages/auth/SignUp/SignUp"));
 const SignIn = lazy(() => import("./pages/auth/SignIn"));
@@ -146,6 +149,12 @@ function App() {
           <Route path="/cookies" element={<CookiePolicy />} />
           <Route path="/acceptable-use" element={<AcceptableUsePolicy />} />
           <Route path="/refund-policy" element={<RefundPolicy />} />
+
+          {/* ── Dev-only: SuccessBadge animation preview (DEV builds only;
+            null keeps react-router from seeing a non-Route child). ── */}
+          {import.meta.env.DEV ? (
+            <Route path="/dev/success-badge" element={<SuccessPreview />} />
+          ) : null}
 
           {/* ── Auth ──
             /sign-up is the COMMUNITY OWNER entry point (desktop-first,

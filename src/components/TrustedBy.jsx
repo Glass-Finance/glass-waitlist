@@ -80,7 +80,14 @@ export default function TrustedBy() {
                 decoding="async"
                 onError={(e) => {
                   e.target.style.display = "none";
-                  e.target.parentElement.innerHTML = `<span style="color:#9099b2;font-weight:600;font-size:15px;white-space:nowrap">${item.name}</span>`;
+                  // Build the fallback with DOM APIs, not innerHTML — the
+                  // text is static today, but createElement/textContent
+                  // keeps any future interpolation inert by construction.
+                  const span = document.createElement("span");
+                  span.textContent = item.name;
+                  span.style.cssText =
+                    "color:#9099b2;font-weight:600;font-size:15px;white-space:nowrap";
+                  e.target.parentElement.replaceChildren(span);
                 }}
               />
             </div>

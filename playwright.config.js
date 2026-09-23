@@ -1,32 +1,40 @@
-import { defineConfig } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test";
 
-// ESLint lints every *.js in the repo with browser globals only (see
-// eslint.config.js), so this Node-side config deliberately never references
-// `process` — including for CI detection. CI runs the suite with `npm run
-// test:e2e` after `npx playwright install --with-deps chromium` (see
-// .github/workflows/ci.yml); with no server up, webServer starts `npm run
-// dev`, and reuseExistingServer lets a locally running dev server be reused
-// instead of spawning a second one on port 3000.
+// E2E runs against a local Vite dev server with every backend call mocked
+// via page.route — no real API, no real money (see e2e/README note in
+// docs/testing-strategy.md). The member app is device-gated to mobile
+// (MemberDeviceGuard), so payment tests use the Pixel profile; public pages
+// run on desktop Chrome.
 export default defineConfig({
   testDir: "./e2e",
-  // Deliberately narrow: Vitest's default include never matches *.e2e.js, and
-  // nothing else in e2e/ is a spec — the two suites cannot pick up each
-  // other's files.
-  testMatch: "**/*.e2e.js",
+  timeout: 45_000,
+  expect: { timeout: 10_000 },
   fullyParallel: false,
   workers: 1,
-  reporter: "list",
-  outputDir: "test-results",
-  expect: {
-    timeout: 10_000,
-  },
+  retries: process.env.CI ? 1 : 0,
+  reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: "http://127.0.0.1:4173",
+    trace: "on-first-retry",
   },
   webServer: {
-    command: "npm run dev",
-    url: "http://localhost:3000",
-    reuseExistingServer: true,
+    command: "npm run dev -- --host 127.0.0.1 --port 4173 --strictPort",
+    url: "http://127.0.0.1:4173",
+    reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      // Values are public (inlined into the client bundle) — same set CI
+      // already hardcodes for the unit/build job. TEST_MODE=true so a stray
+      // unmocked payment call can never hit live keys in this harness.
+      VITE_API_BASE_URL: "https://api.glasspay.app",
+      VITE_CLOUDINARY_CLOUD_NAME: "ece5jmhy",
+      VITE_TEST_MODE: "true",
+      VITE_APP_URL: "http://127.0.0.1:4173",
+    },
   },
+  projects: [
+    { name: "desktop-chromium", use: { ...devices["Desktop Chrome"] } },
+    // Mobile UA + viewport so MemberDeviceGuard lets /member/* render.
+    { name: "mobile-chromium", use: { ...devices["Pixel 7"] } },
+  ],
 });

@@ -1,31 +1,27 @@
 <!doctype html>
 <html lang="en-NG">
   <head>
-    <!-- CSP script-src hardening (see vercel.json's Content-Security-Policy-
-         Report-Only): every inline script tag below with no src attribute
-         (structured data, Pendo bootstrap) is allowlisted by a
+    <!-- CSP script-src hardening (vercel.json's Content-Security-Policy-
+         Report-Only header): every inline script tag below with no src
+         attribute (structured data, Pendo bootstrap) is allowlisted by a
          'sha256-<hash>' entry instead of 'unsafe-inline'.
 
          If you edit any of those scripts' content: `npm run build` then
          `node scripts/compute-csp-hashes.mjs`, and swap the matching hash
          into vercel.json's Report-Only value.
 
-         Two more sha256 hashes also live in that same script-src value,
-         with no corresponding script anywhere in this repo: Google
-         Identity Services (loaded for the "Continue with Google" button)
-         injects its own inline scripts directly into the page at runtime,
-         not just into its iframe. Those hashes were read off an actual
-         CSP violation report in the browser console, not computed by
-         scripts/compute-csp-hashes.mjs -- if Google ever changes that
-         injected content, script-src will start silently failing to run
-         it, and the fix is to sign in, read the new hash off the console
-         warning, and swap it in. This is a real, ongoing fragility (Google
-         controls that content, not us) which is exactly why this is still
-         Report-Only and not enforced.
+         Google Identity Services (loaded for the "Continue with Google"
+         button) also injects its own inline scripts at runtime with no
+         counterpart in this repo — those hashes are NOT pre-listed. Under
+         Report-Only that only produces a console warning; when moving to
+         enforcement, load the page, sign in, copy the new hash(es) off the
+         console violation, and add them to script-src. Google controlling
+         that content is the reason this stays Report-Only first.
 
-         Currently running Report-Only specifically to catch a stale/missed
-         hash -- ours or Google's -- via browser console warnings before it
-         would ever actually block something in production. -->
+         Promotion path: keep Report-Only until the console is clean for a
+         full release cycle (ours + Google's hashes stable), add a report
+         endpoint (or Vercel logs), then rename the header key to
+         Content-Security-Policy to enforce. -->
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />

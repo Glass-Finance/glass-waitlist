@@ -288,6 +288,10 @@ const MEMBER_TARGET = {
 
 // Returns null when the type is missing/unrecognized, or maps to no page
 // (GENERAL) — callers should fall back to their own heuristic in that case.
+/**
+ * @param {string} type
+ * @param {{ memberApp?: boolean, communityRef?: string|null }} [opts]
+ */
 export function notificationTypeTarget(type, { memberApp = false, communityRef } = {}) {
   const table = memberApp ? MEMBER_TARGET : ADMIN_TARGET;
   const fn = table[(type ?? "").toUpperCase()];

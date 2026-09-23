@@ -111,8 +111,16 @@ function useNotificationDetail(notifications, markRead) {
 // into.
 function AllCommunitiesNotifications() {
   usePageTitle("Notifications");
-  const { notifications, isLoading, unreadCount, markRead, markAllRead, isMarkingAllRead } =
-    useAllNotifications();
+  const {
+    notifications,
+    isLoading,
+    unreadCount,
+    markRead,
+    markAllRead,
+    isMarkingAllRead,
+    clearAll,
+    isClearingAll,
+  } = useAllNotifications();
   const detail = useNotificationDetail(notifications, markRead);
 
   return (
@@ -123,14 +131,25 @@ function AllCommunitiesNotifications() {
             <h1 className="text-xl font-bold text-black mb-1">Notifications</h1>
             <p className="text-sm text-gray-400">Updates across every community you manage.</p>
           </div>
-          {unreadCount > 0 && (
-            <button
-              onClick={() => markAllRead()}
-              disabled={isMarkingAllRead}
-              className="self-start flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
-            >
-              Mark All As Read
-            </button>
+          {notifications.length > 0 && (
+            <div className="flex items-center gap-2.5 flex-shrink-0">
+              {unreadCount > 0 && (
+                <button
+                  onClick={() => markAllRead()}
+                  disabled={isMarkingAllRead}
+                  className="self-start flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                >
+                  Mark All As Read
+                </button>
+              )}
+              <button
+                onClick={() => clearAll()}
+                disabled={isClearingAll}
+                className="self-start flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-red-500 bg-transparent border border-red-500 hover:opacity-80 border-solid cursor-pointer disabled:opacity-40 disabled:cursor-default"
+              >
+                Clear All
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -167,8 +186,16 @@ function AllCommunitiesNotifications() {
 
 function CommunityNotifications() {
   usePageTitle("Notifications");
-  const { notifications, isLoading, unreadCount, markRead, markAllRead, isMarkingAllRead } =
-    useNotifications();
+  const {
+    notifications,
+    isLoading,
+    unreadCount,
+    markRead,
+    markAllRead,
+    isMarkingAllRead,
+    clearAll,
+    isClearingAll,
+  } = useNotifications();
   const [tab, setTab] = useState("All");
   const detail = useNotificationDetail(notifications, markRead);
 
@@ -205,13 +232,20 @@ function CommunityNotifications() {
                 Stay on top of payments, member activity, and alerts.
               </p>
             </div>
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-2.5 flex-shrink-0">
               <button
                 onClick={() => markAllRead()}
                 disabled={isMarkingAllRead || unreadCount === 0}
                 className="px-4 py-2 rounded text-xs font-medium text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
               >
                 Mark All As Read
+              </button>
+              <button
+                onClick={() => clearAll()}
+                disabled={isClearingAll || notifications.length === 0}
+                className="px-4 py-2 rounded text-xs font-medium text-red-500 bg-transparent border border-red-500 hover:opacity-80 border-solid cursor-pointer disabled:opacity-40 disabled:cursor-default"
+              >
+                Clear All
               </button>
             </div>
           </div>

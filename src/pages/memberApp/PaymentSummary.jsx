@@ -19,6 +19,7 @@ import { Button } from "../../components/ui/Button";
 import { toastSuccess } from "../../utils/toast";
 import { scheduleCopy, estimateNextCharge } from "../../utils/recurring";
 import { toTitleCase, formatNaira as fmt, formatDate } from "../../utils/format";
+import { paymentsDisabled } from "../../lib/flags";
 
 function useObligation(obligationId) {
   return useQuery({
@@ -149,8 +150,16 @@ export default function PaymentSummary() {
   // no separate status field to check up front -- detected here so the
   // button can be permanently disabled instead of allowing endless retries.
   const isLinkInactive = /not accepting payments/i.test(error);
+  // Build-time kill switch (VITE_FLAGS) -- see src/lib/flags.js and
+  // docs/runbooks/incident-rollback.md. Blocks initiating new payments
+  // without shipping code; backend must separately stop in-flight charges.
+  const killSwitch = paymentsDisabled();
 
   async function handlePay() {
+    if (killSwitch) {
+      setError("Payments are temporarily unavailable. Please try again later.");
+      return;
+    }
     if (!obligation?.paymentLink?.id) return;
     setError("");
 
@@ -421,10 +430,11 @@ export default function PaymentSummary() {
             backend state, not a transient failure -- retrying hits the same
             wall every time. Without this the button stayed fully enabled
             after that error, inviting an endless retry loop against a link
-            that will never succeed. */}
+            that will never succeed. The kill switch is the incident path
+            (VITE_FLAGS={"paymentsDisabled":true} + redeploy). */}
         <Button
           onClick={handlePay}
-          disabled={!obligation || isLinkInactive}
+          disabled={!obligation || isLinkInactive || killSwitch}
           loading={initiatePayment.isPending || redirecting}
           className="mt-1 flex items-center justify-center gap-2"
         >
@@ -433,6 +443,8 @@ export default function PaymentSummary() {
               <Loader2 size={16} className="animate-spin" />
               {redirecting ? "Opening secure payment…" : "Processing…"}
             </>
+          ) : killSwitch ? (
+            "Payments Temporarily Unavailable"
           ) : isLinkInactive ? (
             "Payment Unavailable"
           ) : (

@@ -70,6 +70,7 @@ export function getEmailError(value) {
   if (!domain) return "Enter a valid email address.";
   if (TYPO_CHECK_DOMAINS.includes(domain) || OTHER_KNOWN_DOMAINS.includes(domain)) return "";
 
+  /** @type {string|null} */
   let closest = null;
   let closestDist = Infinity;
   for (const known of TYPO_CHECK_DOMAINS) {

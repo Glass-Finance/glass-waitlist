@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, configDefaults } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
@@ -6,14 +6,45 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
-    // Baseline measurement only — no thresholds enforced yet (see
-    // docs/testing-strategy.md). Enable per-run via `npm run test:coverage`.
+    // e2e/ is Playwright (npm run test:e2e), not Vitest — without this the
+    // default *.spec.js glob swallows those files and fails on the
+    // @playwright/test import.
+    exclude: [...configDefaults.exclude, "e2e/**", "**/node_modules/**"],
     coverage: {
       provider: "v8",
+      // Union of both branches: the summaries plus text detail, the local
+      // html drill-down, and lcov for badges/future CI coverage reporting.
       reporter: ["text", "text-summary", "html", "lcov", "json-summary"],
-      reportsDirectory: "coverage",
       include: ["src/**/*.{js,jsx}"],
-      exclude: ["**/__tests__/**", "**/*.{test,spec}.{js,jsx,ts,tsx}", "src/main.jsx"],
+      exclude: [
+        "src/__tests__/**",
+        "src/main.jsx",
+        "src/App.jsx",
+        "src/preview-notif*.jsx",
+        "src/pages/dev/**",
+      ],
+      // Floors measured against the suite as of the initial coverage gate
+      // (overall ~20% lines — a jsdom SPA with page-heavy surface). They are
+      // regression gates, not aspirations: raise them when adding tests,
+      // never lower them to make CI green.
+      thresholds: {
+        lines: 19,
+        functions: 14,
+        statements: 19,
+        branches: 16,
+        "src/utils/**": {
+          lines: 48,
+          functions: 43,
+          statements: 49,
+          branches: 53,
+        },
+        "src/api/**": {
+          lines: 50,
+          functions: 27,
+          statements: 50,
+          branches: 50,
+        },
+      },
     },
   },
   build: {
