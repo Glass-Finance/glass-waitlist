@@ -3,7 +3,8 @@ import { ADMIN_PERSONA, createScenario, installNetworkMock, preparePage } from "
 
 // One representative destructive admin mutation, end to end: confirmation
 // modal → PATCH → refetched row + success toast.
-test("suspends a user through the confirmation flow", async ({ page }) => {
+test("suspends a user through the confirmation flow", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-chromium", "dashboard is desktop");
   const scenario = createScenario();
   await installNetworkMock(page, scenario);
   await preparePage(page, ADMIN_PERSONA);

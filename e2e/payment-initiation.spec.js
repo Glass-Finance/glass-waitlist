@@ -8,7 +8,10 @@ test.describe("member payment initiation", () => {
   // of the QR handoff.
   test.use({ isMobile: true, hasTouch: true, viewport: { width: 390, height: 844 } });
 
-  test("reaches the provider authorization boundary without a real charge", async ({ page }) => {
+  test("reaches the provider authorization boundary without a real charge", async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== "mobile-chromium", "member pay flow is mobile-only");
     const scenario = createScenario({ persona: MEMBER_PERSONA });
     scenario.overrides.push({
       method: "GET",

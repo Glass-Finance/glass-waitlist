@@ -11,7 +11,8 @@ test.describe("payment callback verification", () => {
     await preparePage(page, ADMIN_PERSONA);
   }
 
-  test("settles into the success state", async ({ page }) => {
+  test("settles into the success state", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop-chromium", "callback is desktop");
     const scenario = createScenario({ verifyStatus: "SUCCESSFUL" });
     await setup(page, scenario);
 
@@ -29,7 +30,8 @@ test.describe("payment callback verification", () => {
     expect(scenario.calls.verify.query).toContain("reference=tx-e2e-success");
   });
 
-  test("shows the failure state when verification reports FAILED", async ({ page }) => {
+  test("shows the failure state when verification reports FAILED", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop-chromium", "callback is desktop");
     const scenario = createScenario({ verifyStatus: "FAILED" });
     await setup(page, scenario);
 

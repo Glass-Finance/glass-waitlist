@@ -6,7 +6,8 @@ import { ADMIN_PERSONA, createScenario, installNetworkMock, preparePage } from "
 // routes isPlatformAdmin first — straight to /dashboard/admin-panel.
 const PASSWORD = "CorrectHorseBattery1!";
 
-test("signs in and lands in the platform admin shell", async ({ page }) => {
+test("signs in and lands in the platform admin shell", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-chromium", "admin shell is desktop");
   const scenario = createScenario();
   await installNetworkMock(page, scenario);
   await preparePage(page); // fresh session — only the tour flag is pre-seeded
@@ -30,7 +31,8 @@ test("signs in and lands in the platform admin shell", async ({ page }) => {
   expect(scenario.calls.login.deviceInfo).toBeTruthy();
 });
 
-test("shows the pre-auth error copy when credentials are rejected", async ({ page }) => {
+test("shows the pre-auth error copy when credentials are rejected", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-chromium", "admin shell is desktop");
   const scenario = createScenario({ loginResult: "failure" });
   await installNetworkMock(page, scenario);
   await preparePage(page);
@@ -49,7 +51,8 @@ test("shows the pre-auth error copy when credentials are rejected", async ({ pag
   expect(await page.evaluate(() => localStorage.getItem("accessToken"))).toBeNull();
 });
 
-test("logs out from the dashboard shell", async ({ page }) => {
+test("logs out from the dashboard shell", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-chromium", "admin shell is desktop");
   const scenario = createScenario();
   await installNetworkMock(page, scenario);
   await preparePage(page, ADMIN_PERSONA);
@@ -66,7 +69,10 @@ test("logs out from the dashboard shell", async ({ page }) => {
   expect(await page.evaluate(() => localStorage.getItem("accessToken"))).toBeNull();
 });
 
-test("hard-redirects to sign-in with the expiry toast when refresh fails", async ({ page }) => {
+test("hard-redirects to sign-in with the expiry toast when refresh fails", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop-chromium", "admin shell is desktop");
   const scenario = createScenario();
   await installNetworkMock(page, scenario);
   await preparePage(page, ADMIN_PERSONA);
