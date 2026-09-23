@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import client from "../api/client";
 import { fetchAllCommunityMembers } from "../api/communities";
 import { fetchAllCommunityObligations } from "../api/transactions";
+import { isSuccessfulStatus } from "../utils/paymentStatus";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/v1/communities/{communityIdentifier}
@@ -134,9 +135,8 @@ export function useCommunityDashboard(communityId) {
 
   // Compute collected from actual successful transactions — backend's
   // collectedAmount only tracks settlements and returns 0 even after payments.
-  const SUCCESS_STATUSES = new Set(["SUCCESS", "SUCCESSFUL", "PAID"]);
   const computedCollected = (transactionsQuery.data ?? [])
-    .filter((t) => SUCCESS_STATUSES.has((t.status ?? "").toUpperCase()))
+    .filter((t) => isSuccessfulStatus(t.status))
     .reduce((sum, t) => sum + (t.amount ?? 0), 0);
 
   const balances = {

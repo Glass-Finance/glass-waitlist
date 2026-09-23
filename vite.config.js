@@ -12,7 +12,9 @@ export default defineConfig({
     exclude: [...configDefaults.exclude, "e2e/**", "**/node_modules/**"],
     coverage: {
       provider: "v8",
-      reporter: ["text-summary", "json-summary"],
+      // Union of both branches: the summaries plus text detail, the local
+      // html drill-down, and lcov for badges/future CI coverage reporting.
+      reporter: ["text", "text-summary", "html", "lcov", "json-summary"],
       include: ["src/**/*.{js,jsx}"],
       exclude: [
         "src/__tests__/**",

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getMyCommunities } from "../api/members";
-import client from "../api/client";
+import { fetchAllNotifications, selectNotificationItems } from "./useNotifications";
 import { toastSuccess } from "../utils/toast";
 
 // The backend sends no reliable signal to the requesting member when an
@@ -70,12 +70,6 @@ function escapeRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-async function fetchRecentNotifications() {
-  const res = await client.get("/notifications", { params: { pageSize: 50 } });
-  const data = res.data?.data;
-  return Array.isArray(data) ? data : (data?.content ?? []);
-}
-
 export function useJoinApprovalWatcher() {
   // Same key/queryFn as the rest of the app — shares the cached list, so
   // this adds no extra network traffic.
@@ -89,9 +83,17 @@ export function useJoinApprovalWatcher() {
   // in `communities` above — the JOIN_REQUEST_REJECTED notification the
   // backend sends the member is what lets a rejected card flip back to
   // "Request to Join" instead of sitting on "Request sent" until the TTL.
+  //
+  // Same key AND same queryFn as useAllNotifications (Topbar dropdown,
+  // CommunitiesHome, dashboard/Notifications): one cache entry holding the raw
+  // envelope, fetched once for every observer. This watcher only ever *reads*
+  // an array out of it via selectNotificationItems — it must not hand a
+  // differently-shaped (unwrapped) list to that shared entry, which is what
+  // previously overwrote the envelope and broke both consumers.
   const { data: notifications } = useQuery({
     queryKey: ["notifications", "all", "list"],
-    queryFn: fetchRecentNotifications,
+    queryFn: fetchAllNotifications,
+    select: selectNotificationItems,
     staleTime: 1000 * 20,
   });
 

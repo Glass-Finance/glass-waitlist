@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchAllCommunityMembers } from "../api/communities";
 import { fetchAllCommunityObligations, fetchAllCommunityTransactions } from "../api/transactions";
 import { getCommunityPaymentLinks } from "../api/payments";
+import { isPaidObligationStatus, isFailedStatus } from "../utils/paymentStatus";
 
 function unwrapList(res) {
   const data = res.data?.data;
@@ -82,13 +83,9 @@ export function useMembersWithPayments(communityId) {
 
     const planIds = new Set(memberObligations.map((o) => o.paymentLink?.id ?? o.recurringPlan?.id));
 
-    const paidCount = memberObligations.filter(
-      (o) => (o.status ?? "").toUpperCase() === "PAID",
-    ).length;
+    const paidCount = memberObligations.filter((o) => isPaidObligationStatus(o.status)).length;
 
-    const failedCount = memberTransactions.filter(
-      (t) => (t.status ?? "").toUpperCase() === "FAILED",
-    ).length;
+    const failedCount = memberTransactions.filter((t) => isFailedStatus(t.status)).length;
 
     // Exempt members genuinely have no dues -- only fill the gap for
     // everyone else, and only for plans that don't already have a real

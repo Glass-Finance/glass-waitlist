@@ -20,6 +20,7 @@ import activePlansIcon from "../../assets/dashboard/active-plans.webp";
 import { formatNaira } from "./admin-dashboard/helpers";
 import { toTitleCase } from "../../utils/format";
 import { isMemberRoleOwner } from "../../utils/communityRole";
+import { isPaidObligationStatus } from "../../utils/paymentStatus";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 import AddMemberModal from "./admin-dashboard/AddMemberModal";
 import CreatePlanModal from "./payments/CreatePlanModal";
@@ -97,7 +98,7 @@ function DashboardContent({ isPaying, communityId }) {
     let rows = [...myUpcoming];
     if (myPaymentsFilter) {
       rows = rows.filter((row) => {
-        const isPaid = row.status === "PAID" || row.status === "SUCCESSFUL";
+        const isPaid = isPaidObligationStatus(row.status);
         return myPaymentsFilter === "paid" ? isPaid : !isPaid;
       });
     }

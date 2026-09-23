@@ -7,6 +7,7 @@ import { useExportJob } from "../../../hooks/useExportJob";
 import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 import { formatNaira, toTitleCase, formatDate } from "../../../utils/format";
 import LoadingState from "../../../components/common/LoadingState";
+import { isPaidObligationStatus, isOverdueObligationStatus } from "../../../utils/paymentStatus";
 
 // ── Plan members modal ────────────────────────────────────────────────────────
 export default function PlanMembersModal({ plan, communityId, onClose }) {
@@ -77,13 +78,13 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
     const q = search.toLowerCase();
     if (q && !getName(m).toLowerCase().includes(q) && !getEmail(m).toLowerCase().includes(q))
       return false;
-    if (statusFilter === "Paid" && getStatus(m) !== "PAID") return false;
-    if (statusFilter === "Unpaid" && getStatus(m) === "PAID") return false;
-    if (statusFilter === "Overdue" && getStatus(m) !== "OVERDUE") return false;
+    if (statusFilter === "Paid" && !isPaidObligationStatus(getStatus(m))) return false;
+    if (statusFilter === "Unpaid" && isPaidObligationStatus(getStatus(m))) return false;
+    if (statusFilter === "Overdue" && !isOverdueObligationStatus(getStatus(m))) return false;
     return true;
   });
 
-  const paidCount = planMembers.filter((m) => getStatus(m) === "PAID").length;
+  const paidCount = planMembers.filter((m) => isPaidObligationStatus(getStatus(m))).length;
   const totalCount = planMembers.length;
   const totalCollected = planMembers.reduce((sum, m) => sum + getAmountPaid(m), 0);
 

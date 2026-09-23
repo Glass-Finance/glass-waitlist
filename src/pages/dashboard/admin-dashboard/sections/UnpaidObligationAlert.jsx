@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { toTitleCase, formatDate } from "../../../../utils/format";
 import WarnSignIcon from "../../../../assets/dashboard/warn-sign.webp";
 import { formatNaira } from "../helpers";
+import { isPaidObligationStatus } from "../../../../utils/paymentStatus";
 
 export default function UnpaidObligationAlert({
   myUpcoming,
@@ -9,7 +10,7 @@ export default function UnpaidObligationAlert({
   onDismiss,
   hasActiveAutoPay,
 }) {
-  const dueList = myUpcoming.filter((o) => (o.status ?? "").toUpperCase() !== "PAID");
+  const dueList = myUpcoming.filter((o) => !isPaidObligationStatus(o.status));
   const due = dueList[0];
   if (!due) return null;
   const othersDue = dueList.length - 1;
