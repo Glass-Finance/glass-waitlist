@@ -200,7 +200,6 @@ export function AuthProvider({ children }) {
         pendo.identify({
           visitor: {
             id: user.id,
-            email: user.email,
             platformRoleCode: user.role,
             emailVerified: user.emailVerified,
           },
@@ -254,7 +253,6 @@ export function AuthProvider({ children }) {
         pendo.identify({
           visitor: {
             id: user.id,
-            email: user.email,
             platformRoleCode: user.role,
             emailVerified: user.emailVerified,
           },
@@ -346,13 +344,15 @@ export function AuthProvider({ children }) {
       return updated;
     });
 
-    // Re-identify with enriched profile + community (account) data
+    // Re-identify with enriched profile + community (account) data.
+    // PII minimisation: the visitor id is the opaque backend UUID — email,
+    // first/last/full name are deliberately NOT sent to Pendo (product
+    // analytics doesn't need them; NDPR/GDPR data-minimisation does). Account
+    // (community) fields stay because they're organisation-level, not personal.
     if (profile.id && typeof pendo !== "undefined") {
       const pendoPayload = {
         visitor: {
           id: profile.id,
-          email: profile.email,
-          full_name: [ud.firstName, ud.lastName].filter(Boolean).join(" ") || undefined,
           accountName: profile.accountName,
           timezone: profile.timezone,
           platformRoleCode: profile.platformRole,
@@ -361,8 +361,6 @@ export function AuthProvider({ children }) {
           lastLoginAt: profile.lastLoginAt,
           enabled: profile.enabled,
           createdAt: profile.createdAt,
-          firstName: ud.firstName,
-          lastName: ud.lastName,
         },
       };
       const primaryCommunity = communities[0];

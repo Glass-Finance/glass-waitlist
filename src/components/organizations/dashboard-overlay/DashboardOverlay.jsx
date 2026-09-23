@@ -107,12 +107,20 @@ export default function DashboardOverlay() {
         transition:opacity .4s ease,transform .4s ease;
         font-family:Inter,-apple-system,sans-serif;
       `;
-      el.innerHTML = `
-        <div style="width:7px;height:7px;border-radius:50%;background:${d.color};flex-shrink:0;margin-top:4px"></div>
-        <div>
-          <div style="font-size:11px;font-weight:700;color:#000;margin-bottom:2px">${d.title}</div>
-          <div style="font-size:10px;color:#6b7280;line-height:1.35">${d.sub}</div>
-        </div>`;
+      // DOM APIs instead of innerHTML — d.title/d.sub are internal strings
+      // today, but textContent makes the toast inert to any future change.
+      const dot = document.createElement("div");
+      dot.style.cssText = "width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px";
+      dot.style.background = d.color;
+      const body = document.createElement("div");
+      const title = document.createElement("div");
+      title.textContent = d.title;
+      title.style.cssText = "font-size:11px;font-weight:700;color:#000;margin-bottom:2px";
+      const sub = document.createElement("div");
+      sub.textContent = d.sub;
+      sub.style.cssText = "font-size:10px;color:#6b7280;line-height:1.35";
+      body.append(title, sub);
+      el.append(dot, body);
       return el;
     };
 
