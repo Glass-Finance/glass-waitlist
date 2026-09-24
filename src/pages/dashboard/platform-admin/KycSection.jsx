@@ -21,28 +21,15 @@ import {
   StatusBadge,
 } from "./SharedUI";
 import { unwrap, pageParams, fmtDateTime } from "./shared";
-import { idTypeLabel, isKycApproved } from "../../../utils/kycStatus";
+import {
+  idTypeLabel,
+  isKycApproved,
+  isKycInReview,
+  KYC_STATUS_FILTER_OPTIONS,
+  KYC_ID_TYPE_FILTER_OPTIONS,
+  KYC_DEFAULT_STATUS_FILTER,
+} from "../../../utils/kycStatus";
 import { getErrorMessage } from "../../../utils/errorHandler";
-
-const STATUS_OPTIONS = [
-  { value: "IN_REVIEW", label: "In review" },
-  { value: "ALL", label: "All statuses" },
-  { value: "PENDING", label: "Pending" },
-  { value: "APPROVED", label: "Approved" },
-  { value: "REJECTED", label: "Rejected" },
-  { value: "ERROR", label: "Error" },
-  { value: "EXPIRED", label: "Expired" },
-  { value: "REVOKED", label: "Revoked" },
-];
-
-const ID_TYPE_OPTIONS = [
-  { value: "ALL", label: "All ID types" },
-  { value: "BVN", label: "BVN" },
-  { value: "VOTER_ID", label: "Voter's card" },
-  { value: "V_NIN", label: "Virtual NIN" },
-  { value: "NIN_SLIP", label: "NIN slip" },
-  { value: "NIN_V2", label: "NIN" },
-];
 
 function Row({ label, value }) {
   return (
@@ -300,12 +287,12 @@ function KycDetailModal({ attemptId, onClose }) {
 
       {d && !mode && (
         <div className="px-6 pb-5 pt-1 border-t border-gray-100 flex flex-wrap gap-2">
-          {d.status === "IN_REVIEW" && d.canApprove !== false && (
+          {isKycInReview(d.status) && d.canApprove !== false && (
             <Button size="sm" onClick={() => setMode("APPROVE")}>
               Approve
             </Button>
           )}
-          {d.status === "IN_REVIEW" && (
+          {isKycInReview(d.status) && (
             <Button size="sm" variant="danger" onClick={() => setMode("REJECT")}>
               Reject
             </Button>
@@ -329,7 +316,7 @@ function KycDetailModal({ attemptId, onClose }) {
 export default function KycSection() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [status, setStatus] = useState("IN_REVIEW");
+  const [status, setStatus] = useState(KYC_DEFAULT_STATUS_FILTER);
   const [idType, setIdType] = useState("ALL");
   const [page, setPage] = useState(0);
   const [openId, setOpenId] = useState(null);
@@ -377,7 +364,7 @@ export default function KycSection() {
                 setStatus(v);
                 setPage(0);
               }}
-              options={STATUS_OPTIONS}
+              options={KYC_STATUS_FILTER_OPTIONS}
             />
             <FilterSelect
               value={idType}
@@ -385,7 +372,7 @@ export default function KycSection() {
                 setIdType(v);
                 setPage(0);
               }}
-              options={ID_TYPE_OPTIONS}
+              options={KYC_ID_TYPE_FILTER_OPTIONS}
             />
           </>
         }

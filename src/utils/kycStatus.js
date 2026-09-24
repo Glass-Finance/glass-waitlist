@@ -69,12 +69,49 @@ export function idTypeLabel(idType) {
   return ID_TYPE_OPTIONS.find((o) => o.value === idType)?.label ?? idType ?? "—";
 }
 
+// Exact status classifiers — callers must not re-derive string compares.
+function upper(status) {
+  return String(status ?? "").toUpperCase();
+}
+
 // Account statuses where starting is blocked / nothing to show as "current".
 export function isKycApproved(status) {
-  return String(status ?? "").toUpperCase() === "APPROVED";
+  return upper(status) === "APPROVED";
+}
+
+export function isKycPending(status) {
+  return upper(status) === "PENDING";
+}
+
+export function isKycInReview(status) {
+  return upper(status) === "IN_REVIEW";
+}
+
+export function isKycNotStarted(status) {
+  return upper(status) === "NOT_STARTED";
 }
 
 export function isKycTerminal(status) {
-  const s = String(status ?? "").toUpperCase();
+  const s = upper(status);
   return s === "REJECTED" || s === "ERROR" || s === "EXPIRED" || s === "REVOKED";
 }
+
+// Admin list default filter (IN_REVIEW) + full filter set for platform-admin KYC.
+export const KYC_STATUS_FILTER_OPTIONS = [
+  { value: "IN_REVIEW", label: "In review" },
+  { value: "ALL", label: "All statuses" },
+  { value: "PENDING", label: "Pending" },
+  { value: "APPROVED", label: "Approved" },
+  { value: "REJECTED", label: "Rejected" },
+  { value: "ERROR", label: "Error" },
+  { value: "EXPIRED", label: "Expired" },
+  { value: "REVOKED", label: "Revoked" },
+];
+
+export const KYC_DEFAULT_STATUS_FILTER = "IN_REVIEW";
+
+// Admin ID-type filter: ALL sentinel + the shared id-type set.
+export const KYC_ID_TYPE_FILTER_OPTIONS = [
+  { value: "ALL", label: "All ID types" },
+  ...ID_TYPE_OPTIONS,
+];

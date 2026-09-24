@@ -18,6 +18,9 @@ import {
   idTypeLabel,
   kycStatusLabel,
   isKycApproved,
+  isKycPending,
+  isKycInReview,
+  isKycNotStarted,
 } from "../../../../utils/kycStatus";
 import { notifyError, getErrorMessage } from "../../../../utils/errorHandler";
 
@@ -156,15 +159,16 @@ export default function VerifyIdentity() {
 
   async function handleResume() {
     setLocalError("");
-    if (!activeAttemptId) return;
+    // Resume is only reachable when the button is shown (PENDING + attempt +
+    // canRefreshToken). Always mint a fresh capture token — never resume on a
+    // stale one, and never treat "PENDING but cannot refresh" as a session
+    // expiry path.
+    if (!activeAttemptId || !canRefreshToken) return;
     try {
-      let token = null;
-      if (canRefreshToken || summary?.status === "PENDING") {
-        const session = await refreshToken.mutateAsync(activeAttemptId);
-        token = session?.token;
-      }
+      const session = await refreshToken.mutateAsync(activeAttemptId);
+      const token = session?.token;
       if (!token) {
-        setLocalError("Your session expired. Refresh your status and try again.");
+        setLocalError("Couldn't refresh your verification session. Check status and try again.");
         refetch();
         return;
       }
@@ -220,9 +224,9 @@ export default function VerifyIdentity() {
   }
 
   const isApproved = isKycApproved(status);
-  const isInReview = status === "IN_REVIEW";
-  const isPending = status === "PENDING";
-  const isNotStarted = status === "NOT_STARTED";
+  const isInReview = isKycInReview(status);
+  const isPending = isKycPending(status);
+  const isNotStarted = isKycNotStarted(status);
   const canRetry = isNotStarted || (canStart && !isApproved && !isPending && !isInReview);
   const showResume = isPending && activeAttemptId && canRefreshToken;
 
