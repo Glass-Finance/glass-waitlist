@@ -5,6 +5,10 @@ import { AlertTriangle, ChevronLeft, ChevronRight, LogOut, Plus, X } from "lucid
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
 import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
+import KycRequiredSheet from "../../../../components/memberApp/KycRequiredSheet";
+import KycStatusBadge from "../../../../components/memberApp/KycStatusBadge";
+import { useKycGate } from "../../../../hooks/useKycGate";
+import { kycDisabled } from "../../../../lib/flags";
 
 function getInitials(name = "") {
   return name
@@ -93,9 +97,11 @@ export default function MyCommunities() {
   const leaveCommunity = useLeaveCommunity();
   const [navigatingId, setNavigatingId] = useState(null);
   const [leavingCommunity, setLeavingCommunity] = useState(null);
+  const kycGate = useKycGate();
 
   async function handleSelect(c) {
     if (c.owned) {
+      if (!kycGate.enforce()) return;
       setNavigatingId(c.id);
       try {
         localStorage.setItem("glass_community", JSON.stringify(c));
@@ -138,15 +144,28 @@ export default function MyCommunities() {
         <h1 className="text-lg font-semibold text-[#111] m-0">My Communities</h1>
       </div>
 
-      <div className="pt-0 px-4 pb-4">
+      <div className="pt-0 px-4 pb-4 flex items-center gap-2">
         <button
-          onClick={() => navigate("/onboarding/choose-path")}
-          className="flex items-center justify-center gap-2 w-full p-3 rounded-xl bg-[#1C2B8A] text-white text-sm font-semibold border-none cursor-pointer"
+          onClick={() => {
+            if (!kycGate.enforce(() => navigate("/onboarding/choose-path"))) return;
+          }}
+          className="flex items-center justify-center gap-2 flex-1 p-3 rounded-xl bg-[#1C2B8A] text-white text-sm font-semibold border-none cursor-pointer"
         >
           <Plus size={16} />
           Create a Community
         </button>
+        {!kycDisabled() && kycGate.status && (
+          <button
+            onClick={() => navigate("/member/verify-identity")}
+            className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0"
+            aria-label="Identity verification status"
+          >
+            <KycStatusBadge status={kycGate.status} />
+          </button>
+        )}
       </div>
+
+      <KycRequiredSheet open={kycGate.gateOpen} onClose={kycGate.closeGate} />
 
       <div className="px-4">
         {isLoading ? (

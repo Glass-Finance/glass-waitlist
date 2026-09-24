@@ -4,8 +4,10 @@ This directory records the current frontend architecture, operational convention
 
 - [Architecture](architecture.md)
 - [Authentication](authentication.md)
+- [Account, phone, and identity flows](account-verification.md)
 - [Authorization](authorization.md)
 - [Payments](payments.md)
+- [KYC](kyc.md)
 - [Data fetching](data-fetching.md)
 - [Error handling](error-handling.md)
 - [Testing strategy](testing-strategy.md)

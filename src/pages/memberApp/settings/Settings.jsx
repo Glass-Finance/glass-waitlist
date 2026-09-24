@@ -9,10 +9,14 @@ import {
   RefreshCw,
   Users,
   LogOut,
+  IdCard,
 } from "lucide-react";
 import { useAuth } from "../../../store/AuthContext";
 import GlassLogoGlow from "../../../components/memberApp/GlassLogoGlow";
 import { toastSuccess } from "../../../utils/toast";
+import { useKycSummary } from "../../../hooks/useKyc";
+import KycStatusBadge from "../../../components/memberApp/KycStatusBadge";
+import { kycDisabled } from "../../../lib/flags";
 
 const SECTIONS = [
   {
@@ -23,6 +27,13 @@ const SECTIONS = [
         label: "Profile",
         desc: "Your name, email and phone number",
         to: "/member/profile",
+      },
+      {
+        Icon: IdCard,
+        label: "Identity Verification",
+        desc: "Verify your identity with Smile ID",
+        to: "/member/verify-identity",
+        kyc: true,
       },
       {
         Icon: Shield,
@@ -71,6 +82,14 @@ const SECTIONS = [
 export default function Settings() {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const hideKyc = kycDisabled();
+  const { data: kycSummary } = useKycSummary();
+  const sections = hideKyc
+    ? SECTIONS.map((s) => ({
+        ...s,
+        items: s.items.filter((item) => !item.kyc),
+      }))
+    : SECTIONS;
 
   async function handleLogout() {
     await logout();
@@ -95,13 +114,13 @@ export default function Settings() {
       </div>
 
       <div className="px-4">
-        {SECTIONS.map((section) => (
+        {sections.map((section) => (
           <div key={section.label} className="mb-5">
             <p className="text-xs font-semibold text-[#999] mt-0 mx-1 mb-2 uppercase [letter-spacing:0.4px]">
               {section.label}
             </p>
             <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden">
-              {section.items.map(({ Icon, label, desc, to }, i) => (
+              {section.items.map(({ Icon, label, desc, to, kyc }, i) => (
                 <button
                   key={label}
                   onClick={() => navigate(to)}
@@ -114,6 +133,9 @@ export default function Settings() {
                     <p className="text-sm font-medium text-[#111] m-0">{label}</p>
                     <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">{desc}</p>
                   </div>
+                  {kyc && kycSummary?.status && (
+                    <KycStatusBadge status={kycSummary.status} className="mr-1 flex-shrink-0" />
+                  )}
                   <ChevronRight size={16} className="text-[#ccc] flex-shrink-0" />
                 </button>
               ))}

@@ -203,8 +203,8 @@ export default function Profile() {
               </div>
               <button
                 onClick={() => navigate("/member/verify-phone")}
-                title={user?.phoneVerified ? "Update phone number" : "Verify phone number"}
-                aria-label={user?.phoneVerified ? "Update phone number" : "Verify phone number"}
+                title={user?.phoneVerified ? "Update phone number" : "Add phone number"}
+                aria-label={user?.phoneVerified ? "Update phone number" : "Add phone number"}
                 className="flex-shrink-0 w-10 h-10 rounded-[10px] border-[1.5px] border-[#E0E0E0] bg-white text-brand cursor-pointer flex items-center justify-center"
               >
                 <Pencil size={15} />

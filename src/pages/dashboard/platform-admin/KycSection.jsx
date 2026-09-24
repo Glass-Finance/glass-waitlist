@@ -1,0 +1,487 @@
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ShieldCheck, User as UserIcon } from "lucide-react";
+import {
+  getAdminKycAttempts,
+  getAdminKycAttempt,
+  decideKyc,
+  revokeKyc,
+  setKycAttemptPolicy,
+} from "../../../api/admin";
+import { useDebounce } from "../../../hooks/useDebounce";
+import ModalShell from "../../../components/dashboard/ModalShell";
+import { Button } from "../../../components/ui/Button";
+import { TextInput } from "../../../components/ui/TextInput";
+import {
+  SectionHeader,
+  SearchBar,
+  FilterSelect,
+  TableShell,
+  TableFooter,
+  StatusBadge,
+} from "./SharedUI";
+import { unwrap, pageParams, fmtDateTime } from "./shared";
+import { idTypeLabel, isKycApproved } from "../../../utils/kycStatus";
+import { getErrorMessage } from "../../../utils/errorHandler";
+
+const STATUS_OPTIONS = [
+  { value: "IN_REVIEW", label: "In review" },
+  { value: "ALL", label: "All statuses" },
+  { value: "PENDING", label: "Pending" },
+  { value: "APPROVED", label: "Approved" },
+  { value: "REJECTED", label: "Rejected" },
+  { value: "ERROR", label: "Error" },
+  { value: "EXPIRED", label: "Expired" },
+  { value: "REVOKED", label: "Revoked" },
+];
+
+const ID_TYPE_OPTIONS = [
+  { value: "ALL", label: "All ID types" },
+  { value: "BVN", label: "BVN" },
+  { value: "VOTER_ID", label: "Voter's card" },
+  { value: "V_NIN", label: "Virtual NIN" },
+  { value: "NIN_SLIP", label: "NIN slip" },
+  { value: "NIN_V2", label: "NIN" },
+];
+
+function Row({ label, value }) {
+  return (
+    <div className="flex justify-between gap-3 py-1.5">
+      <span className="text-[11px] text-gray-400 flex-shrink-0">{label}</span>
+      <span className="text-[11px] text-gray-800 text-right break-words min-w-0">
+        {value ?? "—"}
+      </span>
+    </div>
+  );
+}
+
+function KycDetailModal({ attemptId, onClose }) {
+  const queryClient = useQueryClient();
+  const [mode, setMode] = useState(null); // "APPROVE" | "REJECT" | "REVOKE" | "POLICY" | null
+  const [reason, setReason] = useState("");
+  const [policyAllowed, setPolicyAllowed] = useState(false);
+  const [formError, setFormError] = useState("");
+
+  const detail = useQuery({
+    queryKey: ["admin-kyc-attempt", attemptId],
+    queryFn: () => getAdminKycAttempt(attemptId).then((r) => r.data?.data ?? r.data),
+    staleTime: 0,
+    retry: false,
+  });
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["admin-kyc-attempts"] });
+    queryClient.invalidateQueries({ queryKey: ["admin-kyc-attempt", attemptId] });
+  };
+
+  const decide = useMutation({
+    mutationFn: ({ decision, reason: r }) => decideKyc(attemptId, { decision, reason: r }),
+    onSuccess: () => {
+      invalidate();
+      setMode(null);
+      setReason("");
+    },
+    meta: {
+      successMessage: (vars) => (vars.decision === "APPROVE" ? "KYC approved" : "KYC rejected"),
+    },
+    onError: (err) => {
+      const status = err?.response?.status;
+      if (status === 409) {
+        invalidate();
+        setFormError("This attempt changed — details reloaded. Review the latest state.");
+      } else {
+        setFormError(getErrorMessage(err, "Action failed."));
+      }
+    },
+  });
+
+  const revoke = useMutation({
+    mutationFn: ({ reason: r }) => revokeKyc(detail.data?.user?.id, { reason: r }),
+    onSuccess: () => {
+      invalidate();
+      setMode(null);
+      setReason("");
+    },
+    meta: { successMessage: "KYC revoked" },
+    onError: (err) => {
+      if (err?.response?.status === 409) {
+        invalidate();
+        setFormError("Approval is no longer current — details reloaded.");
+      } else {
+        setFormError(getErrorMessage(err, "Revoke failed."));
+      }
+    },
+  });
+
+  const policy = useMutation({
+    mutationFn: ({ allowed, reason: r }) =>
+      setKycAttemptPolicy(detail.data?.user?.id, { allowed, reason: r }),
+    onSuccess: () => {
+      invalidate();
+      setMode(null);
+      setReason("");
+    },
+    meta: { successMessage: "Attempt policy updated" },
+    onError: (err) => setFormError(getErrorMessage(err, "Policy update failed.")),
+  });
+
+  const d = detail.data;
+  const busy = decide.isPending || revoke.isPending || policy.isPending;
+  const evidence = d?.evidence;
+  const reviewReasons = evidence?.reviewReasons ?? [];
+
+  function submitReason() {
+    setFormError("");
+    const r = reason.trim();
+    if (!r) {
+      setFormError("A user-visible reason is required.");
+      return;
+    }
+    if (mode === "APPROVE" || mode === "REJECT") decide.mutate({ decision: mode, reason: r });
+    else if (mode === "REVOKE") revoke.mutate({ reason: r });
+    else if (mode === "POLICY") policy.mutate({ allowed: policyAllowed, reason: r });
+  }
+
+  return (
+    <ModalShell
+      title="KYC attempt"
+      subtitle={d?.id ? `Attempt ${d.id.slice(0, 8)}…` : "Loading…"}
+      onClose={onClose}
+    >
+      <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">
+        {detail.isLoading && <p className="text-xs text-gray-400">Loading detail…</p>}
+        {detail.isError && (
+          <p className="text-xs text-red-500">
+            {getErrorMessage(detail.error, "Failed to load attempt detail.")}
+          </p>
+        )}
+
+        {d && (
+          <>
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <StatusBadge status={d.status} />
+              <span className="text-[11px] text-gray-400">{fmtDateTime(d.createdAt)}</span>
+            </div>
+
+            <div className="bg-white rounded-xl border border-surface-container-border p-3 mb-3">
+              <Row
+                label="User"
+                value={
+                  d.user
+                    ? `${[d.user.firstName, d.user.lastName].filter(Boolean).join(" ") || d.user.username || "—"}` +
+                      (d.user.email ? ` · ${d.user.email}` : "")
+                    : "—"
+                }
+              />
+              <Row label="User ID" value={d.user?.id} />
+              <Row label="External ref" value={d.externalUserReference} />
+              <Row label="ID type" value={idTypeLabel(d.idType)} />
+              <Row
+                label="ID number"
+                value={d.idNumber ? "••••" + String(d.idNumber).slice(-4) : "—"}
+              />
+              <Row label="Country" value={d.country} />
+              <Row label="Provider" value={d.providerName} />
+              <Row label="Environment" value={d.environment} />
+              <Row label="Provider status" value={d.providerStatus} />
+              <Row label="Job ID" value={d.providerJobId} />
+              <Row label="Submitted" value={fmtDateTime(d.submittedAt)} />
+              <Row label="Decided" value={fmtDateTime(d.decidedAt)} />
+              <Row label="Decision reason" value={d.decisionReason} />
+              <Row label="Revoked reason" value={d.revokedReason} />
+            </div>
+
+            {Array.isArray(d.reviewReasons) && d.reviewReasons.length > 0 && (
+              <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 mb-3">
+                <p className="text-[11px] font-semibold text-amber-800 m-0 mb-1">Review reasons</p>
+                <p className="text-[11px] text-amber-700 m-0">{d.reviewReasons.join(", ")}</p>
+              </div>
+            )}
+
+            {evidence && (
+              <div className="bg-white rounded-xl border border-surface-container-border p-3 mb-3">
+                <p className="text-[11px] font-semibold text-gray-500 m-0 mb-1">Evidence</p>
+                <Row
+                  label="Authority name"
+                  value={[evidence.authorityFirstName, evidence.authorityLastName]
+                    .filter(Boolean)
+                    .join(" ")}
+                />
+                <Row label="DOB" value={evidence.authorityDateOfBirth} />
+                <Row label="Provider reason" value={evidence.providerReason} />
+                <Row label="Smile Secure" value={evidence.smileSecure?.status} />
+                <Row label="Fraud risk" value={evidence.fraudRisk?.riskLevel} />
+                {reviewReasons.length > 0 && (
+                  <div className="mt-2 space-y-1.5">
+                    {reviewReasons.map((rr, i) => (
+                      <div key={`${rr.code}-${i}`} className="text-[11px] text-gray-600">
+                        <span className="font-semibold">{rr.code}</span>
+                        {rr.message ? ` — ${rr.message}` : ""}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {d.matchedAccounts && Object.keys(d.matchedAccounts).length > 0 && (
+              <div className="bg-white rounded-xl border border-surface-container-border p-3 mb-3">
+                <p className="text-[11px] font-semibold text-gray-500 m-0 mb-1">Matched accounts</p>
+                {Object.entries(d.matchedAccounts).map(([ref, v]) => (
+                  <Row
+                    key={ref}
+                    label={ref}
+                    value={`${v.accountState ?? "—"} / ${v.kycStatus ?? "—"}`}
+                  />
+                ))}
+              </div>
+            )}
+
+            {d.canApprove === false &&
+              Array.isArray(d.approvalBlockingReasons) &&
+              d.approvalBlockingReasons.length > 0 && (
+                <p className="text-[11px] text-red-500 mb-2">
+                  Approval blocked: {d.approvalBlockingReasons.join(", ")}
+                </p>
+              )}
+
+            {formError && <p className="text-[11px] text-red-500 mb-2">{formError}</p>}
+
+            {mode && (
+              <div className="bg-white rounded-xl border border-surface-container-border p-3 mb-3">
+                <p className="text-[11px] font-semibold text-gray-700 m-0 mb-2">
+                  {mode === "APPROVE" && "Approve reason"}
+                  {mode === "REJECT" && "Reject reason"}
+                  {mode === "REVOKE" && "Revoke reason"}
+                  {mode === "POLICY" && "Attempt policy"}
+                </p>
+                {mode === "POLICY" && (
+                  <label className="flex items-center gap-2 text-[11px] text-gray-600 mb-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={policyAllowed}
+                      onChange={(e) => setPolicyAllowed(e.target.checked)}
+                    />
+                    Allow new attempts
+                  </label>
+                )}
+                <TextInput
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="User-visible reason…"
+                />
+                <div className="flex gap-2 mt-3">
+                  <Button
+                    size="sm"
+                    variant={mode === "REJECT" || mode === "REVOKE" ? "danger" : "brand"}
+                    loading={busy}
+                    onClick={submitReason}
+                  >
+                    Confirm
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => {
+                      setMode(null);
+                      setReason("");
+                      setFormError("");
+                    }}
+                    disabled={busy}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {d && !mode && (
+        <div className="px-6 pb-5 pt-1 border-t border-gray-100 flex flex-wrap gap-2">
+          {d.status === "IN_REVIEW" && d.canApprove !== false && (
+            <Button size="sm" onClick={() => setMode("APPROVE")}>
+              Approve
+            </Button>
+          )}
+          {d.status === "IN_REVIEW" && (
+            <Button size="sm" variant="danger" onClick={() => setMode("REJECT")}>
+              Reject
+            </Button>
+          )}
+          {isKycApproved(d.status) && d.user?.id && (
+            <Button size="sm" variant="danger" onClick={() => setMode("REVOKE")}>
+              Revoke
+            </Button>
+          )}
+          {d.user?.id && (
+            <Button size="sm" variant="secondary" onClick={() => setMode("POLICY")}>
+              Attempt policy
+            </Button>
+          )}
+        </div>
+      )}
+    </ModalShell>
+  );
+}
+
+export default function KycSection() {
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [status, setStatus] = useState("IN_REVIEW");
+  const [idType, setIdType] = useState("ALL");
+  const [page, setPage] = useState(0);
+  const [openId, setOpenId] = useState(null);
+  const debouncedSet = useDebounce((v) => {
+    setDebouncedSearch(v);
+    setPage(0);
+  });
+
+  const params = {
+    ...pageParams(page),
+    ...(debouncedSearch ? { userId: debouncedSearch } : {}),
+    ...(status !== "ALL" ? { status } : {}),
+    ...(idType !== "ALL" ? { idType } : {}),
+  };
+
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["admin-kyc-attempts", params],
+    queryFn: () => getAdminKycAttempts(params).then(unwrap),
+    staleTime: 30_000,
+    placeholderData: (p) => p,
+  });
+
+  const items = data?.content ?? [];
+
+  return (
+    <div>
+      <SectionHeader
+        title="KYC"
+        desc="Identity verification attempts. Default queue is In review."
+        count={data?.totalElements ?? 0}
+        isFetching={isFetching && !isLoading}
+        right={
+          <>
+            <SearchBar
+              value={search}
+              onChange={(v) => {
+                setSearch(v);
+                debouncedSet(v);
+              }}
+              placeholder="Search user ID…"
+            />
+            <FilterSelect
+              value={status}
+              onChange={(v) => {
+                setStatus(v);
+                setPage(0);
+              }}
+              options={STATUS_OPTIONS}
+            />
+            <FilterSelect
+              value={idType}
+              onChange={(v) => {
+                setIdType(v);
+                setPage(0);
+              }}
+              options={ID_TYPE_OPTIONS}
+            />
+          </>
+        }
+      />
+
+      <TableShell
+        isLoading={isLoading}
+        isEmpty={items.length === 0}
+        error={error}
+        emptyIcon={ShieldCheck}
+        emptyLabel="No KYC attempts found"
+      >
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="border-b border-stacked-container">
+              {["User", "Status", "ID type", "Provider", "Review reasons", "Created", ""].map(
+                (h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap"
+                  >
+                    {h}
+                  </th>
+                ),
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((a, i) => (
+              <tr
+                key={a.id}
+                onClick={() => setOpenId(a.id)}
+                className={`group hover:bg-gray-50 transition-colors cursor-pointer ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
+              >
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                      <UserIcon size={12} className="text-gray-400" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[12px] font-semibold text-gray-900 truncate">
+                        {[a.user?.firstName, a.user?.lastName].filter(Boolean).join(" ") ||
+                          a.user?.email ||
+                          "—"}
+                      </p>
+                      <p className="text-[10px] text-gray-400 truncate">{a.user?.email}</p>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <StatusBadge status={a.status} />
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <span className="text-[12px] text-gray-700">{idTypeLabel(a.idType)}</span>
+                </td>
+                <td className="px-4 py-3">
+                  <span className="text-[11px] text-gray-500">
+                    {a.providerStatus ?? a.providerName ?? "—"}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  <span className="text-[11px] text-gray-500">
+                    {Array.isArray(a.reviewReasons) && a.reviewReasons.length
+                      ? a.reviewReasons.join(", ")
+                      : "—"}
+                  </span>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <span className="text-[11px] text-gray-400">{fmtDateTime(a.createdAt)}</span>
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenId(a.id);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-auto px-3 py-1.5 rounded-lg text-[11px] font-semibold text-brand bg-blue-50 hover:bg-blue-100 transition-all cursor-pointer border-none"
+                  >
+                    <ShieldCheck size={11} /> Review
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </TableShell>
+
+      <TableFooter
+        totalElements={data?.totalElements ?? 0}
+        noun="attempt"
+        page={page}
+        totalPages={data?.totalPages ?? 1}
+        onPage={setPage}
+      />
+
+      {openId && <KycDetailModal attemptId={openId} onClose={() => setOpenId(null)} />}
+    </div>
+  );
+}

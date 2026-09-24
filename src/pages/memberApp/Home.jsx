@@ -11,6 +11,10 @@ import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
 import { useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
 import JoinApprovedModal from "../../components/memberApp/JoinApprovedModal";
 import SideDrawer from "../../components/memberApp/SideDrawer";
+import KycStatusBadge from "../../components/memberApp/KycStatusBadge";
+import { useKycSummary } from "../../hooks/useKyc";
+import { isKycApproved } from "../../utils/kycStatus";
+import { kycDisabled } from "../../lib/flags";
 import {
   CommunitySwitcher,
   HeroCard,
@@ -114,6 +118,8 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const { data: rawMyCommunities = [] } = useMyCommunities();
+  const { data: kycSummary } = useKycSummary();
+  const showKycBadge = !kycDisabled() && kycSummary?.status && !isKycApproved(kycSummary.status);
   const myCommunities = rawMyCommunities
     .filter((c) => (c.memberStatus ?? "ACTIVE").toUpperCase() === "ACTIVE")
     .map((c) => ({
@@ -193,6 +199,16 @@ export default function Home() {
                 onSelect={handleSwitchCommunity}
                 navigate={navigate}
               />
+            )}
+
+            {showKycBadge && (
+              <button
+                onClick={() => navigate("/member/verify-identity")}
+                className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0"
+                aria-label="Identity verification status"
+              >
+                <KycStatusBadge status={kycSummary.status} />
+              </button>
             )}
           </div>
 

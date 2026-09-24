@@ -15,7 +15,7 @@ const Divider = () => (
 );
 
 // ── Step 1: Email ───────────────────────────────────────────────────────────
-// Phone is collected later, post-registration (Settings/Profile's "Verify
+// Phone is collected later, post-registration (Settings/Profile's "Add
 // Your Phone Number" flow) -- not here. It's optional at registration per
 // the backend (Meta/WhatsApp verification isn't fully wired up yet), and
 // collecting it upfront meant sending a phone OTP and an email OTP as two

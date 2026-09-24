@@ -334,7 +334,7 @@ function DashboardContent({ isPaying, communityId }) {
           </div>
         </div>
 
-        {/* "Verify Your Phone Number" nudge — only once the admin has left the
+        {/* "Add Your Phone Number" nudge — only once the admin has left the
             empty state (real members/plans exist), not on first login. */}
         {currentUser && !currentUser.phoneVerified && (
           <button
@@ -342,7 +342,7 @@ function DashboardContent({ isPaying, communityId }) {
             className="w-full flex items-center justify-between gap-3 text-left bg-[#D7E2FF] rounded px-6 py-3 mb-5 border border-[#E0E0EB] cursor-pointer"
           >
             <div>
-              <p className="text-sm font-semibold text-brand m-0">Verify Your Phone Number</p>
+              <p className="text-sm font-semibold text-brand m-0">Add Your Phone Number</p>
               <p className="text-xs text-brand/80 mt-0.5 mb-0">
                 We will use it for payment reminders and account security.
               </p>

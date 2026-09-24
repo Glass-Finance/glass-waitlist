@@ -9,7 +9,6 @@ import { isMobileDevice } from "../../utils/deviceRedirect";
 import { notifyError, getErrorMessage, getRetryAfterSeconds } from "../../utils/errorHandler";
 import { resolvePostAuthDestination } from "../../utils/postAuthDestination";
 import { getEmailError } from "../../utils/validators";
-import { isPhoneValid, PHONE_FORMAT_HINT } from "../../utils/phone";
 import { toastInfo, toastSuccess } from "../../utils/toast";
 import { JOIN_COMMUNITY_KEY } from "../../hooks/useJoinCommunityParam";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
@@ -18,22 +17,17 @@ import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
 import { MfaChallengeScreen, OtpVerifyScreen } from "./SignInSections";
 
-// A single field doubles as email-or-phone -- the backend rejects both/
-// neither, so there's exactly one identifier to resolve, not two fields to
-// reconcile. "@" is the one unambiguous signal between the two formats.
+// Email-only identifier. Phone was removed from auth fields; the backend
+// still accepts a phone identifier, but the product decision is email sign-in
+// only (phone is optional and added later in Settings).
 function parseIdentifier(value) {
-  const trimmed = value.trim();
-  return trimmed.includes("@") ? { email: trimmed.toLowerCase() } : { phoneNumber: trimmed };
+  return { email: value.trim().toLowerCase() };
 }
 
 function validateIdentifier(value) {
   const trimmed = value.trim();
-  if (!trimmed) return "Enter your email or phone number.";
-  return trimmed.includes("@")
-    ? getEmailError(trimmed)
-    : isPhoneValid(trimmed)
-      ? ""
-      : PHONE_FORMAT_HINT;
+  if (!trimmed) return "Enter your email.";
+  return getEmailError(trimmed);
 }
 
 // Tab switcher between password and passwordless sign-in -- both are
@@ -481,7 +475,7 @@ export default function SignIn() {
           <h1 className="text-headline text-gray-900 mb-1">Sign In To Your Account</h1>
           <p className="text-sm text-gray-500">
             {mode === "otp"
-              ? "We'll email or text you a one-time code, no password needed."
+              ? "We'll email you a one-time code, no password needed."
               : "Enter your credentials to continue."}
           </p>
         </div>
@@ -491,12 +485,12 @@ export default function SignIn() {
         {mode === "password" ? (
           <>
             <div>
-              <Label htmlFor="identifier">Email or Phone Number</Label>
+              <Label htmlFor="identifier">Email</Label>
               <TextInput
                 ref={identifierRef}
                 id="identifier"
-                type="text"
-                placeholder="Enter your email or number"
+                type="email"
+                placeholder="Enter your email"
                 value={form.identifier}
                 onChange={set("identifier")}
                 onFocus={() => setActiveField("identifier")}
@@ -554,11 +548,11 @@ export default function SignIn() {
         ) : (
           <>
             <div>
-              <Label htmlFor="otp-identifier">Email or Phone Number</Label>
+              <Label htmlFor="otp-identifier">Email</Label>
               <TextInput
                 id="otp-identifier"
-                type="text"
-                placeholder="Enter your email or number"
+                type="email"
+                placeholder="Enter your email"
                 value={otpIdentifier}
                 onChange={(e) => {
                   setOtpIdentifier(e.target.value);

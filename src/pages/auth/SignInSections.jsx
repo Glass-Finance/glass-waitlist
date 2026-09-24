@@ -94,7 +94,7 @@ export function OtpVerifyScreen({
             onClick={onBackToIdentifier}
             className="text-sm font-medium mt-1 hover:underline text-[#1B2FE8] bg-transparent border-none cursor-pointer p-0"
           >
-            Use a different email or number
+            Use a different email
           </button>
           <p
             className={`text-xs mt-2 ${otpCodeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}

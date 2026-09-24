@@ -116,4 +116,11 @@ export const STATUS_COLORS = {
   HIGH: { bg: "bg-red-50", text: "text-red-700" },
   MEDIUM: { bg: "bg-amber-50", text: "text-amber-700" },
   LOW: { bg: "bg-gray-100", text: "text-gray-500" },
+  // KYC attempt / account statuses (kyc-frontend-integration.md).
+  NOT_STARTED: { bg: "bg-gray-100", text: "text-gray-500" },
+  INITIATED: { bg: "bg-amber-50", text: "text-amber-700" },
+  PROCESSING: { bg: "bg-amber-50", text: "text-amber-700" },
+  IN_REVIEW: { bg: "bg-amber-50", text: "text-amber-700" },
+  APPROVED: { bg: "bg-green-50", text: "text-green-700" },
+  REVOKED: { bg: "bg-red-50", text: "text-red-700" },
 };

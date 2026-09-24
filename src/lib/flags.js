@@ -38,3 +38,9 @@ export function isFlagEnabled(name) {
 export function paymentsDisabled() {
   return isFlagEnabled("paymentsDisabled");
 }
+
+// KYC kill switch: hides the member verify-identity entry points and the
+// community-create/manage gate when true. Backend remains authoritative.
+export function kycDisabled() {
+  return isFlagEnabled("kycDisabled");
+}

@@ -458,7 +458,7 @@ export function ProfileNudge({ navigate, user }) {
       className="w-[calc(100%-40px)] mx-5 mb-4 flex items-center gap-3 text-left bg-[#D7E2FF] rounded-2xl px-4 py-3.5 border-none cursor-pointer"
     >
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-brand m-0">Verify Your Phone Number</p>
+        <p className="text-sm font-semibold text-brand m-0">Add Your Phone Number</p>
         <p className="text-[13px] text-brand/80 mt-0.5 mb-0 leading-snug">
           We will use it for payment reminders and account security.
         </p>
