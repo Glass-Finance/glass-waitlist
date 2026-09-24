@@ -24,11 +24,11 @@
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         {
           "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=()"
+          "value": "camera=(self \"https://cdn.usesmileid.com\"), microphone=(), geolocation=()"
         },
         {
           "key": "Content-Security-Policy-Report-Only",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'sha256-Zg1J4txFCl1ri1RegJTouTyZFdOsurrWLmo0CuHQiqs=' 'sha256-fniemBdEF5QacBItAgar1z5OLs6DXO2BnnC/LXIlhHk=' https://cdn.pendo.io https://accounts.google.com https://apis.google.com https://*.crisp.chat; style-src 'self' 'unsafe-inline' https://*.crisp.chat; img-src 'self' data: blob: https://res.cloudinary.com https://cdn.pendo.io https://*.pendo.io https://*.crisp.chat; font-src 'self' data: https://*.crisp.chat; media-src 'self' blob: https://*.crisp.chat; connect-src 'self' https://api.glasspay.app https://res.cloudinary.com https://cdn.pendo.io https://*.pendo.io https://*.ingest.sentry.io https://*.sentry.io https://vitals.vercel-insights.com https://va.vercel-scripts.com https://*.crisp.chat wss://*.relay.crisp.chat wss://*.relay.rescue.crisp.chat; frame-src 'self' https://accounts.google.com https://*.google.com https://checkout.paystack.com https://*.crisp.chat; worker-src 'self' blob: https://*.crisp.chat; manifest-src 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'sha256-Zg1J4txFCl1ri1RegJTouTyZFdOsurrWLmo0CuHQiqs=' 'sha256-fniemBdEF5QacBItAgar1z5OLs6DXO2BnnC/LXIlhHk=' https://cdn.pendo.io https://accounts.google.com https://apis.google.com https://cdn.usesmileid.com https://*.crisp.chat; style-src 'self' 'unsafe-inline' https://*.crisp.chat; img-src 'self' data: blob: https://res.cloudinary.com https://cdn.pendo.io https://*.pendo.io https://cdn.usesmileid.com https://*.crisp.chat; font-src 'self' data: https://*.crisp.chat; connect-src 'self' https://api.glasspay.app https://res.cloudinary.com https://cdn.pendo.io https://*.pendo.io https://*.ingest.sentry.io https://*.sentry.io https://vitals.vercel-insights.com https://va.vercel-scripts.com https://api.smileidentity.com https://testapi.smileidentity.com https://*.crisp.chat wss://*.relay.crisp.chat wss://*.relay.rescue.crisp.chat; frame-src 'self' https://accounts.google.com https://*.google.com https://checkout.paystack.com https://*.crisp.chat; worker-src 'self' blob: https://*.crisp.chat; manifest-src 'self'; upgrade-insecure-requests; media-src 'self' blob: https://*.crisp.chat"
         }
       ]
     },

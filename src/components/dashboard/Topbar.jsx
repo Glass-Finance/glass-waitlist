@@ -2,14 +2,23 @@
  * Topbar.jsx
  * Wired to real auth + notifications.
  *
- * Reads:  useAuth() → user
+ * Reads:  useAuth() → user, logout
  *         useNotifications() → GET /api/v1/notifications, GET .../unread-count
  * Actions: Bell → opens notification dropdown panel
- *          User avatar → navigate to /dashboard/settings
+ *          User avatar → profile menu (Settings / Log out)
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Bell, Loader2, Menu, HelpCircle } from "lucide-react";
+import {
+  Search,
+  Bell,
+  Loader2,
+  Menu,
+  HelpCircle,
+  LogOut,
+  Settings,
+  ChevronDown,
+} from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { useAllNotifications } from "../../hooks/useNotifications";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
@@ -54,8 +63,11 @@ export default function Topbar({
   onOpenTour,
 }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const communityId = useActiveCommunityId();
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
 
   // Panel uses all-community notifications so the dropdown is universal
   const { notifications, isLoading, unreadCount, markRead, markAllRead, clearAll, isClearingAll } =
@@ -80,6 +92,18 @@ export default function Topbar({
 
   // Close the dropdown on outside click
   useClickOutside(panelRef, () => setPanelOpen(false), panelOpen);
+  useClickOutside(userMenuRef, () => setUserMenuOpen(false), userMenuOpen);
+
+  async function handleLogout() {
+    setLoggingOut(true);
+    try {
+      await logout();
+      navigate("/sign-in", { replace: true });
+    } finally {
+      setLoggingOut(false);
+      setUserMenuOpen(false);
+    }
+  }
 
   // ── Search — GET /communities/{id}/search, debounced (backend requires
   // 2+ chars and returns a capped top-10 preview per category). ───────────
@@ -382,23 +406,61 @@ export default function Topbar({
         {/* Divider */}
         <div className="w-px h-6 bg-[var(--color-hairline)]" />
 
-        {/* User */}
-        <button
-          onClick={() => navigate("/dashboard/settings")}
-          className="flex items-center gap-2 bg-transparent border-none cursor-pointer hover:opacity-80 transition-opacity p-0"
-        >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--color-brand)] to-[#4f46e5] flex items-center justify-center text-white font-bold text-xs flex-shrink-0 select-none overflow-hidden">
-            {user?.profileImage?.url ? (
-              <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
-            ) : (
-              initials
-            )}
-          </div>
-          <div className="text-left hidden sm:block">
-            <p className="text-xs font-bold text-[#000000] leading-tight">{displayName}</p>
-            <p className="text-[11px] text-gray-400 leading-tight">{email}</p>
-          </div>
-        </button>
+        {/* User menu — Settings + Log out (POST /auth/logout lives in AuthContext) */}
+        <div className="relative" ref={userMenuRef}>
+          <button
+            onClick={() => setUserMenuOpen((o) => !o)}
+            aria-haspopup="menu"
+            aria-expanded={userMenuOpen}
+            aria-label="Account menu"
+            className="flex items-center gap-2 bg-transparent border-none cursor-pointer hover:opacity-80 transition-opacity p-0"
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--color-brand)] to-[#4f46e5] flex items-center justify-center text-white font-bold text-xs flex-shrink-0 select-none overflow-hidden">
+              {user?.profileImage?.url ? (
+                <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                initials
+              )}
+            </div>
+            <div className="text-left hidden sm:block">
+              <p className="text-xs font-bold text-[#000000] leading-tight">{displayName}</p>
+              <p className="text-[11px] text-gray-400 leading-tight">{email}</p>
+            </div>
+            <ChevronDown
+              size={14}
+              className={`text-gray-400 hidden sm:block transition-transform ${userMenuOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          {userMenuOpen && (
+            <div
+              role="menu"
+              className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-gray-100 bg-white shadow-lg py-1.5 z-50"
+            >
+              <button
+                role="menuitem"
+                onClick={() => {
+                  setUserMenuOpen(false);
+                  navigate("/dashboard/settings");
+                }}
+                className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-gray-700 bg-transparent border-none cursor-pointer hover:bg-gray-50 text-left"
+              >
+                <Settings size={14} className="text-gray-400" />
+                Settings
+              </button>
+              <div className="h-px bg-gray-100 my-1" />
+              <button
+                role="menuitem"
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-red-600 bg-transparent border-none cursor-pointer hover:bg-red-50 text-left disabled:opacity-50"
+              >
+                <LogOut size={14} />
+                {loggingOut ? "Signing out…" : "Log out"}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

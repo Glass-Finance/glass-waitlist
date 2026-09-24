@@ -12,7 +12,7 @@ import { useAuth } from "../../../store/AuthContext";
 // Steps: 1 email -> 2 name+password (register()) -> 3 email OTP. Phone is
 // no longer collected here -- it's optional at registration (Meta/WhatsApp
 // verification isn't fully wired up backend-side yet) and is instead added
-// later via Settings/Profile's "Verify Your Phone Number" flow. Steps 1.5
+// later via Settings/Profile's "Add Your Phone Number" flow. Steps 1.5
 // (phone OTP) and 1.6 (its "wrong number" correction screen) are dead code
 // paths for now, kept in case phone-at-signup comes back once that's fixed.
 // ── Main Component ────────────────────────────────────────────────────────────

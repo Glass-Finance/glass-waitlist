@@ -2,7 +2,9 @@
 
 ## Current behavior
 
-Authentication is coordinated by `AuthContext` and `src/services/authService.js`. Password, passwordless OTP, Google OAuth, registration, email/phone verification, password reset, and TOTP endpoints are called through the shared Axios client.
+Authentication is coordinated by `AuthContext` and `src/services/authService.js`. Password, passwordless OTP, Google OAuth, registration, email verification, optional phone add/update (post-signup), password reset, and TOTP endpoints are called through the shared Axios client.
+
+**Sign-in product rule (current):** the sign-in UI is **email-only** (password and OTP tabs). Phone is not a sign-in identifier in the product, even though backend login APIs may still accept `phoneNumber`. Phone is optional at registration and is **added later** in Settings with first-time copy **“Add…”**, not “Verify…” — see [`account-verification.md`](account-verification.md).
 
 Successful sessions store `accessToken`, `refreshToken`, basic user identifiers, and the serialized user snapshot in browser `localStorage`, plus a monotonic session epoch (`glass_session_epoch`). The Axios request interceptor sends the access token as a Bearer token. A `401` response triggers a refresh-token request that is single-flight in-tab (shared promise) and lease-elected cross-tab (one owner per cycle, losers wait for the published result), so concurrent tabs never present the same rotating token twice. Refreshes verify the session epoch before applying tokens, so a logout that wins the race is never undone. Failed refresh clears the local session and redirects to the appropriate sign-in route.
 
@@ -26,7 +28,7 @@ Backend role codes (`core.community_roles`): `COMMUNITY_OWNER`, `COMMUNITY_ADMIN
 
 ### Registration and invites
 
-`POST /auth/register` accepts `firstName`, `lastName`, `email`, `password`, optional `phoneNumber` (+ required `phoneConfirmToken` when present), optional `phoneRegion`. It has no `inviteToken`, role, or community fields — extra fields are ignored. Invites are email-bound server-side and accepted via `PATCH /communities/invites/{inviteId}/accept`; `POST /auth/google` accepts only `{ clientToken }`, so Google sign-in during an invite flow falls back to manual acceptance on `/member/invites`. The `?token=` invite value is kept client-side until the post-auth flow completes and is never transmitted. Duplicate-email registration returns HTTP 400 ("Email is already registered"), never 409.
+`POST /auth/register` accepts `firstName`, `lastName`, `email`, `password`, optional `phoneNumber` (+ required `phoneConfirmToken` when present), optional `phoneRegion`. The **frontend registration flow does not collect phone** (email-first); an empty phone is the normal case. Phone can be added after sign-in via Settings. It has no `inviteToken`, role, or community fields — extra fields are ignored. Invites are email-bound server-side and accepted via `PATCH /communities/invites/{inviteId}/accept`; `POST /auth/google` accepts only `{ clientToken }`, so Google sign-in during an invite flow falls back to manual acceptance on `/member/invites`. The `?token=` invite value is kept client-side until the post-auth flow completes and is never transmitted. Duplicate-email registration returns HTTP 400 ("Email is already registered"), never 409.
 
 ### Phone region
 

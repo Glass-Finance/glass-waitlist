@@ -36,7 +36,7 @@ export default function Profile() {
   const photoInputRef = useRef(null);
 
   // "profile" (normal view) | "email" | "phone" — the latter two swap the
-  // Personal Information card for a dedicated Update/Verify sub-card,
+  // Personal Information card for a dedicated Update/Add sub-card,
   // mirroring the member app's full-page equivalents but inline since this
   // is desktop. Seeded straight from ?verify=phone (the Dashboard banner's
   // deep link) so there's no flash of the normal profile view first.
@@ -432,8 +432,8 @@ export default function Profile() {
                       setPhoneFieldError("");
                       setView("phone");
                     }}
-                    title={isPhoneUpdate ? "Update phone number" : "Verify phone number"}
-                    aria-label={isPhoneUpdate ? "Update phone number" : "Verify phone number"}
+                    title={isPhoneUpdate ? "Update phone number" : "Add phone number"}
+                    aria-label={isPhoneUpdate ? "Update phone number" : "Add phone number"}
                     className="flex-shrink-0 w-12 h-12 rounded-lg border-[1.5px] border-gray-300 bg-white text-brand cursor-pointer flex items-center justify-center"
                   >
                     <Pencil size={15} />
@@ -524,7 +524,7 @@ export default function Profile() {
           <div className="bg-surface-container rounded-xl border border-surface-container-border">
             <div className="px-6 py-4 border-b border-gray-100">
               <p className="text-sm font-bold text-gray-900">
-                {isPhoneUpdate ? "Update Your Phone Number" : "Verify Your Phone Number"}
+                {isPhoneUpdate ? "Update Your Phone Number" : "Add Your Phone Number"}
               </p>
             </div>
             <div className="p-6">
@@ -569,7 +569,11 @@ export default function Profile() {
               size="sm"
               className="px-10 min-w-[320px]"
             >
-              {phoneSending ? "Sending Code…" : isPhoneUpdate ? "Update Phone Number" : "Verify"}
+              {phoneSending
+                ? "Sending Code…"
+                : isPhoneUpdate
+                  ? "Update Phone Number"
+                  : "Add Phone Number"}
             </Button>
           </div>
         </>

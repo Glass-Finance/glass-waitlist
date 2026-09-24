@@ -16,7 +16,7 @@ import { Label, ErrorMessage } from "./shared";
 // account actually exists. Phone is no longer collected here -- it's
 // optional at registration (Meta/WhatsApp verification isn't fully wired up
 // backend-side yet) and is instead added later via Settings/Profile's
-// "Verify Your Phone Number" flow. Join()'s STEPS.PHONE_OTP branch and
+// "Add Your Phone Number" flow. Join()'s STEPS.PHONE_OTP branch and
 // register() payload already treat an empty phone as the normal case.
 // ---------------------------------------------------------------------------
 export default function StepContact({ initialEmail, onNext, onGoogleAuth, hasCommunity }) {

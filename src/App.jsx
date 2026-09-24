@@ -88,6 +88,12 @@ const MemberSettings = lazy(() => import("./pages/memberApp/settings/Settings"))
 const MemberProfile = lazy(() => import("./pages/memberApp/settings/account/Profile"));
 const MemberUpdateEmail = lazy(() => import("./pages/memberApp/settings/account/UpdateEmail"));
 const MemberVerifyPhone = lazy(() => import("./pages/memberApp/settings/account/VerifyPhone"));
+const MemberVerifyIdentity = lazy(
+  () => import("./pages/memberApp/settings/account/VerifyIdentity"),
+);
+const MemberVerifyIdentityHistory = lazy(
+  () => import("./pages/memberApp/settings/account/VerifyIdentityHistory"),
+);
 const MyCommunities = lazy(() => import("./pages/memberApp/settings/communities/MyCommunities"));
 const MemberSecurity = lazy(() => import("./pages/memberApp/settings/account/Security"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -268,6 +274,8 @@ function App() {
                 <Route path="profile" element={<MemberProfile />} />
                 <Route path="update-email" element={<MemberUpdateEmail />} />
                 <Route path="verify-phone" element={<MemberVerifyPhone />} />
+                <Route path="verify-identity" element={<MemberVerifyIdentity />} />
+                <Route path="verify-identity/history" element={<MemberVerifyIdentityHistory />} />
                 <Route path="communities" element={<MyCommunities />} />
                 <Route path="security" element={<MemberSecurity />} />
                 <Route path="security/password" element={<MemberPassword />} />

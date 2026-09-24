@@ -67,7 +67,7 @@ function renderSignIn(initialPath = "/sign-in") {
 }
 
 function fillCredentials(identifier, password) {
-  fireEvent.change(screen.getByPlaceholderText("Enter your email or number"), {
+  fireEvent.change(screen.getByPlaceholderText("Enter your email"), {
     target: { value: identifier },
   });
   fireEvent.change(screen.getByPlaceholderText("Enter your password"), {
@@ -131,6 +131,16 @@ describe("SignIn password form", () => {
     expect(useAuth().login).not.toHaveBeenCalled();
   });
 
+  it("rejects a phone-shaped identifier as an invalid email (email-only sign-in)", () => {
+    renderSignIn();
+    fillCredentials("+2348012345678", "whatever1");
+
+    clickSignIn();
+
+    expect(screen.getByText("Enter a valid email address.")).toBeDefined();
+    expect(useAuth().login).not.toHaveBeenCalled();
+  });
+
   it("signs in and routes a platform admin to the admin panel, normalizing the email", async () => {
     renderSignIn();
     useAuth().login.mockResolvedValue({ isPlatformAdmin: true, isAdmin: true });
@@ -186,7 +196,7 @@ describe("SignIn password form", () => {
     clickSignIn();
 
     expect(screen.getByText("Signing in…")).toBeDefined();
-    expect(screen.getByPlaceholderText("Enter your email or number").disabled).toBe(true);
+    expect(screen.getByPlaceholderText("Enter your email").disabled).toBe(true);
 
     gate.resolve({ isPlatformAdmin: true, isAdmin: true });
     expect(await screen.findByText("Admin panel")).toBeDefined();
@@ -263,7 +273,7 @@ describe("SignIn one-time-code mode", () => {
     renderSignIn();
     switchToOtpMode();
 
-    fireEvent.change(screen.getByPlaceholderText("Enter your email or number"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter your email"), {
       target: { value: "bad@" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Send Code" }));
@@ -282,7 +292,7 @@ describe("SignIn one-time-code mode", () => {
     auth.setSession.mockResolvedValue({ isPlatformAdmin: true, isAdmin: true });
     switchToOtpMode();
 
-    fireEvent.change(screen.getByPlaceholderText("Enter your email or number"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter your email"), {
       target: { value: "Member@Example.com" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Send Code" }));
@@ -314,7 +324,7 @@ describe("SignIn one-time-code mode", () => {
     });
     switchToOtpMode();
 
-    fireEvent.change(screen.getByPlaceholderText("Enter your email or number"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter your email"), {
       target: { value: "member@example.com" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Send Code" }));

@@ -55,7 +55,7 @@ export default function PhoneChangeModal({
     } catch (err) {
       setError(
         notifyError(err, {
-          context: "Verify phone",
+          context: "Confirm phone",
           fallback: "Invalid or expired code. Please try again.",
         }),
       );
@@ -91,9 +91,7 @@ export default function PhoneChangeModal({
       <ModalShell onClose={onVerified}>
         <SuccessBadge
           message={
-            isUpdate
-              ? "Your Phone Number Has Been Updated!"
-              : "Your Phone Number Has Been Verified!"
+            isUpdate ? "Your Phone Number Has Been Updated!" : "Your Phone Number Has Been Added!"
           }
         />
       </ModalShell>

@@ -25,7 +25,9 @@ Focused test: `npx vitest run src/__tests__/path/to.test.js` (suite runs `vitest
 - `src/routes/` — `ProtectedRoute`, `MemberProtectedRoute`, `MemberDeviceGuard`, `CommunityAdminGuard`, `PlatformAdminRoute`. Read these before touching routing. Guards are UX/access-routing only; backend permissions are authoritative.
 - `src/services/` — auth payload builders + thin endpoint wrappers (`authPayloads.js`, `authService.js`). Build auth payloads with the builders; don't hand-roll request shapes.
 - `src/store/AuthContext.jsx` — session source of truth. See `docs/authentication.md`.
-- `docs/` — architecture, auth, authorization, payments, data-fetching, error-handling, testing strategy, ADRs. Check the relevant file before inventing a pattern.
+- `docs/` — architecture, auth, authorization, payments, account/phone/KYC flows, data-fetching, error-handling, testing strategy, ADRs. Check the relevant file before inventing a pattern.
+- **Sign-in is email-only; phone is added later in Settings (copy = Add, not Verify)** — `docs/account-verification.md`.
+- **KYC (Smile ID)** — `docs/kyc.md`.
 - `docs/team-conventions.md` — human team working agreements (PR flow, ownership of coverage floors / ADRs / AGENTS.md, e2e mocking preferences, how to avoid parallel-infra collisions). Read when coordinating with other contributors.
 
 ## Rules agents violate most

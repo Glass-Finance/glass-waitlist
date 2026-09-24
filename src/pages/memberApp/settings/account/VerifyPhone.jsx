@@ -37,11 +37,12 @@ function StepHeader({ title, onBack }) {
 }
 
 // One flow, two modes -- same OTP mechanics either way, per AQ's call
-// ("same flow" for updating as for the first verification). Which mode
+// ("same flow" for updating as for the first add). Which mode
 // shows is decided entirely by user.phoneVerified, not by which entry
 // point (Home banner vs. Profile's pencil icon) was used to get here: an
-// unverified number is always "Verify" copy, a verified one is always
-// "Update" copy, regardless of where the tap came from.
+// unverified number is always "Add" copy (phone is optional at signup and
+// collected later in Settings), a verified one is always "Update" copy,
+// regardless of where the tap came from.
 export default function VerifyPhone() {
   const navigate = useNavigate();
   const { data: user } = useMe();
@@ -103,7 +104,7 @@ export default function VerifyPhone() {
     } catch (err) {
       setOtpError(
         notifyError(err, {
-          context: "Verify phone",
+          context: "Add phone",
           fallback: "Invalid or expired code. Please try again.",
         }),
       );
@@ -139,9 +140,7 @@ export default function VerifyPhone() {
       <div className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center px-6">
         <SuccessBadge
           message={
-            isUpdate
-              ? "Your Phone Number Has Been Updated!"
-              : "Your Phone Number Has Been Verified!"
+            isUpdate ? "Your Phone Number Has Been Updated!" : "Your Phone Number Has Been Added!"
           }
         />
       </div>
@@ -155,7 +154,7 @@ export default function VerifyPhone() {
       {step === "form" && (
         <>
           <StepHeader
-            title={isUpdate ? "Update Your Phone Number" : "Verify Your Number"}
+            title={isUpdate ? "Update Your Phone Number" : "Add Your Phone Number"}
             onBack={() => navigate(-1)}
           />
           <div className="px-4">
@@ -185,7 +184,7 @@ export default function VerifyPhone() {
             )}
 
             <Button onClick={handleSubmitNumber} loading={sending} className="mt-5">
-              {sending ? "Sending Code…" : isUpdate ? "Update Phone Number" : "Verify"}
+              {sending ? "Sending Code…" : isUpdate ? "Update Phone Number" : "Add Phone Number"}
             </Button>
           </div>
         </>

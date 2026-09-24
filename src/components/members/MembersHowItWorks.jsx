@@ -14,7 +14,7 @@ const steps = [
   {
     num: "02",
     label: "Create Account",
-    desc: "Sign up in under 60 seconds. Verify your phone — no long forms, no waiting.",
+    desc: "Sign up in under 60 seconds. Email only — no long forms, no waiting.",
     badge: "No Long Forms",
     img: { publicId: "glass/work/member-create-account", width: 1440 },
     stepIcon: { publicId: "glass/icon/step-2", width: 80 },

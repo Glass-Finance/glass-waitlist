@@ -10,11 +10,14 @@ import StepIndicator from "../../components/onboarding/StepIndicator";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { useAuth } from "../../store/AuthContext";
 import { Button } from "../../components/ui/Button";
+import KycRequiredSheet from "../../components/memberApp/KycRequiredSheet";
+import { useKycGate } from "../../hooks/useKycGate";
 
 export default function ChoosePath() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
+  const kycGate = useKycGate();
   const email = location.state?.email ?? "";
   // Entry points that specifically mean "join" (e.g. Communities Home's
   // Join Community button) pass this so the option isn't stuck defaulting
@@ -38,7 +41,8 @@ export default function ChoosePath() {
 
   const handleContinue = () => {
     if (selected === "create") {
-      navigate("/onboarding/paying-member", { state: { email } });
+      if (!kycGate.enforce(() => navigate("/onboarding/paying-member", { state: { email } })))
+        return;
     } else if (isAuthenticated) {
       // Join.jsx (below) is a full account-registration form -- fine for a
       // brand-new visitor, but an already-authenticated user (e.g. an admin
@@ -160,6 +164,7 @@ export default function ChoosePath() {
         </div>
         <div className="h-[env(safe-area-inset-bottom,0px)]" />
       </main>
+      <KycRequiredSheet open={kycGate.gateOpen} onClose={kycGate.closeGate} />
     </div>
   );
 }

@@ -11,6 +11,7 @@ import {
   SlidersHorizontal,
   Landmark,
   Scale,
+  ShieldCheck,
 } from "lucide-react";
 import SystemConfig from "./settings/admin/SystemConfig";
 import CommunitiesSection from "./platform-admin/CommunitiesSection";
@@ -21,6 +22,7 @@ import BalancesSection from "./platform-admin/BalancesSection";
 import SettlementsSection from "./platform-admin/SettlementsSection";
 import ReconciliationSection from "./platform-admin/ReconciliationSection";
 import NotificationsSection from "./platform-admin/NotificationsSection";
+import KycSection from "./platform-admin/KycSection";
 
 const TABS = [
   { id: "communities", label: "Communities", Icon: Building2 },
@@ -30,6 +32,7 @@ const TABS = [
   { id: "balances", label: "Balances", Icon: BarChart2 },
   { id: "settlements", label: "Settlements", Icon: Landmark },
   { id: "reconciliation", label: "Reconciliation", Icon: Scale },
+  { id: "kyc", label: "KYC", Icon: ShieldCheck },
   { id: "notifications", label: "Notifications", Icon: Bell },
   { id: "system-config", label: "System Config", Icon: SlidersHorizontal },
 ];
@@ -92,6 +95,7 @@ export default function PlatformAdmin() {
       {activeTab === "balances" && <BalancesSection />}
       {activeTab === "settlements" && <SettlementsSection />}
       {activeTab === "reconciliation" && <ReconciliationSection />}
+      {activeTab === "kyc" && <KycSection />}
       {activeTab === "notifications" && <NotificationsSection />}
       {activeTab === "system-config" && <SystemConfig />}
     </div>

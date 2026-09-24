@@ -13,6 +13,9 @@ vi.mock("../../../hooks/useMyAccount");
 vi.mock("../../../hooks/useNotifications");
 vi.mock("../../../hooks/useInvites");
 vi.mock("../../../hooks/useJoinApproval");
+vi.mock("../../../hooks/useKyc", () => ({
+  useKycSummary: () => ({ data: undefined, isLoading: false }),
+}));
 
 // Needs an AuthProvider this test isn't rendering -- irrelevant to the
 // Upcoming Payments/Payment History cards under test here.

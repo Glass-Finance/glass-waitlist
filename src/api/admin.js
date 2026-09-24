@@ -80,6 +80,21 @@ export const getAdminSettlementSyncJobs = (params) =>
 export const getAdminSettlementSyncJob = (jobId) =>
   client.get(`/admin/settlements/sync-jobs/${jobId}`);
 
+// ─── KYC (platform admin) ────────────────────────────────────────────────────
+// Permissions: platform.kyc.read / review / revoke / attempts.manage.
+// List is evidence-free; always load detail before rendering review controls.
+export const getAdminKycAttempts = (params) => client.get("/admin/kyc/attempts", { params });
+export const getAdminKycAttempt = (attemptId) => client.get(`/admin/kyc/attempts/${attemptId}`);
+// decision: "APPROVE" | "REJECT"; reason is user-visible and required.
+export const decideKyc = (attemptId, payload) =>
+  client.post(`/admin/kyc/attempts/${attemptId}/decision`, payload);
+// Revoke the user's current APPROVED attempt. payload { reason }.
+export const revokeKyc = (userId, payload) =>
+  client.post(`/admin/users/${userId}/kyc/revoke`, payload);
+// Enable/disable new attempts. payload { allowed, reason }.
+export const setKycAttemptPolicy = (userId, payload) =>
+  client.put(`/admin/users/${userId}/kyc/attempt-policy`, payload);
+
 // ─── Reconciliation ─────────────────────────────────────────────────────────────
 export const getAdminReconciliationRuns = (params) =>
   client.get("/admin/reconciliation/runs", { params });
