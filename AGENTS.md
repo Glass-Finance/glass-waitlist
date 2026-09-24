@@ -26,6 +26,7 @@ Focused test: `npx vitest run src/__tests__/path/to.test.js` (suite runs `vitest
 - `src/services/` — auth payload builders + thin endpoint wrappers (`authPayloads.js`, `authService.js`). Build auth payloads with the builders; don't hand-roll request shapes.
 - `src/store/AuthContext.jsx` — session source of truth. See `docs/authentication.md`.
 - `docs/` — architecture, auth, authorization, payments, data-fetching, error-handling, testing strategy, ADRs. Check the relevant file before inventing a pattern.
+- `docs/team-conventions.md` — human team working agreements (PR flow, ownership of coverage floors / ADRs / AGENTS.md, e2e mocking preferences, how to avoid parallel-infra collisions). Read when coordinating with other contributors.
 
 ## Rules agents violate most
 

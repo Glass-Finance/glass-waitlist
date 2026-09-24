@@ -9,4 +9,5 @@ This directory records the current frontend architecture, operational convention
 - [Data fetching](data-fetching.md)
 - [Error handling](error-handling.md)
 - [Testing strategy](testing-strategy.md)
+- [Team conventions](team-conventions.md)
 - [Architecture decisions](decisions/)

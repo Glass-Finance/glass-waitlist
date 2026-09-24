@@ -1,5 +1,7 @@
 # Contributing
 
+Working agreements with other contributors (branch/PR flow, who owns coverage floors and ADRs, how to avoid colliding on shared infra) live in [`docs/team-conventions.md`](docs/team-conventions.md).
+
 ## Code conventions
 
 - Keep application code in JavaScript/JSX. Use the existing React and Vite patterns; do not introduce TypeScript requirements.
