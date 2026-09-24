@@ -17,6 +17,39 @@ export const SESSION_KEYS = [
   "glass_member_community",
 ];
 
+/**
+ * Session-adjacent application state owned by the AUTHENTICATED USER (F6).
+ *
+ * Not credentials: each entry is one user's own data written under a key
+ * that is not in SESSION_KEYS. Because nothing removed them when a session
+ * ended, User A's value survived logout and was read straight back by
+ * User B — the pending-join list drove another user's UI, the preference
+ * mirror was merged into their next GET, and the cached Google identity was
+ * rendered on the sign-in screen they then used.
+ *
+ * Deliberately a SEPARATE list from SESSION_KEYS rather than folded into it:
+ *   * SESSION_KEYS is the set AuthContext's cross-tab `storage` handler
+ *     treats as "the session ended" — widening it would make deleting a
+ *     preference or a resolved join request tear down every other tab's
+ *     live session.
+ *   * KEY_EPOCH must keep surviving a clear (see below).
+ * It is cleared in the same place, for the same reason: clearSessionStorage()
+ * is the single funnel every session-ending path already funnels through,
+ * so this needs no new lifecycle and no scattered removeItem() calls.
+ *
+ * Owners keep writing these freely while the user is authenticated — the
+ * contract is only that the value cannot outlive the session that produced it.
+ */
+export const SESSION_ADJACENT_KEYS = [
+  // useJoinApproval.js — the communities this user asked to join.
+  "glass_pending_join_requests",
+  // useNotifications.js — preference mirror spread into the queryFn result.
+  "glass_notification_prefs",
+  // GoogleAuthButton.jsx — cached {email, picture, name} for the sign-in
+  // button. Also TTL-bounded at 7 days for the never-logged-out case.
+  "glass_last_google_identity",
+];
+
 export const KEY_TOKEN = "accessToken";
 export const KEY_REFRESH_TOKEN = "refreshToken";
 export const KEY_USER = "glass_user";
@@ -135,10 +168,20 @@ function emitSessionEnd() {
   });
 }
 
-/** Remove every session key. Idempotent — safe to call from N queued 401s. */
+/**
+ * Remove every session key AND every session-adjacent value.
+ * Idempotent — safe to call from N queued 401s.
+ *
+ * Ordering is the invariant this function exists to guarantee:
+ * authenticated state is fully gone BEFORE emitSessionEnd(), so a listener
+ * (or anything reading storage from a synchronous continuation) can never
+ * observe a half-cleared session where tokens are dropped but the user's
+ * own data is still readable.
+ */
 export function clearSessionStorage() {
   try {
     SESSION_KEYS.forEach((key) => localStorage.removeItem(key));
+    SESSION_ADJACENT_KEYS.forEach((key) => localStorage.removeItem(key));
   } catch {
     // ignore
   }
