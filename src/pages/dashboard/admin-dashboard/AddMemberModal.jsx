@@ -3,6 +3,7 @@ import { Copy, X, Download, FileSpreadsheet, Check } from "lucide-react";
 import uploadCloudIcon from "../../../assets/icons/upload-cloud.webp";
 import { APP_ORIGIN } from "../../../utils/deviceRedirect";
 import { useCommunityMembers, useRoles } from "../../../hooks/useCommunityMembers";
+import { bulkAddCommunityMembers } from "../../../api/communities";
 import { getEmailError } from "../../../utils/validators";
 import { useCopyToClipboard } from "../../../hooks/useCopyToClipboard";
 import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
@@ -154,18 +155,32 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
   async function handleUploadCSV() {
     if (!csvRows.length) return;
     setUploading(true);
-    for (const row of csvRows) {
-      if (!row.email) continue;
-      const matchedRole = finalRoles.find((r) => r.name?.toLowerCase() === row.role?.toLowerCase());
-      try {
-        await inviteMember.mutateAsync({
-          email: row.email,
-          roleId: matchedRole?.id ?? defaultRole?.id ?? "",
-          billingExempt: false,
+    setManualError("");
+    try {
+      // Bulk create (not invite) — the only endpoint that accepts memberRef,
+      // firstName, lastName, and phoneNumber together. All-or-nothing per API.
+      const members = csvRows
+        .filter((row) => row.email)
+        .map((row) => {
+          const matchedRole = finalRoles.find(
+            (r) => r.name?.toLowerCase() === row.role?.toLowerCase(),
+          );
+          return {
+            email: row.email,
+            roleId: matchedRole?.id ?? defaultRole?.id ?? "",
+            billingExempt: false,
+            ...(row.firstName ? { firstName: row.firstName } : {}),
+            ...(row.lastName ? { lastName: row.lastName } : {}),
+            ...(row.phone ? { phoneNumber: row.phone } : {}),
+            ...(row.memberId ? { memberRef: row.memberId } : {}),
+          };
         });
-      } catch {
-        /* skip failed rows */
-      }
+      if (!members.length) throw new Error("No valid rows to import.");
+      await bulkAddCommunityMembers(communityId, { members });
+    } catch (err) {
+      setManualError(getErrorMessage(err, "Failed to import members."));
+      setUploading(false);
+      return;
     }
     setUploading(false);
     setCsvRows([]);
