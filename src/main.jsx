@@ -35,6 +35,7 @@ import "@fontsource/urbanist/800.css";
 import "./index.css";
 import { AuthProvider } from "./store/AuthContext.jsx";
 import RealtimeBridge from "./components/common/RealtimeBridge.jsx";
+import CrispChat from "./components/common/CrispChat.jsx";
 import { notifyError } from "./utils/errorHandler.js";
 import { toastSuccess } from "./utils/toast.js";
 import { initMonitoring } from "./utils/monitoring.js";
@@ -143,6 +144,7 @@ createRoot(document.getElementById("root")).render(
             <App />
           </ErrorBoundary>
           <RealtimeBridge />
+          <CrispChat />
           <SpeedInsights />
           <Analytics />
 
