@@ -22,11 +22,19 @@ describe("cldUrl", () => {
     );
   });
 
-  it("applies blur as a low-quality placeholder variant", () => {
+  it("applies blur as a small LQIP placeholder variant", () => {
     const url = cldUrl("glass/hero/hero", { blur: true });
-    expect(url).toContain("e_blur:1200");
-    expect(url).toContain("q_auto:low");
-    expect(url).toContain("w_32");
+    expect(url).toContain("w_64");
+    expect(url).not.toContain("e_blur");
+    expect(url).not.toContain("q_auto:low");
+    expect(url).not.toContain("w_32");
+  });
+
+  it("ignores width/dpr for the placeholder variant", () => {
+    const url = cldUrl("glass/hero/hero", { blur: true, width: 1920, dpr: 2 });
+    expect(url).toContain("w_64");
+    expect(url).not.toContain("w_1920");
+    expect(url).not.toContain("dpr_2");
   });
 
   it("respects a custom crop and quality", () => {

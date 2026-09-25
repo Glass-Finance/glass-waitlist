@@ -27,6 +27,7 @@ import { searchCommunity } from "../../api/communities";
 import NotificationsPanel from "./NotificationsPanel";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { useClickOutside } from "../../hooks/useClickOutside";
+import PulseImg from "../common/PulseImg";
 import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -417,7 +418,7 @@ export default function Topbar({
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--color-brand)] to-[#4f46e5] flex items-center justify-center text-white font-bold text-xs flex-shrink-0 select-none overflow-hidden">
               {user?.profileImage?.url ? (
-                <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
+                <PulseImg src={user.profileImage.url} alt="" className="w-full h-full" />
               ) : (
                 initials
               )}

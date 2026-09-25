@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useInvites } from "../../hooks/useInvites";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/Button";
+import PulseImg from "../common/PulseImg";
 
 const SESSION_KEY = "glass_popup_dismissed_invites";
 
@@ -25,11 +26,7 @@ function CommunityAvatar({ name, logo }) {
     <div
       className={`w-[72px] h-[72px] rounded-[18px] text-white flex items-center justify-center text-2xl font-bold overflow-hidden mx-auto mt-0 mb-5 ${logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
     >
-      {logo?.url ? (
-        <img src={logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
-      ) : (
-        initials
-      )}
+      {logo?.url ? <PulseImg src={logo.url} className="w-full h-full" /> : initials}
     </div>
   );
 }

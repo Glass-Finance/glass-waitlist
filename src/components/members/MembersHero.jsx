@@ -3,19 +3,19 @@ import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
-import { cldUrl, cldSrcSet, widthsFor } from "../../lib/cloudinary";
+import { cldUrl } from "../../lib/cloudinary";
 import BlurText from "../ui/BlurText";
 import VariableProximity from "../ui/VariableProximity";
+import LqipImg from "../common/LqipImg";
 
 /* Wave background and phone mockup — Cloudinary (glass/hero/hero,
-   glass/hero/iphone, see docs/cloudinary.md). The iphone is rendered in a
-   raw <img> because both copies scale to their container width (w-full
-   h-auto), not a fixed box — the LQIP component needs an explicit
-   height-per-width box and can't drive intrinsic aspect ratio. */
+   glass/hero/iphone, see docs/cloudinary.md). The iphone is a natural-
+   aspect image (w-full h-auto): CloudImage's fixed box can't drive
+   intrinsic aspect ratio, but LqipImg's wrapper follows the real image's
+   own height, so both copies get the blur-up LQIP anyway. */
 const waveBg = cldUrl("glass/hero/hero", { width: 1920 });
 const IPHONE = {
-  src: cldUrl("glass/hero/iphone", { width: 1240 }),
-  srcSet: cldSrcSet("glass/hero/iphone", widthsFor(1240)),
+  width: 1240,
   sizes: "(min-width: 640px) 55vw, 330px",
 };
 
@@ -202,15 +202,15 @@ export default function MembersHero() {
                 whichever one that is still loads promptly since it's in
                 the initial viewport, "lazy" here just means "skip if
                 hidden," not "defer until scrolled to." */}
-              <img
-                src={IPHONE.src}
-                srcSet={IPHONE.srcSet}
+              <LqipImg
+                publicId="glass/hero/iphone"
+                width={IPHONE.width}
                 sizes={IPHONE.sizes}
                 alt="Glass app on iPhone"
-                className="relative block w-full z-10 object-contain"
+                className="relative z-10 w-full"
+                imgClassName="object-contain"
                 draggable={false}
                 loading="lazy"
-                decoding="async"
               />
             </motion.div>
           </div>
@@ -275,15 +275,15 @@ export default function MembersHero() {
             <div className="relative w-[330px]">
               {/* See the desktop copy of this <img> above for why
                 loading="lazy" is deliberate here, not an oversight. */}
-              <img
-                src={IPHONE.src}
-                srcSet={IPHONE.srcSet}
+              <LqipImg
+                publicId="glass/hero/iphone"
+                width={IPHONE.width}
                 sizes={IPHONE.sizes}
                 alt="Glass app on iPhone"
-                className="relative z-10 w-full block drop-shadow-[0_16px_40px_rgba(120,10,160,0.5)]"
+                className="relative z-10 w-full"
+                imgClassName="drop-shadow-[0_16px_40px_rgba(120,10,160,0.5)]"
                 draggable={false}
                 loading="lazy"
-                decoding="async"
               />
             </div>
           </div>

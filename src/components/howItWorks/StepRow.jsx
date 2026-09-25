@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
-import { cldUrl, cldSrcSet, widthsFor } from "../../lib/cloudinary";
 import CloudImage from "../common/CloudImage";
+import LqipImg from "../common/LqipImg";
 
 const isMobileScreen =
   typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
@@ -70,15 +70,13 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
         {/* ── Mobile — label overlaps top-left of image ── */}
         <div className="flex flex-col md:hidden relative">
           <div className="relative w-full rounded-lg overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
-            <img
-              src={cldUrl(step.img.publicId, { width: step.img.width })}
-              srcSet={cldSrcSet(step.img.publicId, widthsFor(step.img.width))}
+            <LqipImg
+              publicId={step.img.publicId}
+              width={step.img.width}
               sizes="100vw"
               alt={step.label}
-              className="w-full h-auto block"
               draggable={false}
               loading="lazy"
-              decoding="async"
             />
             <div
               className={`absolute bottom-3 right-3 flex items-center gap-2 rounded-full py-2 px-3.5 border border-white/90 shadow-[0_4px_20px_rgba(15,29,110,0.14)] ${glassSurfaceCls}`}
@@ -120,15 +118,13 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
             <p className="text-[13px] font-bold text-[#0f1d6e] leading-snug">{step.label}</p>
           </div>
           <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
-            <img
-              src={cldUrl(step.img.publicId, { width: step.img.width })}
-              srcSet={cldSrcSet(step.img.publicId, widthsFor(step.img.width))}
+            <LqipImg
+              publicId={step.img.publicId}
+              width={step.img.width}
               sizes="(min-width: 768px) 720px, 100vw"
               alt={step.label}
-              className="w-full h-auto block"
               draggable={false}
               loading="lazy"
-              decoding="async"
             />
             <div
               ref={badgeRef}

@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, MoreVertical, User } from "lucide-react";
 import { useClickOutside } from "../../hooks/useClickOutside";
+import PulseImg from "../common/PulseImg";
 import {
   extractNotificationDetails,
   formatNairaAmount,
@@ -60,11 +61,7 @@ function NotifAvatar({ n }) {
   if (isSelf && user?.profileImage?.url) {
     return (
       <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden mt-px">
-        <img
-          src={user.profileImage.url}
-          alt={selfName ?? ""}
-          className="w-full h-full object-cover"
-        />
+        <PulseImg src={user.profileImage.url} alt={selfName ?? ""} className="w-full h-full" />
       </div>
     );
   }
