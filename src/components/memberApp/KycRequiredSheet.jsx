@@ -14,12 +14,12 @@ export default function KycRequiredSheet({ open, onClose, reason }) {
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-end justify-center bg-[rgba(15,23,42,0.45)]"
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-[rgba(15,23,42,0.45)] sm:items-center sm:p-4"
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-[430px] bg-white rounded-t-[20px] pt-6 px-5 pb-7"
+        className="w-full max-w-[430px] bg-white rounded-t-[20px] sm:rounded-[20px] pt-6 px-5 pb-7"
       >
         <div className="flex justify-end">
           <button
