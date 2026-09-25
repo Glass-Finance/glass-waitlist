@@ -81,7 +81,7 @@ export default function Footer() {
         <div className="mb-6">
           <a href="/" className="inline-flex items-center gap-2 no-underline mb-3">
             <CloudImage
-              publicId="glass/cta/ctalogo"
+              publicId="glass/footer/Glass"
               alt="Glass"
               width={56}
               objectFit="contain"
