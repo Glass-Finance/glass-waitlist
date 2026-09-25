@@ -67,7 +67,7 @@ function renderSignIn(initialPath = "/sign-in") {
 }
 
 function fillCredentials(identifier, password) {
-  fireEvent.change(screen.getByPlaceholderText("Enter your email"), {
+  fireEvent.change(screen.getByPlaceholderText("Enter your email or number"), {
     target: { value: identifier },
   });
   fireEvent.change(screen.getByPlaceholderText("Enter your password"), {
@@ -90,6 +90,7 @@ function deferred() {
 beforeEach(() => {
   vi.clearAllMocks();
   sessionStorage.clear();
+  localStorage.clear();
   // Desktop device + an unauthenticated session by default; individual tests
   // override the auth mock. isMobileDevice() feeds resolvePostAuthDestination,
   // so pinning UA/width keeps the asserted destinations deterministic.
@@ -131,14 +132,19 @@ describe("SignIn password form", () => {
     expect(useAuth().login).not.toHaveBeenCalled();
   });
 
-  it("rejects a phone-shaped identifier as an invalid email (email-only sign-in)", () => {
+  it("accepts a phone-shaped identifier and passes it through as phoneNumber", async () => {
     renderSignIn();
+    useAuth().login.mockResolvedValue({ isPlatformAdmin: true, isAdmin: true });
+
     fillCredentials("+2348012345678", "whatever1");
 
     clickSignIn();
 
-    expect(screen.getByText("Enter a valid email address.")).toBeDefined();
-    expect(useAuth().login).not.toHaveBeenCalled();
+    expect(await screen.findByText("Admin panel")).toBeDefined();
+    expect(useAuth().login).toHaveBeenCalledWith({
+      phoneNumber: "+2348012345678",
+      password: "whatever1",
+    });
   });
 
   it("signs in and routes a platform admin to the admin panel, normalizing the email", async () => {
@@ -196,7 +202,7 @@ describe("SignIn password form", () => {
     clickSignIn();
 
     expect(screen.getByText("Signing in…")).toBeDefined();
-    expect(screen.getByPlaceholderText("Enter your email").disabled).toBe(true);
+    expect(screen.getByPlaceholderText("Enter your email or number").disabled).toBe(true);
 
     gate.resolve({ isPlatformAdmin: true, isAdmin: true });
     expect(await screen.findByText("Admin panel")).toBeDefined();
@@ -215,6 +221,54 @@ describe("SignIn password form", () => {
     expect(submitJoinRequest).toHaveBeenCalledWith("glass-community-link");
     // One-shot flag: consumed so a later sign-in can't re-submit it.
     expect(sessionStorage.getItem("glass_join_community")).toBeNull();
+  });
+});
+
+describe("SignIn pre-auth redirect", () => {
+  it("sends an already-verified platform admin to the admin panel, never showing the form", async () => {
+    useAuth.mockReturnValue({
+      ...useAuth(),
+      user: { isPlatformAdmin: true, isAdmin: true },
+      token: "verified-token",
+      sessionVerified: true,
+      isAuthenticated: true,
+    });
+
+    renderSignIn();
+
+    expect(await screen.findByText("Admin panel")).toBeDefined();
+    expect(screen.queryByText("Sign In To Your Account")).toBeNull();
+  });
+
+  it("sends an already-verified desktop member through the same routing math as a fresh sign-in", async () => {
+    useAuth.mockReturnValue({
+      ...useAuth(),
+      user: { isPlatformAdmin: false, isAdmin: false },
+      token: "verified-token",
+      sessionVerified: true,
+      isAuthenticated: true,
+    });
+
+    renderSignIn();
+
+    const marker = await screen.findByTestId("destination");
+    expect(marker.textContent).toBe("/member/mobile-required?to=%2Fmember%2Fapp-sign-in");
+    expect(screen.queryByText("Sign In To Your Account")).toBeNull();
+  });
+
+  it("holds a spinner instead of flashing the form while a stored session restores", () => {
+    localStorage.setItem("accessToken", "stored-token");
+    useAuth.mockReturnValue({ ...useAuth(), loading: true });
+
+    renderSignIn();
+
+    expect(screen.queryByText("Sign In To Your Account")).toBeNull();
+  });
+
+  it("keeps the form for an unauthenticated visitor", () => {
+    renderSignIn();
+
+    expect(screen.getByText("Sign In To Your Account")).toBeDefined();
   });
 });
 
@@ -273,7 +327,7 @@ describe("SignIn one-time-code mode", () => {
     renderSignIn();
     switchToOtpMode();
 
-    fireEvent.change(screen.getByPlaceholderText("Enter your email"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter your email or number"), {
       target: { value: "bad@" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Send Code" }));
@@ -292,7 +346,7 @@ describe("SignIn one-time-code mode", () => {
     auth.setSession.mockResolvedValue({ isPlatformAdmin: true, isAdmin: true });
     switchToOtpMode();
 
-    fireEvent.change(screen.getByPlaceholderText("Enter your email"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter your email or number"), {
       target: { value: "Member@Example.com" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Send Code" }));
@@ -313,6 +367,22 @@ describe("SignIn one-time-code mode", () => {
     expect(auth.setSession).toHaveBeenCalledWith({ accessToken: "otp-token" });
   });
 
+  it("requests a code for a phone identifier as well as an email one", async () => {
+    renderSignIn();
+    requestLoginOtp.mockResolvedValue({
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+    });
+    switchToOtpMode();
+
+    fireEvent.change(screen.getByPlaceholderText("Enter your email or number"), {
+      target: { value: "+2348012345678" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Send Code" }));
+
+    expect(await screen.findByText("Enter Your Code")).toBeDefined();
+    expect(requestLoginOtp).toHaveBeenCalledWith({ phoneNumber: "+2348012345678" });
+  });
+
   it("stays on the code screen and explains a rejected code", async () => {
     renderSignIn();
     const auth = useAuth();
@@ -324,7 +394,7 @@ describe("SignIn one-time-code mode", () => {
     });
     switchToOtpMode();
 
-    fireEvent.change(screen.getByPlaceholderText("Enter your email"), {
+    fireEvent.change(screen.getByPlaceholderText("Enter your email or number"), {
       target: { value: "member@example.com" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Send Code" }));
