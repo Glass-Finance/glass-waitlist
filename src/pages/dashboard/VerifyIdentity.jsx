@@ -1,42 +1,30 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, History, IdCard, ShieldCheck, Clock, XCircle } from "lucide-react";
-import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
-import { Button } from "../../../../components/ui/Button";
-import SuccessBadge from "../../../../components/common/SuccessBadge";
-import KycStatusBadge from "../../../../components/memberApp/KycStatusBadge";
-import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
-import { useKycVerification } from "../../../../hooks/useKycVerification";
-import { ID_TYPE_OPTIONS, idTypeLabel, kycStatusLabel } from "../../../../utils/kycStatus";
-import { getErrorMessage } from "../../../../utils/errorHandler";
-
-function StepHeader({ title, onBack, right }) {
-  return (
-    <div className="flex items-center justify-center relative pt-6 px-5 pb-6">
-      {onBack && (
-        <button
-          onClick={onBack}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
-        >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
-        </button>
-      )}
-      <h1 className="text-lg font-semibold text-[#111] m-0">{title}</h1>
-      {right && <div className="absolute right-5">{right}</div>}
-    </div>
-  );
-}
+import { ArrowLeft, History, IdCard, ShieldCheck, Clock, XCircle } from "lucide-react";
+import { Button } from "../../components/ui/Button";
+import SuccessBadge from "../../components/common/SuccessBadge";
+import LoadingState from "../../components/common/LoadingState";
+import KycStatusBadge from "../../components/memberApp/KycStatusBadge";
+import { useKycVerification } from "../../hooks/useKycVerification";
+import { ID_TYPE_OPTIONS, idTypeLabel, kycStatusLabel } from "../../utils/kycStatus";
+import { getErrorMessage } from "../../utils/errorHandler";
 
 function Card({ children, className = "" }) {
   return (
-    <div className={`border border-surface-container-border bg-white rounded-2xl p-4 ${className}`}>
+    <div className={`border border-surface-container-border bg-white rounded-xl p-5 ${className}`}>
       {children}
     </div>
   );
 }
 
-// Member-app identity verification (mobile-only — the device gate keeps
-// desktop traffic on the dashboard-styled page). The Smile ID flow itself
-// lives in useKycVerification, shared with the dashboard page.
+// Dashboard-styled identity verification — the desktop counterpart to the
+// member app's /member/verify-identity (which stays behind the mobile-only
+// device gate). Reached from Communities Home's KYC badge and the
+// KycRequiredSheet interstitial. Runs the shared Smile ID flow from
+// useKycVerification; this file only supplies the admin chrome.
+//
+// The root carries bg-mobile-auth-default — the same left-center glow
+// backdrop MemberAppLayout puts behind every member-app page — so the
+// verification surface keeps the branded backdrop inside the dashboard.
 export default function VerifyIdentity() {
   const navigate = useNavigate();
   const {
@@ -69,20 +57,24 @@ export default function VerifyIdentity() {
 
   if (isLoading) {
     return (
-      <div className="relative overflow-hidden min-h-screen">
-        <GlassLogoGlow />
-        <StepHeader title="Identity Verification" onBack={() => navigate(-1)} />
-        <PageLoadingState label="Loading your verification status…" />
+      <div className="relative flex flex-col min-h-full bg-cover bg-center bg-no-repeat bg-mobile-auth-default">
+        <div className="px-4 md:px-7 pt-7 pb-5">
+          <h1 className="text-lg font-semibold text-[#000000]">Identity Verification</h1>
+        </div>
+        <div className="px-4 md:px-7 pb-10">
+          <LoadingState label="Loading your verification status…" className="py-10" />
+        </div>
       </div>
     );
   }
 
   if (isError && !summary) {
     return (
-      <div className="relative overflow-hidden min-h-screen pb-10">
-        <GlassLogoGlow />
-        <StepHeader title="Identity Verification" onBack={() => navigate(-1)} />
-        <div className="px-4">
+      <div className="relative flex flex-col min-h-full bg-cover bg-center bg-no-repeat bg-mobile-auth-default">
+        <div className="px-4 md:px-7 pt-7 pb-5">
+          <h1 className="text-lg font-semibold text-[#000000]">Identity Verification</h1>
+        </div>
+        <div className="px-4 md:px-7 pb-10 w-full max-w-[640px]">
           <Card>
             <p className="text-sm text-danger m-0">
               {getErrorMessage(error, "Couldn't load your verification status.")}
@@ -97,23 +89,34 @@ export default function VerifyIdentity() {
   }
 
   return (
-    <div className="relative overflow-hidden min-h-screen pb-10">
-      <GlassLogoGlow />
-      <StepHeader
-        title="Identity Verification"
-        onBack={() => navigate(-1)}
-        right={
+    <div className="relative flex flex-col min-h-full bg-cover bg-center bg-no-repeat bg-mobile-auth-default">
+      {/* Header — dashboard page-header pattern (see CommunitiesHome) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-7 pt-7 pb-5">
+        <div className="flex items-center gap-3 min-w-0">
           <button
-            onClick={() => navigate("/member/verify-identity/history")}
-            className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
-            aria-label="Attempt history"
+            onClick={() => navigate("/dashboard/home")}
+            aria-label="Back to communities"
+            className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
           >
-            <History size={16} className="text-[#111]" />
+            <ArrowLeft size={17} strokeWidth={2} className="text-[#111]" />
           </button>
-        }
-      />
+          <div className="min-w-0">
+            <h1 className="text-lg font-semibold text-[#000000] m-0">Identity Verification</h1>
+            <p className="text-xs text-gray-400 mt-0.5 m-0">
+              Required to create and manage communities.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={() => navigate("/dashboard/verify-identity/history")}
+          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
+          aria-label="Attempt history"
+        >
+          <History size={16} className="text-[#111]" />
+        </button>
+      </div>
 
-      <div className="px-4 flex flex-col gap-3">
+      <div className="px-4 md:px-7 pb-10 flex flex-col gap-3 w-full max-w-[640px]">
         <Card>
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
@@ -285,7 +288,7 @@ export default function VerifyIdentity() {
         )}
 
         <button
-          onClick={() => navigate("/member/verify-identity/history")}
+          onClick={() => navigate("/dashboard/verify-identity/history")}
           className="mt-1 text-sm font-medium text-brand bg-transparent border-none cursor-pointer p-0 text-center"
         >
           View attempt history

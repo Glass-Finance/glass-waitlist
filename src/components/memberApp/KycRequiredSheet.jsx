@@ -3,13 +3,15 @@ import { ShieldCheck, X } from "lucide-react";
 
 // Bottom sheet shown before community create/manage when KYC is not APPROVED.
 // Non-danger brand styling (unlike ConfirmSheet's destructive default).
-export default function KycRequiredSheet({ open, onClose, reason }) {
+// verifyPath lets the desktop dashboard send people to its own verify page —
+// the member-app path is behind the mobile-only device gate.
+export default function KycRequiredSheet({ open, onClose, reason, verifyPath }) {
   const navigate = useNavigate();
   if (!open) return null;
 
   function goVerify() {
     onClose?.();
-    navigate("/member/verify-identity");
+    navigate(verifyPath ?? "/member/verify-identity");
   }
 
   return (

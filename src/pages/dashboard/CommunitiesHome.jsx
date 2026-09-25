@@ -400,7 +400,7 @@ export default function CommunitiesHome() {
         <div data-tour="communities-home-actions" className="flex gap-2.5 items-center">
           {!kycDisabled() && kycGate.status && (
             <button
-              onClick={() => navigate("/member/verify-identity")}
+              onClick={() => navigate("/dashboard/verify-identity")}
               className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0"
               aria-label="Identity verification status"
             >
@@ -424,7 +424,11 @@ export default function CommunitiesHome() {
         </div>
       </div>
 
-      <KycRequiredSheet open={kycGate.gateOpen} onClose={kycGate.closeGate} />
+      <KycRequiredSheet
+        open={kycGate.gateOpen}
+        onClose={kycGate.closeGate}
+        verifyPath="/dashboard/verify-identity"
+      />
 
       {!invitesLoading && pendingInvites.length > 0 && (
         <div className="px-4 md:px-7 pb-5">
