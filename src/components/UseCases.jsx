@@ -12,19 +12,19 @@ import { USECASE_PHOTOS } from "./usecasePhotos";
 // under the featured card (the caption box is flex-1, spacers mirror strips).
 const GAP = "gap-2.5 md:gap-4";
 const STRIP =
-  "hidden md:block shrink-0 transition-[width] duration-500 ease-out motion-reduce:transition-none";
+  "hidden md:block shrink-0 transition-[filter] duration-200 hover:brightness-110 motion-reduce:transition-none";
 const STRIP_W = [152, 96, 56];
 const CARD_H = "h-[340px] md:h-[420px]";
 
 const TICK_MS = 4500;
+const SLIDE_MS = 650;
 const PHOTO_WIDTHS = [640, 960, 1280, 1600];
 const STRIP_SRC_W = [320, 640, 960];
 const PHOTO_QUALITY = "auto:best";
 const PHOTO_SIZES = "(max-width: 768px) calc(100vw - 48px), 732px";
-const PROX_RADIUS = 180;
-const PROX_SCALE = 0.045;
-const PROX_BRIGHTNESS = 0.12;
+const STRIP_SIZES = "152px";
 const WARM_TIMEOUT_MS = 3000;
+const SLIDE_EASE = [0.22, 1, 0.36, 1];
 
 const cases = [
   {
@@ -68,17 +68,14 @@ function pickWidth() {
 
 export default function UseCases() {
   const [step, setStep] = useState(0);
-  // `displayed` lags `step` until the target photo is fetched+decoded, so a
-  // slide only swaps when its image is already there — never a blank frame.
+  // `displayed` is the row actually on screen; it lags `step` until the new
+  // row's featured photo is fetched+decoded, so the slide never shows a blank.
   const [displayed, setDisplayed] = useState(null);
   const [revealed, setRevealed] = useState(false);
   const [inView, setInView] = useState(false);
-  const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const [tabHidden, setTabHidden] = useState(false);
   const sectionRef = useRef(null);
-  const stripImgRefs = useRef([]);
-  const posRef = useRef({ x: -9999, y: -9999 });
   const warmRef = useRef(new Set());
   const navigate = useNavigate();
   const reduce = useReducedMotion();
@@ -100,9 +97,19 @@ export default function UseCases() {
     [queues],
   );
 
-  const warm = useCallback((pid) => {
-    if (!pid || warmRef.current.has(pid)) return Promise.resolve();
-    warmRef.current.add(pid);
+  // Steps are one full round apart per strip: strip k advances `delta` steps.
+  const deltaFor = useCallback((rowStep, k) => {
+    const activeIdx = rowStep % cases.length;
+    return (k - activeIdx + cases.length) % cases.length || cases.length;
+  }, []);
+
+  // Warm the exact resource the <img> will select (same srcset + sizes), so
+  // decode() finishes before we start the slide.
+  const warm = useCallback((pid, mode) => {
+    const key = `${mode}:${pid}`;
+    if (warmRef.current.has(key)) return Promise.resolve();
+    warmRef.current.add(key);
+    const featured = mode === "featured";
     return new Promise((resolve) => {
       const img = new Image();
       const timer = setTimeout(resolve, WARM_TIMEOUT_MS);
@@ -110,9 +117,14 @@ export default function UseCases() {
         clearTimeout(timer);
         resolve(pid);
       };
-      img.sizes = PHOTO_SIZES;
-      img.srcset = cldSrcSet(pid, PHOTO_WIDTHS, { quality: PHOTO_QUALITY });
-      img.src = cldUrl(pid, { width: pickWidth(), quality: PHOTO_QUALITY });
+      img.sizes = featured ? PHOTO_SIZES : STRIP_SIZES;
+      img.srcset = cldSrcSet(pid, featured ? PHOTO_WIDTHS : STRIP_SRC_W, {
+        quality: PHOTO_QUALITY,
+      });
+      img.src = cldUrl(pid, {
+        width: featured ? pickWidth() : 640,
+        quality: PHOTO_QUALITY,
+      });
       if (img.decode) img.decode().then(settle, settle);
       else img.onload = settle;
       img.onerror = settle;
@@ -143,96 +155,45 @@ export default function UseCases() {
     return () => document.removeEventListener("visibilitychange", onVisibility);
   }, []);
 
-  // First slide is warmed immediately; everything else while in view. On each
-  // step, warm the current photo plus the whole next round (+1) so upcoming
-  // swaps hit cache — the featured <img> never waits on the network.
+  // Commit a new row only once its featured photo decoded (never a blank
+  // frame), while preloading that row's three strip panels in parallel.
   useEffect(() => {
-    if (!inView) return;
+    if (displayed && displayed.step === step) return;
     let alive = true;
     const target = photoAt(step);
-    warm(target.photo.publicId).then(() => {
+    warm(target.photo.publicId, "featured").then(() => {
       if (alive) setDisplayed({ ...target.photo, step });
     });
-    for (let d = 1; d <= cases.length; d++) warm(photoAt(step + d).photo.publicId);
+    // Next tick's featured photo starts fetching now, so the following slide
+    // begins instantly instead of waiting on the network.
+    warm(photoAt(step + 1).photo.publicId, "featured");
+    for (let d = 1; d < cases.length; d++) warm(photoAt(step + d).photo.publicId, "strip");
     return () => {
       alive = false;
     };
-  }, [step, inView, photoAt, warm]);
+  }, [step, displayed, photoAt, warm]);
 
-  useEffect(() => {
-    const first = photoAt(0);
-    warm(first.photo.publicId).then(() => {
-      setDisplayed((d) => d ?? { ...first.photo, step: 0 });
-    });
-  }, [photoAt, warm]);
-
-  // Autoplay: one rhythm — every tick advances a step (next category, and a
-  // new photo for a category once per full round). Runs only while in view
-  // and not hovered/focused, never under reduced motion, never in a
-  // background tab.
-  const playing = inView && !hovered && !focused && !tabHidden && !reduce;
+  // Autoplay: one rhythm — every tick slides to the next category (and a new
+  // photo for a category once per full round). Runs while in view regardless
+  // of hover (Stripe-like: it keeps scrolling), never under reduced motion,
+  // never in a background tab, paused while keyboard-focused.
+  const playing = inView && !focused && !tabHidden && !reduce;
   useEffect(() => {
     if (!playing) return;
     const id = setInterval(() => setStep((s) => s + 1), TICK_MS);
     return () => clearInterval(id);
   }, [playing]);
 
-  const activeIdx = step % cases.length;
-  const stripStep = (k) => {
-    const delta = (k - activeIdx + cases.length) % cases.length || cases.length;
-    return step + delta;
-  };
+  const enter = `uc-enter ${revealed ? "uc-in" : ""}`;
+  const shown = displayed ?? { ...photoAt(0).photo, step: 0 };
+
   // Strips show the rest of the queue in order: next-up first (3 strips —
   // the active category is the featured card, not a strip).
   const queue = Array.from(
     { length: cases.length - 1 },
-    (_, k) => (activeIdx + k + 1) % cases.length,
+    (_, k) => (shown.step + k + 1) % cases.length,
   );
-  const go = (k) => setStep(stripStep(k));
-  const enter = `uc-enter ${revealed ? "uc-in" : ""}`;
-  const shown = displayed ?? { ...photoAt(0).photo, step: 0 };
-  const shownCase = cases[shown.step % cases.length];
-
-  // ── Proximity: gaussian falloff from the cursor to each strip photo ──────
-  // (same math as ui/VariableProximity — distance/radius + gaussian — but
-  // interpolating scale/brightness on the <img> instead of font axes).
-  useEffect(() => {
-    if (reduce) return;
-    let frameId;
-    const loop = () => {
-      const section = sectionRef.current;
-      if (section) {
-        const secRect = section.getBoundingClientRect();
-        const { x, y } = posRef.current;
-        stripImgRefs.current.forEach((el) => {
-          if (!el) return;
-          const rect = el.getBoundingClientRect();
-          if (!rect.width) return;
-          const cx = rect.left + rect.width / 2 - secRect.left;
-          const cy = rect.top + rect.height / 2 - secRect.top;
-          const dist = Math.hypot(x - cx, y - cy);
-          const v = dist >= PROX_RADIUS ? 0 : Math.exp(-((dist / (PROX_RADIUS / 2)) ** 2) / 2);
-          el.style.transform = v ? `scale(${1 + PROX_SCALE * v})` : "";
-          el.style.filter = v ? `brightness(${1 + PROX_BRIGHTNESS * v})` : "";
-        });
-      }
-      frameId = requestAnimationFrame(loop);
-    };
-    frameId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(frameId);
-  }, [reduce]);
-
-  const trackPointer = (clientX, clientY) => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    posRef.current = { x: clientX - rect.left, y: clientY - rect.top };
-  };
-  const handleMouseMove = (e) => trackPointer(e.clientX, e.clientY);
-  const handleTouchMove = (e) => {
-    const t = e.touches[0];
-    if (t) trackPointer(t.clientX, t.clientY);
-  };
+  const go = (delta) => setStep((s) => s + delta);
 
   // Pause on keyboard focus anywhere in the section.
   const handleFocus = (e) => {
@@ -249,13 +210,6 @@ export default function UseCases() {
       ref={sectionRef}
       id="use-cases"
       className="py-20 md:py-28 relative isolate overflow-hidden"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => {
-        setHovered(false);
-        posRef.current = { x: -9999, y: -9999 };
-      }}
-      onMouseMove={handleMouseMove}
-      onTouchMove={handleTouchMove}
       onFocus={handleFocus}
       onBlur={handleBlur}
     >
@@ -299,56 +253,73 @@ export default function UseCases() {
           </div>
         </div>
 
-        {/* ── Visual row — featured photo + receding photo strips ── */}
+        {/* ── Visual row — slides left on every change (old row exits left,
+            new row enters from the right, Stripe-style) ── */}
         <div
-          className={`${enter} flex ${GAP} ${CARD_H}`}
+          className={`${enter} relative overflow-hidden ${CARD_H}`}
           style={{ animationDelay: "120ms" }}
           role="group"
           aria-roledescription="carousel"
           aria-label="Use cases"
         >
-          <div className="relative flex-1 min-w-0 overflow-hidden rounded-sm bg-white shadow-[0_0_0_1px_rgba(28,43,138,0.06),0_4px_24px_rgba(28,43,138,0.08)]">
-            <img
-              data-featured
-              src={cldUrl(shown.publicId, { width: pickWidth(), quality: PHOTO_QUALITY })}
-              srcSet={cldSrcSet(shown.publicId, PHOTO_WIDTHS, { quality: PHOTO_QUALITY })}
-              sizes={PHOTO_SIZES}
-              alt={shown.alt}
-              className="absolute inset-0 h-full w-full object-cover"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-
-          {queue.map((k, i) => {
-            const c = cases[k];
-            const stripPhoto = photoAt(stripStep(k)).photo;
-            return (
-              <button
-                key={i}
-                type="button"
-                onClick={() => go(k)}
-                aria-label={`Show ${c.title}`}
-                style={{ width: STRIP_W[i] }}
-                className={`${STRIP} group relative overflow-hidden rounded-sm bg-[#F5F7FD] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#002FA7]/60`}
-              >
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={shown.step}
+              className={`absolute inset-0 flex ${GAP}`}
+              initial={{ x: reduce ? 0 : "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: reduce ? 0 : "-100%" }}
+              transition={{ duration: reduce ? 0 : SLIDE_MS / 1000, ease: SLIDE_EASE }}
+            >
+              <div className="relative flex-1 min-w-0 overflow-hidden rounded-sm bg-white shadow-[0_0_0_1px_rgba(28,43,138,0.06),0_4px_24px_rgba(28,43,138,0.08)]">
                 <img
-                  ref={(el) => {
-                    stripImgRefs.current[i] = el;
-                  }}
-                  src={cldUrl(stripPhoto.publicId, { width: 640, quality: PHOTO_QUALITY })}
-                  srcSet={cldSrcSet(stripPhoto.publicId, STRIP_SRC_W, {
+                  data-featured
+                  src={cldUrl(shown.publicId, {
+                    width: pickWidth(),
                     quality: PHOTO_QUALITY,
                   })}
-                  sizes={`${STRIP_W[i]}px`}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover will-change-transform"
+                  srcSet={cldSrcSet(shown.publicId, PHOTO_WIDTHS, {
+                    quality: PHOTO_QUALITY,
+                  })}
+                  sizes={PHOTO_SIZES}
+                  alt={shown.alt}
+                  className="absolute inset-0 h-full w-full object-cover"
                   loading="lazy"
                   decoding="async"
                 />
-              </button>
-            );
-          })}
+              </div>
+
+              {queue.map((k, i) => {
+                const c = cases[k];
+                const stripPhoto = photoAt(shown.step + deltaFor(shown.step, k)).photo;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={(e) => {
+                      if (e.detail > 0) e.currentTarget.blur();
+                      go(deltaFor(shown.step, k));
+                    }}
+                    aria-label={`Show ${c.title}`}
+                    style={{ width: STRIP_W[i] }}
+                    className={`${STRIP} relative overflow-hidden rounded-sm bg-[#F5F7FD] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#002FA7]/60`}
+                  >
+                    <img
+                      src={cldUrl(stripPhoto.publicId, { width: 640, quality: PHOTO_QUALITY })}
+                      srcSet={cldSrcSet(stripPhoto.publicId, STRIP_SRC_W, {
+                        quality: PHOTO_QUALITY,
+                      })}
+                      sizes={`${STRIP_W[i]}px`}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                );
+              })}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* ── Caption — mirrors the row above so it sits under the featured card ── */}
@@ -364,10 +335,10 @@ export default function UseCases() {
                   transition={{ duration: reduce ? 0 : 0.28, ease: "easeOut" }}
                 >
                   <h3 className="text-[clamp(19px,2.2vw,24px)] font-bold text-[#0f1d6e] leading-snug">
-                    {shownCase.title}
+                    {cases[shown.step % cases.length].title}
                   </h3>
                   <p className="mt-1.5 text-[15px] md:text-[16px] text-[#9099b2] leading-[1.6] max-w-[560px]">
-                    {shownCase.body}
+                    {cases[shown.step % cases.length].body}
                   </p>
                 </motion.div>
               </AnimatePresence>
