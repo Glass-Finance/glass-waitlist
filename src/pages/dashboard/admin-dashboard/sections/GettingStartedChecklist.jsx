@@ -1,11 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { X, Check, AlertCircle, Clock } from "lucide-react";
+import { useKycSummary } from "../../../../hooks/useKyc";
+import { isKycApproved } from "../../../../utils/kycStatus";
+import { kycDisabled } from "../../../../lib/flags";
 
 // Shown on DashboardContent until a plan, a member, and a usable payout
-// account all exist. Step 4 (payout account) has three real states, not
+// account all exist. Step 5 (payout account) has three real states, not
 // just done/not-done: submitting the account isn't the same as it being
 // usable -- it still needs to clear verification on our side before
-// payment plans can actually collect.
+// payment plans can actually collect. Identity verification leads because
+// it gates community create/manage upstream of everything here — showing
+// it completed also tells newer owners why the gate already let them in.
 export default function GettingStartedChecklist({
   communityId,
   hasPlans,
@@ -17,6 +22,11 @@ export default function GettingStartedChecklist({
   onAddMember,
 }) {
   const navigate = useNavigate();
+  const { data: kycSummary } = useKycSummary();
+  const hideKyc = kycDisabled();
+  // Wait for the summary before judging: a loading fetch must not flash a
+  // "Verify" call-to-action at someone who is already approved.
+  const kycApproved = isKycApproved(kycSummary?.status);
 
   return (
     <div
@@ -40,7 +50,34 @@ export default function GettingStartedChecklist({
       </div>
 
       <div className="flex flex-col gap-2.5">
-        {/* Step 1 — always done (they're here) */}
+        {/* Step 1 — identity verification (gates create/manage upstream;
+            hidden while the summary loads and when the kill switch is on) */}
+        {!hideKyc && kycSummary && (
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span
+                className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${kycApproved ? "bg-emerald-100" : "bg-white border-2 border-gray-200"}`}
+              >
+                {kycApproved && <Check size={11} className="text-emerald-600" strokeWidth={2.5} />}
+              </span>
+              <span
+                className={`text-xs ${kycApproved ? "text-gray-400 line-through" : "text-gray-700 font-medium"}`}
+              >
+                Verify your identity
+              </span>
+            </div>
+            {!kycApproved && (
+              <button
+                onClick={() => navigate("/dashboard/verify-identity")}
+                className="text-xs font-semibold text-brand bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
+              >
+                Verify
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Step 2 — always done (they're here) */}
         <div className="flex items-center gap-3">
           <span className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
             <Check size={11} className="text-emerald-600" strokeWidth={2.5} />
@@ -48,7 +85,7 @@ export default function GettingStartedChecklist({
           <span className="text-xs text-gray-400 line-through">Create your community</span>
         </div>
 
-        {/* Step 2 — create a payment plan */}
+        {/* Step 3 — create a payment plan */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span
@@ -72,7 +109,7 @@ export default function GettingStartedChecklist({
           )}
         </div>
 
-        {/* Step 3 — add members */}
+        {/* Step 4 — add members */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <span
@@ -96,7 +133,7 @@ export default function GettingStartedChecklist({
           )}
         </div>
 
-        {/* Step 4 — payout account. Three real states, not just
+        {/* Step 5 — payout account. Three real states, not just
             done/not-done: submitting the account isn't the same as
             it being usable -- it still needs to clear verification
             on our side before payment plans can actually collect. */}

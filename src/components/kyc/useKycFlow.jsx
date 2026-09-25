@@ -24,7 +24,10 @@ import StatusStep from "./steps/StatusStep";
 const POLL_MS = 6000;
 const MAX_POLLS = 20; // ~2 minutes
 
-export default function useKycFlow({ reason, onDismiss, onHistory } = {}) {
+// onComplete fires when the user hits Done on an APPROVED outcome — gates
+// pass it so "Done" resumes the interrupted action (create/manage) instead
+// of only closing; dismissals and unapproved Dones fall through to onDismiss.
+export default function useKycFlow({ reason, onDismiss, onHistory, onComplete } = {}) {
   const kyc = useKycVerification();
   const {
     summary,
@@ -196,7 +199,13 @@ export default function useKycFlow({ reason, onDismiss, onHistory } = {}) {
     } else if (isApproved || !attemptsAllowed) {
       footerNode = row(
         null,
-        primary("Done", () => onDismiss?.()),
+        primary("Done", () => {
+          if (isApproved && onComplete) {
+            onComplete();
+            return;
+          }
+          onDismiss?.();
+        }),
       );
     } else if (showResume && !confirmed && !narrativeLive) {
       footerNode = row(

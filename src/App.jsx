@@ -208,8 +208,9 @@ function App() {
               <Route path="notifications" element={<AdminNotifications />} />
 
               {/* Personal KYC — the desktop counterpart to the member app's
-                  mobile-only verify pages (community admins reach these from
-                  Communities Home's badge and the create-community gate). */}
+                  mobile-only verify pages. Deep-linkable shell (direct URLs,
+                  getting-started checklist, History); gates and badges open
+                  the wizard modal inline instead of routing here. */}
               <Route path="verify-identity" element={<DashboardVerifyIdentity />} />
               <Route path="verify-identity/history" element={<DashboardVerifyIdentityHistory />} />
 

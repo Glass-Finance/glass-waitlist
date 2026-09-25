@@ -13,16 +13,24 @@ import glassLogo from "../../assets/Glass.webp";
 // step body, fixed footer — the primary action can never scroll away.
 // Unmounting this component resets the flow's local state, so a reopened
 // wizard always starts from the server's current status.
-export default function KycWizardModal({ open, onClose, reason, historyPath }) {
+export default function KycWizardModal({ open, onClose, reason, historyPath, onComplete }) {
   if (!open) return null;
-  return <WizardContent onClose={onClose} reason={reason} historyPath={historyPath} />;
+  return (
+    <WizardContent
+      onClose={onClose}
+      reason={reason}
+      historyPath={historyPath}
+      onComplete={onComplete}
+    />
+  );
 }
 
-function WizardContent({ onClose, reason, historyPath }) {
+function WizardContent({ onClose, reason, historyPath, onComplete }) {
   const navigate = useNavigate();
   const flow = useKycFlow({
     reason,
     onDismiss: onClose,
+    onComplete,
     onHistory: historyPath
       ? () => {
           onClose();
