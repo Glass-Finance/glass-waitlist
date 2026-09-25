@@ -45,6 +45,30 @@ first — keep the two in sync (see README's two-repo rule).
      natural size decides the box height (`w-full h-auto`), and
      `cldUrl()` for CSS backgroundImage.
 
+## Use-case carousel photos
+
+The Use Cases section (`src/components/UseCases.jsx`) shuffles 12 photos per
+category (48 total) from Cloudinary:
+
+- **Manifest** — `src/components/usecasePhotos.js` is the source of truth:
+  `publicId` (`glass/usecase/<category>/<code>`), the original Pexels URL
+  (provenance — [Pexels license](https://www.pexels.com/license/): free for
+  commercial use, attribution not required) and `alt` text. Imported by both
+  the component (public ids + alts) and the upload script.
+- **Upload script** — manifest-driven, uploads by fetching each original URL,
+  and skips public ids that already exist, so it is re-runnable after adding
+  photos:
+
+  ```bash
+  node scripts/upload-usecase-photos.mjs --dry-run   # preview
+  node scripts/upload-usecase-photos.mjs             # upload missing photos
+  ```
+
+- Delivery uses `q_auto:best` at widths `[640, 960, 1280, 1600]` (`cldSrcSet`
+  accepts an optional opts object forwarded to `cldUrl` per width).
+- The same manifest/script exists in `glass-waitlist-v1` — keep the two in
+  sync (the photos are uploaded once to the shared cloud).
+
 ## Env vars
 
 | Variable                     | Used by                           | Notes                                               |

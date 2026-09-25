@@ -65,9 +65,10 @@ export function cldUrl(publicId, opts = {}) {
  * Build a srcSet string across a set of widths, for responsive delivery.
  * @param {string} publicId
  * @param {number[]} widths - e.g. [400, 800, 1200, 1600]
+ * @param {object} [opts] - forwarded to cldUrl per width (quality, crop, ...)
  */
-export function cldSrcSet(publicId, widths) {
-  return widths.map((w) => `${cldUrl(publicId, { width: w })} ${w}w`).join(", ");
+export function cldSrcSet(publicId, widths, opts = {}) {
+  return widths.map((w) => `${cldUrl(publicId, { ...opts, width: w })} ${w}w`).join(", ");
 }
 
 // Standard width buckets used to derive a responsive srcSet from a single
