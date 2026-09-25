@@ -4,13 +4,12 @@
 
 This page describes the product flows for **sign-in**, **optional phone**, and **identity verification (KYC)** as implemented in this frontend. Backend contracts remain authoritative (`docs/authentication.md`, `docs/kyc.md`, `docs/authorization.md`).
 
-### Sign-in is email-only
+### Sign-in accepts email or phone
 
-- `/sign-in` and `/member/app-sign-in` accept an **email** only (password tab and One-Time Code tab).
-- Labels, placeholders, and validation say email — not “email or phone”.
-- Phone-shaped input is rejected as an invalid email.
-- Password reset (`ForgotPassword`) is already email-only.
-- The backend may still accept a phone identifier on login APIs; the **product decision** is email-only UI. Do not reintroduce phone as a sign-in identifier without an explicit product change.
+- `/sign-in` and `/member/app-sign-in` take a single identifier that accepts an **email or phone number** (password tab and One-Time Code tab).
+- `"@"` is the one unambiguous signal between the two formats; phone input is format-validated (`isPhoneValid`), email input by `getEmailError`.
+- Password reset (`ForgotPassword`) is email-only.
+- Backend login APIs accept both shapes (`{ email }` XOR `{ phoneNumber }` — `identifierPayload` in `src/services/authPayloads.js`); the identifier pass-through was restored after a frontend-only email-only regression.
 
 ### Phone is optional and added after signup
 
@@ -40,9 +39,9 @@ Members verify identity with Smile ID before creating or managing communities (a
 
 Summary:
 
-- Member page: `/member/verify-identity` (+ history).
+- Member page: `/member/verify-identity` (+ history) and the dashboard counterpart; gates and badges open the wizard modal inline.
 - Status badges: Settings Account, Home header, communities surfaces.
-- Gate: bottom sheet when summary is not `APPROVED` (fails open on load/error).
+- Gate: wizard modal when summary is not `APPROVED` (fails open on load/error).
 - Platform admin: Admin Panel → KYC review queue and decision modal.
 - Kill switch: `VITE_FLAGS={"kycDisabled":true}`.
 
@@ -57,6 +56,5 @@ See `.env.example` and `docs/runbooks/incident-rollback.md`.
 
 ## Proposed/future direction
 
-- Confirm with product whether passwordless OTP login stays email-only forever or phone login returns as a deliberate feature.
 - Optional: rename route `verify-phone` → `add-phone` with redirects if URL copy should match product language (not required for correctness).
 - Marketing copy under `glass-waitlist-v1` must be re-ported if landing “how it works” steps change here (see root `README.md` two-repo rule).

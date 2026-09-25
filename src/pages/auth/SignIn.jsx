@@ -3,31 +3,39 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Lock, KeyRound } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
+import { getAccessToken } from "../../store/sessionStorage";
 import { verifyMfaLogin, requestLoginOtp, verifyLoginOtp } from "../../services/authService";
 import { getMyInvites, getMyCommunityJoinRequests, submitJoinRequest } from "../../api/invites";
 import { isMobileDevice } from "../../utils/deviceRedirect";
 import { notifyError, getErrorMessage, getRetryAfterSeconds } from "../../utils/errorHandler";
 import { resolvePostAuthDestination } from "../../utils/postAuthDestination";
 import { getEmailError } from "../../utils/validators";
+import { isPhoneValid, PHONE_FORMAT_HINT } from "../../utils/phone";
 import { toastInfo, toastSuccess } from "../../utils/toast";
 import { JOIN_COMMUNITY_KEY } from "../../hooks/useJoinCommunityParam";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 import AuthLayout from "../../layouts/AuthLayout";
+import LoadingScreen from "../../components/LoadingScreen";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
 import { MfaChallengeScreen, OtpVerifyScreen } from "./SignInSections";
 
-// Email-only identifier. Phone was removed from auth fields; the backend
-// still accepts a phone identifier, but the product decision is email sign-in
-// only (phone is optional and added later in Settings).
+// A single field doubles as email-or-phone -- the backend rejects both/
+// neither, so there's exactly one identifier to resolve, not two fields to
+// reconcile. "@" is the one unambiguous signal between the two formats.
 function parseIdentifier(value) {
-  return { email: value.trim().toLowerCase() };
+  const trimmed = value.trim();
+  return trimmed.includes("@") ? { email: trimmed.toLowerCase() } : { phoneNumber: trimmed };
 }
 
 function validateIdentifier(value) {
   const trimmed = value.trim();
-  if (!trimmed) return "Enter your email.";
-  return getEmailError(trimmed);
+  if (!trimmed) return "Enter your email or phone number.";
+  return trimmed.includes("@")
+    ? getEmailError(trimmed)
+    : isPhoneValid(trimmed)
+      ? ""
+      : PHONE_FORMAT_HINT;
 }
 
 // Tab switcher between password and passwordless sign-in -- both are
@@ -77,7 +85,7 @@ export default function SignIn() {
   usePageTitle("Sign in");
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, setSession } = useAuth();
+  const { login, setSession, user, token, loading: authLoading, sessionVerified } = useAuth();
   const isMemberSignIn = location.pathname === "/member/app-sign-in";
   const [form, setForm] = useState({ identifier: "", password: "" });
   const [fieldErrors, setFieldErrors] = useState({
@@ -203,7 +211,16 @@ export default function SignIn() {
       }
     }
 
-    const returnTo = new URLSearchParams(location.search).get("return");
+    // `?return=` is the public form of this; the route guards hand off via
+    // location.state.from (ProtectedRoute's state={{ from: location }}) —
+    // same validation either way (resolvePostAuthDestination runs it through
+    // isSafeReturnPath), so both a pre-auth bounce and a fresh sign-in land
+    // where the user was actually headed.
+    const returnTo =
+      new URLSearchParams(location.search).get("return") ??
+      (location.state?.from?.pathname
+        ? `${location.state.from.pathname}${location.state.from.search ?? ""}`
+        : null);
 
     // If the session expired mid-payment (while the user was on Paystack's
     // page), PaymentSummary stored the reference before navigating away.
@@ -244,7 +261,34 @@ export default function SignIn() {
     }).to;
   }
 
+  // Pre-auth redirect: a visitor whose session is already verified against
+  // the backend has no business filling in a sign-in form — resolve where
+  // they belong (same role/device math as a fresh sign-in) and get out of
+  // the way. Runs resolveDestination exactly once, because it consumes
+  // one-shot sessionStorage flags (pending join, payment reference), and
+  // only when the visitor hasn't started an auth attempt themselves: the
+  // handlers below flip destinationTakenRef before establishing a session,
+  // so a fresh sign-in can never race this effect for the flags. Mirrors
+  // Join/index.jsx's already-authenticated short-circuit.
+  const destinationTakenRef = useRef(false);
+  useEffect(() => {
+    if (destinationTakenRef.current) return;
+    if (authLoading || !token || !sessionVerified) return;
+    destinationTakenRef.current = true;
+    resolveDestination(user)
+      .then((dest) => navigate(dest, { replace: true }))
+      .catch(() =>
+        navigate(user?.isPlatformAdmin || user?.isAdmin ? "/dashboard/home" : "/member/home", {
+          replace: true,
+        }),
+      );
+    // resolveDestination reads live location/sessionStorage state and the
+    // ref guard makes reruns no-ops — this fires once per mount, so it must
+    // not re-run on function-identity churn.
+  }, [authLoading, token, sessionVerified, user]); // eslint-disable-line react-hooks/exhaustive-deps
+
   async function handleSignIn() {
+    destinationTakenRef.current = true;
     const identifierError = validateField("identifier", form.identifier);
     const passwordError = validateField("password", form.password);
     if (identifierError || passwordError) {
@@ -304,6 +348,7 @@ export default function SignIn() {
   }
 
   async function handleVerifyOtp() {
+    destinationTakenRef.current = true;
     if (otp.some((d) => !d) || otpCodeExpired) return;
     setOtpVerifying(true);
     setOtpError("");
@@ -355,6 +400,7 @@ export default function SignIn() {
   }
 
   async function handleMfaVerify() {
+    destinationTakenRef.current = true;
     if (mfaCode.length !== 6) return;
     setLoading(true);
     setError("");
@@ -380,6 +426,7 @@ export default function SignIn() {
   }
 
   async function handleGoogleAuth(user) {
+    destinationTakenRef.current = true;
     try {
       navigate(await resolveDestination(user), { replace: true });
     } catch (err) {
@@ -388,6 +435,14 @@ export default function SignIn() {
   }
 
   const isReady = form.identifier.trim() && form.password;
+
+  // A stored session that's still being verified server-side shouldn't
+  // flash the form and then bounce — hold the spinner until the verdict,
+  // the same way the route guards do (they gate on loading first). No
+  // stored token means a fresh visitor, who sees the form immediately.
+  if (authLoading && getAccessToken()) {
+    return <LoadingScreen />;
+  }
 
   // ── MFA challenge screen ──────────────────────────────────────────────────────
   if (mfaChallenge) {
@@ -475,7 +530,7 @@ export default function SignIn() {
           <h1 className="text-headline text-gray-900 mb-1">Sign In To Your Account</h1>
           <p className="text-sm text-gray-500">
             {mode === "otp"
-              ? "We'll email you a one-time code, no password needed."
+              ? "We'll email or text you a one-time code, no password needed."
               : "Enter your credentials to continue."}
           </p>
         </div>
@@ -485,12 +540,12 @@ export default function SignIn() {
         {mode === "password" ? (
           <>
             <div>
-              <Label htmlFor="identifier">Email</Label>
+              <Label htmlFor="identifier">Email or Phone Number</Label>
               <TextInput
                 ref={identifierRef}
                 id="identifier"
-                type="email"
-                placeholder="Enter your email"
+                type="text"
+                placeholder="Enter your email or number"
                 value={form.identifier}
                 onChange={set("identifier")}
                 onFocus={() => setActiveField("identifier")}
@@ -548,11 +603,11 @@ export default function SignIn() {
         ) : (
           <>
             <div>
-              <Label htmlFor="otp-identifier">Email</Label>
+              <Label htmlFor="otp-identifier">Email or Phone Number</Label>
               <TextInput
                 id="otp-identifier"
-                type="email"
-                placeholder="Enter your email"
+                type="text"
+                placeholder="Enter your email or number"
                 value={otpIdentifier}
                 onChange={(e) => {
                   setOtpIdentifier(e.target.value);

@@ -123,7 +123,7 @@ The codebase uses a handful of domain terms consistently — worth knowing befor
 
 ## Auth and account flows (summary)
 
-- **Sign-in is email-only** (password or one-time code). Phone is not a sign-in identifier in the product.
+- **Sign-in accepts an email or phone number** in one identifier field (password or one-time code).
 - **Phone is optional** and **added later** in Settings (home/Profile/dashboard nudges say **Add**, not Verify, until the number is verified).
 - **Identity verification (KYC)** gates community create/manage and lives under member Settings → Identity Verification plus a platform-admin KYC queue.
 
