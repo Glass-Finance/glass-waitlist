@@ -254,7 +254,11 @@ function App() {
           {/* ── Member app ──
             Mobile-only by design (never device-gated): direct URL access,
             old bookmarks, or links shared into a desktop chat all get the
-            QR handoff instead of a half-responsive layout. ── */}
+            QR handoff instead of a half-responsive layout. Identity
+            verification is the deliberate exception — it lives outside the
+            guard below, because the community-admin dashboard (which works
+            on desktop) gates entry on KYC and links straight into it, and
+            Smile ID's biometric capture runs fine on a desktop webcam. */}
           <Route element={<MemberDeviceGuard />}>
             <Route element={<MemberProtectedRoute />}>
               <Route path="/member" element={<MemberAppLayout />}>
@@ -274,8 +278,6 @@ function App() {
                 <Route path="profile" element={<MemberProfile />} />
                 <Route path="update-email" element={<MemberUpdateEmail />} />
                 <Route path="verify-phone" element={<MemberVerifyPhone />} />
-                <Route path="verify-identity" element={<MemberVerifyIdentity />} />
-                <Route path="verify-identity/history" element={<MemberVerifyIdentityHistory />} />
                 <Route path="communities" element={<MyCommunities />} />
                 <Route path="security" element={<MemberSecurity />} />
                 <Route path="security/password" element={<MemberPassword />} />
@@ -284,6 +286,17 @@ function App() {
                 <Route path="saved-cards" element={<MemberSavedCards />} />
                 <Route path="notification-settings" element={<MemberNotificationSettings />} />
               </Route>
+            </Route>
+          </Route>
+
+          {/* KYC verification — the one member-app surface allowed on
+            desktop, so it sits outside MemberDeviceGuard (auth still
+            enforced). Same MemberAppLayout shell: a centered phone-width
+            column, which keeps the Smile ID widget's layout intact. */}
+          <Route element={<MemberProtectedRoute />}>
+            <Route path="/member" element={<MemberAppLayout />}>
+              <Route path="verify-identity" element={<MemberVerifyIdentity />} />
+              <Route path="verify-identity/history" element={<MemberVerifyIdentityHistory />} />
             </Route>
           </Route>
 
