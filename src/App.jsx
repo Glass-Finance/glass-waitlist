@@ -42,6 +42,10 @@ const AddMembers = lazy(() => import("./pages/onboarding/AddMembers"));
 // ── Admin dashboard layout + pages ───────────────────────────────────────────
 const DashboardLayout = lazy(() => import("./layouts/DashboardLayout"));
 const CommunitiesHome = lazy(() => import("./pages/dashboard/CommunitiesHome"));
+const DashboardVerifyIdentity = lazy(() => import("./pages/dashboard/VerifyIdentity"));
+const DashboardVerifyIdentityHistory = lazy(
+  () => import("./pages/dashboard/VerifyIdentityHistory"),
+);
 const AdminDashboard = lazy(() => import("./pages/dashboard/AdminDashboard"));
 const JoinRequests = lazy(() => import("./pages/dashboard/JoinRequests"));
 const PayingAdminDashboard = lazy(() =>
@@ -203,6 +207,12 @@ function App() {
               <Route path="home" element={<CommunitiesHome />} />
               <Route path="notifications" element={<AdminNotifications />} />
 
+              {/* Personal KYC — the desktop counterpart to the member app's
+                  mobile-only verify pages (community admins reach these from
+                  Communities Home's badge and the create-community gate). */}
+              <Route path="verify-identity" element={<DashboardVerifyIdentity />} />
+              <Route path="verify-identity/history" element={<DashboardVerifyIdentityHistory />} />
+
               {/* These all act on whichever community ?community= resolves
                   to (see CommunityAdminGuard) — requiredRole="admin" above
                   only proves admin of *some* community, not this one. */}
@@ -254,11 +264,9 @@ function App() {
           {/* ── Member app ──
             Mobile-only by design (never device-gated): direct URL access,
             old bookmarks, or links shared into a desktop chat all get the
-            QR handoff instead of a half-responsive layout. Identity
-            verification is the deliberate exception — it lives outside the
-            guard below, because the community-admin dashboard (which works
-            on desktop) gates entry on KYC and links straight into it, and
-            Smile ID's biometric capture runs fine on a desktop webcam. */}
+            QR handoff instead of a half-responsive layout — including
+            identity verification. Desktop users verify via the
+            dashboard-styled page at /dashboard/verify-identity instead. */}
           <Route element={<MemberDeviceGuard />}>
             <Route element={<MemberProtectedRoute />}>
               <Route path="/member" element={<MemberAppLayout />}>
@@ -278,6 +286,8 @@ function App() {
                 <Route path="profile" element={<MemberProfile />} />
                 <Route path="update-email" element={<MemberUpdateEmail />} />
                 <Route path="verify-phone" element={<MemberVerifyPhone />} />
+                <Route path="verify-identity" element={<MemberVerifyIdentity />} />
+                <Route path="verify-identity/history" element={<MemberVerifyIdentityHistory />} />
                 <Route path="communities" element={<MyCommunities />} />
                 <Route path="security" element={<MemberSecurity />} />
                 <Route path="security/password" element={<MemberPassword />} />
@@ -286,17 +296,6 @@ function App() {
                 <Route path="saved-cards" element={<MemberSavedCards />} />
                 <Route path="notification-settings" element={<MemberNotificationSettings />} />
               </Route>
-            </Route>
-          </Route>
-
-          {/* KYC verification — the one member-app surface allowed on
-            desktop, so it sits outside MemberDeviceGuard (auth still
-            enforced). Same MemberAppLayout shell: a centered phone-width
-            column, which keeps the Smile ID widget's layout intact. */}
-          <Route element={<MemberProtectedRoute />}>
-            <Route path="/member" element={<MemberAppLayout />}>
-              <Route path="verify-identity" element={<MemberVerifyIdentity />} />
-              <Route path="verify-identity/history" element={<MemberVerifyIdentityHistory />} />
             </Route>
           </Route>
 
