@@ -6,6 +6,7 @@ import {
   ID_TYPE_OPTIONS,
   isKycApproved,
   isKycTerminal,
+  isKycInFlight,
 } from "../../utils/kycStatus";
 
 // Predicate-matrix coverage for every KYC status/idType literal the frontend
@@ -51,6 +52,17 @@ describe("kyc status predicates", () => {
     expect(isKycTerminal(undefined)).toBe(false);
     expect(isKycTerminal("")).toBe(false);
   });
+
+  // In-flight = exactly the statuses the verification modal's live
+  // narrative + bounded refetch run against — nothing settled, nothing idle.
+  it("in-flight covers exactly the moving statuses", () => {
+    ["PENDING", "INITIATED", "PROCESSING"].forEach((s) => expect(isKycInFlight(s)).toBe(true));
+    ["NOT_STARTED", "IN_REVIEW", "APPROVED", "REJECTED", "ERROR", "EXPIRED", "REVOKED"].forEach(
+      (s) => expect(isKycInFlight(s)).toBe(false),
+    );
+    expect(isKycInFlight(null)).toBe(false);
+    expect(isKycInFlight("pending")).toBe(true);
+  });
 });
 
 describe("kyc status labels and styles", () => {
@@ -71,6 +83,8 @@ describe("kyc status labels and styles", () => {
     expect(kycStatusLabel(status)).toBe(label);
     expect(kycStatusStyle(status).label).toBe(label);
     expect(kycStatusStyle(status).cls).toBeTruthy();
+    // status pill dot color rides along with the chip style
+    expect(kycStatusStyle(status).dot).toBeTruthy();
   });
 
   it("folds case and falls back for unknown/missing", () => {

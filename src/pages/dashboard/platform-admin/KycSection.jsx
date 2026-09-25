@@ -134,6 +134,79 @@ function KycDetailModal({ attemptId, onClose }) {
       title="KYC attempt"
       subtitle={d?.id ? `Attempt ${d.id.slice(0, 8)}…` : "Loading…"}
       onClose={onClose}
+      footer={
+        !d ? null : mode ? (
+          <div>
+            <p className="text-[11px] font-semibold text-gray-700 m-0 mb-2">
+              {mode === "APPROVE" && "Approve reason"}
+              {mode === "REJECT" && "Reject reason"}
+              {mode === "REVOKE" && "Revoke reason"}
+              {mode === "POLICY" && "Attempt policy"}
+            </p>
+            {mode === "POLICY" && (
+              <label className="flex items-center gap-2 text-[11px] text-gray-600 mb-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={policyAllowed}
+                  onChange={(e) => setPolicyAllowed(e.target.checked)}
+                />
+                Allow new attempts
+              </label>
+            )}
+            <TextInput
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="User-visible reason…"
+            />
+            {formError && <p className="text-[11px] text-red-500 mt-2 mb-0">{formError}</p>}
+            <div className="flex gap-2 mt-3">
+              <Button
+                size="sm"
+                variant={mode === "REJECT" || mode === "REVOKE" ? "danger" : "brand"}
+                loading={busy}
+                onClick={submitReason}
+              >
+                Confirm
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  setMode(null);
+                  setReason("");
+                  setFormError("");
+                }}
+                disabled={busy}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {isKycInReview(d.status) && d.canApprove !== false && (
+              <Button size="sm" onClick={() => setMode("APPROVE")}>
+                Approve
+              </Button>
+            )}
+            {isKycInReview(d.status) && (
+              <Button size="sm" variant="danger" onClick={() => setMode("REJECT")}>
+                Reject
+              </Button>
+            )}
+            {isKycApproved(d.status) && d.user?.id && (
+              <Button size="sm" variant="danger" onClick={() => setMode("REVOKE")}>
+                Revoke
+              </Button>
+            )}
+            {d.user?.id && (
+              <Button size="sm" variant="secondary" onClick={() => setMode("POLICY")}>
+                Attempt policy
+              </Button>
+            )}
+          </div>
+        )
+      }
     >
       <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">
         {detail.isLoading && <p className="text-xs text-gray-400">Loading detail…</p>}
@@ -231,84 +304,9 @@ function KycDetailModal({ attemptId, onClose }) {
                   Approval blocked: {d.approvalBlockingReasons.join(", ")}
                 </p>
               )}
-
-            {formError && <p className="text-[11px] text-red-500 mb-2">{formError}</p>}
-
-            {mode && (
-              <div className="bg-white rounded-xl border border-surface-container-border p-3 mb-3">
-                <p className="text-[11px] font-semibold text-gray-700 m-0 mb-2">
-                  {mode === "APPROVE" && "Approve reason"}
-                  {mode === "REJECT" && "Reject reason"}
-                  {mode === "REVOKE" && "Revoke reason"}
-                  {mode === "POLICY" && "Attempt policy"}
-                </p>
-                {mode === "POLICY" && (
-                  <label className="flex items-center gap-2 text-[11px] text-gray-600 mb-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={policyAllowed}
-                      onChange={(e) => setPolicyAllowed(e.target.checked)}
-                    />
-                    Allow new attempts
-                  </label>
-                )}
-                <TextInput
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  placeholder="User-visible reason…"
-                />
-                <div className="flex gap-2 mt-3">
-                  <Button
-                    size="sm"
-                    variant={mode === "REJECT" || mode === "REVOKE" ? "danger" : "brand"}
-                    loading={busy}
-                    onClick={submitReason}
-                  >
-                    Confirm
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => {
-                      setMode(null);
-                      setReason("");
-                      setFormError("");
-                    }}
-                    disabled={busy}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            )}
           </>
         )}
       </div>
-
-      {d && !mode && (
-        <div className="px-6 pb-5 pt-1 border-t border-gray-100 flex flex-wrap gap-2">
-          {isKycInReview(d.status) && d.canApprove !== false && (
-            <Button size="sm" onClick={() => setMode("APPROVE")}>
-              Approve
-            </Button>
-          )}
-          {isKycInReview(d.status) && (
-            <Button size="sm" variant="danger" onClick={() => setMode("REJECT")}>
-              Reject
-            </Button>
-          )}
-          {isKycApproved(d.status) && d.user?.id && (
-            <Button size="sm" variant="danger" onClick={() => setMode("REVOKE")}>
-              Revoke
-            </Button>
-          )}
-          {d.user?.id && (
-            <Button size="sm" variant="secondary" onClick={() => setMode("POLICY")}>
-              Attempt policy
-            </Button>
-          )}
-        </div>
-      )}
     </ModalShell>
   );
 }

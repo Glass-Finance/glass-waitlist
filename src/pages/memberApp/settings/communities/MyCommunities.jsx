@@ -5,7 +5,7 @@ import { AlertTriangle, ChevronLeft, ChevronRight, LogOut, Plus, X } from "lucid
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
 import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
-import KycRequiredSheet from "../../../../components/memberApp/KycRequiredSheet";
+import KycWizardModal from "../../../../components/kyc/KycWizardModal";
 import KycStatusBadge from "../../../../components/memberApp/KycStatusBadge";
 import { useKycGate } from "../../../../hooks/useKycGate";
 import { kycDisabled } from "../../../../lib/flags";
@@ -98,6 +98,12 @@ export default function MyCommunities() {
   const [navigatingId, setNavigatingId] = useState(null);
   const [leavingCommunity, setLeavingCommunity] = useState(null);
   const kycGate = useKycGate();
+  // KYC badge opens the wizard modal in place instead of routing away.
+  const [kycWizardOpen, setKycWizardOpen] = useState(false);
+  const closeKycWizard = () => {
+    setKycWizardOpen(false);
+    kycGate.closeGate();
+  };
 
   async function handleSelect(c) {
     if (c.owned) {
@@ -156,7 +162,7 @@ export default function MyCommunities() {
         </button>
         {!kycDisabled() && kycGate.status && (
           <button
-            onClick={() => navigate("/member/verify-identity")}
+            onClick={() => setKycWizardOpen(true)}
             className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0"
             aria-label="Identity verification status"
           >
@@ -165,7 +171,11 @@ export default function MyCommunities() {
         )}
       </div>
 
-      <KycRequiredSheet open={kycGate.gateOpen} onClose={kycGate.closeGate} />
+      <KycWizardModal
+        open={kycWizardOpen || kycGate.gateOpen}
+        onClose={closeKycWizard}
+        historyPath="/member/verify-identity/history"
+      />
 
       <div className="px-4">
         {isLoading ? (

@@ -10,7 +10,7 @@ import StepIndicator from "../../components/onboarding/StepIndicator";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { useAuth } from "../../store/AuthContext";
 import { Button } from "../../components/ui/Button";
-import KycRequiredSheet from "../../components/memberApp/KycRequiredSheet";
+import KycWizardModal from "../../components/kyc/KycWizardModal";
 import { useKycGate } from "../../hooks/useKycGate";
 
 export default function ChoosePath() {
@@ -164,7 +164,7 @@ export default function ChoosePath() {
         </div>
         <div className="h-[env(safe-area-inset-bottom,0px)]" />
       </main>
-      <KycRequiredSheet open={kycGate.gateOpen} onClose={kycGate.closeGate} />
+      <KycWizardModal open={kycGate.gateOpen} onClose={kycGate.closeGate} />
     </div>
   );
 }

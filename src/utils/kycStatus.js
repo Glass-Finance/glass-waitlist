@@ -21,16 +21,20 @@
 // Case folding is intentional: backend enums are uppercase; callers may
 // pass raw or already-normalized values.
 const STYLES = {
-  approved: { cls: "bg-success-tint text-[#15803d]", text: "Approved" },
-  pending: { cls: "bg-[#fef9c3] text-[#b45309]", text: "Pending" },
-  inReview: { cls: "bg-[#fef9c3] text-[#b45309]", text: "In review" },
-  rejected: { cls: "bg-[#fce4e4] text-danger", text: "Rejected" },
-  error: { cls: "bg-[#fce4e4] text-danger", text: "Error" },
-  expired: { cls: "bg-stacked-container text-[#6B7280]", text: "Expired" },
-  revoked: { cls: "bg-[#fce4e4] text-danger", text: "Revoked" },
-  notStarted: { cls: "bg-stacked-container text-[#6B7280]", text: "Not started" },
-  initiated: { cls: "bg-[#fef9c3] text-[#b45309]", text: "In progress" },
-  processing: { cls: "bg-[#fef9c3] text-[#b45309]", text: "Processing" },
+  approved: { cls: "bg-success-tint text-[#15803d]", text: "Approved", dot: "bg-[#15803d]" },
+  pending: { cls: "bg-[#fef9c3] text-[#b45309]", text: "Pending", dot: "bg-[#b45309]" },
+  inReview: { cls: "bg-[#fef9c3] text-[#b45309]", text: "In review", dot: "bg-[#b45309]" },
+  rejected: { cls: "bg-[#fce4e4] text-danger", text: "Rejected", dot: "bg-danger" },
+  error: { cls: "bg-[#fce4e4] text-danger", text: "Error", dot: "bg-danger" },
+  expired: { cls: "bg-stacked-container text-[#6B7280]", text: "Expired", dot: "bg-[#9CA3AF]" },
+  revoked: { cls: "bg-[#fce4e4] text-danger", text: "Revoked", dot: "bg-danger" },
+  notStarted: {
+    cls: "bg-stacked-container text-[#6B7280]",
+    text: "Not started",
+    dot: "bg-[#9CA3AF]",
+  },
+  initiated: { cls: "bg-[#fef9c3] text-[#b45309]", text: "In progress", dot: "bg-[#b45309]" },
+  processing: { cls: "bg-[#fef9c3] text-[#b45309]", text: "Processing", dot: "bg-[#b45309]" },
 };
 
 const KEYS = {
@@ -53,8 +57,10 @@ export function kycStatusLabel(status) {
 
 export function kycStatusStyle(status) {
   const key = KEYS[String(status ?? "").toUpperCase()];
-  const s = key ? STYLES[key] : { cls: "bg-stacked-container text-[#6B7280]", text: "—" };
-  return { label: s.text, cls: s.cls };
+  const s = key
+    ? STYLES[key]
+    : { cls: "bg-stacked-container text-[#6B7280]", text: "—", dot: "bg-[#9CA3AF]" };
+  return { label: s.text, cls: s.cls, dot: s.dot };
 }
 
 export const ID_TYPE_OPTIONS = [
@@ -94,6 +100,14 @@ export function isKycNotStarted(status) {
 export function isKycTerminal(status) {
   const s = upper(status);
   return s === "REJECTED" || s === "ERROR" || s === "EXPIRED" || s === "REVOKED";
+}
+
+// Statuses where results are still moving through the pipeline (attempt
+// submitted, provider processing). Powers the verification modal's live
+// narrative + bounded refetch — callers must not re-derive the literal set.
+export function isKycInFlight(status) {
+  const s = upper(status);
+  return s === "PENDING" || s === "INITIATED" || s === "PROCESSING";
 }
 
 // Admin list default filter (IN_REVIEW) + full filter set for platform-admin KYC.

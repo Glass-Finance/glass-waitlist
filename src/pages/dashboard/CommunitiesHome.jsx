@@ -31,7 +31,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingState from "../../components/common/LoadingState";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 import { CommunityCard } from "./CommunitiesHomeSections";
-import KycRequiredSheet from "../../components/memberApp/KycRequiredSheet";
+import KycWizardModal from "../../components/kyc/KycWizardModal";
 import KycStatusBadge from "../../components/memberApp/KycStatusBadge";
 import { useKycGate } from "../../hooks/useKycGate";
 import { kycDisabled } from "../../lib/flags";
@@ -311,6 +311,13 @@ export default function CommunitiesHome() {
   const { user, isPlatformAdmin } = useAuth();
   const { data, isLoading, error } = useCommunitiesWithMetrics();
   const kycGate = useKycGate();
+  // The KYC badge opens the wizard modal directly instead of routing to the
+  // verify page — same flow, no context switch.
+  const [kycWizardOpen, setKycWizardOpen] = useState(false);
+  const closeKycWizard = () => {
+    setKycWizardOpen(false);
+    kycGate.closeGate();
+  };
   const {
     invites,
     isLoading: invitesLoading,
@@ -400,7 +407,7 @@ export default function CommunitiesHome() {
         <div data-tour="communities-home-actions" className="flex gap-2.5 items-center">
           {!kycDisabled() && kycGate.status && (
             <button
-              onClick={() => navigate("/dashboard/verify-identity")}
+              onClick={() => setKycWizardOpen(true)}
               className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0"
               aria-label="Identity verification status"
             >
@@ -424,10 +431,10 @@ export default function CommunitiesHome() {
         </div>
       </div>
 
-      <KycRequiredSheet
-        open={kycGate.gateOpen}
-        onClose={kycGate.closeGate}
-        verifyPath="/dashboard/verify-identity"
+      <KycWizardModal
+        open={kycWizardOpen || kycGate.gateOpen}
+        onClose={closeKycWizard}
+        historyPath="/dashboard/verify-identity/history"
       />
 
       {!invitesLoading && pendingInvites.length > 0 && (
