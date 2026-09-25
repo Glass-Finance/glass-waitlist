@@ -15,7 +15,13 @@ import { X } from "lucide-react";
 // dashboard confirm dialog's), so when title is omitted the bordered
 // header row + divider aren't rendered at all -- only the close button,
 // positioned over the content instead of inside a header strip.
-export default function ModalShell({ title, subtitle, onClose, children }) {
+//
+// footer (optional): a fixed action bar rendered below the children and
+// outside whatever scroll region the caller sets on its body — the modal
+// UX rule is that the primary action must never be scrolled to reach, so
+// decision buttons/reason forms belong here, not at the end of a long
+// scrollable body.
+export default function ModalShell({ title, subtitle, onClose, children, footer }) {
   // Escape-to-close -- every dashboard modal built on this shell gets this
   // for free; hand-rolled modals elsewhere in the app don't have it yet.
   useEffect(() => {
@@ -59,6 +65,7 @@ export default function ModalShell({ title, subtitle, onClose, children }) {
           </button>
         )}
         {children}
+        {footer && <div className="border-t border-gray-100 px-6 pt-4 pb-5">{footer}</div>}
       </div>
     </div>
   );

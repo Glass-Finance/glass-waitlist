@@ -10,6 +10,7 @@ import { useNotifications } from "../../hooks/useNotifications";
 import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
 import { useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
 import JoinApprovedModal from "../../components/memberApp/JoinApprovedModal";
+import KycWizardModal from "../../components/kyc/KycWizardModal";
 import SideDrawer from "../../components/memberApp/SideDrawer";
 import KycStatusBadge from "../../components/memberApp/KycStatusBadge";
 import { useKycSummary } from "../../hooks/useKyc";
@@ -116,6 +117,8 @@ export default function Home() {
   const communityLogo = data?.community?.logo;
   const activeCommunityIdentifier = data?.community?.slug ?? data?.community?.id ?? null;
   const [menuOpen, setMenuOpen] = useState(false);
+  // KYC badge opens the wizard modal in place instead of routing away.
+  const [kycWizardOpen, setKycWizardOpen] = useState(false);
 
   const { data: rawMyCommunities = [] } = useMyCommunities();
   const { data: kycSummary } = useKycSummary();
@@ -203,7 +206,7 @@ export default function Home() {
 
             {showKycBadge && (
               <button
-                onClick={() => navigate("/member/verify-identity")}
+                onClick={() => setKycWizardOpen(true)}
                 className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0"
                 aria-label="Identity verification status"
               >
@@ -336,6 +339,12 @@ export default function Home() {
         entry={activeApproval}
         onOpen={openApprovedCommunity}
         onDismiss={dismissJoin}
+      />
+
+      <KycWizardModal
+        open={kycWizardOpen}
+        onClose={() => setKycWizardOpen(false)}
+        historyPath="/member/verify-identity/history"
       />
     </>
   );

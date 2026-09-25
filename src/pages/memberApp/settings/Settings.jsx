@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -16,6 +17,7 @@ import GlassLogoGlow from "../../../components/memberApp/GlassLogoGlow";
 import { toastSuccess } from "../../../utils/toast";
 import { useKycSummary } from "../../../hooks/useKyc";
 import KycStatusBadge from "../../../components/memberApp/KycStatusBadge";
+import KycWizardModal from "../../../components/kyc/KycWizardModal";
 import { kycDisabled } from "../../../lib/flags";
 
 const SECTIONS = [
@@ -84,6 +86,9 @@ export default function Settings() {
   const { logout } = useAuth();
   const hideKyc = kycDisabled();
   const { data: kycSummary } = useKycSummary();
+  // The Identity Verification row opens the wizard modal in place instead
+  // of routing to the verify page (same flow, no context switch).
+  const [kycWizardOpen, setKycWizardOpen] = useState(false);
   const sections = hideKyc
     ? SECTIONS.map((s) => ({
         ...s,
@@ -123,7 +128,7 @@ export default function Settings() {
               {section.items.map(({ Icon, label, desc, to, kyc }, i) => (
                 <button
                   key={label}
-                  onClick={() => navigate(to)}
+                  onClick={() => (kyc ? setKycWizardOpen(true) : navigate(to))}
                   className={`flex items-center gap-3 w-full text-left py-3.5 px-4 bg-transparent border-none cursor-pointer ${i < section.items.length - 1 ? "border-b border-[#F2F2F2]" : "border-b-0"}`}
                 >
                   <div className="w-9 h-9 rounded-[10px] bg-[#EEF2FF] flex items-center justify-center flex-shrink-0">
@@ -151,6 +156,12 @@ export default function Settings() {
           <span className="text-sm font-medium text-brand">Log Out</span>
         </button>
       </div>
+
+      <KycWizardModal
+        open={kycWizardOpen}
+        onClose={() => setKycWizardOpen(false)}
+        historyPath="/member/verify-identity/history"
+      />
     </div>
   );
 }

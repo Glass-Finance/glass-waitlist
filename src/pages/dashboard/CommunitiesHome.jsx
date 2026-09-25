@@ -12,6 +12,7 @@ import {
   Bell,
   CreditCard,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { formatNaira as sharedFormatNaira, formatDateShort, toTitleCase } from "../../utils/format";
 import { useCommunitiesWithMetrics } from "../../hooks/useCommunities";
@@ -31,7 +32,7 @@ import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingState from "../../components/common/LoadingState";
 import { AdminPaymentModal } from "../../components/dashboard/AdminPaymentModal";
 import { CommunityCard } from "./CommunitiesHomeSections";
-import KycRequiredSheet from "../../components/memberApp/KycRequiredSheet";
+import KycWizardModal from "../../components/kyc/KycWizardModal";
 import KycStatusBadge from "../../components/memberApp/KycStatusBadge";
 import { useKycGate } from "../../hooks/useKycGate";
 import { kycDisabled } from "../../lib/flags";
@@ -311,6 +312,19 @@ export default function CommunitiesHome() {
   const { user, isPlatformAdmin } = useAuth();
   const { data, isLoading, error } = useCommunitiesWithMetrics();
   const kycGate = useKycGate();
+  // The KYC badge opens the wizard modal directly instead of routing to the
+  // verify page — same flow, no context switch.
+  const [kycWizardOpen, setKycWizardOpen] = useState(false);
+  const closeKycWizard = () => {
+    setKycWizardOpen(false);
+    kycGate.closeGate();
+  };
+  // Done-after-approval: resume whatever the gate interrupted (create a
+  // community, open an owned community) instead of parking on the dashboard.
+  const completeKycWizard = () => {
+    setKycWizardOpen(false);
+    kycGate.completeGate();
+  };
   const {
     invites,
     isLoading: invitesLoading,
@@ -357,34 +371,45 @@ export default function CommunitiesHome() {
   });
 
   async function handleCommunityClick(community) {
+    // Everything after the gate is the continuation: the gate stores it
+    // and re-runs it when verification completes, so resume lands exactly
+    // where this click was headed instead of re-deriving a destination.
+    const enterCommunity = async () => {
+      // Route by role, not ownership — a member promoted to ADMIN/MANAGER
+      // administers this community without owning it, and previously got
+      // bounced to the member app with no way into the dashboard.
+      if (!isCommunityAdmin(community)) {
+        try {
+          localStorage.setItem(
+            "glass_member_community",
+            JSON.stringify({
+              id: community.id,
+              slug: community.slug,
+              name: community.name,
+            }),
+          );
+        } catch {
+          /* ignore */
+        }
+        navigate("/member/home");
+        return;
+      }
+      const id = community.slug ?? community.id;
+      localStorage.setItem("glass_community", JSON.stringify(community));
+      const isPaying = await resolveIsPayingAdmin(id);
+      navigate(`/dashboard/${isPaying ? "admin/paying" : "admin"}?community=${id}`);
+    };
+
     // Gate community admin entry until KYC is APPROVED (backend also
     // enforces — this is the UX interstitial, not the authority).
+    // enforce runs enterCommunity itself when allowed, stores it when the
+    // wizard opens, and holds it while the summary is still loading —
+    // either way nothing after this line should run again.
     if (community?.owned || isCommunityAdmin(community)) {
-      if (!kycGate.enforce()) return;
-    }
-    // Route by role, not ownership — a member promoted to ADMIN/MANAGER
-    // administers this community without owning it, and previously got
-    // bounced to the member app with no way into the dashboard.
-    if (!isCommunityAdmin(community)) {
-      try {
-        localStorage.setItem(
-          "glass_member_community",
-          JSON.stringify({
-            id: community.id,
-            slug: community.slug,
-            name: community.name,
-          }),
-        );
-      } catch {
-        /* ignore */
-      }
-      navigate("/member/home");
+      kycGate.enforce(enterCommunity);
       return;
     }
-    const id = community.slug ?? community.id;
-    localStorage.setItem("glass_community", JSON.stringify(community));
-    const isPaying = await resolveIsPayingAdmin(id);
-    navigate(`/dashboard/${isPaying ? "admin/paying" : "admin"}?community=${id}`);
+    await enterCommunity();
   }
 
   return (
@@ -400,7 +425,7 @@ export default function CommunitiesHome() {
         <div data-tour="communities-home-actions" className="flex gap-2.5 items-center">
           {!kycDisabled() && kycGate.status && (
             <button
-              onClick={() => navigate("/dashboard/verify-identity")}
+              onClick={() => setKycWizardOpen(true)}
               className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0"
               aria-label="Identity verification status"
             >
@@ -415,19 +440,29 @@ export default function CommunitiesHome() {
           </button>
           <button
             onClick={() => {
-              if (!kycGate.enforce(() => navigate("/onboarding/choose-path"))) return;
+              kycGate.enforce(() => navigate("/onboarding/choose-path"));
             }}
-            className="h-10 px-3.5 rounded-lg bg-[#002FA7] text-white text-xs font-medium hover:opacity-90 transition-all flex items-center justify-center"
+            disabled={kycGate.isLoading}
+            aria-busy={kycGate.isLoading}
+            className="h-10 px-3.5 rounded-lg bg-[#002FA7] text-white text-xs font-medium hover:opacity-90 transition-all flex items-center justify-center disabled:opacity-60 disabled:cursor-wait"
           >
-            Create Community
+            {kycGate.isLoading ? (
+              <>
+                <Loader2 size={13} className="animate-spin mr-1.5" />
+                Checking…
+              </>
+            ) : (
+              "Create Community"
+            )}
           </button>
         </div>
       </div>
 
-      <KycRequiredSheet
-        open={kycGate.gateOpen}
-        onClose={kycGate.closeGate}
-        verifyPath="/dashboard/verify-identity"
+      <KycWizardModal
+        open={kycWizardOpen || kycGate.gateOpen}
+        onClose={closeKycWizard}
+        onComplete={completeKycWizard}
+        historyPath="/dashboard/verify-identity/history"
       />
 
       {!invitesLoading && pendingInvites.length > 0 && (

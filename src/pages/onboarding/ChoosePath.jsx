@@ -10,7 +10,7 @@ import StepIndicator from "../../components/onboarding/StepIndicator";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { useAuth } from "../../store/AuthContext";
 import { Button } from "../../components/ui/Button";
-import KycRequiredSheet from "../../components/memberApp/KycRequiredSheet";
+import KycWizardModal from "../../components/kyc/KycWizardModal";
 import { useKycGate } from "../../hooks/useKycGate";
 
 export default function ChoosePath() {
@@ -154,7 +154,12 @@ export default function ChoosePath() {
         </div>
 
         <div className="flex flex-col items-center gap-4 w-full max-w-[500px]">
-          <Button onClick={handleContinue}>Continue</Button>
+          {/* Create is gated: while the KYC summary resolves the button
+              holds (never "still loading ⇒ let them through"). Join has
+              no gate and stays immediate. */}
+          <Button onClick={handleContinue} loading={selected === "create" && kycGate.isLoading}>
+            Continue
+          </Button>
           <button
             onClick={() => navigate("/dashboard/home")}
             className="text-sm font-medium hover:underline bg-transparent border-none cursor-pointer text-brand"
@@ -164,7 +169,16 @@ export default function ChoosePath() {
         </div>
         <div className="h-[env(safe-area-inset-bottom,0px)]" />
       </main>
-      <KycRequiredSheet open={kycGate.gateOpen} onClose={kycGate.closeGate} />
+      <KycWizardModal
+        open={kycGate.gateOpen}
+        onClose={kycGate.closeGate}
+        onComplete={kycGate.completeGate}
+        historyPath={
+          isMobileDevice()
+            ? "/member/verify-identity/history"
+            : "/dashboard/verify-identity/history"
+        }
+      />
     </div>
   );
 }

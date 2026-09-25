@@ -118,7 +118,7 @@ export const COMMUNITIES_HOME_STEPS = [
   {
     icon: Plus,
     title: "Start or join a community",
-    body: "Create a new community from scratch, or join one you've already been invited to.",
+    body: "Create a new community from scratch, or join one you've already been invited to. Creating one first asks you to verify your identity — it only takes a few minutes.",
     target: '[data-tour="communities-home-actions"]',
   },
   {

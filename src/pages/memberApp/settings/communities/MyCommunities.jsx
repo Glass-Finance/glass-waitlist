@@ -1,11 +1,11 @@
 import { useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, ChevronLeft, ChevronRight, LogOut, Plus, X } from "lucide-react";
+import { AlertTriangle, ChevronLeft, ChevronRight, Loader2, LogOut, Plus, X } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
 import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
-import KycRequiredSheet from "../../../../components/memberApp/KycRequiredSheet";
+import KycWizardModal from "../../../../components/kyc/KycWizardModal";
 import KycStatusBadge from "../../../../components/memberApp/KycStatusBadge";
 import { useKycGate } from "../../../../hooks/useKycGate";
 import { kycDisabled } from "../../../../lib/flags";
@@ -98,25 +98,40 @@ export default function MyCommunities() {
   const [navigatingId, setNavigatingId] = useState(null);
   const [leavingCommunity, setLeavingCommunity] = useState(null);
   const kycGate = useKycGate();
+  // KYC badge opens the wizard modal in place instead of routing away.
+  const [kycWizardOpen, setKycWizardOpen] = useState(false);
+  const closeKycWizard = () => {
+    setKycWizardOpen(false);
+    kycGate.closeGate();
+  };
+  // Done-after-approval resumes the blocked navigation into the community.
+  const completeKycWizard = () => {
+    setKycWizardOpen(false);
+    kycGate.completeGate();
+  };
 
   async function handleSelect(c) {
     if (c.owned) {
-      if (!kycGate.enforce()) return;
-      setNavigatingId(c.id);
-      try {
-        localStorage.setItem("glass_community", JSON.stringify(c));
-        const isPaying = await resolveIsPayingAdmin(c.slug ?? c.id);
-        const path = isPaying
-          ? `/dashboard/admin/paying?community=${c.slug}`
-          : `/dashboard/admin?community=${c.slug}`;
-        navigate(path);
-      } finally {
-        setNavigatingId(null);
-      }
-    } else {
-      setActiveMemberCommunity(c);
-      navigate("/member/home");
+      // The gate stores this continuation and re-runs it after
+      // verification instead of dumping the user back on this list.
+      const enterCommunity = async () => {
+        setNavigatingId(c.id);
+        try {
+          localStorage.setItem("glass_community", JSON.stringify(c));
+          const isPaying = await resolveIsPayingAdmin(c.slug ?? c.id);
+          const path = isPaying
+            ? `/dashboard/admin/paying?community=${c.slug}`
+            : `/dashboard/admin?community=${c.slug}`;
+          navigate(path);
+        } finally {
+          setNavigatingId(null);
+        }
+      };
+      kycGate.enforce(enterCommunity);
+      return;
     }
+    setActiveMemberCommunity(c);
+    navigate("/member/home");
   }
 
   function handleLeave(e, c) {
@@ -147,16 +162,27 @@ export default function MyCommunities() {
       <div className="pt-0 px-4 pb-4 flex items-center gap-2">
         <button
           onClick={() => {
-            if (!kycGate.enforce(() => navigate("/onboarding/choose-path"))) return;
+            kycGate.enforce(() => navigate("/onboarding/choose-path"));
           }}
-          className="flex items-center justify-center gap-2 flex-1 p-3 rounded-xl bg-[#1C2B8A] text-white text-sm font-semibold border-none cursor-pointer"
+          disabled={kycGate.isLoading}
+          aria-busy={kycGate.isLoading}
+          className="flex items-center justify-center gap-2 flex-1 p-3 rounded-xl bg-[#1C2B8A] text-white text-sm font-semibold border-none cursor-pointer disabled:opacity-60 disabled:cursor-wait"
         >
-          <Plus size={16} />
-          Create a Community
+          {kycGate.isLoading ? (
+            <>
+              <Loader2 size={16} className="animate-spin" />
+              Checking…
+            </>
+          ) : (
+            <>
+              <Plus size={16} />
+              Create a Community
+            </>
+          )}
         </button>
         {!kycDisabled() && kycGate.status && (
           <button
-            onClick={() => navigate("/member/verify-identity")}
+            onClick={() => setKycWizardOpen(true)}
             className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0"
             aria-label="Identity verification status"
           >
@@ -165,7 +191,12 @@ export default function MyCommunities() {
         )}
       </div>
 
-      <KycRequiredSheet open={kycGate.gateOpen} onClose={kycGate.closeGate} />
+      <KycWizardModal
+        open={kycWizardOpen || kycGate.gateOpen}
+        onClose={closeKycWizard}
+        onComplete={completeKycWizard}
+        historyPath="/member/verify-identity/history"
+      />
 
       <div className="px-4">
         {isLoading ? (
