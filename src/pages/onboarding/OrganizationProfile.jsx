@@ -13,6 +13,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Bell, Upload, Check, X as XIcon, Loader2, ArrowLeft } from "lucide-react";
 import CloudImage from "../../components/common/CloudImage";
+import KycWizardModal from "../../components/kyc/KycWizardModal";
 import { createCommunity, updateCommunity } from "../../api/communities";
 import { uploadFile } from "../../api/files";
 import { useSlug } from "../../hooks/useSlug";
@@ -21,12 +22,25 @@ import { notifyError } from "../../utils/errorHandler";
 import { getEmailError } from "../../utils/validators";
 import { resizeImageFile } from "../../utils/resizeImage";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
-import { APP_ORIGIN } from "../../utils/deviceRedirect";
+import { APP_ORIGIN, isMobileDevice } from "../../utils/deviceRedirect";
 import StepIndicator from "../../components/onboarding/StepIndicator";
 import OnboardingStepsSidebar from "../../components/onboarding/OnboardingStepsSidebar";
 import { Button } from "../../components/ui/Button";
 
 const INVITE_HOST = APP_ORIGIN.replace(/^https?:\/\//, "");
+
+// Backend contract (glass-backend: AccessControlService
+// .requireKycForCommunityStaff → GlobalExceptionHandler): community create
+// rejects a creator whose KYC isn't APPROVED with HTTP 403 and description
+// "Approved KYC is required for community staff participation". The
+// ChoosePath gate normally stops this earlier, but that gate trusts a
+// client-side summary — a stale one (status changed since page load) or a
+// deep link straight into this form can still land here. The backend is the
+// authority, so this submit treats its 403 as "verify, then resume" rather
+// than a dead-end error string.
+const isKycRequiredError = (err) =>
+  err?.response?.status === 403 &&
+  /Approved KYC is required/.test(err?.response?.data?.description ?? "");
 
 const CATEGORIES = [
   "Alumni Association",
@@ -79,6 +93,10 @@ export default function OrganizationProfile() {
   const [logoUrl, setLogoUrl] = useState(null); // preview URL
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [kycWizardOpen, setKycWizardOpen] = useState(false);
+  // Submission held by a KYC 403 — re-run from the wizard's onComplete
+  // (which only fires on real approval), cleared on dismiss.
+  const kycRetryRef = useRef(null);
   const [fieldErrors, setFieldErrors] = useState({
     communityName: "",
     category: "",
@@ -142,28 +160,10 @@ export default function OrganizationProfile() {
     handleFile(e.dataTransfer.files[0]);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    const nextFieldErrors = {
-      communityName: validateField("communityName", form.communityName),
-      category: validateField("category", form.category),
-      contactEmail: validateField("contactEmail", form.contactEmail),
-      slug: validateField("slug", slug),
-      description: validateField("description", form.description),
-    };
-    if (Object.values(nextFieldErrors).some(Boolean)) {
-      setFieldErrors(nextFieldErrors);
-      return;
-    }
-    // An unchanged slug on a revisit is taken -- by this same community --
-    // so the live availability check would otherwise wrongly block re-saving.
-    if (available === false && slug.trim() !== existingCommunitySlug) {
-      setError("That URL slug is already taken — pick another.");
-      return;
-    }
-
+  // The submit body lives outside handleSubmit so a KYC-rejected submission
+  // can re-run it as-is once the wizard approves — no re-validation of
+  // fields the user already filled, and no lost form state.
+  const runSubmit = async () => {
     setLoading(true);
     try {
       // 1. Upload logo (optional — skip if no file selected)
@@ -235,6 +235,14 @@ export default function OrganizationProfile() {
         },
       });
     } catch (err) {
+      if (isKycRequiredError(err)) {
+        // Backend overruled the client-side gate: hold this submission and
+        // open the wizard. onComplete (approval-only) re-runs it; dismissing
+        // the wizard drops it and the form keeps whatever the user typed.
+        kycRetryRef.current = runSubmit;
+        setKycWizardOpen(true);
+        return;
+      }
       setError(
         notifyError(err, {
           context: existingCommunityId ? "Update community" : "Create community",
@@ -243,6 +251,31 @@ export default function OrganizationProfile() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    const nextFieldErrors = {
+      communityName: validateField("communityName", form.communityName),
+      category: validateField("category", form.category),
+      contactEmail: validateField("contactEmail", form.contactEmail),
+      slug: validateField("slug", slug),
+      description: validateField("description", form.description),
+    };
+    if (Object.values(nextFieldErrors).some(Boolean)) {
+      setFieldErrors(nextFieldErrors);
+      return;
+    }
+    // An unchanged slug on a revisit is taken -- by this same community --
+    // so the live availability check would otherwise wrongly block re-saving.
+    if (available === false && slug.trim() !== existingCommunitySlug) {
+      setError("That URL slug is already taken — pick another.");
+      return;
+    }
+
+    await runSubmit();
   };
 
   return (
@@ -479,6 +512,28 @@ export default function OrganizationProfile() {
           </form>
         </main>
       </div>
+
+      {/* Backend-rejected create (KYC 403): verify here without leaving the
+          form — approval re-runs the held submission from onComplete,
+          dismissal drops it and keeps the page state. */}
+      <KycWizardModal
+        open={kycWizardOpen}
+        onClose={() => {
+          setKycWizardOpen(false);
+          kycRetryRef.current = null;
+        }}
+        onComplete={() => {
+          setKycWizardOpen(false);
+          const retry = kycRetryRef.current;
+          kycRetryRef.current = null;
+          retry?.();
+        }}
+        historyPath={
+          isMobileDevice()
+            ? "/member/verify-identity/history"
+            : "/dashboard/verify-identity/history"
+        }
+      />
     </div>
   );
 }
