@@ -118,6 +118,9 @@ export function kycStatusStyle(status) {
   return { label: s.text, cls: s.cls, dot: s.dot, Icon: s.icon };
 }
 
+// Label map for every id type the backend's KycIdType enum has ever held —
+// a record persisted before the enum was narrowed must still render a
+// friendly label, so this list stays complete and is NOT the picker source.
 export const ID_TYPE_OPTIONS = [
   { value: "BVN", label: "BVN" },
   { value: "VOTER_ID", label: "Voter's card" },
@@ -125,6 +128,18 @@ export const ID_TYPE_OPTIONS = [
   { value: "NIN_SLIP", label: "NIN slip" },
   { value: "NIN_V2", label: "NIN" },
 ];
+
+// Values the backend accepts when STARTING an attempt (KycIdType is now
+// exactly BVN and NIN_V2 — narrowed in the backend's V85 migration). A
+// picker offering a retired value produces a server-side rejection, so the
+// choice UI must read this list, not ID_TYPE_OPTIONS. Derived from
+// ID_TYPE_OPTIONS on purpose: one label source, no second place to update
+// when the enum changes.
+export const KYC_SUBMITTABLE_ID_TYPES = ["BVN", "NIN_V2"];
+
+export const KYC_SUBMITTABLE_ID_TYPE_OPTIONS = ID_TYPE_OPTIONS.filter((option) =>
+  KYC_SUBMITTABLE_ID_TYPES.includes(option.value),
+);
 
 export function idTypeLabel(idType) {
   return ID_TYPE_OPTIONS.find((o) => o.value === idType)?.label ?? idType ?? "—";
