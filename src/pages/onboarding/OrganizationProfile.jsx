@@ -19,6 +19,7 @@ import { uploadFile } from "../../api/files";
 import { useSlug } from "../../hooks/useSlug";
 import { useAuth } from "../../store/AuthContext";
 import { notifyError } from "../../utils/errorHandler";
+import { isKycRequiredError } from "../../utils/kycStatus";
 import { getEmailError } from "../../utils/validators";
 import { resizeImageFile } from "../../utils/resizeImage";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
@@ -37,10 +38,8 @@ const INVITE_HOST = APP_ORIGIN.replace(/^https?:\/\//, "");
 // client-side summary — a stale one (status changed since page load) or a
 // deep link straight into this form can still land here. The backend is the
 // authority, so this submit treats its 403 as "verify, then resume" rather
-// than a dead-end error string.
-const isKycRequiredError = (err) =>
-  err?.response?.status === 403 &&
-  /Approved KYC is required/.test(err?.response?.data?.description ?? "");
+// than a dead-end error string. The matcher itself lives in
+// utils/kycStatus.js so every catch site recognizes the same rejection.
 
 const CATEGORIES = [
   "Alumni Association",

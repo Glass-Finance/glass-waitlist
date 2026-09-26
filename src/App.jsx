@@ -35,6 +35,7 @@ const MobileRequired = lazy(() => import("./pages/auth/member/MobileRequired"));
 
 // ── Onboarding pages ──────────────────────────────────────────────────────────
 const ChoosePath = lazy(() => import("./pages/onboarding/ChoosePath"));
+const OnboardingVerifyIdentity = lazy(() => import("./pages/onboarding/VerifyIdentity"));
 const PayingMember = lazy(() => import("./pages/onboarding/PayingMember"));
 const OrganizationProfile = lazy(() => import("./pages/onboarding/OrganizationProfile"));
 const PaymentProfile = lazy(() => import("./pages/onboarding/PaymentProfile"));
@@ -199,6 +200,7 @@ function App() {
 
           {/* ── Onboarding — responsive at every step, so no device gate. ── */}
           <Route path="/onboarding/choose-path" element={<ChoosePath />} />
+          <Route path="/onboarding/verify-identity" element={<OnboardingVerifyIdentity />} />
           <Route path="/onboarding/paying-member" element={<PayingMember />} />
           <Route path="/onboarding/organization-profile" element={<OrganizationProfile />} />
           <Route path="/onboarding/payment-profile" element={<PaymentProfile />} />

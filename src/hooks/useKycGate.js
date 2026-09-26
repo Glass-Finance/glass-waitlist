@@ -82,5 +82,10 @@ export function useKycGate() {
     status,
     isLoading,
     isError,
+    // True when this account never faces the gate: kill switch or platform
+    // staff (backend-exempt, cannot start a personal attempt). Exposed so
+    // navigated gates (ChoosePath's verify step) can skip the step with
+    // the same rules the modal gate applies.
+    exempt,
   };
 }

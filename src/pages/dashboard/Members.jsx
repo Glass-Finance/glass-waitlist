@@ -31,6 +31,7 @@ import { exportCommunityObligations } from "../../api/exports";
 import { useExportJob } from "../../hooks/useExportJob";
 import LoadingState from "../../components/common/LoadingState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
+import KycStateBadge from "../../components/dashboard/KycStateBadge";
 import StatCard from "../../components/dashboard/StatCard";
 import { formatDate } from "../../utils/format";
 import { resolveDisplayName, resolveEmail } from "../../utils/memberName";
@@ -523,14 +524,20 @@ export default function Members() {
                           />
                         </td>
                         <td className="px-5 py-3">
-                          <button
-                            onClick={() =>
-                              navigate(`/dashboard/members/${m.id}?community=${communityId}`)
-                            }
-                            className="text-xs font-semibold text-brand hover:underline bg-transparent border-none cursor-pointer p-0"
-                          >
-                            {memberName(m)}
-                          </button>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <button
+                              onClick={() =>
+                                navigate(`/dashboard/members/${m.id}?community=${communityId}`)
+                              }
+                              className="text-xs font-semibold text-brand hover:underline bg-transparent border-none cursor-pointer p-0"
+                            >
+                              {memberName(m)}
+                            </button>
+                            {/* Verification completion — admin-facing only;
+                                renders nothing until the member DTO carries
+                                kycStatus (docs/kyc.md). */}
+                            <KycStateBadge status={m.kycStatus} />
+                          </div>
                         </td>
                         <td className="px-5 py-3 text-xs text-gray-600">{m.planCount}</td>
                         <td className="px-5 py-3">

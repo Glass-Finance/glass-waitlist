@@ -9,8 +9,11 @@ import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
 import LoadingState from "../../../../components/common/LoadingState";
 import Toggle from "../../../../components/common/Toggle";
 import ConfirmDialog from "../../../../components/dashboard/ConfirmDialog";
+import KycStateBadge from "../../../../components/dashboard/KycStateBadge";
 import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
 import { resolveDisplayName, resolveEmail } from "../../../../utils/memberName";
+import { isKycRequiredError, KYC_ADMIN_BLOCK_COPY } from "../../../../utils/kycStatus";
+import { getErrorMessage } from "../../../../utils/errorHandler";
 
 // Per-member "⋯" actions menu — one open at a time (state lives in the page),
 // dismissed by the invisible full-screen overlay behind it.
@@ -60,6 +63,7 @@ export default function MemberAccess() {
   const [copied, copy] = useCopyToClipboard();
   const [openMenuId, setOpenMenuId] = useState(null);
   const [pendingAction, setPendingAction] = useState(null); // { member, type: "demote"|"promote"|"remove" }
+  const [actionError, setActionError] = useState("");
   const { members, isLoading, removeMember, updateMember } = useCommunityMembers(communitySlug);
   const { data: rolesData, isLoading: rolesLoading } = useRoles();
   const { data: community, isLoading: communityLoading } = useCommunity(communitySlug);
@@ -207,6 +211,9 @@ export default function MemberAccess() {
                   >
                     {memberRoleLabel(member)}
                   </span>
+                  {/* Verification completion — admin-facing only; renders
+                      nothing until the member DTO carries kycStatus. */}
+                  <KycStateBadge status={member.kycStatus} />
                 </div>
                 {/* Owners can't be demoted or removed from here — no menu. */}
                 {!isOwnerRole(member) && (
@@ -266,9 +273,14 @@ export default function MemberAccess() {
           }
           danger={pendingAction.type !== "promote"}
           confirming={updateMember.isPending || removeMember.isPending}
-          onClose={() => setPendingAction(null)}
+          error={actionError}
+          onClose={() => {
+            setPendingAction(null);
+            setActionError("");
+          }}
           onConfirm={() => {
             const { member, type } = pendingAction;
+            setActionError("");
             if (type === "demote") {
               updateMember.mutate(
                 { memberId: member.id, payload: { roleId: memberRoleId } },
@@ -277,7 +289,15 @@ export default function MemberAccess() {
             } else if (type === "promote") {
               updateMember.mutate(
                 { memberId: member.id, payload: { roleId: adminRoleId } },
-                { onSuccess: () => setPendingAction(null) },
+                {
+                  onSuccess: () => setPendingAction(null),
+                  onError: (err) =>
+                    setActionError(
+                      isKycRequiredError(err)
+                        ? KYC_ADMIN_BLOCK_COPY
+                        : getErrorMessage(err, "Couldn't promote this member."),
+                    ),
+                },
               );
             } else {
               removeMember.mutate(member.id, { onSuccess: () => setPendingAction(null) });
