@@ -19,6 +19,10 @@ export function useUpdateCommunity(communityId) {
     mutationFn: (payload) => updateCommunity(communityId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["community", communityId] });
+      // The switcher, Topbar and community cards read name/logo from the
+      // community LISTS, not this detail entry — without this they keep the
+      // pre-edit snapshot for the list's whole staleTime.
+      queryClient.invalidateQueries({ queryKey: ["communities"] });
     },
     meta: { successMessage: "Community profile updated" },
   });
