@@ -18,6 +18,14 @@ npm run format:check && npm run lint && npm run typecheck && npm run test && npm
 
 Focused test: `npx vitest run src/__tests__/path/to.test.js` (suite runs `vitest run --pool=forks --maxWorkers=1`, jsdom). Tests live in `src/__tests__/` mirroring `src/`; mock API modules at the boundary, never require prod credentials.
 
+```bash
+npm run audit:endpoints                    # frontend calls vs the backend's real routes (OpenAPI)
+npm run audit:endpoints -- --unconnected    # + backend routes nothing calls yet (roadmap view)
+npm run audit:endpoints -- --strict         # non-zero exit on drift; runs advisory in CI
+```
+
+A call to a route the backend doesn't have type-checks, lints, builds and unit-tests clean, so nothing else catches it. Run this after touching anything in `src/api/`, and before claiming an endpoint is wired. `--unconnected` is the roadmap view; the script's `PENDING_BACKEND` list exists for routes whose 404 is deliberately tolerated, and every entry there owes a reason.
+
 ## Where things live
 
 - `src/api/` — Axios resource modules. Components never call these directly; expose server state via React Query hooks in `src/hooks/`. See `docs/data-fetching.md`.

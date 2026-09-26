@@ -47,6 +47,13 @@ jobs:
       - name: Test
         run: npm run test
 
+      # Non-blocking by design: it reports frontend calls the backend has no
+      # route for (the class of bug that type-checks, lints and unit-tests
+      # clean), but a backend deploy that hasn't landed yet must not block a
+      # frontend PR. Read the log; add `--strict` locally to fail on drift.
+      - name: Endpoint audit (advisory)
+        run: npm run audit:endpoints
+
       - name: Build
         run: npm run build
 
