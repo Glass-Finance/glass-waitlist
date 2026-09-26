@@ -49,9 +49,10 @@ export const archivePaymentLink = patchAction("archive");
 export const duplicatePaymentLink = (communityId, paymentLinkId, payload) =>
   client.post(`/communities/${communityId}/payment-links/${paymentLinkId}/duplicate`, payload);
 
-// POST — sends an immediate reminder to unpaid members for this payment link.
-// payload: { reminderFrequency, reminderChannels } — chosen by the admin in
-// SendReminderModal (Payments.jsx), not hardcoded here. reminderChannels
-// values match the notification API's channel enum: IN_APP | EMAIL | WHATSAPP.
-export const sendPaymentLinkReminder = (communityId, paymentLinkId, payload) =>
-  client.post(`/communities/${communityId}/payment-links/${paymentLinkId}/reminders`, payload);
+// NOTE: there is deliberately no "send a reminder now" wrapper here. The
+// backend exposes no POST .../payment-links/{id}/reminders route (a
+// ReminderService exists, but no controller triggers it on demand), so the
+// old call here was a guaranteed 404. Plan-level reminder cadence
+// (reminderFrequency / reminderChannels on create + update) IS supported and
+// is what CreatePlanModal/EditPlanModal configure; the on-demand action stays
+// disabled with "coming soon" copy until the backend ships a route.

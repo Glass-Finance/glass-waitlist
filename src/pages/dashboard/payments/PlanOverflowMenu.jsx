@@ -2,11 +2,12 @@ import { useState } from "react";
 import { MoreHorizontal, Pencil, Bell, Users, Pause, Play, Trash2 } from "lucide-react";
 import ConfirmDialog from "../../../components/dashboard/ConfirmDialog";
 
-function MenuItem({ icon, label, onClick, disabled, danger }) {
+function MenuItem({ icon, label, onClick, disabled, danger, title }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
+      title={title}
       className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs font-medium bg-transparent border-none cursor-pointer transition-colors text-left
         ${disabled ? "text-gray-300 cursor-not-allowed" : danger ? "text-red-500 hover:bg-red-50" : "text-gray-700 hover:bg-gray-50"}`}
     >
@@ -16,14 +17,7 @@ function MenuItem({ icon, label, onClick, disabled, danger }) {
   );
 }
 
-export default function PlanOverflowMenu({
-  plan,
-  planPlans,
-  onEdit,
-  onViewMembers,
-  onSendReminder,
-  onDuplicate,
-}) {
+export default function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMembers, onDuplicate }) {
   const [open, setOpen] = useState(false);
   const [confirmingEnd, setConfirmingEnd] = useState(false);
   const [confirmingArchive, setConfirmingArchive] = useState(false);
@@ -53,13 +47,15 @@ export default function PlanOverflowMenu({
                 close();
               }}
             />
+            {/* On-demand reminders have no backend route yet (the
+                plan-level reminderFrequency/reminderChannels cadence on
+                create/update does). Kept visible but inert, matching the
+                disabled "coming soon" affordance in Members.jsx. */}
             <MenuItem
               icon={<Bell size={13} />}
               label="Send Reminder"
-              onClick={() => {
-                onSendReminder(plan);
-                close();
-              }}
+              disabled
+              title="Send Reminder — coming soon"
             />
             <MenuItem
               icon={<Users size={13} />}

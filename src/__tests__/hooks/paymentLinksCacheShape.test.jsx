@@ -20,7 +20,6 @@ vi.mock("../../api/payments", () => ({
   expirePaymentLink: vi.fn(),
   archivePaymentLink: vi.fn(),
   duplicatePaymentLink: vi.fn(),
-  sendPaymentLinkReminder: vi.fn(),
 }));
 
 vi.mock("../../api/communities", () => ({
