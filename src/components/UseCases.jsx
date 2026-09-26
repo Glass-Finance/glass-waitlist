@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowRight } from "lucide-react";
@@ -8,23 +8,28 @@ import { goToApp } from "../utils/deviceRedirect";
 import { USECASE_PHOTOS } from "./usecasePhotos";
 
 // ─── Carousel geometry ──────────────────────────────────────────────────────
-// The caption row repeats the strip widths so its first cell lines up exactly
-// under the featured card (the caption box is flex-1, spacers mirror strips).
-const GAP = "gap-2.5 md:gap-4";
-const STRIP =
-  "hidden md:block shrink-0 transition-[filter] duration-200 hover:brightness-110 motion-reduce:transition-none";
+// Featured width = calc(100% - 352px - --T): 352 = strips (152+96+56) + 3
+// gaps; --T absorbs the hovered strip's tease growth so the other strips keep
+// their exact rest widths. Strips are absolutely positioned (left calc) so
+// each box animates independently. ALL geometry motion (promote + hover tease)
+// runs through one WAAPI FLIP pipeline — no CSS transitions on the boxes,
+// because a running CSS transition poisons getBoundingClientRect() during the
+// FLIP measurement (it reports the old, mid-transition value).
 const STRIP_W = [152, 96, 56];
+const TEASE_ADD = 40;
+const GAP = 16;
+const STRIPS_PLUS_GAPS = 352;
 const CARD_H = "h-[340px] md:h-[420px]";
-
 const TICK_MS = 4500;
 const SLIDE_MS = 650;
+const SLIDE_EASE = [0.22, 1, 0.36, 1];
+const TEASE_MS = 300;
 const PHOTO_WIDTHS = [640, 960, 1280, 1600];
 const STRIP_SRC_W = [320, 640, 960];
 const PHOTO_QUALITY = "auto:best";
 const PHOTO_SIZES = "(max-width: 768px) calc(100vw - 48px), 732px";
 const STRIP_SIZES = "152px";
 const WARM_TIMEOUT_MS = 3000;
-const SLIDE_EASE = [0.22, 1, 0.36, 1];
 
 const cases = [
   {
@@ -49,15 +54,7 @@ const cases = [
   },
 ];
 
-// Fisher-Yates — each mount sees the category pools in a fresh random order.
-function shuffle(list) {
-  const arr = [...list];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
+const pools = cases.map((c) => USECASE_PHOTOS[c.variant]);
 
 function pickWidth() {
   const dpr = window.devicePixelRatio || 1;
@@ -67,44 +64,38 @@ function pickWidth() {
 }
 
 export default function UseCases() {
-  const [step, setStep] = useState(0);
-  // `displayed` is the row actually on screen; it lags `step` until the new
-  // row's featured photo is fetched+decoded, so the slide never shows a blank.
-  const [displayed, setDisplayed] = useState(null);
+  const [active, setActive] = useState(0);
+  // One image index per category: a category's strip preview and its featured
+  // slot always show the same variant — demoting never swaps the image, so
+  // nothing pops or reappears during the promote.
+  const [imgIdx, setImgIdx] = useState(() =>
+    cases.map((_, i) => Math.floor(Math.random() * pools[i].length)),
+  );
+  const [tease, setTease] = useState(null);
   const [revealed, setRevealed] = useState(false);
   const [inView, setInView] = useState(false);
   const [focused, setFocused] = useState(false);
   const [tabHidden, setTabHidden] = useState(false);
   const sectionRef = useRef(null);
+  const rowRef = useRef(null);
+  const boxRefs = useRef([]);
+  const flipRef = useRef(null);
   const warmRef = useRef(new Set());
   const navigate = useNavigate();
   const reduce = useReducedMotion();
 
-  const queues = useMemo(
-    () => Object.fromEntries(cases.map((c) => [c.variant, shuffle(USECASE_PHOTOS[c.variant])])),
-    [],
-  );
+  const order = [0, 1, 2, 3].map((i) => (active + i) % cases.length);
+  const teased = tease !== null && tease !== active;
+  const teaseDelta = teased ? TEASE_ADD : 0;
+  const slotWidth = (slot) => STRIP_W[slot - 1] + (teased && tease === order[slot] ? TEASE_ADD : 0);
+  const stripLeft = (slot) => {
+    let off = GAP;
+    if (slot >= 2) off += slotWidth(1) + GAP;
+    if (slot >= 3) off += slotWidth(2) + GAP;
+    return `calc(100% - ${STRIPS_PLUS_GAPS}px - var(--T) + ${off}px)`;
+  };
 
-  // Rounds loop: every category shows one photo per round —
-  // step 0..3 = photo #1 of each category, step 4..7 = photo #2, ...
-  const photoAt = useCallback(
-    (s) => {
-      const caseIdx = s % cases.length;
-      const round = Math.floor(s / cases.length);
-      const pool = queues[cases[caseIdx].variant];
-      return { caseIdx, round, photo: pool[round % pool.length] };
-    },
-    [queues],
-  );
-
-  // Steps are one full round apart per strip: strip k advances `delta` steps.
-  const deltaFor = useCallback((rowStep, k) => {
-    const activeIdx = rowStep % cases.length;
-    return (k - activeIdx + cases.length) % cases.length || cases.length;
-  }, []);
-
-  // Warm the exact resource the <img> will select (same srcset + sizes), so
-  // decode() finishes before we start the slide.
+  // Warm the exact resource an <img> will select (same srcset + sizes).
   const warm = useCallback((pid, mode) => {
     const key = `${mode}:${pid}`;
     if (warmRef.current.has(key)) return Promise.resolve();
@@ -131,6 +122,18 @@ export default function UseCases() {
     });
   }, []);
 
+  // Always ready: every category's current variant at featured size (a click
+  // promotes it with no fetch) and its NEXT variant (autoplay promotes with
+  // fresh image variety on every visit).
+  useEffect(() => {
+    pools.forEach((pool, i) => {
+      const len = pool.length;
+      warm(pool[imgIdx[i]].publicId, "featured");
+      warm(pool[(imgIdx[i] + 1) % len].publicId, "featured");
+      warm(pool[imgIdx[i]].publicId, "strip");
+    });
+  }, [imgIdx, warm]);
+
   // Entrance reveal (one-shot) + live in-view flag for autoplay gating.
   useEffect(() => {
     const el = sectionRef.current;
@@ -155,45 +158,102 @@ export default function UseCases() {
     return () => document.removeEventListener("visibilitychange", onVisibility);
   }, []);
 
-  // Commit a new row only once its featured photo decoded (never a blank
-  // frame), while preloading that row's three strip panels in parallel.
-  useEffect(() => {
-    if (displayed && displayed.step === step) return;
-    let alive = true;
-    const target = photoAt(step);
-    warm(target.photo.publicId, "featured").then(() => {
-      if (alive) setDisplayed({ ...target.photo, step });
+  // Capture all four boxes' geometry (relative to the row) BEFORE the state
+  // change; useLayoutEffect then plays the FLIP before paint — no flash.
+  const capture = useCallback(() => {
+    const row = rowRef.current;
+    if (!row) return null;
+    const rowRect = row.getBoundingClientRect();
+    const boxes = {};
+    cases.forEach((c, i) => {
+      const el = boxRefs.current[i];
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      boxes[i] = { x: r.x - rowRect.x, w: r.width };
     });
-    // Next tick's featured photo starts fetching now, so the following slide
-    // begins instantly instead of waiting on the network.
-    warm(photoAt(step + 1).photo.publicId, "featured");
-    for (let d = 1; d < cases.length; d++) warm(photoAt(step + d).photo.publicId, "strip");
-    return () => {
-      alive = false;
-    };
-  }, [step, displayed, photoAt, warm]);
+    return { boxes };
+  }, []);
 
-  // Autoplay: one rhythm — every tick slides to the next category (and a new
-  // photo for a category once per full round). Runs while in view regardless
-  // of hover (Stripe-like: it keeps scrolling), never under reduced motion,
-  // never in a background tab, paused while keyboard-focused.
+  // Any geometry-affecting state change records First + timing, then flips.
+  const flipThen = useCallback(
+    (mutate, ms, easing) => {
+      const c = capture();
+      if (c) flipRef.current = { ...c, ms, easing };
+      mutate();
+    },
+    [capture],
+  );
+
+  // `advance` = autoplay tick: the incoming category reveals the NEXT variant
+  // of its image pool (show-diversity). A click keeps the exact peeked image.
+  const promote = useCallback(
+    (cat, advance) => {
+      if (cat === active) return;
+      flipThen(
+        () => {
+          // Clear tease only for the promoted box (functional update: keeps
+          // this callback's deps stable so hovering never resets the timer).
+          setTease((t) => (t === cat ? null : t));
+          if (advance) {
+            setImgIdx((prev) => {
+              const next = [...prev];
+              next[cat] = (next[cat] + 1) % pools[cat].length;
+              return next;
+            });
+          }
+          setActive(cat);
+        },
+        SLIDE_MS,
+        `cubic-bezier(${SLIDE_EASE.join(",")})`,
+      );
+    },
+    [active, flipThen],
+  );
+
+  // FLIP: each box animates its own left + width from First to Last —
+  // promoted expands into the featured slot, the old featured demotes into
+  // its strip slot, the middle strips slide over. Running animations are
+  // finished first so Last is measured from the real base styles (a chained
+  // tease/promote starts visually from where the box currently is). Four
+  // boxes, one continuous motion; same DOM nodes throughout.
+  useLayoutEffect(() => {
+    const first = flipRef.current;
+    flipRef.current = null;
+    if (!first || reduce) return;
+    const row = rowRef.current;
+    if (!row) return;
+    const rowRect = row.getBoundingClientRect();
+    cases.forEach((c, i) => {
+      const el = boxRefs.current[i];
+      const f = first.boxes[i];
+      if (!el || !f) return;
+      el.getAnimations().forEach((a) => a.finish());
+      const r = el.getBoundingClientRect();
+      if (!r.width) return; // hidden on mobile
+      const last = { x: r.x - rowRect.x, w: r.width };
+      if (Math.abs(f.x - last.x) < 2 && Math.abs(f.w - last.w) < 2) return;
+      el.animate(
+        [
+          { left: `${f.x}px`, width: `${f.w}px` },
+          { left: `${last.x}px`, width: `${last.w}px` },
+        ],
+        { duration: first.ms, easing: first.easing },
+      );
+    });
+  }, [active, tease, imgIdx, reduce]);
+
+  // Autoplay: promote the next category every tick (ring order), continuously
+  // while in view — hover does not pause (Stripe-like). Paused for reduced
+  // motion, hidden tabs, and keyboard focus.
   const playing = inView && !focused && !tabHidden && !reduce;
   useEffect(() => {
     if (!playing) return;
-    const id = setInterval(() => setStep((s) => s + 1), TICK_MS);
+    const id = setInterval(() => promote((active + 1) % cases.length, true), TICK_MS);
     return () => clearInterval(id);
-  }, [playing]);
+  }, [playing, active, promote]);
 
   const enter = `uc-enter ${revealed ? "uc-in" : ""}`;
-  const shown = displayed ?? { ...photoAt(0).photo, step: 0 };
-
-  // Strips show the rest of the queue in order: next-up first (3 strips —
-  // the active category is the featured card, not a strip).
-  const queue = Array.from(
-    { length: cases.length - 1 },
-    (_, k) => (shown.step + k + 1) % cases.length,
-  );
-  const go = (delta) => setStep((s) => s + delta);
+  const featured = cases[active];
 
   // Pause on keyboard focus anywhere in the section.
   const handleFocus = (e) => {
@@ -253,92 +313,88 @@ export default function UseCases() {
           </div>
         </div>
 
-        {/* ── Visual row — slides left on every change (old row exits left,
-            new row enters from the right, Stripe-style) ── */}
+        {/* ── Visual row — featured + filmstrips; promote is an exact FLIP ── */}
         <div
           className={`${enter} relative overflow-hidden ${CARD_H}`}
-          style={{ animationDelay: "120ms" }}
+          style={{ animationDelay: "120ms", "--T": `${teaseDelta}px` }}
+          ref={rowRef}
           role="group"
           aria-roledescription="carousel"
           aria-label="Use cases"
         >
-          <AnimatePresence initial={false}>
-            <motion.div
-              key={shown.step}
-              className={`absolute inset-0 flex ${GAP}`}
-              initial={{ x: reduce ? 0 : "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: reduce ? 0 : "-100%" }}
-              transition={{ duration: reduce ? 0 : SLIDE_MS / 1000, ease: SLIDE_EASE }}
-            >
-              <div className="relative flex-1 min-w-0 overflow-hidden rounded-sm bg-white shadow-[0_0_0_1px_rgba(28,43,138,0.06),0_4px_24px_rgba(28,43,138,0.08)]">
+          {cases.map((c, cat) => {
+            const slot = order.indexOf(cat);
+            const isFeatured = slot === 0;
+            const photo = pools[cat][imgIdx[cat]];
+            const boxCls = isFeatured
+              ? "absolute left-0 top-0 h-full z-10 overflow-hidden rounded-sm bg-white shadow-[0_0_0_1px_rgba(28,43,138,0.06),0_4px_24px_rgba(28,43,138,0.08)] w-full md:w-[calc(100%_-_352px_-_var(--T))]"
+              : "hidden md:block absolute top-0 h-full overflow-hidden rounded-sm bg-[#F5F7FD]";
+            const boxStyle = isFeatured
+              ? undefined
+              : { left: stripLeft(slot), width: slotWidth(slot) };
+            return (
+              <div
+                key={cat}
+                ref={(el) => {
+                  boxRefs.current[cat] = el;
+                }}
+                className={boxCls}
+                style={boxStyle}
+              >
                 <img
-                  data-featured
-                  src={cldUrl(shown.publicId, {
-                    width: pickWidth(),
+                  data-featured={isFeatured ? "true" : undefined}
+                  src={cldUrl(photo.publicId, {
+                    width: isFeatured ? pickWidth() : 640,
                     quality: PHOTO_QUALITY,
                   })}
-                  srcSet={cldSrcSet(shown.publicId, PHOTO_WIDTHS, {
+                  srcSet={cldSrcSet(photo.publicId, isFeatured ? PHOTO_WIDTHS : STRIP_SRC_W, {
                     quality: PHOTO_QUALITY,
                   })}
-                  sizes={PHOTO_SIZES}
-                  alt={shown.alt}
+                  sizes={isFeatured ? PHOTO_SIZES : `${STRIP_W[slot - 1]}px`}
+                  alt={isFeatured ? photo.alt : ""}
                   className="absolute inset-0 h-full w-full object-cover"
                   loading="lazy"
                   decoding="async"
                 />
-              </div>
-
-              {queue.map((k, i) => {
-                const c = cases[k];
-                const stripPhoto = photoAt(shown.step + deltaFor(shown.step, k)).photo;
-                return (
+                {!isFeatured && (
                   <button
-                    key={i}
                     type="button"
+                    aria-label={`Show ${c.title}`}
                     onClick={(e) => {
                       if (e.detail > 0) e.currentTarget.blur();
-                      go(deltaFor(shown.step, k));
+                      promote(cat, false);
                     }}
-                    aria-label={`Show ${c.title}`}
-                    style={{ width: STRIP_W[i] }}
-                    className={`${STRIP} relative overflow-hidden rounded-sm bg-[#F5F7FD] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#002FA7]/60`}
-                  >
-                    <img
-                      src={cldUrl(stripPhoto.publicId, { width: 640, quality: PHOTO_QUALITY })}
-                      srcSet={cldSrcSet(stripPhoto.publicId, STRIP_SRC_W, {
-                        quality: PHOTO_QUALITY,
-                      })}
-                      sizes={`${STRIP_W[i]}px`}
-                      alt=""
-                      className="absolute inset-0 h-full w-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </button>
-                );
-              })}
-            </motion.div>
-          </AnimatePresence>
+                    onMouseEnter={() => {
+                      if (tease !== cat) flipThen(() => setTease(cat), TEASE_MS, "ease-out");
+                    }}
+                    onMouseLeave={() => {
+                      if (tease === cat) flipThen(() => setTease(null), TEASE_MS, "ease-out");
+                    }}
+                    className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#002FA7]/60"
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {/* ── Caption — mirrors the row above so it sits under the featured card ── */}
-        <div className={`${enter} flex ${GAP} mt-5 md:mt-7`} style={{ animationDelay: "240ms" }}>
+        {/* ── Caption — mirrors the rest widths so it sits under the featured card ── */}
+        <div className={`${enter} flex gap-2.5 md:gap-4 mt-5 md:mt-7`}>
           <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between">
             <div className="min-w-0" aria-live="polite">
               <AnimatePresence initial={false}>
                 <motion.div
-                  key={shown.step}
+                  key={active}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: reduce ? 0 : 0.28, ease: "easeOut" }}
                 >
                   <h3 className="text-[clamp(19px,2.2vw,24px)] font-bold text-[#0f1d6e] leading-snug">
-                    {cases[shown.step % cases.length].title}
+                    {featured.title}
                   </h3>
                   <p className="mt-1.5 text-[15px] md:text-[16px] text-[#9099b2] leading-[1.6] max-w-[560px]">
-                    {cases[shown.step % cases.length].body}
+                    {featured.body}
                   </p>
                 </motion.div>
               </AnimatePresence>
@@ -352,8 +408,8 @@ export default function UseCases() {
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
-          {queue.map((_, i) => (
-            <div key={i} aria-hidden className={STRIP} style={{ width: STRIP_W[i] }} />
+          {STRIP_W.map((w) => (
+            <div key={w} aria-hidden className="hidden md:block shrink-0" style={{ width: w }} />
           ))}
         </div>
       </div>
