@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import LoadingScreen from "./components/LoadingScreen";
+import CrispRouteBridge from "./components/common/CrispRouteBridge";
 import { isAppHost, MARKETING_ORIGIN } from "./utils/deviceRedirect";
 
 // ── Guards (eager — lightweight, needed for route resolution) ─────────────────
@@ -139,6 +140,9 @@ function App() {
   return (
     <Router>
       <LandingPageRedirect />
+      {/* Router-aware support chat: hides the widget on sensitive routes
+        (KYC/payment/bank-data pages) and pushes page context for agents. */}
+      <CrispRouteBridge />
       <Suspense fallback={<LoadingScreen />}>
         <Routes>
           {/* ── Public landing ── */}

@@ -1,0 +1,73 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { render } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import CrispRouteBridge from "../../../components/common/CrispRouteBridge";
+
+const { crisp } = vi.hoisted(() => ({
+  crisp: {
+    chat: { hide: vi.fn(), show: vi.fn() },
+    session: { setData: vi.fn() },
+  },
+}));
+
+vi.mock("crisp-sdk-web", () => ({ Crisp: crisp }));
+
+const renderAt = (path) =>
+  render(
+    <MemoryRouter initialEntries={[path]}>
+      <CrispRouteBridge />
+    </MemoryRouter>,
+  );
+
+describe("CrispRouteBridge", () => {
+  beforeEach(() => {
+    vi.stubEnv("VITE_CRISP_WEBSITE_ID", "test-website-id");
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllEnvs();
+  });
+
+  it.each([
+    "/onboarding/payment-profile",
+    "/dashboard/verify-identity",
+    "/dashboard/verify-identity/history",
+    "/member/verify-identity",
+    "/member/pay/abc-123",
+    "/member/pay/abc-123/success",
+    "/payment/callback",
+    "/dashboard/finance/payment-methods",
+    "/member/saved-cards",
+  ])("hides the chat on %s", (path) => {
+    renderAt(path);
+    expect(crisp.chat.hide).toHaveBeenCalled();
+    expect(crisp.chat.show).not.toHaveBeenCalled();
+  });
+
+  it("shows the chat on regular pages", () => {
+    renderAt("/dashboard/home");
+    expect(crisp.chat.show).toHaveBeenCalled();
+    expect(crisp.chat.hide).not.toHaveBeenCalled();
+  });
+
+  it("pushes the current page as agent context, debounced", () => {
+    renderAt("/member/transactions");
+    expect(crisp.session.setData).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(400);
+    expect(crisp.session.setData).toHaveBeenCalledWith({
+      page: "/member/transactions",
+    });
+  });
+
+  it("does nothing when the chat is disabled", () => {
+    vi.stubEnv("VITE_CRISP_WEBSITE_ID", "");
+    renderAt("/dashboard/home");
+    vi.advanceTimersByTime(400);
+    expect(crisp.chat.show).not.toHaveBeenCalled();
+    expect(crisp.chat.hide).not.toHaveBeenCalled();
+    expect(crisp.session.setData).not.toHaveBeenCalled();
+  });
+});

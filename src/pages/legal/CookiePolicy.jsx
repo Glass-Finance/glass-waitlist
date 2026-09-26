@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
-import { usePageTitle } from "../../hooks/usePageTitle";
+import { useSeoMeta } from "../../hooks/useSeoMeta";
 import LegalPageLayout from "../../components/legal/LegalPageLayout";
 
 export default function CookiePolicy() {
-  usePageTitle("Cookie Policy");
+  useSeoMeta({
+    title: "Cookie Policy",
+    description: "How Glass Finance uses cookies and similar technologies.",
+    path: "/cookies",
+  });
 
   return (
     <LegalPageLayout
@@ -87,6 +91,12 @@ export default function CookiePolicy() {
         widgets. These third parties may use cookies to provide fraud detection, analytics, or
         payment functionality, subject to their own privacy and cookie policies. We do not permit
         third-party advertising cookies on the Platform.
+      </p>
+      <p>
+        The Platform's support chatbox is provided by Crisp, a third-party chat service. Its cookies
+        use the "crisp-client" prefix and keep your support conversation working across pages and
+        visits. The chatbox runs in Total Privacy Mode: no chatbox cookies are set until you open
+        the chatbox and begin a conversation yourself.
       </p>
 
       <h2>10. Managing Cookies</h2>
