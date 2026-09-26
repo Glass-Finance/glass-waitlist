@@ -7,17 +7,17 @@ const cards = [
   {
     publicId: "glass/security/transparency",
     title: "Transparency",
-    desc: "Every kobo is accounted for. No hidden fees or missing funds.",
+    desc: "Every fee is shown before you pay. Your community always receives the full due.",
   },
   {
     publicId: "glass/security/ndpr-compliant",
     title: "NDPR Compliant",
-    desc: "Fully licensed and compliant with Nigerian Data Protection Regulations.",
+    desc: "Your rights — access, correction, and deletion — are set out in our Privacy Policy under the Nigeria Data Protection Act 2023.",
   },
   {
     publicId: "glass/security/encryption",
     title: "Encryption",
-    desc: "All data and transactions are encrypted. Your records are private.",
+    desc: "Bank details, identity documents, and MFA secrets are AES-256 encrypted at rest; everything is TLS-encrypted in transit.",
   },
 ];
 
@@ -79,7 +79,7 @@ export default function SecurityFeatures() {
           <div className="flex justify-center mb-4">
             <h2 className="text-[clamp(32px,5.5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight max-w-[1080px]">
               <BlurText
-                text="Bank-grade security for your peace of mind"
+                text="Your Money and Data Are Protected at Every Layer"
                 delay={80}
                 animateBy="words"
                 direction="top"
@@ -98,8 +98,8 @@ export default function SecurityFeatures() {
               viewport={{ once: true, amount: 0.5 }}
               transition={{ duration: 0.65, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              We protect your funds with encryption in transit and at rest, strict access controls,
-              and continuous security monitoring.
+              Your money moves through Paystack straight to your community's account — we never hold
+              it. Your data is AES-256 encrypted, access-controlled, and monitored around the clock.
             </motion.p>
           </div>
         </div>
@@ -163,7 +163,8 @@ export default function SecurityFeatures() {
                 Why the Nigerian Tribune Is Talking About Glass
               </h4>
               <p className="text-[14px] text-[#9099b2]">
-                Discover how Glass is redefining community financial security.
+                See how Team Glass took the ₦1,000,000 grand prize at the 5th Babcock Innovation
+                Challenge.
               </p>
             </div>
             <a

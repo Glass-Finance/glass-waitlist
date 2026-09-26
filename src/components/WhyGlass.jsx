@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     q: "Is Glass secure?",
-    a: "Absolutely. Glass uses bank-grade AES-256 encryption, is fully NDPR compliant, and partners with NDIC-insured banks. We never have direct access to your funds — every transaction requires proper authorisation.",
+    a: "Absolutely. Sensitive data is AES-256 encrypted and everything is protected by TLS in transit, with OTP/MFA, rate-limited access, audit trails, and 24/7 monitoring. Payments run through Paystack — we never hold your funds, and every transaction needs your authorisation. Your NDPR rights are set out in our Privacy Policy.",
   },
   {
     q: "Can we customize our dues structure?",
