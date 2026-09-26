@@ -10,7 +10,6 @@ import StepIndicator from "../../components/onboarding/StepIndicator";
 import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { useAuth } from "../../store/AuthContext";
 import { Button } from "../../components/ui/Button";
-import KycWizardModal from "../../components/kyc/KycWizardModal";
 import { useKycGate } from "../../hooks/useKycGate";
 
 export default function ChoosePath() {
@@ -41,9 +40,22 @@ export default function ChoosePath() {
 
   const handleContinue = () => {
     if (selected === "create") {
-      if (!kycGate.enforce(() => navigate("/onboarding/paying-member", { state: { email } })))
-        return;
-    } else if (isAuthenticated) {
+      // Navigated gate — Continue routes to the verify step instead of
+      // opening the wizard modal inline. The step is skipped exactly when
+      // the modal gate would have let the action through:
+      //   - summary still loading → hold (the Button spins above; no guess)
+      //   - approved / exempt (platform staff, kill switch) / summary
+      //     failed (fail open — backend stays authoritative) / settled
+      //     summary with no KYC record → straight to paying-member
+      //   - known not-approved → /onboarding/verify-identity
+      if (kycGate.isLoading) return;
+      const skip = kycGate.exempt || kycGate.isError || kycGate.isApproved || !kycGate.status;
+      navigate(skip ? "/onboarding/paying-member" : "/onboarding/verify-identity", {
+        state: { email },
+      });
+      return;
+    }
+    if (isAuthenticated) {
       // Join.jsx (below) is a full account-registration form -- fine for a
       // brand-new visitor, but an already-authenticated user (e.g. an admin
       // clicking Join Community from Communities Home, or someone who just
@@ -155,8 +167,9 @@ export default function ChoosePath() {
 
         <div className="flex flex-col items-center gap-4 w-full max-w-[500px]">
           {/* Create is gated: while the KYC summary resolves the button
-              holds (never "still loading ⇒ let them through"). Join has
-              no gate and stays immediate. */}
+              holds (never "still loading ⇒ let them through") and Continue
+              then routes to the verify step or straight past it (see
+              handleContinue). Join has no gate and stays immediate. */}
           <Button onClick={handleContinue} loading={selected === "create" && kycGate.isLoading}>
             Continue
           </Button>
@@ -169,16 +182,6 @@ export default function ChoosePath() {
         </div>
         <div className="h-[env(safe-area-inset-bottom,0px)]" />
       </main>
-      <KycWizardModal
-        open={kycGate.gateOpen}
-        onClose={kycGate.closeGate}
-        onComplete={kycGate.completeGate}
-        historyPath={
-          isMobileDevice()
-            ? "/member/verify-identity/history"
-            : "/dashboard/verify-identity/history"
-        }
-      />
     </div>
   );
 }
