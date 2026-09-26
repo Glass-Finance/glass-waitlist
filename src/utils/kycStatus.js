@@ -20,23 +20,69 @@
 // (shared.js), which mirrors the same enum set for the dashboard chrome.
 // Reactive block copy + the backend-403 matcher live here too: every
 // catch site must recognize and phrase the same KYC rejection identically.
+// Each style also carries its Phosphor icon (MIT) so every pill renders
+// icon + label from one map — components must not re-pick glyphs.
 // Case folding is intentional: backend enums are uppercase; callers may
 // pass raw or already-normalized values.
+import {
+  CircleDashed,
+  Clock,
+  ClockCountdown,
+  Hourglass,
+  PlayCircle,
+  Prohibit,
+  SealCheck,
+  Spinner,
+  WarningCircle,
+  XCircle,
+} from "@phosphor-icons/react";
+
 const STYLES = {
-  approved: { cls: "bg-success-tint text-[#15803d]", text: "Approved", dot: "bg-[#15803d]" },
-  pending: { cls: "bg-[#fef9c3] text-[#b45309]", text: "Pending", dot: "bg-[#b45309]" },
-  inReview: { cls: "bg-[#fef9c3] text-[#b45309]", text: "In review", dot: "bg-[#b45309]" },
-  rejected: { cls: "bg-[#fce4e4] text-danger", text: "Rejected", dot: "bg-danger" },
-  error: { cls: "bg-[#fce4e4] text-danger", text: "Error", dot: "bg-danger" },
-  expired: { cls: "bg-stacked-container text-[#6B7280]", text: "Expired", dot: "bg-[#9CA3AF]" },
-  revoked: { cls: "bg-[#fce4e4] text-danger", text: "Revoked", dot: "bg-danger" },
+  approved: {
+    cls: "bg-success-tint text-[#15803d]",
+    text: "Approved",
+    dot: "bg-[#15803d]",
+    icon: SealCheck,
+  },
+  pending: {
+    cls: "bg-[#fef9c3] text-[#b45309]",
+    text: "Pending",
+    dot: "bg-[#b45309]",
+    icon: ClockCountdown,
+  },
+  inReview: {
+    cls: "bg-[#fef9c3] text-[#b45309]",
+    text: "In review",
+    dot: "bg-[#b45309]",
+    icon: Hourglass,
+  },
+  rejected: { cls: "bg-[#fce4e4] text-danger", text: "Rejected", dot: "bg-danger", icon: XCircle },
+  error: { cls: "bg-[#fce4e4] text-danger", text: "Error", dot: "bg-danger", icon: WarningCircle },
+  expired: {
+    cls: "bg-stacked-container text-[#6B7280]",
+    text: "Expired",
+    dot: "bg-[#9CA3AF]",
+    icon: Clock,
+  },
+  revoked: { cls: "bg-[#fce4e4] text-danger", text: "Revoked", dot: "bg-danger", icon: Prohibit },
   notStarted: {
     cls: "bg-stacked-container text-[#6B7280]",
     text: "Not started",
     dot: "bg-[#9CA3AF]",
+    icon: CircleDashed,
   },
-  initiated: { cls: "bg-[#fef9c3] text-[#b45309]", text: "In progress", dot: "bg-[#b45309]" },
-  processing: { cls: "bg-[#fef9c3] text-[#b45309]", text: "Processing", dot: "bg-[#b45309]" },
+  initiated: {
+    cls: "bg-[#fef9c3] text-[#b45309]",
+    text: "In progress",
+    dot: "bg-[#b45309]",
+    icon: PlayCircle,
+  },
+  processing: {
+    cls: "bg-[#fef9c3] text-[#b45309]",
+    text: "Processing",
+    dot: "bg-[#b45309]",
+    icon: Spinner,
+  },
 };
 
 const KEYS = {
@@ -61,8 +107,15 @@ export function kycStatusStyle(status) {
   const key = KEYS[String(status ?? "").toUpperCase()];
   const s = key
     ? STYLES[key]
-    : { cls: "bg-stacked-container text-[#6B7280]", text: "—", dot: "bg-[#9CA3AF]" };
-  return { label: s.text, cls: s.cls, dot: s.dot };
+    : {
+        cls: "bg-stacked-container text-[#6B7280]",
+        text: "—",
+        dot: "bg-[#9CA3AF]",
+        icon: CircleDashed,
+      };
+  // `dot` stays part of the contract (badge tests + any dot-painted
+  // consumer); `Icon` is the pill's primary mark.
+  return { label: s.text, cls: s.cls, dot: s.dot, Icon: s.icon };
 }
 
 export const ID_TYPE_OPTIONS = [

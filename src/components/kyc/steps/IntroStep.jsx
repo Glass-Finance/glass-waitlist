@@ -1,23 +1,17 @@
-import {
-  IdCardArt,
-  FaceScanArt,
-  CheckBadgeArt,
-  GlyphLock,
-  GlyphCommunity,
-  GlyphPlans,
-  GlyphPayout,
-  TrustNote,
-} from "../illustrations";
+import { IdentificationCard, Scan, SealCheck } from "@phosphor-icons/react";
+import { GlyphLock, GlyphCommunity, GlyphPlans, GlyphPayout, TrustNote } from "../illustrations";
 
 // Step 1 — Overview. First-time entry: the payoff preview (brief item 6)
 // shows the almost-ready dashboard BEFORE the heavy capture step, and the
 // numbered 01/02/03 sequence (marloden-style) sets expectations. No
 // fabricated amounts — the preview tiles read "—" behind a lock chip until
-// verification unlocks them.
+// verification unlocks them. Sequence marks are Phosphor duotone glyphs: at
+// 26px inside a tint circle, scenes would read as blobs (the Art families
+// stay for 40px+ surfaces).
 const SEQUENCE = [
-  { n: "01", label: "Pick your ID", Art: IdCardArt },
-  { n: "02", label: "Quick ID check", Art: FaceScanArt },
-  { n: "03", label: "You're verified", Art: CheckBadgeArt },
+  { n: "01", label: "Pick your ID", Icon: IdentificationCard },
+  { n: "02", label: "Quick ID check", Icon: Scan },
+  { n: "03", label: "You're verified", Icon: SealCheck },
 ];
 
 const UNLOCKS = [
@@ -72,11 +66,11 @@ export default function IntroStep({ reason }) {
 
       {/* How it works — numbered sequence with the flow's own illustrations */}
       <div className="grid grid-cols-3 gap-2">
-        {SEQUENCE.map(({ n, label, Art }) => (
+        {SEQUENCE.map(({ n, label, Icon }) => (
           <div key={n} className="flex flex-col items-center gap-1.5 text-center">
             <span className="text-[10px] font-bold text-brand tracking-[0.05em]">{n}</span>
-            <span className="w-12 h-12 rounded-full bg-brand-tint flex items-center justify-center">
-              <Art size={26} />
+            <span className="w-12 h-12 rounded-full bg-brand-tint flex items-center justify-center text-brand">
+              <Icon size={26} weight="duotone" aria-hidden="true" />
             </span>
             <span className="text-[10.5px] text-[#6B7280] leading-tight">{label}</span>
           </div>

@@ -1,8 +1,11 @@
 import { defineConfig, configDefaults } from "vitest/config";
 import react from "@vitejs/plugin-react";
+import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
-  plugins: [react()],
+  // svgr turns `*.svg?react` imports (KYC scenes in src/assets/kyc) into
+  // React components so they can inherit currentColor and size props.
+  plugins: [react(), svgr()],
   test: {
     environment: "jsdom",
     globals: true,
