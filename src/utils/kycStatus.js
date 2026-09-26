@@ -18,6 +18,8 @@
 //
 // Admin table badges intentionally use platform-admin STATUS_COLORS
 // (shared.js), which mirrors the same enum set for the dashboard chrome.
+// Reactive block copy + the backend-403 matcher live here too: every
+// catch site must recognize and phrase the same KYC rejection identically.
 // Case folding is intentional: backend enums are uppercase; callers may
 // pass raw or already-normalized values.
 const STYLES = {
@@ -129,3 +131,41 @@ export const KYC_ID_TYPE_FILTER_OPTIONS = [
   { value: "ALL", label: "All ID types" },
   ...ID_TYPE_OPTIONS,
 ];
+
+// ── Reactive blocks (backend-enforced) ─────────────────────────────────────
+// The backend rejects KYC-gated staff actions with HTTP 403 +
+// "Approved KYC is required for community staff participation"
+// (GlobalExceptionHandler → ApiResponse description). The client gate
+// normally gets there first; this matcher catches what it can't see —
+// stale summaries, deep links past the gate, invite acceptances that
+// grant a staff role — so the UI shows the shared copy above instead of
+// a dead-end error string.
+export function isKycRequiredError(err) {
+  return (
+    err?.response?.status === 403 &&
+    /Approved KYC is required/.test(err?.response?.data?.description ?? "")
+  );
+}
+
+// One voice for every reactive block site. Admin copy speaks about the
+// member being promoted; accept copy speaks to the person accepting.
+export const KYC_ADMIN_BLOCK_COPY =
+  "This member needs an approved identity verification before they can become an admin. Ask them to verify, then try promoting again.";
+export const KYC_ACCEPT_BLOCK_COPY =
+  "You need an approved identity verification before you can take an admin role. Verify your identity, then accept this invite again.";
+
+// Completion indicator states — collapses the account enum into the four
+// states the member-list badge shows. Returns null when there is nothing
+// to show (missing status, or a future literal we don't recognize — fail
+// quiet rather than mislabel), so KycStateBadge can ship before the
+// backend adds kycStatus to the community-member DTO (docs/kyc.md).
+export function kycCompletionState(status) {
+  const s = upper(status);
+  if (!s) return null;
+  if (s === "APPROVED") return "APPROVED";
+  if (s === "PENDING" || s === "IN_REVIEW" || s === "INITIATED" || s === "PROCESSING")
+    return "IN_REVIEW";
+  if (isKycTerminal(s)) return "REJECTED";
+  if (s === "NOT_STARTED") return "NOT_STARTED";
+  return null;
+}

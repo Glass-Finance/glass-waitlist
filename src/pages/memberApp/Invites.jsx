@@ -7,6 +7,8 @@ import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import PageLoadingState from "../../components/memberApp/PageLoadingState";
 import { PENDING_INVITE_KEY } from "../InviteLanding";
 import { Button } from "../../components/ui/Button";
+import { isKycRequiredError, KYC_ACCEPT_BLOCK_COPY } from "../../utils/kycStatus";
+import { getErrorMessage } from "../../utils/errorHandler";
 // Same empty-state illustration the Notifications page's Invites tab uses.
 import invitesEmptyIllustration from "../../assets/memberApp/empty-states/notifications-invites-empty.webp";
 
@@ -38,6 +40,9 @@ export default function Invites() {
   // not obviously there.
   const [highlightId, setHighlightId] = useState(null);
   const [staleNotice, setStaleNotice] = useState(null);
+  // Accept rejections (reactive KYC block, network, …) — inline above the
+  // list so the reason lands on the invite the user just tapped.
+  const [acceptNotice, setAcceptNotice] = useState(null);
   const cardRefs = useRef({});
 
   useEffect(() => {
@@ -67,8 +72,21 @@ export default function Invites() {
   }, [highlightId, invites]);
 
   async function handleAccept(invite) {
-    await accept(invite.id);
-    navigate("/member/home");
+    setAcceptNotice(null);
+    try {
+      await accept(invite.id);
+      navigate("/member/home");
+    } catch (err) {
+      // Backend-enforced staff gate: accepting an invite that grants a
+      // staff role requires APPROVED KYC (CommunityInviteServiceImpl →
+      // requireKycForCommunityRole). Show the shared copy instead of a
+      // dead-end toast; the optimistic list removal already rolled back.
+      setAcceptNotice(
+        isKycRequiredError(err)
+          ? KYC_ACCEPT_BLOCK_COPY
+          : getErrorMessage(err, "Couldn't accept this invite."),
+      );
+    }
   }
 
   async function handleReject(invite) {
@@ -95,6 +113,12 @@ export default function Invites() {
           <div className="flex items-center gap-2 bg-[#FEF3C7] text-[#92400E] text-[12.5px] font-medium py-2.5 px-3 rounded-[10px] mb-3">
             <Info size={14} strokeWidth={2} className="flex-shrink-0" />
             {staleNotice}
+          </div>
+        )}
+        {acceptNotice && (
+          <div className="flex items-center gap-2 bg-[#FEE2E2] text-[#B91C1C] text-[12.5px] font-medium py-2.5 px-3 rounded-[10px] mb-3">
+            <Info size={14} strokeWidth={2} className="flex-shrink-0" />
+            {acceptNotice}
           </div>
         )}
         {isLoading || joinRequestsLoading ? (

@@ -15,6 +15,7 @@ export default function ConfirmDialog({
   confirmingLabel,
   danger = true,
   confirming = false,
+  error = "",
   onConfirm,
   onClose,
 }) {
@@ -22,6 +23,14 @@ export default function ConfirmDialog({
     <ModalShell title={title} subtitle={subtitle} onClose={onClose}>
       <div className="px-6 py-5 flex flex-col gap-4">
         {description && <p className="text-xs text-gray-600 leading-relaxed">{description}</p>}
+        {/* Rejection surfaced by onConfirm's onError (e.g. a reactive KYC
+            block) — renders inside the dialog so the reason lands where the
+            user just clicked, and the dialog stays open to retry. */}
+        {error && (
+          <p className="text-xs leading-relaxed bg-[#fce4e4] text-danger rounded-xl px-3 py-2.5 -mt-1">
+            {error}
+          </p>
+        )}
         <div className="flex gap-3 pt-1">
           <button
             type="button"
