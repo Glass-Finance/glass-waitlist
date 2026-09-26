@@ -140,11 +140,21 @@ createRoot(document.getElementById("root")).render(
     <QueryClientProvider client={queryClient}>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <AuthProvider>
+          {/*
+            CrispChat must mount BEFORE <App/>: React flushes effects in tree
+            order, and CrispChat's mount effect is what runs
+            Crisp.configure() on the SDK. CrispRouteBridge (inside App) calls
+            Crisp.chat.show() from its own effect on the first route — if the
+            chat hasn't configured yet, the real SDK throws "websiteId must
+            be set before loading Crisp" out of that effect, the ErrorBoundary
+            below catches it, and every fresh page load renders "Something
+            went wrong" instead of the app (this hit /sign-in in production).
+          */}
+          <CrispChat />
           <ErrorBoundary>
             <App />
           </ErrorBoundary>
           <RealtimeBridge />
-          <CrispChat />
           <SpeedInsights />
           <Analytics />
 
