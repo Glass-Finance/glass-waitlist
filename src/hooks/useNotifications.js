@@ -338,6 +338,15 @@ export function useAllNotifications() {
 // and the switch visibly snapped back on. Mirror all preferences locally:
 // server fields always win when present; the mirror carries everything else
 // until the backend stores those fields too.
+//
+// Session-adjacent (F6): the mirror holds ONE user's preferences and is
+// spread *into* the queryFn result below — so unlike a normal cache entry,
+// queryClient.clear() on a session transition does NOT remove it, and the
+// next account's first GET would merge the previous account's category
+// toggles into its own response. It is on SESSION_ADJACENT_KEYS, which
+// clearSessionStorage() drops on every session-ending path, so the mirror is
+// empty by the time any later account can fetch. While the user is signed
+// in the mirror behaves exactly as before.
 const PREFS_MIRROR_KEY = "glass_notification_prefs";
 
 function readPrefsMirror() {

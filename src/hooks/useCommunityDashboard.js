@@ -21,10 +21,11 @@ async function fetchCommunity(id) {
 // count in the Create Payment Plan modal.
 // ─────────────────────────────────────────────────────────────────────────────
 async function fetchMembers(id) {
-  // fetchAllCommunityMembers defaults to status=ACTIVE and pages through
-  // every member rather than trusting a single capped fetch — the raw
-  // endpoint includes soft-deleted members and inflates the count, and a
-  // single page would silently truncate a large community's roster.
+  // fetchAllCommunityMembers defaults to status=ACTIVE — the raw endpoint
+  // includes soft-deleted members and inflates the count. It is a SINGLE
+  // fetch with no pageSize and no page-2+ loop, so a roster larger than the
+  // backend's default page size is silently truncated here (pageSize:1000 is
+  // rejected with 400 by this endpoint — see api/communities.js).
   return fetchAllCommunityMembers(id);
 }
 

@@ -47,6 +47,11 @@ export default function Role() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["member-record", communityId] });
+      // The Members table derives per-member plan/paid counts from this same
+      // member row (billingExempt) plus the community's obligations — both
+      // change with this PATCH, and neither is under the member-record key.
+      queryClient.invalidateQueries({ queryKey: ["community", communityId, "members"] });
+      queryClient.invalidateQueries({ queryKey: ["community", communityId, "obligations"] });
     },
   });
 

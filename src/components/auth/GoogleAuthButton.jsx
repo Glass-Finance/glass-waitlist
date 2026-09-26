@@ -130,19 +130,27 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
           return;
         }
         const claims = decodeJwtPayload(credentialResponse.credential);
-        if (claims?.email) {
-          const next = {
-            email: claims.email,
-            picture: claims.picture ?? null,
-            name: claims.name ?? claims.given_name ?? null,
-          };
-          writeCachedIdentity(next);
-          setIdentity(next);
-          setAvatarFailed(false);
-        }
+        const next = claims?.email
+          ? {
+              email: claims.email,
+              picture: claims.picture ?? null,
+              name: claims.name ?? claims.given_name ?? null,
+            }
+          : null;
         try {
           const authData = await googleAuth({ clientToken: credentialResponse.credential });
           const user = await setSession(authData);
+          // Cached only after the WHOLE sign-in succeeded (F6-3). Previously
+          // this ran before googleAuth(), so a credential the backend
+          // rejected still left {email, picture, name} on this machine for
+          // the next person to see on this screen. The TTL above still
+          // covers the never-logged-out case; clearSessionStorage() drops it
+          // immediately the moment a session ends.
+          if (next) {
+            writeCachedIdentity(next);
+            setIdentity(next);
+            setAvatarFailed(false);
+          }
           onAuthenticatedRef.current?.(user);
         } catch (err) {
           notifyError(err, { context: "Google auth" });

@@ -10,6 +10,15 @@ import { toastSuccess } from "../utils/toast";
 // community shows up as an ACTIVE membership, the request was approved.
 // Result: a toast + a dismissible "you're in" banner on Home (see
 // useJoinApprovalWatcher's `approved` return).
+//
+// Session-adjacent (F6): this list belongs to the *current* user, so it is
+// on SESSION_ADJACENT_KEYS and clearSessionStorage() drops it on every
+// session-ending path (logout, failed restore, refresh failure, and the
+// clearing tab of a cross-tab logout). Otherwise User A's list survived
+// sign-out and made User B's watcher toast a false approval or pin a card
+// to "Request sent". Nothing else about the lifecycle changes: still written
+// while authenticated, still resolved by the watcher below, still bounded
+// by the 14-day TTL at read time.
 const PENDING_KEY = "glass_pending_join_requests";
 
 function readPending() {

@@ -1,77 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { Eye, EyeOff, Loader2, Lock, KeyRound } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useAuth } from "../../store/AuthContext";
 import { getAccessToken } from "../../store/sessionStorage";
-import { verifyMfaLogin, requestLoginOtp, verifyLoginOtp } from "../../services/authService";
+import { useMfaChallenge } from "../../hooks/useMfaChallenge";
 import { getMyInvites, getMyCommunityJoinRequests, submitJoinRequest } from "../../api/invites";
 import { isMobileDevice } from "../../utils/deviceRedirect";
-import { notifyError, getErrorMessage, getRetryAfterSeconds } from "../../utils/errorHandler";
+import { notifyError } from "../../utils/errorHandler";
 import { resolvePostAuthDestination } from "../../utils/postAuthDestination";
-import { getEmailError } from "../../utils/validators";
-import { isPhoneValid, PHONE_FORMAT_HINT } from "../../utils/phone";
 import { toastInfo, toastSuccess } from "../../utils/toast";
 import { JOIN_COMMUNITY_KEY } from "../../hooks/useJoinCommunityParam";
 import GoogleAuthButton from "../../components/auth/GoogleAuthButton";
 import AuthLayout from "../../layouts/AuthLayout";
 import LoadingScreen from "../../components/LoadingScreen";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
-import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
+import { formatCountdown } from "../../hooks/useCountdown";
+import { useOtpSignIn } from "../../hooks/useOtpSignIn";
 import { MfaChallengeScreen, OtpVerifyScreen } from "./SignInSections";
-
-// A single field doubles as email-or-phone -- the backend rejects both/
-// neither, so there's exactly one identifier to resolve, not two fields to
-// reconcile. "@" is the one unambiguous signal between the two formats.
-function parseIdentifier(value) {
-  const trimmed = value.trim();
-  return trimmed.includes("@") ? { email: trimmed.toLowerCase() } : { phoneNumber: trimmed };
-}
-
-function validateIdentifier(value) {
-  const trimmed = value.trim();
-  if (!trimmed) return "Enter your email or phone number.";
-  return trimmed.includes("@")
-    ? getEmailError(trimmed)
-    : isPhoneValid(trimmed)
-      ? ""
-      : PHONE_FORMAT_HINT;
-}
-
-// Tab switcher between password and passwordless sign-in -- both are
-// first-class here (the backend built OTP login as a parallel flow, not a
-// "forgot your password" fallback), so equal-weight tabs rather than a
-// single primary form with a secondary link underneath.
-function ModeTabs({ mode, setMode, disabled }) {
-  return (
-    <div className="flex gap-1 bg-stacked-container rounded-xl p-1">
-      <button
-        type="button"
-        onClick={() => setMode("password")}
-        disabled={disabled}
-        className={`appearance-none flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
-          mode === "password"
-            ? "bg-white text-gray-900"
-            : "bg-transparent text-gray-500 hover:text-gray-800"
-        }`}
-      >
-        <Lock size={14} /> Password
-      </button>
-      <button
-        type="button"
-        onClick={() => setMode("otp")}
-        disabled={disabled}
-        className={`appearance-none flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-sm font-semibold border-none cursor-pointer transition-all disabled:cursor-not-allowed ${
-          mode === "otp"
-            ? "bg-white text-gray-900"
-            : "bg-transparent text-gray-500 hover:text-gray-800"
-        }`}
-      >
-        <KeyRound size={14} /> One-Time Code
-      </button>
-    </div>
-  );
-}
+import { parseIdentifier, validateIdentifier } from "../../utils/authIdentifiers";
+import ModeTabs from "../../components/auth/ModeTabs";
 
 // One sign-in page reachable from two routes (/sign-in and
 // /member/app-sign-in) — neither the page nor the login call itself knows
@@ -107,31 +55,68 @@ export default function SignIn() {
   const identifierRef = useRef(null);
   const passwordRef = useRef(null);
 
-  // MFA challenge state — set after login() returns mfaRequired: true
-  const [mfaChallenge, setMfaChallenge] = useState(null); // { mfaChallengeToken }
-  const [mfaCode, setMfaCode] = useState("");
-  const mfaInputRef = useRef(null);
+  // ── Shared session-completion for the MFA and OTP hooks ──────────────────
+  // Claimed by whichever auth path gets there first: the pre-auth redirect
+  // effect below, or a sign-in the visitor started themselves.
+  const destinationTakenRef = useRef(false);
 
-  // ── Passwordless (OTP) sign-in ────────────────────────────────────────────
+  // One definition serves both hook callbacks below: establish the session,
+  // then route by the resulting role/device.
+  async function authenticateAndRoute(authData) {
+    const user = await setSession(authData);
+    navigate(await resolveDestination(user), { replace: true });
+  }
+
+  // Disarms the pre-auth redirect effect below, so a visitor who starts an
+  // auth attempt themselves can never have that effect race them for the
+  // one-shot sessionStorage flags resolveDestination consumes. This MUST run
+  // before the session is established, not in authenticateAndRoute above --
+  // by the time onAuthenticated fires, the token is already set and the
+  // effect's guard has nothing left to protect. Hence a separate
+  // onAuthAttempt callback that both hooks invoke at the top of their
+  // session-establishing handlers.
+  const markAuthAttempted = () => {
+    destinationTakenRef.current = true;
+  };
+
+  // MFA challenge state + verification live in useMfaChallenge.
+  const { mfaChallenge, setMfaChallenge, mfaCode, setMfaCode, mfaInputRef, handleMfaVerify } =
+    useMfaChallenge({
+      setLoading,
+      setError,
+      onAuthAttempt: markAuthAttempted,
+      onAuthenticated: authenticateAndRoute,
+    });
+
+  // ── Passwordless (OTP) sign-in — state + handlers live in useOtpSignIn ──
   const [mode, setMode] = useState("password"); // "password" | "otp"
-  const [otpStep, setOtpStep] = useState("request"); // "request" | "verify"
-  const [otpIdentifier, setOtpIdentifier] = useState("");
-  const [otpIdentifierError, setOtpIdentifierError] = useState("");
-  const [otpSending, setOtpSending] = useState(false);
-  const [otpVerifying, setOtpVerifying] = useState(false);
-  const [otpError, setOtpError] = useState("");
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  // Seconds-left for the code itself, driven by the server's expiresAt (not
-  // a hardcoded TTL) -- resendCount as the reset key restarts it on resend.
-  const [otpInitialSeconds, setOtpInitialSeconds] = useState(0);
-  const [resendCount, setResendCount] = useState(0);
-  // Separate cooldown for the resend button itself, driven by a 429's
-  // Retry-After when one comes back -- 0 whenever there's no active cooldown.
-  const [resendCooldown, setResendCooldown] = useState(0);
-  const [resendCooldownKey, setResendCooldownKey] = useState(0);
-  const otpSecondsLeft = useCountdown(otpInitialSeconds, resendCount);
-  const resendSecondsLeft = useCountdown(resendCooldown, resendCooldownKey);
-  const otpCodeExpired = otpStep === "verify" && otpSecondsLeft <= 0;
+  const {
+    otpStep,
+    setOtpStep,
+    otpIdentifier,
+    setOtpIdentifier,
+    otpIdentifierError,
+    setOtpIdentifierError,
+    otpSending,
+    otpVerifying,
+    otpError,
+    setOtpError,
+    otp,
+    setOtp,
+    otpSecondsLeft,
+    resendSecondsLeft,
+    otpCodeExpired,
+    handleSendOtp,
+    handleVerifyOtp,
+    handleResendOtp,
+  } = useOtpSignIn({
+    onAuthAttempt: markAuthAttempted,
+    onMfaRequired: (mfaChallengeToken) => {
+      setMfaChallenge({ mfaChallengeToken });
+      setTimeout(() => mfaInputRef.current?.focus(), 50);
+    },
+    onAuthenticated: authenticateAndRoute,
+  });
 
   function switchMode(next) {
     setMode(next);
@@ -269,8 +254,9 @@ export default function SignIn() {
   // only when the visitor hasn't started an auth attempt themselves: the
   // handlers below flip destinationTakenRef before establishing a session,
   // so a fresh sign-in can never race this effect for the flags. Mirrors
-  // Join/index.jsx's already-authenticated short-circuit.
-  const destinationTakenRef = useRef(false);
+  // Join/index.jsx's already-authenticated short-circuit. The ref itself is
+  // declared above the hook wiring, because useOtpSignIn/useMfaChallenge
+  // close over it via onAuthAttempt.
   useEffect(() => {
     if (destinationTakenRef.current) return;
     if (authLoading || !token || !sessionVerified) return;
@@ -318,108 +304,6 @@ export default function SignIn() {
           fallback: "Incorrect email or password.",
         }),
       );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // ── Passwordless (OTP) handlers ───────────────────────────────────────────
-  async function handleSendOtp() {
-    const identifierError = validateIdentifier(otpIdentifier);
-    if (identifierError) {
-      setOtpIdentifierError(identifierError);
-      return;
-    }
-    setOtpSending(true);
-    setOtpIdentifierError("");
-    try {
-      const result = await requestLoginOtp(parseIdentifier(otpIdentifier));
-      const seconds = Math.max(0, Math.round((new Date(result.expiresAt) - Date.now()) / 1000));
-      setOtpInitialSeconds(seconds);
-      setResendCount((c) => c + 1);
-      setOtp(["", "", "", "", "", ""]);
-      setOtpError("");
-      setOtpStep("verify");
-    } catch (err) {
-      setOtpIdentifierError(notifyError(err, { context: "Send login code" }));
-    } finally {
-      setOtpSending(false);
-    }
-  }
-
-  async function handleVerifyOtp() {
-    destinationTakenRef.current = true;
-    if (otp.some((d) => !d) || otpCodeExpired) return;
-    setOtpVerifying(true);
-    setOtpError("");
-    try {
-      const result = await verifyLoginOtp({
-        ...parseIdentifier(otpIdentifier),
-        token: otp.join(""),
-      });
-      if (result?.mfaRequired) {
-        setMfaChallenge({ mfaChallengeToken: result.mfaChallengeToken });
-        setTimeout(() => mfaInputRef.current?.focus(), 50);
-        return;
-      }
-      const user = await setSession(result);
-      navigate(await resolveDestination(user), { replace: true });
-    } catch (err) {
-      setOtpError(
-        notifyError(err, {
-          context: "Verify login code",
-          fallback: "Invalid or expired code.",
-        }),
-      );
-    } finally {
-      setOtpVerifying(false);
-    }
-  }
-
-  async function handleResendOtp() {
-    setOtpSending(true);
-    setOtpError("");
-    try {
-      const result = await requestLoginOtp(parseIdentifier(otpIdentifier));
-      const seconds = Math.max(0, Math.round((new Date(result.expiresAt) - Date.now()) / 1000));
-      setOtpInitialSeconds(seconds);
-      setResendCount((c) => c + 1);
-      setOtp(["", "", "", "", "", ""]);
-    } catch (err) {
-      const retryAfter = getRetryAfterSeconds(err);
-      if (retryAfter) {
-        setResendCooldown(retryAfter);
-        setResendCooldownKey((k) => k + 1);
-        setOtpError(`Too many attempts — try again in ${formatCountdown(retryAfter)}.`);
-      } else {
-        setOtpError(getErrorMessage(err, "Couldn't resend. Please try again."));
-      }
-    } finally {
-      setOtpSending(false);
-    }
-  }
-
-  async function handleMfaVerify() {
-    destinationTakenRef.current = true;
-    if (mfaCode.length !== 6) return;
-    setLoading(true);
-    setError("");
-    try {
-      const authData = await verifyMfaLogin({
-        challengeToken: mfaChallenge.mfaChallengeToken,
-        code: mfaCode,
-      });
-      const user = await setSession(authData);
-      navigate(await resolveDestination(user), { replace: true });
-    } catch (err) {
-      setError(
-        notifyError(err, {
-          context: "MFA verification",
-          fallback: "Invalid code. Please try again.",
-        }),
-      );
-      setMfaCode("");
-      mfaInputRef.current?.focus();
     } finally {
       setLoading(false);
     }
