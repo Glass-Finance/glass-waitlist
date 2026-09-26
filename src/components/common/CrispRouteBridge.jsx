@@ -32,13 +32,26 @@ export default function CrispRouteBridge() {
   useEffect(() => {
     if (!websiteId) return;
 
-    if (isSensitive(pathname)) Crisp.chat.hide();
-    else Crisp.chat.show();
+    // Crisp's SDK throws if it's used before CrispChat's mount effect has
+    // run Crisp.configure() (this effect can flush first on a fresh page
+    // load — hence the mount order in main.jsx). A chat-widget failure must
+    // never reach the top-level ErrorBoundary and replace the whole app with
+    // an error page: degrade to "widget not updated" instead.
+    try {
+      if (isSensitive(pathname)) Crisp.chat.hide();
+      else Crisp.chat.show();
+    } catch (error) {
+      console.error("[crisp] chat visibility update failed", error);
+    }
 
     // Agent context: which page the visitor is on. Debounced so rapid
     // navigation doesn't fire a session-data write per keystroke of travel.
     const t = setTimeout(() => {
-      Crisp.session.setData({ page: pathname });
+      try {
+        Crisp.session.setData({ page: pathname });
+      } catch (error) {
+        console.error("[crisp] session data update failed", error);
+      }
     }, 400);
     return () => clearTimeout(t);
   }, [pathname, websiteId]);
