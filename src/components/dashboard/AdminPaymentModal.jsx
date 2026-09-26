@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Info, X, Landmark, Loader2 } from "lucide-react";
+import PulseImg from "../common/PulseImg";
 import {
   useInitiatePayment,
   useManagePayments,
@@ -214,7 +215,7 @@ export function AdminPaymentModal({ item, onClose }) {
           <div className="flex items-center gap-3 py-3 border-b border-gray-200">
             <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 border border-surface-container-border bg-[#f0f4ff]">
               {item.logo?.url ? (
-                <img src={item.logo.url} alt="" className="w-full h-full object-cover rounded-lg" />
+                <PulseImg src={item.logo.url} className="w-full h-full rounded-lg" />
               ) : (
                 <span className="text-[11px] font-bold text-brand">{communityInitials}</span>
               )}

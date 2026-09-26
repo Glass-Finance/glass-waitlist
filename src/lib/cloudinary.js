@@ -48,15 +48,25 @@ function cloudName() {
  * @param {number} [opts.dpr] - device pixel ratio (dpr_), e.g. 2 for retina
  * @param {string} [opts.crop] - crop mode (c_), default "limit" (never upscale)
  * @param {string} [opts.quality] - default "auto"
- * @param {boolean} [opts.blur] - low-quality blurred placeholder variant
+ * @param {boolean} [opts.blur] - small LQIP placeholder variant (w_64; the
+ *   caller applies the visual blur via CSS filter). width/dpr are ignored —
+ *   a placeholder's size is fixed by design, not by render size.
  */
 export function cldUrl(publicId, opts = {}) {
   const { width, dpr, crop = "limit", quality = "auto", blur = false } = opts;
 
   const parts = ["f_auto", `q_${quality}`, `c_${crop}`];
-  if (width) parts.push(`w_${width}`);
-  if (dpr) parts.push(`dpr_${dpr}`);
-  if (blur) parts.push("e_blur:1200", "q_auto:low", "w_32");
+  if (blur) {
+    // Plain small downscale only. The old `e_blur:1200,q_auto:low,w_32`
+    // chain quantized this to a ~145-byte 1-bit PNG — a posterized blob
+    // that read as garbage colors once CSS blurred and upscaled it ~35x.
+    // The tiny real-color image + the consumer's `filter: blur(8px)` gives
+    // an honest, cheap LQIP.
+    parts.push("w_64");
+  } else {
+    if (width) parts.push(`w_${width}`);
+    if (dpr) parts.push(`dpr_${dpr}`);
+  }
 
   return `https://res.cloudinary.com/${cloudName()}/image/upload/${parts.join(",")}/${publicId}`;
 }

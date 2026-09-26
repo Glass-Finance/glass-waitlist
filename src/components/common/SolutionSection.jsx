@@ -9,7 +9,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import BlurText from "../ui/BlurText";
 import CloudImage from "./CloudImage";
-import { cldUrl, cldSrcSet, widthsFor } from "../../lib/cloudinary";
+import LqipImg from "./LqipImg";
 
 const lightBg = { publicId: "glass/solution/bg-light", width: 1200 };
 
@@ -155,15 +155,15 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
           draggable={false}
         />
         <div className="solution-fade absolute top-0 left-0 right-0 h-[18%] bg-[linear-gradient(to_bottom,#EFEFF1_0%,rgba(239,239,241,0.7)_55%,transparent_100%)] pointer-events-none z-[5]" />
-        <img
-          src={cldUrl(illustration.publicId, { width: illustration.width })}
-          srcSet={cldSrcSet(illustration.publicId, widthsFor(illustration.width))}
+        <LqipImg
+          publicId={illustration.publicId}
+          width={illustration.width}
           sizes="(min-width: 768px) 50vw, 85vw"
           alt={title}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-auto object-contain z-10"
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] z-10"
+          imgClassName="object-contain"
           draggable={false}
           loading="lazy"
-          decoding="async"
         />
       </div>
     </div>
