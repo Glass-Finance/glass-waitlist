@@ -581,9 +581,85 @@ html.dashboard-compact {
   animation: kycNarrativeIn 0.3s ease-out;
 }
 
+/* ── KYC approval celebration ───────────────────────────────────────────
+   The approved status card's moment: the scene pops in with a slight
+   overshoot, two rings breathe outward once, and six confetti chips fly
+   out from around it. One-shot animations (fill-mode both); base states
+   keep rings/confetti invisible so prefers-reduced-motion — which kills
+   the animations below alongside the classes above — leaves a clean,
+   static card. */
+.kyc-success-scene {
+  position: relative;
+  display: inline-flex;
+  opacity: 1;
+  animation: kycSuccessPop 0.55s cubic-bezier(0.215, 0.61, 0.355, 1) both;
+}
+.kyc-success-scene::before,
+.kyc-success-scene::after {
+  content: "";
+  position: absolute;
+  inset: 14%;
+  border-radius: 9999px;
+  border: 2px solid rgba(22, 163, 74, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  animation: kycSuccessRing 1.4s ease-out 0.25s both;
+}
+.kyc-success-scene::after {
+  animation-delay: 0.6s;
+}
+
+@keyframes kycSuccessPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes kycSuccessRing {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.7);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+.kyc-confetti {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  animation: kycConfetti 0.9s cubic-bezier(0.2, 0.7, 0.4, 1) 0.35s both;
+}
+@keyframes kycConfetti {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--cx), var(--cy)) scale(1) rotate(240deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-kyc-pulse,
-  .animate-kyc-narrative-in {
+  .animate-kyc-narrative-in,
+  .kyc-success-scene,
+  .kyc-success-scene::before,
+  .kyc-success-scene::after,
+  .kyc-confetti {
     animation: none;
   }
 }

@@ -54,14 +54,78 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
 
       {isApproved && (
         <div className={cardCls}>
-          <div className="flex items-center gap-3">
-            <CheckBadgeArt size={44} color="#15803d" tint="#dcfce7" />
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-[#111] m-0">Identity verified</p>
-              <p className="text-xs text-[#6B7280] mt-0.5 mb-0 leading-relaxed">
-                You can create and manage communities.
-              </p>
-            </div>
+          {/* Approval moment: the scene pops in with breathing rings and a
+              confetti burst (index.css — all killed under
+              prefers-reduced-motion). The headline stays exactly "Identity
+              verified" — KycWizardModal's test asserts that text. */}
+          <div className="flex flex-col items-center text-center gap-0.5 pt-1 pb-1.5">
+            <span className="relative inline-flex mb-2 kyc-success-scene">
+              <CheckBadgeArt size={112} />
+              <span
+                className="kyc-confetti"
+                style={{
+                  top: "2%",
+                  left: "8%",
+                  background: "#002fa7",
+                  "--cx": "-16px",
+                  "--cy": "-26px",
+                }}
+              />
+              <span
+                className="kyc-confetti"
+                style={{
+                  top: "0%",
+                  left: "46%",
+                  background: "#f59e0b",
+                  "--cx": "0px",
+                  "--cy": "-32px",
+                }}
+              />
+              <span
+                className="kyc-confetti"
+                style={{
+                  top: "8%",
+                  right: "6%",
+                  background: "#e11d48",
+                  "--cx": "18px",
+                  "--cy": "-22px",
+                }}
+              />
+              <span
+                className="kyc-confetti"
+                style={{
+                  bottom: "10%",
+                  left: "4%",
+                  background: "#4ade80",
+                  "--cx": "-22px",
+                  "--cy": "14px",
+                }}
+              />
+              <span
+                className="kyc-confetti"
+                style={{
+                  bottom: "2%",
+                  left: "40%",
+                  background: "#8b5cf6",
+                  "--cx": "-4px",
+                  "--cy": "28px",
+                }}
+              />
+              <span
+                className="kyc-confetti"
+                style={{
+                  bottom: "12%",
+                  right: "8%",
+                  background: "#002fa7",
+                  "--cx": "20px",
+                  "--cy": "12px",
+                }}
+              />
+            </span>
+            <p className="text-[15px] font-bold text-[#16a34a] m-0">Identity verified</p>
+            <p className="text-xs text-[#6B7280] mt-1 mb-0 leading-relaxed">
+              You can create and manage communities.
+            </p>
           </div>
         </div>
       )}
@@ -69,7 +133,7 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
       {!isApproved && isInReview && !narrativeActive && (
         <div className={cardCls}>
           <div className="flex items-start gap-3">
-            <ClockArt size={40} />
+            <ClockArt size={48} />
             <div className="min-w-0">
               <p className="text-sm font-semibold text-[#111] m-0">Under review</p>
               <p className="text-xs text-[#6B7280] mt-0.5 mb-0 leading-relaxed">
@@ -149,7 +213,7 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
       {!isApproved && !attemptsAllowed && (summary?.restrictionReason || !canStart) && (
         <div className={cardCls + " bg-danger-tint border-[#fecaca]"}>
           <div className="flex items-start gap-3">
-            <AlertArt size={40} />
+            <AlertArt size={48} />
             <div className="min-w-0">
               <p className="text-sm font-semibold text-danger m-0">New attempts disabled</p>
               <p className="text-xs text-[#6B7280] mt-1 mb-0 leading-relaxed">
@@ -170,7 +234,7 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
         isKycTerminal(status) && (
           <div className={cardCls}>
             <div className="flex items-start gap-3">
-              <AlertArt size={40} />
+              <AlertArt size={48} />
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-[#111] m-0">
                   Verification {kycStatusLabel(status).toLowerCase()}
