@@ -19,13 +19,7 @@ export default defineConfig({
       // html drill-down, and lcov for badges/future CI coverage reporting.
       reporter: ["text", "text-summary", "html", "lcov", "json-summary"],
       include: ["src/**/*.{js,jsx}"],
-      exclude: [
-        "src/__tests__/**",
-        "src/main.jsx",
-        "src/App.jsx",
-        "src/preview-notif*.jsx",
-        "src/pages/dev/**",
-      ],
+      exclude: ["src/__tests__/**", "src/main.jsx", "src/App.jsx", "src/pages/dev/**"],
       // Floors measured against the suite as of the initial coverage gate
       // (overall ~20% lines — a jsdom SPA with page-heavy surface). They are
       // regression gates, not aspirations: raise them when adding tests,
