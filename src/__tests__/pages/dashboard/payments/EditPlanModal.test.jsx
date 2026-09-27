@@ -12,6 +12,17 @@ vi.mock("../../../../hooks/useCommunityAccount", () => ({
   useCommunityAccount: () => ({ accounts: [], account: null, isLoading: false }),
 }));
 
+// AudienceMemberPicker owns the members query (mounted only for a
+// SELECTED_MEMBERS audience), so this is the seam it reads.
+const MEMBERS = [
+  { id: "member-a", firstName: "ada", lastName: "Obi", email: "ada@example.test" },
+  { id: "member-b", firstName: "bayo", lastName: "Ade", email: "bayo@example.test" },
+  { id: "member-c", firstName: "chioma", lastName: "Eze", email: "chioma@example.test" },
+];
+vi.mock("../../../../hooks/useCommunityMembers", () => ({
+  useCommunityMembers: () => ({ members: MEMBERS, isLoading: false, error: null }),
+}));
+
 afterEach(cleanup);
 
 const plan = {
@@ -26,6 +37,10 @@ const plan = {
   reminderFrequency: "WEEKLY",
   reminderChannels: ["IN_APP"],
   communityAccountId: "",
+  amountMode: "FIXED",
+  audience: "ALL_MEMBERS",
+  visibility: "PUBLIC",
+  memberIds: [],
 };
 
 function renderModal({ planOverrides = {}, ...props } = {}) {
@@ -156,6 +171,166 @@ describe("EditPlanModal — payload contract", () => {
     const payload = onSave.mock.calls[0][1];
     expect(payload.reminderFrequency).toBe("DISABLED");
     expect(payload.reminderChannels).toBeUndefined();
+  });
+});
+
+// ── amountMode / visibility / audience ───────────────────────────────────────
+// These three used to be absent from the PATCH payload entirely, which made
+// them unchangeable after creation: the backend keeps the stored value for any
+// field a PATCH omits, so an edit silently left the terms alone. They now
+// round-trip — hydrate from the plan, and go back out on save.
+function setSelect(testId, value) {
+  fireEvent.change(screen.getByTestId(testId), { target: { value } });
+}
+
+function savedPayload(onSave) {
+  return onSave.mock.calls[0][1];
+}
+
+describe("EditPlanModal — amountMode", () => {
+  it("offers only FIXED for a recurring plan", () => {
+    renderModal();
+    expect([...screen.getByTestId("amount-mode").options].map((o) => o.value)).toEqual(["FIXED"]);
+    expect(screen.getByText("Recurring plans always bill a fixed amount.")).toBeTruthy();
+  });
+
+  it("offers all four modes for a one-time plan", () => {
+    renderModal({ planOverrides: { type: "ONE_TIME" } });
+    expect([...screen.getByTestId("amount-mode").options].map((o) => o.value)).toEqual([
+      "FIXED",
+      "MINIMUM",
+      "SUGGESTED",
+      "VARIABLE",
+    ]);
+  });
+
+  it("hydrates the stored amount mode", () => {
+    renderModal({ planOverrides: { type: "ONE_TIME", amountMode: "SUGGESTED" } });
+    expect(screen.getByTestId("amount-mode").value).toBe("SUGGESTED");
+  });
+
+  it("sends a changed amount mode", () => {
+    const { onSave } = renderModal({ planOverrides: { type: "ONE_TIME" } });
+    setSelect("amount-mode", "MINIMUM");
+
+    fireEvent.click(saveButton());
+
+    expect(savedPayload(onSave)).toMatchObject({ amountMode: "MINIMUM", amount: 5000 });
+  });
+
+  it("clears the amount with an explicit 0 when a VARIABLE plan's figure is emptied", () => {
+    // Not an omission: the PATCH handler substitutes the stored amount when
+    // `amount` is absent, so clearing the field has to send 0 to take effect.
+    const { onSave } = renderModal({
+      planOverrides: { type: "ONE_TIME", amount: 5000, amountMode: "FIXED" },
+    });
+    setSelect("amount-mode", "VARIABLE");
+    fireEvent.change(screen.getByPlaceholderText("₦0"), { target: { value: "" } });
+
+    fireEvent.click(saveButton());
+
+    expect(savedPayload(onSave)).toMatchObject({ amountMode: "VARIABLE", amount: 0 });
+  });
+
+  it("keeps a stored figure as the VARIABLE baseline instead of wiping it on the switch", () => {
+    const { onSave } = renderModal({ planOverrides: { type: "ONE_TIME" } });
+    setSelect("amount-mode", "VARIABLE");
+
+    fireEvent.click(saveButton());
+
+    expect(savedPayload(onSave)).toMatchObject({ amountMode: "VARIABLE", amount: 5000 });
+  });
+
+  it("still blocks a save when a non-variable mode has no amount", () => {
+    const { onSave } = renderModal({
+      planOverrides: { type: "ONE_TIME", amountMode: "SUGGESTED" },
+    });
+    const amount = screen.getByPlaceholderText("₦0");
+    fireEvent.change(amount, { target: { value: "" } });
+
+    // Same shape as the pre-existing zero-amount case: Save is disabled and
+    // the reason arrives on blur, since a disabled button can't be clicked.
+    expect(saveButton().disabled).toBe(true);
+    fireEvent.blur(amount);
+    expect(screen.getByText("Amount is required.")).toBeTruthy();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+});
+
+describe("EditPlanModal — visibility", () => {
+  it("hydrates and re-sends the stored visibility", () => {
+    const { onSave } = renderModal({ planOverrides: { visibility: "MEMBERS_ONLY" } });
+    expect(screen.getByTestId("visibility").value).toBe("MEMBERS_ONLY");
+
+    fireEvent.click(saveButton());
+
+    expect(savedPayload(onSave)).toMatchObject({ visibility: "MEMBERS_ONLY" });
+  });
+
+  it("sends a changed visibility", () => {
+    const { onSave } = renderModal();
+    setSelect("visibility", "PRIVATE");
+
+    fireEvent.click(saveButton());
+
+    expect(savedPayload(onSave)).toMatchObject({ visibility: "PRIVATE" });
+  });
+});
+
+describe("EditPlanModal — selected members", () => {
+  it("hydrates the stored member selection and re-sends those ids", () => {
+    const { onSave } = renderModal({
+      planOverrides: { audience: "SELECTED_MEMBERS", memberIds: ["member-a", "member-c"] },
+    });
+    expect(screen.getByLabelText("Ada Obi").checked).toBe(true);
+    expect(screen.getByLabelText("Bayo Ade").checked).toBe(false);
+
+    fireEvent.click(saveButton());
+
+    expect(savedPayload(onSave)).toMatchObject({
+      audience: "SELECTED_MEMBERS",
+      memberIds: ["member-a", "member-c"],
+    });
+  });
+
+  it("adds and removes members from the saved payload", () => {
+    const { onSave } = renderModal({
+      planOverrides: { audience: "SELECTED_MEMBERS", memberIds: ["member-a"] },
+    });
+
+    fireEvent.click(screen.getByLabelText("Bayo Ade"));
+    fireEvent.click(saveButton());
+    expect(savedPayload(onSave)).toMatchObject({ memberIds: ["member-a", "member-b"] });
+
+    cleanup();
+
+    const { onSave: secondSave } = renderModal({
+      planOverrides: { audience: "SELECTED_MEMBERS", memberIds: ["member-a", "member-b"] },
+    });
+    fireEvent.click(screen.getByLabelText("Ada Obi"));
+    fireEvent.click(saveButton());
+    expect(secondSave).toHaveBeenCalled();
+    expect(secondSave.mock.calls[0][1]).toMatchObject({ memberIds: ["member-b"] });
+  });
+
+  it("blocks the save and explains when the last member is deselected", () => {
+    const { onSave } = renderModal({
+      planOverrides: { audience: "SELECTED_MEMBERS", memberIds: ["member-a"] },
+    });
+
+    fireEvent.click(screen.getByLabelText("Ada Obi"));
+
+    expect(saveButton().disabled).toBe(true);
+    expect(screen.getByText("Choose at least one member for this plan to bill.")).toBeTruthy();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("omits memberIds for an all-members plan", () => {
+    const { onSave } = renderModal();
+
+    fireEvent.click(saveButton());
+
+    expect(savedPayload(onSave)).not.toHaveProperty("memberIds");
   });
 });
 

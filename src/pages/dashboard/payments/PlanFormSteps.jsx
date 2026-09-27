@@ -10,10 +10,45 @@ import {
   RETRY_POLICIES,
   REMINDER_FREQUENCIES,
   REMINDER_CHANNELS,
+  AMOUNT_MODES,
+  AUDIENCE_OPTIONS,
+  AUDIENCE_EMPTY_MESSAGE,
+  VISIBILITY_OPTIONS,
 } from "./constants";
-import { blurOnWheel, intervalUnitLabel } from "./helpers";
+import {
+  blurOnWheel,
+  intervalUnitLabel,
+  amountModesForPlanType,
+  amountRequiredForMode,
+} from "./helpers";
 import { PayoutAccountField, BillingDayField } from "./PlanFormFields";
 import PlanReview from "./PlanReview";
+import AudienceMemberPicker from "./AudienceMemberPicker";
+
+// The native select chevron is drawn by hand throughout this file (an
+// absolutely-positioned triangle over `appearance-none`), so every select here
+// repeats it rather than diverging visually. Every option list passed in
+// always has a concrete value, so there is no empty/placeholder state to
+// model — the controls below all default to a real term.
+function Select({ value, onChange, options, testId }) {
+  return (
+    <div className="relative">
+      <select
+        className={`${inputCls} appearance-none !pr-9`}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        data-testid={testId}
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+    </div>
+  );
+}
 
 // Card look matches onboarding's ChoosePath.jsx (white fill, rounded-2xl,
 // brand border + filled checkmark circle only on selection) -- one
@@ -89,10 +124,12 @@ export function Step2({
   accounts,
   fieldErrors = {},
   onFieldBlur,
+  communityId,
 }) {
   const { slug, setSlug, available, checking, suggesting, suggestFrom } = slugState;
 
   const isDaily = form.frequency === "DAILY";
+  const amountRequired = amountRequiredForMode(form.amountMode);
 
   // Weekly billing days are 1–7 (day of week). Monthly billing days are
   // validated against the selected start date's actual month (e.g. 28 for
@@ -173,8 +210,33 @@ export function Step2({
         onChange={(v) => onChange("communityAccountId", v)}
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Amount mode is constrained by plan type, not just offered: the
+            backend whitelists paymentType x amountMode and RECURRING accepts
+            FIXED alone, so the option list here is the whitelist for this
+            step's plan type. */}
         <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Amount</label>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Amount type</label>
+          <Select
+            value={form.amountMode || "FIXED"}
+            onChange={(v) => onChange("amountMode", v)}
+            options={AMOUNT_MODES.filter((o) => amountModesForPlanType(planType).includes(o.value))}
+            testId="amount-mode"
+          />
+          {amountModesForPlanType(planType).length === 1 && (
+            <p className="text-[11px] text-gray-400 mt-1">
+              Recurring plans always bill a fixed amount.
+            </p>
+          )}
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Amount{" "}
+            {amountRequired ? (
+              <span className="text-red-500">*</span>
+            ) : (
+              <span className="text-gray-400">(optional)</span>
+            )}
+          </label>
           <input
             type="number"
             onWheel={blurOnWheel}
@@ -186,30 +248,79 @@ export function Step2({
             style={fieldErrors.amount ? { borderColor: "var(--color-danger)" } : undefined}
           />
           {fieldErrors.amount && <p className="text-xs text-danger mt-1">{fieldErrors.amount}</p>}
+          {!amountRequired && !fieldErrors.amount && (
+            <p className="text-[11px] text-gray-400 mt-1">
+              Leave blank and members pay any amount they choose.
+            </p>
+          )}
         </div>
-        {planType === "recurring" && (
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Frequency</label>
-            <div className="relative">
-              <select
-                className={`${inputCls} appearance-none !pr-9`}
-                value={form.frequency || ""}
-                onChange={(e) => onChange("frequency", e.target.value)}
-              >
-                <option value="" disabled>
-                  Select frequency
-                </option>
-                {FREQUENCIES.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
-            </div>
-          </div>
-        )}
       </div>
+
+      {planType === "recurring" && (
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Frequency</label>
+          <div className="relative">
+            <select
+              className={`${inputCls} appearance-none !pr-9`}
+              value={form.frequency || ""}
+              onChange={(e) => onChange("frequency", e.target.value)}
+            >
+              <option value="" disabled>
+                Select frequency
+              </option>
+              {FREQUENCIES.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Who it's for</label>
+          <Select
+            value={form.audience || "ALL_MEMBERS"}
+            onChange={(v) => onChange("audience", v)}
+            options={AUDIENCE_OPTIONS}
+            testId="audience"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">Who can pay</label>
+          <Select
+            value={form.visibility || "PUBLIC"}
+            onChange={(v) => onChange("visibility", v)}
+            options={VISIBILITY_OPTIONS}
+            testId="visibility"
+          />
+        </div>
+      </div>
+
+      {form.audience === "SELECTED_MEMBERS" && (
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Members <span className="text-red-500">*</span>
+          </label>
+          <AudienceMemberPicker
+            communityId={communityId}
+            selected={form.memberIds}
+            onChange={(ids) => onChange("memberIds", ids)}
+          />
+          {/* Shown as soon as the audience needs a selection, not only after a
+              submit attempt: Continue is disabled while the list is empty, so
+              waiting for a click would mean the reason never appears. */}
+          {(fieldErrors.audience ||
+            (form.audience === "SELECTED_MEMBERS" && !(form.memberIds ?? []).length)) && (
+            <p className="text-xs text-danger mt-1">
+              {fieldErrors.audience || AUDIENCE_EMPTY_MESSAGE}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Interval — multiplier on top of frequency, e.g. frequency=DAILY +
           interval=3 means "every 3 days". Required by RecurringPlanRequest;
@@ -411,6 +522,14 @@ export function Step2({
   );
 }
 
-export function Step3({ planType, form, slug, accounts }) {
-  return <PlanReview planType={planType} form={form} slug={slug} accounts={accounts} />;
+export function Step3({ planType, form, slug, accounts, memberCount = 0 }) {
+  return (
+    <PlanReview
+      planType={planType}
+      form={form}
+      slug={slug}
+      accounts={accounts}
+      memberCount={memberCount}
+    />
+  );
 }

@@ -54,7 +54,12 @@ export default function PlanCard({
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5 min-w-0">
           <span className="text-md font-semibold text-gray-900 leading-none">
-            {formatNaira(plan.amount)}
+            {/* A VARIABLE plan with no baseline stores amount 0 (the service
+                maps a null amount to 0), so formatting it would read as
+                "₦0" — i.e. free — rather than "any amount". */}
+            {plan.amountMode === "VARIABLE" && !plan.amount
+              ? "Any amount"
+              : formatNaira(plan.amount)}
           </span>
           <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0 text-[#7c3aed] bg-[#f3eeff]">
             {freqLabel}

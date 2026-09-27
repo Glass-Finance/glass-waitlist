@@ -192,6 +192,19 @@ describe("Payments — page states", () => {
     expect(statValue("Failed Payments")).toBe("1");
   });
 
+  it("labels a VARIABLE plan with no baseline instead of showing ₦0", () => {
+    // The service stores 0 for "no amount", which would otherwise read as a
+    // free plan rather than one where the member chooses the figure.
+    renderPage(
+      makePlanPlans({
+        plans: [planFixture({ type: "ONE_TIME", amountMode: "VARIABLE", amount: 0 })],
+      }),
+    );
+
+    expect(screen.getByText("Any amount")).toBeTruthy();
+    expect(screen.queryByText("₦0")).toBeNull();
+  });
+
   it("filters plans by tab", () => {
     renderPage(
       makePlanPlans({
