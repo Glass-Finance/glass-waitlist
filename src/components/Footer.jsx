@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import { Crisp } from "crisp-sdk-web";
 import { goToApp } from "../utils/deviceRedirect";
-import CloudImage from "./common/CloudImage";
+import glassLogo from "../assets/Glass.webp";
 import BlurText from "./ui/BlurText";
 
 // Help Centre opens the support chat when Crisp is configured; the mailto
@@ -89,12 +89,15 @@ export default function Footer() {
         {/* Brand */}
         <div className="mb-6">
           <a href="/" className="inline-flex items-center gap-2 no-underline mb-3">
-            <CloudImage
-              publicId="glass/footer/Glass"
+            {/* Local bundle, not Cloudinary: the remote logo kept rendering
+                unreliably here, and this ships with the app — no CDN round
+                trip for a 28px icon. */}
+            <img
+              src={glassLogo}
               alt="Glass"
-              width={56}
-              objectFit="contain"
-              className="w-7 h-7"
+              loading="lazy"
+              decoding="async"
+              className="w-7 h-7 object-contain"
             />
             <span className="font-bold text-[20px] text-white">Glass</span>
           </a>
