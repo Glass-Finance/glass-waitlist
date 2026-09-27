@@ -23,7 +23,6 @@ export default defineConfig({
         "src/__tests__/**",
         "src/main.jsx",
         "src/App.jsx",
-        "src/preview-notif*.jsx",
         "src/pages/dev/**",
       ],
       // Floors measured against the suite as of the initial coverage gate

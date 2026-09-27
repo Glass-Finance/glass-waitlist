@@ -16,7 +16,7 @@ ESLint runs `eslint-plugin-jsx-a11y` recommended rules. Five rules with large pr
 
 ## Coverage
 
-`npm run test:coverage` runs Vitest with the v8 provider over `src/**/*.{js,jsx}`. Test files (`src/__tests__/**`), entry points (`src/main.jsx`, `src/App.jsx`), the notification preview harness (`src/preview-notif*.jsx`), and dev-only pages (`src/pages/dev/**`) are excluded; `e2e/**` is excluded from Vitest entirely (Playwright owns it). Reports are written to `coverage/` in `text`, `text-summary`, `html`, `lcov`, and `json-summary` formats — the summaries for quick reading, `html` for local drill-down, `lcov` for badges/future CI reporting.
+`npm run test:coverage` runs Vitest with the v8 provider over `src/**/*.{js,jsx}`. Test files (`src/__tests__/**`), entry points (`src/main.jsx`, `src/App.jsx`), and dev-only pages (`src/pages/dev/**`) are excluded; `e2e/**` is excluded from Vitest entirely (Playwright owns it). Reports are written to `coverage/` in `text`, `text-summary`, `html`, `lcov`, and `json-summary` formats — the summaries for quick reading, `html` for local drill-down, `lcov` for badges/future CI reporting.
 
 Baseline after the testing sprints (measured on the merged suite): **statements 32.11%, branches 29.69%, functions 26.56%, lines 33.04%** — up from the pre-sprint baseline of 19.82% statements / 17.01% branches / 14.59% functions / 20.19% lines.
 
