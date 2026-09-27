@@ -11,8 +11,8 @@ const cards = [
   },
   {
     publicId: "glass/security/ndpr-compliant",
-    title: "NDPR Compliant",
-    desc: "Your rights — access, correction, and deletion — are set out in our Privacy Policy under the Nigeria Data Protection Act 2023.",
+    title: "Data Rights",
+    desc: "Your rights: access, correction, and deletion are set out in our Privacy Policy.",
   },
   {
     publicId: "glass/security/encryption",
