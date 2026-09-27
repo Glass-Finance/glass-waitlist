@@ -487,7 +487,7 @@ describe("CreatePlanModal — selected members", () => {
     submitStepTwo();
 
     expect(screen.getByText("Specific members")).toBeTruthy();
-    expect(screen.getByText("Only the selected members")).toBeTruthy();
+    expect(screen.getByText("Plan audience only")).toBeTruthy();
     expect(screen.getByText("Members selected")).toBeTruthy();
   });
 });

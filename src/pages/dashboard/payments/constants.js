@@ -31,23 +31,27 @@ export const RETRY_POLICIES = [
 ];
 
 // Matches PaymentAmountMode (FIXED | MINIMUM | SUGGESTED | VARIABLE).
-// What the label has to convey is whether the member chooses the number:
-// FIXED/MINIMUM are hard requirements, SUGGESTED is a default the member can
-// raise, VARIABLE means any amount at all (the member types it at checkout).
+// The labels are deliberately short: these render inside a half-width select
+// with ~173px of usable text, and a closed native select clips rather than
+// wraps, so the longer "…— members pay at least this" phrasing was unreadable
+// once chosen. What each mode MEANS is carried by the field hint under the
+// amount input, not by the option text.
 export const AMOUNT_MODES = [
   { label: "Fixed amount", value: "FIXED" },
-  { label: "Minimum — members pay at least this", value: "MINIMUM" },
-  { label: "Suggested — members can pay more", value: "SUGGESTED" },
-  { label: "Any amount — members choose", value: "VARIABLE" },
+  { label: "Minimum amount", value: "MINIMUM" },
+  { label: "Suggested amount", value: "SUGGESTED" },
+  { label: "Any amount", value: "VARIABLE" },
 ];
 
 // Matches PaymentVisibility (PUBLIC | MEMBERS_ONLY | PRIVATE). PRIVATE is not
-// "hidden": the link only works for the audience members (the backend rejects
-// a PRIVATE link with an empty audience), so the label says who can pay.
+// "hidden": the link only works for the plan's AUDIENCE, which may or may not
+// be a hand-picked list. The old "Only the selected members" wording was
+// actively wrong for an ALL_MEMBERS audience, where nothing is selected and no
+// member picker is even on screen.
 export const VISIBILITY_OPTIONS = [
   { label: "Anyone with the link", value: "PUBLIC" },
-  { label: "Community members only", value: "MEMBERS_ONLY" },
-  { label: "Only the selected members", value: "PRIVATE" },
+  { label: "Community members", value: "MEMBERS_ONLY" },
+  { label: "Plan audience only", value: "PRIVATE" },
 ];
 
 // Matches PaymentAudience. GROUP is deliberately NOT offered yet: it needs

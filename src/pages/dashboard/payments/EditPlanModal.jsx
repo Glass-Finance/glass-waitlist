@@ -38,7 +38,13 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
   // them unchangeable after creation.
   const [form, setForm] = useState({
     name: plan.name ?? "",
-    amount: String(plan.amount ?? ""),
+    // A VARIABLE plan with no baseline is stored with amount 0 (the service
+    // maps a null amount to 0). Hydrating that as the string "0" made the
+    // mode-aware validator read it as a deliberately-typed zero and reject it,
+    // which left Save disabled on a perfectly valid plan. Hydrate the "no
+    // baseline" state as blank instead, matching the create flow — the payload
+    // still converts back to 0 via amountPayloadForMode.
+    amount: plan.amountMode === "VARIABLE" && !plan.amount ? "" : String(plan.amount ?? ""),
     amountMode: plan.amountMode ?? "FIXED",
     audience: plan.audience ?? "ALL_MEMBERS",
     visibility: plan.visibility ?? "PUBLIC",

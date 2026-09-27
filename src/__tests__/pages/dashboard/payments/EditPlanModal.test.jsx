@@ -241,6 +241,19 @@ describe("EditPlanModal — amountMode", () => {
     expect(savedPayload(onSave)).toMatchObject({ amountMode: "VARIABLE", amount: 5000 });
   });
 
+  it("hydrates a stored VARIABLE plan with no baseline as a blank, saveable amount", () => {
+    // Regression: amount 0 is how the backend stores "no baseline". Hydrating
+    // it as the string "0" looked like a typed zero, so validation rejected it
+    // and Save stayed disabled on a valid plan.
+    const { onSave } = renderModal({
+      planOverrides: { type: "ONE_TIME", amountMode: "VARIABLE", amount: 0 },
+    });
+    expect(screen.getByPlaceholderText("₦0").value).toBe("");
+    expect(saveButton().disabled).toBe(false);
+    fireEvent.click(saveButton());
+    expect(savedPayload(onSave)).toMatchObject({ amountMode: "VARIABLE", amount: 0 });
+  });
+
   it("still blocks a save when a non-variable mode has no amount", () => {
     const { onSave } = renderModal({
       planOverrides: { type: "ONE_TIME", amountMode: "SUGGESTED" },
