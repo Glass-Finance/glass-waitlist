@@ -1,8 +1,19 @@
 import { formatNaira, formatDate } from "../../../utils/format";
-import { FREQUENCIES, REMINDER_FREQUENCIES, REMINDER_CHANNELS, RETRY_POLICIES } from "./constants";
+import {
+  FREQUENCIES,
+  REMINDER_FREQUENCIES,
+  REMINDER_CHANNELS,
+  RETRY_POLICIES,
+  AMOUNT_MODES,
+  AUDIENCE_OPTIONS,
+  VISIBILITY_OPTIONS,
+} from "./constants";
 import { billingDayLabel, intervalUnitLabel, payoutAccountLabel } from "./helpers";
 
-export default function PlanReview({ planType, form, slug, accounts }) {
+const optionLabel = (options, value, fallback = "—") =>
+  options.find((option) => option.value === value)?.label ?? fallback;
+
+export default function PlanReview({ planType, form, slug, accounts, memberCount = 0 }) {
   const rows = [
     { label: "Plan Name", value: form.name || "—" },
     { label: "URL slug", value: slug || "—" },
@@ -10,10 +21,22 @@ export default function PlanReview({ planType, form, slug, accounts }) {
       label: "Plan Type",
       value: planType === "recurring" ? "Recurring" : "One Time",
     },
+    { label: "Amount type", value: optionLabel(AMOUNT_MODES, form.amountMode, "Fixed amount") },
     {
       label: "Amount",
-      value: form.amount ? formatNaira(Number(form.amount)) : "—",
+      // VARIABLE with no figure is a real state, not a missing one — the
+      // backend stores 0 and lets the member choose at checkout.
+      value: form.amount
+        ? formatNaira(Number(form.amount))
+        : form.amountMode === "VARIABLE"
+          ? "Any amount"
+          : "—",
     },
+    { label: "Who it's for", value: optionLabel(AUDIENCE_OPTIONS, form.audience, "All members") },
+    ...(form.audience === "SELECTED_MEMBERS"
+      ? [{ label: "Members selected", value: `${memberCount}` }]
+      : []),
+    { label: "Who can pay", value: optionLabel(VISIBILITY_OPTIONS, form.visibility, "Anyone") },
     ...(accounts && accounts.length > 1
       ? [
           {
