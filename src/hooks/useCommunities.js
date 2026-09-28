@@ -99,7 +99,7 @@ export function useCommunitiesWithMetrics(params = {}) {
     queries: communities.map((c) => ({
       queryKey: ["community", c.slug ?? c.id, "transactions"],
       queryFn: () => fetchAllCommunityTransactions(c.slug ?? c.id),
-      enabled: !!listQuery.data,
+      enabled: !!listQuery.data && !!c.owned,
       staleTime: 1000 * 60 * 2,
     })),
   });
