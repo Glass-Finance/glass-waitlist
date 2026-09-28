@@ -9,7 +9,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import BlurText from "../ui/BlurText";
 import CloudImage from "./CloudImage";
-import LqipImg from "./LqipImg";
+import CloudAspectImage from "./CloudAspectImage";
 
 const lightBg = { publicId: "glass/solution/bg-light", width: 1200 };
 
@@ -155,9 +155,10 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
           draggable={false}
         />
         <div className="solution-fade absolute top-0 left-0 right-0 h-[18%] bg-[linear-gradient(to_bottom,#EFEFF1_0%,rgba(239,239,241,0.7)_55%,transparent_100%)] pointer-events-none z-[5]" />
-        <LqipImg
+        <CloudAspectImage
           publicId={illustration.publicId}
           width={illustration.width}
+          aspectRatio={illustration.aspect}
           sizes="(min-width: 768px) 50vw, 85vw"
           alt={title}
           className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] z-10"

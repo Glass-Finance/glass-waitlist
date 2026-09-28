@@ -3,7 +3,13 @@ import { X, ArrowLeft } from "lucide-react";
 import { useSlug } from "../../../hooks/useSlug";
 import { useCommunityAccount } from "../../../hooks/useCommunityAccount";
 import { dateInputToIso } from "../../../utils/date";
-import { validatePlanField } from "./helpers";
+import { AUDIENCE_EMPTY_MESSAGE } from "./constants";
+import {
+  validatePlanField,
+  validateAmountForMode,
+  amountPayloadForMode,
+  resolveAmountMode,
+} from "./helpers";
 import PlanStepIndicator from "./PlanStepIndicator";
 import { Step1, Step2, Step3 } from "./PlanFormSteps";
 import SuccessBadge from "../../../components/common/SuccessBadge";
@@ -20,6 +26,13 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
     name: "",
     description: "",
     amount: "",
+    // amountMode/visibility/audience used to be hardcoded into the payload
+    // (FIXED / PUBLIC / ALL_MEMBERS) — the endpoints have always accepted all
+    // of them, but the wizard made the other values unreachable.
+    amountMode: "FIXED",
+    visibility: "PUBLIC",
+    audience: "ALL_MEMBERS",
+    memberIds: [],
     frequency: "",
     startDate: "",
     dueDate: "",
@@ -35,13 +48,36 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
     communityAccountId: "",
   });
   const slugState = useSlug("PAYMENT_LINK");
-  const [fieldErrors, setFieldErrors] = useState({ name: "", amount: "" });
-  const update = useCallback((k, v) => {
-    setForm((f) => ({ ...f, [k]: v }));
-    setFieldErrors((fe) => (fe[k] ? { ...fe, [k]: validatePlanField(k, v) } : fe));
-  }, []);
+  const [fieldErrors, setFieldErrors] = useState({ name: "", amount: "", audience: "" });
+  // The amount rule is mode-dependent, so live re-validation has to read the
+  // mode that applies. Depending on amountMode (rather than all of `form`)
+  // keeps this callback stable across keystrokes — Step2's billing-day clamp
+  // effect takes `onChange` as a dependency.
+  const update = useCallback(
+    (k, v) => {
+      setForm((f) => ({ ...f, [k]: v }));
+      setFieldErrors((fe) =>
+        fe[k]
+          ? {
+              ...fe,
+              [k]:
+                k === "amount"
+                  ? validateAmountForMode(v, form.amountMode)
+                  : validatePlanField(k, v),
+            }
+          : fe,
+      );
+    },
+    [form.amountMode],
+  );
   const handleFieldBlur = (field) => (e) =>
-    setFieldErrors((fe) => ({ ...fe, [field]: validatePlanField(field, e.target.value) }));
+    setFieldErrors((fe) => ({
+      ...fe,
+      [field]:
+        field === "amount"
+          ? validateAmountForMode(e.target.value, form.amountMode)
+          : validatePlanField(field, e.target.value),
+    }));
 
   // Only relevant when a community has more than one payout account
   // connected (PayoutAccountField hides itself otherwise) — default to
@@ -56,23 +92,32 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (def) setForm((f) => ({ ...f, communityAccountId: def.id }));
   }, [accounts]); // eslint-disable-line react-hooks/exhaustive-deps
+  // A SELECTED_MEMBERS plan with nobody selected is the one invalid state the
+  // CREATE endpoint does NOT reject: the backend's create path saves the
+  // audience rows without checking the list is non-empty (only its PATCH path
+  // does, at PaymentLinkServiceImpl's "Selected members audience requires at
+  // least one member"), so an empty selection would quietly produce a plan that
+  // bills nobody. Gated here instead.
+  const audienceReady = form.audience !== "SELECTED_MEMBERS" || (form.memberIds ?? []).length > 0;
   const canContinue =
     step === 1
       ? !!planType
       : step === 2
         ? !!(
             form.name &&
-            Number(form.amount) > 0 &&
+            !validateAmountForMode(form.amount, form.amountMode) &&
             slugState.slug &&
+            audienceReady &&
             (planType === "recurring" ? form.frequency : form.dueDate)
           )
         : true;
 
   function handleStep2Continue() {
     const nameError = validatePlanField("name", form.name);
-    const amountError = validatePlanField("amount", form.amount);
-    if (nameError || amountError) {
-      setFieldErrors({ name: nameError, amount: amountError });
+    const amountError = validateAmountForMode(form.amount, form.amountMode);
+    const audienceError = audienceReady ? "" : AUDIENCE_EMPTY_MESSAGE;
+    if (nameError || amountError || audienceError) {
+      setFieldErrors({ name: nameError, amount: amountError, audience: audienceError });
       return;
     }
     setStep(3);
@@ -82,15 +127,23 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
     const startIso = form.startDate
       ? dateInputToIso(form.startDate, { clampToNow: true })
       : new Date().toISOString();
+    // Clamped at the last moment: picking VARIABLE on a one-time plan and then
+    // switching back to recurring on step 1 can leave a mode the whitelist
+    // rejects, and the payload must never carry it.
+    const amountMode = resolveAmountMode(planType, form.amountMode);
     const payload = {
       title: form.name,
-      amount: Number(form.amount),
+      amount: amountPayloadForMode(amountMode, form.amount),
       paymentType: planType === "recurring" ? "RECURRING" : "ONE_TIME",
       slug: slugState.slug,
       activateImmediately: form.activateImmediately ?? true,
-      audience: "ALL_MEMBERS",
-      visibility: "PUBLIC",
-      amountMode: "FIXED",
+      audience: form.audience || "ALL_MEMBERS",
+      visibility: form.visibility || "PUBLIC",
+      amountMode,
+      // memberIds only travel with a SELECTED_MEMBERS audience: the backend
+      // reads them solely for that case, and sending them otherwise would
+      // imply an audience the plan doesn't have.
+      ...(form.audience === "SELECTED_MEMBERS" ? { memberIds: form.memberIds } : {}),
       ...(form.description?.trim() ? { description: form.description.trim() } : {}),
       ...(form.communityAccountId ? { communityAccountId: form.communityAccountId } : {}),
       ...(planType === "recurring"
@@ -186,6 +239,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
                     accounts={accounts}
                     fieldErrors={fieldErrors}
                     onFieldBlur={handleFieldBlur}
+                    communityId={communityId}
                   />
                 )}
                 {step === 3 && (
@@ -194,6 +248,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
                     form={form}
                     slug={slugState.slug}
                     accounts={accounts}
+                    memberCount={(form.memberIds ?? []).length}
                   />
                 )}
               </div>

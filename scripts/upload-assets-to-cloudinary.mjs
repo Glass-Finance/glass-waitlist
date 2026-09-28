@@ -20,8 +20,9 @@
 //   node scripts/upload-assets-to-cloudinary.mjs --dry-run # preview only, no upload
 //   node scripts/upload-assets-to-cloudinary.mjs --scope   # only the landing + auth/brand
 //                                                          # assets referenced by migrated
-//                                                          # components (LQIP CloudImage /
-//                                                          # cldUrl / cldSrcSet) — see
+//                                                          # components (CloudImage /
+//                                                          # CloudAspectImage / cldUrl /
+//                                                          # cldSrcSet) — see
 //                                                          # docs/cloudinary.md
 // Flags compose, e.g. `--dry-run --scope`.
 

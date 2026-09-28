@@ -6,6 +6,8 @@ import {
   useConfirmKycSubmission,
 } from "./useKyc";
 import { loadSmileScript } from "../utils/smileScript";
+import { buildSmileConfig, validateSmileConfig } from "../utils/smileSdkConfig";
+import { DEFAULT_SMILE_CALLBACK_URL } from "../api/kyc";
 import { isKycApproved, isKycPending, isKycInReview, isKycNotStarted } from "../utils/kycStatus";
 import { notifyError, getErrorMessage } from "../utils/errorHandler";
 
@@ -13,9 +15,18 @@ import { notifyError, getErrorMessage } from "../utils/errorHandler";
 // member app page and the dashboard page run the exact same state machine,
 // only the chrome differs.
 //
-// Smile ID capture uses a short-lived token minted by Glass. The callback URL
-// is already embedded in the token — do not pass it to the SDK. Keep the
-// token in memory only (this hook's state / mutation result).
+// Smile ID capture uses a short-lived token minted by Glass, kept in memory
+// only (this hook's state / mutation result).
+//
+// The SDK REQUIRES an explicit `callback_url` on its initialisation call. It
+// does NOT read a callback out of that token: omitting the attribute makes
+// SmileIdentity throw synchronously, before any document or camera capture
+// starts, and every resume retries the same dead end.
+//
+// The partner configuration the SDK also requires lives in build-time env
+// (see .env.example), so it is assembled and checked in one place —
+// utils/smileSdkConfig.js — before the call, rather than being discovered one
+// provider error at a time in production.
 export function useKycVerification() {
   const { data: summary, isLoading, isError, error, refetch, isFetching } = useKycSummary();
   const startAttempt = useStartKycAttempt();
@@ -42,14 +53,12 @@ export function useKycVerification() {
         throw new Error("Smile ID SDK failed to load. Please try again.");
       }
 
-      const env = (import.meta.env.VITE_SMILE_ENV ?? "sandbox").toLowerCase();
-      const partnerId = import.meta.env.VITE_SMILE_PARTNER_ID ?? "";
-      const partnerName = import.meta.env.VITE_SMILE_PARTNER_NAME ?? "Glass";
-      const logoUrl = import.meta.env.VITE_SMILE_LOGO_URL ?? "";
-      const policyUrl =
-        import.meta.env.VITE_SMILE_POLICY_URL ??
-        `${import.meta.env.VITE_APP_URL ?? ""}/legal/privacy-policy`;
-      const themeColor = import.meta.env.VITE_SMILE_THEME_COLOR ?? "#002FA7";
+      // Throws before the SDK is called when a required option is absent, so a
+      // misconfigured deploy names every missing key in one message instead of
+      // stalling the member on the next provider validation error.
+      const config = validateSmileConfig(
+        buildSmileConfig({ token, callbackUrl: DEFAULT_SMILE_CALLBACK_URL }),
+      );
 
       let settled = false;
       const finish = async (ok, message) => {
@@ -73,16 +82,7 @@ export function useKycVerification() {
       };
 
       window.SmileIdentity({
-        token,
-        product: "biometric_kyc",
-        environment: env === "production" ? "production" : "sandbox",
-        partner_details: {
-          partner_id: partnerId,
-          name: partnerName,
-          logo_url: logoUrl,
-          policy_url: policyUrl,
-          theme_color: themeColor,
-        },
+        ...config,
         onSuccess: () => finish(true),
         onError: (err) =>
           finish(false, typeof err === "string" ? err : "Verification was not completed."),

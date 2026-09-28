@@ -13,7 +13,6 @@ import { formatNaira } from "../../utils/format";
 import { TABS, BAR_COLOR_CLASSES } from "./payments/constants";
 import CreatePlanModal from "./payments/CreatePlanModal";
 import EditPlanModal from "./payments/EditPlanModal";
-import SendReminderModal from "./payments/SendReminderModal";
 import PlanMembersModal from "./payments/PlanMembersModal";
 import DuplicatePlanModal from "./payments/DuplicatePlanModal";
 import PlanCard from "./payments/PlanCard";
@@ -24,7 +23,6 @@ export default function Payments() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
   const [viewingMembersPlan, setViewingMembersPlan] = useState(null);
-  const [remindingPlan, setRemindingPlan] = useState(null);
   const [duplicatingPlan, setDuplicatingPlan] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [tab, setTab] = useState("All Plans");
@@ -75,19 +73,6 @@ export default function Payments() {
       flashSuccess("Plan Updated!");
     } catch (err) {
       notifyError(err, { context: "Update payment plan" });
-    }
-  }
-
-  async function handleSendReminder(payload) {
-    try {
-      await planPlans.sendReminder.mutateAsync({
-        paymentLinkId: remindingPlan.id,
-        payload,
-      });
-      setRemindingPlan(null);
-      flashSuccess("Reminder Sent!");
-    } catch (err) {
-      notifyError(err, { context: "Send reminder" });
     }
   }
 
@@ -199,7 +184,6 @@ export default function Payments() {
               barColorCls={BAR_COLOR_CLASSES[i % BAR_COLOR_CLASSES.length]}
               onEdit={setEditingPlan}
               onViewMembers={setViewingMembersPlan}
-              onSendReminder={setRemindingPlan}
               onDuplicate={setDuplicatingPlan}
             />
           ))}
@@ -230,14 +214,6 @@ export default function Payments() {
           plan={viewingMembersPlan}
           communityId={communityId}
           onClose={() => setViewingMembersPlan(null)}
-        />
-      )}
-      {remindingPlan && (
-        <SendReminderModal
-          plan={remindingPlan}
-          onClose={() => setRemindingPlan(null)}
-          onSend={handleSendReminder}
-          sending={planPlans.sendReminder.isPending}
         />
       )}
       {duplicatingPlan && (

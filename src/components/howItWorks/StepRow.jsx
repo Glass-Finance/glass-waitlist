@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import CloudImage from "../common/CloudImage";
-import LqipImg from "../common/LqipImg";
+import CloudAspectImage from "../common/CloudAspectImage";
 
 const isMobileScreen =
   typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
@@ -70,9 +70,10 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
         {/* ── Mobile — label overlaps top-left of image ── */}
         <div className="flex flex-col md:hidden relative">
           <div className="relative w-full rounded-lg overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
-            <LqipImg
+            <CloudAspectImage
               publicId={step.img.publicId}
               width={step.img.width}
+              aspectRatio={step.img.aspect}
               sizes="100vw"
               alt={step.label}
               draggable={false}
@@ -118,9 +119,10 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
             <p className="text-[13px] font-bold text-[#0f1d6e] leading-snug">{step.label}</p>
           </div>
           <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
-            <LqipImg
+            <CloudAspectImage
               publicId={step.img.publicId}
               width={step.img.width}
+              aspectRatio={step.img.aspect}
               sizes="(min-width: 768px) 720px, 100vw"
               alt={step.label}
               draggable={false}

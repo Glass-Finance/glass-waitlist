@@ -61,3 +61,72 @@ export function validatePlanField(field, value) {
   }
   return "";
 }
+
+// ── amountMode ──────────────────────────────────────────────────────────────
+// Everything below is derived from the backend's
+// CollectionPaymentSupport.validatePaymentTypeAmount, NOT from the request
+// DTO — UpsertPaymentLinkRequest marks amountMode @NotNull but leaves amount
+// un-annotated, which reads as "amount is always optional". The service is
+// stricter, and the DTO is the weaker of the two sources:
+//
+//   1. paymentType x amountMode is a whitelist. RECURRING accepts FIXED and
+//      nothing else; ONE_TIME accepts all four. Offering VARIABLE on a
+//      recurring plan is a guaranteed 400 ("Amount mode is not allowed for
+//      payment type").
+//   2. amount is required (non-null, > 0) for FIXED, MINIMUM and SUGGESTED.
+//      VARIABLE is exempt: the service maps a null amount to 0
+//      (resolvedAmountMinor), so "no amount" is a real, supported state.
+//   3. A server-configured collection minimum additionally applies to
+//      FIXED/MINIMUM/SUGGESTED. That value lives in backend system config and
+//      is deliberately not duplicated here — it surfaces as a 400 we render.
+
+// The amount modes a given plan type may use. Takes the wizard's
+// "recurring"/"one_time" vocabulary as well as the backend's enum names, so
+// both the create wizard and the edit modal (which has RECURRING/ONE_TIME)
+// can call it without translating first.
+export function amountModesForPlanType(planType) {
+  const isRecurring = planType === "recurring" || planType === "RECURRING" || planType === true;
+  return isRecurring ? ["FIXED"] : ["FIXED", "MINIMUM", "SUGGESTED", "VARIABLE"];
+}
+
+// Clamp a chosen mode to what the plan type allows. The create wizard can
+// reach a disallowed state by picking VARIABLE on a one-time plan, then going
+// Back and switching to recurring — the payload must never carry it.
+export function resolveAmountMode(planType, amountMode) {
+  const allowed = amountModesForPlanType(planType);
+  return allowed.includes(amountMode) ? amountMode : allowed[0];
+}
+
+export function amountRequiredForMode(amountMode) {
+  return amountMode !== "VARIABLE";
+}
+
+// Mode-aware replacement for the old unconditional amount rule. Kept separate
+// from validatePlanField so the name/amount pair that both modals already
+// share stays untouched.
+export function validateAmountForMode(value, amountMode) {
+  if (!amountRequiredForMode(amountMode)) {
+    // Optional, but a value that IS typed still has to be sane: the backend
+    // rejects a negative amount in every mode.
+    if (String(value ?? "").trim() && !(Number(value) > 0)) {
+      return "Enter an amount greater than 0.";
+    }
+    return "";
+  }
+  return validatePlanField("amount", value);
+}
+
+// The amount to put on the wire.
+//
+// VARIABLE with a blank field sends 0 rather than omitting `amount`. That is
+// deliberate and load-bearing on the edit path: the backend's update handler
+// substitutes the CURRENTLY STORED amount whenever `amount` is absent
+// (`request.getAmount() == null ? majorAmount(link.getAmountMinor(), ...)`),
+// so omitting it would silently keep the old figure and a "clear the amount"
+// edit would do nothing. An explicit 0 is accepted for VARIABLE (only
+// negatives are rejected) and resolves to the same stored 0 the create path
+// would have produced from a null.
+export function amountPayloadForMode(amountMode, value) {
+  if (!amountRequiredForMode(amountMode) && !String(value ?? "").trim()) return 0;
+  return Number(value) || 0;
+}

@@ -26,7 +26,6 @@ function renderMenu(overrides = {}) {
       planPlans={planPlans}
       onEdit={vi.fn()}
       onViewMembers={vi.fn()}
-      onSendReminder={vi.fn()}
       onDuplicate={vi.fn()}
     />,
   );

@@ -30,6 +30,47 @@ export const RETRY_POLICIES = [
   { label: "Retry with backoff (7 days)", value: "EXPONENTIAL_BACKOFF_7D" },
 ];
 
+// Matches PaymentAmountMode (FIXED | MINIMUM | SUGGESTED | VARIABLE).
+// The labels are deliberately short: these render inside a half-width select
+// with ~173px of usable text, and a closed native select clips rather than
+// wraps, so the longer "…— members pay at least this" phrasing was unreadable
+// once chosen. What each mode MEANS is carried by the field hint under the
+// amount input, not by the option text.
+export const AMOUNT_MODES = [
+  { label: "Fixed amount", value: "FIXED" },
+  { label: "Minimum amount", value: "MINIMUM" },
+  { label: "Suggested amount", value: "SUGGESTED" },
+  { label: "Any amount", value: "VARIABLE" },
+];
+
+// Matches PaymentVisibility (PUBLIC | MEMBERS_ONLY | PRIVATE). PRIVATE is not
+// "hidden": the link only works for the plan's AUDIENCE, which may or may not
+// be a hand-picked list. The old "Only the selected members" wording was
+// actively wrong for an ALL_MEMBERS audience, where nothing is selected and no
+// member picker is even on screen.
+export const VISIBILITY_OPTIONS = [
+  { label: "Anyone with the link", value: "PUBLIC" },
+  { label: "Community members", value: "MEMBERS_ONLY" },
+  { label: "Plan audience only", value: "PRIVATE" },
+];
+
+// Matches PaymentAudience. GROUP is deliberately NOT offered yet: it needs
+// the community-groups endpoints (create/list/assign), which this app has no
+// surface for at all. Offering a GROUP option now would produce a payment
+// link the UI cannot create or repair — the backend rejects a GROUP audience
+// with no groupIds. Added when the groups feature lands.
+export const AUDIENCE_OPTIONS = [
+  { label: "All members", value: "ALL_MEMBERS" },
+  { label: "Specific members", value: "SELECTED_MEMBERS" },
+];
+
+// One string, three call sites: both modals' validation and the inline hint
+// under the picker. It has to be shown proactively rather than on submit,
+// because the Continue/Save button is disabled while the selection is empty —
+// a message that only appears after clicking a disabled button is a message
+// nobody ever sees.
+export const AUDIENCE_EMPTY_MESSAGE = "Choose at least one member for this plan to bill.";
+
 // Singular unit label per frequency, used to build the "repeat every N ___"
 // copy next to the interval input.
 export const FREQUENCY_UNIT_LABEL = {

@@ -1,9 +1,12 @@
-import { ID_TYPE_OPTIONS } from "../../../utils/kycStatus";
+import { KYC_SUBMITTABLE_ID_TYPE_OPTIONS } from "../../../utils/kycStatus";
 import { GlyphCheckMark, TrustNote } from "../illustrations";
 
 // Step 2 — ID type. Selectable cards with the brand ring on the selected
 // one (existing pattern from the verify pages, tokenized), plus the trust
 // note directly under the sensitive choice (brief item 5).
+//
+// Only submittable values are offered: the backend's KycIdType enum is
+// BVN/NIN_V2, so any other card here is a dead end the user can pick.
 export default function IdTypeStep({ idType, setIdType, disabled = false }) {
   return (
     <div className="flex flex-col gap-3.5">
@@ -16,7 +19,7 @@ export default function IdTypeStep({ idType, setIdType, disabled = false }) {
       </div>
 
       <div className="flex flex-col gap-2" role="radiogroup" aria-label="ID type">
-        {ID_TYPE_OPTIONS.map((opt) => {
+        {KYC_SUBMITTABLE_ID_TYPE_OPTIONS.map((opt) => {
           const selected = idType === opt.value;
           return (
             <button
