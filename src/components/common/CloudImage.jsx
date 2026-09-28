@@ -1,11 +1,12 @@
 // src/components/common/CloudImage.jsx
 //
-// Drop-in replacement for a raw <img src={localImport} />. Renders a tiny
-// (~1-2kb) blurred placeholder immediately — visible even on a slow
-// connection before the real image finishes — then cross-fades to the
-// full image once it loads. Always serves f_auto/q_auto (best format +
-// compression for the requesting browser) and a responsive srcSet so
-// phones don't download desktop-sized files.
+// Drop-in replacement for a raw <img src={localImport} />. One <img>,
+// one request: the Cloudinary-optimized URL (f_auto/q_auto, best format +
+// compression for the requesting browser) plus a responsive srcSet so
+// phones don't download desktop-sized files. The image renders normally —
+// no placeholder fetch, no blur layer, no opacity crossfade; the browser's
+// own loading (lazy by default, eager+fetchpriority for `priority`) is the
+// only load behavior.
 //
 // Usage (replacing the old pattern):
 //   Before: import signupIcon from "../../assets/howItWorks/icon-signup.png";
@@ -21,11 +22,12 @@
 // This component is for images rendered inside a fixed-size box (cover),
 // or a fixed-size container with objectFit="contain" (icons/logos). For
 // images whose natural aspect ratio defines the box height (e.g.
-// `w-full h-auto` work illustrations), render a plain
-// <img src={cldUrl(...)} srcSet={cldSrcSet(...)}> instead — a h-full
-// absolute-object fit can't size itself without a known height.
+// `w-full h-auto` step illustrations), use <CloudAspectImage> instead —
+// a h-full absolute-object fit can't size itself without a known height,
+// and its wrapper can reserve the space via CSS aspect-ratio.
+//
+// See docs/cloudinary.md for the full delivery architecture.
 
-import { useState } from "react";
 import { cldUrl, cldSrcSet, widthsFor } from "../../lib/cloudinary";
 
 /**
@@ -39,7 +41,7 @@ import { cldUrl, cldSrcSet, widthsFor } from "../../lib/cloudinary";
  * @param {"cover"|"contain"} [props.objectFit] - default "cover"
  * @param {object} [props.style] - applied to the wrapper span
  * @param {string} [props.imgClassName] - extra classes for the rendered <img>
- * @param {boolean} [props.draggable] - forwarded to the rendered <img>s
+ * @param {boolean} [props.draggable] - forwarded to the rendered <img>
  * @param {import("react").RefObject} [props.imgRef] - forwarded to the real <img>
  * @param {function} [props.onClick]
  */
@@ -57,11 +59,8 @@ export default function CloudImage({
   imgRef,
   onClick,
 }) {
-  const [loaded, setLoaded] = useState(false);
-
   const src = cldUrl(publicId, { width });
   const srcSet = cldSrcSet(publicId, widthsFor(width));
-  const placeholder = cldUrl(publicId, { blur: true });
   const fitCls = objectFit === "contain" ? "object-contain" : "object-cover";
 
   return (
@@ -70,18 +69,6 @@ export default function CloudImage({
       style={style}
       onClick={onClick}
     >
-      {/* Blur placeholder — tiny payload, shows instantly on slow networks */}
-      <img
-        src={placeholder}
-        alt=""
-        aria-hidden="true"
-        draggable={draggable}
-        className={`absolute inset-0 w-full h-full ${fitCls} ${imgClassName} transition-opacity duration-500 ${
-          loaded ? "opacity-0" : "opacity-100"
-        }`}
-        style={{ filter: "blur(8px)" }}
-      />
-      {/* Real image */}
       <img
         ref={imgRef}
         src={src}
@@ -92,10 +79,7 @@ export default function CloudImage({
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}
         decoding="async"
-        onLoad={() => setLoaded(true)}
-        className={`relative w-full h-full ${fitCls} ${imgClassName} transition-opacity duration-500 ${
-          loaded ? "opacity-100" : "opacity-0"
-        }`}
+        className={`relative w-full h-full ${fitCls} ${imgClassName}`}
       />
     </span>
   );

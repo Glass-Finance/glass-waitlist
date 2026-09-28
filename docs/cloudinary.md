@@ -37,13 +37,40 @@ first — keep the two in sync (see README's two-repo rule).
    (`cldUrl`) and responsive `srcSet` strings (`cldSrcSet`). No Cloudinary
    SDK is ever shipped to the browser; every transformation is a URL
    segment (`f_auto`, `q_auto`, `w_`, `dpr_`, `c_limit`).
-4. **Components** — one of two render styles:
+4. **Components** — each renders ONE optimized `<img>`: one Cloudinary
+   request per image, no placeholder fetch, no blur layer, no opacity
+   crossfade. Load behavior is the browser's own.
    - `CloudImage` (`src/components/common/CloudImage.jsx`) for images
-     rendered in a fixed-size box: blur-up LQIP placeholder, responsive
-     srcSet, lazy/eager control, `objectFit="cover"|"contain"`.
-   - Raw `cldUrl()`/`cldSrcSet()` `<img>` for aspect-driven images whose
-     natural size decides the box height (`w-full h-auto`), and
+     rendered in a fixed-size box: Cloudinary URL + responsive srcSet,
+     `loading="lazy"` by default (`priority` → eager +
+     `fetchpriority=high` for LCP images), `objectFit="cover"|"contain"`.
+   - `CloudAspectImage` (`src/components/common/CloudAspectImage.jsx`)
+     for aspect-driven images whose natural size decides the box height
+     (`w-full h-auto`). Pass `aspectRatio="<w> / <h>"` (the image's
+     intrinsic dimensions) so the wrapper reserves space before the
+     image lands — reserved box → image, no layout snap. Callers pass
+     their own loading strategy through to the `<img>` (the hero's
+     duplicate lazy iphone copies depend on that passthrough).
+   - Raw `cldUrl()`/`cldSrcSet()` `<img>` when neither applies, and
      `cldUrl()` for CSS backgroundImage.
+   - `PulseImg` (API-provided avatar/logo `src`s, dashboard + member
+     app) is a CSS skeleton + fade — not Cloudinary, no second request,
+     not part of this pipeline.
+
+   What each layer does — and deliberately doesn't:
+   - **Cloudinary optimization** — `f_auto`/`q_auto`/`w_`/`c_limit` on
+     every delivered URL: format, quality and sizing decided by the CDN.
+   - **Responsive sizing** — `srcSet`/`sizes` derived from `width` via
+     `widthsFor`/`WIDTH_STEPS` (2x retina headroom).
+   - **Layout reservation** — CSS `aspect-ratio` on the
+     `CloudAspectImage` wrapper; fixed-size boxes for `CloudImage`.
+   - **Image-loading animation** — none, on purpose. The only images
+     requested are the real ones.
+   - **Intentional section animations** — ProblemSection's clip-path
+     curtain reveal, CTA entrance motion, BlurText, etc. are design
+     animations independent of image load state; keep them decoupled.
+   - **Connection warm-up** — `rel="preconnect"` to `res.cloudinary.com`
+     in `index.html` (one tag, no duplicates).
 
 ## Use-case carousel photos
 
