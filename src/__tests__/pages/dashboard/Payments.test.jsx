@@ -48,7 +48,6 @@ function makePlanPlans(overrides = {}) {
     error: null,
     create: { mutateAsync: vi.fn(), isPending: false, error: null },
     update: { mutateAsync: vi.fn(), isPending: false, error: null },
-    sendReminder: { mutateAsync: vi.fn(), isPending: false, error: null },
     duplicate: { mutateAsync: vi.fn(), isPending: false, error: null },
     activate: { mutate: vi.fn(), isPending: false },
     pause: { mutate: vi.fn(), isPending: false },
@@ -311,18 +310,16 @@ describe("Payments — edit", () => {
 });
 
 describe("Payments — reminder & duplicate", () => {
-  it("sends a reminder with the default payload and flashes success", async () => {
-    const { sendReminder } = renderPage(makePlanPlans({ plans: [planFixture()] }));
+  it("keeps on-demand reminders inert while the backend route is missing", () => {
+    renderPage(makePlanPlans({ plans: [planFixture()] }));
 
     openMenu();
-    fireEvent.click(screen.getByText("Send Reminder"));
-    fireEvent.click(screen.getByRole("button", { name: "Send Reminder" }));
-
-    expect(sendReminder.mutateAsync).toHaveBeenCalledWith({
-      paymentLinkId: "plan-1",
-      payload: { reminderFrequency: "EVERY_3_DAYS", reminderChannels: ["IN_APP"] },
-    });
-    expect(await screen.findByText("Reminder Sent!")).toBeTruthy();
+    const item = screen.getByText("Send Reminder").closest("button");
+    // No POST .../payment-links/{id}/reminders exists server-side, so the
+    // action must not be reachable: disabled, labelled, and opening nothing.
+    expect(item.disabled).toBe(true);
+    expect(item.getAttribute("title")).toBe("Send Reminder — coming soon");
+    fireEvent.click(item);
     expect(screen.queryByRole("heading", { name: "Send Reminder" })).toBeNull();
   });
 

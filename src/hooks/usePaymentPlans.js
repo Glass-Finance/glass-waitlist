@@ -9,7 +9,6 @@ import {
   expirePaymentLink,
   archivePaymentLink,
   duplicatePaymentLink,
-  sendPaymentLinkReminder,
 } from "../api/payments";
 
 function unwrapList(res) {
@@ -99,7 +98,7 @@ export function usePaymentPlans(communityId) {
     queryClient.invalidateQueries({ queryKey: ["community", communityId, "payment-links"] });
   }
 
-  // silentError: true on create/update/duplicate/sendReminder -- Payments.jsx
+  // silentError: true on create/update/duplicate -- Payments.jsx
   // (the only caller of these) already shows its own notifyError with a more
   // specific context per action; without this the global mutationCache
   // onError in main.jsx toasts the same failure a second time.
@@ -152,11 +151,9 @@ export function usePaymentPlans(communityId) {
     meta: { successMessage: "Payment plan duplicated", silentError: true },
   });
 
-  const sendReminder = useMutation({
-    mutationFn: ({ paymentLinkId, payload }) =>
-      sendPaymentLinkReminder(communityId, paymentLinkId, payload),
-    meta: { successMessage: "Reminder sent to unpaid members", silentError: true },
-  });
+  // No sendReminder mutation: the backend has no on-demand reminder route
+  // (see the note in api/payments.js). Plan-level reminder cadence is
+  // configured through create/update instead.
 
   return {
     plans: query.data ?? [],
@@ -170,6 +167,5 @@ export function usePaymentPlans(communityId) {
     expire,
     archive,
     duplicate,
-    sendReminder,
   };
 }

@@ -44,8 +44,30 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      # Runs WITH coverage on purpose: vite.config.js already carries global
+      # and per-glob floors, but `npm run test` alone never evaluated them, so
+      # they gated nothing. Same single run, now enforced. The floors are
+      # regression gates, not targets — raise them with new tests, never lower
+      # them to go green.
       - name: Test
-        run: npm run test
+        run: npm run test:coverage
+
+      - name: Upload coverage summary (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-summary
+          path: |
+            coverage/coverage-summary.json
+            coverage/lcov.info
+          retention-days: 7
+
+      # Non-blocking by design: it reports frontend calls the backend has no
+      # route for (the class of bug that type-checks, lints and unit-tests
+      # clean), but a backend deploy that hasn't landed yet must not block a
+      # frontend PR. Read the log; add `--strict` locally to fail on drift.
+      - name: Endpoint audit (advisory)
+        run: npm run audit:endpoints
 
       - name: Build
         run: npm run build

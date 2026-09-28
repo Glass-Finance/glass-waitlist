@@ -87,6 +87,16 @@ describe("KycWizardModal", () => {
     expect(screen.getByRole("button", { name: "Back" })).toBeTruthy();
   });
 
+  it("offers only the id types the backend accepts for a new attempt", () => {
+    renderWizard();
+    fireEvent.click(screen.getByRole("button", { name: "Get started" }));
+    const cards = screen.getAllByRole("radio");
+    expect(cards.map((c) => c.textContent)).toEqual(["BVN", "NIN"]);
+    // Retired KycIdType values stay labelable but must never be selectable.
+    expect(screen.queryByText("Voter's card")).toBeNull();
+    expect(screen.queryByText("NIN slip")).toBeNull();
+  });
+
   it("opens an approved account directly on the verified status card", () => {
     mockKyc.current = makeKyc({ status: "APPROVED", canStart: false });
     renderWizard();

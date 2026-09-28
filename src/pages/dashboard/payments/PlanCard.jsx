@@ -9,7 +9,6 @@ export default function PlanCard({
   barColorCls,
   onEdit,
   onViewMembers,
-  onSendReminder,
   onDuplicate,
 }) {
   const ps = PLAN_STATUS[plan.status] ?? PLAN_STATUS.DRAFT;
@@ -42,7 +41,6 @@ export default function PlanCard({
           planPlans={planPlans}
           onEdit={onEdit}
           onViewMembers={onViewMembers}
-          onSendReminder={onSendReminder}
           onDuplicate={onDuplicate}
         />
       </div>

@@ -4,6 +4,8 @@ import {
   kycStatusStyle,
   idTypeLabel,
   ID_TYPE_OPTIONS,
+  KYC_SUBMITTABLE_ID_TYPES,
+  KYC_SUBMITTABLE_ID_TYPE_OPTIONS,
   isKycApproved,
   isKycTerminal,
   isKycInFlight,
@@ -97,7 +99,10 @@ describe("kyc status labels and styles", () => {
 });
 
 describe("id type labels", () => {
-  it("maps every Nigeria enum value from the KYC guide", () => {
+  it("maps every Nigeria enum value the backend has ever accepted", () => {
+    // Label map stays complete: an attempt persisted with a retired value
+    // must still render. Only the picker is narrowed — see the submittable
+    // set test below.
     const values = ID_TYPE_OPTIONS.map((o) => o.value);
     expect(values).toEqual(["BVN", "VOTER_ID", "V_NIN", "NIN_SLIP", "NIN_V2"]);
     expect(idTypeLabel("BVN")).toBe("BVN");
@@ -105,6 +110,17 @@ describe("id type labels", () => {
     expect(idTypeLabel("V_NIN")).toBe("Virtual NIN");
     expect(idTypeLabel("NIN_SLIP")).toBe("NIN slip");
     expect(idTypeLabel("NIN_V2")).toBe("NIN");
+  });
+
+  it("offers only backend-accepted id types for a new attempt", () => {
+    // KycIdType is exactly BVN/NIN_V2 now; anything else in the picker is
+    // a server-side rejection.
+    expect(KYC_SUBMITTABLE_ID_TYPES).toEqual(["BVN", "NIN_V2"]);
+    expect(KYC_SUBMITTABLE_ID_TYPE_OPTIONS.map((o) => o.value)).toEqual(["BVN", "NIN_V2"]);
+    // Derived, not a second hand-maintained list.
+    expect(KYC_SUBMITTABLE_ID_TYPE_OPTIONS.every((o) => ID_TYPE_OPTIONS.includes(o))).toBe(true);
+    // The default the flow starts on must be offered.
+    expect(KYC_SUBMITTABLE_ID_TYPE_OPTIONS.map((o) => o.value)).toContain("BVN");
   });
 
   it("passes through unknown ids and handles nullish", () => {
