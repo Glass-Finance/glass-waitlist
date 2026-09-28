@@ -2,13 +2,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const { fetchAllCommunityTransactionsMock, fetchAllCommunityMembersMock, getCommunityMock } = vi.hoisted(
-  () => ({
+const { fetchAllCommunityTransactionsMock, fetchAllCommunityMembersMock, getCommunityMock } =
+  vi.hoisted(() => ({
     fetchAllCommunityTransactionsMock: vi.fn(),
     fetchAllCommunityMembersMock: vi.fn(),
     getCommunityMock: vi.fn(),
-  }),
-);
+  }));
 
 vi.mock("../../api/transactions", () => ({
   fetchAllCommunityTransactions: fetchAllCommunityTransactionsMock,
@@ -50,7 +49,9 @@ describe("useCommunitiesWithMetrics transaction ownership gating", () => {
     const { default: clientMock } = await import("../../api/client");
     clientMock.get.mockImplementation((url) => {
       if (url === "/communities/me") {
-        return Promise.resolve({ data: { data: { content: [OWNED_COMMUNITY, MEMBER_COMMUNITY] } } });
+        return Promise.resolve({
+          data: { data: { content: [OWNED_COMMUNITY, MEMBER_COMMUNITY] } },
+        });
       }
       if (url === "/communities/owned-community") {
         return Promise.resolve({ data: { data: { metrics: {} } } });
