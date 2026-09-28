@@ -13,8 +13,12 @@ const { googleAuthMock, setSessionMock, notifyErrorMock, onAuthenticatedMock } =
   onAuthenticatedMock: vi.fn(),
 }));
 
+const { useGoogleOAuthMock } = vi.hoisted(() => ({
+  useGoogleOAuthMock: vi.fn(),
+}));
+
 vi.mock("@react-oauth/google", () => ({
-  useGoogleOAuth: () => ({ clientId: "test-client-id", scriptLoadedSuccessfully: true }),
+  useGoogleOAuth: useGoogleOAuthMock,
 }));
 
 vi.mock("../../../services/authService", () => ({ googleAuth: googleAuthMock }));
@@ -65,6 +69,10 @@ describe("F6-3 — cached Google identity isolation", () => {
     localStorage.clear();
     sessionStorage.clear();
     googleCallback = undefined;
+    useGoogleOAuthMock.mockReturnValue({
+      clientId: "test-client-id",
+      scriptLoadedSuccessfully: true,
+    });
 
     // jsdom implements neither of these.
     originalResizeObserver = window.ResizeObserver;
@@ -176,5 +184,146 @@ describe("F6-3 — cached Google identity isolation", () => {
 
     expect(screen.queryByText(/Continue as/)).toBeNull();
     expect(localStorage.getItem(IDENTITY_KEY)).toBeNull();
+  });
+});
+
+describe("GIS configuration/loading failures", () => {
+  let originalResizeObserver;
+  let originalGoogle;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    localStorage.clear();
+    sessionStorage.clear();
+    googleCallback = undefined;
+
+    originalResizeObserver = window.ResizeObserver;
+    window.ResizeObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
+    originalGoogle = window.google;
+  });
+
+  afterEach(() => {
+    window.ResizeObserver = originalResizeObserver;
+    window.google = originalGoogle;
+  });
+
+  it("shows an error and does not initialize GIS when clientId is missing", () => {
+    useGoogleOAuthMock.mockReturnValue({ clientId: "", scriptLoadedSuccessfully: false });
+    window.google = {
+      accounts: {
+        id: {
+          initialize: vi.fn(),
+          renderButton: vi.fn(),
+        },
+      },
+    };
+
+    render(<GoogleAuthButton />);
+
+    expect(screen.queryByText(/temporarily unavailable/)).not.toBeNull();
+    expect(window.google.accounts.id.initialize).not.toHaveBeenCalled();
+    expect(window.google.accounts.id.renderButton).not.toHaveBeenCalled();
+  });
+
+  it("shows an error and does not initialize GIS when clientId is whitespace-only", () => {
+    useGoogleOAuthMock.mockReturnValue({ clientId: "   ", scriptLoadedSuccessfully: false });
+    window.google = {
+      accounts: {
+        id: {
+          initialize: vi.fn(),
+          renderButton: vi.fn(),
+        },
+      },
+    };
+
+    render(<GoogleAuthButton />);
+
+    expect(screen.queryByText(/temporarily unavailable/)).not.toBeNull();
+    expect(window.google.accounts.id.initialize).not.toHaveBeenCalled();
+  });
+
+  it("shows an error and notifies when GIS initialization throws", () => {
+    useGoogleOAuthMock.mockReturnValue({
+      clientId: "test-client-id",
+      scriptLoadedSuccessfully: true,
+    });
+    window.google = {
+      accounts: {
+        id: {
+          initialize: () => {
+            throw new Error("GIS init failed");
+          },
+          renderButton: vi.fn(),
+        },
+      },
+    };
+
+    render(<GoogleAuthButton />);
+
+    expect(screen.queryByText(/failed to load/)).not.toBeNull();
+    expect(notifyErrorMock).toHaveBeenCalledTimes(1);
+    expect(window.google.accounts.id.renderButton).not.toHaveBeenCalled();
+  });
+
+  it("renders the button normally when GIS loads and initializes successfully", () => {
+    useGoogleOAuthMock.mockReturnValue({
+      clientId: "test-client-id",
+      scriptLoadedSuccessfully: true,
+    });
+    const initializeMock = vi.fn((opts) => {
+      googleCallback = opts.callback;
+    });
+    const renderButtonMock = vi.fn();
+    window.google = {
+      accounts: {
+        id: {
+          initialize: initializeMock,
+          renderButton: renderButtonMock,
+        },
+      },
+    };
+
+    render(<GoogleAuthButton />);
+
+    expect(screen.queryByText(/temporarily unavailable/)).toBeNull();
+    expect(screen.queryByText(/failed to load/)).toBeNull();
+    expect(initializeMock).toHaveBeenCalledTimes(1);
+    expect(renderButtonMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("still calls googleAuth with the credential JWT on successful sign-in", async () => {
+    useGoogleOAuthMock.mockReturnValue({
+      clientId: "test-client-id",
+      scriptLoadedSuccessfully: true,
+    });
+    const initializeMock = vi.fn((opts) => {
+      googleCallback = opts.callback;
+    });
+    window.google = {
+      accounts: {
+        id: {
+          initialize: initializeMock,
+          renderButton: vi.fn(),
+        },
+      },
+    };
+
+    render(<GoogleAuthButton onAuthenticated={onAuthenticatedMock} />);
+    await waitFor(() => expect(typeof googleCallback).toBe("function"));
+
+    googleAuthMock.mockResolvedValue({ accessToken: "a", refreshToken: "r" });
+    setSessionMock.mockResolvedValue({ id: "u1", email: CLAIMS.email });
+
+    await act(async () => {
+      await googleCallback({ credential: makeCredential(CLAIMS) });
+    });
+
+    expect(googleAuthMock).toHaveBeenCalledWith({ clientToken: makeCredential(CLAIMS) });
+    expect(setSessionMock).toHaveBeenCalledTimes(1);
+    expect(onAuthenticatedMock).toHaveBeenCalledWith({ id: "u1", email: CLAIMS.email });
   });
 });
