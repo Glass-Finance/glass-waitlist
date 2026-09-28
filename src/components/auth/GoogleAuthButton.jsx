@@ -108,6 +108,10 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
   const [width, setWidth] = useState(320);
   const [identity, setIdentity] = useState(() => readCachedIdentity());
   const [avatarFailed, setAvatarFailed] = useState(false);
+  const [initFailed, setInitFailed] = useState(false);
+
+  const hasClientId = typeof clientId === "string" && clientId.trim().length > 0;
+  const gisError = !hasClientId ? "missing-client-id" : initFailed ? "init-failed" : null;
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -121,53 +125,77 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
   }, []);
 
   useEffect(() => {
-    if (!scriptLoadedSuccessfully || !hiddenBtnRef.current) return;
-    window.google?.accounts?.id?.initialize({
-      client_id: clientId,
-      callback: async (credentialResponse) => {
-        if (!credentialResponse?.credential) {
-          notifyError(new Error("Google didn't return a credential."), { context: "Google auth" });
-          return;
-        }
-        const claims = decodeJwtPayload(credentialResponse.credential);
-        const next = claims?.email
-          ? {
-              email: claims.email,
-              picture: claims.picture ?? null,
-              name: claims.name ?? claims.given_name ?? null,
-            }
-          : null;
-        try {
-          const authData = await googleAuth({ clientToken: credentialResponse.credential });
-          const user = await setSession(authData);
-          // Cached only after the WHOLE sign-in succeeded (F6-3). Previously
-          // this ran before googleAuth(), so a credential the backend
-          // rejected still left {email, picture, name} on this machine for
-          // the next person to see on this screen. The TTL above still
-          // covers the never-logged-out case; clearSessionStorage() drops it
-          // immediately the moment a session ends.
-          if (next) {
-            writeCachedIdentity(next);
-            setIdentity(next);
-            setAvatarFailed(false);
+    if (!hasClientId) return;
+    if (!scriptLoadedSuccessfully) return;
+    if (!hiddenBtnRef.current) return;
+
+    try {
+      window.google?.accounts?.id?.initialize({
+        client_id: clientId,
+        callback: async (credentialResponse) => {
+          if (!credentialResponse?.credential) {
+            notifyError(new Error("Google didn't return a credential."), {
+              context: "Google auth",
+            });
+            return;
           }
-          onAuthenticatedRef.current?.(user);
-        } catch (err) {
-          notifyError(err, { context: "Google auth" });
-        }
-      },
-    });
-    // Re-rendered whenever `width` changes (matches the visible button's
-    // measured width) -- Google's SDK replaces the container's contents in
-    // place, same as the old <GoogleLogin/> widget did.
-    window.google.accounts.id.renderButton(hiddenBtnRef.current, {
-      type: "standard",
-      theme: "outline",
-      size: "large",
-      width: String(width),
-    });
+          const claims = decodeJwtPayload(credentialResponse.credential);
+          const next = claims?.email
+            ? {
+                email: claims.email,
+                picture: claims.picture ?? null,
+                name: claims.name ?? claims.given_name ?? null,
+              }
+            : null;
+          try {
+            const authData = await googleAuth({ clientToken: credentialResponse.credential });
+            const user = await setSession(authData);
+            // Cached only after the WHOLE sign-in succeeded (F6-3). Previously
+            // this ran before googleAuth(), so a credential the backend
+            // rejected still left {email, picture, name} on this machine for
+            // the next person to see on this screen. The TTL above still
+            // covers the never-logged-out case; clearSessionStorage() drops it
+            // immediately the moment a session ends.
+            if (next) {
+              writeCachedIdentity(next);
+              setIdentity(next);
+              setAvatarFailed(false);
+            }
+            onAuthenticatedRef.current?.(user);
+          } catch (err) {
+            notifyError(err, { context: "Google auth" });
+          }
+        },
+      });
+      // Re-rendered whenever `width` changes (matches the visible button's
+      // measured width) -- Google's SDK replaces the container's contents in
+      // place, same as the old <GoogleLogin/> widget did.
+      window.google.accounts.id.renderButton(hiddenBtnRef.current, {
+        type: "standard",
+        theme: "outline",
+        size: "large",
+        width: String(width),
+      });
+    } catch (err) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- error state must be set synchronously to prevent a render with a stale ref
+      setInitFailed(true);
+      notifyError(err, { context: "Google auth" });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- re-render on script-ready/width only
-  }, [clientId, scriptLoadedSuccessfully, width]);
+  }, [clientId, scriptLoadedSuccessfully, width, hasClientId]);
+
+  if (gisError) {
+    return (
+      <div className="w-full flex items-center gap-2.5 rounded-xl px-4 py-3.5 border-[1.5px] border-red-200 bg-red-50 text-sm text-red-700">
+        <GoogleGlyph />
+        <span className="truncate min-w-0">
+          {gisError === "missing-client-id"
+            ? "Google sign-in is temporarily unavailable. Please try again later."
+            : "Google sign-in failed to load. Please try again later."}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div ref={wrapRef} className="relative w-full group">
