@@ -6,6 +6,7 @@ import {
   useConfirmKycSubmission,
 } from "./useKyc";
 import { loadSmileScript } from "../utils/smileScript";
+import { DEFAULT_SMILE_CALLBACK_URL } from "../api/kyc";
 import { isKycApproved, isKycPending, isKycInReview, isKycNotStarted } from "../utils/kycStatus";
 import { notifyError, getErrorMessage } from "../utils/errorHandler";
 
@@ -13,9 +14,15 @@ import { notifyError, getErrorMessage } from "../utils/errorHandler";
 // member app page and the dashboard page run the exact same state machine,
 // only the chrome differs.
 //
-// Smile ID capture uses a short-lived token minted by Glass. The callback URL
-// is already embedded in the token — do not pass it to the SDK. Keep the
-// token in memory only (this hook's state / mutation result).
+// Smile ID capture uses a short-lived token minted by Glass, kept in memory
+// only (this hook's state / mutation result).
+//
+// The SDK REQUIRES an explicit `callback_url` on its initialisation call. It
+// does NOT read a callback out of that token: omitting the attribute makes
+// SmileIdentity throw synchronously, before any document or camera capture
+// starts, and every resume retries the same dead end. So the callback is
+// passed to BOTH the Glass API (which embeds it in the job) and the SDK
+// itself (which posts the capture result to it) — one shared constant.
 export function useKycVerification() {
   const { data: summary, isLoading, isError, error, refetch, isFetching } = useKycSummary();
   const startAttempt = useStartKycAttempt();
@@ -74,6 +81,7 @@ export function useKycVerification() {
 
       window.SmileIdentity({
         token,
+        callback_url: DEFAULT_SMILE_CALLBACK_URL,
         product: "biometric_kyc",
         environment: env === "production" ? "production" : "sandbox",
         partner_details: {

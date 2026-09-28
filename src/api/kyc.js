@@ -8,7 +8,13 @@ import client from "./client";
 // initiating a challenge so Glass can embed it in the Smile ID job/token.
 // Start-attempt only: the refresh path re-mints from the existing attempt
 // record, which already carries the callback.
-const DEFAULT_SMILE_CALLBACK_URL = "https://api.glasspay.app/api/v1/webhooks/smile-id";
+//
+// Exported because the Smile Identity Web SDK needs the SAME url on its own
+// initialisation call — it does not read a callback out of the capture token,
+// and throws "Please provide a callback URL via the 'callback_url' attribute"
+// if it is missing (see useKycVerification.runSmileCapture). One constant, so
+// the API request and the SDK call cannot drift apart.
+export const DEFAULT_SMILE_CALLBACK_URL = "https://api.glasspay.app/api/v1/webhooks/smile-id";
 
 // GET /api/v1/kyc — account summary (source of truth for status + flags)
 export const getKycSummary = () => client.get("/kyc");
