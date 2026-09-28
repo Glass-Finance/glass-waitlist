@@ -6,17 +6,20 @@ import { isMobileDevice, mobileRequiredPath } from "../../utils/deviceRedirect";
 import { cldUrl } from "../../lib/cloudinary";
 import BlurText from "../ui/BlurText";
 import VariableProximity from "../ui/VariableProximity";
-import LqipImg from "../common/LqipImg";
+import CloudAspectImage from "../common/CloudAspectImage";
 
 /* Wave background and phone mockup — Cloudinary (glass/hero/hero,
    glass/hero/iphone, see docs/cloudinary.md). The iphone is a natural-
    aspect image (w-full h-auto): CloudImage's fixed box can't drive
-   intrinsic aspect ratio, but LqipImg's wrapper follows the real image's
-   own height, so both copies get the blur-up LQIP anyway. */
+   intrinsic aspect ratio, but CloudAspectImage's wrapper reserves it via
+   CSS aspect-ratio, so both copies hold their space before load. */
 const waveBg = cldUrl("glass/hero/hero", { width: 1920 });
 const IPHONE = {
   width: 1240,
   sizes: "(min-width: 640px) 55vw, 330px",
+  // Intrinsic dimensions of glass/hero/iphone (876 x 791) — reserves the
+  // mockup's space before the image lands so the hero never layout-snaps.
+  aspect: "876 / 791",
 };
 
 export default function MembersHero() {
@@ -202,10 +205,11 @@ export default function MembersHero() {
                 whichever one that is still loads promptly since it's in
                 the initial viewport, "lazy" here just means "skip if
                 hidden," not "defer until scrolled to." */}
-              <LqipImg
+              <CloudAspectImage
                 publicId="glass/hero/iphone"
                 width={IPHONE.width}
                 sizes={IPHONE.sizes}
+                aspectRatio={IPHONE.aspect}
                 alt="Glass app on iPhone"
                 className="relative z-10 w-full"
                 imgClassName="object-contain"
@@ -275,10 +279,11 @@ export default function MembersHero() {
             <div className="relative w-[330px]">
               {/* See the desktop copy of this <img> above for why
                 loading="lazy" is deliberate here, not an oversight. */}
-              <LqipImg
+              <CloudAspectImage
                 publicId="glass/hero/iphone"
                 width={IPHONE.width}
                 sizes={IPHONE.sizes}
+                aspectRatio={IPHONE.aspect}
                 alt="Glass app on iPhone"
                 className="relative z-10 w-full"
                 imgClassName="drop-shadow-[0_16px_40px_rgba(120,10,160,0.5)]"

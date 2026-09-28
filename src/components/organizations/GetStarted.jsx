@@ -8,7 +8,7 @@ const steps = [
     label: "Create Your Community",
     desc: "Set up your organisation in minutes — no paperwork, no bank visits.",
     badge: "Set Up With Few Clicks",
-    img: { publicId: "glass/work/org-create-community", width: 1440 },
+    img: { publicId: "glass/work/org-create-community", width: 1440, aspect: "563 / 303" },
     stepIcon: { publicId: "glass/icon/step-1", width: 80 },
   },
   {
@@ -16,7 +16,7 @@ const steps = [
     label: "Add Members",
     desc: "Invite by phone or email, or bulk-import your roster via CSV instantly.",
     badge: "Upload CSV For Bulk Addition",
-    img: { publicId: "glass/work/org-add-members", width: 1440 },
+    img: { publicId: "glass/work/org-add-members", width: 1440, aspect: "563 / 303" },
     stepIcon: { publicId: "glass/icon/step-2", width: 80 },
   },
   {
@@ -24,7 +24,7 @@ const steps = [
     label: "Set Payment Schedule",
     desc: "Define dues, set deadlines — monthly, yearly, or custom. Glass reconciles everything.",
     badge: "Set Your Dues Structure",
-    img: { publicId: "glass/work/org-set-payment-schedule", width: 1440 },
+    img: { publicId: "glass/work/org-set-payment-schedule", width: 1440, aspect: "563 / 303" },
     stepIcon: { publicId: "glass/icon/step-3", width: 80 },
   },
   {
@@ -32,7 +32,7 @@ const steps = [
     label: "Go Live!",
     desc: "Activate your community. Payments run automatically, receipts sent instantly.",
     badge: "Activate Your Community",
-    img: { publicId: "glass/work/org-go-live", width: 1440 },
+    img: { publicId: "glass/work/org-go-live", width: 1440, aspect: "563 / 303" },
     stepIcon: { publicId: "glass/icon/step-4", width: 80 },
   },
 ];
