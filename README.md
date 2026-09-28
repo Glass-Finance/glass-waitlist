@@ -8,20 +8,20 @@ This repository is the **frontend**: a Vite + React SPA covering the member app,
 
 ## Tech Stack
 
-| Layer      | Technology |
-| ---------- | ---------- |
-| Framework  | React 19, React Router 7 (SPA) |
-| Build      | Vite 8 (Rolldown) |
-| Styling    | Tailwind CSS 4 (CSS-first, no config file) |
-| State      | TanStack React Query 5 |
-| HTTP       | Axios (interceptor-based auth refresh) |
+| Layer      | Technology                                              |
+| ---------- | ------------------------------------------------------- |
+| Framework  | React 19, React Router 7 (SPA)                          |
+| Build      | Vite 8 (Rolldown)                                       |
+| Styling    | Tailwind CSS 4 (CSS-first, no config file)              |
+| State      | TanStack React Query 5                                  |
+| HTTP       | Axios (interceptor-based auth refresh)                  |
 | Fonts      | Fontsource (Inter, DM Sans, Playfair Display, Urbanist) |
-| Charts     | Phosphor Icons, Lucide Icons |
-| Testing    | Vitest + Testing Library (unit), Playwright (E2E) |
-| Monitoring | Sentry (optional, env-gated) |
-| Images     | Cloudinary |
-| KYC        | Smile ID biometric verification |
-| Chat       | Crisp |
+| Charts     | Phosphor Icons, Lucide Icons                            |
+| Testing    | Vitest + Testing Library (unit), Playwright (E2E)       |
+| Monitoring | Sentry (optional, env-gated)                            |
+| Images     | Cloudinary                                              |
+| KYC        | Smile ID biometric verification                         |
+| Chat       | Crisp                                                   |
 
 ---
 
@@ -35,39 +35,39 @@ npm run dev            # starts on http://localhost:3000
 
 ### Environment Variables
 
-| Variable | Required | Purpose |
-| -------- | -------- | ------- |
-| `VITE_API_BASE_URL` | **Yes** | Backend origin (e.g. `https://api.glasspay.app`). `/api/v1` is appended automatically. |
-| `VITE_CLOUDINARY_CLOUD_NAME` | **Yes** | Cloudinary cloud name. Build fails without it. |
-| `VITE_TEST_MODE` | **Yes** | `"true"` or `"false"` — fail-closed money-mode switch. |
-| `VITE_GOOGLE_CLIENT_ID` | Google sign-in only | OAuth 2.0 Web client ID. |
-| `VITE_APP_URL` | No | Public app origin (defaults to `window.location.origin`). |
-| `VITE_CRISP_WEBSITE_ID` | No | Crisp chat widget ID (disables chat if unset). |
-| `VITE_SENTRY_DSN` | Prod: yes | Sentry error reporting. |
-| `VITE_SENTRY_TRACES_SAMPLE_RATE` | No | 0–1, defaults to `0.1`. |
-| `VITE_FLAGS` | No | JSON feature flags (e.g. `{"paymentsDisabled":true}`). |
-| `VITE_SMILE_ENV` / `VITE_SMILE_*` | No | Smile ID KYC browser SDK config. |
+| Variable                          | Required            | Purpose                                                                                |
+| --------------------------------- | ------------------- | -------------------------------------------------------------------------------------- |
+| `VITE_API_BASE_URL`               | **Yes**             | Backend origin (e.g. `https://api.glasspay.app`). `/api/v1` is appended automatically. |
+| `VITE_CLOUDINARY_CLOUD_NAME`      | **Yes**             | Cloudinary cloud name. Build fails without it.                                         |
+| `VITE_TEST_MODE`                  | **Yes**             | `"true"` or `"false"` — fail-closed money-mode switch.                                 |
+| `VITE_GOOGLE_CLIENT_ID`           | Google sign-in only | OAuth 2.0 Web client ID.                                                               |
+| `VITE_APP_URL`                    | No                  | Public app origin (defaults to `window.location.origin`).                              |
+| `VITE_CRISP_WEBSITE_ID`           | No                  | Crisp chat widget ID (disables chat if unset).                                         |
+| `VITE_SENTRY_DSN`                 | Prod: yes           | Sentry error reporting.                                                                |
+| `VITE_SENTRY_TRACES_SAMPLE_RATE`  | No                  | 0–1, defaults to `0.1`.                                                                |
+| `VITE_FLAGS`                      | No                  | JSON feature flags (e.g. `{"paymentsDisabled":true}`).                                 |
+| `VITE_SMILE_ENV` / `VITE_SMILE_*` | No                  | Smile ID KYC browser SDK config.                                                       |
 
 ---
 
 ## Scripts
 
-| Command | Description |
-| ------- | ----------- |
-| `npm run dev` | Start Vite dev server |
-| `npm run build` | Production build (runs env guard first) |
-| `npm run preview` | Serve the production build locally |
-| `npm run lint` | ESLint |
-| `npm run format` | Prettier write |
-| `npm run format:check` | Prettier check |
-| `npm run typecheck` | TypeScript check |
-| `npm run test` | Vitest (single run) |
-| `npm run test:watch` | Vitest (watch mode) |
-| `npm run test:coverage` | Vitest with coverage thresholds |
-| `npm run test:e2e` | Playwright E2E |
-| `npm run audit:endpoints` | Frontend calls vs backend OpenAPI |
+| Command                      | Description                                           |
+| ---------------------------- | ----------------------------------------------------- |
+| `npm run dev`                | Start Vite dev server                                 |
+| `npm run build`              | Production build (runs env guard first)               |
+| `npm run preview`            | Serve the production build locally                    |
+| `npm run lint`               | ESLint                                                |
+| `npm run format`             | Prettier write                                        |
+| `npm run format:check`       | Prettier check                                        |
+| `npm run typecheck`          | TypeScript check                                      |
+| `npm run test`               | Vitest (single run)                                   |
+| `npm run test:watch`         | Vitest (watch mode)                                   |
+| `npm run test:coverage`      | Vitest with coverage thresholds                       |
+| `npm run test:e2e`           | Playwright E2E                                        |
+| `npm run audit:endpoints`    | Frontend calls vs backend OpenAPI                     |
 | `npm run check:landing-sync` | Diff shared landing components against marketing repo |
-| `npm run probe:idempotency` | Live double-charge probe (needs credentials) |
+| `npm run probe:idempotency`  | Live double-charge probe (needs credentials)          |
 
 ---
 
@@ -98,10 +98,10 @@ src/
 
 ### Two-Repo Setup
 
-| Repo | Deploys to | Purpose |
-| ---- | ---------- | ------- |
+| Repo                         | Deploys to         | Purpose                                    |
+| ---------------------------- | ------------------ | ------------------------------------------ |
 | `glass-waitlist` (this repo) | `app.glasspay.app` | The product — auth, dashboards, member app |
-| `glass-waitlist-v1` | `glasspay.app` | Marketing site only |
+| `glass-waitlist-v1`          | `glasspay.app`     | Marketing site only                        |
 
 Landing components in this repo are the **source of truth** but do not auto-sync to the marketing repo. Cross-domain navigation goes through `goToApp()` (`src/utils/deviceRedirect.js`), never raw `navigate()`.
 
@@ -119,18 +119,18 @@ Token refresh is single-flight with cross-tab lease coordination (`src/api/refre
 
 ## Domain Glossary
 
-| Term | Meaning |
-| ---- | ------- |
-| **Community** | Top-level entity (school, cooperative, association). |
-| **Member** | A user belonging to a community who owes/pays money. |
-| **Admin / Owner** | A member with management rights over a community. |
-| **Payment plan** | A recurring or one-time due set up for members. |
-| **Obligation** | One instance of a member owing against a plan. |
-| **Payment link** | The underlying payable object created from a plan. |
-| **Transaction** | A record of money moving (completed, failed, pending). |
-| **Authorisation** | A saved card with auto-charge consent. |
-| **Settlement** | Payout of collected funds to a community's bank account. |
-| **KYC** | Identity verification (Smile ID) required for community management. |
+| Term              | Meaning                                                             |
+| ----------------- | ------------------------------------------------------------------- |
+| **Community**     | Top-level entity (school, cooperative, association).                |
+| **Member**        | A user belonging to a community who owes/pays money.                |
+| **Admin / Owner** | A member with management rights over a community.                   |
+| **Payment plan**  | A recurring or one-time due set up for members.                     |
+| **Obligation**    | One instance of a member owing against a plan.                      |
+| **Payment link**  | The underlying payable object created from a plan.                  |
+| **Transaction**   | A record of money moving (completed, failed, pending).              |
+| **Authorisation** | A saved card with auto-charge consent.                              |
+| **Settlement**    | Payout of collected funds to a community's bank account.            |
+| **KYC**           | Identity verification (Smile ID) required for community management. |
 
 ---
 
