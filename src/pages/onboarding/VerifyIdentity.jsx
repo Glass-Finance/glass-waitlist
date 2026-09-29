@@ -53,7 +53,7 @@ export default function VerifyIdentity() {
             aria-label="Back to choose path"
             className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
           >
-            <ArrowLeft size={17} strokeWidth={2} className="text-[#111]" />
+            <ArrowLeft size={17} strokeWidth={2} className="text-ink" />
           </button>
           <div className="min-w-0">
             <h1 className="text-lg font-semibold text-gray-900 m-0">Identity Verification</h1>
@@ -73,7 +73,7 @@ export default function VerifyIdentity() {
           className="ml-auto w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
           aria-label="Attempt history"
         >
-          <History size={16} className="text-[#111]" />
+          <History size={16} className="text-ink" />
         </button>
       </header>
 

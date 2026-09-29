@@ -39,48 +39,58 @@ import {
 
 const STYLES = {
   approved: {
-    cls: "bg-success-tint text-[#15803d]",
+    cls: "bg-success-tint text-success-deep",
     text: "Approved",
-    dot: "bg-[#15803d]",
+    dot: "bg-success-deep",
     icon: SealCheck,
   },
   pending: {
-    cls: "bg-[#fef9c3] text-[#b45309]",
+    cls: "bg-[#fef9c3] text-warning",
     text: "Pending",
-    dot: "bg-[#b45309]",
+    dot: "bg-warning",
     icon: ClockCountdown,
   },
   inReview: {
-    cls: "bg-[#fef9c3] text-[#b45309]",
+    cls: "bg-[#fef9c3] text-warning",
     text: "In review",
-    dot: "bg-[#b45309]",
+    dot: "bg-warning",
     icon: Hourglass,
   },
-  rejected: { cls: "bg-[#fce4e4] text-danger", text: "Rejected", dot: "bg-danger", icon: XCircle },
-  error: { cls: "bg-[#fce4e4] text-danger", text: "Error", dot: "bg-danger", icon: WarningCircle },
+  rejected: {
+    cls: "bg-danger-wash text-danger",
+    text: "Rejected",
+    dot: "bg-danger",
+    icon: XCircle,
+  },
+  error: {
+    cls: "bg-danger-wash text-danger",
+    text: "Error",
+    dot: "bg-danger",
+    icon: WarningCircle,
+  },
   expired: {
-    cls: "bg-stacked-container text-[#6B7280]",
+    cls: "bg-stacked-container text-ink-muted",
     text: "Expired",
-    dot: "bg-[#9CA3AF]",
+    dot: "bg-ink-faint",
     icon: Clock,
   },
-  revoked: { cls: "bg-[#fce4e4] text-danger", text: "Revoked", dot: "bg-danger", icon: Prohibit },
+  revoked: { cls: "bg-danger-wash text-danger", text: "Revoked", dot: "bg-danger", icon: Prohibit },
   notStarted: {
-    cls: "bg-stacked-container text-[#6B7280]",
+    cls: "bg-stacked-container text-ink-muted",
     text: "Not started",
-    dot: "bg-[#9CA3AF]",
+    dot: "bg-ink-faint",
     icon: CircleDashed,
   },
   initiated: {
-    cls: "bg-[#fef9c3] text-[#b45309]",
+    cls: "bg-[#fef9c3] text-warning",
     text: "In progress",
-    dot: "bg-[#b45309]",
+    dot: "bg-warning",
     icon: PlayCircle,
   },
   processing: {
-    cls: "bg-[#fef9c3] text-[#b45309]",
+    cls: "bg-[#fef9c3] text-warning",
     text: "Processing",
-    dot: "bg-[#b45309]",
+    dot: "bg-warning",
     icon: Spinner,
   },
 };
@@ -108,9 +118,9 @@ export function kycStatusStyle(status) {
   const s = key
     ? STYLES[key]
     : {
-        cls: "bg-stacked-container text-[#6B7280]",
+        cls: "bg-stacked-container text-ink-muted",
         text: "—",
-        dot: "bg-[#9CA3AF]",
+        dot: "bg-ink-faint",
         icon: CircleDashed,
       };
   // `dot` stays part of the contract (badge tests + any dot-painted

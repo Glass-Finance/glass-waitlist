@@ -144,7 +144,7 @@ export default function StepProfile({ onSubmit }) {
           </p>
           <Link
             to="/member/app-sign-in?return=/member/invites"
-            className="inline-block mt-2 text-xs font-semibold text-[#1C2B8A]"
+            className="inline-block mt-2 text-xs font-semibold text-brand-deep"
           >
             Sign in to accept the invite
           </Link>

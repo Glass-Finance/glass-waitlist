@@ -131,7 +131,7 @@ function FeatureCard({ icon, title, desc, illustration, entryDelay }) {
         />
         <div className="min-w-0">
           {/* Title types first */}
-          <h3 className="text-[clamp(16px,2.5vw,18px)] font-bold text-[#0f1d6e] leading-[1.3] mb-1.5">
+          <h3 className="text-[clamp(16px,2.5vw,18px)] font-bold text-brand-ink leading-[1.3] mb-1.5">
             {title}
           </h3>
 
@@ -197,12 +197,12 @@ export default function SolutionSection({
           {/* ── Header — BlurText on all three elements ── */}
           <div className="text-center mb-12">
             <div className="mb-5 flex justify-center">
-              <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full">
+              <span className="inline-flex items-center border border-brand-deep/25 text-brand-deep text-[13px] font-medium px-5 py-2 rounded-full">
                 {badge}
               </span>
             </div>
 
-            <h2 className="text-[clamp(26px,5vw,58px)] font-bold text-[#0f1d6e] leading-[1.15] tracking-[-0.02em] mb-4">
+            <h2 className="text-[clamp(26px,5vw,58px)] font-bold text-brand-ink leading-[1.15] tracking-[-0.02em] mb-4">
               <BlurText
                 text={headline}
                 animateBy="words"

@@ -73,7 +73,7 @@ export default function StepConnector({ p1, p2, bendY, stepRef }) {
             <motion.path
               ref={i === 0 ? mainPathRef : undefined}
               d={d}
-              stroke={i === 0 ? "#002FA7" : "#3b4fc8"}
+              stroke={i === 0 ? "var(--color-brand)" : "#3b4fc8"}
               strokeWidth={STROKE_W[i]}
               strokeLinecap="round"
               fill="none"
@@ -93,7 +93,7 @@ export default function StepConnector({ p1, p2, bendY, stepRef }) {
         ref={dotRingRef}
         r={7}
         fill="none"
-        stroke="#4f46e5"
+        stroke="var(--color-accent-indigo)"
         strokeWidth={1.5}
         className="blur-[2px]"
         style={{ opacity: 0 }}
@@ -102,7 +102,7 @@ export default function StepConnector({ p1, p2, bendY, stepRef }) {
       <circle
         ref={dotRef}
         r={3.5}
-        fill="#4f46e5"
+        fill="var(--color-accent-indigo)"
         className="[filter:drop-shadow(0_0_3px_rgba(99,102,241,1))_drop-shadow(0_0_7px_rgba(79,70,229,0.7))]"
         style={{ opacity: 0 }}
       />

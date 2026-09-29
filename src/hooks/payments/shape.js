@@ -26,7 +26,7 @@ export function shapeObligation(raw) {
     // itself no longer accepts payments.
     linkStatus: (raw.paymentLink?.status ?? "").toUpperCase(),
     obligationId: raw.id,
-    logoColor: "#1C2B8A",
+    logoColor: "var(--color-brand-deep)",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
     logo: raw.community?.logo,
   };
@@ -49,7 +49,7 @@ export function shapePaymentLink(raw, fallbackCommunitySlug) {
     linkStatus: (raw.status ?? "").toUpperCase(),
     paymentLinkId: raw.id,
     obligationId: null,
-    logoColor: "#1C2B8A",
+    logoColor: "var(--color-brand-deep)",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
     logo: raw.community?.logo,
     _isLink: true,

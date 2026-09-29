@@ -117,11 +117,11 @@ export function isSelfAccountType(type) {
 // bg/fg are a light-tint/solid-tone pair per semantic bucket: red for
 // failures/urgent, amber for due-soon, green for success, indigo for new/
 // info, gray for neutral account-level notices.
-const RED = { bg: "#FEE2E2", fg: "#DC2626" };
-const AMBER = { bg: "#FEF3C7", fg: "#D97706" };
-const GREEN = { bg: "#D1FAE5", fg: "#059669" };
-const INDIGO = { bg: "#E0E7FF", fg: "#4F46E5" };
-const GRAY = { bg: "#F3F4F6", fg: "#6B7280" };
+const RED = { bg: "var(--color-danger-tint)", fg: "var(--color-danger)" };
+const AMBER = { bg: "var(--color-warning-tint)", fg: "var(--color-warning)" };
+const GREEN = { bg: "var(--color-success-tint-2)", fg: "var(--color-success-strong)" };
+const INDIGO = { bg: "var(--color-brand-tint-2)", fg: "var(--color-accent-indigo)" };
+const GRAY = { bg: "var(--color-stacked-container)", fg: "var(--color-ink-muted)" };
 
 const NOTIFICATION_VISUAL = {
   // Payment lifecycle

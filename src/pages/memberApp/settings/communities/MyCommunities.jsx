@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AlertTriangle, ChevronLeft, ChevronRight, Loader2, LogOut, Plus, X } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
-import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../../../components/common/PageLoadingState";
 import KycWizardModal from "../../../../components/kyc/KycWizardModal";
 import KycStatusBadge from "../../../../components/memberApp/KycStatusBadge";
 import { useKycGate } from "../../../../hooks/useKycGate";
@@ -47,18 +47,18 @@ function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
         <div className="flex justify-end">
           <button
             onClick={onCancel}
-            className="bg-transparent border-none cursor-pointer p-1 text-[#9CA3AF]"
+            className="bg-transparent border-none cursor-pointer p-1 text-ink-faint"
             aria-label="Cancel"
           >
             <X size={18} />
           </button>
         </div>
         <div className="flex flex-col items-center text-center gap-2.5">
-          <div className="w-[52px] h-[52px] rounded-full bg-[#FEF2F2] flex items-center justify-center mb-1">
+          <div className="w-[52px] h-[52px] rounded-full bg-danger-wash flex items-center justify-center mb-1">
             <AlertTriangle size={24} className="text-danger" />
           </div>
-          <p className="text-[17px] font-bold text-[#111] m-0">Leave {community?.name}?</p>
-          <p className="text-[13.5px] text-[#6B7280] m-0 leading-[1.55] max-w-[320px]">
+          <p className="text-[17px] font-bold text-ink m-0">Leave {community?.name}?</p>
+          <p className="text-[13.5px] text-ink-muted m-0 leading-[1.55] max-w-[320px]">
             You'll lose access to this community's payment history and upcoming dues from your
             account, and you'll need a new invite to rejoin. This can't be undone from your side.
           </p>
@@ -74,7 +74,7 @@ function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
           <button
             onClick={onCancel}
             disabled={leaving}
-            className="border border-surface-container-border w-full py-3.5 px-0 rounded-xl bg-white text-[#374151] text-[14.5px] font-semibold cursor-pointer"
+            className="border border-surface-container-border w-full py-3.5 px-0 rounded-xl bg-white text-ink-strong text-[14.5px] font-semibold cursor-pointer"
           >
             Cancel
           </button>
@@ -154,9 +154,9 @@ export default function MyCommunities() {
           onClick={() => navigate(-1)}
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-lg font-semibold text-[#111] m-0">My Communities</h1>
+        <h1 className="text-lg font-semibold text-ink m-0">My Communities</h1>
       </div>
 
       <div className="pt-0 px-4 pb-4 flex items-center gap-2">
@@ -166,7 +166,7 @@ export default function MyCommunities() {
           }}
           disabled={kycGate.isLoading}
           aria-busy={kycGate.isLoading}
-          className="flex items-center justify-center gap-2 flex-1 p-3 rounded-xl bg-[#1C2B8A] text-white text-sm font-semibold border-none cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+          className="flex items-center justify-center gap-2 flex-1 p-3 rounded-xl bg-brand-deep text-white text-sm font-semibold border-none cursor-pointer disabled:opacity-60 disabled:cursor-wait"
         >
           {kycGate.isLoading ? (
             <>
@@ -206,7 +206,7 @@ export default function MyCommunities() {
           // rounded-xl avatar tile, same card layout) but dashed and empty.
           <div className="flex items-center gap-3 bg-white rounded-2xl p-3.5 border border-surface-container-border">
             <div className="w-11 h-11 rounded-xl flex-shrink-0 border-2 border-dashed border-gray-200" />
-            <p className="text-sm text-[#999] m-0">You haven't joined any communities yet</p>
+            <p className="text-sm text-ink-ghost m-0">You haven't joined any communities yet</p>
           </div>
         ) : (
           <div className="flex flex-col gap-2.5">
@@ -218,7 +218,7 @@ export default function MyCommunities() {
                 className={`flex items-center gap-3 bg-white rounded-2xl p-3.5 border border-surface-container-border text-left w-full ${navigatingId === c.id ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
               >
                 <div
-                  className={`w-11 h-11 rounded-xl text-white flex items-center justify-center font-bold text-[13px] flex-shrink-0 overflow-hidden ${c.logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
+                  className={`w-11 h-11 rounded-xl text-white flex items-center justify-center font-bold text-[13px] flex-shrink-0 overflow-hidden ${c.logo?.url ? "bg-transparent" : "bg-brand-deep"}`}
                 >
                   {c.logo?.url ? (
                     <img
@@ -232,8 +232,8 @@ export default function MyCommunities() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#111] m-0">{c.name}</p>
-                  <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">
+                  <p className="text-sm font-medium text-ink m-0">{c.name}</p>
+                  <p className="text-xs text-ink-ghost mt-0.5 mx-0 mb-0">
                     {c.owned ? "Admin" : "Member"}
                   </p>
                 </div>
@@ -247,7 +247,7 @@ export default function MyCommunities() {
                     <LogOut size={16} />
                   </button>
                 ) : navigatingId === c.id ? (
-                  <div className="w-4 h-4 rounded-full border-2 border-surface-container-border [border-top-color:#002FA7] flex-shrink-0 animate-[spin_0.7s_linear_infinite]" />
+                  <div className="w-4 h-4 rounded-full border-2 border-surface-container-border [border-top-color:var(--color-brand)] flex-shrink-0 animate-[spin_0.7s_linear_infinite]" />
                 ) : (
                   <ChevronRight size={16} className="text-[#ccc] flex-shrink-0" />
                 )}

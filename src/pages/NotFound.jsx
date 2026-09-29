@@ -32,7 +32,7 @@ export default function NotFound() {
         <div className="flex gap-3 justify-center">
           <button
             onClick={() => navigate(-1)}
-            className="px-5 py-2.5 rounded-full text-[13px] font-medium text-gray-700 cursor-pointer transition-colors bg-surface-container border border-[#E5E7EB] backdrop-blur-xs"
+            className="px-5 py-2.5 rounded-full text-[13px] font-medium text-gray-700 cursor-pointer transition-colors bg-surface-container border border-hairline-neutral backdrop-blur-xs"
           >
             Go back
           </button>

@@ -11,8 +11,8 @@ export default function IdTypeStep({ idType, setIdType, disabled = false }) {
   return (
     <div className="flex flex-col gap-3.5">
       <div>
-        <h3 className="text-[15px] font-bold text-[#111] m-0">Which ID will you use?</h3>
-        <p className="text-[13px] text-[#6B7280] mt-1 mb-0 leading-[1.55]">
+        <h3 className="text-[15px] font-bold text-ink m-0">Which ID will you use?</h3>
+        <p className="text-[13px] text-ink-muted mt-1 mb-0 leading-[1.55]">
           Pick the document you have on hand — you&apos;ll verify with it inside Smile ID&apos;s
           secure window.
         </p>
@@ -32,8 +32,8 @@ export default function IdTypeStep({ idType, setIdType, disabled = false }) {
               className={[
                 "w-full flex items-center justify-between gap-2 text-left py-3 px-3.5 rounded-xl border bg-white cursor-pointer text-sm transition-all",
                 selected
-                  ? "border-transparent shadow-[0_0_0_2px_var(--color-brand)] text-[#111] font-medium"
-                  : "border-[#E5E7EB] text-[#111] hover:border-gray-300",
+                  ? "border-transparent shadow-[0_0_0_2px_var(--color-brand)] text-ink font-medium"
+                  : "border-hairline-neutral text-ink hover:border-gray-300",
                 disabled ? "opacity-60 cursor-not-allowed" : "",
               ].join(" ")}
             >

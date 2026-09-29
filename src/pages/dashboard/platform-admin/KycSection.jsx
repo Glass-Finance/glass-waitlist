@@ -403,7 +403,7 @@ export default function KycSection() {
               <tr
                 key={a.id}
                 onClick={() => setOpenId(a.id)}
-                className={`group hover:bg-gray-50 transition-colors cursor-pointer ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
+                className={`group hover:bg-gray-50 transition-colors cursor-pointer ${i < items.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">

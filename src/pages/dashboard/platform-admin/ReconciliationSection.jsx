@@ -94,7 +94,7 @@ function ReconciliationRunsTable() {
             {items.map((r, i) => (
               <tr
                 key={r.id}
-                className={i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}
+                className={i < items.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}
               >
                 <td className="px-4 py-3">
                   <p className="text-[12px] font-semibold text-gray-900">
@@ -324,7 +324,7 @@ function ReconciliationFindingsTable() {
             {items.map((f, i) => (
               <tr
                 key={f.id}
-                className={`group ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
+                className={`group ${i < items.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
                   <p className="text-[12px] font-semibold text-gray-900">

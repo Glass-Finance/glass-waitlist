@@ -20,7 +20,7 @@ function StatusPill({ status }) {
         <span
           className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${s.dotCls}`}
         >
-          <Check size={11} color="#fff" strokeWidth={3} />
+          <Check size={11} color="var(--color-white)" strokeWidth={3} />
         </span>
       )}
       {s.text}
@@ -119,7 +119,12 @@ export default function TransactionDetail() {
             <Row label="Community">
               <span className="inline-flex items-center gap-2">
                 {tx.communityLogo?.url && (
-                  <img src={tx.communityLogo.url} alt="" className="w-6 h-6 object-contain" />
+                  <img
+                    src={tx.communityLogo.url}
+                    alt=""
+                    className="w-6 h-6 object-contain"
+                    loading="lazy"
+                  />
                 )}
                 {tx.communityName ?? "—"}
               </span>
@@ -135,7 +140,7 @@ export default function TransactionDetail() {
                       className="w-6 h-6 rounded-full object-cover flex-shrink-0"
                     />
                   ) : (
-                    <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white bg-gradient-to-br from-[#7C3AED] to-brand">
+                    <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white bg-gradient-to-br from-accent-purple to-brand">
                       {getInitials(tx.payerName)}
                     </span>
                   )}
@@ -167,7 +172,7 @@ export default function TransactionDetail() {
             </Row>
             {tx.initiatedBy && (
               <Row label="Initiated by" last>
-                <span className="inline-block bg-[#D7E2FF] text-brand text-xs font-semibold rounded-full px-3 py-1">
+                <span className="inline-block bg-brand-mist text-brand text-xs font-semibold rounded-full px-3 py-1">
                   {tx.initiatedBy}
                 </span>
               </Row>

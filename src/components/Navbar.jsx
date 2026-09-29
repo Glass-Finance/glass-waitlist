@@ -32,13 +32,13 @@ export default function Navbar() {
   return (
     <>
       <motion.div
-        className="[transform-origin:0%_50%] bg-[linear-gradient(90deg,#002FA7_0%,#4f46e5_60%,#7c3aed_100%)] h-[3px] fixed top-0 left-0 right-0 z-[200] pointer-events-none"
+        className="[transform-origin:0%_50%] bg-[linear-gradient(90deg,var(--color-brand)_0%,#4f46e5_60%,#7c3aed_100%)] h-[3px] fixed top-0 left-0 right-0 z-[200] pointer-events-none"
         style={{ scaleX }}
       />
       <nav
         className={`fixed top-0 left-0 right-0 z-50 min-h-[80px] transition-all duration-300 ${
           scrolled
-            ? "bg-[#07091F]/95 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_30px_rgba(0,0,0,0.4)]"
+            ? "bg-brand-night-deep/95 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_30px_rgba(0,0,0,0.4)]"
             : "bg-transparent"
         }`}
       >
@@ -183,7 +183,7 @@ export default function Navbar() {
               <>
                 <button
                   onClick={() => goToApp("/sign-up", navigate)}
-                  className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20 cursor-pointer"
+                  className="flex items-center gap-1.5 bg-white text-brand-night px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20 cursor-pointer"
                 >
                   Get Started Free
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -198,7 +198,7 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={() => goToApp("/sign-in", navigate)}
-                className="flex items-center gap-1.5 bg-white text-[#0B0F2E] px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20 cursor-pointer"
+                className="flex items-center gap-1.5 bg-white text-brand-night px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20 cursor-pointer"
               >
                 Sign In
               </button>
@@ -216,7 +216,7 @@ export default function Navbar() {
 
         {/* ── Mobile Dropdown ── */}
         {menuOpen && (
-          <div className="lg:hidden bg-[#0B0F2E]/98 backdrop-blur-xl border-b border-white/[0.08]">
+          <div className="lg:hidden bg-brand-night/98 backdrop-blur-xl border-b border-white/[0.08]">
             <div className="px-6 py-5 space-y-4">
               <div className="space-y-1 pt-1">
                 {[
@@ -243,7 +243,7 @@ export default function Navbar() {
                       goToApp("/sign-up", navigate);
                       setMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-center gap-2 bg-white text-[#0B0F2E] py-3 rounded-full text-[14px] font-bold cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 bg-white text-brand-night py-3 rounded-full text-[14px] font-bold cursor-pointer"
                   >
                     Get Started Free <ChevronRight className="w-4 h-4" />
                   </button>
@@ -263,7 +263,7 @@ export default function Navbar() {
                     goToApp("/sign-in", navigate);
                     setMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-center gap-2 bg-white text-[#0B0F2E] py-3 rounded-full text-[14px] font-bold cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 bg-white text-brand-night py-3 rounded-full text-[14px] font-bold cursor-pointer"
                 >
                   Sign In
                 </button>

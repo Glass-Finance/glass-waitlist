@@ -4,7 +4,7 @@ export default function NavRail() {
     <div
       style={{
         width: 56,
-        background: "#002FA7",
+        background: "var(--color-brand)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -41,14 +41,14 @@ export default function NavRail() {
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <path
             d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"
-            stroke="#fff"
+            stroke="var(--color-white)"
             strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
           <path
             d="M9 21V12h6v9"
-            stroke="#fff"
+            stroke="var(--color-white)"
             strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -76,7 +76,7 @@ export default function NavRail() {
             width: 6,
             height: 24,
             borderRadius: 99,
-            background: "#fff",
+            background: "var(--color-white)",
           }}
         />
         <div
@@ -84,8 +84,8 @@ export default function NavRail() {
             width: 32,
             height: 32,
             borderRadius: 9,
-            background: "#fff",
-            color: "#002FA7",
+            background: "var(--color-white)",
+            color: "var(--color-brand)",
             fontSize: 10,
             fontWeight: 800,
             display: "flex",
@@ -101,8 +101,8 @@ export default function NavRail() {
           width: 32,
           height: 32,
           borderRadius: 9,
-          background: "#fff",
-          color: "#002FA7",
+          background: "var(--color-white)",
+          color: "var(--color-brand)",
           fontSize: 10,
           fontWeight: 800,
           display: "flex",
@@ -127,14 +127,14 @@ export default function NavRail() {
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <path
             d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
-            stroke="#fff"
+            stroke="var(--color-white)"
             strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
           <path
             d="M16 17l5-5-5-5M21 12H9"
-            stroke="#fff"
+            stroke="var(--color-white)"
             strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"

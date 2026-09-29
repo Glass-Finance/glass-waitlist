@@ -12,7 +12,7 @@ import {
   findAuthorisationForPlan,
 } from "../../hooks/usePayments";
 import { getErrorMessage } from "../../utils/errorHandler";
-import PageLoadingState from "../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import Toggle from "../../components/common/Toggle";
 import { Button } from "../../components/ui/Button";
@@ -63,8 +63,8 @@ function normalizeLinkToObligation(link) {
 // ─── Saved-method icon ────────────────────────────────────────────────────────
 function MethodIcon() {
   return (
-    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#EEF2FF]">
-      <Landmark size={16} className="text-[#1C2B8A]" />
+    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-brand-wash">
+      <Landmark size={16} className="text-brand-deep" />
     </div>
   );
 }
@@ -257,7 +257,7 @@ export default function PaymentSummary() {
 
       {/* ── Test mode banner ── */}
       {isTestMode && (
-        <div className="mx-4 mb-3 rounded-xl px-4 py-3 bg-[#FFFBEB] border-[1.5px] border-[#FCD34D]">
+        <div className="mx-4 mb-3 rounded-xl px-4 py-3 bg-warning-wash border-[1.5px] border-[#FCD34D]">
           <p className="text-[12px] font-bold text-amber-800 mb-1.5">
             🧪 Test Mode — No real money is charged
           </p>
@@ -297,7 +297,7 @@ export default function PaymentSummary() {
           {/* Community row */}
           <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
             <div
-              className={`w-11 h-11 flex items-center justify-center flex-shrink-0 ${communityLogo?.url ? "bg-transparent" : "bg-[#f0f4ff]"}`}
+              className={`w-11 h-11 flex items-center justify-center flex-shrink-0 ${communityLogo?.url ? "bg-transparent" : "bg-brand-glow"}`}
             >
               {communityLogo?.url ? (
                 <img
@@ -307,7 +307,7 @@ export default function PaymentSummary() {
                   className="object-contain w-full h-full"
                 />
               ) : (
-                <span className="text-[10px] font-bold text-[#1C2B8A]">{communityInitials}</span>
+                <span className="text-[10px] font-bold text-brand-deep">{communityInitials}</span>
               )}
             </div>
             <span className="text-[14px] font-medium text-gray-900">{communityName}</span>
@@ -379,7 +379,7 @@ export default function PaymentSummary() {
             className={`flex items-center justify-between ${isRecurring ? "mb-3" : "mb-2.5 pb-3 border-b border-gray-100"}`}
           >
             <span className="text-[13px] text-gray-500">Payment Schedule:</span>
-            <span className="text-[12px] font-semibold px-3 py-0.5 rounded-full bg-[#EEF1FB] text-[#1C2B8A]">
+            <span className="text-[12px] font-semibold px-3 py-0.5 rounded-full bg-[#EEF1FB] text-brand-deep">
               {isRecurring
                 ? toTitleCase((obligation?.recurringPlan?.frequency ?? "Recurring").toLowerCase())
                 : "One-Time"}

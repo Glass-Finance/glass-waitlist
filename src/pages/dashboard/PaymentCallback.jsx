@@ -225,7 +225,7 @@ function AdminPaymentCallback() {
   // innerBgCls, which is why those are absent from its entry here.
   const config = {
     checking: {
-      icon: <Loader2 size={28} className="animate-spin" color="#fff" />,
+      icon: <Loader2 size={28} className="animate-spin" color="var(--color-white)" />,
       outerBgCls: "bg-brand-tint",
       innerBgCls: "bg-brand",
       title: "Confirming payment…",
@@ -241,7 +241,7 @@ function AdminPaymentCallback() {
       buttonLabel: backLabel,
     },
     failed: {
-      icon: <X size={28} strokeWidth={3} color="#fff" />,
+      icon: <X size={28} strokeWidth={3} color="var(--color-white)" />,
       outerBgCls: "bg-danger-tint",
       innerBgCls: "bg-danger",
       title: "Payment Failed",
@@ -249,7 +249,7 @@ function AdminPaymentCallback() {
       buttonLabel: backLabel,
     },
     processing: {
-      icon: <Clock size={28} color="#fff" />,
+      icon: <Clock size={28} color="var(--color-white)" />,
       outerBgCls: "bg-brand-tint",
       innerBgCls: "bg-brand",
       title: "Payment Processing",
@@ -258,15 +258,15 @@ function AdminPaymentCallback() {
       buttonLabel: backLabel,
     },
     unknown: {
-      icon: <Loader2 size={28} strokeWidth={2} color="#fff" />,
+      icon: <Loader2 size={28} strokeWidth={2} color="var(--color-white)" />,
       outerBgCls: "bg-stacked-container",
-      innerBgCls: "bg-[#9CA3AF]",
+      innerBgCls: "bg-ink-faint",
       title: "Still confirming…",
       subtitle: "We couldn't confirm the outcome yet. Check your Transactions tab in a moment.",
       buttonLabel: backLabel,
     },
     signin: {
-      icon: <Clock size={28} color="#fff" />,
+      icon: <Clock size={28} color="var(--color-white)" />,
       outerBgCls: "bg-brand-tint",
       innerBgCls: "bg-brand",
       title: "Sign in to see your payment",

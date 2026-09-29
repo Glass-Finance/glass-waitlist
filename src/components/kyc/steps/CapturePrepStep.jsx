@@ -18,10 +18,8 @@ export default function CapturePrepStep({ idType }) {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h3 className="text-[15px] font-bold text-[#111] m-0">
-          Capture your {idTypeLabel(idType)}
-        </h3>
-        <p className="text-[13px] text-[#6B7280] mt-1 mb-0 leading-[1.55]">
+        <h3 className="text-[15px] font-bold text-ink m-0">Capture your {idTypeLabel(idType)}</h3>
+        <p className="text-[13px] text-ink-muted mt-1 mb-0 leading-[1.55]">
           You&apos;ll be asked to photograph it and take a quick selfie check.
         </p>
       </div>
@@ -47,7 +45,7 @@ export default function CapturePrepStep({ idType }) {
         {TIPS.map((tip) => (
           <li
             key={tip}
-            className="flex items-start gap-2 text-[12.5px] text-[#374151] leading-[1.45]"
+            className="flex items-start gap-2 text-[12.5px] text-ink-strong leading-[1.45]"
           >
             <span className="w-[15px] h-[15px] rounded-full bg-brand text-white flex items-center justify-center flex-shrink-0 mt-[1.5px]">
               <GlyphCheckMark size={9} />

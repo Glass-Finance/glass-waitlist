@@ -92,7 +92,7 @@ export function OtpVerifyScreen({
           <p className="text-sm font-semibold text-gray-900">{otpIdentifier}</p>
           <button
             onClick={onBackToIdentifier}
-            className="text-sm font-medium mt-1 hover:underline text-[#1B2FE8] bg-transparent border-none cursor-pointer p-0"
+            className="text-sm font-medium mt-1 hover:underline text-brand-link bg-transparent border-none cursor-pointer p-0"
           >
             Use a different email
           </button>
@@ -117,7 +117,7 @@ export function OtpVerifyScreen({
                 {digits.slice(0, 3).map((digit, index) => (
                   <div
                     key={index}
-                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${digit || index === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
+                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${digit || index === activeIndex ? "border-primary" : "border-hairline-disabled"}`}
                   >
                     {digit}
                   </div>
@@ -128,7 +128,7 @@ export function OtpVerifyScreen({
                   return (
                     <div
                       key={position}
-                      className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${digit || position === activeIndex ? "border-primary" : "border-[#C2C2C2]"}`}
+                      className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${digit || position === activeIndex ? "border-primary" : "border-hairline-disabled"}`}
                     >
                       {digit}
                     </div>
@@ -153,7 +153,7 @@ export function OtpVerifyScreen({
           <button
             onClick={onResend}
             disabled={otpSending || resendSecondsLeft > 0}
-            className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8] bg-transparent border-none cursor-pointer p-0"
+            className="font-semibold hover:underline disabled:opacity-60 text-brand-link bg-transparent border-none cursor-pointer p-0"
           >
             {otpSending
               ? "Resending…"

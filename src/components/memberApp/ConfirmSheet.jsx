@@ -29,7 +29,7 @@ export default function ConfirmSheet({
           <button
             onClick={onCancel}
             disabled={confirming}
-            className="bg-transparent border-none cursor-pointer p-1 text-[#9CA3AF]"
+            className="bg-transparent border-none cursor-pointer p-1 text-ink-faint"
             aria-label="Cancel"
           >
             <X size={18} />
@@ -37,12 +37,12 @@ export default function ConfirmSheet({
         </div>
         <div className="flex flex-col items-center text-center gap-2.5">
           <div
-            className={`w-[52px] h-[52px] rounded-full flex items-center justify-center mb-1 ${danger ? "bg-[#FEF2F2]" : "bg-brand-tint"}`}
+            className={`w-[52px] h-[52px] rounded-full flex items-center justify-center mb-1 ${danger ? "bg-danger-wash" : "bg-brand-tint"}`}
           >
             <Icon size={24} className={danger ? "text-danger" : "text-brand"} />
           </div>
-          <p className="text-[17px] font-bold text-[#111] m-0">{title}</p>
-          <p className="text-[13.5px] text-[#6B7280] m-0 leading-[1.55] max-w-[320px]">
+          <p className="text-[17px] font-bold text-ink m-0">{title}</p>
+          <p className="text-[13.5px] text-ink-muted m-0 leading-[1.55] max-w-[320px]">
             {description}
           </p>
         </div>
@@ -57,7 +57,7 @@ export default function ConfirmSheet({
           <button
             onClick={onCancel}
             disabled={confirming}
-            className="w-full py-3.5 px-0 rounded-xl border border-[#E5E7EB] bg-white text-[#374151] text-[14.5px] font-semibold cursor-pointer"
+            className="w-full py-3.5 px-0 rounded-xl border border-hairline-neutral bg-white text-ink-strong text-[14.5px] font-semibold cursor-pointer"
           >
             Cancel
           </button>

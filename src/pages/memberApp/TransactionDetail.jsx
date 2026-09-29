@@ -4,7 +4,7 @@ import { ChevronLeft, Check, Copy, CheckCheck, Share2 } from "lucide-react";
 import { useTransactionDetail } from "../../hooks/useTransactionDetail";
 import { useAuth } from "../../store/AuthContext";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
-import PageLoadingState from "../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import ReceiptModal from "../../components/common/ReceiptModal";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { transactionStatusStyle } from "../../utils/transactionStatus";
@@ -20,7 +20,7 @@ function StatusPill({ status }) {
         <span
           className={`w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${s.dotCls}`}
         >
-          <Check size={11} color="#fff" strokeWidth={3} />
+          <Check size={11} color="var(--color-white)" strokeWidth={3} />
         </span>
       )}
       {s.text}
@@ -33,8 +33,8 @@ function Row({ label, children, last }) {
     <div
       className={`flex items-start justify-between gap-4 py-3.5 ${last ? "border-none" : "border-b border-stacked-container"}`}
     >
-      <span className="text-sm text-[#6B7280] flex-shrink-0 pt-px">{label}</span>
-      <span className="text-sm font-semibold text-[#111827] text-right break-words max-w-[62%]">
+      <span className="text-sm text-ink-muted flex-shrink-0 pt-px">{label}</span>
+      <span className="text-sm font-semibold text-ink text-right break-words max-w-[62%]">
         {children}
       </span>
     </div>
@@ -65,9 +65,9 @@ export default function TransactionDetail() {
           onClick={() => navigate(-1)}
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
         >
-          <ChevronLeft size={18} color="#374151" />
+          <ChevronLeft size={18} color="var(--color-ink-strong)" />
         </button>
-        <h1 className="text-lg font-semibold text-[#111] m-0 flex-1 text-center mr-9">
+        <h1 className="text-lg font-semibold text-ink m-0 flex-1 text-center mr-9">
           Transaction Details
         </h1>
       </div>
@@ -82,11 +82,11 @@ export default function TransactionDetail() {
         <div className="py-0 px-4 flex flex-col gap-3">
           {/* Amount card */}
           <div className="bg-white rounded-2xl pt-7 px-5 pb-7 border border-surface-container-border flex flex-col items-center gap-3">
-            <p className="text-[34px] font-bold text-[#111827] m-0 tracking-[-0.5px]">
+            <p className="text-[34px] font-bold text-ink m-0 tracking-[-0.5px]">
               {formatNaira(tx.amount, { decimals: 2 })}
             </p>
             <StatusPill status={tx.status} />
-            <p className="text-[13px] text-[#9CA3AF] m-0">
+            <p className="text-[13px] text-ink-faint m-0">
               {tx.date
                 ? new Date(tx.date)
                     .toLocaleString("en-NG", {
@@ -103,14 +103,19 @@ export default function TransactionDetail() {
 
           {/* Details card */}
           <div className="bg-white rounded-2xl pt-[18px] px-5 pb-[18px] border border-surface-container-border">
-            <p className="text-[15px] font-semibold text-[#111] mt-0 mx-0 mb-1.5">
+            <p className="text-[15px] font-semibold text-ink mt-0 mx-0 mb-1.5">
               Transaction Details
             </p>
 
             <Row label="Community:">
               <span className="flex items-center gap-2">
                 {tx.communityLogo?.url && (
-                  <img src={tx.communityLogo.url} alt="" className="w-8 h-8 object-cover" />
+                  <img
+                    src={tx.communityLogo.url}
+                    alt=""
+                    className="w-8 h-8 object-cover"
+                    loading="lazy"
+                  />
                 )}
                 {tx.communityName ?? "—"}
               </span>
@@ -137,7 +142,7 @@ export default function TransactionDetail() {
               <span className="inline-flex align-middle">
                 <button
                   onClick={copyReference}
-                  className="bg-transparent border-none cursor-pointer p-0.5 text-[#9CA3AF] flex"
+                  className="bg-transparent border-none cursor-pointer p-0.5 text-ink-faint flex"
                   aria-label="Copy transaction ID"
                 >
                   {copied ? <CheckCheck size={13} color="#15803d" /> : <Copy size={13} />}
@@ -146,7 +151,7 @@ export default function TransactionDetail() {
             </Row>
             {tx.initiatedBy && (
               <Row label="Initiated by:" last>
-                <span className="inline-block bg-[#D7E2FF] text-brand text-xs font-semibold rounded-full py-[3px] px-3">
+                <span className="inline-block bg-brand-mist text-brand text-xs font-semibold rounded-full py-[3px] px-3">
                   {tx.initiatedBy}
                 </span>
               </Row>

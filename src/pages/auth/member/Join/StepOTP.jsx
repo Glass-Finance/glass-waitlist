@@ -97,7 +97,7 @@ export default function StepOTP({ email, onVerified, onBack }) {
             sessionStorage.removeItem(PENDING_KEY);
             onBack();
           }}
-          className="text-sm font-medium mt-1 text-[#1C2B8A]"
+          className="text-sm font-medium mt-1 text-brand-deep"
         >
           Wrong email?
         </button>
@@ -159,7 +159,7 @@ export default function StepOTP({ email, onVerified, onBack }) {
         <button
           onClick={handleResend}
           disabled={resendCooldown > 0}
-          className="font-semibold disabled:opacity-40 text-[#1C2B8A]"
+          className="font-semibold disabled:opacity-40 text-brand-deep"
         >
           {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend"}
         </button>

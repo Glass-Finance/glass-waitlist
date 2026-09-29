@@ -12,7 +12,7 @@ import { TextInput } from "../../../../components/ui/TextInput";
 function PasswordField({ label, value, onChange, show, onToggleShow }) {
   return (
     <div>
-      <label className="text-xs text-[#888] block mb-1.5">{label}</label>
+      <label className="text-xs text-ink-ghost block mb-1.5">{label}</label>
       <TextInput
         type={show ? "text" : "password"}
         value={value}
@@ -21,7 +21,7 @@ function PasswordField({ label, value, onChange, show, onToggleShow }) {
           <button
             type="button"
             onClick={onToggleShow}
-            className="bg-transparent border-none cursor-pointer text-[#999] p-1"
+            className="bg-transparent border-none cursor-pointer text-ink-ghost p-1"
           >
             {show ? <EyeOff size={15} /> : <Eye size={15} />}
           </button>
@@ -78,9 +78,9 @@ export default function Password() {
           onClick={() => navigate(-1)}
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-lg font-semibold text-[#111] m-0">Password</h1>
+        <h1 className="text-lg font-semibold text-ink m-0">Password</h1>
       </div>
 
       <div className="px-4">
@@ -112,7 +112,9 @@ export default function Password() {
         </div>
 
         {error && <p className="text-[13px] text-danger mt-3 mx-1 mb-0">{error}</p>}
-        {success && <p className="text-[13px] text-[#059669] mt-3 mx-1 mb-0">Password updated.</p>}
+        {success && (
+          <p className="text-[13px] text-success-strong mt-3 mx-1 mb-0">Password updated.</p>
+        )}
 
         <Button onClick={handleSubmit} loading={updatePassword.isPending} className="mt-4">
           {updatePassword.isPending ? "Updating…" : "Update Password"}

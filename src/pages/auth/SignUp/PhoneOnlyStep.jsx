@@ -83,7 +83,7 @@ export default function PhoneOnlyStep({ initialPhone, onNext, onCancel }) {
         <button
           type="button"
           onClick={onCancel}
-          className="text-sm font-medium text-center hover:underline text-[#1B2FE8] bg-transparent border-none cursor-pointer"
+          className="text-sm font-medium text-center hover:underline text-brand-link bg-transparent border-none cursor-pointer"
         >
           Back to verification
         </button>

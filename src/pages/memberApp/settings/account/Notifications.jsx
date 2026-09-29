@@ -7,11 +7,11 @@ import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
   return (
     <div
-      className={`flex items-center justify-between py-3.5 px-4 ${last ? "border-none" : "border-b border-[#F2F2F2]"}`}
+      className={`flex items-center justify-between py-3.5 px-4 ${last ? "border-none" : "border-b border-hairline-soft"}`}
     >
       <div className="min-w-0 pr-3">
-        <p className="text-sm font-medium text-[#111] m-0">{label}</p>
-        {desc && <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">{desc}</p>}
+        <p className="text-sm font-medium text-ink m-0">{label}</p>
+        {desc && <p className="text-xs text-ink-ghost mt-0.5 mx-0 mb-0">{desc}</p>}
       </div>
       <Toggle on={!!value} onChange={onChange} disabled={disabled} />
     </div>
@@ -21,7 +21,7 @@ function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
 function Section({ title, children }) {
   return (
     <div className="mb-5">
-      <p className="text-[11px] font-bold text-[#999] mt-0 mx-1 mb-2 uppercase [letter-spacing:0.6px]">
+      <p className="text-[11px] font-bold text-ink-ghost mt-0 mx-1 mb-2 uppercase [letter-spacing:0.6px]">
         {title}
       </p>
       <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden">
@@ -34,11 +34,11 @@ function Section({ title, children }) {
 function SkeletonRow({ last }) {
   return (
     <div
-      className={`flex items-center justify-between p-4 ${last ? "border-none" : "border-b border-[#F2F2F2]"}`}
+      className={`flex items-center justify-between p-4 ${last ? "border-none" : "border-b border-hairline-soft"}`}
     >
       <div>
         <div className="w-[140px] h-[13px] rounded-md bg-[#EBEBEB] mb-1.5" />
-        <div className="w-[200px] h-[11px] rounded-md bg-[#F2F2F2]" />
+        <div className="w-[200px] h-[11px] rounded-md bg-hairline-soft" />
       </div>
       <div className="w-10 h-[22px] rounded-full bg-[#EBEBEB] flex-shrink-0" />
     </div>
@@ -64,9 +64,9 @@ export default function Notifications() {
           onClick={() => navigate(-1)}
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-lg font-semibold text-[#111] m-0">Notifications</h1>
+        <h1 className="text-lg font-semibold text-ink m-0">Notifications</h1>
       </div>
 
       <div className="px-4">
@@ -192,11 +192,11 @@ export default function Notifications() {
         </Section>
 
         {/* Info note */}
-        <div className="flex items-start gap-2 py-3 px-3.5 rounded-[10px] bg-[#D7E2FF]">
+        <div className="flex items-start gap-2 py-3 px-3.5 rounded-[10px] bg-brand-mist">
           <div className="w-4 h-4 rounded-full border-[1.5px] border-brand flex items-center justify-center flex-shrink-0 mt-px">
             <span className="text-[9px] font-bold text-brand">i</span>
           </div>
-          <p className="text-xs text-[#333] m-0 leading-[1.5]">
+          <p className="text-xs text-ink m-0 leading-[1.5]">
             Changes take effect immediately. Critical security alerts are always sent regardless of
             your preferences.
           </p>

@@ -15,14 +15,14 @@ const STATS = [
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
         <path
           d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
-          stroke="#002FA7"
+          stroke="var(--color-brand)"
           strokeWidth="1.8"
           strokeLinecap="round"
         />
-        <circle cx="9" cy="7" r="4" stroke="#002FA7" strokeWidth="1.8" />
+        <circle cx="9" cy="7" r="4" stroke="var(--color-brand)" strokeWidth="1.8" />
         <path
           d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
-          stroke="#002FA7"
+          stroke="var(--color-brand)"
           strokeWidth="1.8"
           strokeLinecap="round"
         />
@@ -37,17 +37,17 @@ const STATS = [
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
         <path
           d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
-          stroke="#b45309"
+          stroke="var(--color-warning)"
           strokeWidth="1.8"
           strokeLinecap="round"
         />
-        <circle cx="9" cy="7" r="4" stroke="#b45309" strokeWidth="1.8" />
+        <circle cx="9" cy="7" r="4" stroke="var(--color-warning)" strokeWidth="1.8" />
         <line
           x1="17"
           y1="11"
           x2="23"
           y2="17"
-          stroke="#b45309"
+          stroke="var(--color-warning)"
           strokeWidth="1.8"
           strokeLinecap="round"
         />
@@ -56,7 +56,7 @@ const STATS = [
           y1="11"
           x2="17"
           y2="17"
-          stroke="#b45309"
+          stroke="var(--color-warning)"
           strokeWidth="1.8"
           strokeLinecap="round"
         />
@@ -69,9 +69,9 @@ const STATS = [
     value: "07",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="10" stroke="#DC2626" strokeWidth="1.8" />
-        <path d="M12 7v6" stroke="#DC2626" strokeWidth="1.8" strokeLinecap="round" />
-        <circle cx="12" cy="16.5" r="1" fill="#DC2626" />
+        <circle cx="12" cy="12" r="10" stroke="var(--color-danger)" strokeWidth="1.8" />
+        <path d="M12 7v6" stroke="var(--color-danger)" strokeWidth="1.8" strokeLinecap="round" />
+        <circle cx="12" cy="16.5" r="1" fill="var(--color-danger)" />
       </svg>
     ),
   },
@@ -82,10 +82,10 @@ const STATS = [
     small: true,
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="10" stroke="#d4a017" strokeWidth="1.8" />
+        <circle cx="12" cy="12" r="10" stroke="var(--color-accent-gold)" strokeWidth="1.8" />
         <path
           d="M12 6v2m0 8v2M9 9h4.5a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3H15"
-          stroke="#d4a017"
+          stroke="var(--color-accent-gold)"
           strokeWidth="1.8"
           strokeLinecap="round"
         />
@@ -98,8 +98,21 @@ const STATS = [
     value: "05",
     icon: (
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-        <rect x="2" y="5" width="20" height="14" rx="2" stroke="#7c3aed" strokeWidth="1.8" />
-        <path d="M2 10h20M6 15h4" stroke="#7c3aed" strokeWidth="1.8" strokeLinecap="round" />
+        <rect
+          x="2"
+          y="5"
+          width="20"
+          height="14"
+          rx="2"
+          stroke="var(--color-accent-purple)"
+          strokeWidth="1.8"
+        />
+        <path
+          d="M2 10h20M6 15h4"
+          stroke="var(--color-accent-purple)"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
       </svg>
     ),
   },
@@ -116,17 +129,17 @@ export default function StatsRow() {
           id={"dbo-" + s.id}
           style={{
             ...REVEAL_STYLE,
-            background: "#fff",
+            background: "var(--color-white)",
             borderRadius: 8,
             padding: "12px",
-            border: "1px solid #E0E0EB",
+            border: "1px solid var(--color-hairline)",
             minWidth: 0,
           }}
         >
           <div
             style={{
               fontSize: 8.5,
-              color: "#6b7280",
+              color: "var(--color-ink-muted)",
               fontWeight: 500,
               marginBottom: 10,
               display: "flex",
@@ -151,7 +164,9 @@ export default function StatsRow() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {s.icon}
-            <span style={{ fontSize: s.small ? 11 : 15, fontWeight: 700, color: "#000" }}>
+            <span
+              style={{ fontSize: s.small ? 11 : 15, fontWeight: 700, color: "var(--color-ink)" }}
+            >
               {s.value}
             </span>
           </div>

@@ -126,7 +126,7 @@ export default function StepSignInOtp({ email, onVerified, onUseDifferentEmail }
           {sending ? "Sending a sign-in code to" : "Enter the 6-digit code sent to"}
         </p>
         <p className="font-semibold text-sm text-gray-900 mb-1">{email}</p>
-        <button onClick={onUseDifferentEmail} className="text-sm font-medium mt-1 text-[#1C2B8A]">
+        <button onClick={onUseDifferentEmail} className="text-sm font-medium mt-1 text-brand-deep">
           Not you?
         </button>
         {resendCount > 0 && (
@@ -172,7 +172,7 @@ export default function StepSignInOtp({ email, onVerified, onUseDifferentEmail }
         <button
           onClick={handleResend}
           disabled={resendCooldown > 0 || sending}
-          className="font-semibold disabled:opacity-40 text-[#1C2B8A]"
+          className="font-semibold disabled:opacity-40 text-brand-deep"
         >
           {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend"}
         </button>

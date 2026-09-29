@@ -213,7 +213,7 @@ export function AdminPaymentModal({ item, onClose }) {
         {/* ── Community + payment method + Auto-Pay toggle ── */}
         <div className="mx-6 rounded-lg bg-white px-4">
           <div className="flex items-center gap-3 py-3 border-b border-gray-200">
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 border border-surface-container-border bg-[#f0f4ff]">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 border border-surface-container-border bg-brand-glow">
               {item.logo?.url ? (
                 <PulseImg src={item.logo.url} className="w-full h-full rounded-lg" />
               ) : (

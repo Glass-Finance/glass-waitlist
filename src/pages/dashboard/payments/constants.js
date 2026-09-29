@@ -3,11 +3,23 @@
 // what it actually needs instead of every consumer redeclaring these.
 
 export const PLAN_STATUS = {
-  ACTIVE: { cls: "bg-[#ecfdf5] text-[#059669]", dotCls: "bg-[#059669]", label: "Active" },
-  PAUSED: { cls: "bg-[#fffbeb] text-[#b45309]", dotCls: "bg-[#b45309]", label: "Paused" },
-  DRAFT: { cls: "bg-[#f5f6fa] text-[#6b7280]", dotCls: "bg-[#6b7280]", label: "Draft" },
-  EXPIRED: { cls: "bg-[#fff1f2] text-[#e11d48]", dotCls: "bg-[#e11d48]", label: "Inactive" },
-  ARCHIVED: { cls: "bg-[#fff1f2] text-[#e11d48]", dotCls: "bg-[#e11d48]", label: "Inactive" },
+  ACTIVE: {
+    cls: "bg-success-wash text-success-strong",
+    dotCls: "bg-success-strong",
+    label: "Active",
+  },
+  PAUSED: { cls: "bg-warning-wash text-warning", dotCls: "bg-warning", label: "Paused" },
+  DRAFT: { cls: "bg-[#f5f6fa] text-ink-muted", dotCls: "bg-ink-muted", label: "Draft" },
+  EXPIRED: {
+    cls: "bg-danger-wash-2 text-danger-bright",
+    dotCls: "bg-danger-bright",
+    label: "Inactive",
+  },
+  ARCHIVED: {
+    cls: "bg-danger-wash-2 text-danger-bright",
+    dotCls: "bg-danger-bright",
+    label: "Inactive",
+  },
 };
 
 // NOTE: value must match the backend's RecurringPlanRequest.frequency enum
@@ -111,10 +123,15 @@ export const REMINDER_CHANNELS = [
   { label: "WhatsApp", value: "WHATSAPP" },
 ];
 export const TABS = ["All Plans", "Recurring", "One Time"];
-export const BAR_COLOR_CLASSES = ["bg-[#d4a017]", "bg-[#7c3aed]", "bg-brand", "bg-[#059669]"];
+export const BAR_COLOR_CLASSES = [
+  "bg-accent-gold",
+  "bg-accent-purple",
+  "bg-brand",
+  "bg-success-strong",
+];
 
 export const inputCls =
-  "w-full h-12 min-h-8 px-4 py-1 rounded-lg border-[1.5px] border-gray-200 text-placeholder text-black placeholder-black/60 outline-none transition-all focus:border-[#002FA7]";
+  "w-full h-12 min-h-8 px-4 py-1 rounded-lg border-[1.5px] border-gray-200 text-placeholder text-black placeholder-black/60 outline-none transition-all focus:border-brand";
 
 // Description field is taller (128px, per Figma) with real top padding
 // instead of reusing the single-line field's vertically-centered py-1 --
@@ -122,4 +139,4 @@ export const inputCls =
 // Padding and radius are deliberately asymmetric to match the Figma spec
 // exactly (top 24 / right 24 / bottom 4 / left 16, radius 16).
 export const textareaCls =
-  "w-full h-32 pt-6 pr-6 pb-1 pl-4 rounded-2xl border-[1.5px] border-gray-200 text-placeholder text-gray-700 outline-none transition-all resize-none focus:border-[#002FA7]";
+  "w-full h-32 pt-6 pr-6 pb-1 pl-4 rounded-2xl border-[1.5px] border-gray-200 text-placeholder text-gray-700 outline-none transition-all resize-none focus:border-brand";

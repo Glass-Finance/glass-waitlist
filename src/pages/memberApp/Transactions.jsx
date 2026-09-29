@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
-import PageLoadingState from "../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { transactionStatusLabel, transactionStatusStyle } from "../../utils/transactionStatus";
 
@@ -41,10 +41,10 @@ function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
     <div className="relative inline-block">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="border border-surface-container-border flex items-center gap-1.5 bg-white rounded-lg py-[7px] px-3.5 text-sm font-medium text-[#111827] cursor-pointer"
+        className="border border-surface-container-border flex items-center gap-1.5 bg-white rounded-lg py-[7px] px-3.5 text-sm font-medium text-ink cursor-pointer"
       >
         {optionLabel(value)}
-        <ChevronDown size={14} color="#6b7280" />
+        <ChevronDown size={14} color="var(--color-ink-muted)" />
       </button>
 
       {open && (
@@ -58,7 +58,7 @@ function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
                   onChange(opt);
                   setOpen(false);
                 }}
-                className={`block w-full text-left py-2.5 px-4 text-sm border-none cursor-pointer ${opt === value ? "text-[#2563eb] font-semibold bg-[#eff6ff]" : "text-[#111827] font-normal bg-transparent"}`}
+                className={`block w-full text-left py-2.5 px-4 text-sm border-none cursor-pointer ${opt === value ? "text-[#2563eb] font-semibold bg-[#eff6ff]" : "text-ink font-normal bg-transparent"}`}
               >
                 {optionLabel(opt)}
               </button>
@@ -78,8 +78,8 @@ function TxRow({ tx, onOpen }) {
       className="flex items-center justify-between gap-2 py-3.5 px-5 border-b border-stacked-container cursor-pointer"
     >
       <div className="min-w-0">
-        <p className="text-[15px] font-medium text-[#111827] m-0">{toTitleCase(tx.description)}</p>
-        <p className="text-[13px] text-[#9ca3af] mt-0.5 mx-0 mb-0">
+        <p className="text-[15px] font-medium text-ink m-0">{toTitleCase(tx.description)}</p>
+        <p className="text-[13px] text-ink-faint mt-0.5 mx-0 mb-0">
           {tx.communityName}
           {tx.communityName ? " · " : ""}
           {tx.date
@@ -92,7 +92,7 @@ function TxRow({ tx, onOpen }) {
         </p>
       </div>
       <div className="text-right flex-shrink-0">
-        <p className="text-[15px] font-semibold text-[#111827] mt-0 mx-0 mb-1">
+        <p className="text-[15px] font-semibold text-ink mt-0 mx-0 mb-1">
           {formatNaira(tx.amount)}
         </p>
         <StatusBadge status={tx.status} />
@@ -162,9 +162,9 @@ export default function Transactions() {
           onClick={() => navigate(-1)}
           className="border border-surface-container-border w-9 h-9 rounded-full bg-white flex items-center justify-center cursor-pointer flex-shrink-0"
         >
-          <ChevronLeft size={18} color="#374151" />
+          <ChevronLeft size={18} color="var(--color-ink-strong)" />
         </button>
-        <h1 className="text-lg font-medium text-[#111827] m-0 flex-1 text-center mr-9">
+        <h1 className="text-lg font-medium text-ink m-0 flex-1 text-center mr-9">
           Payment History
         </h1>
       </div>
@@ -189,7 +189,7 @@ export default function Transactions() {
           <p className="text-danger text-sm mb-3">Couldn't load transactions.</p>
           <button
             onClick={() => refetch()}
-            className="bg-transparent border border-[#FCA5A5] rounded-full text-[#EF4444] text-xs font-semibold cursor-pointer py-1.5 px-4.5"
+            className="bg-transparent border border-[#FCA5A5] rounded-full text-danger-bright-2 text-xs font-semibold cursor-pointer py-1.5 px-4.5"
           >
             Try again
           </button>
@@ -202,7 +202,7 @@ export default function Transactions() {
               height="22"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#9CA3AF"
+              stroke="var(--color-ink-faint)"
               strokeWidth="1.6"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -214,8 +214,8 @@ export default function Transactions() {
               <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
             </svg>
           </div>
-          <p className="text-sm font-semibold text-[#374151] m-0">No transactions yet</p>
-          <p className="text-[13px] text-[#9CA3AF] m-0">Your payment history will appear here.</p>
+          <p className="text-sm font-semibold text-ink-strong m-0">No transactions yet</p>
+          <p className="text-[13px] text-ink-faint m-0">Your payment history will appear here.</p>
         </div>
       ) : (
         groups.map(([label, txs]) => (

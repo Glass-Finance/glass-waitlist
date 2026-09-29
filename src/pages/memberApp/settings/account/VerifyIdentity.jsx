@@ -11,10 +11,10 @@ function StepHeader({ title, onBack, right }) {
           onClick={onBack}
           className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
       )}
-      <h1 className="text-lg font-semibold text-[#111] m-0">{title}</h1>
+      <h1 className="text-lg font-semibold text-ink m-0">{title}</h1>
       {right && <div className="absolute right-5">{right}</div>}
     </div>
   );
@@ -44,7 +44,7 @@ export default function VerifyIdentity() {
             className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
             aria-label="Attempt history"
           >
-            <History size={16} className="text-[#111]" />
+            <History size={16} className="text-ink" />
           </button>
         }
       />

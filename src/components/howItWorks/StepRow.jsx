@@ -69,7 +69,7 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
       <motion.div ref={innerRef} style={{ opacity: rowOpacity, y: rowY }}>
         {/* ── Mobile — label overlaps top-left of image ── */}
         <div className="flex flex-col md:hidden relative">
-          <div className="relative w-full rounded-lg overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
+          <div className="relative w-full rounded-lg overflow-hidden shadow-2xl shadow-brand-deep/15">
             <CloudAspectImage
               publicId={step.img.publicId}
               width={step.img.width}
@@ -83,7 +83,7 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
               className={`absolute bottom-3 right-3 flex items-center gap-2 rounded-full py-2 px-3.5 border border-white/90 shadow-[0_4px_20px_rgba(15,29,110,0.14)] ${glassSurfaceCls}`}
             >
               <span className="w-[7px] h-[7px] rounded-full bg-brand flex-shrink-0 inline-block" />
-              <span className="text-xs font-bold text-[#0f1d6e]">{step.badge}</span>
+              <span className="text-xs font-bold text-brand-ink">{step.badge}</span>
             </div>
           </div>
           <div
@@ -97,7 +97,7 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
               imgRef={iconRef}
               className="w-8 h-8 mb-2"
             />
-            <p className="text-xs font-bold text-[#0f1d6e] leading-[1.3] m-0">{step.label}</p>
+            <p className="text-xs font-bold text-brand-ink leading-[1.3] m-0">{step.label}</p>
           </div>
         </div>
 
@@ -116,9 +116,9 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
               imgRef={iconRef}
               className="w-10 h-10 mb-2.5"
             />
-            <p className="text-[13px] font-bold text-[#0f1d6e] leading-snug">{step.label}</p>
+            <p className="text-[13px] font-bold text-brand-ink leading-snug">{step.label}</p>
           </div>
-          <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-[#1C2B8A]/15">
+          <div className="relative flex-1 rounded-3xl overflow-hidden shadow-2xl shadow-brand-deep/15">
             <CloudAspectImage
               publicId={step.img.publicId}
               width={step.img.width}
@@ -133,11 +133,11 @@ export default function StepRow({ step, index, innerRef, badgeRef }) {
               className={`absolute bottom-4 right-4 flex items-center gap-2 rounded-full py-2.5 px-[18px] border border-white/90 shadow-[0_4px_20px_rgba(15,29,110,0.14)] ${glassSurfaceCls}`}
             >
               <span className="w-2 h-2 rounded-full bg-brand flex-shrink-0 inline-block" />
-              <span className="text-xs font-bold text-[#0f1d6e]">{step.badge}</span>
+              <span className="text-xs font-bold text-brand-ink">{step.badge}</span>
             </div>
           </div>
-          <div className="absolute top-3 right-[-8px] w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/8 bg-[#EEF1FB]/45 -z-10" />
-          <div className="absolute top-6 right-[-15px] w-[calc(100%-160px)] h-full rounded-3xl border border-[#1C2B8A]/4 bg-[#E8ECF8]/28 -z-20" />
+          <div className="absolute top-3 right-[-8px] w-[calc(100%-160px)] h-full rounded-3xl border border-brand-deep/8 bg-[#EEF1FB]/45 -z-10" />
+          <div className="absolute top-6 right-[-15px] w-[calc(100%-160px)] h-full rounded-3xl border border-brand-deep/4 bg-[#E8ECF8]/28 -z-20" />
         </div>
       </motion.div>
     </>

@@ -1,7 +1,11 @@
 const STATUS_STYLES = {
-  Success: { cls: "bg-success-tint text-[#15803d]", dotCls: "bg-[#15803d]", text: "Successful" },
-  Failed: { cls: "bg-[#fce4e4] text-danger", dotCls: "bg-danger", text: "Failed" },
-  Pending: { cls: "bg-[#fef9c3] text-[#b45309]", dotCls: "bg-[#b45309]", text: "Pending" },
+  Success: {
+    cls: "bg-success-tint text-success-deep",
+    dotCls: "bg-success-deep",
+    text: "Successful",
+  },
+  Failed: { cls: "bg-danger-wash text-danger", dotCls: "bg-danger", text: "Failed" },
+  Pending: { cls: "bg-[#fef9c3] text-warning", dotCls: "bg-warning", text: "Pending" },
 };
 
 export function transactionStatusLabel(status) {

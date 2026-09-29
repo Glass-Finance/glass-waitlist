@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Bell, Mail, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
-import PageLoadingState from "../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import AutoPayPrompt from "../../components/common/AutoPayPrompt";
 import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
@@ -189,7 +189,7 @@ export default function Home() {
               aria-label="Open menu"
               className="flex items-center justify-center border-none cursor-pointer bg-transparent p-0 flex-shrink-0"
             >
-              <Menu size={28} strokeWidth={2} className="text-[#222]" />
+              <Menu size={28} strokeWidth={2} className="text-ink" />
             </button>
 
             {!hasNoCommunity && (
@@ -222,7 +222,7 @@ export default function Home() {
                 onClick={() => navigate("/member/invites")}
                 className="relative w-[38px] h-[38px] rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
               >
-                <Mail size={17} strokeWidth={1.8} className="text-[#333]" />
+                <Mail size={17} strokeWidth={1.8} className="text-ink" />
                 {pendingInviteCount > 0 && (
                   <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
                     {pendingInviteCount > 9 ? "9+" : pendingInviteCount}
@@ -236,7 +236,7 @@ export default function Home() {
               onClick={() => navigate("/member/notifications")}
               className="relative w-[38px] h-[38px] rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
             >
-              <Bell size={17} strokeWidth={1.8} className="text-[#333]" />
+              <Bell size={17} strokeWidth={1.8} className="text-ink" />
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
                   {unreadCount > 9 ? "9+" : unreadCount}
@@ -248,8 +248,8 @@ export default function Home() {
 
         {!hasNoCommunity && !showNothingHappening && (
           <div className="pt-1 px-5 pb-5">
-            <h1 className="text-2xl font-medium text-[#111] m-0">Hi {firstName(data?.user)},</h1>
-            <p className="text-[13px] text-[#888] mt-[3px] font-normal">
+            <h1 className="text-2xl font-medium text-ink m-0">Hi {firstName(data?.user)},</h1>
+            <p className="text-[13px] text-ink-ghost mt-[3px] font-normal">
               Here's Your Community At A Glance
             </p>
           </div>
@@ -274,9 +274,9 @@ export default function Home() {
             <div className="mx-4 mt-4 bg-surface-container rounded-lg px-4 pt-4 pb-1 border border-surface-container-border">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-normal text-[#111]">Upcoming Payments</span>
+                  <span className="text-sm font-normal text-ink">Upcoming Payments</span>
                   {totalUpcomingCount > 0 && (
-                    <span className="text-[11px] font-bold text-[#1C2B8A] bg-[#E4E7F9] rounded-full py-px px-[7px] leading-normal">
+                    <span className="text-[11px] font-bold text-brand-deep bg-[#E4E7F9] rounded-full py-px px-[7px] leading-normal">
                       {totalUpcomingCount}
                     </span>
                   )}
@@ -284,7 +284,7 @@ export default function Home() {
                 {totalUpcomingCount > 0 && (
                   <button
                     onClick={() => navigate("/member/upcoming")}
-                    className="bg-transparent border-none cursor-pointer text-[13px] font-semibold text-[#9CA3AF] p-0"
+                    className="bg-transparent border-none cursor-pointer text-[13px] font-semibold text-ink-faint p-0"
                   >
                     See All
                   </button>
@@ -300,11 +300,11 @@ export default function Home() {
 
             <div className="mx-4 mt-4 bg-surface-container rounded-lg px-4 pt-4 pb-1 border border-surface-container-border">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-normal text-[#111]">Payment History</span>
+                <span className="text-sm font-normal text-ink">Payment History</span>
                 {history.length > 0 && (
                   <button
                     onClick={() => navigate("/member/transactions")}
-                    className="bg-transparent border-none cursor-pointer text-[13px] font-semibold text-[#9CA3AF] p-0"
+                    className="bg-transparent border-none cursor-pointer text-[13px] font-semibold text-ink-faint p-0"
                   >
                     See All
                   </button>

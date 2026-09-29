@@ -1,11 +1,11 @@
 export const TOASTS = [
   {
-    color: "#059669",
+    color: "var(--color-success-strong)",
     title: "Payment received",
     sub: "Joseph Alabi paid ₦20,200",
   },
   {
-    color: "#002FA7",
+    color: "var(--color-brand)",
     title: "New member joined",
     sub: "Grace Adekunle joined the community",
   },
@@ -15,12 +15,12 @@ export const TOASTS = [
     sub: "SMS sent to 12 overdue members",
   },
   {
-    color: "#7c3aed",
+    color: "var(--color-accent-purple)",
     title: "Plan milestone",
     sub: "Infra Development: 74% collected",
   },
   {
-    color: "#059669",
+    color: "var(--color-success-strong)",
     title: "Payment received",
     sub: "Emeka Nwosu paid ₦15,000",
   },

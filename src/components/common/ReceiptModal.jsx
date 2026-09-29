@@ -41,7 +41,8 @@ function Avatar({ photo, name, size = 28 }) {
         width: size,
         height: size,
         borderRadius: "50%",
-        background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)",
+        background:
+          "linear-gradient(135deg, var(--color-accent-purple) 0%, var(--color-brand) 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -50,7 +51,7 @@ function Avatar({ photo, name, size = 28 }) {
     >
       <span
         style={{
-          color: "#fff",
+          color: "var(--color-white)",
           fontSize: size * 0.38,
           fontWeight: 700,
           lineHeight: 1,
@@ -118,7 +119,7 @@ function ReceiptCard({
   const isSuccess = status === "Successful";
   const isFailed = status === "Failed";
 
-  const statusColor = isSuccess ? "#ffffff" : isFailed ? "#FCA5A5" : "#FDE68A";
+  const statusColor = isSuccess ? "var(--color-white)" : isFailed ? "#FCA5A5" : "#FDE68A";
 
   const refValue = tx?.reference ?? tx?.id ?? "—";
   const maskedEmail = maskEmail(payerEmail);
@@ -130,7 +131,7 @@ function ReceiptCard({
       style={{
         width: "100%",
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Helvetica, sans-serif',
-        background: "#ffffff",
+        background: "var(--color-white)",
         // no border-radius anywhere on the outer container
       }}
     >
@@ -159,7 +160,7 @@ function ReceiptCard({
               width: 16,
               height: 16,
               borderRadius: "50%",
-              background: "#ffffff",
+              background: "var(--color-white)",
               flexShrink: 0,
             }}
           />
@@ -170,7 +171,8 @@ function ReceiptCard({
           surfaces elsewhere in the app (135deg, purple to Glass blue) ── */}
       <div
         style={{
-          background: "linear-gradient(135deg, #7C3AED 0%, #002FA7 100%)",
+          background:
+            "linear-gradient(135deg, var(--color-accent-purple) 0%, var(--color-brand) 100%)",
           padding: "28px 28px 32px",
         }}
       >
@@ -185,7 +187,14 @@ function ReceiptCard({
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             {logoB64 ? (
-              <img src={logoB64} width={30} height={30} alt="" style={{ display: "block" }} />
+              <img
+                src={logoB64}
+                width={30}
+                height={30}
+                alt=""
+                style={{ display: "block" }}
+                loading="lazy"
+              />
             ) : (
               <div
                 style={{
@@ -199,7 +208,7 @@ function ReceiptCard({
               >
                 <span
                   style={{
-                    color: "#fff",
+                    color: "var(--color-white)",
                     fontSize: 15,
                     fontWeight: 900,
                     lineHeight: 1,
@@ -211,7 +220,7 @@ function ReceiptCard({
             )}
             <span
               style={{
-                color: "#ffffff",
+                color: "var(--color-white)",
                 fontSize: 18,
                 fontWeight: 600,
               }}
@@ -235,7 +244,7 @@ function ReceiptCard({
           <div style={{ marginBottom: 14, lineHeight: 1 }}>
             <span
               style={{
-                color: "#ffffff",
+                color: "var(--color-white)",
                 fontSize: 38,
                 fontWeight: 700,
                 letterSpacing: "-1px",
@@ -276,7 +285,7 @@ function ReceiptCard({
                 flexShrink: 0,
               }}
             >
-              {isSuccess && <Check size={10} color="#fff" strokeWidth={3.5} />}
+              {isSuccess && <Check size={10} color="var(--color-white)" strokeWidth={3.5} />}
             </span>
             <span
               style={{
@@ -304,7 +313,7 @@ function ReceiptCard({
       </div>
 
       {/* ── TRANSACTION DETAILS ───────────────────────────────────────────── */}
-      <div style={{ background: "#ffffff" }}>
+      <div style={{ background: "var(--color-white)" }}>
         <DetailRow label="Community">
           <span
             style={{
@@ -485,7 +494,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
     if (!cardRef.current) return null;
     return html2canvas(cardRef.current, {
       scale,
-      backgroundColor: "#ffffff",
+      backgroundColor: "var(--color-white)",
       useCORS: true,
       logging: false,
     });
@@ -559,7 +568,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
       disabled={!!saving}
       style={{ opacity: saving && !isActive ? 0.55 : 1 }}
       // no border-radius — sharp buttons to match the receipt
-      className={`flex-1 flex items-center justify-center gap-1.5 py-[13px] px-2.5 border-none text-[13px] font-semibold transition-opacity duration-150 ${saving ? "cursor-not-allowed" : "cursor-pointer"} ${primary ? "bg-brand text-white" : "bg-[#EEF2FF] text-[#1E3A8A]"}`}
+      className={`flex-1 flex items-center justify-center gap-1.5 py-[13px] px-2.5 border-none text-[13px] font-semibold transition-opacity duration-150 ${saving ? "cursor-not-allowed" : "cursor-pointer"} ${primary ? "bg-brand text-white" : "bg-brand-wash text-[#1E3A8A]"}`}
     >
       {children}
     </button>
@@ -580,7 +589,7 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
           dialog from sm: up so it doesn't swallow most of a desktop
           viewport (this component is shared with the admin dashboard). */}
       <div
-        className="relative bg-[#F0F4FF] rounded-t-[20px] sm:rounded-[20px] max-h-[92dvh] sm:max-h-[85vh] sm:w-full sm:max-w-[420px] flex flex-col overflow-hidden"
+        className="relative bg-brand-glow rounded-t-[20px] sm:rounded-[20px] max-h-[92dvh] sm:max-h-[85vh] sm:w-full sm:max-w-[420px] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Drag handle — mobile-only affordance, meaningless on a centered desktop dialog */}

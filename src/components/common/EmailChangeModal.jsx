@@ -99,7 +99,10 @@ export default function EmailChangeModal({
       <h1 className="text-headline text-gray-900 mb-3">Enter the Code we Sent</h1>
       <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code that was sent to</p>
       <p className="text-sm font-semibold text-gray-900 mb-2">{maskEmail(newEmail)}</p>
-      <button onClick={onWrongEmail} className="text-sm font-medium hover:underline text-[#1B2FE8]">
+      <button
+        onClick={onWrongEmail}
+        className="text-sm font-medium hover:underline text-brand-link"
+      >
         Wrong email?
       </button>
       <p
@@ -122,7 +125,7 @@ export default function EmailChangeModal({
               {digits.slice(0, 3).map((d, i) => (
                 <div
                   key={i}
-                  className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
+                  className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || i === activeIndex ? "border-brand-deep" : "border-hairline-disabled"}`}
                 >
                   {d}
                 </div>
@@ -133,7 +136,7 @@ export default function EmailChangeModal({
                 return (
                   <div
                     key={idx}
-                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || idx === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
+                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || idx === activeIndex ? "border-brand-deep" : "border-hairline-disabled"}`}
                   >
                     {d}
                   </div>
@@ -155,7 +158,7 @@ export default function EmailChangeModal({
         <button
           onClick={handleResend}
           disabled={resending}
-          className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]"
+          className="font-semibold hover:underline disabled:opacity-60 text-brand-link"
         >
           {resending ? "Resending..." : "Resend"}
         </button>

@@ -66,12 +66,12 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
   }
 
   function statusStyle(s) {
-    if (s === "PAID") return { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" };
-    if (s === "OVERDUE") return { cls: "bg-[#fff1f2] text-[#e11d48]", label: "Overdue" };
-    if (s === "DUE") return { cls: "bg-[#fffbeb] text-[#b45309]", label: "Due" };
-    if (s === "WAIVED") return { cls: "bg-[#f5f6fa] text-[#6b7280]", label: "Waived" };
-    if (s === "NONE") return { cls: "bg-[#f5f6fa] text-[#9ca3af]", label: "N/A" };
-    return { cls: "bg-[#fffbeb] text-[#b45309]", label: "Pending" };
+    if (s === "PAID") return { cls: "bg-success-wash text-success-strong", label: "Paid" };
+    if (s === "OVERDUE") return { cls: "bg-danger-wash-2 text-danger-bright", label: "Overdue" };
+    if (s === "DUE") return { cls: "bg-warning-wash text-warning", label: "Due" };
+    if (s === "WAIVED") return { cls: "bg-[#f5f6fa] text-ink-muted", label: "Waived" };
+    if (s === "NONE") return { cls: "bg-[#f5f6fa] text-ink-faint", label: "N/A" };
+    return { cls: "bg-warning-wash text-warning", label: "Pending" };
   }
 
   const filtered = planMembers.filter((m) => {

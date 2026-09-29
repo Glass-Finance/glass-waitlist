@@ -27,7 +27,7 @@ export default function ConfirmDialog({
             block) — renders inside the dialog so the reason lands where the
             user just clicked, and the dialog stays open to retry. */}
         {error && (
-          <p className="text-xs leading-relaxed bg-[#fce4e4] text-danger rounded-xl px-3 py-2.5 -mt-1">
+          <p className="text-xs leading-relaxed bg-danger-wash text-danger rounded-xl px-3 py-2.5 -mt-1">
             {error}
           </p>
         )}

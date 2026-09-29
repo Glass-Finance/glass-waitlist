@@ -99,7 +99,7 @@ describe('Home\'s Upcoming Payments / Payment History "See All" links', () => {
     expect(screen.getByText("No Payment History")).toBeDefined();
     const seeAllLinks = screen.getAllByText("See All");
     expect(seeAllLinks).toHaveLength(1);
-    expect(seeAllLinks[0].className).toContain("text-[#9CA3AF]");
+    expect(seeAllLinks[0].className).toContain("text-ink-faint");
 
     seeAllLinks[0].click();
     expect(navigateSpy).toHaveBeenCalledWith("/member/upcoming");
@@ -123,7 +123,7 @@ describe('Home\'s Upcoming Payments / Payment History "See All" links', () => {
     expect(screen.getByText("No Upcoming Payments")).toBeDefined();
     const seeAllLinks = screen.getAllByText("See All");
     expect(seeAllLinks).toHaveLength(1);
-    expect(seeAllLinks[0].className).toContain("text-[#9CA3AF]");
+    expect(seeAllLinks[0].className).toContain("text-ink-faint");
 
     seeAllLinks[0].click();
     expect(navigateSpy).toHaveBeenCalledWith("/member/transactions");

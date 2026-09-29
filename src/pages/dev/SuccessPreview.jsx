@@ -34,7 +34,7 @@ function Panel({ label, children }) {
 
 export default function SuccessPreview() {
   return (
-    <div className="min-h-screen bg-[#FAFAFA] py-10 px-6">
+    <div className="min-h-screen bg-surface-page py-10 px-6">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-xl font-bold text-black m-0">SuccessBadge preview</h1>
         <p className="text-sm text-gray-500 mt-1 mb-6">

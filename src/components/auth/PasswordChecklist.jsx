@@ -12,8 +12,8 @@ export default function PasswordChecklist({ password }) {
       {checks.map(({ key, label, met }) => (
         <li key={key} className="flex items-center gap-2 text-xs text-gray-600 transition-colors">
           {met ? (
-            <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 border border-[#002FA7]">
-              <Check size={10} className="text-[#002FA7]" strokeWidth={3} />
+            <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 border border-brand">
+              <Check size={10} className="text-brand" strokeWidth={3} />
             </span>
           ) : (
             <span className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 border border-gray-300">

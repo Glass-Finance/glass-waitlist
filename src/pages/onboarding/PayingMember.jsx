@@ -81,7 +81,7 @@ export default function PayingMember() {
                 onClick={() => setSelected(opt.id)}
                 className={`flex-1 relative flex flex-row lg:flex-col items-center text-left lg:text-center gap-4 lg:gap-0 px-5 lg:px-6 py-5 lg:py-8 rounded-2xl bg-white transition-all duration-200 cursor-pointer border ${isSelected ? "border-2 border-brand" : "border-white"}`}
               >
-                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] lg:bg-transparent lg:rounded-none lg:w-12 lg:h-12 lg:mb-3 lg:mt-2">
+                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-brand-wash lg:bg-transparent lg:rounded-none lg:w-12 lg:h-12 lg:mb-3 lg:mt-2">
                   <CloudImage
                     publicId={opt.icon}
                     alt={opt.label}

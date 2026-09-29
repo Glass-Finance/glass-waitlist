@@ -3,17 +3,17 @@ import { Skeleton } from "../SkeletonUI";
 import { formatNaira } from "../helpers";
 
 const BAR_COLOR_CLASSES = [
-  "bg-[#d4a017]",
-  "bg-[#7c3aed]",
+  "bg-accent-gold",
+  "bg-accent-purple",
   "bg-[#099DA8]",
-  "bg-[#059669]",
+  "bg-success-strong",
   "bg-brand",
-  "bg-[#e11d48]",
+  "bg-danger-bright",
 ];
 
 export default function PaymentPlansCard({ plans, plansLoading, onManageAll }) {
   return (
-    <div className="rounded-xl border border-surface-container-border p-4 bg-[#D7E2FF]">
+    <div className="rounded-xl border border-surface-container-border p-4 bg-brand-mist">
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-black">Payment Plans</span>
         <button
@@ -57,7 +57,7 @@ export default function PaymentPlansCard({ plans, plansLoading, onManageAll }) {
                     <span className="text-xs font-medium text-black truncate">
                       {toTitleCase(p.name)}
                     </span>
-                    <span className="text-[10px] font-normal px-2 py-0.5 rounded-full flex-shrink-0 text-[#7c3aed] bg-[#f3eeff]">
+                    <span className="text-[10px] font-normal px-2 py-0.5 rounded-full flex-shrink-0 text-accent-purple bg-accent-purple-wash">
                       {p.frequency ?? p.type ?? "—"}
                     </span>
                   </div>
