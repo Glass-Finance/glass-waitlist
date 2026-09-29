@@ -41,7 +41,7 @@ describe("notificationVisual", () => {
   it("returns the icon/color pair for a known type", () => {
     const v = notificationVisual("PAYMENT_RECEIVED");
     expect(v).not.toBeNull();
-    expect(v.fg).toBe("#059669");
+    expect(v.fg).toBe("var(--color-success-strong)");
   });
   it("returns null for an unknown type", () => {
     expect(notificationVisual("SOMETHING_MADE_UP")).toBeNull();

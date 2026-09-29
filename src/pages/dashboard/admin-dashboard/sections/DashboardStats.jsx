@@ -31,7 +31,12 @@ export default function DashboardStats({ stats, isLoading }) {
             <Info size={15} className="text-brand" />
           </div>
           <div className="flex items-center gap-3">
-            <img src={s.icon} alt={s.label} className="w-8 h-8 object-contain flex-shrink-0" />
+            <img
+              src={s.icon}
+              alt={s.label}
+              className="w-8 h-8 object-contain flex-shrink-0"
+              loading="lazy"
+            />
             {isLoading ? (
               <Skeleton className="h-6 w-16" />
             ) : (

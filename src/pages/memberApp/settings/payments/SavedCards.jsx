@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { ChevronLeft, CreditCard, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
-import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../../../components/common/PageLoadingState";
 import ConfirmSheet from "../../../../components/memberApp/ConfirmSheet";
 
 export default function SavedCards() {
@@ -23,14 +23,14 @@ export default function SavedCards() {
           onClick={() => navigate(-1)}
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-lg font-semibold text-[#111] m-0">Payment Methods</h1>
+        <h1 className="text-lg font-semibold text-ink m-0">Payment Methods</h1>
       </div>
 
       <div className="px-4">
         {data.length > 0 && (
-          <p className="text-xs font-semibold text-[#999] mt-0 mx-1 mb-2 uppercase [letter-spacing:0.4px]">
+          <p className="text-xs font-semibold text-ink-ghost mt-0 mx-1 mb-2 uppercase [letter-spacing:0.4px]">
             Saved Cards
           </p>
         )}
@@ -46,23 +46,23 @@ export default function SavedCards() {
             // icon tile, same flex layout) but dashed and empty.
             <div className="flex items-center gap-3 py-3.5 px-4">
               <div className="w-9 h-9 rounded-[10px] flex-shrink-0 border-2 border-dashed border-gray-200" />
-              <p className="text-sm text-[#999] m-0">No saved cards yet</p>
+              <p className="text-sm text-ink-ghost m-0">No saved cards yet</p>
             </div>
           ) : (
             data.map((item, i) => (
               <div
                 key={item.id}
-                className={`flex items-center gap-3 py-3.5 px-4 ${i < data.length - 1 ? "border-b border-[#F2F2F2]" : "border-b-0"}`}
+                className={`flex items-center gap-3 py-3.5 px-4 ${i < data.length - 1 ? "border-b border-hairline-soft" : "border-b-0"}`}
               >
-                <div className="w-9 h-9 rounded-[10px] bg-[#EEF2FF] flex items-center justify-center flex-shrink-0">
-                  <CreditCard size={16} className="text-[#1C2B8A]" />
+                <div className="w-9 h-9 rounded-[10px] bg-brand-wash flex items-center justify-center flex-shrink-0">
+                  <CreditCard size={16} className="text-brand-deep" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-[#111] m-0">
+                  <p className="text-sm font-medium text-ink m-0">
                     {item.bank ?? "Card"} •••{item.last4 ?? "----"}
                   </p>
                   {item.channel && (
-                    <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">{item.channel}</p>
+                    <p className="text-xs text-ink-ghost mt-0.5 mx-0 mb-0">{item.channel}</p>
                   )}
                 </div>
                 <button

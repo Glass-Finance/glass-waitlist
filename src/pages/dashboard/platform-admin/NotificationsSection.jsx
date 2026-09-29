@@ -155,7 +155,7 @@ function SendNotificationModal({ onClose }) {
             onChange={(e) => setTargets(e.target.value)}
             rows={3}
             required
-            className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-800 outline-none resize-none font-mono transition-colors focus:border-[#002FA7]"
+            className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-hairline-strong text-placeholder text-gray-800 outline-none resize-none font-mono transition-colors focus:border-brand"
             placeholder={
               targetMode === "emails" ? "user@example.com, another@example.com" : "uuid1, uuid2"
             }
@@ -172,7 +172,7 @@ function SendNotificationModal({ onClose }) {
             <select
               value={notificationType}
               onChange={(e) => setNotificationType(e.target.value)}
-              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-700 outline-none focus:border-[#002FA7] appearance-none !pr-9"
+              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-hairline-strong text-placeholder text-gray-700 outline-none focus:border-brand appearance-none !pr-9"
             >
               {NOTIF_TYPES.map((t) => (
                 <option key={t} value={t}>
@@ -212,7 +212,7 @@ function SendNotificationModal({ onClose }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-800 outline-none transition-colors focus:border-[#002FA7]"
+            className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-hairline-strong text-placeholder text-gray-800 outline-none transition-colors focus:border-brand"
             placeholder="Notification title"
           />
         </div>
@@ -225,7 +225,7 @@ function SendNotificationModal({ onClose }) {
             onChange={(e) => setMessage(e.target.value)}
             rows={4}
             required
-            className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-800 outline-none resize-none transition-colors focus:border-[#002FA7]"
+            className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-hairline-strong text-placeholder text-gray-800 outline-none resize-none transition-colors focus:border-brand"
             placeholder="Notification body…"
           />
         </div>
@@ -323,7 +323,7 @@ export default function NotificationsSection() {
               return (
                 <tr
                   key={j.jobId}
-                  className={`hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
+                  className={`hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}`}
                 >
                   <td className="px-4 py-3">
                     <span className="text-[11px] text-gray-700 font-medium">

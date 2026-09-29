@@ -25,17 +25,17 @@ function formatRequestedAt(r) {
 }
 
 const STATUS_CHIP = {
-  APPROVED: { label: "Approved", cls: "bg-[#ECFDF5] text-[#059669]" },
-  REJECTED: { label: "Rejected", cls: "bg-[#FEF2F2] text-danger" },
-  CANCELLED: { label: "Cancelled", cls: "bg-stacked-container text-[#6B7280]" },
-  EXPIRED: { label: "Expired", cls: "bg-stacked-container text-[#6B7280]" },
+  APPROVED: { label: "Approved", cls: "bg-success-wash text-success-strong" },
+  REJECTED: { label: "Rejected", cls: "bg-danger-wash text-danger" },
+  CANCELLED: { label: "Cancelled", cls: "bg-stacked-container text-ink-muted" },
+  EXPIRED: { label: "Expired", cls: "bg-stacked-container text-ink-muted" },
 };
 
 function Avatar({ requester }) {
   return (
-    <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-blue-100 bg-[#EEF2FF]">
+    <div className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden border border-blue-100 bg-brand-wash">
       {requester.image ? (
-        <img src={requester.image} alt="" className="w-full h-full object-cover" />
+        <img src={requester.image} alt="" className="w-full h-full object-cover" loading="lazy" />
       ) : (
         <span className="text-xs font-bold text-brand">{requester.initials}</span>
       )}

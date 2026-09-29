@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
-import PageLoadingState from "../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
 
@@ -14,7 +14,7 @@ function FilterDropdown({ value, onChange }) {
     <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 py-2 px-3.5 rounded-lg border-[1.5px] border-[#CCC] bg-white text-[#111] text-[13px] font-semibold cursor-pointer"
+        className="flex items-center gap-1.5 py-2 px-3.5 rounded-lg border-[1.5px] border-[#CCC] bg-white text-ink text-[13px] font-semibold cursor-pointer"
       >
         {value}
         <ChevronDown size={14} strokeWidth={2} />
@@ -30,7 +30,7 @@ function FilterDropdown({ value, onChange }) {
                   onChange(opt);
                   setOpen(false);
                 }}
-                className={`block w-full text-left py-[11px] px-4 text-[13px] cursor-pointer border-none ${value === opt ? "bg-[#F0F2FA] text-brand font-semibold" : "bg-white text-[#333] font-normal"}`}
+                className={`block w-full text-left py-[11px] px-4 text-[13px] cursor-pointer border-none ${value === opt ? "bg-[#F0F2FA] text-brand font-semibold" : "bg-white text-ink font-normal"}`}
               >
                 {opt}
               </button>
@@ -45,15 +45,15 @@ function FilterDropdown({ value, onChange }) {
 function PaymentRow({ item, onPay, paying }) {
   const isRecurring = item.type === "recurring";
   const badge = isRecurring
-    ? { label: "Recurring", cls: "text-[#7C3AED]", dotCls: "bg-[#7C3AED]" }
+    ? { label: "Recurring", cls: "text-accent-purple", dotCls: "bg-accent-purple" }
     : { label: "One-time", cls: "text-danger", dotCls: "bg-danger" };
 
   return (
     <div className="border border-surface-container-border py-[18px] px-4 bg-white rounded-2xl flex items-center justify-between gap-3">
       <div className="min-w-0">
         <div className="flex items-baseline gap-1.5 mb-1.5">
-          <span className="text-xl font-bold text-[#111]">{formatNaira(item.amount)}</span>
-          {isRecurring && <span className="text-[13px] text-[#888]">/month</span>}
+          <span className="text-xl font-bold text-ink">{formatNaira(item.amount)}</span>
+          {isRecurring && <span className="text-[13px] text-ink-ghost">/month</span>}
           <span
             className={`inline-flex items-center gap-[5px] text-xs font-semibold ml-1 ${badge.cls}`}
           >
@@ -61,10 +61,10 @@ function PaymentRow({ item, onPay, paying }) {
             {badge.label}
           </span>
         </div>
-        <p className="text-[15px] text-[#111] mt-0 mx-0 mb-[3px] font-medium">
+        <p className="text-[15px] text-ink mt-0 mx-0 mb-[3px] font-medium">
           {toTitleCase(item.name)}
         </p>
-        <p className="text-[13px] text-[#9CA3AF] m-0">Due: {formatDate(item.dueDate)}</p>
+        <p className="text-[13px] text-ink-faint m-0">Due: {formatDate(item.dueDate)}</p>
       </div>
       <button
         onClick={() => onPay(item)}
@@ -107,9 +107,9 @@ export default function UpcomingPayments() {
           onClick={() => navigate(-1)}
           className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-lg font-medium text-[#111] m-0">Upcoming Payments</h1>
+        <h1 className="text-lg font-medium text-ink m-0">Upcoming Payments</h1>
       </div>
 
       {/* Filter */}
@@ -135,13 +135,13 @@ export default function UpcomingPayments() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="border border-surface-container-border bg-white rounded-2xl py-12 px-6 text-center flex flex-col items-center gap-2">
-            <div className="w-[52px] h-[52px] rounded-full bg-[#D7E2FF] flex items-center justify-center mb-1">
+            <div className="w-[52px] h-[52px] rounded-full bg-brand-mist flex items-center justify-center mb-1">
               <svg
                 width="22"
                 height="22"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#002FA7"
+                stroke="var(--color-brand)"
                 strokeWidth="1.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -149,8 +149,8 @@ export default function UpcomingPayments() {
                 <path d="M5 12l5 5 9-9" />
               </svg>
             </div>
-            <p className="text-sm font-semibold text-[#374151] m-0">Nothing due right now</p>
-            <p className="text-[13px] text-[#9CA3AF] m-0">You're up to date on all payments.</p>
+            <p className="text-sm font-semibold text-ink-strong m-0">Nothing due right now</p>
+            <p className="text-[13px] text-ink-faint m-0">You're up to date on all payments.</p>
             <button
               onClick={refresh}
               className="mt-1 bg-transparent border-none text-brand text-[13px] font-semibold cursor-pointer p-0"

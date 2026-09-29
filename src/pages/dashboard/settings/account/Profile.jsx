@@ -24,7 +24,7 @@ import { toastSuccess } from "../../../../utils/toast";
 import { DeleteAccountModal } from "./ProfileSections";
 
 const inputCls =
-  "w-full h-12 min-h-8 px-4 py-1 rounded-lg text-black placeholder-black/60 text-placeholder outline-none transition-all border-[1.5px] focus:border-[#002FA7]";
+  "w-full h-12 min-h-8 px-4 py-1 rounded-lg text-black placeholder-black/60 text-placeholder outline-none transition-all border-[1.5px] focus:border-brand";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -327,7 +327,7 @@ export default function Profile() {
             <div className="-mx-6 border-b border-gray-100 mb-5" />
 
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-14 h-14 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <div className="w-14 h-14 rounded-full bg-brand-mist flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {photoPreview || profileImageUrl ? (
                   <img
                     src={photoPreview ?? profileImageUrl}
@@ -348,7 +348,7 @@ export default function Profile() {
               <button
                 onClick={() => photoInputRef.current?.click()}
                 disabled={uploadFile.isPending}
-                className="h-12 px-2.5 rounded-[4px] text-xs text-brand bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-[#002FA7] flex items-center justify-center"
+                className="h-12 px-2.5 rounded-[4px] text-xs text-brand bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-brand flex items-center justify-center"
               >
                 {uploadFile.isPending ? "Uploading…" : "Upload Photo"}
               </button>
@@ -552,7 +552,7 @@ export default function Profile() {
           </div>
 
           {!isPhoneUpdate && (
-            <div className="flex items-start gap-2.5 px-4 py-3.5 rounded-xl bg-[#D7E2FF]">
+            <div className="flex items-start gap-2.5 px-4 py-3.5 rounded-xl bg-brand-mist">
               <ShieldCheck size={18} className="text-brand flex-shrink-0 mt-0.5" />
               <p className="text-sm text-brand leading-snug m-0">
                 Your number is only used for payment reminders and account recovery. We will never

@@ -416,7 +416,7 @@ export default function Topbar({
             aria-label="Account menu"
             className="flex items-center gap-2 bg-transparent border-none cursor-pointer hover:opacity-80 transition-opacity p-0"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--color-brand)] to-[#4f46e5] flex items-center justify-center text-white font-bold text-xs flex-shrink-0 select-none overflow-hidden">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--color-brand)] to-accent-indigo flex items-center justify-center text-white font-bold text-xs flex-shrink-0 select-none overflow-hidden">
               {user?.profileImage?.url ? (
                 <PulseImg src={user.profileImage.url} alt="" className="w-full h-full" />
               ) : (
@@ -424,7 +424,7 @@ export default function Topbar({
               )}
             </div>
             <div className="text-left hidden sm:block">
-              <p className="text-xs font-bold text-[#000000] leading-tight">{displayName}</p>
+              <p className="text-xs font-bold text-ink leading-tight">{displayName}</p>
               <p className="text-[11px] text-gray-400 leading-tight">{email}</p>
             </div>
             <ChevronDown

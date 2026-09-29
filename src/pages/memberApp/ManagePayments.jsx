@@ -3,7 +3,7 @@ import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments, useManagePayments } from "../../hooks/usePayments";
-import PageLoadingState from "../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import Toggle from "../../components/common/Toggle";
 import ConfirmSheet from "../../components/memberApp/ConfirmSheet";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
@@ -26,7 +26,7 @@ function CardIcon({ cardType }) {
     ? "bg-[#EB001B]"
     : type.includes("VISA")
       ? "bg-[#1A1F71]"
-      : "bg-[#999]";
+      : "bg-ink-ghost";
   const rightCls = type.includes("MASTER")
     ? "bg-[#F79E1B]"
     : type.includes("VISA")
@@ -51,7 +51,7 @@ function FilterDropdown({ value, onChange }) {
     <div className="relative inline-block">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 py-2 px-3.5 rounded-lg border border-surface-container-border bg-white text-[#111] text-sm font-medium cursor-pointer"
+        className="flex items-center gap-1.5 py-2 px-3.5 rounded-lg border border-surface-container-border bg-white text-ink text-sm font-medium cursor-pointer"
       >
         {value} <ChevronDown size={14} strokeWidth={2} />
       </button>
@@ -66,7 +66,7 @@ function FilterDropdown({ value, onChange }) {
                   onChange(opt);
                   setOpen(false);
                 }}
-                className={`block w-full text-left py-[11px] px-4 text-[13px] cursor-pointer border-none ${value === opt ? "bg-[#F0F2FA] text-brand font-semibold" : "bg-white text-[#333] font-normal"}`}
+                className={`block w-full text-left py-[11px] px-4 text-[13px] cursor-pointer border-none ${value === opt ? "bg-[#F0F2FA] text-brand font-semibold" : "bg-white text-ink font-normal"}`}
               >
                 {opt}
               </button>
@@ -93,11 +93,16 @@ function PlanCard({ plan, auth, onToggle }) {
       <div className="pt-4 px-4 pb-3.5">
         {/* Row 1: logo + Recurring badge */}
         <div className="flex items-center justify-between mb-3">
-          <div className="w-11 h-11 rounded-[10px] bg-[#F0F4FF] flex items-center justify-center overflow-hidden flex-shrink-0">
+          <div className="w-11 h-11 rounded-[10px] bg-brand-glow flex items-center justify-center overflow-hidden flex-shrink-0">
             {plan.logo?.url ? (
-              <img src={plan.logo.url} alt="" className="w-full h-full object-cover" />
+              <img
+                src={plan.logo.url}
+                alt=""
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
             ) : (
-              <span className="text-lg font-bold text-[#1C2B8A]">{plan.logoText ?? "P"}</span>
+              <span className="text-lg font-bold text-brand-deep">{plan.logoText ?? "P"}</span>
             )}
           </div>
           <span className="text-xs font-semibold text-brand bg-[#E8EEFF] py-1 px-3 rounded-full">
@@ -106,37 +111,37 @@ function PlanCard({ plan, auth, onToggle }) {
         </div>
 
         {/* Row 2: amount */}
-        <p className="text-xl font-bold text-[#111] mt-0 mx-0 mb-1">
+        <p className="text-xl font-bold text-ink mt-0 mx-0 mb-1">
           {formatNaira(plan.amount)}
-          <span className="text-[13px] font-normal text-[#888]">
+          <span className="text-[13px] font-normal text-ink-ghost">
             {frequencyLabel(plan.frequency)}
           </span>
         </p>
 
         {/* Row 3: plan name + auto-pay toggle */}
         <div className="flex items-center justify-between">
-          <p className="text-[15px] font-medium text-[#111] m-0">{toTitleCase(plan.name)}</p>
+          <p className="text-[15px] font-medium text-ink m-0">{toTitleCase(plan.name)}</p>
           <div className="flex items-center gap-2">
-            <span className="text-[13px] text-[#888]">Auto-Pay</span>
+            <span className="text-[13px] text-ink-ghost">Auto-Pay</span>
             <Toggle on={isOn} onChange={() => onToggle(plan, auth)} />
           </div>
         </div>
 
         {/* Row 4: next charge */}
         {plan.dueDate && (
-          <p className="text-[13px] text-[#888] mt-1.5 mx-0 mb-0">
+          <p className="text-[13px] text-ink-ghost mt-1.5 mx-0 mb-0">
             Next charge: {formatDate(plan.dueDate)}
           </p>
         )}
       </div>
 
       {/* Card row */}
-      <div className="border-t border-[#F2F2F2] py-3 px-4 flex items-center justify-between">
+      <div className="border-t border-hairline-soft py-3 px-4 flex items-center justify-between">
         {cardLabel ? (
           <>
             <div className="flex items-center gap-2.5">
               <CardIcon cardType={auth?.cardType ?? auth?.channel} />
-              <span className="text-sm font-medium text-[#333]">
+              <span className="text-sm font-medium text-ink">
                 {cardLabel}
                 {expiry ? ` | ${expiry}` : ""}
               </span>
@@ -146,7 +151,7 @@ function PlanCard({ plan, auth, onToggle }) {
             </button>
           </>
         ) : (
-          <span className="text-[13px] text-[#aaa]">No saved card</span>
+          <span className="text-[13px] text-ink-ghost">No saved card</span>
         )}
       </div>
     </div>
@@ -234,9 +239,9 @@ export default function ManagePayments() {
           onClick={() => navigate(-1)}
           className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-lg font-semibold text-[#111] m-0">Manage Payments</h1>
+        <h1 className="text-lg font-semibold text-ink m-0">Manage Payments</h1>
       </div>
 
       <div className="px-4">
@@ -250,7 +255,7 @@ export default function ManagePayments() {
           {isLoading ? (
             <PageLoadingState size={56} padding="36px 24px" />
           ) : filtered.length === 0 ? (
-            <p className="text-center text-[#999] text-sm mt-10">
+            <p className="text-center text-ink-ghost text-sm mt-10">
               {recurringPlans.length === 0
                 ? "You're not enrolled in any recurring plans yet."
                 : "No plans match this filter."}

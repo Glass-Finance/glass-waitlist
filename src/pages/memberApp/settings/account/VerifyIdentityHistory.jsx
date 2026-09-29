@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown, Inbox } from "lucide-react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
-import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../../../components/common/PageLoadingState";
 import { useKycAttempts } from "../../../../hooks/useKyc";
 import { kycStatusStyle, idTypeLabel } from "../../../../utils/kycStatus";
 import { formatDate } from "../../../../utils/format";
@@ -35,7 +35,7 @@ function Dropdown({ value, onChange, options }) {
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none bg-white border border-surface-container-border rounded-lg pl-3 pr-8 py-2 text-sm text-[#111] outline-none cursor-pointer min-w-[130px]"
+        className="appearance-none bg-white border border-surface-container-border rounded-lg pl-3 pr-8 py-2 text-sm text-ink outline-none cursor-pointer min-w-[130px]"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -45,7 +45,7 @@ function Dropdown({ value, onChange, options }) {
       </select>
       <ChevronDown
         size={14}
-        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] pointer-events-none"
+        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-ink-faint pointer-events-none"
       />
       <span className="sr-only">{current.label}</span>
     </div>
@@ -73,9 +73,9 @@ export default function VerifyIdentityHistory() {
           onClick={() => navigate(-1)}
           className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-lg font-semibold text-[#111] m-0">Verification History</h1>
+        <h1 className="text-lg font-semibold text-ink m-0">Verification History</h1>
       </div>
 
       <div className="px-4">
@@ -106,10 +106,10 @@ export default function VerifyIdentityHistory() {
         {!isLoading && !isError && attempts.length === 0 && (
           <div className="border border-surface-container-border bg-white rounded-2xl p-8 flex flex-col items-center text-center">
             <div className="w-[52px] h-[52px] rounded-full bg-stacked-container flex items-center justify-center mb-2">
-              <Inbox size={22} className="text-[#9CA3AF]" />
+              <Inbox size={22} className="text-ink-faint" />
             </div>
-            <p className="text-sm font-semibold text-[#374151] m-0">No attempts yet</p>
-            <p className="text-[13px] text-[#9CA3AF] m-0 mt-1">
+            <p className="text-sm font-semibold text-ink-strong m-0">No attempts yet</p>
+            <p className="text-[13px] text-ink-faint m-0 mt-1">
               Your identity verification attempts will appear here.
             </p>
           </div>
@@ -125,13 +125,13 @@ export default function VerifyIdentityHistory() {
                 }`}
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-[#111] m-0">{idTypeLabel(a.idType)}</p>
-                  <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">
+                  <p className="text-sm font-medium text-ink m-0">{idTypeLabel(a.idType)}</p>
+                  <p className="text-xs text-ink-ghost mt-0.5 mx-0 mb-0">
                     Started {formatDate(a.createdAt)}
                     {a.submittedAt ? ` · Submitted ${formatDate(a.submittedAt)}` : ""}
                   </p>
                   {a.decisionReason && (
-                    <p className="text-xs text-[#6B7280] mt-1 mx-0 mb-0 leading-snug">
+                    <p className="text-xs text-ink-muted mt-1 mx-0 mb-0 leading-snug">
                       {a.decisionReason}
                     </p>
                   )}

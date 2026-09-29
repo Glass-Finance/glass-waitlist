@@ -141,7 +141,7 @@ export default function useKycFlow({ reason, onDismiss, onHistory, onComplete } 
       key={label}
       type="button"
       onClick={onClick}
-      className="text-[13px] font-medium text-[#6B7280] bg-transparent border-none cursor-pointer px-1 py-2 hover:text-[#111]"
+      className="text-[13px] font-medium text-ink-muted bg-transparent border-none cursor-pointer px-1 py-2 hover:text-ink"
     >
       {label}
     </button>

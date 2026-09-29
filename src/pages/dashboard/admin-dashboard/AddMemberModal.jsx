@@ -73,7 +73,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
   const [roleId, setRoleId] = useState(defaultRole?.id ?? "");
 
   const inputCls =
-    "w-full h-12 min-h-8 border border-[#797D86] px-4 py-1 rounded-lg text-placeholder text-black placeholder-black/60 outline-none focus:border-[#002FA7] transition-all";
+    "w-full h-12 min-h-8 border border-outline-input px-4 py-1 rounded-lg text-placeholder text-black placeholder-black/60 outline-none focus:border-brand transition-all";
 
   function copyLink() {
     copyLinkText(inviteLink);
@@ -282,7 +282,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
 
           <div className="px-3 pb-8 flex flex-col gap-2">
             {/* Invite link banner */}
-            <div className="flex items-center justify-between px-3 py-4 rounded-xl bg-[#D7E2FF] border border-[#0E628C33]">
+            <div className="flex items-center justify-between px-3 py-4 rounded-xl bg-brand-mist border border-[#0E628C33]">
               <div>
                 <p className="text-xs text-gray-900 mb-0.5">Your community is ready to grow.</p>
                 <p className="text-xs text-gray-500">
@@ -313,7 +313,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                   <button
                     key={t}
                     onClick={() => setTab(t)}
-                    className={`pb-2.5 text-sm font-medium capitalize bg-transparent cursor-pointer transition-all border-x-0 border-t-0 border-b-2 ${tab === t ? "text-brand border-b-brand" : "text-[#9ca3af] border-b-transparent"}`}
+                    className={`pb-2.5 text-sm font-medium capitalize bg-transparent cursor-pointer transition-all border-x-0 border-t-0 border-b-2 ${tab === t ? "text-brand border-b-brand" : "text-ink-faint border-b-transparent"}`}
                   >
                     {t.charAt(0).toUpperCase() + t.slice(1)}
                   </button>
@@ -388,7 +388,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                     }}
                     onDragLeave={() => setDragOver(false)}
                     onDrop={handleDrop}
-                    className={`w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-5 min-h-[140px] border-2 border-dashed ${dragOver ? "bg-[#EEF2FF] border-brand" : "bg-[#FAFAFA] border-[#D1D5DB]"}`}
+                    className={`w-full rounded-lg flex flex-col items-center justify-center py-14 cursor-pointer transition-all mb-5 min-h-[140px] border-2 border-dashed ${dragOver ? "bg-brand-wash border-brand" : "bg-surface-page border-[#D1D5DB]"}`}
                   >
                     <input
                       ref={fileRef}
@@ -397,7 +397,12 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                       className="hidden"
                       onChange={(e) => handleFile(e.target.files[0])}
                     />
-                    <img src={uploadCloudIcon} alt="" className="w-[30px] h-[30px] mb-3" />
+                    <img
+                      src={uploadCloudIcon}
+                      alt=""
+                      className="w-[30px] h-[30px] mb-3"
+                      loading="lazy"
+                    />
                     {csvFile ? (
                       <p className="text-xs text-brand font-medium">
                         {csvFile.name} — {csvRows.length} rows
@@ -435,7 +440,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                     </div>
 
                     {urlStage === "fetching" && (
-                      <div className="mt-3 rounded-lg flex flex-col items-center justify-center py-10 border-2 border-dashed border-brand bg-[#EEF2FF]">
+                      <div className="mt-3 rounded-lg flex flex-col items-center justify-center py-10 border-2 border-dashed border-brand bg-brand-wash">
                         <div className="relative w-16 h-16 mb-3">
                           <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90">
                             <circle
@@ -514,7 +519,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                         key={em + i}
                         className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full text-sm text-gray-800 bg-stacked-container"
                       >
-                        <span className="w-6 h-6 rounded-full bg-[#D7E2FF] text-brand text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
+                        <span className="w-6 h-6 rounded-full bg-brand-mist text-brand text-[10px] font-semibold flex items-center justify-center flex-shrink-0">
                           {em.charAt(0).toUpperCase()}
                         </span>
                         {em}

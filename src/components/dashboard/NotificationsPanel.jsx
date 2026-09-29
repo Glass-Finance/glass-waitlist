@@ -69,7 +69,7 @@ function NotifAvatar({ n }) {
   const visual = notificationVisual(type);
   const Icon = visual?.icon ?? (isSelf ? User : Bell);
   const bg = visual?.bg ?? "#F3F4F6";
-  const fg = visual?.fg ?? "#6B7280";
+  const fg = visual?.fg ?? "var(--color-ink-muted)";
 
   return (
     <div
@@ -111,20 +111,20 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
           </p>
         )}
         <p
-          className={`text-[11.5px] m-0 leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap ${isRead ? "font-medium text-[#666]" : "font-semibold text-[#111]"}`}
+          className={`text-[11.5px] m-0 leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap ${isRead ? "font-medium text-ink-muted" : "font-semibold text-ink"}`}
         >
           {title}
         </p>
         {body && (
-          <p className="text-[10.5px] text-[#888] mt-1 mx-0 mb-0 leading-[1.4] overflow-hidden text-ellipsis whitespace-nowrap">
+          <p className="text-[10.5px] text-ink-ghost mt-1 mx-0 mb-0 leading-[1.4] overflow-hidden text-ellipsis whitespace-nowrap">
             {body}
           </p>
         )}
-        <p className="text-[10px] text-[#aaa] mt-1.5 mx-0 mb-0">
+        <p className="text-[10px] text-ink-ghost mt-1.5 mx-0 mb-0">
           {time}
           {(() => {
             const amount = formatNairaAmount(details.amount);
-            return amount ? <span className="text-[#111] font-semibold"> · {amount}</span> : null;
+            return amount ? <span className="text-ink font-semibold"> · {amount}</span> : null;
           })()}
         </p>
       </div>
@@ -179,7 +179,7 @@ export default function NotificationsPanel({
     >
       {/* Header */}
       <div className="flex items-center justify-between pt-3.5 px-4 pb-2.5">
-        <p className="flex items-center gap-2 text-[14px] font-bold text-[#111] m-0">
+        <p className="flex items-center gap-2 text-[14px] font-bold text-ink m-0">
           Notifications
           {count > 0 && (
             <span className="text-[10px] font-semibold text-brand bg-[#E3E9FF] rounded-full min-w-[17px] h-[17px] px-1.5 flex items-center justify-center">
@@ -193,7 +193,7 @@ export default function NotificationsPanel({
             <button
               onClick={onMarkAllRead}
               disabled={count === 0}
-              className="text-[11px] font-normal text-[#002FA7] bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
+              className="text-[11px] font-normal text-brand bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
             >
               Mark All As Read
             </button>
@@ -212,7 +212,7 @@ export default function NotificationsPanel({
               onClick={() => setActionsOpen((o) => !o)}
               aria-label="Notification actions"
               aria-expanded={actionsOpen}
-              className="flex items-center justify-center w-7 h-7 rounded-full text-[#666] bg-transparent border-none cursor-pointer hover:bg-[#F0F0F0] transition-colors"
+              className="flex items-center justify-center w-7 h-7 rounded-full text-ink-muted bg-transparent border-none cursor-pointer hover:bg-[#F0F0F0] transition-colors"
             >
               <MoreVertical size={16} />
             </button>
@@ -228,7 +228,7 @@ export default function NotificationsPanel({
                   }}
                   disabled={count === 0}
                   role="menuitem"
-                  className="w-full text-left px-3.5 py-2.5 text-[11.5px] font-medium text-[#002FA7] bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7] disabled:opacity-40 disabled:cursor-default"
+                  className="w-full text-left px-3.5 py-2.5 text-[11.5px] font-medium text-brand bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7] disabled:opacity-40 disabled:cursor-default"
                 >
                   Mark All As Read
                 </button>
@@ -264,7 +264,9 @@ export default function NotificationsPanel({
         ) : (
           buckets.map(({ label, items }) => (
             <div key={label}>
-              <p className="text-[10.5px] font-normal text-[#999] pt-3 px-4 pb-1.5 m-0">{label}</p>
+              <p className="text-[10.5px] font-normal text-ink-ghost pt-3 px-4 pb-1.5 m-0">
+                {label}
+              </p>
               <div className="flex flex-col gap-1 px-2.5">
                 {items.map((n) => (
                   <NotifCard

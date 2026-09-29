@@ -71,7 +71,7 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center border border-[#1C2B8A]/20 text-[#1C2B8A] text-[12px] font-semibold px-5 py-2 rounded-full mb-7"
+            className="inline-flex items-center border border-brand-deep/20 text-brand-deep text-[12px] font-semibold px-5 py-2 rounded-full mb-7"
           >
             How We Work
           </motion.span>
@@ -80,7 +80,7 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[clamp(26px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-5"
+            className="text-[clamp(26px,5vw,58px)] font-bold text-brand-ink leading-tight tracking-tight mb-5"
           >
             Launch Transparent Payments
             <br className="hidden md:block" /> in Minutes
@@ -153,7 +153,7 @@ export default function HowItWorksSection({ steps, onCtaClick, ctaLabel = "Join 
             onClick={onCtaClick}
             whileHover={{ scale: 1.04, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="relative inline-flex items-center gap-3 bg-[#0f1d6e] text-white font-bold text-[14px] px-8 py-4 rounded-full overflow-hidden shadow-2xl shadow-[#0f1d6e]/25"
+            className="relative inline-flex items-center gap-3 bg-brand-ink text-white font-bold text-[14px] px-8 py-4 rounded-full overflow-hidden shadow-2xl shadow-brand-ink/25"
           >
             <motion.span
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full"

@@ -63,7 +63,7 @@ export default function YourPaymentsSection({
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse text-left">
           <thead>
-            <tr className="border-b border-gray-100 bg-[#F3F4F6]">
+            <tr className="border-b border-gray-100 bg-stacked-container">
               {["Plan", "Frequency", "Amount", "Due Date", "Status", "Action"].map((h) => (
                 <th key={h} className="p-2 text-left text-xs font-normal text-gray-400">
                   {h}

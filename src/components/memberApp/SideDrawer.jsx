@@ -52,13 +52,13 @@ export default function SideDrawer({ open, onClose }) {
             <div>
               <img src="/Glass.webp" alt="Glass" className="w-[30px] h-[30px]" />
             </div>
-            <span className="text-lg font-medium text-[#111]">Glass</span>
+            <span className="text-lg font-medium text-ink">Glass</span>
           </div>
 
           <button
             onClick={onClose}
             aria-label="Close menu"
-            className="bg-transparent border-none cursor-pointer p-1 text-[#555]"
+            className="bg-transparent border-none cursor-pointer p-1 text-ink-strong"
           >
             <X size={20} strokeWidth={2} />
           </button>
@@ -77,8 +77,8 @@ export default function SideDrawer({ open, onClose }) {
               }}
               className="flex items-center gap-3 py-3.5 px-3 rounded-xl border-none bg-transparent cursor-pointer w-full text-left"
             >
-              <Icon size={20} strokeWidth={1.6} className="text-[#444]" />
-              <span className="text-[15px] font-normal text-[#222]">{label}</span>
+              <Icon size={20} strokeWidth={1.6} className="text-ink-strong" />
+              <span className="text-[15px] font-normal text-ink">{label}</span>
             </button>
           ))}
 

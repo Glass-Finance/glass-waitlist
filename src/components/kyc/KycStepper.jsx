@@ -64,7 +64,7 @@ export default function KycStepper({ current, className = "" }) {
                     ? "bg-brand text-white"
                     : state === "active"
                       ? "bg-brand-tint text-brand"
-                      : "bg-white/70 text-[#9CA3AF]",
+                      : "bg-white/70 text-ink-faint",
                 ].join(" ")}
               >
                 {done ? (
@@ -88,7 +88,7 @@ export default function KycStepper({ current, className = "" }) {
                     ? "text-brand font-medium"
                     : state === "active"
                       ? "text-brand font-semibold"
-                      : "text-[#9CA3AF] font-medium",
+                      : "text-ink-faint font-medium",
                 ].join(" ")}
               >
                 {step.label}

@@ -290,12 +290,12 @@ export default function UseCases() {
         {/* ── Header — centered, original sizing (uniform with other sections) ── */}
         <div className={`${enter} text-center mb-14`} style={{ animationDelay: "0ms" }}>
           <div className="mb-5 flex justify-center">
-            <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full">
+            <span className="inline-flex items-center border border-brand-deep/25 text-brand-deep text-[13px] font-medium px-5 py-2 rounded-full">
               Use Cases
             </span>
           </div>
           <div className="flex justify-center mb-4">
-            <h2 className="text-[clamp(26px,5.5vw,64px)] font-bold text-[#0f1d6e] leading-[1.15] tracking-[-0.02em] max-w-[1080px] text-center">
+            <h2 className="text-[clamp(26px,5.5vw,64px)] font-bold text-brand-ink leading-[1.15] tracking-[-0.02em] max-w-[1080px] text-center">
               <BlurText
                 text="Built for every Nigerian community"
                 animateBy="words"
@@ -370,7 +370,7 @@ export default function UseCases() {
                     onMouseLeave={() => {
                       if (tease === cat) flipThen(() => setTease(null), TEASE_MS, "ease-out");
                     }}
-                    className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#002FA7]/60"
+                    className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/60"
                   />
                 )}
               </div>
@@ -390,10 +390,10 @@ export default function UseCases() {
                   exit={{ opacity: 0 }}
                   transition={{ duration: reduce ? 0 : 0.28, ease: "easeOut" }}
                 >
-                  <h3 className="text-[clamp(19px,2.2vw,24px)] font-bold text-[#0f1d6e] leading-snug">
+                  <h3 className="text-[clamp(19px,2.2vw,24px)] font-bold text-brand-ink leading-snug">
                     {featured.title}
                   </h3>
-                  <p className="mt-1.5 text-[15px] md:text-[16px] text-[#9099b2] leading-[1.6] max-w-[560px]">
+                  <p className="mt-1.5 text-[15px] md:text-[16px] text-ink-cool leading-[1.6] max-w-[560px]">
                     {featured.body}
                   </p>
                 </motion.div>
@@ -402,7 +402,7 @@ export default function UseCases() {
             <button
               type="button"
               onClick={() => goToApp("/sign-up", navigate)}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#002FA7]/25 bg-white px-5 py-2.5 text-[14px] font-semibold text-[#002FA7] transition-colors hover:bg-[#002FA7] hover:border-[#002FA7] hover:text-white motion-reduce:transition-none"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-brand/25 bg-white px-5 py-2.5 text-[14px] font-semibold text-brand transition-colors hover:bg-brand hover:border-brand hover:text-white motion-reduce:transition-none"
             >
               Get started
               <ArrowRight className="w-3.5 h-3.5" />

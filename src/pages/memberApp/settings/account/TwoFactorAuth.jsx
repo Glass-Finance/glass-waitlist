@@ -1,6 +1,6 @@
 import { useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
-import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../../../components/common/PageLoadingState";
 import LoadingState from "../../../../components/common/LoadingState";
 import SuccessBadge from "../../../../components/common/SuccessBadge";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +25,7 @@ function CodeInput({ value, onChange, disabled }) {
       value={value}
       disabled={disabled}
       onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, 6))}
-      className="w-full py-3 px-4 text-[22px] font-bold tracking-[8px] text-center rounded-xl border-[1.5px] border-[#D0D0D0] bg-[#FAFAFA] outline-none text-[#111] focus:border-[#002FA7]"
+      className="w-full py-3 px-4 text-[22px] font-bold tracking-[8px] text-center rounded-xl border-[1.5px] border-hairline-strong bg-surface-page outline-none text-ink focus:border-brand"
     />
   );
 }
@@ -80,12 +80,10 @@ function SetupFlow({ onSuccess, onCancel }) {
   if (stage === "idle") {
     return (
       <div className="flex flex-col gap-4">
-        <div className="bg-[#F0F4FF] rounded-2xl py-[18px] px-4 text-center">
+        <div className="bg-brand-glow rounded-2xl py-[18px] px-4 text-center">
           <Shield size={28} className="text-brand mb-2.5" />
-          <p className="text-[15px] font-semibold text-[#111] mb-1.5">
-            Protect your account with MFA
-          </p>
-          <p className="text-[13px] text-[#666] m-0 leading-relaxed">
+          <p className="text-[15px] font-semibold text-ink mb-1.5">Protect your account with MFA</p>
+          <p className="text-[13px] text-ink-muted m-0 leading-relaxed">
             Use an authenticator app like Google Authenticator or Authy to generate time-based codes
             at login.
           </p>
@@ -94,7 +92,7 @@ function SetupFlow({ onSuccess, onCancel }) {
         <Button onClick={startSetup}>Set Up MFA</Button>
         <button
           onClick={onCancel}
-          className="p-3 rounded-xl border-[1.5px] border-[#D0D0D0] bg-white text-[#555] text-sm cursor-pointer"
+          className="p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
         >
           Cancel
         </button>
@@ -109,30 +107,30 @@ function SetupFlow({ onSuccess, onCancel }) {
   if (stage === "qr" || stage === "verifying") {
     return (
       <div className="flex flex-col gap-4">
-        <p className="text-sm font-semibold text-[#111] m-0">
+        <p className="text-sm font-semibold text-ink m-0">
           1. Scan this QR code with your authenticator app
         </p>
 
         {/* QR code display */}
         {qrSrc ? (
           <div className="flex justify-center p-4 bg-white rounded-xl border border-outline-on-surface">
-            <img src={qrSrc} alt="MFA QR code" className="w-[180px] h-[180px]" />
+            <img src={qrSrc} alt="MFA QR code" className="w-[180px] h-[180px]" loading="lazy" />
           </div>
         ) : qrUri ? (
           <div className="bg-white rounded-xl border border-outline-on-surface py-3 px-4">
-            <p className="text-[11px] font-semibold text-[#999] uppercase tracking-[0.4px] mb-1.5">
+            <p className="text-[11px] font-semibold text-ink-ghost uppercase tracking-[0.4px] mb-1.5">
               QR URI (scan or paste into your app)
             </p>
-            <p className="text-[11px] text-[#555] break-all m-0 leading-snug">{qrUri}</p>
+            <p className="text-[11px] text-ink-strong break-all m-0 leading-snug">{qrUri}</p>
           </div>
         ) : null}
 
         {/* Manual secret */}
         {setupData?.secret && (
           <div>
-            <p className="text-[13px] text-[#666] mb-2">Or enter this key manually:</p>
+            <p className="text-[13px] text-ink-muted mb-2">Or enter this key manually:</p>
             <div className="flex items-center gap-2.5 bg-[#F5F5F5] rounded-[10px] py-2.5 px-3.5">
-              <code className="flex-1 text-sm font-semibold tracking-[2px] text-[#111] break-all">
+              <code className="flex-1 text-sm font-semibold tracking-[2px] text-ink break-all">
                 {setupData.secret}
               </code>
               <button
@@ -145,7 +143,7 @@ function SetupFlow({ onSuccess, onCancel }) {
           </div>
         )}
 
-        <p className="text-sm font-semibold text-[#111] mt-1 mb-0">
+        <p className="text-sm font-semibold text-ink mt-1 mb-0">
           2. Enter the 6-digit code from the app
         </p>
         <CodeInput value={code} onChange={setCode} disabled={stage === "verifying"} />
@@ -156,7 +154,7 @@ function SetupFlow({ onSuccess, onCancel }) {
         </Button>
         <button
           onClick={onCancel}
-          className="p-3 rounded-xl border-[1.5px] border-[#D0D0D0] bg-white text-[#555] text-sm cursor-pointer"
+          className="p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
         >
           Cancel
         </button>
@@ -176,8 +174,8 @@ function SetupFlow({ onSuccess, onCancel }) {
     return (
       <div className="flex flex-col gap-4">
         <div className="bg-[#F5F5F5] rounded-xl p-4 border border-gray-200">
-          <p className="text-[13px] font-semibold text-[#111] mb-1">Save your recovery codes</p>
-          <p className="text-xs text-[#666] leading-relaxed m-0">
+          <p className="text-[13px] font-semibold text-ink mb-1">Save your recovery codes</p>
+          <p className="text-xs text-ink-muted leading-relaxed m-0">
             Each code can only be used once if you lose access to your authenticator app.
           </p>
         </div>
@@ -186,7 +184,7 @@ function SetupFlow({ onSuccess, onCancel }) {
             {recoveryCodes.map((rc, i) => (
               <code
                 key={i}
-                className="text-xs font-mono font-bold text-[#111] bg-white rounded px-2 py-1 border border-gray-200 text-center"
+                className="text-xs font-mono font-bold text-ink bg-white rounded px-2 py-1 border border-gray-200 text-center"
               >
                 {rc}
               </code>
@@ -226,12 +224,12 @@ function DisableFlow({ onSuccess, onCancel }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="bg-[#FFF8F0] rounded-xl py-3.5 px-4 border border-[#FDDCB5]">
-        <p className="text-sm font-semibold text-[#B45309] mb-1">Disable MFA?</p>
+        <p className="text-sm font-semibold text-warning mb-1">Disable MFA?</p>
         <p className="text-[13px] text-[#7C4D0F] m-0 leading-relaxed">
           Your account will be less secure. You can re-enable it at any time.
         </p>
       </div>
-      <p className="text-sm text-[#333] m-0">
+      <p className="text-sm text-ink m-0">
         Enter the 6-digit code from your authenticator app to confirm:
       </p>
       <CodeInput value={code} onChange={setCode} disabled={loading} />
@@ -245,7 +243,7 @@ function DisableFlow({ onSuccess, onCancel }) {
       </button>
       <button
         onClick={onCancel}
-        className="p-3 rounded-xl border-[1.5px] border-[#D0D0D0] bg-white text-[#555] text-sm cursor-pointer"
+        className="p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
       >
         Cancel
       </button>
@@ -276,9 +274,9 @@ export default function TwoFactorAuth() {
           onClick={() => (flow ? setFlow(null) : navigate(-1))}
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-lg font-semibold text-[#111] m-0">
+        <h1 className="text-lg font-semibold text-ink m-0">
           {flow === "setup"
             ? "Set Up MFA"
             : flow === "disable"
@@ -301,20 +299,18 @@ export default function TwoFactorAuth() {
               <div
                 className={`w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center ${mfaEnabled ? "bg-success-tint" : "bg-stacked-container"}`}
               >
-                <ShieldCheck size={22} className={mfaEnabled ? "text-success" : "text-[#9CA3AF]"} />
+                <ShieldCheck size={22} className={mfaEnabled ? "text-success" : "text-ink-faint"} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[15px] font-semibold text-[#111] m-0">
-                  Authenticator App (TOTP)
-                </p>
+                <p className="text-[15px] font-semibold text-ink m-0">Authenticator App (TOTP)</p>
                 <p
-                  className={`text-[13px] mt-0.5 mb-0 ${mfaEnabled ? "text-success font-medium" : "text-[#999] font-normal"}`}
+                  className={`text-[13px] mt-0.5 mb-0 ${mfaEnabled ? "text-success font-medium" : "text-ink-ghost font-normal"}`}
                 >
                   {mfaEnabled ? "Active — your account is protected" : "Not set up"}
                 </p>
               </div>
               <span
-                className={`text-[11px] font-bold py-1 px-2.5 rounded-full ${mfaEnabled ? "bg-success-tint text-[#15803D]" : "bg-stacked-container text-[#9CA3AF]"}`}
+                className={`text-[11px] font-bold py-1 px-2.5 rounded-full ${mfaEnabled ? "bg-success-tint text-success-deep" : "bg-stacked-container text-ink-faint"}`}
               >
                 {mfaEnabled ? "ON" : "OFF"}
               </span>
@@ -333,11 +329,11 @@ export default function TwoFactorAuth() {
             )}
 
             {/* Info note */}
-            <div className="flex items-start gap-2 py-3 px-3.5 rounded-[10px] bg-[#D7E2FF] mt-5">
+            <div className="flex items-start gap-2 py-3 px-3.5 rounded-[10px] bg-brand-mist mt-5">
               <div className="w-4 h-4 rounded-full border-[1.5px] border-brand flex items-center justify-center flex-shrink-0 mt-px">
                 <span className="text-[9px] font-bold text-brand">i</span>
               </div>
-              <p className="text-xs text-[#333] m-0 leading-relaxed">
+              <p className="text-xs text-ink m-0 leading-relaxed">
                 With MFA enabled, you'll need to enter a code from your authenticator app every time
                 you sign in. Use Google Authenticator, Authy, or any TOTP-compatible app.
               </p>

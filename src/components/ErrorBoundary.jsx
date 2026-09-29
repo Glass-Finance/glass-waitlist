@@ -34,7 +34,7 @@ export default class ErrorBoundary extends Component {
           <div className="flex gap-3">
             <a
               href="/"
-              className="px-5 py-2.5 rounded-full text-[13px] font-medium text-gray-700 no-underline cursor-pointer transition-colors bg-surface-container border border-[#E5E7EB] backdrop-blur-xs"
+              className="px-5 py-2.5 rounded-full text-[13px] font-medium text-gray-700 no-underline cursor-pointer transition-colors bg-surface-container border border-hairline-neutral backdrop-blur-xs"
             >
               Go home
             </a>

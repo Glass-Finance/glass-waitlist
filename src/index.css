@@ -170,11 +170,99 @@
      black-alpha, so they composite correctly over any base color. */
   --color-outline-on-surface: rgb(0 0 0 / 0.15);
   --color-outline-on-container: rgb(0 0 0 / 0.05);
+
+  /* ── Extended tokens ────────────────────────────────────────────────────
+     Added to retire the ad-hoc hex values that had been hardcoded across the
+     app. Every entry below replaced at least six real call sites, so each one
+     is a value we now change in exactly one place. Names are semantic
+     (ink / wash / hairline), not literal — do not add "landing-text-blue-2".
+
+     Deliberately NOT tokenized: third-party brand artwork (the Google
+     multi-colour SVG fills) and multi-stop brand gradients. Those are
+     artwork, not theme. */
+
+  /* Ink — the neutral text ramp, darkest to lightest. */
+  --color-ink: #111111;
+  --color-ink-strong: #374151;
+  --color-ink-muted: #6b7280;
+  --color-ink-faint: #9ca3af;
+  --color-ink-ghost: #aaaaaa;
+  --color-ink-cool: #9099b2;
+
+  /* Brand blue family. --color-brand / --color-brand-tint are the originals
+     above; these are the deeper and lighter members of the same family. */
+  --color-brand-deep: #1c2b8a;
+  --color-brand-ink: #0f1d6e;
+  --color-brand-link: #1b2fe8;
+  --color-brand-mist: #d7e2ff;
+  --color-brand-wash: #eef2ff;
+  --color-brand-glow: #f0f4ff;
+  --color-brand-night: #0b0f2e;
+  --color-brand-night-deep: #07091f;
+
+  /* Accents used for non-semantic emphasis. */
+  --color-accent-indigo: #4f46e5;
+  --color-accent-purple: #7c3aed;
+  --color-accent-gold: #d4a017;
+
+  /* Status text. Distinct from the --color-success / --color-danger above,
+     which are the light-on-tint chip colors. */
+  --color-success-strong: #059669;
+  --color-success-deep: #15803d;
+  --color-success-bright: #0ece7b;
+  --color-danger-bright: #e11d48;
+  --color-danger-bright-2: #ef4444;
+  --color-warning: #b45309;
+
+  /* Status washes — the pale fills these statuses sit on. */
+  --color-success-wash: #ecfdf5;
+  --color-danger-wash: #fef2f2;
+  --color-danger-wash-2: #fff1f2;
+  --color-warning-wash: #fffbeb;
+  --color-accent-purple-wash: #f3eeff;
+
+  /* Hairlines. --color-hairline is the original above; the rest are the
+     neutral/disabled/strong steps that were being spelled out per form. */
+  /* Status chip tints. These are the second family alongside
+     --color-success-tint / --color-brand-tint above: same roles, one step
+     deeper. They exist so the notification palette in
+     src/utils/notificationTypes.js (five bg/fg pairs) can be re-tinted from
+     here instead of from hexes in that file. */
+  --color-warning-tint: #fef3c7;
+  --color-success-tint-2: #d1fae5;
+  --color-brand-tint-2: #e0e7ff;
+
+  --color-hairline-neutral: #e5e7eb;
+  --color-hairline-soft: #f2f2f2;
+  --color-hairline-strong: #d0d0d0;
+  --color-hairline-disabled: #c2c2c2;
+  --color-outline-input: #797d86;
+
+  /* Surfaces below the base. --color-stacked-container and --color-surface-bg
+     are the originals above. */
+  --color-surface-sunken: #f9fafb;
+  --color-surface-page: #fafafa;
 }
 
 /* Global Resets */
 * {
   box-sizing: border-box;
+}
+
+/* ── Focus visibility ──────────────────────────────────────────────────────
+   Keyboard focus must stay visible; mouse focus should not draw a ring.
+   `:focus-visible` is what browsers match for keyboard/assistive-tech driven
+   focus, while `:focus` matches for any focus including mouse clicks — so we
+   suppress the default outline only on the non-keyboard case and always paint
+   an explicit brand ring on the keyboard one. Several components set
+   `outline-none` for visual reasons, which otherwise leaves keyboard focus
+   with no indicator at all. */
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 html {

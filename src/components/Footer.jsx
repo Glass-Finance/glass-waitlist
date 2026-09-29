@@ -46,7 +46,7 @@ export default function Footer() {
   const navigate = useNavigate();
 
   return (
-    <footer className="relative isolate bg-[#0d1a6e] text-white">
+    <footer className="relative isolate bg-brand-ink text-white">
       {/* ── CTA ── */}
       <div className="relative pt-20 md:pt-28 pb-20 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_60%_at_50%_50%,rgba(30,50,160,0.35)_0%,transparent_70%)]" />
@@ -77,7 +77,7 @@ export default function Footer() {
           </p>
           <button
             onClick={() => goToApp("/sign-up", navigate)}
-            className="inline-flex items-center gap-2 bg-white text-[#0f1640] text-[15px] font-semibold px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/20"
+            className="inline-flex items-center gap-2 bg-white text-brand-ink text-[15px] font-semibold px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/20"
           >
             Get Started Free
           </button>

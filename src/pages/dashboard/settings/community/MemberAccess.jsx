@@ -151,7 +151,7 @@ export default function MemberAccess() {
               <QRCodeCanvas value={inviteLink} size={96} />
             </div>
           )}
-          <div className="flex items-center justify-between px-4 py-3 rounded-xl flex-1 min-w-0 bg-[#EEF2FF] border border-[#C7D2FE]">
+          <div className="flex items-center justify-between px-4 py-3 rounded-xl flex-1 min-w-0 bg-brand-wash border border-[#C7D2FE]">
             <span className="text-sm text-gray-700 font-medium truncate">
               {inviteLink ?? "Select a community to generate an invite link"}
             </span>
@@ -207,7 +207,7 @@ export default function MemberAccess() {
                     <p className="text-xs text-gray-500">{memberEmail(member)}</p>
                   </div>
                   <span
-                    className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${isAdminRole(member) ? "text-brand bg-[#EEF2FF]" : "text-[#D97706] bg-[#FEF3C7]"}`}
+                    className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${isAdminRole(member) ? "text-brand bg-brand-wash" : "text-warning bg-[#FEF3C7]"}`}
                   >
                     {memberRoleLabel(member)}
                   </span>

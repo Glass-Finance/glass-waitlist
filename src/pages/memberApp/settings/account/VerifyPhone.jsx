@@ -28,10 +28,10 @@ function StepHeader({ title, onBack }) {
           onClick={onBack}
           className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
       )}
-      <h1 className="text-lg font-semibold text-[#111] m-0">{title}</h1>
+      <h1 className="text-lg font-semibold text-ink m-0">{title}</h1>
     </div>
   );
 }
@@ -159,7 +159,7 @@ export default function VerifyPhone() {
           />
           <div className="px-4">
             <div className="border border-surface-container-border bg-white rounded-2xl p-4">
-              <label className="text-xs text-[#888] block mb-1.5">Phone Number</label>
+              <label className="text-xs text-ink-ghost block mb-1.5">Phone Number</label>
               <TextInput
                 type="tel"
                 value={phone}
@@ -174,7 +174,7 @@ export default function VerifyPhone() {
             </div>
 
             {!isUpdate && (
-              <div className="flex items-start gap-2.5 mt-3.5 px-4 py-3.5 rounded-xl bg-[#D7E2FF]">
+              <div className="flex items-start gap-2.5 mt-3.5 px-4 py-3.5 rounded-xl bg-brand-mist">
                 <ShieldCheck size={18} className="text-brand flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-brand leading-snug m-0">
                   Your number is only used for payment reminders and account recovery. We will never
@@ -194,7 +194,7 @@ export default function VerifyPhone() {
         <>
           <StepHeader title="Enter OTP" onBack={() => setStep("form")} />
           <div className="px-5">
-            <p className="text-lg font-bold text-[#111] mb-4">Enter the Code we Sent</p>
+            <p className="text-lg font-bold text-ink mb-4">Enter the Code we Sent</p>
             <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code that was sent to</p>
             <p className="text-sm font-semibold text-gray-900 mb-3">{maskPhone(phone)}</p>
             <button

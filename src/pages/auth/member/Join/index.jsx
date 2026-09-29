@@ -12,7 +12,7 @@ import { notifyError } from "../../../../utils/errorHandler";
 import { toastSuccess } from "../../../../utils/toast";
 import { useAuth } from "../../../../store/AuthContext";
 import { resolvePostAuthDestination } from "../../../../utils/postAuthDestination";
-import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../../../components/common/PageLoadingState";
 import AuthLayout from "../../../../layouts/AuthLayout";
 import { STEPS, PENDING_KEY } from "./constants";
 import StepContact from "./StepContact";

@@ -194,7 +194,7 @@ export default function Settings() {
             }}
             onFocus={() => setSearchOpen(true)}
             onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
-            className="pl-9 pr-4 py-2 rounded-md text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-brand transition-colors w-full max-w-[220px] border border-[#D0D0D0] bg-white"
+            className="pl-9 pr-4 py-2 rounded-md text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-brand transition-colors w-full max-w-[220px] border border-hairline-strong bg-white"
           />
 
           {/* Dropdown results */}

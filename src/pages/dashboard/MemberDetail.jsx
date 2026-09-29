@@ -29,14 +29,14 @@ function PlanCard({ plan }) {
       <div className="flex items-start justify-between mb-2">
         <p className="text-sm font-medium text-black pt-0.5">{plan.paymentLink?.title ?? "Plan"}</p>
         <span
-          className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${isPaid ? "text-[#059669] bg-[#ecfdf5]" : "text-[#e11d48] bg-[#fff1f2]"}`}
+          className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${isPaid ? "text-success-strong bg-success-wash" : "text-danger-bright bg-danger-wash-2"}`}
         >
           {isPaid ? "Paid" : "Unpaid"}
         </span>
       </div>
       <div className="flex items-center gap-2 mb-3">
         <span className="text-md font-semibold text-gray-900">{formatNaira(plan.amount)}</span>
-        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full text-[#7c3aed] bg-[#f3eeff]">
+        <span className="text-[11px] font-bold px-2 py-0.5 rounded-full text-accent-purple bg-accent-purple-wash">
           {isRecurring ? (plan.recurringPlan?.frequency ?? "Recurring") : "One-Time"}
         </span>
       </div>
@@ -134,7 +134,7 @@ export default function MemberDetail() {
         <button
           onClick={handleRemove}
           disabled={removeMember.isPending}
-          className="flex items-center gap-1.5 px-4 py-2 rounded text-xs font-medium text-white hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50 bg-[#E53E3E]"
+          className="flex items-center gap-1.5 px-4 py-2 rounded text-xs font-medium text-white hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50 bg-danger"
         >
           <UserMinus size={14} /> Remove Member
         </button>
@@ -231,7 +231,7 @@ export default function MemberDetail() {
                         </td>
                         <td className="px-5 py-3">
                           <span
-                            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isPaid ? "text-[#059669] bg-[#ecfdf5]" : "text-danger bg-[#fff1f2]"}`}
+                            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${isPaid ? "text-success-strong bg-success-wash" : "text-danger bg-danger-wash-2"}`}
                           >
                             {isPaid ? "Paid" : statusLabel}
                           </span>
