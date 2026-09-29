@@ -71,7 +71,11 @@ window.addEventListener("vite:preloadError", () => {
 // anonymous visitor site-wide can collapse into one merged visitor record
 // instead of each getting their own, corrupting pre-login funnel data.
 // pendo.identify() is called later once the user signs in (see AuthContext).
-pendo.initialize();
+// Guard against a missing/failed Pendo script (network error, ad blocker) so
+// the app still mounts.
+if (typeof pendo !== "undefined" && pendo?.initialize) {
+  pendo.initialize();
+}
 
 /**
  * QueryClient — React Query

@@ -48,7 +48,7 @@ export async function verifyEmail({ email, token }) {
  */
 export async function resendVerification({ email }) {
   const { data } = await client.post("/auth/verify/resend", { email });
-  return data;
+  return data.data;
 }
 
 /**
@@ -99,7 +99,7 @@ export async function logout() {
   const refreshToken = getRefreshToken();
   if (!refreshToken) return;
   const { data } = await client.post("/auth/logout", { refreshToken });
-  return data;
+  return data.data;
 }
 
 /**
@@ -112,7 +112,7 @@ export async function forgotPassword({ email, phoneNumber, phoneRegion }) {
     "/auth/password/forgot",
     identifierPayload({ email, phoneNumber, phoneRegion }),
   );
-  return data;
+  return data.data;
 }
 
 /**
@@ -140,7 +140,7 @@ export async function resetPassword({
       confirmPassword,
     }),
   );
-  return data;
+  return data.data;
 }
 
 /**

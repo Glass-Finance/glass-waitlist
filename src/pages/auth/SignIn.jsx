@@ -274,6 +274,7 @@ export default function SignIn() {
   }, [authLoading, token, sessionVerified, user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSignIn() {
+    if (loading) return;
     destinationTakenRef.current = true;
     const identifierError = validateField("identifier", form.identifier);
     const passwordError = validateField("password", form.password);

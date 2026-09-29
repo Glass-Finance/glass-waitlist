@@ -135,6 +135,7 @@ export default function PaymentSuccess() {
   useEffect(() => {
     if (!reference) return;
     let cancelled = false;
+    let timeoutId = null;
 
     function consumePendingFlags() {
       sessionStorage.removeItem("paymentReturnTo");
@@ -194,12 +195,13 @@ export default function PaymentSuccess() {
         return;
       }
 
-      setTimeout(poll, POLL_INTERVAL_MS);
+      timeoutId = setTimeout(poll, POLL_INTERVAL_MS);
     }
 
     poll();
     return () => {
       cancelled = true;
+      if (timeoutId !== null) clearTimeout(timeoutId);
     };
   }, [reference, invalidateCaches]);
 

@@ -97,6 +97,7 @@ function AdminPaymentCallback() {
   useEffect(() => {
     if (!reference) return;
     let cancelled = false;
+    let timeoutId = null;
 
     // Terminal states own the cleanup of the pending-payment flags; anything
     // earlier (including a session-expiry bounce) must leave them intact so
@@ -193,12 +194,13 @@ function AdminPaymentCallback() {
         return;
       }
 
-      setTimeout(poll, POLL_INTERVAL_MS);
+      timeoutId = setTimeout(poll, POLL_INTERVAL_MS);
     }
 
     poll();
     return () => {
       cancelled = true;
+      if (timeoutId !== null) clearTimeout(timeoutId);
     };
   }, [reference, invalidateCaches]);
 
