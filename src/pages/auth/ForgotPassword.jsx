@@ -56,9 +56,14 @@ export default function ForgotPassword() {
       setError("Please enter the full 6-digit code.");
       return;
     }
-    navigate(
-      `/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}&token=${encodeURIComponent(code)}`,
+    // Store the OTP in sessionStorage instead of the URL to avoid leaking
+    // the secret via browser history, referrer headers, or server logs.
+    // The ResetPassword page reads and consumes this on submit.
+    sessionStorage.setItem(
+      "glass_reset_otp",
+      JSON.stringify({ email: email.trim().toLowerCase(), token: code }),
     );
+    navigate("/reset-password");
   }
 
   async function handleResend() {
@@ -122,7 +127,7 @@ export default function ForgotPassword() {
 
             <p className="text-sm text-center text-gray-500 pb-2">
               Remember your password?{" "}
-              <Link to="/sign-in" className="font-semibold text-[#1C2B8A]">
+              <Link to="/sign-in" className="font-semibold text-brand-deep">
                 Sign In
               </Link>
             </p>
@@ -168,7 +173,7 @@ export default function ForgotPassword() {
                         {digits.map((d, i) => (
                           <div
                             key={i}
-                            className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-[22px] font-bold rounded-lg text-[#111827] transition-[border-color] duration-150 border-[1.5px] ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-surface-container-border"}`}
+                            className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-[22px] font-bold rounded-lg text-ink transition-[border-color] duration-150 border-[1.5px] ${d || i === activeIndex ? "border-brand-deep" : "border-surface-container-border"}`}
                           >
                             {d}
                           </div>
@@ -198,7 +203,7 @@ export default function ForgotPassword() {
                 <button
                   onClick={handleResend}
                   disabled={loading}
-                  className="font-semibold bg-transparent border-none cursor-pointer disabled:opacity-50 text-[#1C2B8A]"
+                  className="font-semibold bg-transparent border-none cursor-pointer disabled:opacity-50 text-brand-deep"
                 >
                   {loading ? "Sending…" : "Resend code"}
                 </button>
@@ -209,7 +214,7 @@ export default function ForgotPassword() {
                   setError("");
                   setOtp(["", "", "", "", "", ""]);
                 }}
-                className="text-xs bg-transparent border-none cursor-pointer mt-1 text-[#6b7280]"
+                className="text-xs bg-transparent border-none cursor-pointer mt-1 text-ink-muted"
               >
                 ← Change email address
               </button>

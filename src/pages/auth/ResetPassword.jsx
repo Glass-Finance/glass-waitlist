@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { resetPassword } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
@@ -13,9 +13,26 @@ import PasswordChecklist from "../../components/auth/PasswordChecklist";
 // for why these were merged.
 export default function ResetPassword() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const email = searchParams.get("email") ?? "";
-  const token = searchParams.get("token") ?? "";
+  // Read email + token from sessionStorage (set by ForgotPassword) instead
+  // of URL query params to avoid leaking the reset secret via browser
+  // history, referrer headers, or server logs.
+  // Stored in state (not consumed during render) so the token survives
+  // re-renders and is only removed when the form is submitted.
+  const [credentials, setCredentials] = useState({ email: "", token: "" });
+  const [credentialsLoaded, setCredentialsLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("glass_reset_otp");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setCredentials({ email: parsed.email ?? "", token: parsed.token ?? "" });
+      }
+    } catch {
+      // Invalid JSON — treat as no credentials
+    }
+    setCredentialsLoaded(true);
+  }, []);
 
   const [form, setForm] = useState({ newPassword: "", confirmPassword: "" });
   const [fieldErrors, setFieldErrors] = useState({ newPassword: "", confirmPassword: "" });
@@ -87,9 +104,11 @@ export default function ResetPassword() {
     setLoading(true);
     setError("");
     try {
+      // Consume the token only when the user actually submits the form
+      sessionStorage.removeItem("glass_reset_otp");
       await resetPassword({
-        email,
-        token,
+        email: credentials.email,
+        token: credentials.token,
         newPassword: form.newPassword,
         confirmPassword: form.confirmPassword,
       });
@@ -112,10 +131,12 @@ export default function ResetPassword() {
           <p className="text-sm text-gray-500">Choose a new password for your account.</p>
         </div>
 
-        {!email || !token ? (
-          <p className="text-sm text-[#E53E3E]">
+        {!credentialsLoaded ? (
+          <p className="text-sm text-gray-500">Loading…</p>
+        ) : !credentials.email || !credentials.token ? (
+          <p className="text-sm text-danger">
             This reset link is invalid or has expired.{" "}
-            <Link to="/forgot-password" className="font-semibold text-[#1C2B8A]">
+            <Link to="/forgot-password" className="font-semibold text-brand-deep">
               Request a new one
             </Link>
           </p>
@@ -183,7 +204,7 @@ export default function ResetPassword() {
 
         <p className="text-sm text-center text-gray-500 pb-2">
           Remember your password?{" "}
-          <Link to="/sign-in" className="font-semibold text-[#1C2B8A]">
+          <Link to="/sign-in" className="font-semibold text-brand-deep">
             Sign In
           </Link>
         </p>

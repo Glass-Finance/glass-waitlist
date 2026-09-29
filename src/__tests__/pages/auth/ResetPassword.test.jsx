@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import ResetPassword from "../../../pages/auth/ResetPassword";
 import { resetPassword } from "../../../services/authService";
@@ -14,9 +14,15 @@ vi.mock("../../../services/authService", () => ({
 
 const VALID_PASSWORD = "Glass123!";
 
-function renderReset(query = "?email=sulaimon%40example.com&token=reset-token-1") {
+function renderReset() {
+  // Seed sessionStorage with the reset credentials (set by ForgotPassword)
+  // instead of passing them as URL query params.
+  sessionStorage.setItem(
+    "glass_reset_otp",
+    JSON.stringify({ email: "sulaimon@example.com", token: "reset-token-1" }),
+  );
   return render(
-    <MemoryRouter initialEntries={[`/reset-password${query}`]}>
+    <MemoryRouter initialEntries={["/reset-password"]}>
       <Routes>
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/sign-in" element={<div data-testid="sign-in-page" />} />
@@ -52,9 +58,24 @@ beforeEach(() => {
   sessionStorage.clear();
 });
 
+afterEach(() => {
+  cleanup();
+  sessionStorage.clear();
+});
+
 describe("ResetPassword without a usable link", () => {
-  it("shows the invalid-link state instead of the form when email/token are missing", async () => {
-    renderReset("");
+  it("shows the invalid-link state instead of the form when sessionStorage has no reset data", async () => {
+    // No sessionStorage seed — simulates a direct navigation without a prior
+    // forgot-password flow.
+    render(
+      <MemoryRouter initialEntries={["/reset-password"]}>
+        <Routes>
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/sign-in" element={<div data-testid="sign-in-page" />} />
+          <Route path="/forgot-password" element={<div data-testid="forgot-page" />} />
+        </Routes>
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByText(/This reset link is invalid or has expired\./)).toBeDefined();
     expect(screen.queryByPlaceholderText("Enter new password")).toBeNull();

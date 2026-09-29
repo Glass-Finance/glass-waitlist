@@ -112,7 +112,7 @@ describe("ForgotPassword email step", () => {
 });
 
 describe("ForgotPassword code step", () => {
-  it("hands off to reset-password with the email and the entered code", async () => {
+  it("hands off to reset-password with the OTP stored in sessionStorage, not the URL", async () => {
     renderForgotPassword();
     await reachOtpStep();
 
@@ -120,7 +120,11 @@ describe("ForgotPassword code step", () => {
     fireEvent.click(screen.getByRole("button", { name: "Verify Code" }));
 
     const target = await screen.findByTestId("reset-target");
-    expect(target.textContent).toBe("/reset-password?email=sulaimon%40example.com&token=123456");
+    // OTP is NOT in the URL — it is stored in sessionStorage under glass_reset_otp
+    expect(target.textContent).toBe("/reset-password");
+    const stored = JSON.parse(sessionStorage.getItem("glass_reset_otp"));
+    expect(stored.email).toBe("sulaimon@example.com");
+    expect(stored.token).toBe("123456");
   });
 
   it("re-requests a code for the same email on resend", async () => {
