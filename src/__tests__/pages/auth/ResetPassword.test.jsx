@@ -49,6 +49,7 @@ function deferred() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  sessionStorage.clear();
 });
 
 describe("ResetPassword without a usable link", () => {

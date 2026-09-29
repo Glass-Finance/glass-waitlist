@@ -12,8 +12,8 @@ vi.mock("../../../services/authService", () => ({
   forgotPassword: vi.fn(),
 }));
 
-// Records the reset hand-off URL, including the encoded email + token query
-// params that ResetPassword reads back.
+// Records the reset hand-off URL. After C4, the OTP is NOT in the URL —
+// it is stored in sessionStorage under glass_reset_otp.
 function ResetTarget() {
   const location = useLocation();
   return <div data-testid="reset-target">{location.pathname + location.search}</div>;
@@ -61,6 +61,7 @@ function deferred() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  sessionStorage.clear();
 });
 
 describe("ForgotPassword email step", () => {
