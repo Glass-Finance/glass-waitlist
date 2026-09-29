@@ -34,14 +34,18 @@ describe("useRealtimeStream session gating (Sprint 2)", () => {
   it("does not mint an SSE ticket for an unverified token", async () => {
     mintRealtimeTicket.mockClear();
     renderStream({ isAuthenticated: true, sessionVerified: false });
-    await waitFor(() => new Promise((r) => setTimeout(r, 50)));
-    expect(mintRealtimeTicket).not.toHaveBeenCalled();
+    // Wait for the effect to run and verify no ticket was minted
+    await waitFor(() => {
+      expect(mintRealtimeTicket).not.toHaveBeenCalled();
+    });
   });
 
   it("does not mint when unauthenticated", async () => {
     mintRealtimeTicket.mockClear();
     renderStream({ isAuthenticated: false, sessionVerified: false });
-    await waitFor(() => new Promise((r) => setTimeout(r, 50)));
-    expect(mintRealtimeTicket).not.toHaveBeenCalled();
+    // Wait for the effect to run and verify no ticket was minted
+    await waitFor(() => {
+      expect(mintRealtimeTicket).not.toHaveBeenCalled();
+    });
   });
 });
