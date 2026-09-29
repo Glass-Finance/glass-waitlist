@@ -24,6 +24,7 @@ import {
   LayoutDashboard,
   CreditCard,
   Users,
+  UsersRound,
   Bell,
   Settings,
   LogOut,
@@ -67,6 +68,17 @@ const NAV = [
     segment: "members",
     path: "members",
     shortcut: "m",
+  },
+  {
+    // NO `shortcut`, unlike every other item here. "Groups" wants `g`, but `g`
+    // is the chord prefix itself -- `g g` technically resolves, but a
+    // same-letter chord reads as a mistake and would be the only binding here
+    // that does. Adding a binding means picking a new prefix or reworking the
+    // scheme for all six items, which is a separate call from shipping Groups.
+    icon: UsersRound,
+    label: "Groups",
+    segment: "groups",
+    path: "groups",
   },
   {
     icon: Bell,
@@ -214,6 +226,10 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           ? "/dashboard/home"
           : null;
       if (!href) return null;
+      // No `shortcut` means this item deliberately has no binding (Groups --
+      // see the note on its NAV entry). Registering `g undefined` would be a
+      // dead entry that still shows up in the `?` shortcuts overlay.
+      if (!shortcut) return null;
       return {
         keys: `g ${shortcut}`,
         description: `Go to ${label}`,

@@ -57,6 +57,7 @@ const PayingAdminDashboard = lazy(() =>
 );
 const Payments = lazy(() => import("./pages/dashboard/Payments"));
 const Members = lazy(() => import("./pages/dashboard/Members"));
+const Groups = lazy(() => import("./pages/dashboard/Groups"));
 const MemberDetail = lazy(() => import("./pages/dashboard/MemberDetail"));
 const AdminTransactionDetail = lazy(() => import("./pages/dashboard/TransactionDetail"));
 const AdminNotifications = lazy(() => import("./pages/dashboard/Notifications"));
@@ -229,6 +230,7 @@ function App() {
                 <Route path="payments" element={<Payments />} />
                 <Route path="members" element={<Members />} />
                 <Route path="members/:memberId" element={<MemberDetail />} />
+                <Route path="groups" element={<Groups />} />
                 <Route path="transactions/:transactionId" element={<AdminTransactionDetail />} />
                 <Route path="join-requests" element={<JoinRequests />} />
               </Route>
