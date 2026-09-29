@@ -124,25 +124,25 @@ const REVIEW_DECISIONS = [
     value: "ACCEPT",
     label: "Accept",
     Icon: ShieldCheck,
-    activeCls: "bg-[#ECFDF5] border-[#059669] text-[#059669]",
-    solidCls: "bg-[#059669]",
-    focusCls: "focus:border-[#059669]",
+    activeCls: "bg-success-wash border-success-strong text-success-strong",
+    solidCls: "bg-success-strong",
+    focusCls: "focus:border-success-strong",
   },
   {
     value: "REQUEST_INFO",
     label: "Request Info",
     Icon: HelpCircle,
-    activeCls: "bg-[#FFFBEB] border-[#B45309] text-[#B45309]",
-    solidCls: "bg-[#B45309]",
-    focusCls: "focus:border-[#B45309]",
+    activeCls: "bg-warning-wash border-warning text-warning",
+    solidCls: "bg-warning",
+    focusCls: "focus:border-warning",
   },
   {
     value: "REJECT",
     label: "Reject",
     Icon: ShieldAlert,
-    activeCls: "bg-[#FEF2F2] border-[#e11d48] text-[#e11d48]",
-    solidCls: "bg-[#e11d48]",
-    focusCls: "focus:border-[#e11d48]",
+    activeCls: "bg-danger-wash border-danger-bright text-danger-bright",
+    solidCls: "bg-danger-bright",
+    focusCls: "focus:border-danger-bright",
   },
 ];
 
@@ -185,7 +185,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
             code before deciding.
           </p>
         ) : (
-          <div className={`rounded-lg p-4 ${nameMatches ? "bg-[#ECFDF5]" : "bg-[#FEF2F2]"}`}>
+          <div className={`rounded-lg p-4 ${nameMatches ? "bg-success-wash" : "bg-danger-wash"}`}>
             <p className="text-xs text-gray-500 mb-1">On file:</p>
             <p className="text-sm font-semibold text-gray-900 mb-3">{account.accountName}</p>
             <p className="text-xs text-gray-500 mb-1">Paystack says:</p>
@@ -229,7 +229,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
               onChange={(e) => setComment(e.target.value)}
               rows={3}
               required={commentRequired}
-              className={`w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors border border-[#D0D0D0] ${chosen?.focusCls ?? "focus:border-brand"}`}
+              className={`w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors border border-hairline-strong ${chosen?.focusCls ?? "focus:border-brand"}`}
               placeholder={
                 decision === "REJECT"
                   ? "Why is this account being rejected?"
@@ -252,7 +252,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
           <button
             type="submit"
             disabled={!decision || submitting || isLoading || (commentRequired && !comment.trim())}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none ${chosen?.solidCls ?? "bg-[#9CA3AF]"}`}
+            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none ${chosen?.solidCls ?? "bg-ink-faint"}`}
           >
             {submitting ? (
               <Loader2 size={12} className="animate-spin" />
@@ -381,7 +381,7 @@ export default function AccountsSection() {
             {items.map((a, i) => (
               <tr
                 key={a.id}
-                className={`group hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
+                className={`group hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
                   <p className="text-[12px] font-semibold text-gray-900">{a.settlementBank}</p>

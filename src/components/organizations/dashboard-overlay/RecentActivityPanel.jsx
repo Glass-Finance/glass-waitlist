@@ -13,8 +13,8 @@ const REVEAL_STYLE = {
 const ACTIVITY = [
   {
     id: "e8",
-    aBg: "#ecfdf5",
-    aColor: "#059669",
+    aBg: "var(--color-success-wash)",
+    aColor: "var(--color-success-strong)",
     type: "payment",
     name: "Joseph Alabi",
     action: "paid",
@@ -23,7 +23,7 @@ const ACTIVITY = [
   {
     id: "e9",
     aBg: "#e6eeff",
-    aColor: "#002FA7",
+    aColor: "var(--color-brand)",
     type: "member",
     name: "Grace Adekunle",
     action: "joined the community",
@@ -31,8 +31,8 @@ const ACTIVITY = [
   },
   {
     id: "e10",
-    aBg: "#ecfdf5",
-    aColor: "#059669",
+    aBg: "var(--color-success-wash)",
+    aColor: "var(--color-success-strong)",
     type: "payment",
     name: "Emeka Nwosu",
     action: "paid Event Fee",
@@ -41,7 +41,7 @@ const ACTIVITY = [
   {
     id: "e11",
     aBg: "#fff1f2",
-    aColor: "#e11d48",
+    aColor: "var(--color-danger-bright)",
     type: "failed",
     name: "Chidinma Obi",
     action: "payment failed for",
@@ -82,9 +82,14 @@ function ActivityIcon({ type, color }) {
 export default function RecentActivityPanel() {
   return (
     <div
-      style={{ background: "#fff", borderRadius: 12, border: "1px solid #E0E0EB", padding: "10px" }}
+      style={{
+        background: "var(--color-white)",
+        borderRadius: 12,
+        border: "1px solid var(--color-hairline)",
+        padding: "10px",
+      }}
     >
-      <div style={{ fontSize: 12, fontWeight: 700, color: "#000", marginBottom: 8 }}>
+      <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-ink)", marginBottom: 8 }}>
         Recent Activity
       </div>
       {ACTIVITY.map((a, i, arr) => (
@@ -115,22 +120,36 @@ export default function RecentActivityPanel() {
             <ActivityIcon type={a.type} color={a.aColor} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: 10.5, color: "#374151", margin: 0, lineHeight: 1.5 }}>
-              {a.name && <strong style={{ color: "#002FA7", fontWeight: 700 }}>{a.name} </strong>}
+            <p
+              style={{
+                fontSize: 10.5,
+                color: "var(--color-ink-strong)",
+                margin: 0,
+                lineHeight: 1.5,
+              }}
+            >
+              {a.name && (
+                <strong style={{ color: "var(--color-brand)", fontWeight: 700 }}>{a.name} </strong>
+              )}
               {a.action}
               {a.detail && (
                 <>
                   {" "}
-                  <strong style={{ color: "#000" }}>{a.detail}</strong>
+                  <strong style={{ color: "var(--color-ink)" }}>{a.detail}</strong>
                 </>
               )}
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: 3, marginTop: 3 }}>
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="#9ca3af" strokeWidth="1.8" />
-                <path d="M12 6v6l4 2" stroke="#9ca3af" strokeWidth="1.8" strokeLinecap="round" />
+                <circle cx="12" cy="12" r="10" stroke="var(--color-ink-faint)" strokeWidth="1.8" />
+                <path
+                  d="M12 6v6l4 2"
+                  stroke="var(--color-ink-faint)"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
               </svg>
-              <span style={{ fontSize: 9, color: "#9ca3af" }}>5 hours ago</span>
+              <span style={{ fontSize: 9, color: "var(--color-ink-faint)" }}>5 hours ago</span>
             </div>
           </div>
         </div>

@@ -8,7 +8,7 @@ import { TextInput } from "../ui/TextInput";
 
 export function Label({ htmlFor, children }) {
   return (
-    <label htmlFor={htmlFor} className="block text-label font-medium mb-1.5 text-[#111]">
+    <label htmlFor={htmlFor} className="block text-label font-medium mb-1.5 text-ink">
       {children}
     </label>
   );

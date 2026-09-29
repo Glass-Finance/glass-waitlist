@@ -8,8 +8,8 @@ import { forwardRef } from "react";
 const VARIANTS = {
   // Glass/OutlineVariant per Figma dev-mode spec (#797D86 @ 40%) -- #E0E0E6
   // was too close to the page background to read as a stroke at all.
-  default: "border-[#797D86]/40 focus:border-[#002FA7]",
-  signup: "border-[#C2C2C2] focus:border-[#002FA7]",
+  default: "border-outline-input/40 focus:border-brand",
+  signup: "border-hairline-disabled focus:border-brand",
 };
 
 // Single source of truth for the app's text/email/password/number inputs —
@@ -63,7 +63,7 @@ export const TextInput = forwardRef(function TextInput(
         // Pinned to text-base (16px/24px) rather than the text-placeholder
         // token -- that token is being sized down for the dashboard/onboarding
         // inputs, but auth's fields were already tuned separately and stay put.
-        className={`w-full rounded-lg border px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${invalid ? "border-danger focus:border-[#002FA7]" : VARIANTS[variant]} ${className}`}
+        className={`w-full rounded-lg border px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${invalid ? "border-danger focus:border-brand" : VARIANTS[variant]} ${className}`}
         {...rest}
       />
       {rightElement && (

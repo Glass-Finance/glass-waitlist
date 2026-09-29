@@ -24,10 +24,8 @@ export default function IntroStep({ reason }) {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h3 className="text-[15px] font-bold text-[#111] m-0">
-          One quick check, then you&apos;re in
-        </h3>
-        <p className="text-[13px] text-[#6B7280] mt-1 mb-0 leading-[1.55]">
+        <h3 className="text-[15px] font-bold text-ink m-0">One quick check, then you&apos;re in</h3>
+        <p className="text-[13px] text-ink-muted mt-1 mb-0 leading-[1.55]">
           {reason ??
             "Identity verification is required to create or manage communities. It only takes a few minutes."}
         </p>
@@ -41,13 +39,13 @@ export default function IntroStep({ reason }) {
         </span>
         <div className="grid grid-cols-2 gap-2.5">
           <div className="rounded-xl bg-white/70 border border-surface-container-border px-3 py-2.5">
-            <p className="text-[9.5px] uppercase tracking-[0.06em] text-[#9CA3AF] m-0">
+            <p className="text-[9.5px] uppercase tracking-[0.06em] text-ink-faint m-0">
               Contributions
             </p>
             <p className="text-[17px] font-semibold text-[#C4C9D4] m-0 mt-0.5 leading-tight">—</p>
           </div>
           <div className="rounded-xl bg-white/70 border border-surface-container-border px-3 py-2.5">
-            <p className="text-[9.5px] uppercase tracking-[0.06em] text-[#9CA3AF] m-0">
+            <p className="text-[9.5px] uppercase tracking-[0.06em] text-ink-faint m-0">
               Payment plans
             </p>
             <p className="text-[17px] font-semibold text-[#C4C9D4] m-0 mt-0.5 leading-tight">—</p>
@@ -58,7 +56,7 @@ export default function IntroStep({ reason }) {
             <GlyphCommunity size={15} />
           </span>
           <div className="flex-1 min-w-0">
-            <p className="text-[12px] font-medium text-[#9CA3AF] m-0 truncate">Your community</p>
+            <p className="text-[12px] font-medium text-ink-faint m-0 truncate">Your community</p>
             <p className="text-[10.5px] text-[#C4C9D4] m-0">Ready to set up</p>
           </div>
         </div>
@@ -72,7 +70,7 @@ export default function IntroStep({ reason }) {
             <span className="w-12 h-12 rounded-full bg-brand-tint flex items-center justify-center text-brand">
               <Icon size={26} weight="duotone" aria-hidden="true" />
             </span>
-            <span className="text-[10.5px] text-[#6B7280] leading-tight">{label}</span>
+            <span className="text-[10.5px] text-ink-muted leading-tight">{label}</span>
           </div>
         ))}
       </div>

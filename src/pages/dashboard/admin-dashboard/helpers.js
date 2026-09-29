@@ -15,13 +15,13 @@ export function timeAgo(dateString) {
 }
 
 const STATUS_STYLE = {
-  paid: { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" },
-  success: { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" },
-  successful: { cls: "bg-[#ecfdf5] text-[#059669]", label: "Paid" },
-  unpaid: { cls: "bg-[#fff1f2] text-[#e11d48]", label: "Unpaid" },
-  pending: { cls: "bg-[#fffbeb] text-[#b45309]", label: "Pending" },
-  initiated: { cls: "bg-[#fffbeb] text-[#b45309]", label: "Pending" },
-  failed: { cls: "bg-[#fff1f2] text-[#e11d48]", label: "Failed" },
+  paid: { cls: "bg-success-wash text-success-strong", label: "Paid" },
+  success: { cls: "bg-success-wash text-success-strong", label: "Paid" },
+  successful: { cls: "bg-success-wash text-success-strong", label: "Paid" },
+  unpaid: { cls: "bg-danger-wash-2 text-danger-bright", label: "Unpaid" },
+  pending: { cls: "bg-warning-wash text-warning", label: "Pending" },
+  initiated: { cls: "bg-warning-wash text-warning", label: "Pending" },
+  failed: { cls: "bg-danger-wash-2 text-danger-bright", label: "Failed" },
 };
 
 export function statusStyle(status = "") {
@@ -29,17 +29,18 @@ export function statusStyle(status = "") {
 }
 
 const FREQUENCY_STYLE = {
-  MONTHLY: { cls: "bg-[#FFF8E7] text-[#b45309]", label: "Monthly" },
+  MONTHLY: { cls: "bg-warning-wash text-warning", label: "Monthly" },
   WEEKLY: { cls: "bg-brand-tint text-brand", label: "Weekly" },
-  QUARTERLY: { cls: "bg-[#ECFDF5] text-[#0f766e]", label: "Quarterly" },
-  YEARLY: { cls: "bg-[#ECFDF5] text-[#059669]", label: "Annually" },
+  QUARTERLY: { cls: "bg-success-wash text-[#0f766e]", label: "Quarterly" },
+  YEARLY: { cls: "bg-success-wash text-success-strong", label: "Annually" },
 };
 
 export function freqStyle(row) {
-  if (row.type !== "recurring") return { cls: "bg-[#F3EEFF] text-[#7c3aed]", label: "One-Time" };
+  if (row.type !== "recurring")
+    return { cls: "bg-accent-purple-wash text-accent-purple", label: "One-Time" };
   return (
     FREQUENCY_STYLE[(row.frequency ?? "").toUpperCase()] ?? {
-      cls: "bg-[#F3EEFF] text-[#7c3aed]",
+      cls: "bg-accent-purple-wash text-accent-purple",
       label: "Recurring",
     }
   );

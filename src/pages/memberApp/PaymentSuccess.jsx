@@ -285,7 +285,7 @@ export default function PaymentSuccess() {
       action: { label: backLabel, to: dest },
     },
     unknown: {
-      icon: <Loader2 size={40} className="text-[#6B7280]" />,
+      icon: <Loader2 size={40} className="text-ink-muted" />,
       bgCls: "bg-stacked-container",
       text: "Still confirming…",
       sub: "Check your Transactions tab in a moment.",

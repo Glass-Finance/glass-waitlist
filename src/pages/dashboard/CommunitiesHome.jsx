@@ -73,9 +73,9 @@ function CardSkeleton() {
 
 function obligationStatusChip(o) {
   const days = o.dueDate ? Math.ceil((new Date(o.dueDate) - new Date()) / 86400000) : null;
-  if (days != null && days < 0) return { label: "Overdue", cls: "bg-[#FEF2F2] text-danger" };
-  if (days != null && days <= 7) return { label: "Due soon", cls: "bg-[#FFFBEB] text-[#B45309]" };
-  return { label: "Upcoming", cls: "bg-[#EEF2FF] text-brand" };
+  if (days != null && days < 0) return { label: "Overdue", cls: "bg-danger-wash text-danger" };
+  if (days != null && days <= 7) return { label: "Due soon", cls: "bg-warning-wash text-warning" };
+  return { label: "Upcoming", cls: "bg-brand-wash text-brand" };
 }
 
 function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
@@ -85,7 +85,7 @@ function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
         {icon}
         <p className="text-xs font-semibold text-gray-900">{title}</p>
         {badge != null && badge > 0 && (
-          <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center bg-[#EEF2FF] text-brand border border-blue-100">
+          <span className="min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center bg-brand-wash text-brand border border-blue-100">
             {badge}
           </span>
         )}
@@ -417,7 +417,7 @@ export default function CommunitiesHome() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-7 pt-7 pb-5">
         <div>
-          <h1 className="text-lg font-semibold text-[#000000]">Your Communities</h1>
+          <h1 className="text-lg font-semibold text-ink">Your Communities</h1>
           {user?.firstName && (
             <p className="text-xs text-gray-400 mt-0.5">Welcome back, {user.firstName}</p>
           )}
@@ -434,7 +434,7 @@ export default function CommunitiesHome() {
           )}
           <button
             onClick={() => navigate("/onboarding/choose-path", { state: { intent: "join" } })}
-            className="h-10 px-3.5 rounded-lg border border-[#E0E0EB] text-brand bg-white text-xs font-medium hover:bg-gray-50 transition-all flex items-center justify-center"
+            className="h-10 px-3.5 rounded-lg border border-hairline text-brand bg-white text-xs font-medium hover:bg-gray-50 transition-all flex items-center justify-center"
           >
             Join Community
           </button>
@@ -444,7 +444,7 @@ export default function CommunitiesHome() {
             }}
             disabled={kycGate.isLoading}
             aria-busy={kycGate.isLoading}
-            className="h-10 px-3.5 rounded-lg bg-[#002FA7] text-white text-xs font-medium hover:opacity-90 transition-all flex items-center justify-center disabled:opacity-60 disabled:cursor-wait"
+            className="h-10 px-3.5 rounded-lg bg-brand text-white text-xs font-medium hover:opacity-90 transition-all flex items-center justify-center disabled:opacity-60 disabled:cursor-wait"
           >
             {kycGate.isLoading ? (
               <>

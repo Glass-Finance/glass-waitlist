@@ -61,7 +61,7 @@ export default function MemberPaymentsSection({
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">
           <thead>
-            <tr className="border-y border-hairline bg-[#F9F9FB]">
+            <tr className="border-y border-hairline bg-surface-bg">
               <th className="px-5 py-2.5 text-left text-xs font-normal text-gray-400 whitespace-nowrap">
                 Member
               </th>
@@ -125,7 +125,7 @@ export default function MemberPaymentsSection({
                     </td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-[#d4a017]" />
+                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0 bg-accent-gold" />
                         <span className="text-xs text-black">
                           {toTitleCase(tx.planName ?? tx.description) ?? "—"}
                         </span>

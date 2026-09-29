@@ -17,7 +17,7 @@ import {
   resolveNotificationBody,
 } from "../../utils/notificationContent";
 import { useAuth } from "../../store/AuthContext";
-import PageLoadingState from "../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import { formatRelativeDateTime } from "../../utils/format";
 import paymentsEmptyIllustration from "../../assets/memberApp/empty-states/notifications-payments-empty.webp";
 import communityEmptyIllustration from "../../assets/memberApp/empty-states/notifications-community-empty.webp";
@@ -96,7 +96,7 @@ function NotifIcon({ n }) {
   const visual = notificationVisual(type);
   const Icon = visual?.icon ?? (isSelf ? User : Bell);
   const bg = visual?.bg ?? "#F3F4F6";
-  const fg = visual?.fg ?? "#6B7280";
+  const fg = visual?.fg ?? "var(--color-ink-muted)";
 
   return (
     <div
@@ -136,13 +136,13 @@ function NotificationRow({ n, onTap, onNavigate }) {
       )}
       <NotifIcon n={n} />
       <div className={`flex-1 min-w-0 ${isRead ? "pr-0" : "pr-3.5"}`}>
-        <p className="text-sm text-[#111] m-0 leading-[1.45]">
+        <p className="text-sm text-ink m-0 leading-[1.45]">
           {n.title && <span className={isRead ? "font-medium" : "font-bold"}>{n.title} </span>}
-          {messageText && <span className="text-[#444]">{messageText}</span>}
+          {messageText && <span className="text-ink-strong">{messageText}</span>}
           {!n.title && !messageText && <span className="font-medium">Notification</span>}
         </p>
-        <p className="text-[11.5px] text-[#999] mt-1 mb-0">
-          {amount && <span className="text-[#111] font-semibold">{amount} · </span>}
+        <p className="text-[11.5px] text-ink-ghost mt-1 mb-0">
+          {amount && <span className="text-ink font-semibold">{amount} · </span>}
           {[details.communityName, timeLabel(n.createdAt)].filter(Boolean).join(" · ")}
         </p>
       </div>
@@ -155,10 +155,16 @@ function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
   return (
     <div
-      className={`w-10 h-10 rounded-[10px] text-[#1C2B8A] flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden ${logo?.url ? "bg-transparent border-none" : "bg-[#1C2B8A22] border border-[#1C2B8A44]"}`}
+      className={`w-10 h-10 rounded-[10px] text-brand-deep flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden ${logo?.url ? "bg-transparent border-none" : "bg-[#1C2B8A22] border border-[#1C2B8A44]"}`}
     >
       {logo?.url ? (
-        <img src={logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
+        <img
+          src={logo.url}
+          alt=""
+          decoding="async"
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
       ) : (
         initials
       )}
@@ -173,16 +179,16 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
         <Avatar name={invite.community?.name} logo={invite.community?.logo} />
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-medium text-[#111] m-0">
+            <p className="text-sm font-medium text-ink m-0">
               {invite.community?.name ?? "Community"}
             </p>
             {invite.createdAt && (
-              <span className="text-[11px] text-[#aaa] flex-shrink-0 whitespace-nowrap">
+              <span className="text-[11px] text-ink-ghost flex-shrink-0 whitespace-nowrap">
                 {formatRelativeDateTime(invite.createdAt)}
               </span>
             )}
           </div>
-          <p className="text-xs text-[#888] mt-0.5 mb-0">Invited you to join</p>
+          <p className="text-xs text-ink-ghost mt-0.5 mb-0">Invited you to join</p>
         </div>
       </div>
       <div className="flex gap-2.5">
@@ -214,12 +220,18 @@ function EmptyState({ icon: Icon, illustration, label, hint, onAction, actionLab
   return (
     <div className="min-h-[55vh] flex flex-col items-center justify-center gap-2.5 text-center px-6">
       {illustration ? (
-        <img src={illustration} alt="" className="w-20 h-20 object-contain" draggable={false} />
+        <img
+          src={illustration}
+          alt=""
+          className="w-20 h-20 object-contain"
+          draggable={false}
+          loading="lazy"
+        />
       ) : (
         <Icon size={22} strokeWidth={1.6} className="text-[#bbb]" />
       )}
-      <p className="text-sm font-semibold text-[#111] m-0">{label}</p>
-      {hint && <p className="text-xs text-[#999] m-0 max-w-[240px] leading-relaxed">{hint}</p>}
+      <p className="text-sm font-semibold text-ink m-0">{label}</p>
+      {hint && <p className="text-xs text-ink-ghost m-0 max-w-[240px] leading-relaxed">{hint}</p>}
       {onAction && (
         <button
           onClick={onAction}
@@ -241,7 +253,7 @@ function GroupedNotifications({ items, onTap, onNavigate }) {
     <div className="border border-surface-container-border bg-white rounded-2xl p-4 flex flex-col gap-4">
       {[...groups.entries()].map(([label, notifs]) => (
         <div key={label}>
-          <p className="text-[13px] font-semibold text-[#555] mb-2">{label}</p>
+          <p className="text-[13px] font-semibold text-ink-strong mb-2">{label}</p>
           <div className="flex flex-col gap-0.5">
             {notifs.map((n) => (
               <NotificationRow key={n.id} n={n} onTap={onTap} onNavigate={onNavigate} />
@@ -302,9 +314,9 @@ export default function Notifications() {
           onClick={() => navigate(-1)}
           className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-lg font-medium text-[#111] m-0">Notifications</h1>
+        <h1 className="text-lg font-medium text-ink m-0">Notifications</h1>
       </div>
 
       {/* Tab bar — segmented pill per Figma dev-mode spec (Frame 2121455025):
@@ -316,7 +328,7 @@ export default function Notifications() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-2 rounded border-none cursor-pointer text-[13px] transition-colors duration-200 ${activeTab === tab ? "bg-white font-semibold text-[#111]" : "bg-transparent font-normal text-[#888]"}`}
+            className={`flex-1 py-2 rounded border-none cursor-pointer text-[13px] transition-colors duration-200 ${activeTab === tab ? "bg-white font-semibold text-ink" : "bg-transparent font-normal text-ink-ghost"}`}
           >
             {tab}
           </button>

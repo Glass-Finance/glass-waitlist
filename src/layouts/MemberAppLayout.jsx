@@ -57,12 +57,12 @@ export default function MemberAppLayout() {
                           <Icon
                             size={18}
                             strokeWidth={isActive ? 2.2 : 1.6}
-                            className={`transition-colors duration-200 ${isActive ? "text-[#111111]" : "text-black/35"}`}
+                            className={`transition-colors duration-200 ${isActive ? "text-ink" : "text-black/35"}`}
                           />
                           {/* Active dot */}
                           {isActive && (
                             <span
-                              className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#111111]"
+                              className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-ink"
                               aria-hidden="true"
                             />
                           )}
@@ -70,7 +70,7 @@ export default function MemberAppLayout() {
 
                         {/* Label */}
                         <span
-                          className={`text-[10px] leading-none tracking-wide transition-colors duration-200 select-none ${isActive ? "text-[#111111] font-semibold" : "text-black/35 font-normal"}`}
+                          className={`text-[10px] leading-none tracking-wide transition-colors duration-200 select-none ${isActive ? "text-ink font-semibold" : "text-black/35 font-normal"}`}
                         >
                           {label}
                         </span>

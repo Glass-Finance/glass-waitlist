@@ -59,7 +59,7 @@ export default function PlanCard({
               ? "Any amount"
               : formatNaira(plan.amount)}
           </span>
-          <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0 text-[#7c3aed] bg-[#f3eeff]">
+          <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0 text-accent-purple bg-accent-purple-wash">
             {freqLabel}
           </span>
         </div>

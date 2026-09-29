@@ -109,15 +109,15 @@ export default function GlassModal({
             <div className="flex items-start justify-between gap-3 px-5 pt-4 sm:px-6">
               <div className="min-w-0">
                 {title && (
-                  <h2 className="text-[15.5px] font-bold text-[#111] m-0 leading-snug">{title}</h2>
+                  <h2 className="text-[15.5px] font-bold text-ink m-0 leading-snug">{title}</h2>
                 )}
-                {subtitle && <p className="text-xs text-[#6B7280] mt-0.5 mb-0">{subtitle}</p>}
+                {subtitle && <p className="text-xs text-ink-muted mt-0.5 mb-0">{subtitle}</p>}
               </div>
               {showClose && !closeDisabled && (
                 <button
                   onClick={() => onClose?.()}
                   aria-label="Close"
-                  className="bg-transparent border-none cursor-pointer p-1 -mr-1 text-[#9CA3AF] hover:text-[#6B7280] flex-shrink-0"
+                  className="bg-transparent border-none cursor-pointer p-1 -mr-1 text-ink-faint hover:text-ink-muted flex-shrink-0"
                 >
                   <X size={18} />
                 </button>

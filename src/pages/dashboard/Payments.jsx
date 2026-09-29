@@ -129,7 +129,7 @@ export default function Payments() {
             icon={Clock}
             label="Yet to pay"
             value={String(stats.yetToPay)}
-            iconCls="text-[#b45309] bg-[#FFF8E7]"
+            iconCls="text-warning bg-warning-wash"
           />
           <StatCard
             icon={XCircle}

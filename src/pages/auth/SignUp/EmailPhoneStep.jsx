@@ -90,7 +90,7 @@ export default function EmailPhoneStep({ initialEmail, onNext, onSwitch, onGoogl
                 setAgreed(e.target.checked);
                 setError("");
               }}
-              className="appearance-none w-4 h-4 rounded-sm border border-[#797D86]/40 checked:bg-[#2535c3] checked:border-[#2535c3] cursor-pointer"
+              className="appearance-none w-4 h-4 rounded-sm border border-outline-input/40 checked:bg-[#2535c3] checked:border-[#2535c3] cursor-pointer"
             />
             {agreed && (
               <Check

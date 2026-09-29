@@ -93,7 +93,7 @@ export function Step1({ value, onChange }) {
                     <Check size={12} color="white" strokeWidth={3} />
                   </div>
                 ) : (
-                  <div className="w-6 h-6 rounded-full border-2 border-[#C2C2C2]" />
+                  <div className="w-6 h-6 rounded-full border-2 border-hairline-disabled" />
                 )}
               </div>
               {/* Card was reading as near-square against Figma's wider
@@ -103,7 +103,12 @@ export function Step1({ value, onChange }) {
               {/* Plain black glyph, no colored background tile -- confirmed
                   against the actual exported Figma icons (fill="black"),
                   not recolored/boxed the way an earlier pass assumed. */}
-              <img src={opt.icon} alt="" className="w-8 h-8 object-contain mt-5 mb-3" />
+              <img
+                src={opt.icon}
+                alt=""
+                className="w-8 h-8 object-contain mt-5 mb-3"
+                loading="lazy"
+              />
               <p className="font-semibold text-gray-900 text-base mb-1">{opt.title}</p>
               {/* text-xs, not text-sm -- per direct feedback the
                   description read too large next to the title. */}

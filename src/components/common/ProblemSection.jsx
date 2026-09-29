@@ -97,12 +97,12 @@ export default function ProblemSection({
         <div className="text-center mb-16">
           {/* Badge: same span + classes, BlurText inside */}
           <div className="mb-6">
-            <span className="inline-flex items-center border border-[#1C2B8A]/30 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full">
+            <span className="inline-flex items-center border border-brand-deep/30 text-brand-deep text-[13px] font-medium px-5 py-2 rounded-full">
               THE PROBLEM
             </span>
           </div>
 
-          <h2 className="text-[clamp(26px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-4">
+          <h2 className="text-[clamp(26px,5vw,58px)] font-bold text-brand-ink leading-tight tracking-tight mb-4">
             <BlurText
               text={headline}
               delay={60}
@@ -129,10 +129,10 @@ export default function ProblemSection({
                 className="flex items-start gap-5"
               >
                 <div className="flex-shrink-0 w-[60px] h-[60px] rounded-full bg-white shadow-[0_2px_12px_rgba(28,43,138,0.10)] border border-[#e8eaf5] flex items-center justify-center mt-0.5">
-                  <Icon className="w-[24px] h-[24px] text-[#1C2B8A]" strokeWidth={1.8} />
+                  <Icon className="w-[24px] h-[24px] text-brand-deep" strokeWidth={1.8} />
                 </div>
                 <div>
-                  <h3 className="text-[22px] font-bold text-[#0f1d6e] leading-snug mb-2">
+                  <h3 className="text-[22px] font-bold text-brand-ink leading-snug mb-2">
                     {title}
                   </h3>
                   <p className="text-[17px] text-gray-text leading-relaxed">{desc}</p>
@@ -146,7 +146,7 @@ export default function ProblemSection({
             {/* Image wrapper — clipPath wipe applied here */}
             <div
               ref={imageRef}
-              className="relative rounded-2xl overflow-hidden w-full shadow-xl shadow-[#1C2B8A]/15 aspect-[458/250]"
+              className="relative rounded-2xl overflow-hidden w-full shadow-xl shadow-brand-deep/15 aspect-[458/250]"
             >
               <CloudImage
                 publicId={image.publicId}
@@ -161,13 +161,13 @@ export default function ProblemSection({
             {/* Floating card */}
             <div
               ref={cardRef}
-              className="rounded-2xl shadow-lg shadow-[#1C2B8A]/10 border border-[#eef0f8] px-5 py-4 flex items-center gap-4 self-start -mt-7 -ml-5 w-[260px] relative z-10 bg-[#EFEFF199] backdrop-blur-sm [-webkit-backdrop-filter:blur(8px)]"
+              className="rounded-2xl shadow-lg shadow-brand-deep/10 border border-[#eef0f8] px-5 py-4 flex items-center gap-4 self-start -mt-7 -ml-5 w-[260px] relative z-10 bg-[#EFEFF199] backdrop-blur-sm [-webkit-backdrop-filter:blur(8px)]"
             >
               <div className="w-10 h-10 rounded-xl bg-[#eef0fb] flex items-center justify-center flex-shrink-0">
-                <Lightbulb className="w-5 h-5 text-[#1C2B8A]" strokeWidth={1.8} />
+                <Lightbulb className="w-5 h-5 text-brand-deep" strokeWidth={1.8} />
               </div>
               <div>
-                <p className="text-[15px] font-bold text-[#0f1d6e] leading-tight">
+                <p className="text-[15px] font-bold text-brand-ink leading-tight">
                   Your Solution Awaits.
                 </p>
                 <p className="text-[14px] text-[#00000099] text-center leading-snug mt-1">

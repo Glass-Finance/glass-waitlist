@@ -105,7 +105,7 @@ export default function PhoneChangeModal({
       <p className="text-sm font-semibold text-gray-900 mb-2">{maskPhone(newPhone)}</p>
       <button
         onClick={onWrongNumber}
-        className="text-sm font-medium hover:underline text-[#1B2FE8]"
+        className="text-sm font-medium hover:underline text-brand-link"
       >
         Wrong number?
       </button>
@@ -129,7 +129,7 @@ export default function PhoneChangeModal({
               {digits.slice(0, 3).map((d, i) => (
                 <div
                   key={i}
-                  className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
+                  className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || i === activeIndex ? "border-brand-deep" : "border-hairline-disabled"}`}
                 >
                   {d}
                 </div>
@@ -140,7 +140,7 @@ export default function PhoneChangeModal({
                 return (
                   <div
                     key={idx}
-                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || idx === activeIndex ? "border-[#1C2B8A]" : "border-[#C2C2C2]"}`}
+                    className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-lg font-semibold text-gray-900 rounded-lg transition-all border-[1.5px] ${d || idx === activeIndex ? "border-brand-deep" : "border-hairline-disabled"}`}
                   >
                     {d}
                   </div>
@@ -162,7 +162,7 @@ export default function PhoneChangeModal({
         <button
           onClick={handleResend}
           disabled={resending}
-          className="font-semibold hover:underline disabled:opacity-60 text-[#1B2FE8]"
+          className="font-semibold hover:underline disabled:opacity-60 text-brand-link"
         >
           {resending ? "Resending..." : "Resend"}
         </button>

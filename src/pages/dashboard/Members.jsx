@@ -57,10 +57,10 @@ const memberEmail = (m) => resolveEmail(m);
 const isAdminRole = (m) => isCommunityAdmin(m);
 
 function statusStyle(paid, total) {
-  if (total === 0) return "bg-[#f5f6fa] text-[#6b7280]";
-  if (paid === total) return "bg-[#ecfdf5] text-[#059669]";
-  if (paid === 0) return "bg-[#fff1f2] text-[#e11d48]";
-  return "bg-[#fffbeb] text-[#b45309]";
+  if (total === 0) return "bg-[#f5f6fa] text-ink-muted";
+  if (paid === total) return "bg-success-wash text-success-strong";
+  if (paid === 0) return "bg-danger-wash-2 text-danger-bright";
+  return "bg-warning-wash text-warning";
 }
 function FilterPanel({ planOptions, filters, onApply, onClose }) {
   const [plan, setPlan] = useState(filters.plan ?? "");
@@ -280,12 +280,12 @@ export default function Members() {
           return (
             <button
               onClick={() => navigate("/dashboard/join-requests")}
-              className="w-full flex items-center justify-between gap-4 px-5 py-3.5 rounded-xl border border-amber-100 mb-5 text-left cursor-pointer bg-[#FFFBEB]"
+              className="w-full flex items-center justify-between gap-4 px-5 py-3.5 rounded-xl border border-amber-100 mb-5 text-left cursor-pointer bg-warning-wash"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <Clock size={15} className="flex-shrink-0 text-[#b45309]" />
+                <Clock size={15} className="flex-shrink-0 text-warning" />
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold m-0 text-[#b45309]">
+                  <p className="text-xs font-semibold m-0 text-warning">
                     {pendingJoinRequests.length} pending join{" "}
                     {pendingJoinRequests.length === 1 ? "request" : "requests"}
                   </p>
@@ -341,13 +341,13 @@ export default function Members() {
             icon={Clock}
             label="Inactive"
             value={String(stats.inactive)}
-            iconCls="text-[#b45309] bg-[#FFF8E7]"
+            iconCls="text-warning bg-warning-wash"
           />
           <StatCard
             icon={ShieldCheck}
             label="Admins"
             value={String(stats.admins)}
-            iconCls="text-[#7c3aed] bg-[#F3EEFF]"
+            iconCls="text-accent-purple bg-accent-purple-wash"
           />
         </div>
       )}
@@ -450,7 +450,7 @@ export default function Members() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="border-y border-gray-100 bg-[#F9F9FB]">
+                <tr className="border-y border-gray-100 bg-surface-bg">
                   <th className="hidden sm:table-cell px-5 py-2.5 w-8">
                     <input
                       type="checkbox"

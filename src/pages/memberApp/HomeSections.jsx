@@ -39,7 +39,7 @@ export function CommunitySwitcher({
         className="flex items-center gap-[7px] min-w-0 bg-transparent border-none cursor-pointer p-0"
       >
         <div
-          className={`w-7 h-7 rounded-md flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 overflow-hidden ${communityLogo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
+          className={`w-7 h-7 rounded-md flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 overflow-hidden ${communityLogo?.url ? "bg-transparent" : "bg-brand-deep"}`}
         >
           {communityLogo?.url ? (
             <img
@@ -52,13 +52,13 @@ export function CommunitySwitcher({
             communityInitial
           )}
         </div>
-        <span className="text-sm font-medium text-[#111] whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
+        <span className="text-sm font-medium text-ink whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
           {communityName}
         </span>
         <ChevronDown
           size={14}
           strokeWidth={2}
-          className={`text-[#666] flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`text-ink-muted flex-shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -77,7 +77,7 @@ export function CommunitySwitcher({
                 className="w-full flex items-center gap-2.5 px-3 py-2.5 text-left bg-transparent border-none cursor-pointer hover:bg-[#F7F8FB]"
               >
                 <div
-                  className={`w-6 h-6 rounded-md flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 overflow-hidden ${c.logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
+                  className={`w-6 h-6 rounded-md flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 overflow-hidden ${c.logo?.url ? "bg-transparent" : "bg-brand-deep"}`}
                 >
                   {c.logo?.url ? (
                     <img
@@ -90,7 +90,7 @@ export function CommunitySwitcher({
                     (c.name ?? "?").charAt(0).toUpperCase()
                   )}
                 </div>
-                <span className="flex-1 min-w-0 text-sm text-[#111] truncate">{c.name}</span>
+                <span className="flex-1 min-w-0 text-sm text-ink truncate">{c.name}</span>
                 {isActive && (
                   <Check size={15} strokeWidth={2.5} className="text-brand flex-shrink-0" />
                 )}
@@ -132,40 +132,44 @@ export function HeroCard({ nextDue, onPay, error, onRefresh }) {
           {isError ? (
             <div className="w-14 h-14 rounded-full flex items-center justify-center bg-danger-tint">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="9" stroke="#EF4444" strokeWidth="1.8" />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="9"
+                  stroke="var(--color-danger-bright-2)"
+                  strokeWidth="1.8"
+                />
                 <path
                   d="M12 8v4M12 16h.01"
-                  stroke="#EF4444"
+                  stroke="var(--color-danger-bright-2)"
                   strokeWidth="2"
                   strokeLinecap="round"
                 />
               </svg>
             </div>
           ) : (
-            <img src={paymentsDueIcon} alt="" className="w-14 h-14 object-contain" />
+            <img src={paymentsDueIcon} alt="" className="w-14 h-14 object-contain" loading="lazy" />
           )}
         </div>
 
         <div className="text-center flex flex-col items-center px-6 pt-2 pb-8">
           {isError ? (
             <>
-              <p className="text-lg text-[#111] font-bold mb-1.5">Couldn't load payments</p>
-              <p className="text-[13px] text-[#9CA3AF] m-0 leading-normal">
+              <p className="text-lg text-ink font-bold mb-1.5">Couldn't load payments</p>
+              <p className="text-[13px] text-ink-faint m-0 leading-normal">
                 Check your connection and try again.
               </p>
               <button
                 onClick={onRefresh}
-                className="mt-4 bg-transparent border border-[#FCA5A5] rounded-[20px] text-[#EF4444] text-xs font-semibold cursor-pointer py-1.5 px-[18px]"
+                className="mt-4 bg-transparent border border-[#FCA5A5] rounded-[20px] text-danger-bright-2 text-xs font-semibold cursor-pointer py-1.5 px-[18px]"
               >
                 Try again
               </button>
             </>
           ) : (
             <>
-              <p className="text-lg text-[#111] font-normal mb-2 tracking-[-0.2px]">
-                No Payments Due
-              </p>
-              <p className="text-[13px] text-[#9CA3AF] m-0 leading-normal">
+              <p className="text-lg text-ink font-normal mb-2 tracking-[-0.2px]">No Payments Due</p>
+              <p className="text-[13px] text-ink-faint m-0 leading-normal">
                 New dues Will Appear Here
               </p>
             </>
@@ -189,26 +193,26 @@ export function HeroCard({ nextDue, onPay, error, onRefresh }) {
         }}
       />
       <div className="pt-5 px-5 flex flex-col items-center">
-        <div className="border border-surface-container-border mb-3.5 py-1.5 px-[18px] rounded-full text-[#374151] text-xs font-medium flex items-center gap-1.5">
+        <div className="border border-surface-container-border mb-3.5 py-1.5 px-[18px] rounded-full text-ink-strong text-xs font-medium flex items-center gap-1.5">
           <span
-            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isRecurring ? "bg-[#7C3AED]" : "bg-danger"}`}
+            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isRecurring ? "bg-accent-purple" : "bg-danger"}`}
           />
           {isRecurring ? "Recurring" : "One-time"}
         </div>
 
-        <p className="text-[13px] text-[#6B7280] mb-1.5 font-normal">Next Payment Due</p>
-        <p className="text-[42px] font-bold text-[#111827] tracking-[-1px] leading-none mb-3.5">
+        <p className="text-[13px] text-ink-muted mb-1.5 font-normal">Next Payment Due</p>
+        <p className="text-[42px] font-bold text-ink tracking-[-1px] leading-none mb-3.5">
           {formatNaira(nextDue.amount)}
         </p>
       </div>
 
       <div className="px-5 pb-5 flex flex-col items-center">
-        <div className="py-1.5 px-4 rounded-lg bg-[#D7E2FF] text-brand text-xs font-normal mb-2.5">
+        <div className="py-1.5 px-4 rounded-lg bg-brand-mist text-brand text-xs font-normal mb-2.5">
           {nextDue.name}
         </div>
 
         <div
-          className={`flex items-center gap-[5px] mb-[18px] text-xs ${isOverdue ? "text-danger font-semibold" : "text-[#9CA3AF] font-normal"}`}
+          className={`flex items-center gap-[5px] mb-[18px] text-xs ${isOverdue ? "text-danger font-semibold" : "text-ink-faint font-normal"}`}
         >
           <Clock size={12} strokeWidth={1.8} />
           <span>Due {formatDate(nextDue.dueDate)}</span>
@@ -228,16 +232,16 @@ export function HeroCard({ nextDue, onPay, error, onRefresh }) {
 export function UpcomingRow({ payment, onPay }) {
   const isRecurring = payment.type === "recurring";
   const badgeLabel = isRecurring ? "Recurring" : "One-time";
-  const badgeCls = isRecurring ? "text-[#1C2B8A] bg-[#E8ECF8]" : "text-[#9C27B0] bg-[#F3E5F5]";
+  const badgeCls = isRecurring ? "text-brand-deep bg-[#E8ECF8]" : "text-[#9C27B0] bg-[#F3E5F5]";
 
   return (
     <div className="py-3.5 px-3 my-4 rounded-lg bg-white flex items-center justify-between gap-3">
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-0.5 mb-1.5">
-          <span className="text-[17px] font-bold text-[#111]">{formatNaira(payment.amount)}</span>
+          <span className="text-[17px] font-bold text-ink">{formatNaira(payment.amount)}</span>
         </div>
-        <p className="text-[13px] text-[#333] font-normal mb-1">{payment.name}</p>
-        <div className="flex items-center gap-1 text-[#999]">
+        <p className="text-[13px] text-ink font-normal mb-1">{payment.name}</p>
+        <div className="flex items-center gap-1 text-ink-ghost">
           <Clock size={11} strokeWidth={1.8} />
           <span className="text-xs">Due: {formatDateShort(payment.dueDate)}</span>
         </div>
@@ -266,13 +270,13 @@ export function HistoryRow({ item, onOpen }) {
       className="flex items-center justify-between py-[13px] border-b border-[#F0F0F0] cursor-pointer"
     >
       <div>
-        <p className="text-sm font-medium text-[#111] mb-[3px]">{item.description}</p>
-        <p className="text-xs text-[#999]">{formatDateShort(item.date)}</p>
+        <p className="text-sm font-medium text-ink mb-[3px]">{item.description}</p>
+        <p className="text-xs text-ink-ghost">{formatDateShort(item.date)}</p>
       </div>
       <div className="flex flex-col items-end gap-1">
-        <span className="text-sm font-bold text-[#111]">{formatNaira(item.amount)}</span>
+        <span className="text-sm font-bold text-ink">{formatNaira(item.amount)}</span>
         <span
-          className={`text-[11px] font-semibold py-0.5 px-2.5 rounded-full ${isSuccess ? "text-[#059669] bg-[#ECFDF5]" : "text-danger bg-[#FEF2F2]"}`}
+          className={`text-[11px] font-semibold py-0.5 px-2.5 rounded-full ${isSuccess ? "text-success-strong bg-success-wash" : "text-danger bg-danger-wash"}`}
         >
           {isSuccess ? "Success" : "Failed"}
         </span>
@@ -284,12 +288,17 @@ export function HistoryRow({ item, onOpen }) {
 export function NoCommunityState({ navigate }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-6 pt-[60px] pb-20 text-center">
-      <img src={noCommunityIcon} alt="" className="w-28 h-28 object-contain mb-7 flex-shrink-0" />
+      <img
+        src={noCommunityIcon}
+        alt=""
+        className="w-28 h-28 object-contain mb-7 flex-shrink-0"
+        loading="lazy"
+      />
 
-      <p className="text-lg font-semibold text-[#111] mb-2.5 leading-snug">
+      <p className="text-lg font-semibold text-ink mb-2.5 leading-snug">
         You're not part of any community yet.
       </p>
-      <p className="text-sm text-[#888] mb-9 leading-relaxed">
+      <p className="text-sm text-ink-ghost mb-9 leading-relaxed">
         Join a community or check your invitations to get started.
       </p>
 
@@ -310,12 +319,17 @@ export function NoCommunityState({ navigate }) {
 export function NothingHappeningState({ navigate }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-6 pt-[60px] pb-20 text-center">
-      <img src={noCommunityIcon} alt="" className="w-28 h-28 object-contain mb-7 flex-shrink-0" />
+      <img
+        src={noCommunityIcon}
+        alt=""
+        className="w-28 h-28 object-contain mb-7 flex-shrink-0"
+        loading="lazy"
+      />
 
-      <p className="text-lg font-semibold text-[#111] mb-2.5 leading-snug">
+      <p className="text-lg font-semibold text-ink mb-2.5 leading-snug">
         Nothing happening here yet.
       </p>
-      <p className="text-sm text-[#888] mb-9 leading-relaxed">
+      <p className="text-sm text-ink-ghost mb-9 leading-relaxed">
         Check out your other communities to see what's happening.
       </p>
 
@@ -337,13 +351,13 @@ export function PendingApprovalState({ navigate, community }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-8 pt-[60px] pb-20 text-center">
       <div className="w-20 h-20 rounded-full bg-[#FFF7E0] flex items-center justify-center mb-7">
-        <Clock size={36} strokeWidth={1.6} className="text-[#D4A017]" />
+        <Clock size={36} strokeWidth={1.6} className="text-accent-gold" />
       </div>
-      <p className="text-xl font-bold text-[#111] mb-2.5">Request Pending</p>
-      <p className="text-sm text-[#888] mb-2 leading-relaxed max-w-[260px]">
+      <p className="text-xl font-bold text-ink mb-2.5">Request Pending</p>
+      <p className="text-sm text-ink-ghost mb-2 leading-relaxed max-w-[260px]">
         Your request to join {community?.name ?? "this community"} is awaiting admin approval.
       </p>
-      <p className="text-[13px] text-[#aaa] mb-9">You'll get access once it's approved.</p>
+      <p className="text-[13px] text-ink-ghost mb-9">You'll get access once it's approved.</p>
       <button
         onClick={() => navigate("/member/communities/search")}
         className="bg-transparent border-[1.5px] border-brand rounded-[10px] py-3 px-6 text-brand font-semibold cursor-pointer"
@@ -376,7 +390,7 @@ export function MemberHomeHeader({
           aria-label="Open menu"
           className="flex items-center justify-center border-none cursor-pointer bg-transparent p-0 flex-shrink-0"
         >
-          <Bell size={28} strokeWidth={2} className="text-[#222]" />
+          <Bell size={28} strokeWidth={2} className="text-ink" />
         </button>
 
         {!hasNoCommunity && (
@@ -399,7 +413,7 @@ export function MemberHomeHeader({
             onClick={() => navigate("/member/invites")}
             className="relative w-[38px] h-[38px] rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
           >
-            <Mail size={17} strokeWidth={1.8} className="text-[#333]" />
+            <Mail size={17} strokeWidth={1.8} className="text-ink" />
             {pendingInviteCount > 0 && (
               <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
                 {pendingInviteCount > 9 ? "9+" : pendingInviteCount}
@@ -413,7 +427,7 @@ export function MemberHomeHeader({
           onClick={() => navigate("/member/notifications")}
           className="relative w-[38px] h-[38px] rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
         >
-          <Bell size={17} strokeWidth={1.8} className="text-[#333]" />
+          <Bell size={17} strokeWidth={1.8} className="text-ink" />
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
               {unreadCount > 9 ? "9+" : unreadCount}
@@ -428,9 +442,14 @@ export function MemberHomeHeader({
 export function EmptyUpcomingState() {
   return (
     <div className="flex flex-col items-center px-4 pt-7 pb-5 text-center gap-0">
-      <img src={upcomingPaymentsIcon} alt="" className="w-[52px] h-[52px] object-contain mb-3.5" />
-      <p className="text-[17px] font-normal text-[#111] mb-1.5">No Upcoming Payments</p>
-      <p className="text-[13px] text-[#9CA3AF] m-0 leading-[1.55] max-w-[270px]">
+      <img
+        src={upcomingPaymentsIcon}
+        alt=""
+        className="w-[52px] h-[52px] object-contain mb-3.5"
+        loading="lazy"
+      />
+      <p className="text-[17px] font-normal text-ink mb-1.5">No Upcoming Payments</p>
+      <p className="text-[13px] text-ink-faint m-0 leading-[1.55] max-w-[270px]">
         New Dues from community will show up here once scheduled
       </p>
     </div>
@@ -440,9 +459,14 @@ export function EmptyUpcomingState() {
 export function EmptyHistoryState() {
   return (
     <div className="flex flex-col items-center px-4 pt-7 pb-5 text-center gap-0">
-      <img src={paymentHistoryIcon} alt="" className="w-[52px] h-[52px] object-contain mb-3.5" />
-      <p className="text-[17px] font-normal text-[#111] mb-1.5">No Payment History</p>
-      <p className="text-[13px] text-[#9CA3AF] m-0 leading-[1.55] max-w-[230px]">
+      <img
+        src={paymentHistoryIcon}
+        alt=""
+        className="w-[52px] h-[52px] object-contain mb-3.5"
+        loading="lazy"
+      />
+      <p className="text-[17px] font-normal text-ink mb-1.5">No Payment History</p>
+      <p className="text-[13px] text-ink-faint m-0 leading-[1.55] max-w-[230px]">
         Once you make your transaction history will appear here.
       </p>
     </div>
@@ -455,7 +479,7 @@ export function ProfileNudge({ navigate, user }) {
   return (
     <button
       onClick={() => navigate("/member/verify-phone")}
-      className="w-[calc(100%-40px)] mx-5 mb-4 flex items-center gap-3 text-left bg-[#D7E2FF] rounded-2xl px-4 py-3.5 border-none cursor-pointer"
+      className="w-[calc(100%-40px)] mx-5 mb-4 flex items-center gap-3 text-left bg-brand-mist rounded-2xl px-4 py-3.5 border-none cursor-pointer"
     >
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-brand m-0">Add Your Phone Number</p>

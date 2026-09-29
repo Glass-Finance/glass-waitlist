@@ -33,7 +33,7 @@ export default function StatusNarrative({ phase, lines, icon }) {
           <AnimatePresence mode="wait" initial={false}>
             <motion.p
               key={set[index]}
-              className="text-[13.5px] font-semibold text-[#111] m-0 leading-[18px] truncate"
+              className="text-[13.5px] font-semibold text-ink m-0 leading-[18px] truncate"
               initial={reduce ? { opacity: 1 } : { opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={reduce ? { opacity: 1 } : { opacity: 0, y: -5 }}
@@ -43,7 +43,7 @@ export default function StatusNarrative({ phase, lines, icon }) {
             </motion.p>
           </AnimatePresence>
         </div>
-        <p className="text-[11.5px] text-[#999] m-0 mt-0.5 leading-snug">
+        <p className="text-[11.5px] text-ink-ghost m-0 mt-0.5 leading-snug">
           You can keep this window open — we&apos;ll update you the moment it&apos;s done.
         </p>
       </div>

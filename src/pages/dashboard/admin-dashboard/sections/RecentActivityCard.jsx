@@ -34,8 +34,12 @@ export default function RecentActivityCard({ isLoading, items }) {
           const event = a.event ?? "";
           const failed = a.result === "FAILED";
           const isPmt = event.includes("PAYMENT");
-          const aColor = failed ? "#e11d48" : isPmt ? "#059669" : "var(--color-brand)";
-          const aBgCls = failed ? "bg-[#fff1f2]" : isPmt ? "bg-[#ecfdf5]" : "bg-brand-tint";
+          const aColor = failed
+            ? "var(--color-danger-bright)"
+            : isPmt
+              ? "var(--color-success-strong)"
+              : "var(--color-brand)";
+          const aBgCls = failed ? "bg-danger-wash-2" : isPmt ? "bg-success-wash" : "bg-brand-tint";
           const type = isPmt ? "payment" : event.includes("MEMBER") ? "member" : undefined;
           const actorName = toTitleCase(
             [a.actor?.firstName, a.actor?.lastName].filter(Boolean).join(" "),
@@ -59,10 +63,16 @@ export default function RecentActivityCard({ isLoading, items }) {
                 </p>
                 <div className="flex items-center gap-1 mt-1">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="#9ca3af" strokeWidth="1.8" />
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="var(--color-ink-faint)"
+                      strokeWidth="1.8"
+                    />
                     <path
                       d="M12 6v6l4 2"
-                      stroke="#9ca3af"
+                      stroke="var(--color-ink-faint)"
                       strokeWidth="1.8"
                       strokeLinecap="round"
                     />

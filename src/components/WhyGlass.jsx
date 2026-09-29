@@ -84,13 +84,13 @@ export default function WhyGlass() {
         <div className="text-center mb-14">
           {/* Badge */}
           <div className="mb-6">
-            <span className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full">
+            <span className="inline-flex items-center border border-brand-deep/25 text-brand-deep text-[13px] font-medium px-5 py-2 rounded-full">
               FAQ
             </span>
           </div>
 
           {/* Headline — BlurText word-by-word */}
-          <h2 className="font-sans text-[clamp(32px,5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight mb-4">
+          <h2 className="font-sans text-[clamp(32px,5vw,58px)] font-bold text-brand-ink leading-tight tracking-tight mb-4">
             <BlurText
               text="Frequently Asked Questions"
               animateBy="words"
@@ -101,7 +101,7 @@ export default function WhyGlass() {
             />
           </h2>
 
-          <p className="text-[16px] text-[#9099b2] max-w-[640px] mx-auto leading-relaxed text-center">
+          <p className="text-[16px] text-ink-cool max-w-[640px] mx-auto leading-relaxed text-center">
             Everything you need to know about using Glass, from setting up dues to tracking payments
             and ensuring full transparency.
           </p>
@@ -121,12 +121,12 @@ export default function WhyGlass() {
               >
                 <div
                   className={`flex-shrink-0 w-1 rounded-full self-stretch transition-all duration-300 ${
-                    open === i ? "bg-[#1C2B8A]" : "bg-transparent"
+                    open === i ? "bg-brand-deep" : "bg-transparent"
                   }`}
                 />
                 <span
                   className={`flex-1 font-bold text-[16px] leading-snug transition-colors duration-200 ${
-                    open === i ? "text-[#1C2B8A]" : "text-[#0f1d6e]"
+                    open === i ? "text-brand-deep" : "text-brand-ink"
                   }`}
                 >
                   {faq.q}
@@ -134,8 +134,8 @@ export default function WhyGlass() {
                 <div
                   className={`flex-shrink-0 w-8 h-8 rounded-full border flex items-center justify-center text-[18px] leading-none transition-all duration-300 ${
                     open === i
-                      ? "bg-[#1C2B8A] border-[#1C2B8A] text-white"
-                      : "border-[#d1d5e0] text-[#9099b2]"
+                      ? "bg-brand-deep border-brand-deep text-white"
+                      : "border-[#d1d5e0] text-ink-cool"
                   }`}
                 >
                   {open === i ? "−" : "+"}
@@ -145,7 +145,7 @@ export default function WhyGlass() {
               <div
                 className={`overflow-hidden transition-all duration-300 ease-out ${open === i ? "max-h-[200px]" : "max-h-0"}`}
               >
-                <p className="text-[15px] text-[#9099b2] leading-relaxed pl-11 pr-14 pb-6">
+                <p className="text-[15px] text-ink-cool leading-relaxed pl-11 pr-14 pb-6">
                   {faq.a}
                 </p>
               </div>

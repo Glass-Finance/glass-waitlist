@@ -7,7 +7,7 @@ import BankSelect from "../common/BankSelect";
 import { Button } from "../ui/Button";
 
 const inputCls =
-  "w-full h-12 min-h-8 border-[1.5px] border-gray-300 px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+  "w-full h-12 min-h-8 border-[1.5px] border-gray-300 px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-brand transition-all";
 
 // Bank account entry form — number + bank select, auto-resolves the account
 // name via Paystack, falls back to manual entry if resolution fails.
@@ -185,7 +185,7 @@ export default function AccountFormModal({
                   className={
                     inputCls +
                     (manualMode ? "" : " cursor-default select-none") +
-                    (resolving ? " !text-[#999]" : " !text-[#111]")
+                    (resolving ? " !text-ink-ghost" : " !text-ink")
                   }
                 />
                 {accName && !resolving && !manualMode && (
@@ -198,7 +198,7 @@ export default function AccountFormModal({
             </div>
 
             {resolveError && (
-              <p className={`text-xs ${manualMode ? "text-[#B45309]" : "text-danger"}`}>
+              <p className={`text-xs ${manualMode ? "text-warning" : "text-danger"}`}>
                 {resolveError}
               </p>
             )}

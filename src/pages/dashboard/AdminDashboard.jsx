@@ -339,7 +339,7 @@ function DashboardContent({ isPaying, communityId }) {
         {currentUser && !currentUser.phoneVerified && (
           <button
             onClick={() => navigate(`/dashboard/settings/account/profile?verify=phone`)}
-            className="w-full flex items-center justify-between gap-3 text-left bg-[#D7E2FF] rounded px-6 py-3 mb-5 border border-[#E0E0EB] cursor-pointer"
+            className="w-full flex items-center justify-between gap-3 text-left bg-brand-mist rounded px-6 py-3 mb-5 border border-hairline cursor-pointer"
           >
             <div>
               <p className="text-sm font-semibold text-brand m-0">Add Your Phone Number</p>

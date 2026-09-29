@@ -69,7 +69,7 @@ export default function SecurityFeatures() {
               whileInView={{ clipPath: "inset(0% 0% 0% 0%)" }}
               viewport={{ once: true }}
               transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-              className="inline-flex items-center border border-[#1C2B8A]/25 text-[#1C2B8A] text-[13px] font-medium px-5 py-2 rounded-full"
+              className="inline-flex items-center border border-brand-deep/25 text-brand-deep text-[13px] font-medium px-5 py-2 rounded-full"
             >
               Security & Trust
             </motion.span>
@@ -77,7 +77,7 @@ export default function SecurityFeatures() {
 
           {/* Headline */}
           <div className="flex justify-center mb-4">
-            <h2 className="text-[clamp(32px,5.5vw,58px)] font-bold text-[#0f1d6e] leading-tight tracking-tight max-w-[1080px]">
+            <h2 className="text-[clamp(32px,5.5vw,58px)] font-bold text-brand-ink leading-tight tracking-tight max-w-[1080px]">
               <BlurText
                 text="Your Money and Data Are Protected at Every Layer"
                 delay={80}
@@ -141,7 +141,7 @@ export default function SecurityFeatures() {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-lg font-bold text-[#1C2B8A] mb-3 leading-[1.25]">{title}</h3>
+                <h3 className="text-lg font-bold text-brand-deep mb-3 leading-[1.25]">{title}</h3>
 
                 {/* Description */}
                 <p className="text-sm text-black/50 leading-[1.65] m-0 max-w-[260px]">{desc}</p>
@@ -159,10 +159,10 @@ export default function SecurityFeatures() {
         >
           <div className="bg-[#CCDBFF66] rounded-2xl px-8 py-6 flex items-center justify-between gap-6 flex-wrap">
             <div>
-              <h4 className="text-[15px] font-bold text-[#0f1d6e] mb-1">
+              <h4 className="text-[15px] font-bold text-brand-ink mb-1">
                 Why the Nigerian Tribune Is Talking About Glass
               </h4>
-              <p className="text-[14px] text-[#9099b2]">
+              <p className="text-[14px] text-ink-cool">
                 See how Team Glass took the ₦1,000,000 grand prize at the 5th Babcock Innovation
                 Challenge.
               </p>
@@ -171,7 +171,7 @@ export default function SecurityFeatures() {
               href="https://tribuneonlineng.com/team-glass-shines-as-winner-of-5th-babcock-innovation-challenge/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-shrink-0 border border-[#0f1d6e] text-[#0f1d6e] font-semibold text-[14px] px-6 py-3 rounded-full no-underline transition-all hover:bg-[#0f1d6e] hover:text-white"
+              className="flex-shrink-0 border border-brand-ink text-brand-ink font-semibold text-[14px] px-6 py-3 rounded-full no-underline transition-all hover:bg-brand-ink hover:text-white"
             >
               Check It Out
             </a>

@@ -17,7 +17,7 @@ export default function UnpaidObligationAlert({
   const daysLeft = due.dueDate ? Math.ceil((new Date(due.dueDate) - new Date()) / 86400000) : null;
 
   return (
-    <div className="flex items-start justify-between px-4 py-4 rounded-md mb-5 bg-[#D7E2FF] border border-blue-100">
+    <div className="flex items-start justify-between px-4 py-4 rounded-md mb-5 bg-brand-mist border border-blue-100">
       <div className="flex items-start gap-6">
         <img
           src={WarnSignIcon}

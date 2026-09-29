@@ -123,7 +123,7 @@ export function SearchBar({ value, onChange, placeholder = "Search…", width = 
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="pl-8 pr-4 py-2 rounded-lg text-xs text-gray-700 placeholder-gray-400 outline-none border border-[#D0D0D0] bg-white focus:border-brand"
+        className="pl-8 pr-4 py-2 rounded-lg text-xs text-gray-700 placeholder-gray-400 outline-none border border-hairline-strong bg-white focus:border-brand"
         style={{ width }}
       />
     </div>
@@ -135,7 +135,7 @@ export function FilterSelect({ value, onChange, options }) {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="px-3 py-2 rounded-lg text-xs text-gray-700 outline-none cursor-pointer border border-[#D0D0D0] bg-white focus:border-brand"
+      className="px-3 py-2 rounded-lg text-xs text-gray-700 outline-none cursor-pointer border border-hairline-strong bg-white focus:border-brand"
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>
