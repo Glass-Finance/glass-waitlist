@@ -181,6 +181,15 @@
      multi-colour SVG fills) and multi-stop brand gradients. Those are
      artwork, not theme. */
 
+  /* White — the one foundational neutral that is not an Ink ramp step. It is
+     declared explicitly instead of being inherited from Tailwind's default
+     palette because ~35 call sites reference it as var(--color-white) from
+     inline styles and icon props, and Tailwind only emits the backing variable
+     while some text-white / bg-white utility happens to be generated. Without
+     this line those references would silently resolve to nothing the day the
+     last such utility is removed. */
+  --color-white: #ffffff;
+
   /* Ink — the neutral text ramp, darkest to lightest. */
   --color-ink: #111111;
   --color-ink-strong: #374151;
