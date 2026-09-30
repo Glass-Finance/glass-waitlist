@@ -12,7 +12,7 @@ import {
   resolveBankAccount,
 } from "../../../api/admin";
 import { createCommunityAccount } from "../../../api/communities";
-import { unwrap, pageParams } from "./shared";
+import { unwrap, pageParams, withSafeCommunityLogos } from "./shared";
 import { useDebounce } from "../../../hooks/useDebounce";
 import {
   StatusBadge,
@@ -38,7 +38,7 @@ function CreateCommunityAccountModal({ onClose }) {
         pageNumber: 0,
         pageSize: 8,
         ...(debouncedSearch ? { search: debouncedSearch } : {}),
-      }).then(unwrap),
+      }).then((res) => withSafeCommunityLogos(unwrap(res))),
     enabled: !selectedCommunity,
     staleTime: 30_000,
   });

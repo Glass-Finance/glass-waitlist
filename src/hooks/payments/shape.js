@@ -1,4 +1,14 @@
+import { normalizeImageObject } from "../../utils/normalizeImageFields";
+
 // Shape the raw obligation response into what the UI expects
+//
+// SECURITY: every `logo` / `communityLogo` below is a server-controlled image
+// URL that reaches an <img src> (Home, PaymentSummary, TransactionDetail,
+// ReceiptModal, ManagePayments, CommunitiesHome). Normalize it here, in the one
+// module the audit identified as the canonical representation for the
+// ["transactions"] / ["obligations"] queries, so every observer of those cached
+// entries receives a value that is already safe. Only the URL is touched — the
+// rest of the backend's logo object is preserved.
 export function shapeObligation(raw) {
   const plType = (raw.paymentLink?.paymentType ?? raw.paymentLink?.type ?? "").toUpperCase();
   return {
@@ -28,7 +38,7 @@ export function shapeObligation(raw) {
     obligationId: raw.id,
     logoColor: "var(--color-brand-deep)",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
-    logo: raw.community?.logo,
+    logo: normalizeImageObject(raw.community?.logo),
   };
 }
 
@@ -51,7 +61,7 @@ export function shapePaymentLink(raw, fallbackCommunitySlug) {
     obligationId: null,
     logoColor: "var(--color-brand-deep)",
     logoText: (raw.community?.name ?? "C").charAt(0).toUpperCase(),
-    logo: raw.community?.logo,
+    logo: normalizeImageObject(raw.community?.logo),
     _isLink: true,
   };
 }
@@ -67,7 +77,7 @@ export function shapeTransaction(raw) {
     // Kept so useTransactions' logo enrichment (which prefers /communities/me
     // and falls back to this value) behaves exactly as it did before this
     // shape became the canonical one for ["transactions"].
-    communityLogo: raw.community?.logo,
+    communityLogo: normalizeImageObject(raw.community?.logo),
     date: raw.paidAt ?? raw.createdAt,
     // The backend's enum is SUCCESSFUL — normalise to "success" here so the
     // paid checks in this file (and everywhere else consuming shaped
@@ -117,6 +127,6 @@ export function normalizeCommunity(c) {
     ...c,
     name: c.name ?? c.community?.name,
     slug: c.slug ?? c.community?.slug,
-    logo: c.logo ?? c.community?.logo,
+    logo: normalizeImageObject(c.logo ?? c.community?.logo),
   };
 }

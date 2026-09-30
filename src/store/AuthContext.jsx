@@ -29,6 +29,7 @@ import {
   clearSessionStorage,
 } from "./sessionStorage";
 import { parseUserData } from "../utils/userData";
+import { safeImageUrl } from "../utils/safeImageUrl";
 import { isCommunityAdmin } from "../utils/communityRole";
 import { isPlatformAdminRole } from "../utils/platformRole";
 
@@ -297,6 +298,26 @@ export function AuthProvider({ children }) {
     });
   }, []);
 
+  // SECURITY: profileImage.url is server-supplied (GET /user/me -> userData) and
+  // every consumer (Topbar, NotificationPanel(s), memberApp Notifications, the
+  // #82 sidebar avatar) binds it to an <img src>. Validate once HERE, at the one
+  // boundary that produces the field, rather than at each of those sinks — which
+  // is the same reasoning PR #79 and PR #83 applied to the components they
+  // touched. The shape is preserved (still an object with a `url`), only the URL
+  // is normalized; a rejected URL becomes null so consumers fall through to
+  // their existing initials fallback.
+  //
+  // Used on BOTH paths into user state: the network assignment below, and the
+  // readStoredUser() rehydration in restore(). Persisted user state outlives the
+  // session that wrote it, so an unsanitized value stored before this change (or
+  // tampered with locally) would otherwise reach first paint untouched.
+  const normalizeProfileImage = useCallback((profileImage) => {
+    if (!profileImage) return profileImage;
+    const url = safeImageUrl(profileImage.url);
+    if (url === profileImage.url) return profileImage;
+    return { ...profileImage, url: url ?? null };
+  }, []);
+
   // ── hydrateUserProfile (profile hydration — NOT token refresh) ──────────
   // login()/setSession() only ever populate {id, email, role, emailVerified}
   // — flat fields off the auth response, which has no name or photo on it.
@@ -336,7 +357,7 @@ export function AuthProvider({ children }) {
         firstName: ud.firstName,
         lastName: ud.lastName,
         phoneNumber: profile.phoneNumber ?? ud.phone,
-        profileImage: ud.profileImage,
+        profileImage: normalizeProfileImage(ud.profileImage),
         isPlatformAdmin,
         isAdmin: isPlatformAdmin || hasAdminCommunity(communities),
       };
@@ -381,7 +402,7 @@ export function AuthProvider({ children }) {
       pendo.identify(pendoPayload);
     }
     return true;
-  }, []);
+  }, [normalizeProfileImage]);
 
   // Backwards-compatible alias — public API stays stable.
   const refreshUser = hydrateUserProfile;
@@ -406,7 +427,28 @@ export function AuthProvider({ children }) {
       isRestoringRef.current = true;
       setSessionRestoring(true);
       setToken(storedToken);
-      setUser(readStoredUser());
+      // Rehydrate through the same normalization as the network path, so a
+      // persisted URL can never become active user state unsanitized.
+      //
+      // The normalized value is also written back, not just used. Normalizing
+      // only the React state would leave an already-poisoned `glass_user`
+      // poisoned on disk: it would keep being read on every later mount, and
+      // any other reader of the stored value would still see the raw URL. This
+      // is also a migration — a value persisted before this normalization
+      // existed gets cleaned up the first time it is read.
+      const storedUser = readStoredUser();
+      const normalizedImage = normalizeProfileImage(storedUser?.profileImage);
+      // normalizeProfileImage returns the SAME reference when the URL was
+      // already safe, so this identity check is how we tell "normalization
+      // changed something" from "nothing to do" — a fresh {...storedUser} would
+      // always be a new object and defeat the comparison. Skipping the write on
+      // the unchanged path avoids redundant localStorage I/O on every mount.
+      const needsRewrite = Boolean(storedUser) && normalizedImage !== storedUser.profileImage;
+      const restoredUser = needsRewrite
+        ? { ...storedUser, profileImage: normalizedImage }
+        : storedUser;
+      if (needsRewrite) writeStoredUser(restoredUser);
+      setUser(restoredUser);
       try {
         const verified = await hydrateUserProfile();
         if (cancelled) return;
@@ -431,7 +473,7 @@ export function AuthProvider({ children }) {
     return () => {
       cancelled = true;
     };
-  }, [hydrateUserProfile, queryClient]);
+  }, [hydrateUserProfile, queryClient, normalizeProfileImage]);
 
   // Only fires for token changes that happen AFTER the initial restore
   // (login, setSession, OAuth). The restore() above handles its own hydration.

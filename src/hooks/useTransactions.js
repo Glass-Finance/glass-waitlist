@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getMyCommunities } from "../api/members";
 import { fetchMyTransactions } from "./payments/helpers";
+import { normalizeImageObject } from "../utils/normalizeImageFields";
 
 function unwrapList(res) {
   const data = res.data?.data;
@@ -38,10 +39,17 @@ export function useTransactions() {
     staleTime: 1000 * 60 * 5,
   });
 
+  // SECURITY: this map is a SECOND, independent path by which a server logo
+  // reaches a transaction's `communityLogo` — it reconstructs the value from
+  // /communities/me rather than from the transaction payload that shape.js
+  // normalized. It runs its own query here (not useMyCommunities), so it is not
+  // covered by the ["communities"] boundary either. Normalize at construction;
+  // normalizing only shapeTransaction() would leave this enrichment able to
+  // reintroduce an unsanitized URL onto an already-shaped transaction.
   const logoBySlug = new Map(
     (communitiesQuery.data ?? []).map((c) => [
       c.slug ?? c.community?.slug,
-      c.logo ?? c.community?.logo ?? null,
+      normalizeImageObject(c.logo ?? c.community?.logo) ?? null,
     ]),
   );
 

@@ -4,6 +4,7 @@ import { getCommunity, fetchAllCommunityMembers } from "../api/communities";
 import { fetchAllCommunityTransactions } from "../api/transactions";
 import { searchPublicCommunities } from "../api/communities";
 import { isSuccessfulStatus } from "../utils/paymentStatus";
+import { normalizeImageObject } from "../utils/normalizeImageFields";
 
 // GET /api/v1/communities/me
 // Returns a PAGINATED envelope: { content: [...], pageNumber, pageSize, totalElements, totalPages, last }
@@ -24,7 +25,15 @@ export function useCommunities(params = {}) {
     select: (data) => {
       const content = data?.content ?? [];
       return {
-        communities: content,
+        // SECURITY: `logo.url` is server-controlled and Sidebar.jsx binds it to
+        // <img src>. Normalize here — the shared boundary every observer of
+        // ["communities","me"] goes through — rather than at that one sink.
+        // A rejected logo becomes null so consumers fall back to initials.
+        // Maps to a new object only when a logo actually changed, preserving
+        // referential stability for the rest of the community object.
+        communities: content.map((c) =>
+          c?.logo ? { ...c, logo: normalizeImageObject(c.logo) } : c,
+        ),
         totalElements: data?.totalElements ?? content.length,
         totalPages: data?.totalPages ?? 1,
         pageNumber: data?.pageNumber ?? 0,
@@ -44,7 +53,11 @@ export function usePublicCommunitySearch(search, { enabled = true } = {}) {
     queryFn: async () => {
       const res = await searchPublicCommunities({ search, size: 30 });
       const data = res.data?.data;
-      return Array.isArray(data) ? data : (data?.content ?? []);
+      const list = Array.isArray(data) ? data : (data?.content ?? []);
+      // SECURITY: the public directory is a different endpoint from
+      // /communities/me, so it needs its own normalization here.
+      // DiscoverCommunities renders every result's logo.url directly.
+      return list.map((c) => (c?.logo ? { ...c, logo: normalizeImageObject(c.logo) } : c));
     },
     enabled: enabled,
     staleTime: 1000 * 30,

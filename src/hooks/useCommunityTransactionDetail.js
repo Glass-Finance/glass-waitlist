@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCommunityTransaction } from "../api/transactions";
 import { useCommunity } from "./useCommunity";
+import { normalizeImageObject, normalizeImageUrl } from "../utils/normalizeImageFields";
 
 // Admin-side counterpart to useTransactionDetail.js (member app) -- same
 // shape, same defensive/optional-field philosophy (fee/transaction type/
@@ -25,7 +26,7 @@ function shapeDetail(raw) {
     description: raw.description ?? raw.paymentLink?.title ?? "Payment",
     communityName: raw.community?.name,
     communitySlug: raw.community?.slug,
-    communityLogo: raw.community?.logo,
+    communityLogo: normalizeImageObject(raw.community?.logo),
     date: raw.paidAt ?? raw.createdAt,
     status: (() => {
       const s = (raw.status ?? "").toLowerCase();
@@ -42,7 +43,7 @@ function shapeDetail(raw) {
       raw.user?.email ||
       null,
     payerEmail: raw.member?.email ?? raw.user?.email ?? null,
-    payerPhoto: raw.member?.profileImage?.url ?? raw.user?.profileImage?.url ?? null,
+    payerPhoto: normalizeImageUrl(raw.member?.profileImage?.url ?? raw.user?.profileImage?.url),
     // platformFee is a real, confirmed field on this response -- prefer it
     // directly; billedAmount minus amount (both also confirmed present) is
     // the fallback derivation if it's ever absent on a given record.
@@ -78,7 +79,7 @@ export function useCommunityTransactionDetail(communityId, transactionId) {
   const tx = detailQuery.data;
   const data =
     tx && !tx.communityLogo?.url && community?.logo?.url
-      ? { ...tx, communityLogo: community.logo }
+      ? { ...tx, communityLogo: normalizeImageObject(community.logo) }
       : tx;
 
   return {

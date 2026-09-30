@@ -6,7 +6,7 @@ import Toggle from "../../../components/common/Toggle";
 import { Button } from "../../../components/ui/Button";
 import { getAdminCommunities, setCommissionOverride } from "../../../api/admin";
 import { updateCommunitySettings } from "../../../api/communities";
-import { fmt, fmtDate, unwrap, pageParams } from "./shared";
+import { fmt, fmtDate, unwrap, pageParams, withSafeCommunityLogos } from "./shared";
 import { useDebounce } from "../../../hooks/useDebounce";
 import {
   StatusBadge,
@@ -218,7 +218,7 @@ export default function CommunitiesSection() {
 
   const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["admin-communities", params],
-    queryFn: () => getAdminCommunities(params).then(unwrap),
+    queryFn: () => getAdminCommunities(params).then((res) => withSafeCommunityLogos(unwrap(res))),
     staleTime: 60_000,
     placeholderData: (p) => p,
   });

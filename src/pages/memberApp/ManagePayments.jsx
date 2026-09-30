@@ -7,6 +7,7 @@ import PageLoadingState from "../../components/common/PageLoadingState";
 import Toggle from "../../components/common/Toggle";
 import ConfirmSheet from "../../components/memberApp/ConfirmSheet";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
+import { normalizeImageObject } from "../../utils/normalizeImageFields";
 
 function frequencyLabel(freq) {
   const f = (freq ?? "").toUpperCase();
@@ -179,7 +180,14 @@ export default function ManagePayments() {
     for (const o of data?.upcoming ?? []) {
       if (o.type !== "recurring") continue;
       const key = o.paymentLinkId ?? `${o.name}__${o.communityName}`;
-      if (!seen.has(key)) seen.set(key, o);
+      // SECURITY: `o.logo` reaches <img src> below. The obligation shapers
+      // already normalize it, but this list also merges locally-built plan
+      // objects, so normalize on the way in rather than relying on every
+      // producer of `data.upcoming` having done so. Falls back to the original
+      // object when there is nothing to change, keeping referential stability.
+      if (!seen.has(key)) {
+        seen.set(key, o?.logo ? { ...o, logo: normalizeImageObject(o.logo) } : o);
+      }
     }
     // Also surface plans from auth consents that may not have an obligation yet
     for (const auth of authorisations ?? []) {
