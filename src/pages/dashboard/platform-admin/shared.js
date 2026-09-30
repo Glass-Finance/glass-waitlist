@@ -2,6 +2,7 @@
 // across every PlatformAdmin section.
 
 import { formatNaira } from "../../../utils/format";
+import { normalizeImageObject } from "../../../utils/normalizeImageFields";
 
 // `minor` controls whether `amount` is in minor units (kobo) and needs
 // dividing by 100 — true for most money fields on this backend (e.g.
@@ -52,6 +53,21 @@ export function unwrap(res) {
     content: Array.isArray(d) ? d : (d?.content ?? []),
     totalElements: d?.totalElements ?? 0,
     totalPages: d?.totalPages ?? 1,
+  };
+}
+
+// SECURITY: the platform-admin sections each run their own inline useQuery
+// (they don't share one of the member-side community hooks), so their
+// server-controlled `logo` can't be covered by the boundary work elsewhere in
+// this change. Normalizing here — right next to `unwrap`, which is the other
+// piece every one of those queries already funnels through — keeps the fix to
+// this folder instead of a new global normalizer. Takes and returns the whole
+// unwrapped page envelope so pagination fields survive untouched.
+export function withSafeCommunityLogos(page) {
+  if (!page?.content?.length) return page;
+  return {
+    ...page,
+    content: page.content.map((c) => (c?.logo ? { ...c, logo: normalizeImageObject(c.logo) } : c)),
   };
 }
 

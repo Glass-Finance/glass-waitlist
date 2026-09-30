@@ -5,6 +5,7 @@ import {
   rejectInvite,
   getMyCommunityJoinRequests,
 } from "../api/invites";
+import { normalizeImageObject } from "../utils/normalizeImageFields";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/v1/communities/invites/me returns objects shaped like:
@@ -23,7 +24,16 @@ export function useInvites() {
       const data = res.data?.data;
       // Paginated envelope: { content: [...] }
       const list = Array.isArray(data) ? data : (data?.content ?? []);
-      return [...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      // SECURITY: the invite's nested community logo is server-controlled and
+      // bound to <img src> by Invites.jsx and InvitePopup's CommunityAvatar
+      // (the latter reaches PulseImg). Normalize in the shared queryFn so both
+      // consumers are covered by this one change.
+      const normalized = list.map((i) =>
+        i?.community?.logo
+          ? { ...i, community: { ...i.community, logo: normalizeImageObject(i.community.logo) } }
+          : i,
+      );
+      return [...normalized].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     },
     staleTime: 1000 * 60,
   });

@@ -1,4 +1,5 @@
 import { toTitleCase, formatNaira } from "./format";
+import { normalizeImageUrl } from "./normalizeImageFields";
 
 // Extracts the structured facts (member, community, amount, plan, time,
 // transaction reference) out of a notification.
@@ -152,6 +153,11 @@ function resolveCommunityName(n, communityMap) {
 }
 
 function resolveCommunityLogo(n, communityMap) {
+  // SECURITY: the map is built from the user's own /communities/me list, which
+  // useMyAccount now normalizes at the query boundary — but this helper is also
+  // reachable with an externally-built map, so it normalizes rather than trusting
+  // the caller. Returns the inner url; the caller re-normalizes the coalesced
+  // result, which is what actually reaches the consumer.
   return resolveCommunity(n, communityMap)?.logo?.url ?? null;
 }
 
@@ -191,18 +197,24 @@ export function extractNotificationDetails(n, { communityMap } = {}) {
   // lightweight event record, not a full user snapshot), so this resolves
   // to null far more often than not -- the initials fallback in the avatar
   // components is the realistic common case, not this.
-  const memberPhoto =
-    content.profileImage?.url ??
-    content.profileImageUrl ??
-    content.avatarUrl ??
-    content.photoUrl ??
-    null;
+  // SECURITY: these are server-controlled URLs bound to <img src> by the
+  // notification list components (NotificationsPanel, NotificationsSections,
+  // memberApp Notifications). extractNotificationDetails is already the shared
+  // normalization point every one of those consumers reads, so validating here
+  // covers them together. A rejected URL resolves to null, which is the same
+  // value the surrounding comments already describe as the common case — the
+  // initials fallback renders instead.
+  const memberPhoto = normalizeImageUrl(
+    content.profileImage?.url ?? content.profileImageUrl ?? content.avatarUrl ?? content.photoUrl,
+  );
 
   return {
     memberName: rawMemberName ? toTitleCase(rawMemberName) : null,
     memberPhoto,
     communityName: content.communityName ?? resolveCommunityName(n, communityMap),
-    communityLogo: content.communityLogo?.url ?? resolveCommunityLogo(n, communityMap),
+    communityLogo: normalizeImageUrl(
+      content.communityLogo?.url ?? resolveCommunityLogo(n, communityMap),
+    ),
     // Confirmed against real payloads: some notifications carry `amount` in
     // major units (naira), others only `amountMinor` in minor units (kobo —
     // Paystack convention, ÷100 to get naira). Neither is universal, so both

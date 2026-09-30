@@ -193,13 +193,28 @@ describe("normalizeCommunity", () => {
 
   it("lifts name/slug/logo up from a nested member-shaped .community object", () => {
     const c = {
-      community: { name: "Alumni", slug: "alumni", logo: { url: "x" } },
+      community: { name: "Alumni", slug: "alumni", logo: { url: "https://cdn/x.png" } },
       memberRole: "MEMBER",
     };
     const normalized = normalizeCommunity(c);
     expect(normalized.name).toBe("Alumni");
     expect(normalized.slug).toBe("alumni");
-    expect(normalized.logo).toEqual({ url: "x" });
+    expect(normalized.logo).toEqual({ url: "https://cdn/x.png" });
+  });
+
+  // normalizeCommunity is a logo boundary (see the security note in shape.js):
+  // a server logo whose scheme is rejected must not survive into a sink, while
+  // a valid one is preserved exactly. Previously this test used a scheme-less
+  // "x", which safeImageUrl correctly rejects — so it asserted the lifting
+  // behaviour on a value the production policy now disallows.
+  it("normalizes a rejected nested logo scheme to null while still lifting it", () => {
+    const c = {
+      community: { name: "Alumni", slug: "alumni", logo: { url: "javascript:alert(1)", id: 3 } },
+      memberRole: "MEMBER",
+    };
+    const normalized = normalizeCommunity(c);
+    expect(normalized.name).toBe("Alumni");
+    expect(normalized.logo).toEqual({ url: null, id: 3 });
   });
 
   it("prefers top-level fields over nested ones when both exist", () => {

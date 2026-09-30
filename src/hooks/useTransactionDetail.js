@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getTransaction, getMyCommunities } from "../api/members";
 import { lookupLocalFee } from "./usePayments";
+import { normalizeImageObject, normalizeImageUrl } from "../utils/normalizeImageFields";
 
 function unwrapList(res) {
   const data = res.data?.data;
@@ -36,7 +37,7 @@ function shapeDetail(raw) {
     description: raw.description ?? raw.paymentLink?.title ?? "Payment",
     communityName: raw.community?.name,
     communitySlug: raw.community?.slug,
-    communityLogo: raw.community?.logo,
+    communityLogo: normalizeImageObject(raw.community?.logo),
     date: raw.paidAt ?? raw.createdAt,
     status: (() => {
       const s = (raw.status ?? "").toLowerCase();
@@ -49,7 +50,7 @@ function shapeDetail(raw) {
     // so this is just their own photo -- kept for parity with the admin
     // hook's payerPhoto so ReceiptModal doesn't need to special-case which
     // side is rendering it.
-    payerPhoto: raw.member?.profileImage?.url ?? raw.user?.profileImage?.url ?? null,
+    payerPhoto: normalizeImageUrl(raw.member?.profileImage?.url ?? raw.user?.profileImage?.url),
     // platformFee is a real field on the community/admin-scoped transaction
     // responses but confirmed ABSENT on this one (the member's own
     // finance/transactions/me endpoint) -- billedAmount minus amount (both
@@ -123,15 +124,16 @@ export function useTransactionDetail(transactionId, { skipAuthRedirect = false }
   });
 
   const tx = detailQuery.data;
+  // SECURITY: same second path as useTransactions' logoBySlug — this
+  // reconstructs communityLogo from its own /communities/me query rather than
+  // from the transaction payload shapeTransaction normalized, so it needs its
+  // own normalization to avoid reintroducing an unsanitized URL.
+  const fallbackLogo = (communitiesQuery.data ?? []).find(
+    (c) => (c.slug ?? c.community?.slug) === tx?.communitySlug,
+  )?.logo;
   const data =
     tx && !tx.communityLogo?.url && tx.communitySlug
-      ? {
-          ...tx,
-          communityLogo:
-            (communitiesQuery.data ?? []).find(
-              (c) => (c.slug ?? c.community?.slug) === tx.communitySlug,
-            )?.logo ?? tx.communityLogo,
-        }
+      ? { ...tx, communityLogo: normalizeImageObject(fallbackLogo) ?? tx.communityLogo }
       : tx;
 
   return {

@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { normalizeImageObject } from "../utils/normalizeImageFields";
 import {
   getMe,
   updateProfile,
@@ -109,7 +110,14 @@ export function useMyCommunities() {
     queryKey: ["communities"],
     queryFn: async () => {
       const res = await getMyCommunities();
-      return unwrapList(res);
+      // SECURITY: normalize at the queryFn so the value entering the shared
+      // ["communities"] cache is already safe for every consumer —
+      // MyCommunities.jsx, memberApp HomeSections.jsx, and useCommunityMap
+      // (which feeds notificationContent). Validating here rather than in each
+      // consumer is what makes this one change cover all of them.
+      return unwrapList(res).map((c) =>
+        c?.logo ? { ...c, logo: normalizeImageObject(c.logo) } : c,
+      );
     },
     staleTime: 1000 * 60 * 5,
   });

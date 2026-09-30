@@ -11,6 +11,7 @@ import { Button } from "../../../../components/ui/Button";
 import { formatNairaCompact as formatNaira, formatDate } from "../../../../utils/format";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import banksData from "nigerian-bank-icons/assets/banks.json";
+import { normalizeImageUrl } from "../../../../utils/normalizeImageFields";
 
 // Exclude generic placeholder entries — banks without real logos use colored initials.
 const BANK_LOGO_BY_CODE = Object.fromEntries(
@@ -47,8 +48,14 @@ function BankAvatar({ bankCode, bankName, storedLogoUrl }) {
   const [imgFailed, setImgFailed] = useState(false);
   // Prefer logo URL stored at account-save time (from Paystack API), then package map.
   // Ignore URLs that are the generic placeholder.
+  // SECURITY: `storedLogoUrl` is server-supplied (the bank logo recorded with the
+  // settlement account), so validate that branch. The `BANK_LOGO_BY_CODE`
+  // fallback comes from the bundled nigerian-bank-icons package and is left
+  // untouched — it is not attacker-influenced.
   const logoUrl =
-    (storedLogoUrl && !storedLogoUrl.includes("default-image") ? storedLogoUrl : null) ??
+    normalizeImageUrl(
+      storedLogoUrl && !storedLogoUrl.includes("default-image") ? storedLogoUrl : null,
+    ) ??
     BANK_LOGO_BY_CODE[bankCode] ??
     null;
   if (logoUrl && !imgFailed) {

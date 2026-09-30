@@ -5,6 +5,7 @@ import {
   rejectJoinRequest,
 } from "../api/communities";
 import { parseUserData } from "../utils/userData";
+import { normalizeImageUrl } from "../utils/normalizeImageFields";
 import { toTitleCase } from "../utils/format";
 
 function unwrap(res) {
@@ -23,7 +24,17 @@ export function requesterOf(r) {
   const lastName = toTitleCase(u.lastName ?? ud.lastName ?? "");
   const email = u.email ?? r.email ?? r.userEmail ?? null;
   const phone = u.phoneNumber ?? ud.phone ?? r.phoneNumber ?? null;
-  const image = ud.profileImage ?? u.profileImage?.url ?? u.avatarUrl ?? null;
+  // SECURITY: `image` is bound straight to <img src> by JoinRequests.jsx and is
+  // server-controlled. Two shapes reach it here — `ud.profileImage` is a
+  // `{ url }` object on the /user/me-derived payload, while `u.profileImage?.url`
+  // and `u.avatarUrl` are plain strings — so both are reduced to a validated URL
+  // string. Normalizing at this shared derivation covers every consumer of
+  // requesterOf rather than validating at the JSX sink.
+  const image = normalizeImageUrl(
+    (typeof ud.profileImage === "object" ? ud.profileImage?.url : ud.profileImage) ??
+      u.profileImage?.url ??
+      u.avatarUrl,
+  );
   const name = `${firstName} ${lastName}`.trim() || email || "Unknown requester";
   const initials = (
     `${firstName.charAt(0)}${lastName.charAt(0)}` || (email ?? "?").slice(0, 2)
