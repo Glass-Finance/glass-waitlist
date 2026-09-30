@@ -15,6 +15,7 @@ import { useEscapeToClose } from "../../../../hooks/useKeyboardShortcuts";
 import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../../utils/phone";
 import { useAuth } from "../../../../store/AuthContext";
 import { parseUserData } from "../../../../utils/userData";
+import { safeImageUrl } from "../../../../utils/safeImageUrl";
 import EmailChangeModal from "../../../../components/common/EmailChangeModal";
 import PhoneChangeModal from "../../../../components/common/PhoneChangeModal";
 import { toTitleCase } from "../../../../utils/format";
@@ -129,6 +130,11 @@ export default function Profile() {
   }
 
   const profileImageUrl = parseUserData(user).profileImage?.url ?? user?.profileImage?.url ?? null;
+  // profileImageUrl is server-supplied; photoPreview is a local blob: from
+  // URL.createObjectURL. Validate the value that reaches <img src> and drive
+  // the guard from the same validated value, so a rejected scheme falls back to
+  // the initials block.
+  const photoSrc = safeImageUrl(photoPreview ?? profileImageUrl);
 
   useEffect(() => {
     if (!user) return;
@@ -328,12 +334,8 @@ export default function Profile() {
 
             <div className="flex items-center gap-3 mb-5">
               <div className="w-14 h-14 rounded-full bg-[#D7E2FF] flex items-center justify-center flex-shrink-0 overflow-hidden">
-                {photoPreview || profileImageUrl ? (
-                  <img
-                    src={photoPreview ?? profileImageUrl}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
+                {photoSrc ? (
+                  <img src={photoSrc} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-base text-brand">{initials}</span>
                 )}

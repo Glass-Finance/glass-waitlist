@@ -7,6 +7,7 @@ import { useCommunity, useUpdateCommunity } from "../../../../hooks/useCommunity
 import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { resizeImageFile } from "../../../../utils/resizeImage";
+import { safeImageUrl } from "../../../../utils/safeImageUrl";
 import { deleteCommunity } from "../../../../api/communities";
 import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
 
@@ -136,6 +137,12 @@ export default function CommunityProfile() {
     .map((w) => w[0]?.toUpperCase())
     .join("");
 
+  // community.logo.url / community.logoUrl are server-supplied; logoPreview is
+  // a local blob: from URL.createObjectURL. Validate the value that reaches
+  // <img src> and drive the guard from it, so a rejected scheme falls through
+  // to the initials text.
+  const logoSrc = safeImageUrl(logoPreview ?? community?.logo?.url ?? community?.logoUrl);
+
   return (
     <div className="flex flex-col gap-4">
       {/* ── Community Information -- heading, logo, and fields all in one
@@ -151,12 +158,8 @@ export default function CommunityProfile() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs text-brand flex-shrink-0 overflow-hidden bg-[#D7E2FF]">
-              {logoPreview || community?.logo?.url || community?.logoUrl ? (
-                <img
-                  src={logoPreview ?? community?.logo?.url ?? community?.logoUrl}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
+              {logoSrc ? (
+                <img src={logoSrc} alt="" className="w-full h-full object-cover" />
               ) : (
                 initials || "C"
               )}

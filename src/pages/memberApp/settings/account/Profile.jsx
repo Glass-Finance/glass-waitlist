@@ -7,6 +7,7 @@ import { useFileUpload } from "../../../../hooks/useFileUpload";
 import { useAuth } from "../../../../store/AuthContext";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { parseUserData } from "../../../../utils/userData";
+import { safeImageUrl } from "../../../../utils/safeImageUrl";
 import { toTitleCase } from "../../../../utils/format";
 import { Button } from "../../../../components/ui/Button";
 import { TextInput } from "../../../../components/ui/TextInput";
@@ -98,6 +99,12 @@ export default function Profile() {
 
   const ud = parseUserData(user);
   const photoUrl = ud.profileImage?.url ?? null;
+  // photoUrl is server-supplied (/user/me -> userData.profileImage.url), so
+  // its scheme is not ours to trust. photoPreview is a local blob: from
+  // URL.createObjectURL. Validate the value that actually reaches <img src>
+  // and let the same validated value drive the guard, so a rejected URL
+  // falls back to the initials block instead of rendering a broken image.
+  const photoSrc = safeImageUrl(photoPreview ?? photoUrl);
   const initials =
     `${form.firstName} ${form.lastName}`
       .trim()
@@ -123,8 +130,8 @@ export default function Profile() {
       <div className="px-4">
         <div className="flex flex-col items-center gap-2 mb-5">
           <div className="w-16 h-16 rounded-full bg-[#D7E2FF] flex items-center justify-center overflow-hidden">
-            {photoPreview || photoUrl ? (
-              <img src={photoPreview ?? photoUrl} alt="" className="w-full h-full object-cover" />
+            {photoSrc ? (
+              <img src={photoSrc} alt="" className="w-full h-full object-cover" />
             ) : (
               <span className="text-xl font-semibold text-brand">{initials}</span>
             )}
