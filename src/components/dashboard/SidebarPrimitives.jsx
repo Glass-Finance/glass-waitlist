@@ -1,4 +1,5 @@
 import { LogOut } from "lucide-react";
+import { safeImageUrl } from "../../utils/safeImageUrl";
 
 export function MobileOverlay({ mobileOpen, onClose }) {
   if (!mobileOpen) return null;
@@ -47,11 +48,17 @@ export function LogoutButton({ onClick, loggingOut }) {
 }
 
 export function UserIdentity({ user, initials, displayName }) {
+  // user.profileImage.url is server-supplied (AuthContext <- /user/me), so its
+  // scheme is attacker-influenced the same way the four profile-image sinks
+  // already handled by PR #79 were. Validate before it reaches <img src>; a
+  // rejected value is null, which falls through to the initials block below
+  // rather than rendering an image with an unsafe source.
+  const avatarSrc = safeImageUrl(user?.profileImage?.url);
   return (
     <div className="py-2.5 px-3 border-t border-[var(--color-hairline)] flex items-center gap-2">
       <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--color-brand),var(--color-accent-indigo))] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 overflow-hidden">
-        {user?.profileImage?.url ? (
-          <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
+        {avatarSrc ? (
+          <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
         ) : (
           initials
         )}
