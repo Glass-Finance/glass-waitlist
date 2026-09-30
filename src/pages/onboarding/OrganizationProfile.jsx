@@ -22,6 +22,7 @@ import { notifyError } from "../../utils/errorHandler";
 import { isKycRequiredError } from "../../utils/kycStatus";
 import { getEmailError } from "../../utils/validators";
 import { resizeImageFile } from "../../utils/resizeImage";
+import { safeImageUrl } from "../../utils/safeImageUrl";
 import { saveOnboardingProgress, readOnboardingProgress } from "../../utils/onboardingProgress";
 import { APP_ORIGIN, isMobileDevice } from "../../utils/deviceRedirect";
 import StepIndicator from "../../components/onboarding/StepIndicator";
@@ -93,6 +94,12 @@ export default function OrganizationProfile() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [kycWizardOpen, setKycWizardOpen] = useState(false);
+
+  // logoUrl is only ever set from URL.createObjectURL(file), so it is already
+  // a local blob: — but it flows into <img src>, and CodeQL cannot see
+  // createObjectURL's guarantee, so it is validated through the same helper the
+  // server-supplied URLs use. Consistency here means one code path to audit.
+  const logoSrc = safeImageUrl(logoUrl);
   // Submission held by a KYC 403 — re-run from the wizard's onComplete
   // (which only fires on real approval), cleared on dismiss.
   const kycRetryRef = useRef(null);
@@ -484,8 +491,8 @@ export default function OrganizationProfile() {
                   className="hidden"
                   onChange={(e) => handleFile(e.target.files[0])}
                 />
-                {logoUrl ? (
-                  <img src={logoUrl} alt="preview" className="h-16 object-contain mb-2" />
+                {logoSrc ? (
+                  <img src={logoSrc} alt="preview" className="h-16 object-contain mb-2" />
                 ) : (
                   <Upload size={28} className="text-gray-400 mb-3" />
                 )}
