@@ -155,6 +155,44 @@ describe("AuthContext profileImage URL normalization", () => {
     expect(screen.getByTestId("avatarSrc").textContent).not.toContain("javascript:");
   });
 
+  it("rewrites a poisoned persisted user back to the normalized representation", async () => {
+    // Normalizing only the React state would leave the stored value poisoned on
+    // disk: it would keep being read on every later mount, and any other reader
+    // of glass_user would still see the raw URL. The restore path must
+    // therefore persist what it normalizes.
+    getMe.mockImplementation(() => new Promise(() => {}));
+    client.get.mockImplementation(() => new Promise(() => {}));
+    localStorage.setItem("accessToken", "t");
+    localStorage.setItem("refreshToken", "rt");
+    localStorage.setItem("glass_user", JSON.stringify({ id: "u1", profileImage: { url: EVIL } }));
+
+    renderAuth();
+
+    await waitFor(() => expect(screen.getByTestId("avatarSrc").textContent).toBe("none"));
+
+    const stored = JSON.parse(localStorage.getItem("glass_user") ?? "{}");
+    expect(stored.profileImage.url).toBeNull();
+    expect(localStorage.getItem("glass_user")).not.toContain("javascript:");
+    // Unrelated user fields survive the rewrite.
+    expect(stored.id).toBe("u1");
+  });
+
+  it("leaves an already-valid persisted user untouched, with no needless rewrite", async () => {
+    getMe.mockImplementation(() => new Promise(() => {}));
+    client.get.mockImplementation(() => new Promise(() => {}));
+    localStorage.setItem("accessToken", "t");
+    localStorage.setItem("refreshToken", "rt");
+    const before = JSON.stringify({ id: "u1", role: "USER", profileImage: { url: GOOD, id: 5 } });
+    localStorage.setItem("glass_user", before);
+
+    renderAuth();
+
+    await waitFor(() => expect(screen.getByTestId("avatarSrc").textContent).toBe(GOOD));
+    // Byte-identical: normalization produced no change, so no write happened.
+    expect(localStorage.getItem("glass_user")).toBe(before);
+    expect(screen.getByTestId("avatarId").textContent).toBe("5");
+  });
+
   it("keeps a valid persisted profile image through rehydration", async () => {
     getMe.mockImplementation(() => new Promise(() => {}));
     client.get.mockImplementation(() => new Promise(() => {}));

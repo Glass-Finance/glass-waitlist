@@ -429,12 +429,26 @@ export function AuthProvider({ children }) {
       setToken(storedToken);
       // Rehydrate through the same normalization as the network path, so a
       // persisted URL can never become active user state unsanitized.
+      //
+      // The normalized value is also written back, not just used. Normalizing
+      // only the React state would leave an already-poisoned `glass_user`
+      // poisoned on disk: it would keep being read on every later mount, and
+      // any other reader of the stored value would still see the raw URL. This
+      // is also a migration — a value persisted before this normalization
+      // existed gets cleaned up the first time it is read.
       const storedUser = readStoredUser();
-      setUser(
-        storedUser
-          ? { ...storedUser, profileImage: normalizeProfileImage(storedUser.profileImage) }
-          : storedUser,
-      );
+      const normalizedImage = normalizeProfileImage(storedUser?.profileImage);
+      // normalizeProfileImage returns the SAME reference when the URL was
+      // already safe, so this identity check is how we tell "normalization
+      // changed something" from "nothing to do" — a fresh {...storedUser} would
+      // always be a new object and defeat the comparison. Skipping the write on
+      // the unchanged path avoids redundant localStorage I/O on every mount.
+      const needsRewrite = Boolean(storedUser) && normalizedImage !== storedUser.profileImage;
+      const restoredUser = needsRewrite
+        ? { ...storedUser, profileImage: normalizedImage }
+        : storedUser;
+      if (needsRewrite) writeStoredUser(restoredUser);
+      setUser(restoredUser);
       try {
         const verified = await hydrateUserProfile();
         if (cancelled) return;
