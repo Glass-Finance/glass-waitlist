@@ -100,8 +100,8 @@ export default function DashboardOverlay() {
     const mkToast = (d) => {
       const el = document.createElement("div");
       el.style.cssText = `
-        background:#fff;border-radius:10px;padding:11px 14px;
-        box-shadow:0 4px 22px rgba(0,20,80,0.22);border:1px solid #E0E0EB;
+        background:var(--color-white);border-radius:10px;padding:11px 14px;
+        box-shadow:0 4px 22px rgba(0,20,80,0.22);border:1px solid var(--color-hairline);
         display:flex;align-items:flex-start;gap:9px;width:220px;
         opacity:0;transform:translateX(14px);
         transition:opacity .4s ease,transform .4s ease;
@@ -115,10 +115,10 @@ export default function DashboardOverlay() {
       const body = document.createElement("div");
       const title = document.createElement("div");
       title.textContent = d.title;
-      title.style.cssText = "font-size:11px;font-weight:700;color:#000;margin-bottom:2px";
+      title.style.cssText = `font-size:11px;font-weight:700;color:var(--color-ink);margin-bottom:2px`;
       const sub = document.createElement("div");
       sub.textContent = d.sub;
-      sub.style.cssText = "font-size:10px;color:#6b7280;line-height:1.35";
+      sub.style.cssText = "font-size:10px;color:var(--color-ink-muted);line-height:1.35";
       body.append(title, sub);
       el.append(dot, body);
       return el;
@@ -224,12 +224,12 @@ export default function DashboardOverlay() {
                 >
                   <div>
                     <div className="text-[15px] font-bold text-black">Dashboard</div>
-                    <div className="text-[10.5px] text-[#9ca3af] mt-[3px]">
+                    <div className="text-[10.5px] text-ink-faint mt-[3px]">
                       A full picture of your community's financial activity.
                     </div>
                   </div>
                   <div className="flex gap-[7px]">
-                    <button className="py-1.5 px-3 rounded-lg border-[1.5px] border-[#E0E0EB] bg-white text-black text-[10.5px] font-semibold">
+                    <button className="py-1.5 px-3 rounded-lg border-[1.5px] border-hairline bg-white text-black text-[10.5px] font-semibold">
                       Create Payment Plan
                     </button>
                     <button className="py-1.5 px-3 rounded-lg border-none bg-brand text-white text-[10.5px] font-semibold">
@@ -238,7 +238,7 @@ export default function DashboardOverlay() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-3 px-3.5 py-3 rounded-lg mb-3 bg-[#D7E2FF] border border-[#BFD3FF]">
+                <div className="flex items-center justify-between gap-3 px-3.5 py-3 rounded-lg mb-3 bg-brand-mist border border-[#BFD3FF]">
                   <div className="flex items-start gap-2.5">
                     <svg
                       width="18"
@@ -249,12 +249,17 @@ export default function DashboardOverlay() {
                     >
                       <path
                         d="M12 3l10 18H2L12 3z"
-                        stroke="#002FA7"
+                        stroke="var(--color-brand)"
                         strokeWidth="1.6"
                         strokeLinejoin="round"
                       />
-                      <path d="M12 10v4" stroke="#002FA7" strokeWidth="1.6" strokeLinecap="round" />
-                      <circle cx="12" cy="17" r="0.9" fill="#002FA7" />
+                      <path
+                        d="M12 10v4"
+                        stroke="var(--color-brand)"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                      />
+                      <circle cx="12" cy="17" r="0.9" fill="var(--color-brand)" />
                     </svg>
                     <div>
                       <div className="text-[11.5px] font-semibold text-slate-800">
@@ -273,7 +278,7 @@ export default function DashboardOverlay() {
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
                       <path
                         d="M18 6L6 18M6 6l12 12"
-                        stroke="#002FA7"
+                        stroke="var(--color-brand)"
                         strokeWidth="1.8"
                         strokeLinecap="round"
                       />

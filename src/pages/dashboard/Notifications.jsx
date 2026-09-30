@@ -255,7 +255,7 @@ function CommunityNotifications() {
       {/* Tabs — matches Settings' Account/Finance/Community segmented style */}
       {!isEmpty && (
         <div className="overflow-x-auto flex-shrink-0 mb-5">
-          <div className="flex gap-1 bg-stacked-container rounded-md p-1 w-fit border border-[#fafafa]">
+          <div className="flex gap-1 bg-stacked-container rounded-md p-1 w-fit border border-surface-page">
             {TABS.map((t) => {
               const count =
                 t === "All"
@@ -276,7 +276,7 @@ function CommunityNotifications() {
                     <span
                       className={`min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center border ${
                         active
-                          ? "border-brand bg-[#EEF2FF] text-brand"
+                          ? "border-brand bg-brand-wash text-brand"
                           : "border-surface-container-border bg-white text-gray-500"
                       }`}
                     >

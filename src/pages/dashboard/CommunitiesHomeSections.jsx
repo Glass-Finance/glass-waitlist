@@ -52,9 +52,7 @@ export function CommunityCard({ community, onClick }) {
               </div>
             )}
             <div>
-              <p className="text-xs font-semibold text-[#000000]">
-                {community.name ?? community.slug}
-              </p>
+              <p className="text-xs font-semibold text-ink">{community.name ?? community.slug}</p>
               {memberCount != null && (
                 <div className="flex items-center gap-1 mt-0.5">
                   <Users size={11} className="text-gray-400" />
@@ -81,7 +79,7 @@ export function CommunityCard({ community, onClick }) {
           <>
             <span className="text-xs text-gray-500">
               Collected:{" "}
-              <strong className="text-[#000000]">
+              <strong className="text-ink">
                 {totalCollected != null ? formatNaira(totalCollected) : "—"}
               </strong>
             </span>
@@ -96,7 +94,7 @@ export function CommunityCard({ community, onClick }) {
           <div className="flex items-center gap-1.5">
             <Clock size={12} className="text-gray-400" />
             <span className="text-xs text-gray-600">
-              Status: <strong className="text-[#000000]">{memberStatus ?? "—"}</strong>
+              Status: <strong className="text-ink">{memberStatus ?? "—"}</strong>
             </span>
           </div>
         )}

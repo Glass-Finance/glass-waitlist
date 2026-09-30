@@ -100,7 +100,7 @@ export default function StepContact({ initialEmail, onNext, onGoogleAuth, hasCom
               setAgreed(e.target.checked);
               setError("");
             }}
-            className="appearance-none w-4 h-4 rounded-sm border border-[#797D86]/40 checked:bg-[#1C2B8A] checked:border-[#1C2B8A] cursor-pointer"
+            className="appearance-none w-4 h-4 rounded-sm border border-outline-input/40 checked:bg-brand-deep checked:border-brand-deep cursor-pointer"
           />
           {agreed && (
             <Check
@@ -117,7 +117,7 @@ export default function StepContact({ initialEmail, onNext, onGoogleAuth, hasCom
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="font-medium underline text-[#1C2B8A]"
+            className="font-medium underline text-brand-deep"
           >
             Terms of Service
           </Link>{" "}
@@ -127,7 +127,7 @@ export default function StepContact({ initialEmail, onNext, onGoogleAuth, hasCom
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="font-medium underline text-[#1C2B8A]"
+            className="font-medium underline text-brand-deep"
           >
             Privacy Policy
           </Link>
@@ -150,7 +150,7 @@ export default function StepContact({ initialEmail, onNext, onGoogleAuth, hasCom
 
       <p className="text-sm text-center text-gray-500 pb-2">
         Already Have An Account?{" "}
-        <Link to="/member/app-sign-in" className="font-semibold text-[#1C2B8A]">
+        <Link to="/member/app-sign-in" className="font-semibold text-brand-deep">
           Sign In
         </Link>
       </p>

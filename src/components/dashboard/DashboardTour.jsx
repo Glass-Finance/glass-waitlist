@@ -248,7 +248,7 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
       {/* Highlight ring around the spotlighted element */}
       {rect && (
         <div
-          className="fixed rounded-xl pointer-events-none shadow-[0_0_0_2px_#002FA7] transition-[top,left] duration-200 ease-in-out"
+          className="fixed rounded-xl pointer-events-none shadow-[0_0_0_2pxvar(--color-brand)] transition-[top,left] duration-200 ease-in-out"
           style={{
             top: rect.top,
             left: rect.left,

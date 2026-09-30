@@ -77,8 +77,8 @@ function BankAvatar({ bankCode, bankName, storedLogoUrl }) {
 function StatusBadge({ status }) {
   if (!status) return null;
   const styles = {
-    ACTIVE: "bg-[#ECFDF3] text-[#027A48]",
-    VERIFIED: "bg-[#ECFDF3] text-[#027A48]",
+    ACTIVE: "bg-success-wash text-[#027A48]",
+    VERIFIED: "bg-success-wash text-[#027A48]",
     PENDING: "bg-[#FFFAEB] text-[#B54708]",
     UNVERIFIED: "bg-[#FFFAEB] text-[#B54708]",
     FAILED: "bg-[#FEF3F2] text-[#B42318]",
@@ -321,7 +321,7 @@ export default function PaystackAccount() {
       )}
 
       {/* Info notice */}
-      <div className="flex items-start gap-2.5 rounded-xl px-4 py-3.5 bg-[#EEF2FF]">
+      <div className="flex items-start gap-2.5 rounded-xl px-4 py-3.5 bg-brand-wash">
         <Info size={14} className="text-brand flex-shrink-0 mt-0.5" />
         <p className="text-xs text-brand leading-relaxed">
           Payouts are processed automatically based on your payout frequency settings. Changing your

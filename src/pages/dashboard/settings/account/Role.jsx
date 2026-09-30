@@ -154,7 +154,7 @@ export default function Role() {
                 onClick={() => handleSelect(opt.id)}
                 disabled={saving}
                 className={`flex items-start gap-3 px-4 py-4 rounded-xl text-left transition-all border-[1.5px]
-                  ${isSelected ? "bg-[#D7E2FF] border-transparent" : "bg-transparent hover:bg-gray-50 border-transparent"}
+                  ${isSelected ? "bg-brand-mist border-transparent" : "bg-transparent hover:bg-gray-50 border-transparent"}
                   ${saving ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
               >
                 {isSelected ? (
@@ -165,8 +165,15 @@ export default function Role() {
                     fill="none"
                     className="flex-shrink-0 mt-0.5"
                   >
-                    <rect x="0.5" y="0.5" width="23" height="23" rx="11.5" stroke="#002FA7" />
-                    <circle cx="12" cy="12" r="8" fill="#002FA7" />
+                    <rect
+                      x="0.5"
+                      y="0.5"
+                      width="23"
+                      height="23"
+                      rx="11.5"
+                      stroke="var(--color-brand)"
+                    />
+                    <circle cx="12" cy="12" r="8" fill="var(--color-brand)" />
                   </svg>
                 ) : (
                   <div className="w-5 h-5 rounded-full flex-shrink-0 mt-0.5 bg-white border border-[#D1D5DB]" />

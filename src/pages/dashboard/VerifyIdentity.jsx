@@ -30,10 +30,10 @@ export default function VerifyIdentity() {
             aria-label="Back to communities"
             className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
           >
-            <ArrowLeft size={17} strokeWidth={2} className="text-[#111]" />
+            <ArrowLeft size={17} strokeWidth={2} className="text-ink" />
           </button>
           <div className="min-w-0">
-            <h1 className="text-lg font-semibold text-[#000000] m-0">Identity Verification</h1>
+            <h1 className="text-lg font-semibold text-ink m-0">Identity Verification</h1>
             <p className="text-xs text-gray-400 mt-0.5 m-0">
               Required to create and manage communities.
             </p>
@@ -44,7 +44,7 @@ export default function VerifyIdentity() {
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
           aria-label="Attempt history"
         >
-          <History size={16} className="text-[#111]" />
+          <History size={16} className="text-ink" />
         </button>
       </div>
 

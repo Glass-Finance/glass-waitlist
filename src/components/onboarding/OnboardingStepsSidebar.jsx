@@ -105,7 +105,7 @@ export default function OnboardingStepsSidebar({ activeStepId, completedStepIds 
             </div>
             <div className="pt-1.5 pb-10">
               <span
-                className={`text-sm font-medium ${isActive ? "text-[#000000]" : isCompleted ? "text-gray-600" : "text-gray-400"}`}
+                className={`text-sm font-medium ${isActive ? "text-ink" : isCompleted ? "text-gray-600" : "text-gray-400"}`}
               >
                 {step.label}
               </span>

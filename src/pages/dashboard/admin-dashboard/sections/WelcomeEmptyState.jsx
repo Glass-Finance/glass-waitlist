@@ -13,7 +13,13 @@ import { Button } from "../../../../components/ui/Button";
 export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
   return (
     <div className="flex flex-col items-center py-16 px-6">
-      <img src={inviteIllustration} alt="" className="w-[280px] h-auto mb-6" draggable={false} />
+      <img
+        src={inviteIllustration}
+        alt=""
+        className="w-[280px] h-auto mb-6"
+        draggable={false}
+        loading="lazy"
+      />
       <h1 className="text-xl leading-7 font-normal text-gray-900 text-center mb-1.5">
         Welcome to Glass!
       </h1>
@@ -31,7 +37,13 @@ export default function WelcomeEmptyState({ onCreatePlan, onAddMember }) {
 
       <div className="w-full max-w-lg flex flex-col gap-2.5">
         <div className="w-full bg-gray-50 rounded-xl border border-surface-container-border px-5 py-4 flex items-center gap-4 text-left">
-          <img src={tickIcon} alt="" className="w-9 h-9 flex-shrink-0" draggable={false} />
+          <img
+            src={tickIcon}
+            alt=""
+            className="w-9 h-9 flex-shrink-0"
+            draggable={false}
+            loading="lazy"
+          />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-normal text-gray-500">Community Created</p>
             <p className="text-xs text-gray-400 mt-0.5">Your community is live and ready</p>

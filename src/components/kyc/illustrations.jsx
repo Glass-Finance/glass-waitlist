@@ -58,7 +58,7 @@ function sceneFor(Scene, fallback) {
 export const IdCardArt = sceneFor(CaptureScene, "var(--color-brand)");
 export const FaceScanArt = sceneFor(FaceScanScene, "var(--color-brand)");
 export const CheckBadgeArt = sceneFor(SuccessScene, "var(--color-success)");
-export const ClockArt = sceneFor(PendingScene, "#b45309");
+export const ClockArt = sceneFor(PendingScene, "var(--color-warning)");
 export const AlertArt = sceneFor(RejectedScene, "var(--color-danger)");
 
 export function ShieldLockArt({ size = 48, className = "", color } = {}) {
@@ -116,7 +116,7 @@ export function ViewfinderFrame({ children, className = "" }) {
 export function TrustNote({ children, className = "" }) {
   return (
     <p
-      className={`flex items-start gap-1.5 text-[11.5px] text-[#6B7280] leading-[1.5] m-0 ${className}`}
+      className={`flex items-start gap-1.5 text-[11.5px] text-ink-muted leading-[1.5] m-0 ${className}`}
     >
       <ShieldLockArt size={14} className="flex-shrink-0 mt-[1px]" />
       <span>{children}</span>

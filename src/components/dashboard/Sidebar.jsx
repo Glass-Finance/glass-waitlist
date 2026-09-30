@@ -295,7 +295,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             <div className="py-3.5 px-3 pb-[13px] border-b border-[var(--color-hairline)] min-h-14 flex items-center">
               <div>
                 <div className="text-xs font-bold text-brand leading-[1.3]">Platform Admin</div>
-                <span className="inline-block mt-[3px] text-[9px] font-bold text-[#7c3aed] bg-[#f5f3ff] rounded-full py-px px-[7px]">
+                <span className="inline-block mt-[3px] text-[9px] font-bold text-accent-purple bg-[#f5f3ff] rounded-full py-px px-[7px]">
                   Platform Admin
                 </span>
               </div>
@@ -334,13 +334,13 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                     className={`w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer tracking-normal text-xs whitespace-nowrap mb-1.5 transition-all duration-150 ${
                       isActive
                         ? "bg-brand-tint text-brand font-bold"
-                        : "bg-transparent text-[#6b7280] font-medium hover:bg-[#f9fafb]"
+                        : "bg-transparent text-ink-muted font-medium hover:bg-surface-sunken"
                     }`}
                   >
                     <Icon size={13} className="flex-shrink-0" />
                     <span className="flex-1 text-left">{label}</span>
                     {badge > 0 && (
-                      <span className="min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
+                      <span className="min-w-[18px] h-[18px] rounded-full bg-danger-bright text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
                         {badge > 99 ? "99+" : badge}
                       </span>
                     )}
@@ -350,7 +350,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
             </nav>
 
             <div className="py-2.5 px-3 border-t border-[var(--color-hairline)] flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,#7c3aed,var(--color-brand))] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+              <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--color-accent-purple),var(--color-brand))] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
                 SA
               </div>
               <div className="min-w-0 flex-1">
@@ -539,7 +539,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   "by eye". Scaled back down; kept the radius-4px/#FFF1D6 fix
                   from that same spec, since neither of those was in question. */}
                   <span
-                    className={`flex-shrink-0 text-[10px] font-bold rounded py-0.5 px-2 ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#FFF1D6]" : "text-[#059669] bg-[#ecfdf5]"}`}
+                    className={`flex-shrink-0 text-[10px] font-bold rounded py-0.5 px-2 ${isCommunityAdmin(activeCommunity) ? "text-[#e85d04] bg-[#FFF1D6]" : "text-success-strong bg-success-wash"}`}
                   >
                     {activeCommunity.owned
                       ? "Owner"
@@ -598,16 +598,16 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                       // not content-hugging either (an even earlier attempt).
                       className={`flex items-center gap-3.5 p-2.5 rounded tracking-normal text-xs mb-1.5 transition-all duration-150 whitespace-nowrap font-medium border-none ${isActive ? "w-[70%]" : "w-full"} ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"} ${
                         isDisabled
-                          ? "bg-transparent text-[#9ca3af]"
+                          ? "bg-transparent text-ink-faint"
                           : isActive
-                            ? "bg-[#D7E2FF] text-brand"
-                            : "bg-transparent text-[#6b7280] hover:bg-[#f9fafb]"
+                            ? "bg-brand-mist text-brand"
+                            : "bg-transparent text-ink-muted hover:bg-surface-sunken"
                       }`}
                     >
                       <Icon size={13} className="flex-shrink-0" />
                       <span className="text-left">{label}</span>
                       {badge > 0 && (
-                        <span className="ml-auto min-w-[18px] h-[18px] rounded-full bg-[#e11d48] text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
+                        <span className="ml-auto min-w-[18px] h-[18px] rounded-full bg-danger-bright text-white text-[10px] font-bold flex items-center justify-center px-1 flex-shrink-0">
                           {badge > 99 ? "99+" : badge}
                         </span>
                       )}
@@ -676,14 +676,14 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                   setMemberViewHint(true);
                   setTimeout(() => setMemberViewHint(false), 3500);
                 }}
-                className="w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer bg-transparent text-[#6b7280] font-medium text-xs transition-all duration-150 whitespace-nowrap hover:bg-[#f9fafb] hover:text-brand"
+                className="w-full flex items-center gap-2 py-2.5 px-2.5 rounded-lg border-none cursor-pointer bg-transparent text-ink-muted font-medium text-xs transition-all duration-150 whitespace-nowrap hover:bg-surface-sunken hover:text-brand"
               >
                 <Smartphone size={13} className="flex-shrink-0" />
                 <span className="flex-1 text-left">Member View</span>
               </button>
 
               {memberViewHint && (
-                <div className="absolute left-2 right-2 bg-[#1f2937] text-[#f9fafb] text-[11px] leading-relaxed py-2 px-2.5 rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.15)] z-10 pointer-events-none [bottom:calc(100%-4px)]">
+                <div className="absolute left-2 right-2 bg-[#1f2937] text-surface-sunken text-[11px] leading-relaxed py-2 px-2.5 rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.15)] z-10 pointer-events-none [bottom:calc(100%-4px)]">
                   Ask another admin to invite you to their community, then come back here.
                   <div className="absolute -bottom-[5px] left-[18px] w-2.5 h-2.5 bg-[#1f2937] rotate-45 rounded-sm" />
                 </div>

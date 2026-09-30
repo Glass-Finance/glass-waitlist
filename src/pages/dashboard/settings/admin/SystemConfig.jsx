@@ -143,7 +143,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
                 type={config.valueType === "NUMBER" ? "number" : "text"}
                 value={form.value}
                 onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))}
-                className="w-full h-12 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors border border-[#D0D0D0] focus:border-[#002FA7]"
+                className="w-full h-12 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors border border-hairline-strong focus:border-brand"
                 placeholder={`Enter ${(config.valueType ?? "value").toLowerCase()}…`}
               />
             )}
@@ -155,7 +155,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
             <input
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors border border-[#D0D0D0] focus:border-[#002FA7]"
+              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors border border-hairline-strong focus:border-brand"
               placeholder="Human-readable label"
             />
           </div>
@@ -167,7 +167,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               rows={3}
-              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors resize-none border border-[#D0D0D0] focus:border-[#002FA7]"
+              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg text-placeholder text-gray-800 outline-none transition-colors resize-none border border-hairline-strong focus:border-brand"
               placeholder="What does this configuration control?"
             />
           </div>
@@ -287,7 +287,7 @@ export default function SystemConfig() {
               placeholder="Search configs…"
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-8 pr-4 py-2 rounded-lg text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-brand transition-colors border border-[#D0D0D0] w-[200px] bg-white"
+              className="pl-8 pr-4 py-2 rounded-lg text-xs text-gray-700 placeholder-gray-400 outline-none focus:border-brand transition-colors border border-hairline-strong w-[200px] bg-white"
             />
           </div>
         </div>
@@ -343,7 +343,7 @@ export default function SystemConfig() {
                 {configs.map((cfg, i) => (
                   <tr
                     key={cfg.id}
-                    className={`group transition-colors hover:bg-gray-50 ${i < configs.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
+                    className={`group transition-colors hover:bg-gray-50 ${i < configs.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}`}
                   >
                     {/* Key */}
                     <td className="px-4 py-3 max-w-[200px]">

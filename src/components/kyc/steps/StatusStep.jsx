@@ -66,7 +66,7 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
                 style={{
                   top: "2%",
                   left: "8%",
-                  background: "#002fa7",
+                  background: "var(--color-brand)",
                   "--cx": "-16px",
                   "--cy": "-26px",
                 }}
@@ -86,7 +86,7 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
                 style={{
                   top: "8%",
                   right: "6%",
-                  background: "#e11d48",
+                  background: "var(--color-danger-bright)",
                   "--cx": "18px",
                   "--cy": "-22px",
                 }}
@@ -116,14 +116,14 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
                 style={{
                   bottom: "12%",
                   right: "8%",
-                  background: "#002fa7",
+                  background: "var(--color-brand)",
                   "--cx": "20px",
                   "--cy": "12px",
                 }}
               />
             </span>
-            <p className="text-[15px] font-bold text-[#16a34a] m-0">Identity verified</p>
-            <p className="text-xs text-[#6B7280] mt-1 mb-0 leading-relaxed">
+            <p className="text-[15px] font-bold text-success m-0">Identity verified</p>
+            <p className="text-xs text-ink-muted mt-1 mb-0 leading-relaxed">
               You can create and manage communities.
             </p>
           </div>
@@ -135,8 +135,8 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
           <div className="flex items-start gap-3">
             <ClockArt size={48} />
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-[#111] m-0">Under review</p>
-              <p className="text-xs text-[#6B7280] mt-0.5 mb-0 leading-relaxed">
+              <p className="text-sm font-semibold text-ink m-0">Under review</p>
+              <p className="text-xs text-ink-muted mt-0.5 mb-0 leading-relaxed">
                 Our team is reviewing your results — this usually doesn&apos;t take long.
                 {summary?.decisionReason ? ` ${summary.decisionReason}` : ""}
               </p>
@@ -175,8 +175,8 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
           <div className="flex items-start gap-3">
             <GlyphIdCard size={20} className="text-brand flex-shrink-0 mt-0.5" />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-[#111] m-0">Continue verification</p>
-              <p className="text-xs text-[#6B7280] mt-0.5 mb-3 leading-relaxed">
+              <p className="text-sm font-semibold text-ink m-0">Continue verification</p>
+              <p className="text-xs text-ink-muted mt-0.5 mb-3 leading-relaxed">
                 Your previous session is still open. Resume to finish the Smile ID check.
               </p>
               <Button
@@ -195,8 +195,8 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
 
       {!isApproved && !isInReview && !showResume && !narrativeActive && inFlight && (
         <div className={cardCls}>
-          <p className="text-sm font-semibold text-[#111] m-0">Verification in progress</p>
-          <p className="text-xs text-[#6B7280] mt-1 mb-0 leading-relaxed">
+          <p className="text-sm font-semibold text-ink m-0">Verification in progress</p>
+          <p className="text-xs text-ink-muted mt-1 mb-0 leading-relaxed">
             We&apos;re waiting on your results — no need to start again.{" "}
             {settled ? "We'll notify you the moment it's done." : ""}
           </p>
@@ -216,7 +216,7 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
             <AlertArt size={48} />
             <div className="min-w-0">
               <p className="text-sm font-semibold text-danger m-0">New attempts disabled</p>
-              <p className="text-xs text-[#6B7280] mt-1 mb-0 leading-relaxed">
+              <p className="text-xs text-ink-muted mt-1 mb-0 leading-relaxed">
                 {summary?.restrictionReason ??
                   "A platform administrator has paused new verification attempts on your account."}
               </p>
@@ -236,10 +236,10 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
             <div className="flex items-start gap-3">
               <AlertArt size={48} />
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-[#111] m-0">
+                <p className="text-sm font-semibold text-ink m-0">
                   Verification {kycStatusLabel(status).toLowerCase()}
                 </p>
-                <p className="text-xs text-[#6B7280] mt-1 mb-0 leading-relaxed">
+                <p className="text-xs text-ink-muted mt-1 mb-0 leading-relaxed">
                   {reason ??
                     "The check didn't complete. You can try again with the same or a different ID."}
                 </p>
@@ -263,10 +263,8 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
         !canStart &&
         !isKycTerminal(status) && (
           <div className={cardCls}>
-            <p className="text-sm font-semibold text-[#111] m-0">
-              Status: {kycStatusLabel(status)}
-            </p>
-            <p className="text-xs text-[#6B7280] mt-1 mb-0 leading-relaxed">
+            <p className="text-sm font-semibold text-ink m-0">Status: {kycStatusLabel(status)}</p>
+            <p className="text-xs text-ink-muted mt-1 mb-0 leading-relaxed">
               {reason ??
                 "You can't start a new attempt right now. Check status or contact support if this seems wrong."}
             </p>

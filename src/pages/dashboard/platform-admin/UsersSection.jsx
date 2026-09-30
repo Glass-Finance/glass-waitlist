@@ -47,7 +47,7 @@ function SuspendModal({ user, onClose }) {
             required
             className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors"
             style={f}
-            onFocus={(e) => (e.target.style.borderColor = "#e11d48")}
+            onFocus={(e) => (e.target.style.borderColor = "var(--color-danger-bright)")}
             onBlur={(e) => Object.assign(e.target.style, f)}
             placeholder="Why is this user being suspended?"
           />
@@ -63,7 +63,7 @@ function SuspendModal({ user, onClose }) {
           <button
             type="submit"
             disabled={mutation.isPending || !reason.trim()}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-[#e11d48]"
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-danger-bright"
           >
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -98,7 +98,7 @@ function UnsuspendModal({ user, onClose, onConfirm, unsuspending }) {
             type="button"
             onClick={onConfirm}
             disabled={unsuspending}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-[#15803d]"
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-success-deep"
           >
             {unsuspending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -140,7 +140,7 @@ function MarkForDeletionModal({ user, onClose, onConfirm, marking }) {
             required
             className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors"
             style={f}
-            onFocus={(e) => (e.target.style.borderColor = "#e11d48")}
+            onFocus={(e) => (e.target.style.borderColor = "var(--color-danger-bright)")}
             onBlur={(e) => Object.assign(e.target.style, f)}
             placeholder="Why is this account being marked for deletion?"
           />
@@ -156,7 +156,7 @@ function MarkForDeletionModal({ user, onClose, onConfirm, marking }) {
           <button
             type="submit"
             disabled={marking || !reason.trim()}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-[#e11d48]"
+            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-danger-bright"
           >
             {marking ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
             {marking ? "Marking…" : "Mark for Deletion"}
@@ -194,7 +194,7 @@ function AnonymizeModal({ user, onClose, onConfirm, anonymizing }) {
             required
             className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors"
             style={f}
-            onFocus={(e) => (e.target.style.borderColor = "#e11d48")}
+            onFocus={(e) => (e.target.style.borderColor = "var(--color-danger-bright)")}
             onBlur={(e) => Object.assign(e.target.style, f)}
             placeholder="Why is this account being anonymized now?"
           />
@@ -336,7 +336,7 @@ export default function UsersSection() {
             {items.map((u, i) => (
               <tr
                 key={u.id}
-                className={`group hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
+                className={`group hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
                   <p className="text-[12px] font-semibold text-gray-900 leading-tight">

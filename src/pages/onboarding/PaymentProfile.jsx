@@ -29,7 +29,7 @@ import { Button } from "../../components/ui/Button";
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member", "organization"];
 
 const inputCls =
-  "w-full h-12 min-h-8 border-[1.5px] border-gray-200 px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+  "w-full h-12 min-h-8 border-[1.5px] border-gray-200 px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-brand transition-all";
 
 function SuccessModal() {
   return (
@@ -269,8 +269,8 @@ export default function PaymentProfile() {
         {/* Main */}
         <main className="flex-1 lg:overflow-y-auto py-6 px-4 lg:py-10 lg:px-12">
           <div className="w-full max-w-3xl">
-            <div className="bg-white rounded-lg px-5 py-6 lg:px-8 lg:py-7 border border-[#E5E7EB]">
-              <div className="mb-6 pb-5 border-b border-[#E5E7EB]">
+            <div className="bg-white rounded-lg px-5 py-6 lg:px-8 lg:py-7 border border-hairline-neutral">
+              <div className="mb-6 pb-5 border-b border-hairline-neutral">
                 <button
                   type="button"
                   onClick={handleBack}
@@ -340,7 +340,7 @@ export default function PaymentProfile() {
                     className={
                       inputCls +
                       (!manualMode ? " bg-gray-50 cursor-default select-none" : "") +
-                      (resolving ? " text-[#9CA3AF]" : "")
+                      (resolving ? " text-ink-faint" : "")
                     }
                   />
                   {accName && !resolving && !manualMode && (
@@ -353,7 +353,9 @@ export default function PaymentProfile() {
               </div>
 
               {error && (
-                <p className={`text-sm mt-3 ${manualMode ? "text-[#B45309]" : "text-[#EF4444]"}`}>
+                <p
+                  className={`text-sm mt-3 ${manualMode ? "text-warning" : "text-danger-bright-2"}`}
+                >
                   {error}
                 </p>
               )}

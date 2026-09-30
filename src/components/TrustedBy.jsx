@@ -61,7 +61,7 @@ export default function TrustedBy() {
       <div className="max-w-7xl mx-auto">
         <p
           ref={labelRef}
-          className="text-center text-[13px] font-semibold text-[#9099b2] uppercase tracking-widest mb-10"
+          className="text-center text-[13px] font-semibold text-ink-cool uppercase tracking-widest mb-10"
         >
           Trusted by forward-thinking communities
         </p>

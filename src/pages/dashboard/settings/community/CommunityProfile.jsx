@@ -26,7 +26,7 @@ const CATEGORIES = [
 ];
 
 const inputCls =
-  "w-full h-12 min-h-8 border border-gray-300 px-4 py-1 rounded-lg text-placeholder text-black placeholder-black/60 outline-none focus:border-[#002FA7] transition-all";
+  "w-full h-12 min-h-8 border border-gray-300 px-4 py-1 rounded-lg text-placeholder text-black placeholder-black/60 outline-none focus:border-brand transition-all";
 
 export default function CommunityProfile() {
   const navigate = useNavigate();
@@ -157,7 +157,7 @@ export default function CommunityProfile() {
 
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs text-brand flex-shrink-0 overflow-hidden bg-[#D7E2FF]">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs text-brand flex-shrink-0 overflow-hidden bg-brand-mist">
               {logoSrc ? (
                 <img src={logoSrc} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -183,7 +183,7 @@ export default function CommunityProfile() {
           <button
             onClick={() => logoInputRef.current?.click()}
             disabled={uploadFile.isPending}
-            className="h-12 px-2.5 rounded-[4px] text-xs text-brand bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-[#002FA7] flex items-center justify-center"
+            className="h-12 px-2.5 rounded-[4px] text-xs text-brand bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-brand flex items-center justify-center"
           >
             {uploadFile.isPending ? "Uploading…" : "Change Logo"}
           </button>
@@ -293,7 +293,7 @@ export default function CommunityProfile() {
                 height="18"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#DC2626"
+                stroke="var(--color-danger)"
                 strokeWidth="2.2"
                 strokeLinecap="round"
                 strokeLinejoin="round"

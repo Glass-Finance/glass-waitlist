@@ -62,7 +62,7 @@ export function QuickAddMemberModal({
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="member@email.com"
-              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border-[1.5px] border-gray-200 text-placeholder outline-none focus:border-[#002FA7]"
+              className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border-[1.5px] border-gray-200 text-placeholder outline-none focus:border-brand"
             />
           </div>
           <div>
@@ -101,7 +101,7 @@ export function QuickAddMemberModal({
           <div className="mt-3">
             <p className="text-xs text-red-500">{error}</p>
             {isNotRegistered && inviteLink && (
-              <div className="mt-2.5 rounded-lg p-3 bg-[#EEF2FF] border border-[#C7D2FE]">
+              <div className="mt-2.5 rounded-lg p-3 bg-brand-wash border border-[#C7D2FE]">
                 <p className="text-xs text-gray-700 mb-2">
                   Share your community link so they can register and join:
                 </p>

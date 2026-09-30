@@ -35,7 +35,7 @@ export function Avatar({ n, size = "sm" }) {
   const visual = notificationVisual(type);
   const Icon = visual?.icon ?? (isSelf ? User : Bell);
   const bg = visual?.bg ?? "#F3F4F6";
-  const fg = visual?.fg ?? "#6B7280";
+  const fg = visual?.fg ?? "var(--color-ink-muted)";
 
   return (
     <div
@@ -165,7 +165,12 @@ export function NotificationDetailModal({
           <div className="relative mb-4">
             {user?.profileImage?.url ? (
               <div className="w-20 h-20 rounded-full overflow-hidden ring-4 ring-gray-50">
-                <img src={user.profileImage.url} alt="" className="w-full h-full object-cover" />
+                <img
+                  src={user.profileImage.url}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
               </div>
             ) : (
               <div className="w-20 h-20 rounded-full ring-4 ring-gray-50 bg-gray-100 flex items-center justify-center">

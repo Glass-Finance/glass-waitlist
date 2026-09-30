@@ -123,7 +123,7 @@ export default function PaymentLinksSection() {
             {items.map((l, i) => (
               <tr
                 key={l.id}
-                className={`hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
+                className={`hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}`}
               >
                 <td className="px-4 py-3 max-w-[180px]">
                   <p className="text-[12px] font-semibold text-gray-900 truncate">{l.title}</p>

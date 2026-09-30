@@ -1,6 +1,13 @@
 import { useEffect, useRef } from "react";
 import QRCode from "qrcode";
 
+/**
+ * `color` is NOT a design token, deliberately. It is handed to the `qrcode`
+ * library, which assigns it to a canvas 2D `fillStyle` — and `fillStyle` does
+ * not resolve `var(--color-*)`, it would silently fall back to black. Callers
+ * that want a themed QR code should read the resolved value
+ * (`getComputedStyle`) and pass a concrete colour string.
+ */
 export default function QRCodeCanvas({ value, size = 160, color = "#002FA7" }) {
   const canvasRef = useRef(null);
 

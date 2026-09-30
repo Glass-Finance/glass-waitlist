@@ -42,7 +42,7 @@ export default function UploadMembersTab({
       {/* Sample table — wider than any phone viewport, so it
           scrolls in its own strip instead of squeezing columns
           down to illegible widths. */}
-      <div className="rounded-md overflow-x-auto mb-4 border border-[#E5E7EB]">
+      <div className="rounded-md overflow-x-auto mb-4 border border-hairline-neutral">
         <table className="w-full text-xs min-w-[560px]">
           <thead>
             <tr className="bg-gray-50">
@@ -77,7 +77,7 @@ export default function UploadMembersTab({
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
-        className={`w-full rounded-lg flex flex-col items-center justify-center py-8 cursor-pointer transition-all mb-5 min-h-[100px] border-dashed ${dragOver ? "border-2 bg-[#EEF2FF] border-brand" : "border bg-[#FAFAFA] border-gray-200"}`}
+        className={`w-full rounded-lg flex flex-col items-center justify-center py-8 cursor-pointer transition-all mb-5 min-h-[100px] border-dashed ${dragOver ? "border-2 bg-brand-wash border-brand" : "border bg-surface-page border-gray-200"}`}
       >
         <input
           ref={fileRef}
@@ -86,7 +86,7 @@ export default function UploadMembersTab({
           className="hidden"
           onChange={(e) => handleFile(e.target.files[0])}
         />
-        <img src={uploadCloudIcon} alt="" className="w-6 h-6 mb-2" />
+        <img src={uploadCloudIcon} alt="" className="w-6 h-6 mb-2" loading="lazy" />
         {uploadedFile ? (
           <p className="text-xs text-brand font-medium">{uploadedFile.name}</p>
         ) : (
@@ -115,14 +115,14 @@ export default function UploadMembersTab({
           <button
             onClick={handleUrlUpload}
             disabled={!fileUrl.trim() || urlStage === "fetching" || loading}
-            className="px-5 py-2 rounded-lg bg-[#002FA733] text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50"
+            className="px-5 py-2 rounded-lg bg-brand/20 text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50"
           >
             Upload
           </button>
         </div>
 
         {urlStage === "fetching" && (
-          <div className="mt-3 flex items-center gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
+          <div className="mt-3 flex items-center gap-3 rounded-lg px-4 py-3 border border-hairline-neutral">
             <FileSpreadsheet size={20} className="text-gray-400 flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs text-gray-900 truncate">
@@ -147,7 +147,7 @@ export default function UploadMembersTab({
         )}
 
         {urlStage === "complete" && urlFileInfo && (
-          <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-[#E5E7EB]">
+          <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-hairline-neutral">
             <FileSpreadsheet size={20} className="text-green-600 flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs text-gray-900 truncate">{urlFileInfo.name}</p>

@@ -72,7 +72,7 @@ function CommissionModal({ community, onClose }) {
                 max="10000"
                 value={rate}
                 onChange={(e) => setRate(e.target.value)}
-                className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-800 outline-none transition-colors focus:border-[#002FA7]"
+                className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-hairline-strong text-placeholder text-gray-800 outline-none transition-colors focus:border-brand"
                 placeholder="e.g. 150 for 1.5%"
               />
               {Number(rate) > 0 && (
@@ -90,7 +90,7 @@ function CommissionModal({ community, onClose }) {
                 min="0"
                 value={cap}
                 onChange={(e) => setCap(e.target.value)}
-                className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-[#D0D0D0] text-placeholder text-gray-800 outline-none transition-colors focus:border-[#002FA7]"
+                className="w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-hairline-strong text-placeholder text-gray-800 outline-none transition-colors focus:border-brand"
                 placeholder="e.g. 500"
               />
             </div>
@@ -286,7 +286,7 @@ export default function CommunitiesSection() {
             {items.map((c, i) => (
               <tr
                 key={c.id}
-                className={`group hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
+                className={`group hover:bg-gray-50 transition-colors ${i < items.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">

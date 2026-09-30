@@ -1,27 +1,25 @@
 <!doctype html>
 <html lang="en-NG">
   <head>
-    <!-- CSP script-src hardening (vercel.json's Content-Security-Policy-
-         Report-Only header): every inline script tag below with no src
-         attribute (structured data, Pendo bootstrap) is allowlisted by a
+    <!-- CSP script-src hardening (vercel.json's Content-Security-Policy
+         header): every inline script tag below with no src attribute
+         (structured data, Pendo bootstrap) is allowlisted by a
          'sha256-<hash>' entry instead of 'unsafe-inline'.
 
          If you edit any of those scripts' content: `npm run build` then
          `node scripts/compute-csp-hashes.mjs`, and swap the matching hash
-         into vercel.json's Report-Only value.
+         into vercel.json's Content-Security-Policy value.
 
          Google Identity Services (loaded for the "Continue with Google"
          button) also injects its own inline scripts at runtime with no
          counterpart in this repo — those hashes are NOT pre-listed. Under
-         Report-Only that only produces a console warning; when moving to
-         enforcement, load the page, sign in, copy the new hash(es) off the
-         console violation, and add them to script-src. Google controlling
-         that content is the reason this stays Report-Only first.
+         enforcement, the browser will block them and log a violation.
+         To fix: load the page, sign in, copy the new hash(es) off the
+         console violation, and add them to script-src.
 
-         Promotion path: keep Report-Only until the console is clean for a
-         full release cycle (ours + Google's hashes stable), add a report
-         endpoint (or Vercel logs), then rename the header key to
-         Content-Security-Policy to enforce. -->
+         CSP is now in ENFORCEMENT mode. Violations are reported to the
+         Report-To endpoint (see vercel.json). Monitor for violations after
+         each deploy and add any missing hashes. -->
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />

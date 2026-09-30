@@ -69,6 +69,11 @@ export function buildSmileConfig({ token, callbackUrl, env = import.meta.env } =
       logo_url: env.VITE_SMILE_LOGO_URL,
       partner_id: env.VITE_SMILE_PARTNER_ID,
       policy_url: env.VITE_SMILE_POLICY_URL ?? `${env.VITE_APP_URL ?? ""}/legal/privacy-policy`,
+      // NOT a design token: this is a hex the Smile Identity SDK reads and
+      // applies to its own remote iframe, so a `var(--color-brand)` here would
+      // not resolve and the widget would render unthemed. It has to stay a
+      // literal colour string. If the Glass brand hue changes, update this and
+      // --color-brand together.
       theme_color: env.VITE_SMILE_THEME_COLOR ?? "#002FA7",
     },
   };

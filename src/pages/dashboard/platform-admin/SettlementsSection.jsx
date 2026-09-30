@@ -220,7 +220,7 @@ export default function SettlementsSection() {
               <tr
                 key={s.id}
                 onClick={() => setOpenSettlementId(s.id)}
-                className={`hover:bg-gray-50 transition-colors cursor-pointer ${i < items.length - 1 ? "border-b border-[#F9FAFB]" : "border-b-0"}`}
+                className={`hover:bg-gray-50 transition-colors cursor-pointer ${i < items.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}`}
               >
                 <td className="px-4 py-3">
                   <p className="text-[12px] font-mono text-gray-700">

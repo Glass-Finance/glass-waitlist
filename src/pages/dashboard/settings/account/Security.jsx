@@ -153,7 +153,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
   }, [otpauthUri]);
 
   const inputCls =
-    "w-full h-12 min-h-8 px-6 py-1 rounded-lg border border-gray-300 text-gray-900 text-sm outline-none text-center tracking-widest font-mono text-lg transition-all focus:border-[#002FA7]";
+    "w-full h-12 min-h-8 px-6 py-1 rounded-lg border border-gray-300 text-gray-900 text-sm outline-none text-center tracking-widest font-mono text-lg transition-all focus:border-brand";
 
   return (
     <div
@@ -192,7 +192,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
           {/* Setup: idle */}
           {mode === "setup" && stage === "idle" && (
             <>
-              <div className="bg-[#F0F4FF] rounded-xl p-4 text-center">
+              <div className="bg-brand-glow rounded-xl p-4 text-center">
                 <Shield size={24} className="text-brand mx-auto mb-2" />
                 <p className="text-xs text-gray-600 leading-relaxed">
                   Use Google Authenticator, Authy, or any TOTP-compatible app to generate time-based
@@ -219,7 +219,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
               </p>
               {qrSrc ? (
                 <div className="flex justify-center p-4 bg-white rounded-xl border border-gray-200">
-                  <img src={qrSrc} alt="MFA QR code" className="w-44 h-44" />
+                  <img src={qrSrc} alt="MFA QR code" className="w-44 h-44" loading="lazy" />
                 </div>
               ) : otpauthUri ? (
                 <div className="bg-stacked-container rounded-xl p-3 border border-gray-200">
@@ -400,7 +400,7 @@ export default function Security() {
   const [mfaModal, setMfaModal] = useState(null); // "setup" | "disable" | null
 
   const inputCls =
-    "w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-gray-300 text-black placeholder-black/60 text-placeholder outline-none transition-all pr-11 focus:border-[#002FA7]";
+    "w-full h-12 min-h-8 px-4 py-1 rounded-lg border border-gray-300 text-black placeholder-black/60 text-placeholder outline-none transition-all pr-11 focus:border-brand";
 
   function validatePasswordField(field, value, otherValue) {
     if (field === "current" && !value) return "Current password is required.";
@@ -610,7 +610,7 @@ export default function Security() {
                   : {
                       border: "1px solid var(--color-brand)",
                       color: "var(--color-brand)",
-                      background: "#fff",
+                      background: "var(--color-white)",
                     }
               }
             >

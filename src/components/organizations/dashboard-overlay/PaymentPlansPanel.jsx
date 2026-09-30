@@ -10,7 +10,7 @@ const REVEAL_STYLE = {
 // it doesn't vary by frequency. Progress-bar color does vary, cycling
 // through the real app's BAR_COLOR_CLASSES palette by position, not by
 // frequency either.
-const BAR_COLORS = ["#d4a017", "#7c3aed", "#002FA7"];
+const BAR_COLORS = ["var(--color-accent-gold)", "var(--color-accent-purple)", "var(--color-brand)"];
 
 const PLANS = [
   {
@@ -39,7 +39,7 @@ export default function PaymentPlansPanel() {
       style={{
         background: "#D7E2FF",
         borderRadius: 12,
-        border: "1px solid #E0E0EB",
+        border: "1px solid var(--color-hairline)",
         padding: "10px",
       }}
     >
@@ -51,8 +51,12 @@ export default function PaymentPlansPanel() {
           marginBottom: 8,
         }}
       >
-        <span style={{ fontSize: 12, fontWeight: 700, color: "#000" }}>Payment Plans</span>
-        <span style={{ fontSize: 11, color: "#002FA7", fontWeight: 600 }}>Manage All</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-ink)" }}>
+          Payment Plans
+        </span>
+        <span style={{ fontSize: 11, color: "var(--color-brand)", fontWeight: 600 }}>
+          Manage All
+        </span>
       </div>
       {PLANS.map((p, i) => (
         <div
@@ -60,7 +64,7 @@ export default function PaymentPlansPanel() {
           id={"dbo-" + p.id}
           style={{
             ...REVEAL_STYLE,
-            background: "#fff",
+            background: "var(--color-white)",
             borderRadius: 10,
             padding: "8px 10px",
             marginBottom: 5,
@@ -76,12 +80,14 @@ export default function PaymentPlansPanel() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <span style={{ fontSize: 10.5, fontWeight: 700, color: "#000" }}>{p.name}</span>
+              <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-ink)" }}>
+                {p.name}
+              </span>
               <span
                 style={{
                   fontSize: 8.5,
                   fontWeight: 700,
-                  color: "#7c3aed",
+                  color: "var(--color-accent-purple)",
                   background: "#f3eeff",
                   borderRadius: 99,
                   padding: "1px 6px",
@@ -90,12 +96,21 @@ export default function PaymentPlansPanel() {
                 {p.freq}
               </span>
             </div>
-            <span style={{ fontSize: 10.5, fontWeight: 700, color: "#000" }}>{p.amt}</span>
+            <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-ink)" }}>
+              {p.amt}
+            </span>
           </div>
-          <div style={{ fontSize: 8.5, color: "#9ca3af", marginBottom: 5 }}>
+          <div style={{ fontSize: 8.5, color: "var(--color-ink-faint)", marginBottom: 5 }}>
             {p.paid} members paid
           </div>
-          <div style={{ height: 4, borderRadius: 99, background: "#E0E0EB", overflow: "hidden" }}>
+          <div
+            style={{
+              height: 4,
+              borderRadius: 99,
+              background: "var(--color-hairline)",
+              overflow: "hidden",
+            }}
+          >
             <div
               id={"dbo-" + p.pb}
               style={{
@@ -106,7 +121,14 @@ export default function PaymentPlansPanel() {
               }}
             />
           </div>
-          <div style={{ fontSize: 8.5, color: "#9ca3af", textAlign: "right", marginTop: 3 }}>
+          <div
+            style={{
+              fontSize: 8.5,
+              color: "var(--color-ink-faint)",
+              textAlign: "right",
+              marginTop: 3,
+            }}
+          >
             {p.pct} Collected
           </div>
         </div>

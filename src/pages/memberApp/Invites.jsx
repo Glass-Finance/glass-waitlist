@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, Clock, Home, Info } from "lucide-react";
 import { getInvite } from "../../api/invites";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
-import PageLoadingState from "../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../components/common/PageLoadingState";
 import { PENDING_INVITE_KEY } from "../InviteLanding";
 import { Button } from "../../components/ui/Button";
 import { isKycRequiredError, KYC_ACCEPT_BLOCK_COPY } from "../../utils/kycStatus";
@@ -16,10 +16,16 @@ function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
   return (
     <div
-      className={`w-10 h-10 rounded-[10px] text-white flex items-center justify-center text-[13px] font-bold flex-shrink-0 overflow-hidden ${logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
+      className={`w-10 h-10 rounded-[10px] text-white flex items-center justify-center text-[13px] font-bold flex-shrink-0 overflow-hidden ${logo?.url ? "bg-transparent" : "bg-brand-deep"}`}
     >
       {logo?.url ? (
-        <img src={logo.url} alt="" decoding="async" className="w-full h-full object-cover" />
+        <img
+          src={logo.url}
+          alt=""
+          decoding="async"
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
       ) : (
         initials
       )}
@@ -103,14 +109,14 @@ export default function Invites() {
           aria-label="Go back"
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#333]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-[17px] font-semibold text-[#111] m-0">Invitations</h1>
+        <h1 className="text-[17px] font-semibold text-ink m-0">Invitations</h1>
       </div>
 
       <div className="px-4">
         {staleNotice && (
-          <div className="flex items-center gap-2 bg-[#FEF3C7] text-[#92400E] text-[12.5px] font-medium py-2.5 px-3 rounded-[10px] mb-3">
+          <div className="flex items-center gap-2 bg-[#FEF3C7] text-warning text-[12.5px] font-medium py-2.5 px-3 rounded-[10px] mb-3">
             <Info size={14} strokeWidth={2} className="flex-shrink-0" />
             {staleNotice}
           </div>
@@ -135,8 +141,8 @@ export default function Invites() {
               className="w-20 h-20 object-contain"
               draggable={false}
             />
-            <p className="text-sm font-semibold text-[#333] m-0">No invitations yet</p>
-            <p className="text-[13px] text-[#888] m-0 max-w-[260px] leading-[1.5]">
+            <p className="text-sm font-semibold text-ink m-0">No invitations yet</p>
+            <p className="text-[13px] text-ink-ghost m-0 max-w-[260px] leading-[1.5]">
               If your admin has already added you, you're good to go — head to your home screen.
             </p>
             <Button
@@ -161,15 +167,15 @@ export default function Invites() {
               <div
                 key={invite.id}
                 ref={(el) => (cardRefs.current[invite.id] = el)}
-                className={`border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3 transition-shadow duration-300 ease-in-out ${invite.id === highlightId ? "shadow-[0_0_0_2px_#002FA7]" : ""}`}
+                className={`border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3 transition-shadow duration-300 ease-in-out ${invite.id === highlightId ? "shadow-[0_0_0_2pxvar(--color-brand)]" : ""}`}
               >
                 <div className="flex items-center gap-3 mb-3.5">
                   <Avatar name={invite.community?.name} logo={invite.community?.logo} />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#111] m-0 whitespace-nowrap overflow-hidden text-ellipsis">
+                    <p className="text-sm font-semibold text-ink m-0 whitespace-nowrap overflow-hidden text-ellipsis">
                       {invite.community?.name ?? "Community"}
                     </p>
-                    <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">Invited you to join</p>
+                    <p className="text-xs text-ink-ghost mt-0.5 mx-0 mb-0">Invited you to join</p>
                   </div>
                 </div>
 
@@ -177,7 +183,7 @@ export default function Invites() {
                   <button
                     onClick={() => handleReject(invite)}
                     disabled={isAccepting || isRejecting}
-                    className="flex-1 py-2.5 px-0 rounded-lg border-[1.5px] border-surface-container-border bg-white text-[#555] text-[13px] font-semibold cursor-pointer"
+                    className="flex-1 py-2.5 px-0 rounded-lg border-[1.5px] border-surface-container-border bg-white text-ink-strong text-[13px] font-semibold cursor-pointer"
                   >
                     Decline
                   </button>
@@ -202,14 +208,14 @@ export default function Invites() {
               >
                 <Avatar name={req.community?.name} logo={req.community?.logo} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-[#111] m-0 whitespace-nowrap overflow-hidden text-ellipsis">
+                  <p className="text-sm font-semibold text-ink m-0 whitespace-nowrap overflow-hidden text-ellipsis">
                     {req.community?.name ?? "Community"}
                   </p>
-                  <p className="text-xs text-[#999] mt-0.5 mx-0 mb-0">
+                  <p className="text-xs text-ink-ghost mt-0.5 mx-0 mb-0">
                     Your request to join is pending
                   </p>
                 </div>
-                <span className="flex items-center gap-1 text-[11px] font-semibold text-[#B45309] bg-[#FEF3C7] py-[5px] px-2.5 rounded-full flex-shrink-0">
+                <span className="flex items-center gap-1 text-[11px] font-semibold text-warning bg-[#FEF3C7] py-[5px] px-2.5 rounded-full flex-shrink-0">
                   <Clock size={11} strokeWidth={2} />
                   Pending
                 </span>

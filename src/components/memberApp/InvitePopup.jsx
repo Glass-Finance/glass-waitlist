@@ -24,7 +24,7 @@ function CommunityAvatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
   return (
     <div
-      className={`w-[72px] h-[72px] rounded-[18px] text-white flex items-center justify-center text-2xl font-bold overflow-hidden mx-auto mt-0 mb-5 ${logo?.url ? "bg-transparent" : "bg-[#1C2B8A]"}`}
+      className={`w-[72px] h-[72px] rounded-[18px] text-white flex items-center justify-center text-2xl font-bold overflow-hidden mx-auto mt-0 mb-5 ${logo?.url ? "bg-transparent" : "bg-brand-deep"}`}
     >
       {logo?.url ? <PulseImg src={logo.url} className="w-full h-full" /> : initials}
     </div>
@@ -81,17 +81,17 @@ export default function InvitePopup() {
         <CommunityAvatar name={invite.community?.name} logo={invite.community?.logo} />
 
         {/* Heading */}
-        <p className="text-lg font-bold text-[#111] mt-0 mx-0 mb-2 leading-[1.3]">
+        <p className="text-lg font-bold text-ink mt-0 mx-0 mb-2 leading-[1.3]">
           You've Been Invited To Join
         </p>
 
         {/* Community name */}
-        <p className="text-base font-bold text-[#1C2B8A] mt-0 mx-0 mb-2">
+        <p className="text-base font-bold text-brand-deep mt-0 mx-0 mb-2">
           {invite.community?.name ?? "a Community"}
         </p>
 
         {/* Subtitle */}
-        <p className="text-[13px] text-[#888] mt-0 mx-0 mb-8 leading-[1.5]">
+        <p className="text-[13px] text-ink-ghost mt-0 mx-0 mb-8 leading-[1.5]">
           Accept the invite to start tracking your dues and payments.
         </p>
 
@@ -121,7 +121,7 @@ export default function InvitePopup() {
               handleLater();
               navigate("/member/notifications");
             }}
-            className="block w-full bg-transparent border-none text-[#999] text-xs cursor-pointer pt-1"
+            className="block w-full bg-transparent border-none text-ink-ghost text-xs cursor-pointer pt-1"
           >
             +{remaining - 1} more invite{remaining - 1 > 1 ? "s" : ""} · View all
           </button>

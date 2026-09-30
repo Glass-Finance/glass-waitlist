@@ -120,7 +120,7 @@ export default function ChoosePath() {
                 onClick={() => setSelected(option.id)}
                 className={`relative flex flex-row lg:flex-col items-center text-left lg:text-center gap-4 lg:gap-0 px-5 lg:px-10 py-5 lg:py-8 rounded-2xl transition-all duration-200 cursor-pointer w-full lg:w-[380px] border bg-white ${isSelected ? "border-2 border-brand" : "border-white"}`}
               >
-                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-[#EEF2FF] lg:bg-transparent lg:rounded-none lg:w-14 lg:h-14 lg:mt-6 lg:mb-5">
+                <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-[10px] bg-brand-wash lg:bg-transparent lg:rounded-none lg:w-14 lg:h-14 lg:mt-6 lg:mb-5">
                   <CloudImage
                     publicId={option.icon}
                     alt={option.title}
@@ -149,7 +149,7 @@ export default function ChoosePath() {
                       </svg>
                     </div>
                   ) : (
-                    <div className="w-6 h-6 rounded-full border-2 border-[#C2C2C2]" />
+                    <div className="w-6 h-6 rounded-full border-2 border-hairline-disabled" />
                   )}
                 </div>
               </button>

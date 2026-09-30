@@ -92,7 +92,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
           className={`w-11 h-11 rounded-[10px] flex-shrink-0 overflow-hidden flex items-center justify-center text-lg ${logoUrl ? "bg-transparent border-none" : "bg-[#F0F0F0] border border-[#E0E0E0]"}`}
         >
           {logoUrl ? (
-            <img src={logoUrl} alt="" className="w-full h-full object-cover" />
+            <img src={logoUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
           ) : (
             (community.name?.charAt(0) ?? "C")
           )}
@@ -100,10 +100,10 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
 
         {/* Name + category */}
         <div className="flex-1 min-w-0">
-          <p className="text-base font-bold text-[#111] mb-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
+          <p className="text-base font-bold text-ink mb-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
             {community.name}
           </p>
-          <p className="text-sm text-[#888] overflow-hidden text-ellipsis whitespace-nowrap">
+          <p className="text-sm text-ink-ghost overflow-hidden text-ellipsis whitespace-nowrap">
             {categoryLabel}
           </p>
         </div>
@@ -112,20 +112,20 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
       <div className="px-4 pt-3 pb-4 flex flex-col gap-3">
         {/* Description */}
         {community.description && (
-          <p className="text-sm text-[#555] leading-[1.55]">{community.description}</p>
+          <p className="text-sm text-ink-strong leading-[1.55]">{community.description}</p>
         )}
 
         {(memberCount != null || community.requiresMemberApproval === false) && (
           <div className="flex items-center gap-3">
             {memberCount != null && (
-              <span className="flex items-center gap-1.5 text-sm text-[#888]">
-                <Users size={15} className="text-[#111]" />
-                <span className="font-bold text-[#111]">{memberCount.toLocaleString()}</span>
+              <span className="flex items-center gap-1.5 text-sm text-ink-ghost">
+                <Users size={15} className="text-ink" />
+                <span className="font-bold text-ink">{memberCount.toLocaleString()}</span>
                 Members
               </span>
             )}
             {community.requiresMemberApproval === false && (
-              <span className="text-[11px] text-[#059669] font-semibold">
+              <span className="text-[11px] text-success-strong font-semibold">
                 Open — join instantly
               </span>
             )}
@@ -138,10 +138,10 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
           disabled={alreadyMember || alreadyPending || loading}
           className={`w-full py-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 transition-opacity duration-150 ${loading ? "opacity-70" : "opacity-100"} ${alreadyPending || alreadyMember ? "border-[1.5px] border-[#E0E0E0] cursor-default" : "border-none cursor-pointer"} ${
             alreadyMember
-              ? "bg-[#ECFDF5] text-[#059669]"
+              ? "bg-success-wash text-success-strong"
               : alreadyPending
-                ? "bg-white text-[#888]"
-                : "bg-[#1C2B8A] text-white"
+                ? "bg-white text-ink-ghost"
+                : "bg-brand-deep text-white"
           }`}
         >
           {loading && <Loader2 size={13} className="animate-spin" />}
@@ -165,7 +165,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
 function EmptyState({ query }) {
   if (!query || query.length < 2) {
     return (
-      <div className="flex flex-col items-center pt-[60px] text-[#aaa]">
+      <div className="flex flex-col items-center pt-[60px] text-ink-ghost">
         <Search size={32} strokeWidth={1.2} className="mb-2.5" />
         <p className="text-sm text-center">Search for a community by name</p>
         <p className="text-xs mt-1 text-center">e.g. "Kings College Alumni"</p>
@@ -173,7 +173,7 @@ function EmptyState({ query }) {
     );
   }
   return (
-    <div className="flex flex-col items-center pt-[60px] text-[#aaa]">
+    <div className="flex flex-col items-center pt-[60px] text-ink-ghost">
       <p className="text-sm text-center">No communities found for "{query}"</p>
       <p className="text-xs mt-1 text-center">Try a shorter or different search term</p>
     </div>
@@ -270,18 +270,18 @@ export default function DiscoverCommunities() {
           onClick={() => navigate(-1)}
           className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-[18px] leading-6 font-medium text-[#111] m-0">Browse Communities</h1>
+        <h1 className="text-[18px] leading-6 font-medium text-ink m-0">Browse Communities</h1>
       </div>
 
       {/* Search input */}
       <div className="px-4 pb-4">
-        <div className="flex items-center gap-2.5 bg-white rounded-xl py-3 px-3.5 border-[1.5px] border-[#E0E0E0] focus-within:border-[#002FA7]">
+        <div className="flex items-center gap-2.5 bg-white rounded-xl py-3 px-3.5 border-[1.5px] border-[#E0E0E0] focus-within:border-brand">
           {isFetching ? (
-            <Loader2 size={15} className="animate-spin text-[#1C2B8A] flex-shrink-0" />
+            <Loader2 size={15} className="animate-spin text-brand-deep flex-shrink-0" />
           ) : (
-            <Search size={15} className="text-[#aaa] flex-shrink-0" />
+            <Search size={15} className="text-ink-ghost flex-shrink-0" />
           )}
           <input
             autoFocus
@@ -289,12 +289,12 @@ export default function DiscoverCommunities() {
             placeholder="Search Community"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 border-none outline-none bg-transparent text-sm text-[#111]"
+            className="flex-1 border-none outline-none bg-transparent text-sm text-ink"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="bg-transparent border-none cursor-pointer text-[#aaa] text-lg leading-none p-0"
+              className="bg-transparent border-none cursor-pointer text-ink-ghost text-lg leading-none p-0"
             >
               ×
             </button>

@@ -45,7 +45,7 @@ import ManualMembersTab from "./members/ManualMembersTab";
 // many roles the backend returned. Matches the same allowlist Members.jsx
 // uses for consistency between the two places a role gets assigned.
 const inputCls =
-  "w-full h-12 min-h-8 border border-[#797D86] px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+  "w-full h-12 min-h-8 border border-outline-input px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-brand transition-all";
 
 export default function AddMembers() {
   const navigate = useNavigate();
@@ -167,6 +167,19 @@ export default function AddMembers() {
   async function handleUrlUpload() {
     const url = fileUrl.trim();
     if (!url) return;
+    // Validate URL scheme — only allow https: to prevent SSRF via file://,
+    // http://localhost, or other internal protocols.
+    let parsed;
+    try {
+      parsed = new URL(url);
+    } catch {
+      setError("Please enter a valid URL.");
+      return;
+    }
+    if (parsed.protocol !== "https:") {
+      setError("Only HTTPS URLs are allowed.");
+      return;
+    }
     setError("");
     setUrlStage("fetching");
     setUrlProgress(8);
@@ -371,7 +384,7 @@ export default function AddMembers() {
             </div>
 
             {/* Invite banner */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 px-5 py-4 rounded-xl mb-6 bg-[#D7E2FF] border border-[#0E628C33]">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 px-5 py-4 rounded-xl mb-6 bg-brand-mist border border-[#0E628C33]">
               <div>
                 <p className="text-xs text-gray-900 mb-0.5">Your community is ready to grow.</p>
                 <p className="text-xs text-gray-500">
@@ -388,7 +401,7 @@ export default function AddMembers() {
             </div>
 
             {/* Direct add card */}
-            <div className="bg-white rounded-lg p-4 lg:p-6 border border-[#E5E7EB]">
+            <div className="bg-white rounded-lg p-4 lg:p-6 border border-hairline-neutral">
               <h3 className="text-base font-semibold text-gray-900 mb-4">
                 Prefer To Add Members Directly?
               </h3>
@@ -399,7 +412,7 @@ export default function AddMembers() {
                   <button
                     key={t}
                     onClick={() => setTab(t)}
-                    className={`pb-2.5 text-sm font-medium capitalize bg-transparent cursor-pointer transition-all border-x-0 border-t-0 border-b-2 ${tab === t ? "text-brand border-b-brand" : "text-[#9ca3af] border-b-transparent"}`}
+                    className={`pb-2.5 text-sm font-medium capitalize bg-transparent cursor-pointer transition-all border-x-0 border-t-0 border-b-2 ${tab === t ? "text-brand border-b-brand" : "text-ink-faint border-b-transparent"}`}
                   >
                     {t.charAt(0).toUpperCase() + t.slice(1)}
                   </button>

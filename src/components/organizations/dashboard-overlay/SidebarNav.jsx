@@ -87,8 +87,8 @@ export default function SidebarNav({ nav }) {
     <div
       style={{
         width: 180,
-        background: "#fff",
-        borderRight: "1px solid #E0E0EB",
+        background: "var(--color-white)",
+        borderRight: "1px solid var(--color-hairline)",
         flexShrink: 0,
         display: "flex",
         flexDirection: "column",
@@ -97,10 +97,10 @@ export default function SidebarNav({ nav }) {
       <div
         style={{
           padding: "17px 12px 14px",
-          borderBottom: "1px solid #E0E0EB",
+          borderBottom: "1px solid var(--color-hairline)",
         }}
       >
-        <div style={{ fontSize: 12, fontWeight: 700, color: "#000", lineHeight: 1.3 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-ink)", lineHeight: 1.3 }}>
           Kings College Alumni
         </div>
         <span
@@ -130,7 +130,7 @@ export default function SidebarNav({ nav }) {
               borderRadius: 8,
               marginBottom: 2,
               background: item.active ? "#e6eeff" : "transparent",
-              color: item.active ? "#002FA7" : "#6b7280",
+              color: item.active ? "var(--color-brand)" : "var(--color-ink-muted)",
               fontSize: 12,
               fontWeight: item.active ? 700 : 500,
               position: "relative",
@@ -147,7 +147,7 @@ export default function SidebarNav({ nav }) {
                   padding: "0 3px",
                   borderRadius: 99,
                   background: "#DC2626",
-                  color: "#fff",
+                  color: "var(--color-white)",
                   fontSize: 8,
                   fontWeight: 700,
                   display: "flex",
@@ -161,7 +161,7 @@ export default function SidebarNav({ nav }) {
           </div>
         ))}
       </div>
-      <div style={{ padding: "6px 8px", borderTop: "1px solid #E0E0EB" }}>
+      <div style={{ padding: "6px 8px", borderTop: "1px solid var(--color-hairline)" }}>
         <div
           style={{
             display: "flex",
@@ -169,7 +169,7 @@ export default function SidebarNav({ nav }) {
             gap: 8,
             padding: "6.5px 10px",
             borderRadius: 8,
-            color: "#6b7280",
+            color: "var(--color-ink-muted)",
             fontSize: 12,
             fontWeight: 500,
           }}

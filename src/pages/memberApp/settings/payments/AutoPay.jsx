@@ -7,7 +7,7 @@ import {
   useManagePayments,
   isAuthorisationExpired,
 } from "../../../../hooks/usePayments";
-import PageLoadingState from "../../../../components/memberApp/PageLoadingState";
+import PageLoadingState from "../../../../components/common/PageLoadingState";
 import Toggle from "../../../../components/common/Toggle";
 import ConfirmSheet from "../../../../components/memberApp/ConfirmSheet";
 import { formatNaira } from "../../../../utils/format";
@@ -105,14 +105,14 @@ export default function AutoPay() {
           onClick={() => navigate(-1)}
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
-          <ChevronLeft size={18} strokeWidth={2} className="text-[#111]" />
+          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
-        <h1 className="text-lg font-semibold text-[#111] m-0">Auto-Pay</h1>
+        <h1 className="text-lg font-semibold text-ink m-0">Auto-Pay</h1>
       </div>
 
       <div className="px-4">
         {allPlans.length > 0 && (
-          <p className="text-xs font-semibold text-[#999] mt-0 mx-1 mb-2 uppercase [letter-spacing:0.4px]">
+          <p className="text-xs font-semibold text-ink-ghost mt-0 mx-1 mb-2 uppercase [letter-spacing:0.4px]">
             Active Plans
           </p>
         )}
@@ -123,7 +123,9 @@ export default function AutoPay() {
             // Shaped like a real plan row below (flex justify-between p-4,
             // a Toggle on the right, disabled+off so it renders muted).
             <div className="flex items-center justify-between p-4">
-              <p className="text-[13px] text-[#999] m-0">You're not on any recurring plans yet</p>
+              <p className="text-[13px] text-ink-ghost m-0">
+                You're not on any recurring plans yet
+              </p>
               <Toggle on={false} onChange={() => {}} disabled />
             </div>
           ) : (
@@ -135,11 +137,11 @@ export default function AutoPay() {
               return (
                 <div
                   key={plan.paymentLinkId ?? `${plan.name}-${plan.communityName}`}
-                  className={`flex items-center justify-between p-4 ${i < allPlans.length - 1 ? "border-b border-[#F2F2F2]" : "border-none"}`}
+                  className={`flex items-center justify-between p-4 ${i < allPlans.length - 1 ? "border-b border-hairline-soft" : "border-none"}`}
                 >
                   <div className="min-w-0 pr-3">
-                    <p className="text-[15px] font-medium text-[#111] m-0">{plan.name}</p>
-                    <p className="text-[13px] text-[#999] mt-[3px] mx-0 mb-0">
+                    <p className="text-[15px] font-medium text-ink m-0">{plan.name}</p>
+                    <p className="text-[13px] text-ink-ghost mt-[3px] mx-0 mb-0">
                       {[plan.communityName, plan.amount != null ? formatNaira(plan.amount) : null]
                         .filter(Boolean)
                         .join(" · ")}
@@ -152,7 +154,7 @@ export default function AutoPay() {
                       </p>
                     )}
                     {!expired && inactive && (
-                      <p className="text-[11px] text-[#D97706] mt-1 mx-0 mb-0 leading-[1.4]">
+                      <p className="text-[11px] text-warning mt-1 mx-0 mb-0 leading-[1.4]">
                         Your saved payment method is no longer active, so automatic charges may
                         fail. Pay once with a new method to re-enable Auto-Pay.
                       </p>
@@ -165,11 +167,11 @@ export default function AutoPay() {
           )}
         </div>
 
-        <div className="flex items-start gap-2 mt-3.5 py-3 px-3.5 rounded-[10px] bg-[#D7E2FF]">
+        <div className="flex items-start gap-2 mt-3.5 py-3 px-3.5 rounded-[10px] bg-brand-mist">
           <div className="w-4 h-4 rounded-full border border-brand flex items-center justify-center flex-shrink-0 mt-px">
             <span className="text-[9px] font-bold text-brand">i</span>
           </div>
-          <p className="text-xs text-[#333] m-0 leading-[1.5]">
+          <p className="text-xs text-ink m-0 leading-[1.5]">
             Auto-Pay charges your saved method on each due date, and you'll get an in-app and email
             reminder 3 days before every charge. If a charge fails (an expired card, insufficient
             funds, or a declined transaction), the payment stays due and you'll be notified so you
