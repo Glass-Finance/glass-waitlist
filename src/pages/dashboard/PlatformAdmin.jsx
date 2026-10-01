@@ -12,6 +12,9 @@ import {
   Landmark,
   Scale,
   ShieldCheck,
+  Receipt,
+  FileClock,
+  ScrollText,
 } from "lucide-react";
 import SystemConfig from "./settings/admin/SystemConfig";
 import CommunitiesSection from "./platform-admin/CommunitiesSection";
@@ -23,7 +26,15 @@ import SettlementsSection from "./platform-admin/SettlementsSection";
 import ReconciliationSection from "./platform-admin/ReconciliationSection";
 import NotificationsSection from "./platform-admin/NotificationsSection";
 import KycSection from "./platform-admin/KycSection";
+import TransactionsSection from "./platform-admin/TransactionsSection";
+import ObligationsSection from "./platform-admin/ObligationsSection";
+import AuditLogsSection from "./platform-admin/AuditLogsSection";
 
+// Order is grouped by domain rather than alphabetical, and the digit
+// shortcuts below are positional — so inserting a tab renumbers the keys
+// after it. The three ops views sit either side of Reconciliation so the
+// money-and-ledger group (settlements → transactions → obligations →
+// reconciliation → audit logs) reads in one run.
 const TABS = [
   { id: "communities", label: "Communities", Icon: Building2 },
   { id: "accounts", label: "Accounts", Icon: Wallet },
@@ -31,7 +42,10 @@ const TABS = [
   { id: "payment-links", label: "Payment Links", Icon: CreditCard },
   { id: "balances", label: "Balances", Icon: BarChart2 },
   { id: "settlements", label: "Settlements", Icon: Landmark },
+  { id: "transactions", label: "Transactions", Icon: Receipt },
+  { id: "obligations", label: "Obligations", Icon: FileClock },
   { id: "reconciliation", label: "Reconciliation", Icon: Scale },
+  { id: "audit-logs", label: "Audit Logs", Icon: ScrollText },
   { id: "kyc", label: "KYC", Icon: ShieldCheck },
   { id: "notifications", label: "Notifications", Icon: Bell },
   { id: "system-config", label: "System Config", Icon: SlidersHorizontal },
@@ -41,7 +55,7 @@ export default function PlatformAdmin() {
   usePageTitle("Admin Panel");
   const [activeTab, setActiveTab] = useState("communities");
 
-  // Digit keys, not "g <letter>" chords -- this page's own 9 tabs are a
+  // Digit keys, not "g <letter>" chords -- this page's own 13 tabs are a
   // sub-navigation *within* wherever "g a" already landed you, not another
   // top-level destination, so borrowing the "go to a page" prefix here would
   // blur that distinction. Numbered tabs is the same convention browser tab
@@ -94,7 +108,10 @@ export default function PlatformAdmin() {
       {activeTab === "payment-links" && <PaymentLinksSection />}
       {activeTab === "balances" && <BalancesSection />}
       {activeTab === "settlements" && <SettlementsSection />}
+      {activeTab === "transactions" && <TransactionsSection />}
+      {activeTab === "obligations" && <ObligationsSection />}
       {activeTab === "reconciliation" && <ReconciliationSection />}
+      {activeTab === "audit-logs" && <AuditLogsSection />}
       {activeTab === "kyc" && <KycSection />}
       {activeTab === "notifications" && <NotificationsSection />}
       {activeTab === "system-config" && <SystemConfig />}
