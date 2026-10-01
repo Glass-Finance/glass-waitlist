@@ -51,6 +51,14 @@ vi.mock("../../../utils/toast", () => ({ toastSuccess: vi.fn() }));
 
 const OWNED_A = { id: "comm-A", slug: "comm-a", name: "Alumni", owned: true };
 const OWNED_B = { id: "comm-B", slug: "comm-b", name: "Church", owned: true };
+// UUID-shaped, and deliberately *not* derivable from its slug: real backend ids
+// are uuids, so nothing downstream can be passing by accident.
+const OWNED_UUID = {
+  id: "3f6c1a52-8b1e-4d70-9c34-2b7e5a90d118",
+  slug: "market-square-traders",
+  name: "Market Square",
+  owned: true,
+};
 const PROMOTED_ADMIN = {
   id: "comm-C",
   slug: "comm-c",
@@ -243,12 +251,144 @@ describe("Sidebar community context — explicit ?community= wins", () => {
     await user.click(navButton("Payments"));
     expect(currentUrl()).toBe("/dashboard/payments?community=comm-b");
   });
+});
 
-  // Deliberately NOT asserted here: resolution by numeric id. Sidebar's own
-  // find() matches on slug only, whereas CommunityAdminGuard, Settings and
-  // useNotifications all also match String(c.id). That divergence is
-  // pre-existing and out of scope for this change; pinning either behavior
-  // here would freeze it by accident. Tracked as a follow-up.
+describe("Sidebar community context — ?community= accepts an id or a slug", () => {
+  // ?community= reaches the sidebar from several places that resolve against a
+  // community id rather than a slug (a notification row's communityId, a link
+  // built from a community object). CommunityAdminGuard, Settings and
+  // useNotifications all match id-or-slug; the sidebar matching on slug only
+  // meant a uuid resolved everywhere else and here fell back to "no community",
+  // which disabled the nav links and left the rail unhighlighted on a page the
+  // rest of the app had already resolved.
+  it("resolves ?community=<slug>", () => {
+    renderSidebar({ communities: [OWNED_A, OWNED_B], search: "?community=comm-b" });
+
+    expect(screen.getByText("Church")).toBeTruthy();
+    expect(navButton("Payments").disabled).toBe(false);
+  });
+
+  it("resolves ?community=<id> to the same community the slug resolves to", () => {
+    renderSidebar({
+      communities: [OWNED_UUID, OWNED_A, OWNED_B],
+      search: `?community=${OWNED_UUID.id}`,
+    });
+
+    expect(screen.getByText("Market Square")).toBeTruthy();
+    // Not just "something" resolved -- it is the community the uuid names.
+    expect(screen.queryByText("Alumni")).toBeNull();
+    expect(screen.queryByText("Church")).toBeNull();
+  });
+
+  it("navigates against the id-resolved community's slug", async () => {
+    const user = userEvent.setup();
+    renderSidebar({
+      communities: [OWNED_UUID, OWNED_A, OWNED_B],
+      search: `?community=${OWNED_UUID.id}`,
+    });
+
+    await user.click(navButton("Payments"));
+    // Links are built from the resolved community's slug, so a uuid query
+    // yields the same destination the slug query would.
+    expect(currentUrl()).toBe("/dashboard/payments?community=market-square-traders");
+  });
+
+  it("highlights the rail tile for an id query, not just a slug query", () => {
+    // The rail's own marker, not the resolution the header reads: a uuid query
+    // that resolved but left the rail dark would still look unselected.
+    renderSidebar({
+      communities: [OWNED_UUID, OWNED_A, OWNED_B],
+      search: `?community=${OWNED_UUID.id}`,
+    });
+
+    const activeTile = screen.getByTitle("Market Square").parentElement;
+    expect(activeTile.querySelector('span[aria-hidden="true"]')).not.toBeNull();
+    expect(
+      screen.getByTitle("Church").parentElement.querySelector('span[aria-hidden="true"]'),
+    ).toBeNull();
+  });
+
+  it("persists an id-resolved community as chosen context", () => {
+    // Resolution by id is still an explicit ?community=, so it syncs into
+    // glass_community exactly as a slug query does -- normalized to the stored
+    // community object, so other consumers get a slug they can resolve.
+    renderSidebar({
+      communities: [OWNED_UUID, OWNED_A, OWNED_B],
+      search: `?community=${OWNED_UUID.id}`,
+    });
+
+    expect(storedSlug()).toBe("market-square-traders");
+  });
+
+  it("still resolves nothing for an unknown ?community= (no arbitrary pick)", () => {
+    renderSidebar({
+      communities: [OWNED_UUID, OWNED_A, OWNED_B],
+      search: "?community=3f6c1a52-0000-4000-8000-000000000000",
+    });
+
+    // An unmatched uuid must not fall through to the single-community
+    // inference or the first admin community -- three admin communities here.
+    expect(screen.getByText("Your Communities")).toBeTruthy();
+    expect(screen.queryByText("Market Square")).toBeNull();
+    expect(storedSlug()).toBeNull();
+  });
+
+  it("does not let an id-resolved community bypass the no-inference rule", () => {
+    // A sole admin community found by id is still explicit context, not the
+    // fallback, so this must not blur the PR #94 distinction: the fallback only
+    // ever engages when *nothing* resolved.
+    renderSidebar({ communities: [OWNED_UUID], search: `?community=${OWNED_UUID.id}` });
+
+    expect(screen.getByText("Market Square")).toBeTruthy();
+    // Chosen, therefore persisted -- same as the slug case above.
+    expect(storedSlug()).toBe("market-square-traders");
+  });
+});
+
+describe("Sidebar community context — no regression to the no-inference rule", () => {
+  it("does not persist a single administered community found by id alone", () => {
+    // Nothing in the URL or the snapshot names a community, so the sole admin
+    // community is only *inferred* for nav liveness. A uuid id must not change
+    // that: the id never enters the picture without an explicit ?community=.
+    renderSidebar({ communities: [OWNED_UUID, PLAIN_MEMBER] });
+
+    expect(screen.getByText("Market Square")).toBeTruthy();
+    expect(storedSlug()).toBeNull();
+  });
+
+  it("does not let an inferred uuid community overwrite a stale stored one", () => {
+    // Stored A no longer resolves; the uuid community is the only remaining
+    // admin community, so it is inferred for nav liveness -- and still must not
+    // be written over A's snapshot.
+    localStorage.setItem(KEY, JSON.stringify(OWNED_A));
+    renderSidebar({ communities: [OWNED_UUID, PLAIN_MEMBER] });
+
+    expect(screen.getByText("Market Square")).toBeTruthy();
+    expect(storedSlug()).toBe("comm-a");
+  });
+
+  it("lets ?community=<id> override a different stored selection", () => {
+    localStorage.setItem(KEY, JSON.stringify(OWNED_A));
+    renderSidebar({
+      communities: [OWNED_UUID, OWNED_A],
+      search: `?community=${OWNED_UUID.id}`,
+    });
+
+    expect(screen.getByText("Market Square")).toBeTruthy();
+    expect(storedSlug()).toBe("market-square-traders");
+  });
+
+  it("resolves a stored community by its id when the snapshot carries one", () => {
+    // glass_community is written from a community object, but only a snapshot
+    // whose slug is absent (older write, hand-edited) leaves id as the value
+    // useActiveCommunityId-style readers fall back to. Resolving it keeps the
+    // stored path on the same id-or-slug footing as the query path.
+    localStorage.setItem(KEY, JSON.stringify({ id: OWNED_UUID.id }));
+    renderSidebar({ communities: [OWNED_UUID, OWNED_A] });
+
+    expect(screen.getByText("Market Square")).toBeTruthy();
+    expect(storedSlug()).toBe("market-square-traders");
+  });
 });
 
 describe("Sidebar community context — unauthorized ?community= is not substituted", () => {
