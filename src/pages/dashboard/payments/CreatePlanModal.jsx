@@ -3,12 +3,13 @@ import { X, ArrowLeft } from "lucide-react";
 import { useSlug } from "../../../hooks/useSlug";
 import { useCommunityAccount } from "../../../hooks/useCommunityAccount";
 import { dateInputToIso } from "../../../utils/date";
-import { AUDIENCE_EMPTY_MESSAGE } from "./constants";
+import { audienceEmptyMessage } from "./constants";
 import {
   validatePlanField,
   validateAmountForMode,
   amountPayloadForMode,
   resolveAmountMode,
+  audienceChangePatch,
 } from "./helpers";
 import PlanStepIndicator from "./PlanStepIndicator";
 import { Step1, Step2, Step3 } from "./PlanFormSteps";
@@ -33,6 +34,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
     visibility: "PUBLIC",
     audience: "ALL_MEMBERS",
     memberIds: [],
+    groupIds: [],
     frequency: "",
     startDate: "",
     dueDate: "",
@@ -55,6 +57,14 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
   // effect takes `onChange` as a dependency.
   const update = useCallback(
     (k, v) => {
+      // Switching audience resets both id lists at once — see
+      // audienceChangePatch. A plain `[k]: v` would leave the previous
+      // audience's selection in state, ready to reappear on the way back.
+      if (k === "audience") {
+        setForm((f) => ({ ...f, ...audienceChangePatch(v) }));
+        setFieldErrors((fe) => (fe.audience ? { ...fe, audience: "" } : fe));
+        return;
+      }
       setForm((f) => ({ ...f, [k]: v }));
       setFieldErrors((fe) =>
         fe[k]
@@ -92,13 +102,18 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (def) setForm((f) => ({ ...f, communityAccountId: def.id }));
   }, [accounts]); // eslint-disable-line react-hooks/exhaustive-deps
-  // A SELECTED_MEMBERS plan with nobody selected is the one invalid state the
-  // CREATE endpoint does NOT reject: the backend's create path saves the
-  // audience rows without checking the list is non-empty (only its PATCH path
-  // does, at PaymentLinkServiceImpl's "Selected members audience requires at
-  // least one member"), so an empty selection would quietly produce a plan that
-  // bills nobody. Gated here instead.
-  const audienceReady = form.audience !== "SELECTED_MEMBERS" || (form.memberIds ?? []).length > 0;
+  // A SELECTED_MEMBERS or GROUP plan with an empty list is the invalid state
+  // that must never reach the wire. The backend rejects an empty groupIds on
+  // both paths ("Group audience requires at least one group"), but it does NOT
+  // reject an empty memberIds on create — that path saves the audience rows
+  // without checking — so an empty selection there would quietly produce a plan
+  // that bills nobody. Gated here instead, for both audiences.
+  const audienceReady =
+    form.audience === "SELECTED_MEMBERS"
+      ? (form.memberIds ?? []).length > 0
+      : form.audience === "GROUP"
+        ? (form.groupIds ?? []).length > 0
+        : true;
   const canContinue =
     step === 1
       ? !!planType
@@ -115,7 +130,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
   function handleStep2Continue() {
     const nameError = validatePlanField("name", form.name);
     const amountError = validateAmountForMode(form.amount, form.amountMode);
-    const audienceError = audienceReady ? "" : AUDIENCE_EMPTY_MESSAGE;
+    const audienceError = audienceReady ? "" : audienceEmptyMessage(form.audience);
     if (nameError || amountError || audienceError) {
       setFieldErrors({ name: nameError, amount: amountError, audience: audienceError });
       return;
@@ -140,10 +155,11 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
       audience: form.audience || "ALL_MEMBERS",
       visibility: form.visibility || "PUBLIC",
       amountMode,
-      // memberIds only travel with a SELECTED_MEMBERS audience: the backend
-      // reads them solely for that case, and sending them otherwise would
-      // imply an audience the plan doesn't have.
+      // memberIds and groupIds only travel with the audience that owns them: the
+      // backend reads each list solely for its own case, and sending the other
+      // one would imply an audience the plan doesn't have.
       ...(form.audience === "SELECTED_MEMBERS" ? { memberIds: form.memberIds } : {}),
+      ...(form.audience === "GROUP" ? { groupIds: form.groupIds } : {}),
       ...(form.description?.trim() ? { description: form.description.trim() } : {}),
       ...(form.communityAccountId ? { communityAccountId: form.communityAccountId } : {}),
       ...(planType === "recurring"
@@ -249,6 +265,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
                     slug={slugState.slug}
                     accounts={accounts}
                     memberCount={(form.memberIds ?? []).length}
+                    groupCount={(form.groupIds ?? []).length}
                   />
                 )}
               </div>

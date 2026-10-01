@@ -66,22 +66,43 @@ export const VISIBILITY_OPTIONS = [
   { label: "Plan audience only", value: "PRIVATE" },
 ];
 
-// Matches PaymentAudience. GROUP is deliberately NOT offered yet: it needs
-// the community-groups endpoints (create/list/assign), which this app has no
-// surface for at all. Offering a GROUP option now would produce a payment
-// link the UI cannot create or repair — the backend rejects a GROUP audience
-// with no groupIds. Added when the groups feature lands.
+// Matches the backend's PaymentAudience enum (ALL_MEMBERS | GROUP |
+// SELECTED_MEMBERS). GROUP is offered because the community-groups endpoints
+// it depends on now exist and are wired up (src/api/groups.js, the Groups
+// page) — the earlier note that this app had "no surface for at all" was
+// written before that feature landed and no longer holds.
+//
+// Qualification worth keeping: GROUP is only usable once the community has at
+// least one ACTIVE group, and the backend rejects an empty groupIds on both its
+// create and PATCH paths ("Group audience requires at least one group"). It is
+// also gated behind the caller's community permissions — a community staff
+// member whose KYC isn't approved gets a 403 from the groups list, which the
+// picker surfaces rather than showing an empty list.
 export const AUDIENCE_OPTIONS = [
   { label: "All members", value: "ALL_MEMBERS" },
   { label: "Specific members", value: "SELECTED_MEMBERS" },
+  { label: "Specific groups", value: "GROUP" },
 ];
 
-// One string, three call sites: both modals' validation and the inline hint
-// under the picker. It has to be shown proactively rather than on submit,
-// because the Continue/Save button is disabled while the selection is empty —
-// a message that only appears after clicking a disabled button is a message
-// nobody ever sees.
+// One string per audience, three call sites each: both modals' validation and
+// the inline hint under the picker. It has to be shown proactively rather than
+// on submit, because the Continue/Save button is disabled while the selection
+// is empty — a message that only appears after clicking a disabled button is a
+// message nobody ever sees.
 export const AUDIENCE_EMPTY_MESSAGE = "Choose at least one member for this plan to bill.";
+export const AUDIENCE_GROUP_EMPTY_MESSAGE = "Choose at least one group for this plan to bill.";
+
+/**
+ * The "pick at least one" message for an audience that requires a selection.
+ *
+ * ALL_MEMBERS needs nothing, so it returns "" — the caller treats that as
+ * "ready" rather than special-casing the audience at each site.
+ */
+export function audienceEmptyMessage(audience) {
+  if (audience === "SELECTED_MEMBERS") return AUDIENCE_EMPTY_MESSAGE;
+  if (audience === "GROUP") return AUDIENCE_GROUP_EMPTY_MESSAGE;
+  return "";
+}
 
 // Singular unit label per frequency, used to build the "repeat every N ___"
 // copy next to the interval input.

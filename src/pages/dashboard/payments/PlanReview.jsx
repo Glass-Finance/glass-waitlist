@@ -13,7 +13,14 @@ import { billingDayLabel, intervalUnitLabel, payoutAccountLabel } from "./helper
 const optionLabel = (options, value, fallback = "—") =>
   options.find((option) => option.value === value)?.label ?? fallback;
 
-export default function PlanReview({ planType, form, slug, accounts, memberCount = 0 }) {
+export default function PlanReview({
+  planType,
+  form,
+  slug,
+  accounts,
+  memberCount = 0,
+  groupCount = 0,
+}) {
   const rows = [
     { label: "Plan Name", value: form.name || "—" },
     { label: "URL slug", value: slug || "—" },
@@ -36,6 +43,13 @@ export default function PlanReview({ planType, form, slug, accounts, memberCount
     ...(form.audience === "SELECTED_MEMBERS"
       ? [{ label: "Members selected", value: `${memberCount}` }]
       : []),
+    // A count, not names: the review step has no group list loaded (the picker
+    // only mounts on the details step, and its query is scoped to that step's
+    // lifetime), so naming groups here would mean either fetching again or
+    // rendering stale labels carried over from the previous step. The count is
+    // always accurate, and the details step just above it is where the names are
+    // actually chosen.
+    ...(form.audience === "GROUP" ? [{ label: "Groups selected", value: `${groupCount}` }] : []),
     { label: "Who can pay", value: optionLabel(VISIBILITY_OPTIONS, form.visibility, "Anyone") },
     ...(accounts && accounts.length > 1
       ? [

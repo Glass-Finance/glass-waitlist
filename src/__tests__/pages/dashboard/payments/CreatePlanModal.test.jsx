@@ -40,9 +40,27 @@ vi.mock("../../../../hooks/useCommunityMembers", () => ({
   useCommunityMembers: () => ({ members: MEMBERS, isLoading: false, error: null }),
 }));
 
+// AudienceGroupPicker owns the groups query the same way, so this is its seam.
+// Mocked as a spy so a test can assert the groups list is NOT fetched for an
+// audience that doesn't need it.
+const GROUPS = [
+  { id: "group-a", name: "Board", status: "ACTIVE" },
+  { id: "group-b", name: "Choir", status: "ACTIVE" },
+];
+const useCommunityGroupsMock = vi.fn(() => ({
+  data: { content: GROUPS },
+  isLoading: false,
+  error: null,
+}));
+vi.mock("../../../../hooks/useGroups", async (importOriginal) => {
+  const actual = await importOriginal();
+  return { ...actual, useCommunityGroups: (...args) => useCommunityGroupsMock(...args) };
+});
+
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  useCommunityGroupsMock.mockClear();
 });
 
 function renderModal(overrides = {}) {
@@ -517,5 +535,157 @@ describe("CreatePlanModal — pending & error", () => {
   it("surfaces the create error from the parent", () => {
     renderModal({ createError: "Something went wrong creating the plan." });
     expect(screen.getByText("Something went wrong creating the plan.")).toBeTruthy();
+  });
+});
+
+describe("CreatePlanModal — GROUP audience", () => {
+  it("offers a GROUP option alongside the member audiences", () => {
+    renderModal();
+    goToDetails();
+
+    const select = screen.getByTestId("audience");
+    const values = [...select.querySelectorAll("option")].map((o) => o.value);
+    expect(values).toContain("GROUP");
+    expect(values).toContain("ALL_MEMBERS");
+    expect(values).toContain("SELECTED_MEMBERS");
+  });
+
+  it("mounts the group picker for GROUP and not for the other audiences", () => {
+    const { unmount } = render(
+      <CreatePlanModal
+        communityId="comm-1"
+        onClose={vi.fn()}
+        onCreate={vi.fn()}
+        creating={false}
+        createError={null}
+      />,
+    );
+    goToDetails();
+
+    // ALL_MEMBERS — no picker, and crucially no groups request.
+    expect(screen.queryByText("Groups", { selector: "label" })).toBeNull();
+    expect(useCommunityGroupsMock).not.toHaveBeenCalled();
+    unmount();
+
+    cleanup();
+    renderModal();
+    goToDetails();
+    setSelect("audience", "GROUP");
+    expect(screen.getByText("Groups", { selector: "label" })).toBeTruthy();
+    expect(useCommunityGroupsMock).toHaveBeenCalled();
+  });
+
+  it("blocks Continue with no groups chosen and says why, unprompted", () => {
+    const { onCreate } = renderModal();
+    goToDetails();
+    fillRecurringDetails();
+    setSelect("audience", "GROUP");
+
+    // Continue is disabled, so a submit-only message would never be seen.
+    expect(footerButton("Continue").disabled).toBe(true);
+    expect(screen.getByText("Choose at least one group for this plan to bill.")).toBeTruthy();
+    expect(onCreate).not.toHaveBeenCalled();
+  });
+
+  it("submits the selected group record ids, and drops them again on deselect", async () => {
+    const { onCreate } = renderModal();
+    goToDetails();
+    fillRecurringDetails();
+    setSelect("audience", "GROUP");
+
+    fireEvent.click(screen.getByLabelText("Board"));
+    fireEvent.click(screen.getByLabelText("Choir"));
+    submitStepTwo();
+    submitCreate();
+
+    // group.id, not a user id — the backend resolves these against community
+    // groups and 400s on anything it can't find.
+    expect(createPayload(onCreate)).toMatchObject({
+      audience: "GROUP",
+      groupIds: ["group-a", "group-b"],
+    });
+    await screen.findByText("Plan Created!");
+
+    cleanup();
+    renderModal();
+    goToDetails();
+    fillRecurringDetails();
+    setSelect("audience", "GROUP");
+    fireEvent.click(screen.getByLabelText("Board"));
+    fireEvent.click(screen.getByLabelText("Board"));
+    expect(footerButton("Continue").disabled).toBe(true);
+    expect(screen.getByText("Choose at least one group for this plan to bill.")).toBeTruthy();
+  });
+
+  it("never sends memberIds for a GROUP plan, even after a member selection", async () => {
+    const { onCreate } = renderModal();
+    goToDetails();
+    fillRecurringDetails();
+
+    setSelect("audience", "SELECTED_MEMBERS");
+    fireEvent.click(screen.getByLabelText("Ada Obi"));
+    setSelect("audience", "GROUP");
+    fireEvent.click(screen.getByLabelText("Board"));
+    submitStepTwo();
+    submitCreate();
+
+    const payload = createPayload(onCreate);
+    expect(payload.audience).toBe("GROUP");
+    expect(payload.groupIds).toEqual(["group-a"]);
+    // A member list here would imply an audience the plan doesn't have.
+    expect(payload).not.toHaveProperty("memberIds");
+  });
+
+  it("clears the previous audience's ids when switching, so they can't come back", () => {
+    renderModal();
+    goToDetails();
+    fillRecurringDetails();
+
+    setSelect("audience", "SELECTED_MEMBERS");
+    fireEvent.click(screen.getByLabelText("Ada Obi"));
+    setSelect("audience", "GROUP");
+    // Member list is gone: the member picker is unmounted...
+    expect(screen.queryByLabelText("Ada Obi")).toBeNull();
+
+    // ...and does not silently reappear if the admin switches back.
+    setSelect("audience", "SELECTED_MEMBERS");
+    expect(screen.getByLabelText("Ada Obi").closest("input").checked).toBe(false);
+  });
+
+  it("clears both lists when moving to ALL_MEMBERS", () => {
+    renderModal();
+    goToDetails();
+    fillRecurringDetails();
+
+    setSelect("audience", "GROUP");
+    fireEvent.click(screen.getByLabelText("Board"));
+    setSelect("audience", "ALL_MEMBERS");
+    setSelect("audience", "GROUP");
+
+    expect(screen.getByLabelText("Board").closest("input").checked).toBe(false);
+  });
+
+  it("omits groupIds entirely for an all-members plan", async () => {
+    const { onCreate } = renderModal();
+    goToDetails();
+    fillRecurringDetails();
+    submitStepTwo();
+    submitCreate();
+
+    expect(createPayload(onCreate)).not.toHaveProperty("groupIds");
+  });
+
+  it("names the group count in the review step rather than calling it all members", () => {
+    renderModal();
+    goToDetails();
+    fillRecurringDetails();
+    setSelect("audience", "GROUP");
+    fireEvent.click(screen.getByLabelText("Board"));
+    submitStepTwo();
+
+    // The old optionLabel fallback would have rendered GROUP as "All members".
+    expect(screen.getByText("Specific groups")).toBeTruthy();
+    expect(screen.getByText("Groups selected")).toBeTruthy();
+    expect(screen.queryByText("All members")).toBeNull();
   });
 });
