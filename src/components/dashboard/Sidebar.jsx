@@ -146,7 +146,10 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       : (user?.email ?? "").slice(0, 2).toUpperCase() || "?";
 
   const { data: communitiesData, isLoading: loading } = useCommunities();
-  const communities = communitiesData?.communities ?? [];
+  // In its own useMemo because `?? []` allocates a fresh array on every render
+  // while the query is still loading, and adminCommunities below is memoized
+  // on this reference -- an unstable dep there would recompute it each render.
+  const communities = useMemo(() => communitiesData?.communities ?? [], [communitiesData]);
   const { unreadCount } = useNotifications();
   const { invites } = useInvites();
   const [loggingOut, setLoggingOut] = useState(false);
@@ -179,24 +182,52 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         })());
 
   const resolvedCommunity = urlSlug ? (communities.find((c) => c.slug === urlSlug) ?? null) : null;
-  // Falls back to the first community this admin manages when neither the
-  // URL nor localStorage resolves one -- reachable by landing on a
-  // per-community page (e.g. Notifications, via a self-account
-  // notification like "Profile image updated" that carries no
-  // ?community= at all) without ever having clicked into a community tile
-  // this session. Without this, every nav link but Home goes dead (no
-  // community to build a URL against), leaving no way out except the
-  // logo/overview button or the notification's own action button.
-  const activeCommunity =
-    resolvedCommunity ??
-    (!onCommunitiesOverview ? (communities.filter(isCommunityAdmin)[0] ?? null) : null);
 
-  // Keeps localStorage's "last active community" snapshot in sync with
-  // whatever got resolved above (including the fallback) -- other pages
-  // read the same key directly (useActiveCommunityId.js) and would
-  // otherwise silently disagree with what this sidebar just highlighted.
+  // Computed once and reused by both the community rail and the fallback
+  // decision below, instead of re-filtering the same list in each place.
+  const adminCommunities = useMemo(() => communities.filter(isCommunityAdmin), [communities]);
+
+  // When neither ?community= nor the localStorage snapshot resolves one, a
+  // bare deep link (e.g. Notifications reached from a self-account
+  // notification like "Profile image updated", which carries no
+  // ?community= at all) would leave every nav link but Home dead -- no
+  // community to build a URL against -- so there'd be no way out except the
+  // logo/overview button or the notification's own action button.
+  //
+  // Only the *unambiguous* case is filled in. With exactly one community this
+  // admin manages, [0] is order-independent: it can't pick "the wrong one"
+  // because there is only one candidate, so using it is a presentation
+  // default rather than a guess. With two or more, [0] is whatever the
+  // backend happened to order first, which says nothing about what the user
+  // wanted -- acting on it would quietly drop a multi-community admin into an
+  // arbitrary community. Those users get the honest no-community state
+  // instead, which the header and disabled nav links below already render.
+  const singleAdminFallback =
+    !onCommunitiesOverview && resolvedCommunity === null && adminCommunities.length === 1
+      ? adminCommunities[0]
+      : null;
+
+  const activeCommunity = resolvedCommunity ?? singleAdminFallback;
+
+  // Whether `activeCommunity` reflects context that was actually *chosen* --
+  // an explicit ?community=, or a previously stored selection that still
+  // resolves. Only that may be persisted, because glass_community is not a
+  // per-component cache: useActiveCommunityId() reads it as the session-wide
+  // active community, and CommunityAdminGuard / Notifications / Settings all
+  // resolve from it. Persisting a synthesized fallback would therefore spread
+  // an unchosen community past this sidebar into every community-scoped
+  // surface, which is exactly what the 2+ case above refuses to pick.
+  const communityWasChosen = resolvedCommunity !== null;
+
+  // Keeps localStorage's "last active community" snapshot in sync with the
+  // chosen community above -- other pages read the same key directly
+  // (useActiveCommunityId.js) and would otherwise silently disagree with what
+  // this sidebar just highlighted. A bare fallback is deliberately skipped:
+  // it must never overwrite a real prior selection (which would be a
+  // regression, since the fallback only ever runs when nothing resolved) nor
+  // establish one for pages that would then treat it as explicit.
   useEffect(() => {
-    if (!activeCommunity) return;
+    if (!activeCommunity || !communityWasChosen) return;
     try {
       const stored = JSON.parse(localStorage.getItem("glass_community") ?? "{}");
       if (stored.slug === activeCommunity.slug) return;
@@ -204,7 +235,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       /* fall through and (re)write it */
     }
     localStorage.setItem("glass_community", JSON.stringify(activeCommunity));
-  }, [activeCommunity]);
+  }, [activeCommunity, communityWasChosen]);
 
   // Use the cached member record to derive paying status — same data source
   // as Role.jsx, so no extra network call and no race condition.
@@ -445,7 +476,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 [0, 1].map((i) => (
                   <div key={i} className="w-9 h-9 rounded-sm bg-white/10 animate-pulse" />
                 ))
-              ) : communities.filter(isCommunityAdmin).length === 0 ? (
+              ) : adminCommunities.length === 0 ? (
                 <div className="w-9 h-9 rounded-sm bg-white/10 flex items-center justify-center">
                   <span className="text-white/40 text-[10px]">—</span>
                 </div>
@@ -453,7 +484,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 // Role-based, not ownership-based: promoted ADMIN/MANAGER
                 // members administer communities they don't own and need them
                 // reachable from this rail too.
-                communities.filter(isCommunityAdmin).map((c) => {
+                adminCommunities.map((c) => {
                   const isActive = c.slug === urlSlug;
                   const initials = getInitials(c.name);
                   return (
