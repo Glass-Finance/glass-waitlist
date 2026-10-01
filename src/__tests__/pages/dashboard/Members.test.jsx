@@ -33,6 +33,21 @@ vi.mock("../../../hooks/useJoinRequests", async () => {
   return { ...actual, useJoinRequests: vi.fn() };
 });
 
+// The page reads the account's KYC status so it can explain the 403 that a
+// KYC-incomplete community admin gets from the members endpoint. useKycGate
+// needs an AuthProvider (useAuth) and issues a live /kyc summary request, so
+// it's stubbed here to the benign already-approved state. The gated-403
+// behaviour itself is covered in Members.kycNotice.test.jsx.
+vi.mock("../../../hooks/useKycGate", () => ({
+  useKycGate: () => ({
+    status: "APPROVED",
+    isApproved: true,
+    isLoading: false,
+    isError: false,
+    exempt: false,
+  }),
+}));
+
 function member(overrides = {}) {
   return {
     id: "member-1",

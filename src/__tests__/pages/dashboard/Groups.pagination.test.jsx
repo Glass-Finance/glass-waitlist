@@ -24,6 +24,21 @@ vi.mock("../../../hooks/useCommunityMembers", () => ({
   useCommunityMembers: () => ({ members: [], isLoading: false, error: null }),
 }));
 vi.mock("../../../hooks/usePageTitle", () => ({ usePageTitle: vi.fn() }));
+// The page reads the account's KYC status so it can explain the 403 that a
+// KYC-incomplete community admin gets from the groups endpoint. useKycGate
+// needs an AuthProvider (useAuth) and issues a live /kyc summary request, so
+// it's stubbed here to the benign already-approved state — it isn't part of
+// the pagination wiring under test here. The gated-403 behaviour itself is
+// covered in Groups.kycNotice.test.jsx.
+vi.mock("../../../hooks/useKycGate", () => ({
+  useKycGate: () => ({
+    status: "APPROVED",
+    isApproved: true,
+    isLoading: false,
+    isError: false,
+    exempt: false,
+  }),
+}));
 
 const { mockGet } = vi.hoisted(() => ({
   mockGet: { current: vi.fn() },

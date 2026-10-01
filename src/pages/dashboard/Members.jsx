@@ -37,6 +37,9 @@ import { formatDate } from "../../utils/format";
 import { resolveDisplayName, resolveEmail } from "../../utils/memberName";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
 import { roleKeyword, isCommunityAdmin } from "../../utils/communityRole";
+import { useKycGate } from "../../hooks/useKycGate";
+import { isKycGatedCommunityRequestError } from "../../utils/kycStatus";
+import CommunityStaffKycNotice from "../../components/dashboard/CommunityStaffKycNotice";
 import { QuickAddMemberModal } from "./MembersSections";
 
 // Only these three roles should be assignable when inviting members.
@@ -134,6 +137,22 @@ export default function Members() {
   const { requests: allJoinRequests } = useJoinRequests(communityId);
   const pendingJoinRequests = allJoinRequests.filter((r) => requestStatusOf(r) === "PENDING");
   const { data: rolesData } = useRoles();
+
+  // A community staff member whose KYC isn't approved is downgraded to
+  // COMMUNITY_MEMBER permissions server-side, so the members request 403s even
+  // though their role is correct -- with the generic
+  // "Community permission is required: community.members.read". Name the real
+  // blocker, but only once the KYC status is actually known, so a 403 from any
+  // other cause (or during a summary outage) still falls through to the
+  // existing generic error. Not enforced on load: this states the situation
+  // rather than blocking the page.
+  const kycGate = useKycGate();
+  const kycGated = isKycGatedCommunityRequestError(error, kycGate.status, {
+    isLoading: kycGate.isLoading,
+    isError: kycGate.isError,
+    exempt: kycGate.exempt,
+  });
+
   const filteredRoles = rolesData ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name)) : [];
   const usingFallbackRoles = !filteredRoles.length;
   const roles = usingFallbackRoles ? FALLBACK_ROLES : filteredRoles;
@@ -494,6 +513,15 @@ export default function Members() {
                   <tr>
                     <td colSpan={8}>
                       <LoadingState className="py-8" />
+                    </td>
+                  </tr>
+                ) : kycGated ? (
+                  <tr>
+                    <td colSpan={8} className="px-5 py-6">
+                      <CommunityStaffKycNotice
+                        status={kycGate.status}
+                        subject="your members list"
+                      />
                     </td>
                   </tr>
                 ) : error ? (

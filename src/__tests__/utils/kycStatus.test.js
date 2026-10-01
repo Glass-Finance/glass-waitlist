@@ -9,6 +9,7 @@ import {
   isKycApproved,
   isKycTerminal,
   isKycInFlight,
+  isKycGatedCommunityRequestError,
 } from "../../utils/kycStatus";
 
 // Predicate-matrix coverage for every KYC status/idType literal the frontend
@@ -127,5 +128,117 @@ describe("id type labels", () => {
     expect(idTypeLabel("SOMETHING_NEW")).toBe("SOMETHING_NEW");
     expect(idTypeLabel(null)).toBe("—");
     expect(idTypeLabel(undefined)).toBe("—");
+  });
+});
+
+// The Members/Groups pages use this to tell a KYC-downgrade 403 apart from
+// every other failure. The load-bearing case is the one whose message does NOT
+// mention KYC: AccessControlService.requirePermission throws the generic
+// "Community permission is required: <perm>" after silently downgrading the
+// account's permissions, so isKycRequiredError alone would never fire.
+describe("isKycGatedCommunityRequestError", () => {
+  const downgrade403 = (
+    description = "Community permission is required: community.members.read",
+  ) => ({
+    response: { status: 403, data: { description } },
+  });
+  const settled = { isLoading: false, isError: false, exempt: false };
+
+  it("matches a plain 403 when the KYC status is known and not approved", () => {
+    expect(isKycGatedCommunityRequestError(downgrade403(), "NOT_STARTED", settled)).toBe(true);
+    expect(isKycGatedCommunityRequestError(downgrade403(), "IN_REVIEW", settled)).toBe(true);
+    expect(isKycGatedCommunityRequestError(downgrade403(), "REJECTED", settled)).toBe(true);
+  });
+
+  it("does not match a 403 that isn't a community-permission refusal", () => {
+    // The honest case: an incomplete-KYC account hitting a community they're
+    // not an admin of (via ?community=) gets refused for an unrelated reason.
+    // Telling them "your community role is active" would be wrong.
+    expect(
+      isKycGatedCommunityRequestError(
+        { response: { status: 403, data: { description: "Forbidden" } } },
+        "NOT_STARTED",
+        settled,
+      ),
+    ).toBe(false);
+    // No description at all -- nothing to attribute it to.
+    expect(
+      isKycGatedCommunityRequestError(
+        { response: { status: 403, data: {} } },
+        "NOT_STARTED",
+        settled,
+      ),
+    ).toBe(false);
+  });
+
+  it("ignores the permission name in the message so it can change", () => {
+    // Matched on the prefix only: the backend currently reports
+    // community.members.read for the groups list too, and that name is free to
+    // change without breaking the explanation.
+    expect(
+      isKycGatedCommunityRequestError(
+        downgrade403("Community permission is required: community.some.future.permission"),
+        "NOT_STARTED",
+        settled,
+      ),
+    ).toBe(true);
+  });
+
+  it("does not match once the account is approved", () => {
+    expect(isKycGatedCommunityRequestError(downgrade403(), "APPROVED", settled)).toBe(false);
+  });
+
+  it("does not guess while the status is still loading", () => {
+    // A 403 that lands before /kyc settles is not evidence of anything yet.
+    expect(
+      isKycGatedCommunityRequestError(downgrade403(), null, { ...settled, isLoading: true }),
+    ).toBe(false);
+  });
+
+  it("does not blame KYC when the summary request itself failed", () => {
+    // An outage of /kyc must not send a user off to verify for no reason.
+    expect(
+      isKycGatedCommunityRequestError(downgrade403(), null, { ...settled, isError: true }),
+    ).toBe(false);
+  });
+
+  it("does not match when there is no KYC record at all", () => {
+    expect(isKycGatedCommunityRequestError(downgrade403(), null, settled)).toBe(false);
+  });
+
+  it("never matches a non-403", () => {
+    for (const status of [400, 404, 409, 500, 503]) {
+      expect(
+        isKycGatedCommunityRequestError({ response: { status, data: {} } }, "NOT_STARTED", settled),
+      ).toBe(false);
+    }
+    expect(isKycGatedCommunityRequestError(null, "NOT_STARTED", settled)).toBe(false);
+    expect(isKycGatedCommunityRequestError(undefined, "NOT_STARTED", settled)).toBe(false);
+  });
+
+  it("never matches for an exempt account, whatever the status says", () => {
+    // Platform staff are backend-exempt from the downgrade, and the kill
+    // switch means KYC isn't in play at all -- so a 403 they hit is unrelated.
+    const exempt = { ...settled, exempt: true };
+    expect(isKycGatedCommunityRequestError(downgrade403(), "NOT_STARTED", exempt)).toBe(false);
+    expect(
+      isKycGatedCommunityRequestError(
+        downgrade403("Approved KYC is required for community staff participation"),
+        "NOT_STARTED",
+        exempt,
+      ),
+    ).toBe(false);
+  });
+
+  it("still honours the backend's explicit KYC message without a status", () => {
+    // Guards the case the status pair can't cover: the summary hasn't loaded
+    // but the backend said KYC outright, so we already have proof.
+    expect(
+      isKycGatedCommunityRequestError(
+        downgrade403("Approved KYC is required for community staff participation"),
+        null,
+        { isLoading: true, isError: false, exempt: false },
+      ),
+    ).toBe(true);
   });
 });
