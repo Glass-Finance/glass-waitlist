@@ -163,6 +163,44 @@ describe("connect-src", () => {
   });
 });
 
+// There was no img-src coverage at all, which is how TWO real production
+// breaks shipped through this file: files.glasspay.app (every user-uploaded
+// avatar and community logo) and lh3.googleusercontent.com (the Google
+// sign-in avatar). Neither shows up in typecheck, lint, build, or the unit
+// suite — only a browser console.
+describe("img-src", () => {
+  it("allows the backend file host, or every uploaded avatar/logo is blocked", () => {
+    // GET /communities/me and /user/me return logo.url and
+    // profileImage.url on this host. Without it the images simply never load.
+    expect(sourcesFor("img-src")).toContain("https://files.glasspay.app");
+  });
+
+  it("allows the Google avatar host, or the 'Continue with Google' avatar is blocked", () => {
+    // The `picture` claim on the Google ID token points at this host and is
+    // bound straight to <img src> in GoogleAuthButton. script-src and
+    // style-src already allow accounts.google.com (see above) — without this
+    // the button renders but its avatar does not.
+    expect(sourcesFor("img-src")).toContain("https://lh3.googleusercontent.com");
+  });
+
+  it("keeps the Cloudinary delivery host, which serves the marketing imagery", () => {
+    expect(sourcesFor("img-src")).toContain("https://res.cloudinary.com");
+  });
+
+  it("keeps data: and blob:, which local previews and inline images rely on", () => {
+    // data: is narrowed elsewhere (safeImageUrl rejects it for remote values);
+    // here it is needed for inline SVG/data images the app renders itself.
+    const sources = sourcesFor("img-src");
+    expect(sources).toContain("data:");
+    expect(sources).toContain("blob:");
+  });
+
+  it("does not fall back to allowing every origin", () => {
+    // '*' would let any attacker-chosen host serve an image into the app.
+    expect(sourcesFor("img-src")).not.toContain("*");
+  });
+});
+
 describe("Permissions-Policy stays consistent with frame-src", () => {
   it("grants camera to the Smile ID host, so the iframe it serves can capture", () => {
     const vercel = JSON.parse(readFileSync(join(repoRoot, "vercel.json"), "utf8"));
