@@ -16,8 +16,11 @@ export default function GroupMembersModal({ communityId, group, onClose }) {
   // Membership is fetched in one large page rather than paginated: the picker
   // is a search-and-toggle over the whole community, and a paginated list
   // behind a search box would silently hide members on page 2.
+  //
+  // pageNumber is 1-based (createPageable -> PageRequest.of(pageNumber - 1)),
+  // so 0 would be rejected as an illegal argument.
   const { data, isLoading } = useCommunityGroupMembers(communityId, group.id, {
-    pageNumber: 0,
+    pageNumber: 1,
     pageSize: MEMBERS_PAGE_SIZE,
   });
   const { members: allMembers, isLoading: membersLoading } = useCommunityMembers(communityId);
