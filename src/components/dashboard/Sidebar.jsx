@@ -181,7 +181,16 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
           }
         })());
 
-  const resolvedCommunity = urlSlug ? (communities.find((c) => c.slug === urlSlug) ?? null) : null;
+  // ?community= may carry either identifier: the other three resolvers of this
+  // value -- CommunityAdminGuard, Settings, useNotifications -- all accept a
+  // slug *or* a community id, so a UUID that resolves everywhere else used to
+  // resolve to nothing here and left the sidebar with no active community
+  // (no rail highlight, dead nav links) on a page the rest of the app considered
+  // correctly scoped. Same normalization as those three: slug compared as-is,
+  // id stringified on both sides so a non-string id can't silently miss.
+  const resolvedCommunity = urlSlug
+    ? (communities.find((c) => c.slug === urlSlug || String(c.id) === String(urlSlug)) ?? null)
+    : null;
 
   // Computed once and reused by both the community rail and the fallback
   // decision below, instead of re-filtering the same list in each place.
@@ -485,7 +494,10 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 // members administer communities they don't own and need them
                 // reachable from this rail too.
                 adminCommunities.map((c) => {
-                  const isActive = c.slug === urlSlug;
+                  // Same id-or-slug match as the resolution above, so the rail
+                  // still highlights the right tile when ?community= carries a
+                  // community id rather than a slug.
+                  const isActive = c.slug === urlSlug || String(c.id) === String(urlSlug);
                   const initials = getInitials(c.name);
                   return (
                     <div key={c.id} className="relative flex-shrink-0">
