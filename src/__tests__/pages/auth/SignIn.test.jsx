@@ -4,6 +4,7 @@ import { MemoryRouter, Routes, Route, useLocation } from "react-router-dom";
 import SignIn from "../../../pages/auth/SignIn";
 import { useAuth } from "../../../store/AuthContext";
 import { verifyMfaLogin, requestLoginOtp, verifyLoginOtp } from "../../../services/authService";
+import { verifyMfaRecoveryCodeLogin } from "../../../services/authService";
 import { submitJoinRequest } from "../../../api/invites";
 
 // Sign-in is the front door to every other flow and had zero coverage off the
@@ -16,6 +17,7 @@ import { submitJoinRequest } from "../../../api/invites";
 vi.mock("../../../store/AuthContext", () => ({ useAuth: vi.fn() }));
 vi.mock("../../../services/authService", () => ({
   verifyMfaLogin: vi.fn(),
+  verifyMfaRecoveryCodeLogin: vi.fn(),
   requestLoginOtp: vi.fn(),
   verifyLoginOtp: vi.fn(),
 }));
@@ -315,6 +317,156 @@ describe("SignIn MFA challenge", () => {
     expect(screen.getByPlaceholderText("000000").value).toBe("");
     expect(screen.getByRole("button", { name: "Verify Code" }).disabled).toBe(true);
     expect(auth.setSession).not.toHaveBeenCalled();
+  });
+});
+
+describe("SignIn MFA recovery-code challenge", () => {
+  // A real recovery code is 16 alphanumeric characters, returned to the user
+  // in "XXXX-XXXX-XXXX-XXXX" form. The backend normalises what it receives
+  // (strips separators, uppercases) before comparing against the stored
+  // hash, so these tests pin that the dashed form the user pasted is what
+  // gets submitted, normalised.
+  const DASHED_CODE = "A1B2-C3D4-E5F6-G7H8";
+
+  // Renders, signs in, and waits for the MFA screen. Deliberately does not
+  // touch useAuth() — the mock module is mocked at the boundary so it reads
+  // as a hook to the lint rule, and a plain helper calling it would trip
+  // rules-of-hooks. Tests that need the auth mock call useAuth() themselves,
+  // as the rest of this file already does.
+  async function reachChallengeScreen() {
+    renderSignIn();
+    fillCredentials("sulaimon@example.com", "secret123");
+    clickSignIn();
+    await screen.findByText("Enter MFA Code");
+  }
+
+  beforeEach(() => {
+    const auth = useAuth();
+    auth.login.mockResolvedValue({ mfaRequired: true, mfaChallengeToken: "challenge-1" });
+    auth.setSession.mockResolvedValue({ isPlatformAdmin: true, isAdmin: true });
+  });
+
+  function switchToRecovery() {
+    fireEvent.click(screen.getByRole("button", { name: /Lost access to your authenticator\?/ }));
+  }
+
+  it("signs in with a recovery code and submits it normalised", async () => {
+    await reachChallengeScreen();
+    const auth = useAuth();
+    verifyMfaRecoveryCodeLogin.mockResolvedValue({ accessToken: "recovery-token" });
+
+    switchToRecovery();
+    expect(await screen.findByText("Use a Recovery Code")).toBeDefined();
+
+    fireEvent.change(screen.getByPlaceholderText("XXXX-XXXX-XXXX-XXXX"), {
+      target: { value: DASHED_CODE },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Verify Code" }));
+
+    expect(await screen.findByText("Admin panel")).toBeDefined();
+    // Normalised on the way out: separators stripped and uppercased, matching
+    // what the backend hashes the code as. The TOTP service must not be used.
+    expect(verifyMfaRecoveryCodeLogin).toHaveBeenCalledWith({
+      challengeToken: "challenge-1",
+      recoveryCode: "A1B2C3D4E5F6G7H8",
+    });
+    expect(verifyMfaLogin).not.toHaveBeenCalled();
+    expect(auth.setSession).toHaveBeenCalledWith({ accessToken: "recovery-token" });
+  });
+
+  it("accepts a lowercase pasted code and uppercases it", async () => {
+    await reachChallengeScreen();
+    verifyMfaRecoveryCodeLogin.mockResolvedValue({ accessToken: "recovery-token" });
+
+    switchToRecovery();
+    await screen.findByText("Use a Recovery Code");
+    fireEvent.change(screen.getByPlaceholderText("XXXX-XXXX-XXXX-XXXX"), {
+      target: { value: DASHED_CODE.toLowerCase() },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Verify Code" }));
+
+    await screen.findByText("Admin panel");
+    expect(verifyMfaRecoveryCodeLogin).toHaveBeenCalledWith({
+      challengeToken: "challenge-1",
+      recoveryCode: "A1B2C3D4E5F6G7H8",
+    });
+  });
+
+  it("keeps the button disabled until a full 16-character code is entered", async () => {
+    await reachChallengeScreen();
+    switchToRecovery();
+    const input = await screen.findByPlaceholderText("XXXX-XXXX-XXXX-XXXX");
+    const verify = screen.getByRole("button", { name: "Verify Code" });
+
+    // A TOTP-length entry must not be enough: 6 digits is a valid TOTP code
+    // but nowhere near a complete recovery code.
+    fireEvent.change(input, { target: { value: "123456" } });
+    expect(verify.disabled).toBe(true);
+
+    fireEvent.change(input, { target: { value: "A1B2C3D4E5F6G7" } }); // 15 chars
+    expect(verify.disabled).toBe(true);
+
+    fireEvent.change(input, { target: { value: DASHED_CODE } }); // 16 chars
+    expect(verify.disabled).toBe(false);
+    expect(verifyMfaRecoveryCodeLogin).not.toHaveBeenCalled();
+  });
+
+  it("clears a rejected recovery code so a spent one can't be resubmitted", async () => {
+    await reachChallengeScreen();
+    const auth = useAuth();
+    verifyMfaRecoveryCodeLogin.mockRejectedValue({
+      response: { status: 400, data: { message: "Invalid recovery code" } },
+    });
+
+    switchToRecovery();
+    const input = await screen.findByPlaceholderText("XXXX-XXXX-XXXX-XXXX");
+    fireEvent.change(input, { target: { value: DASHED_CODE } });
+    fireEvent.click(screen.getByRole("button", { name: "Verify Code" }));
+
+    expect(await screen.findByText("Invalid recovery code")).toBeDefined();
+    // Cleared: each code is single-use server-side, so leaving it in the box
+    // invites a repeat submission of a code that's already been consumed.
+    expect(input.value).toBe("");
+    expect(screen.getByRole("button", { name: "Verify Code" }).disabled).toBe(true);
+    expect(auth.setSession).not.toHaveBeenCalled();
+  });
+
+  it("does not carry the TOTP code across when switching to recovery and back", async () => {
+    await reachChallengeScreen();
+    verifyMfaRecoveryCodeLogin.mockResolvedValue({ accessToken: "recovery-token" });
+
+    fireEvent.change(screen.getByPlaceholderText("000000"), { target: { value: "123456" } });
+    switchToRecovery();
+    const input = await screen.findByPlaceholderText("XXXX-XXXX-XXXX-XXXX");
+
+    fireEvent.change(input, { target: { value: DASHED_CODE } });
+    fireEvent.click(screen.getByRole("button", { name: /Use my authenticator app instead/ }));
+
+    // Back on TOTP: the previous code is gone, so Verify is disabled again
+    // rather than silently re-submitting a stale code.
+    expect(screen.getByPlaceholderText("000000").value).toBe("");
+    expect(screen.getByRole("button", { name: "Verify Code" }).disabled).toBe(true);
+    expect(verifyMfaLogin).not.toHaveBeenCalled();
+  });
+
+  it("resets the factor when backing out to the sign-in form", async () => {
+    await reachChallengeScreen();
+    switchToRecovery();
+    await screen.findByPlaceholderText("XXXX-XXXX-XXXX-XXXX");
+    fireEvent.change(screen.getByPlaceholderText("XXXX-XXXX-XXXX-XXXX"), {
+      target: { value: DASHED_CODE },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /Back to sign in/ }));
+
+    // Re-entering the challenge must not reopen on the recovery screen with a
+    // half-entered code.
+    await screen.findByText("Sign In To Your Account");
+    fillCredentials("sulaimon@example.com", "secret123");
+    clickSignIn();
+    expect(await screen.findByText("Enter MFA Code")).toBeDefined();
+    expect(screen.getByPlaceholderText("000000").value).toBe("");
+    expect(verifyMfaRecoveryCodeLogin).not.toHaveBeenCalled();
   });
 });
 
