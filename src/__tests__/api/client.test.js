@@ -195,4 +195,26 @@ describe("client.js auth-refresh interceptor", () => {
   it("PRE_AUTH_PATHS is exported and includes the login endpoint, used by errorHandler.js to distinguish wrong-credentials from session-expiry", () => {
     expect(PRE_AUTH_PATHS).toContain("/auth/login");
   });
+
+  it("treats the MFA verify routes as pre-auth, so a rejected code never triggers refresh-and-redirect", () => {
+    // Both complete the *login* — no session exists yet, so a failure is a
+    // wrong code, not a lapsed session. Without this, the interceptor would
+    // hard-navigate off the sign-in form mid-attempt, taking the MFA
+    // challenge (and whatever the user typed) with it.
+    expect(PRE_AUTH_PATHS).toContain("/auth/mfa/totp/verify-login");
+    expect(PRE_AUTH_PATHS).toContain("/auth/mfa/recovery-code/verify-login");
+  });
+
+  it("does NOT treat the recovery-codes regenerate route as pre-auth — that call is session-authenticated", () => {
+    // Listed in AppConstant.AUTH_PATHS on the backend, i.e. it needs a real
+    // session. If it were in PRE_AUTH_PATHS, a genuinely expired session would
+    // surface as a confusing inline error instead of refreshing, and a
+    // non-pre-auth path is also what errorHandler's MFA copy keys off.
+    expect(PRE_AUTH_PATHS).not.toContain("/auth/mfa/recovery-codes/regenerate");
+    // Substring guard: the singular login path must not accidentally match the
+    // plural regenerate path via `url.includes(...)`.
+    const regenerateUrl = "/auth/mfa/recovery-codes/regenerate";
+    const isPreAuth = PRE_AUTH_PATHS.some((p) => regenerateUrl.includes(p));
+    expect(isPreAuth).toBe(false);
+  });
 });

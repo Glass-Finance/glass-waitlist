@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef, useId } from "react";
 import QRCode from "qrcode";
-import { Eye, EyeOff, ShieldCheck, Shield, Copy, Check, X } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, Shield, Copy, Check, X, KeyRound } from "lucide-react";
 import { useUpdatePassword, useMe } from "../../../../hooks/useMyAccount";
-import { setupMfaTotp, enableMfaTotp, disableMfaTotp } from "../../../../services/authService";
+import {
+  setupMfaTotp,
+  enableMfaTotp,
+  disableMfaTotp,
+  regenerateMfaRecoveryCodes,
+} from "../../../../services/authService";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
 import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
@@ -18,6 +23,10 @@ import { toastSuccess } from "../../../../utils/toast";
 
 function MfaModal({ mode, onClose, onSuccess }) {
   const [stage, setStage] = useState(mode === "setup" ? "idle" : "confirm");
+  // Regenerating invalidates the existing codes the moment it succeeds, so
+  // like the post-enable screen it ends on a stage that can only be left via
+  // an explicit "Done" — requestDismiss below refuses to close it otherwise.
+  const showingRecoveryCodes = stage === "recovery" || stage === "regenerated";
   const [setupData, setSetupData] = useState(null);
   const [recoveryCodes, setRecoveryCodes] = useState([]);
   const [code, setCode] = useState("");
@@ -37,7 +46,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
   // one place this is enforced -- "Done" (gated on savedConfirmed below) is
   // the only way out once codes are on screen.
   function requestDismiss() {
-    if (stage === "recovery" || stage === "success") return;
+    if (stage === "recovery" || stage === "success" || stage === "regenerated") return;
     onClose();
   }
 
@@ -126,6 +135,22 @@ function MfaModal({ mode, onClose, onSuccess }) {
     }
   }
 
+  async function confirmRegenerate() {
+    if (code.length !== 6) return;
+    setLoading(true);
+    setError("");
+    try {
+      const result = await regenerateMfaRecoveryCodes({ code });
+      setRecoveryCodes(result?.recoveryCodes ?? []);
+      setStage("regenerated");
+    } catch (err) {
+      setError(getErrorMessage(err, "Couldn't regenerate codes. Please try again."));
+      setCode("");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function copySecret() {
     copy(secret);
   }
@@ -172,12 +197,16 @@ function MfaModal({ mode, onClose, onSuccess }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
           <h2 id={titleId} className="text-sm font-bold text-gray-900">
-            {mode === "setup" ? "Set Up Authenticator App" : "Disable MFA"}
+            {mode === "setup"
+              ? "Set Up Authenticator App"
+              : mode === "regenerate"
+                ? "Regenerate Recovery Codes"
+                : "Disable MFA"}
           </h2>
           {/* Hidden, not just a no-op, during the recovery stage -- same
               reasoning as the Cancel button below: once codes are on
               screen, "Done" is the only way out. */}
-          {stage !== "recovery" && stage !== "success" && (
+          {!showingRecoveryCodes && stage !== "success" && (
             <button
               onClick={requestDismiss}
               aria-label="Close"
@@ -313,6 +342,96 @@ function MfaModal({ mode, onClose, onSuccess }) {
             </>
           )}
 
+          {/* Regenerate: warning first, code entry second. The backend deletes
+              every existing code the moment this succeeds, so the consequence
+              has to be read before the confirming input, not after. */}
+          {mode === "regenerate" && stage === "confirm" && (
+            <>
+              <div className="bg-warning-wash rounded-xl p-4 border border-warning/30">
+                <p className="text-xs font-semibold text-warning mb-1">
+                  Replace your recovery codes?
+                </p>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  Your current recovery codes will stop working immediately and can't be recovered.
+                  Generate a new set if you've used them up, lost them, or think they may have been
+                  exposed.
+                </p>
+              </div>
+              <label htmlFor={codeInputId} className="text-xs text-gray-600">
+                Enter the 6-digit code from your authenticator app to confirm:
+              </label>
+              <input
+                id={codeInputId}
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="000000"
+                autoComplete="one-time-code"
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                className={inputCls}
+              />
+              {error && (
+                <p role="alert" className="text-xs text-red-500">
+                  {error}
+                </p>
+              )}
+              <Button onClick={confirmRegenerate} disabled={code.length !== 6} loading={loading}>
+                {loading ? "Generating…" : "Generate New Codes"}
+              </Button>
+            </>
+          )}
+
+          {/* Regenerated codes -- same single-exit handling as the post-enable
+              screen below, since these are shown once and only retrievable
+              from this response. */}
+          {stage === "regenerated" && (
+            <div className="flex flex-col gap-3">
+              <div className="bg-warning-wash rounded-xl p-4 border border-warning/30">
+                <p className="text-xs font-semibold text-warning mb-1">
+                  Save your new recovery codes
+                </p>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  Your previous codes no longer work. These are shown once — store them somewhere
+                  safe before you continue.
+                </p>
+              </div>
+              {recoveryCodes.length > 0 && (
+                <>
+                  <div className="bg-stacked-container rounded-xl p-4 border border-gray-200 grid grid-cols-2 gap-2">
+                    {recoveryCodes.map((rc, i) => (
+                      <code
+                        key={i}
+                        className="text-xs font-mono font-bold text-gray-800 bg-white rounded px-2 py-1 border border-gray-200 text-center"
+                      >
+                        {rc}
+                      </code>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => copyAll(recoveryCodes.join("\n"))}
+                    className="flex items-center justify-center gap-1.5 text-xs font-semibold text-brand bg-transparent border-none cursor-pointer py-1"
+                  >
+                    {copiedAll ? <Check size={13} /> : <Copy size={13} />}
+                    {copiedAll ? "Copied" : "Copy all codes"}
+                  </button>
+                </>
+              )}
+              <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={savedConfirmed}
+                  onChange={(e) => setSavedConfirmed(e.target.checked)}
+                  className="w-3.5 h-3.5"
+                />
+                I've saved these codes somewhere safe
+              </label>
+              <Button onClick={onSuccess} disabled={!savedConfirmed}>
+                Done
+              </Button>
+            </div>
+          )}
+
           {/* Brief animated confirmation before the recovery codes -- gives
               the same success moment every other action in the app gets,
               without holding up the codes screen (auto-advances). */}
@@ -373,7 +492,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
             </div>
           )}
 
-          {stage !== "recovery" && stage !== "success" && (
+          {!showingRecoveryCodes && stage !== "success" && (
             <Button onClick={requestDismiss} variant="secondary" size="sm">
               Cancel
             </Button>
@@ -618,6 +737,36 @@ export default function Security() {
             </button>
           </div>
         </div>
+
+        {/* Recovery codes are only meaningful once TOTP is on — with MFA
+            disabled there are no codes to regenerate, so the row is hidden
+            rather than shown disabled. */}
+        {mfaEnabled && (
+          <div className="flex items-center justify-between py-3 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-100">
+                <KeyRound size={16} className="text-gray-400" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-900">Recovery Codes</p>
+                <p className="text-xs text-gray-500">
+                  Single-use codes to sign in if you lose your authenticator
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setMfaModal("regenerate")}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold border cursor-pointer transition-all"
+              style={{
+                border: "1px solid var(--color-brand)",
+                color: "var(--color-brand)",
+                background: "var(--color-white)",
+              }}
+            >
+              Regenerate
+            </button>
+          </div>
+        )}
 
         <div className="flex items-center justify-between py-3">
           <div className="flex items-center gap-3">

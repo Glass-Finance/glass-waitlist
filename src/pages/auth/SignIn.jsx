@@ -79,14 +79,28 @@ export default function SignIn() {
     destinationTakenRef.current = true;
   };
 
-  // MFA challenge state + verification live in useMfaChallenge.
-  const { mfaChallenge, setMfaChallenge, mfaCode, setMfaCode, mfaInputRef, handleMfaVerify } =
-    useMfaChallenge({
-      setLoading,
-      setError,
-      onAuthAttempt: markAuthAttempted,
-      onAuthenticated: authenticateAndRoute,
-    });
+  // MFA challenge state + verification live in useMfaChallenge. The hook owns
+  // which second factor is active (TOTP vs recovery code) so the inputs and
+  // the endpoint that gets called can't disagree.
+  const {
+    mfaChallenge,
+    setMfaChallenge,
+    mfaMethod,
+    switchMethod,
+    mfaCode,
+    setMfaCode,
+    recoveryCode,
+    setRecoveryCode,
+    canVerify,
+    resetChallenge,
+    mfaInputRef,
+    handleMfaVerify,
+  } = useMfaChallenge({
+    setLoading,
+    setError,
+    onAuthAttempt: markAuthAttempted,
+    onAuthenticated: authenticateAndRoute,
+  });
 
   // ── Passwordless (OTP) sign-in — state + handlers live in useOtpSignIn ──
   const [mode, setMode] = useState("password"); // "password" | "otp"
@@ -338,12 +352,22 @@ export default function SignIn() {
           setMfaCode(value);
           setError("");
         }}
+        mfaMethod={mfaMethod}
+        recoveryCode={recoveryCode}
+        setRecoveryCode={(value) => {
+          setRecoveryCode(value);
+          setError("");
+        }}
+        canVerify={canVerify}
         error={error}
         loading={loading}
         onVerify={handleMfaVerify}
+        onSwitchMethod={switchMethod}
         onBack={() => {
-          setMfaChallenge(null);
-          setMfaCode("");
+          // resetChallenge clears the active factor and both inputs, so
+          // returning to the MFA screen later doesn't reopen on a
+          // half-entered recovery code.
+          resetChallenge();
           setError("");
           if (mode === "otp") setOtpStep("request");
         }}

@@ -164,6 +164,29 @@ export async function verifyMfaLogin({ challengeToken, code }) {
 }
 
 /**
+ * Complete MFA login with a recovery code — the path for someone who has lost
+ * or replaced their authenticator. Takes the same challenge token as the TOTP
+ * route and returns the same AuthResponse on success.
+ *
+ * The backend stores each code hashed in its normalised form (uppercase
+ * alphanumerics, separators stripped) and normalises the submitted value the
+ * same way before comparing, so a user pasting the dashed
+ * "XXXX-XXXX-XXXX-XXXX" form they saved works unchanged. A matched code is
+ * marked used, so every code is strictly single-use.
+ *
+ * Pre-auth like the TOTP route: no session exists yet, so a failure here is
+ * "wrong code", never "session expired" — see PRE_AUTH_PATHS in api/client.js.
+ */
+export async function verifyMfaRecoveryCodeLogin({ challengeToken, recoveryCode }) {
+  const { data } = await client.post("/auth/mfa/recovery-code/verify-login", {
+    challengeToken,
+    recoveryCode,
+    deviceInfo: navigator.userAgent,
+  });
+  return data.data;
+}
+
+/**
  * Initiate TOTP MFA setup — returns { secret, qrCodeUri } or { qrCodeImage, secret }.
  */
 export async function setupMfaTotp() {
@@ -183,6 +206,23 @@ export async function enableMfaTotp({ code }) {
 export async function disableMfaTotp({ code }) {
   const { data } = await client.post("/auth/mfa/totp/disable", { code });
   return data.data;
+}
+
+/**
+ * Replace this account's MFA recovery codes with a fresh set.
+ *
+ * Unlike the recovery-code *login* route, this one is an ordinary
+ * authenticated call — it sits behind a session, not behind an MFA challenge
+ * — so it must NOT be added to PRE_AUTH_PATHS in api/client.js.
+ *
+ * Requires a current TOTP code as proof of possession, and deletes every
+ * existing code before issuing the new set, so previously saved codes stop
+ * working immediately and the old set is unrecoverable.
+ * @returns {Promise<{recoveryCodes: string[]}>}
+ */
+export async function regenerateMfaRecoveryCodes({ code }) {
+  const { data } = await client.post("/auth/mfa/recovery-codes/regenerate", { code });
+  return data.data; // { recoveryCodes: [...] }
 }
 
 /**

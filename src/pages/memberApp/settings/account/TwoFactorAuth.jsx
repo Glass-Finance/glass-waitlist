@@ -7,7 +7,12 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ShieldCheck, Shield, Copy, Check } from "lucide-react";
 import { useMe } from "../../../../hooks/useMyAccount";
 import { useQueryClient } from "@tanstack/react-query";
-import { setupMfaTotp, enableMfaTotp, disableMfaTotp } from "../../../../services/authService";
+import {
+  setupMfaTotp,
+  enableMfaTotp,
+  disableMfaTotp,
+  regenerateMfaRecoveryCodes,
+} from "../../../../services/authService";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
 import { Button } from "../../../../components/ui/Button";
@@ -251,12 +256,105 @@ function DisableFlow({ onSuccess, onCancel }) {
   );
 }
 
+// ── Regenerate recovery codes flow ─────────────────────────────────────────────
+// Deliberately a two-step flow: the warning is shown before the code input,
+// because the backend deletes every existing code the moment this succeeds.
+// Someone who regenerates without reading that has silently invalidated the
+// codes they were relying on.
+function RegenerateFlow({ onSuccess, onCancel }) {
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [recoveryCodes, setRecoveryCodes] = useState([]);
+  const [copied, copy] = useCopyToClipboard();
+
+  async function handleRegenerate() {
+    if (code.length !== 6) return;
+    setLoading(true);
+    setError("");
+    try {
+      const result = await regenerateMfaRecoveryCodes({ code });
+      setRecoveryCodes(result?.recoveryCodes ?? []);
+    } catch (err) {
+      setError(getErrorMessage(err, "Couldn't regenerate codes. Please try again."));
+      setCode("");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Codes are only ever returned once, by this response — they aren't
+  // retrievable afterwards, so this is the user's only chance to save them.
+  if (recoveryCodes.length > 0) {
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="bg-[#FFF8F0] rounded-xl py-3.5 px-4 border border-[#FDDCB5]">
+          <p className="text-sm font-semibold text-warning mb-1">Save your new recovery codes</p>
+          <p className="text-[13px] text-[#7C4D0F] m-0 leading-relaxed">
+            Your previous codes no longer work. These are shown once — store them somewhere safe
+            before you continue.
+          </p>
+        </div>
+        <div className="bg-[#F5F5F5] rounded-xl p-4 border border-gray-200 grid grid-cols-2 gap-2">
+          {recoveryCodes.map((rc, i) => (
+            <code
+              key={i}
+              className="text-xs font-mono font-bold text-ink bg-white rounded px-2 py-1 border border-gray-200 text-center"
+            >
+              {rc}
+            </code>
+          ))}
+        </div>
+        <button
+          onClick={() => copy(recoveryCodes.join("\n"))}
+          className="flex items-center justify-center gap-2 p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
+        >
+          {copied ? <Check size={16} /> : <Copy size={16} />}
+          {copied ? "Copied" : "Copy all codes"}
+        </button>
+        <Button onClick={onSuccess}>Done</Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="bg-[#FFF8F0] rounded-xl py-3.5 px-4 border border-[#FDDCB5]">
+        <p className="text-sm font-semibold text-warning mb-1">Replace your recovery codes?</p>
+        <p className="text-[13px] text-[#7C4D0F] m-0 leading-relaxed">
+          Your current recovery codes will stop working immediately and can't be recovered. Generate
+          a new set if you've used them up, lost them, or think they may have been exposed.
+        </p>
+      </div>
+      <p className="text-sm text-ink m-0">
+        Enter the 6-digit code from your authenticator app to confirm:
+      </p>
+      <CodeInput value={code} onChange={setCode} disabled={loading} />
+      {error && <p className="text-[13px] text-danger m-0">{error}</p>}
+      <button
+        onClick={handleRegenerate}
+        disabled={code.length !== 6 || loading}
+        className={`p-3.5 rounded-xl border-none text-white text-[15px] font-semibold ${code.length === 6 && !loading ? "cursor-pointer bg-brand" : "cursor-not-allowed bg-[#E0E0E0]"} ${loading ? "opacity-70" : "opacity-100"}`}
+      >
+        {loading ? "Generating…" : "Generate New Codes"}
+      </button>
+      <button
+        onClick={onCancel}
+        disabled={loading}
+        className="p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
+      >
+        Cancel
+      </button>
+    </div>
+  );
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function TwoFactorAuth() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: profile, isLoading } = useMe();
-  const [flow, setFlow] = useState(null); // null | "setup" | "disable"
+  const [flow, setFlow] = useState(null); // null | "setup" | "disable" | "regenerate"
 
   const mfaEnabled = profile?.mfaEnabled ?? false;
 
@@ -281,7 +379,9 @@ export default function TwoFactorAuth() {
             ? "Set Up MFA"
             : flow === "disable"
               ? "Disable MFA"
-              : "Multi-Factor Authentication"}
+              : flow === "regenerate"
+                ? "Recovery Codes"
+                : "Multi-Factor Authentication"}
         </h1>
       </div>
 
@@ -292,6 +392,8 @@ export default function TwoFactorAuth() {
           <SetupFlow onSuccess={handleSuccess} onCancel={() => setFlow(null)} />
         ) : flow === "disable" ? (
           <DisableFlow onSuccess={handleSuccess} onCancel={() => setFlow(null)} />
+        ) : flow === "regenerate" ? (
+          <RegenerateFlow onSuccess={handleSuccess} onCancel={() => setFlow(null)} />
         ) : (
           <>
             {/* Status card */}
@@ -318,12 +420,20 @@ export default function TwoFactorAuth() {
 
             {/* Action */}
             {mfaEnabled ? (
-              <button
-                onClick={() => setFlow("disable")}
-                className="w-full p-3.5 rounded-xl border-[1.5px] border-danger bg-white text-danger text-sm font-semibold cursor-pointer"
-              >
-                Disable MFA
-              </button>
+              <div className="flex flex-col gap-2.5">
+                <button
+                  onClick={() => setFlow("regenerate")}
+                  className="w-full p-3.5 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm font-semibold cursor-pointer"
+                >
+                  Regenerate Recovery Codes
+                </button>
+                <button
+                  onClick={() => setFlow("disable")}
+                  className="w-full p-3.5 rounded-xl border-[1.5px] border-danger bg-white text-danger text-sm font-semibold cursor-pointer"
+                >
+                  Disable MFA
+                </button>
+              </div>
             ) : (
               <Button onClick={() => setFlow("setup")}>Set Up MFA</Button>
             )}
@@ -335,7 +445,8 @@ export default function TwoFactorAuth() {
               </div>
               <p className="text-xs text-ink m-0 leading-relaxed">
                 With MFA enabled, you'll need to enter a code from your authenticator app every time
-                you sign in. Use Google Authenticator, Authy, or any TOTP-compatible app.
+                you sign in. Use Google Authenticator, Authy, or any TOTP-compatible app. If you
+                ever lose access to it, you can sign in with one of the recovery codes you saved.
               </p>
             </div>
           </>

@@ -7,11 +7,22 @@ export function MfaChallengeScreen({
   mfaInputRef,
   mfaCode,
   setMfaCode,
+  mfaMethod = "totp",
+  recoveryCode = "",
+  setRecoveryCode,
+  canVerify,
   error,
   loading,
   onVerify,
+  onSwitchMethod,
   onBack,
 }) {
+  // The recovery-code field is the escape hatch for someone who has lost or
+  // replaced their authenticator app, so it has to be reachable without
+  // making the TOTP path look broken — the toggle sits under the form, and
+  // the heading/subtitle change to say which factor is being asked for.
+  const isRecovery = mfaMethod === "recovery";
+
   return (
     <AuthLayout heroTitle="Manage Your Community" heroSubtitle="Finance Effortlessly">
       <div className="w-full max-w-md flex flex-col md:mt-14 mb-auto gap-6">
@@ -20,33 +31,66 @@ export function MfaChallengeScreen({
             <ShieldCheck size={22} className="text-brand" />
           </div>
           <div>
-            <h1 className="text-headline text-gray-900 mb-1">Enter MFA Code</h1>
+            <h1 className="text-headline text-gray-900 mb-1">
+              {isRecovery ? "Use a Recovery Code" : "Enter MFA Code"}
+            </h1>
             <p className="text-sm text-gray-500">
-              Open your authenticator app and enter the 6-digit code.
+              {isRecovery
+                ? "Enter one of the backup codes you saved when you set up MFA. Each one works only once."
+                : "Open your authenticator app and enter the 6-digit code."}
             </p>
           </div>
         </div>
 
-        <div>
-          <Label htmlFor="mfa-code">Authentication Code</Label>
-          <TextInput
-            id="mfa-code"
-            ref={mfaInputRef}
-            type="text"
-            inputMode="numeric"
-            maxLength={6}
-            placeholder="000000"
-            value={mfaCode}
-            onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-            onKeyDown={(e) => e.key === "Enter" && onVerify()}
-            autoComplete="one-time-code"
-            disabled={loading}
-            error={error}
-          />
-          <ErrorMessage message={error} />
-        </div>
+        {isRecovery ? (
+          <div>
+            <Label htmlFor="mfa-recovery-code">Recovery Code</Label>
+            <TextInput
+              id="mfa-recovery-code"
+              ref={mfaInputRef}
+              type="text"
+              // Not numeric: recovery codes are 16 alphanumeric characters.
+              // autocapitalize=characters mirrors the backend's uppercase
+              // normalisation so what's typed matches what was saved.
+              inputMode="text"
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+              maxLength={19} // 16 characters + up to three dashes
+              placeholder="XXXX-XXXX-XXXX-XXXX"
+              value={recoveryCode}
+              onChange={(e) => setRecoveryCode(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && onVerify()}
+              // Deliberately not one-time-code: that would have the OS offer
+              // an SMS/autofill code, which is the wrong factor here.
+              autoComplete="off"
+              disabled={loading}
+              error={error}
+            />
+            <ErrorMessage message={error} />
+          </div>
+        ) : (
+          <div>
+            <Label htmlFor="mfa-code">Authentication Code</Label>
+            <TextInput
+              id="mfa-code"
+              ref={mfaInputRef}
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              placeholder="000000"
+              value={mfaCode}
+              onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onKeyDown={(e) => e.key === "Enter" && onVerify()}
+              autoComplete="one-time-code"
+              disabled={loading}
+              error={error}
+            />
+            <ErrorMessage message={error} />
+          </div>
+        )}
 
-        <PrimaryButton onClick={onVerify} loading={loading} disabled={mfaCode.length !== 6}>
+        <PrimaryButton onClick={onVerify} loading={loading} disabled={!canVerify}>
           {loading ? (
             <span className="flex items-center justify-center gap-2">
               <Loader2 size={16} className="animate-spin" />
@@ -56,6 +100,18 @@ export function MfaChallengeScreen({
             "Verify Code"
           )}
         </PrimaryButton>
+
+        {onSwitchMethod && (
+          <button
+            onClick={() => onSwitchMethod(isRecovery ? "totp" : "recovery")}
+            disabled={loading}
+            className="text-sm text-center text-brand hover:text-brand-deep bg-transparent border-none cursor-pointer disabled:opacity-50"
+          >
+            {isRecovery
+              ? "Use my authenticator app instead"
+              : "Lost access to your authenticator? Use a recovery code"}
+          </button>
+        )}
 
         <button
           onClick={onBack}

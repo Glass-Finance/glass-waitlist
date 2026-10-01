@@ -150,7 +150,18 @@ function clearSessionAndRedirect() {
 // credentials" message instead of the generic "your session expired" copy
 // written for an authenticated call whose token lapsed — same reasoning
 // as above, just needed on the message side too.
-export const PRE_AUTH_PATHS = ["/auth/login", "/auth/google", "/auth/mfa/totp/verify-login"];
+export const PRE_AUTH_PATHS = [
+  "/auth/login",
+  "/auth/google",
+  "/auth/mfa/totp/verify-login",
+  // Pre-auth like the TOTP route above: no session exists yet, so a failure
+  // here is a rejected code, never a lapsed session, and the refresh-then-
+  // redirect path would hard-navigate off the sign-in form mid-attempt.
+  // The backend reports these failures as 400 (invalid/expired/used challenge,
+  // invalid recovery code, factor locked), so the 401 branch is a
+  // belt-and-braces guard against ever yanking the form away.
+  "/auth/mfa/recovery-code/verify-login",
+];
 
 // ── Global response handler ───────────────────────────────────────────────────
 client.interceptors.response.use(

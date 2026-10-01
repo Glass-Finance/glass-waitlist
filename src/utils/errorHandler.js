@@ -28,16 +28,27 @@ const STATUS_MESSAGES = {
   504: "That took too long to respond. Please try again in a moment.",
 };
 
+// The MFA verify endpoints are pre-auth too, but the failure is about the
+// second factor, not the password — telling someone on the MFA screen to
+// check their email or password would send them down the wrong path. Matched
+// on the two verify-login routes specifically rather than "/auth/mfa/", which
+// would also catch the session-authenticated /auth/mfa/recovery-codes/regenerate
+// (correctly absent from PRE_AUTH_PATHS, so it can't reach this branch).
+const MFA_VERIFY_PATHS = ["/auth/mfa/totp/verify-login", "/auth/mfa/recovery-code/verify-login"];
+
 // A 401 from a pre-auth endpoint (login, Google sign-in, MFA verify) means
 // "those credentials were wrong" — there's no session yet to have expired.
 // STATUS_MESSAGES[401] is written for the opposite case (an authenticated
 // call whose token lapsed), which client.js's interceptor normally
 // intercepts and hard-redirects before it ever reaches here — except for
-// these three endpoints, which it deliberately lets through (see
-// PRE_AUTH_PATHS in client.js) so the sign-in form can show its own error
-// instead of being yanked out from under the user mid-attempt.
+// these endpoints, which it deliberately lets through (see PRE_AUTH_PATHS in
+// client.js) so the sign-in form can show its own error instead of being
+// yanked out from under the user mid-attempt.
 function fallbackForStatus(status, requestUrl) {
   if (status === 401 && PRE_AUTH_PATHS.some((p) => requestUrl?.includes(p))) {
+    if (MFA_VERIFY_PATHS.some((p) => requestUrl?.includes(p))) {
+      return "That code wasn't accepted. Try again, or use one of your recovery codes.";
+    }
     return "Incorrect email or password.";
   }
   if (STATUS_MESSAGES[status]) return STATUS_MESSAGES[status];
