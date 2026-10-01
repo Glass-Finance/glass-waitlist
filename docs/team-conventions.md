@@ -8,6 +8,7 @@ Shared working agreements across the frontend (`Glass-Finance/glass-waitlist`) a
 - Conventional-commit subjects: `feat:`, `fix:`, `test:`, `chore:`, `docs:`, `ci:`, `refactor:`, `style:`. Non-trivial changes get a body explaining **why**, what invariants were preserved, and how it was verified.
 - Batch related work into sprint-sized PRs; sync `docs/` at sprint boundaries.
 - If a refactor risks eating in-flight edits, branch to preserve them (the `chore/preserve-refactor-edits` pattern) rather than force-resolving over them.
+- **Do not rewrite `main` history to tidy cosmetic duplicates.** PR #77 has duplicate merge history in `main` (`e69f886`, `4af6e5c`); both produce the identical tree `dff43c2`, and the later merge introduced no additional content. It is intentionally retained: rewriting would force-push every commit since `d1d9fc3` and disrupt active branches and clones for no functional benefit. Treat it as historical/cosmetic debt, not a defect to fix.
 
 ## Architecture (ADR-001..004 — settled)
 
