@@ -95,6 +95,40 @@ export const revokeKyc = (userId, payload) =>
 export const setKycAttemptPolicy = (userId, payload) =>
   client.put(`/admin/users/${userId}/kyc/attempt-policy`, payload);
 
+// ─── Transactions (platform-wide) ──────────────────────────────────────────────
+// Distinct from the community-scoped transaction routes in api/transactions.js:
+// these list across every community on the platform, for internal ops. Query
+// params are TransactionQueryDto (extends PageQueryDto), so pageNumber is
+// 1-based and the shape is the same the rest of this file already sends.
+export const getAdminTransactions = (params) => client.get("/admin/transactions", { params });
+export const getAdminTransaction = (transactionId) =>
+  client.get(`/admin/transactions/${transactionId}`);
+// Queues an async job (returns ExportJobResponse immediately, not a file) —
+// the caller must poll GET /exports/{id}; useExportJob does that.
+export const exportAdminTransactions = (params, format = "CSV") =>
+  client.post("/admin/transactions/export", null, { params: { ...params, format } });
+
+// ─── Obligations (platform-wide) ────────────────────────────────────────────────
+// ObligationQueryDto. `status` is a real enum on the backend
+// (PENDING/DUE/PAID/PARTIAL/OVERDUE/WAIVED/FAILED/REFUNDED/CANCELLED), so the
+// filter only offers those and never sends an unrecognised value.
+export const getAdminObligations = (params) => client.get("/admin/obligations", { params });
+export const getAdminObligation = (obligationId) =>
+  client.get(`/admin/obligations/${obligationId}`);
+export const exportAdminObligations = (params, format = "CSV") =>
+  client.post("/admin/obligations/export", null, { params: { ...params, format } });
+
+// ─── Audit Logs (platform admin) ────────────────────────────────────────────────
+// AdminAuditQueryDto. NOTE: the list response (AdminAuditLogResponse) is
+// deliberately evidence-free — no old/new values. The detail endpoint
+// (AdminAuditLogDetailResponse) adds `comment` plus the `oldValue`/`newValue`
+// JsonNode diff, so the table must never be treated as showing the full
+// record; the detail modal is the only place the change itself is visible.
+export const getAdminAuditLogs = (params) => client.get("/admin/audit-logs", { params });
+export const getAdminAuditLog = (auditLogId) => client.get(`/admin/audit-logs/${auditLogId}`);
+export const exportAdminAuditLogs = (params, format = "CSV") =>
+  client.post("/admin/audit-logs/export", null, { params: { ...params, format } });
+
 // ─── Reconciliation ─────────────────────────────────────────────────────────────
 export const getAdminReconciliationRuns = (params) =>
   client.get("/admin/reconciliation/runs", { params });
