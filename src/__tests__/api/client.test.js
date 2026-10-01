@@ -217,4 +217,41 @@ describe("client.js auth-refresh interceptor", () => {
     const isPreAuth = PRE_AUTH_PATHS.some((p) => regenerateUrl.includes(p));
     expect(isPreAuth).toBe(false);
   });
+
+  it("treats the OTP, password-reset and verification routes as pre-auth", () => {
+    // Each of these runs before a session exists: the user is mid-flow with a
+    // code or identifier typed in and no token yet. A 401 means the code was
+    // rejected, not that a session lapsed, so the interceptor must not
+    // refresh-and-redirect — that would hard-navigate off the form and discard
+    // their input before the page's own catch block can explain the failure.
+    for (const path of [
+      "/auth/otp/request",
+      "/auth/otp/verify",
+      "/auth/password/forgot",
+      "/auth/password/reset",
+      "/auth/verify",
+      "/auth/verify/resend",
+    ]) {
+      expect(PRE_AUTH_PATHS).toContain(path);
+    }
+  });
+
+  it("does not let any pre-auth entry substring-match a session-authenticated route", () => {
+    // Matching is `url.includes(preAuthPath)`, so an over-broad pre-auth prefix
+    // would silently classify a route that genuinely needs the refresh path and
+    // strand the user on an inline error instead. "/auth/verify" is the entry
+    // to watch: it is a prefix of "/auth/verify/resend" (correct — both are
+    // pre-auth) but must not reach anything session-authenticated.
+    for (const url of [
+      "/auth/mfa/recovery-codes/regenerate",
+      "/auth/mfa/totp/setup",
+      "/auth/mfa/totp/enable",
+      "/auth/mfa/totp/disable",
+      "/auth/token/refresh",
+      "/auth/logout",
+    ]) {
+      const hit = PRE_AUTH_PATHS.find((p) => url.includes(p));
+      expect(hit, `${url} must not be treated as pre-auth (matched "${hit}")`).toBeUndefined();
+    }
+  });
 });

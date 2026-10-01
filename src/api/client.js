@@ -161,6 +161,22 @@ export const PRE_AUTH_PATHS = [
   // invalid recovery code, factor locked), so the 401 branch is a
   // belt-and-braces guard against ever yanking the form away.
   "/auth/mfa/recovery-code/verify-login",
+  // The remaining flows that run *before* a session exists, for the same
+  // reason as the three above: passwordless OTP sign-in, password reset, and
+  // email verification all leave a user mid-attempt with no token yet. A 401
+  // from any of them means the code or identifier was rejected, not that a
+  // session lapsed — so the refresh-then-redirect path must not run, or it
+  // hard-navigates off the form and destroys what they typed before their own
+  // catch block can explain the failure.
+  //
+  // Also read by errorHandler.js, which turns a 401 from a listed path into
+  // wrong-credentials copy rather than "your session expired".
+  "/auth/otp/request",
+  "/auth/otp/verify",
+  "/auth/password/forgot",
+  "/auth/password/reset",
+  "/auth/verify",
+  "/auth/verify/resend",
 ];
 
 // ── Global response handler ───────────────────────────────────────────────────
