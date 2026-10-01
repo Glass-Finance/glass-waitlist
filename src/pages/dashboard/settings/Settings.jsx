@@ -1,13 +1,30 @@
 import { useRef, useState } from "react";
 import { useNavigate, useLocation, Outlet, Navigate } from "react-router-dom";
 import { usePageTitle } from "../../../hooks/usePageTitle";
-import { Search, ChevronRight } from "lucide-react";
+import { Search, ChevronRight, Building2 } from "lucide-react";
 import { useAuth } from "../../../store/AuthContext";
+import { useActiveCommunityId } from "../../../hooks/useActiveCommunityId";
+import { useCommunities } from "../../../hooks/useCommunities";
+import { isCommunityAdmin } from "../../../utils/communityRole";
+import EmptyState from "../../../components/common/EmptyState";
 
+// The communities overview owns the "pick one community" empty state -- the
+// guard redirects unresolved community-scoped routes back here.
+const COMMUNITIES_HOME = "/dashboard/home";
+
+// Community-scoped Settings destinations are the ones wrapped in
+// CommunityAdminGuard (see App.jsx). Marked explicitly so this page can tell
+// the user up front when one isn't usable, instead of offering a link that
+// silently bounces them back to the communities overview.
 const TABS = [
   { label: "Account", defaultPath: "/dashboard/settings/account", match: "account" },
   { label: "Finance", defaultPath: "/dashboard/settings/finance", match: "finance" },
-  { label: "Community", defaultPath: "/dashboard/settings/community", match: "community" },
+  {
+    label: "Community",
+    defaultPath: "/dashboard/settings/community",
+    match: "community",
+    communityScoped: true,
+  },
 ];
 
 const ACCOUNT_ITEMS = [
@@ -49,6 +66,7 @@ const FINANCE_ITEMS = [
     label: "Payout Account",
     desc: "The account your community's collected dues are settled into.",
     path: "/dashboard/settings/finance/paystack",
+    communityScoped: true,
   },
 ];
 
@@ -57,11 +75,13 @@ const COMMUNITY_ITEMS = [
     label: "Community Profile",
     desc: "How your community looks and behaves to its members.",
     path: "/dashboard/settings/community/profile",
+    communityScoped: true,
   },
   {
     label: "Member Access",
     desc: "Control who can join, and who else can manage this community.",
     path: "/dashboard/settings/community/member-access",
+    communityScoped: true,
   },
 ];
 
@@ -90,12 +110,29 @@ const ALL_SETTINGS = [
   ...COMMUNITY_ITEMS.map((i) => ({ ...i, tab: "Community" })),
 ];
 
+// Community-scoped destinations resolve their community from ?community=,
+// falling back to the localStorage snapshot (see useActiveCommunityId), and
+// CommunityAdminGuard fails closed when neither yields one the user
+// administers. Thread the already-resolved community through explicitly so
+// the guard acts on the community this menu advertised instead of on ambient
+// state — matching the ?community= convention AdminDashboard/Sidebar use.
+//
+// Only ever applied to community-scoped destinations: the account-level
+// /dashboard/settings root deliberately carries no ?community= (see
+// Sidebar.jsx's communityPath), and neither does anything on Account.
+function scopedPath(path, community) {
+  if (!community) return path;
+  const id = community.slug ?? community.id;
+  if (!id) return path;
+  return `${path}?community=${encodeURIComponent(id)}`;
+}
+
 // Parent breadcrumb crumb — click to go back to that tab's menu list.
-function BreadcrumbParent({ parent }) {
+function BreadcrumbParent({ parent, community }) {
   const navigate = useNavigate();
   return (
     <button
-      onClick={() => navigate(PARENT_PATH[parent])}
+      onClick={() => navigate(scopedPath(PARENT_PATH[parent], community))}
       className="text-gray-600 hover:text-gray-900 hover:underline bg-transparent border-none p-0 cursor-pointer text-sm"
     >
       {parent}
@@ -103,14 +140,17 @@ function BreadcrumbParent({ parent }) {
   );
 }
 
-function MenuList({ items }) {
+// One nav helper for every clickable Settings destination. Only
+// community-scoped rows get ?community= threaded on; account-level rows are
+// left exactly as they were, and the bare tab paths stay bare.
+function MenuList({ items, community }) {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col gap-3 w-full">
       {items.map((item, i) => (
         <button
           key={i}
-          onClick={() => navigate(item.path)}
+          onClick={() => navigate(scopedPath(item.path, community))}
           className="w-full flex items-center justify-between px-5 py-4 bg-surface-container rounded-xl text-left hover:bg-gray-50 transition-all cursor-pointer border border-surface-container-border"
         >
           <div>
@@ -124,11 +164,29 @@ function MenuList({ items }) {
   );
 }
 
+// Shown in place of community-scoped destinations when no community can be
+// resolved (nothing chosen yet, or the stored/URL one is stale or one the
+// user doesn't administer). Explains the situation and points back at the
+// page that owns the choice, rather than redirecting silently.
+function ChooseCommunityState({ onChoose }) {
+  return (
+    <EmptyState
+      icon={Building2}
+      title="Choose a community"
+      subtitle="These settings apply to one community at a time. Pick a community you manage to change its profile, member access, or payout account."
+      action={onChoose}
+      actionLabel="Go to my communities"
+    />
+  );
+}
+
 export default function Settings() {
   const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
   const { isPlatformAdmin } = useAuth();
+  const communityId = useActiveCommunityId();
+  const { data: communitiesData, isLoading: communitiesLoading } = useCommunities();
 
   const titleKey = Object.keys(BREADCRUMB_MAP).find((k) => path.includes(k));
   usePageTitle(titleKey ? BREADCRUMB_MAP[titleKey].child : "Settings");
@@ -153,18 +211,50 @@ export default function Settings() {
   const crumbKey = Object.keys(BREADCRUMB_MAP).find((k) => path.includes(k));
   const breadcrumb = crumbKey ? BREADCRUMB_MAP[crumbKey] : null;
 
+  // Which community this page is acting on, using the same resolution the
+  // guards and Sidebar use (?community=, else the glass_community snapshot) --
+  // deliberately no fourth source. In particular there is no first/default/
+  // any-community fallback: an admin of several communities who reaches
+  // Settings from CommunitiesHome has not chosen one yet, so guessing would
+  // silently edit a community they never picked.
+  const communities = communitiesData?.communities ?? [];
+  const activeCommunity = communityId
+    ? (communities.find((c) => c.slug === communityId || String(c.id) === String(communityId)) ??
+      null)
+    : null;
+
+  // A community-scoped destination is only genuinely usable when the resolved
+  // community is one this user actually administers -- a stale localStorage
+  // snapshot, or a hand-edited ?community= naming a community they don't
+  // manage, is exactly what CommunityAdminGuard rejects. Mirror that check
+  // here so the menu never advertises a link that would bounce.
+  const resolvedCommunityIsAdmin = isCommunityAdmin(activeCommunity);
+
+  // While the list is still loading, "no community chosen" and "not loaded
+  // yet" are indistinguishable. Rendering "choose a community" then would
+  // misreport a perfectly valid session on every cold load, so hold off until
+  // the context settles -- the guard shows its own loading screen meanwhile.
+  const communityContextPending = !!communityId && communitiesLoading;
+  const needsCommunityChoice = !communityContextPending && !resolvedCommunityIsAdmin;
+
+  // Thread a community only once it has been resolved AND verified. Nothing is
+  // guessed, and nothing is threaded while the context is still unproven.
+  const scopedCommunity = resolvedCommunityIsAdmin ? activeCommunity : null;
+
   const q = searchQuery.trim().toLowerCase();
   const searchResults =
     q.length > 0
       ? ALL_SETTINGS.filter(
           (s) => s.label.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q),
-        )
+          // Don't advertise community-scoped destinations while no community
+          // resolves -- selecting one would just bounce back here.
+        ).filter((s) => !s.communityScoped || !needsCommunityChoice)
       : [];
 
   function handleSearchSelect(item) {
     setSearchQuery("");
     setSearchOpen(false);
-    navigate(item.path);
+    navigate(scopedPath(item.path, scopedCommunity));
   }
 
   return (
@@ -235,7 +325,7 @@ export default function Settings() {
             return (
               <button
                 key={tab.label}
-                onClick={() => navigate(tab.defaultPath)}
+                onClick={() => navigate(scopedPath(tab.defaultPath, scopedCommunity))}
                 className={`px-6 py-2 text-[13px] rounded transition-all cursor-pointer border-none font-medium
                   ${
                     isActive
@@ -253,7 +343,7 @@ export default function Settings() {
       {/* Breadcrumb — only shown on sub-pages, hidden for platform admins */}
       {breadcrumb && !isPlatformAdmin && (
         <p className="text-sm text-gray-500 mb-5">
-          <BreadcrumbParent parent={breadcrumb.parent} />
+          <BreadcrumbParent parent={breadcrumb.parent} community={scopedCommunity} />
           <span className="mx-2 text-gray-400">›</span>
           <span className="font-semibold text-gray-900">{breadcrumb.child}</span>
         </p>
@@ -261,8 +351,20 @@ export default function Settings() {
 
       {/* Menu lists — platform admins are redirected to Security above */}
       {!isPlatformAdmin && isAccountMenu && <MenuList items={ACCOUNT_ITEMS} />}
-      {!isPlatformAdmin && isFinanceMenu && <MenuList items={FINANCE_ITEMS} />}
-      {!isPlatformAdmin && isCommunityMenu && <MenuList items={COMMUNITY_ITEMS} />}
+      {!isPlatformAdmin &&
+        isFinanceMenu &&
+        (!needsCommunityChoice ? (
+          <MenuList items={FINANCE_ITEMS} community={activeCommunity} />
+        ) : (
+          <ChooseCommunityState onChoose={() => navigate(COMMUNITIES_HOME)} />
+        ))}
+      {!isPlatformAdmin &&
+        isCommunityMenu &&
+        (!needsCommunityChoice ? (
+          <MenuList items={COMMUNITY_ITEMS} community={activeCommunity} />
+        ) : (
+          <ChooseCommunityState onChoose={() => navigate(COMMUNITIES_HOME)} />
+        ))}
 
       {/* Sub-page content */}
       {(isPlatformAdmin || (!isAccountMenu && !isFinanceMenu && !isCommunityMenu)) && <Outlet />}
