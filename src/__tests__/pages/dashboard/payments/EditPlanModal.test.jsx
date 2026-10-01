@@ -23,7 +23,25 @@ vi.mock("../../../../hooks/useCommunityMembers", () => ({
   useCommunityMembers: () => ({ members: MEMBERS, isLoading: false, error: null }),
 }));
 
-afterEach(cleanup);
+// AudienceGroupPicker owns the groups query the same way, so this is its seam.
+const GROUPS = [
+  { id: "group-a", name: "Board", status: "ACTIVE" },
+  { id: "group-b", name: "Choir", status: "ACTIVE" },
+];
+const useCommunityGroupsMock = vi.fn(() => ({
+  data: { content: GROUPS },
+  isLoading: false,
+  error: null,
+}));
+vi.mock("../../../../hooks/useGroups", async (importOriginal) => {
+  const actual = await importOriginal();
+  return { ...actual, useCommunityGroups: (...args) => useCommunityGroupsMock(...args) };
+});
+
+afterEach(() => {
+  cleanup();
+  useCommunityGroupsMock.mockClear();
+});
 
 const plan = {
   id: "plan-1",
@@ -362,5 +380,114 @@ describe("EditPlanModal — pending & dismissal", () => {
 
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(onSave).not.toHaveBeenCalled();
+  });
+});
+
+describe("EditPlanModal — GROUP audience", () => {
+  it("hydrates the stored group selection and re-sends those ids", () => {
+    const { onSave } = renderModal({
+      planOverrides: { audience: "GROUP", groupIds: ["group-a", "group-b"] },
+    });
+
+    expect(screen.getByTestId("audience").value).toBe("GROUP");
+    expect(screen.getByLabelText("Board").checked).toBe(true);
+    expect(screen.getByLabelText("Choir").checked).toBe(true);
+
+    fireEvent.click(saveButton());
+
+    expect(savedPayload(onSave)).toMatchObject({
+      audience: "GROUP",
+      groupIds: ["group-a", "group-b"],
+    });
+  });
+
+  it("can save a hydrated GROUP plan without re-picking anything", () => {
+    // The regression this guards: without groupIds in shapePlan the modal opens
+    // with an empty selection, Save is blocked by the empty-selection gate, and
+    // the admin cannot edit their own plan.
+    const { onSave } = renderModal({
+      planOverrides: { audience: "GROUP", groupIds: ["group-a"] },
+    });
+
+    expect(saveButton().disabled).toBe(false);
+    fireEvent.click(saveButton());
+    expect(savedPayload(onSave)).toMatchObject({ groupIds: ["group-a"] });
+  });
+
+  it("blocks Save and explains when a GROUP plan has no groups", () => {
+    const { onSave } = renderModal({ planOverrides: { audience: "GROUP", groupIds: [] } });
+
+    expect(saveButton().disabled).toBe(true);
+    expect(screen.getByText("Choose at least one group for this plan to bill.")).toBeTruthy();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it("adds and removes groups from the saved payload", () => {
+    const { onSave } = renderModal({
+      planOverrides: { audience: "GROUP", groupIds: ["group-a"] },
+    });
+
+    fireEvent.click(screen.getByLabelText("Choir"));
+    fireEvent.click(saveButton());
+    expect(savedPayload(onSave)).toMatchObject({ groupIds: ["group-a", "group-b"] });
+
+    cleanup();
+
+    const { onSave: secondSave } = renderModal({
+      planOverrides: { audience: "GROUP", groupIds: ["group-a", "group-b"] },
+    });
+    fireEvent.click(screen.getByLabelText("Board"));
+    fireEvent.click(saveButton());
+    expect(secondSave.mock.calls[0][1]).toMatchObject({ groupIds: ["group-b"] });
+  });
+
+  it("never sends memberIds for a GROUP plan", () => {
+    const { onSave } = renderModal({
+      planOverrides: { audience: "GROUP", groupIds: ["group-a"], memberIds: ["member-a"] },
+    });
+
+    fireEvent.click(saveButton());
+    expect(savedPayload(onSave)).toMatchObject({ audience: "GROUP" });
+    expect(savedPayload(onSave)).not.toHaveProperty("memberIds");
+  });
+
+  it("does not fetch the group list for a non-GROUP audience", () => {
+    renderModal({ planOverrides: { audience: "SELECTED_MEMBERS", memberIds: ["member-a"] } });
+
+    expect(screen.queryByText("Groups", { selector: "label" })).toBeNull();
+    expect(useCommunityGroupsMock).not.toHaveBeenCalled();
+  });
+
+  it("clears a stale member selection when switching to GROUP", () => {
+    renderModal({
+      planOverrides: { audience: "SELECTED_MEMBERS", memberIds: ["member-a"] },
+    });
+
+    setSelect("audience", "GROUP");
+    fireEvent.click(screen.getByLabelText("Board"));
+    setSelect("audience", "SELECTED_MEMBERS");
+
+    expect(screen.getByLabelText("Ada Obi").checked).toBe(false);
+  });
+
+  it("clears a stale group selection when switching to SELECTED_MEMBERS", () => {
+    const { onSave } = renderModal({
+      planOverrides: { audience: "GROUP", groupIds: ["group-a"] },
+    });
+
+    setSelect("audience", "SELECTED_MEMBERS");
+    fireEvent.click(screen.getByLabelText("Ada Obi"));
+    setSelect("audience", "GROUP");
+
+    expect(screen.getByLabelText("Board").checked).toBe(false);
+
+    // And the stale group list can't ride along in the payload. A member has to
+    // be picked for the save to be valid at all — an empty SELECTED_MEMBERS
+    // audience is blocked by the same gate a GROUP one is.
+    setSelect("audience", "ALL_MEMBERS");
+    setSelect("audience", "SELECTED_MEMBERS");
+    fireEvent.click(screen.getByLabelText("Bayo Ade"));
+    fireEvent.click(saveButton());
+    expect(savedPayload(onSave)).not.toHaveProperty("groupIds");
   });
 });

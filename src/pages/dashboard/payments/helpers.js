@@ -101,6 +101,33 @@ export function amountRequiredForMode(amountMode) {
   return amountMode !== "VARIABLE";
 }
 
+/**
+ * The form patch for an audience change.
+ *
+ * Each audience owns exactly one id list, and neither list may survive a switch
+ * away from its audience. Without this, going SELECTED_MEMBERS → GROUP leaves
+ * `memberIds` populated in state; the payload builder keys off the audience so
+ * it wouldn't be transmitted, but the stale list would silently reappear the
+ * moment the admin switched back — re-selecting people they had moved away
+ * from, with no click to explain it.
+ *
+ * Both lists reset rather than carrying over: the incoming audience's list is
+ * empty in practice (you only hold ids for the audience you're currently on),
+ * and resetting is the only behaviour that can't be stale.
+ *
+ * Hydration is unaffected — this runs on a change event, so opening an existing
+ * GROUP plan for edit never fires it.
+ *
+ * Shared rather than inlined in each modal so the two paths can't drift on which
+ * list belongs to which audience, the same reason AudienceMemberPicker exists.
+ *
+ * @param {string} nextAudience the audience just chosen
+ * @returns {{audience: string, memberIds: string[], groupIds: string[]}}
+ */
+export function audienceChangePatch(nextAudience) {
+  return { audience: nextAudience, memberIds: [], groupIds: [] };
+}
+
 // Mode-aware replacement for the old unconditional amount rule. Kept separate
 // from validatePlanField so the name/amount pair that both modals already
 // share stays untouched.

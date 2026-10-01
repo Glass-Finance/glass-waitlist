@@ -89,6 +89,70 @@ describe("usePaymentPlans — shaping the editable plan terms", () => {
       audience: "ALL_MEMBERS",
       visibility: "PUBLIC",
       memberIds: [],
+      groupIds: [],
+    });
+  });
+
+  it("preserves a GROUP plan's groupIds so the edit modal can re-send them", async () => {
+    // Without this passthrough a GROUP plan opens with an empty selection, the
+    // empty-selection gate blocks Save, and the admin cannot edit their own
+    // plan without re-picking every group.
+    getCommunityPaymentLinks.mockResolvedValue({
+      data: {
+        data: {
+          content: [
+            {
+              id: "link-group",
+              title: "Board Dues",
+              paymentType: "RECURRING",
+              status: "ACTIVE",
+              amount: 5000,
+              audience: "GROUP",
+              visibility: "MEMBERS_ONLY",
+              groupIds: ["group-a", "group-b"],
+              metrics: {},
+            },
+          ],
+        },
+      },
+    });
+
+    const { result } = renderPlans();
+
+    await waitFor(() => expect(result.current.plans).toHaveLength(1));
+    expect(result.current.plans[0]).toMatchObject({
+      audience: "GROUP",
+      groupIds: ["group-a", "group-b"],
+    });
+  });
+
+  it("gives a GROUP plan an empty member list rather than borrowing one", async () => {
+    // The two id lists belong to separate audience paths; a GROUP plan must not
+    // acquire a member selection just because the shape defaults one.
+    getCommunityPaymentLinks.mockResolvedValue({
+      data: {
+        data: {
+          content: [
+            {
+              id: "link-group-2",
+              title: "Choir Dues",
+              status: "ACTIVE",
+              audience: "GROUP",
+              groupIds: ["group-c"],
+              metrics: {},
+            },
+          ],
+        },
+      },
+    });
+
+    const { result } = renderPlans();
+
+    await waitFor(() => expect(result.current.plans).toHaveLength(1));
+    expect(result.current.plans[0]).toMatchObject({
+      audience: "GROUP",
+      groupIds: ["group-c"],
+      memberIds: [],
     });
   });
 });

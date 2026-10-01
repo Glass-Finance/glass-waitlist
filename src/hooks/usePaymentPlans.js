@@ -48,16 +48,21 @@ function shapePlan(raw) {
     reminderFrequency: raw.reminderFrequency ?? null,
     reminderChannels: raw.reminderChannels ?? [],
     communityAccountId: raw.communityAccountId ?? null,
-    // Audience/visibility/amountMode/memberIds are the editable terms of a
-    // plan (PaymentLinkResponse carries all four at the root). They were
+    // Audience/visibility/amountMode/memberIds/groupIds are the editable terms
+    // of a plan (PaymentLinkResponse carries all five at the root). They were
     // dropped here, which left EditPlanModal hydrating from a plan object that
     // no longer described the link — every edit silently re-sent the defaults
-    // instead of the stored terms. memberIds are COMMUNITY MEMBER record ids
-    // (the same ids the PATCH endpoint expects back), not user ids.
+    // instead of the stored terms. memberIds are COMMUNITY MEMBER record ids and
+    // groupIds are COMMUNITY MEMBER GROUP record ids (the same ids the PATCH
+    // endpoint expects back), not user ids.
     amountMode: raw.amountMode ?? "FIXED",
     audience: raw.audience ?? "ALL_MEMBERS",
     visibility: raw.visibility ?? "PUBLIC",
     memberIds: raw.memberIds ?? [],
+    // Without this a GROUP plan opens with no groups selected, so Save is
+    // blocked by the empty-selection gate and the admin cannot edit their own
+    // plan without re-picking every group.
+    groupIds: raw.groupIds ?? [],
   };
 }
 

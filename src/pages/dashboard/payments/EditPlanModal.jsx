@@ -10,7 +10,7 @@ import {
   REMINDER_CHANNELS,
   AMOUNT_MODES,
   AUDIENCE_OPTIONS,
-  AUDIENCE_EMPTY_MESSAGE,
+  audienceEmptyMessage,
   VISIBILITY_OPTIONS,
 } from "./constants";
 import {
@@ -22,9 +22,11 @@ import {
   amountRequiredForMode,
   amountPayloadForMode,
   amountModesForPlanType,
+  audienceChangePatch,
 } from "./helpers";
 import { PayoutAccountField, BillingDayField } from "./PlanFormFields";
 import AudienceMemberPicker from "./AudienceMemberPicker";
+import AudienceGroupPicker from "./AudienceGroupPicker";
 import { useEscapeToClose } from "../../../hooks/useKeyboardShortcuts";
 
 // ── Edit plan modal ───────────────────────────────────────────────────────────
@@ -49,6 +51,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
     audience: plan.audience ?? "ALL_MEMBERS",
     visibility: plan.visibility ?? "PUBLIC",
     memberIds: plan.memberIds ?? [],
+    groupIds: plan.groupIds ?? [],
     frequency: plan.frequency ?? plan.recurringPlan?.frequency ?? "",
     startDate: toDateInput(plan.startAt ?? plan.recurringPlan?.startAt),
     billingDay: String(plan.recurringPlan?.billingDay ?? ""),
@@ -107,15 +110,23 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
   }
 
   const amountRequired = amountRequiredForMode(form.amountMode);
-  // Same asymmetry as create: the PATCH path DOES reject a SELECTED_MEMBERS
-  // audience with an empty list, so the gate here is a convenience (an
-  // explanatory message) rather than the only line of defence.
-  const audienceReady = form.audience !== "SELECTED_MEMBERS" || form.memberIds.length > 0;
+  // Same asymmetry as create, in both directions: the PATCH path rejects an
+  // empty list for either audience ("Selected members audience requires at least
+  // one member" / "Group audience requires at least one group"), so the gate
+  // here is a convenience (an explanatory message) rather than the only line of
+  // defence — but it is what stops the admin hitting a server error for a state
+  // the UI already knows is invalid.
+  const audienceReady =
+    form.audience === "SELECTED_MEMBERS"
+      ? form.memberIds.length > 0
+      : form.audience === "GROUP"
+        ? form.groupIds.length > 0
+        : true;
 
   async function handleSave() {
     const nameError = validatePlanField("name", form.name);
     const amountError = validateAmountForMode(form.amount, form.amountMode);
-    const audienceError = audienceReady ? "" : AUDIENCE_EMPTY_MESSAGE;
+    const audienceError = audienceReady ? "" : audienceEmptyMessage(form.audience);
     if (nameError || amountError || audienceError) {
       setFieldErrors({ name: nameError, amount: amountError, audience: audienceError });
       return;
@@ -127,7 +138,10 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
       amountMode: form.amountMode,
       audience: form.audience,
       visibility: form.visibility,
+      // Each id list travels only with the audience that owns it — see the same
+      // note in CreatePlanModal's payload.
       ...(form.audience === "SELECTED_MEMBERS" ? { memberIds: form.memberIds } : {}),
+      ...(form.audience === "GROUP" ? { groupIds: form.groupIds } : {}),
       ...(isRecurring && form.frequency
         ? {
             recurringPlan: {
@@ -291,7 +305,12 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
                 <select
                   className={`${inputCls} appearance-none !pr-9`}
                   value={form.audience}
-                  onChange={(e) => setForm((f) => ({ ...f, audience: e.target.value }))}
+                  onChange={(e) => {
+                    // Resets both id lists — see audienceChangePatch. Hydration
+                    // is unaffected because this only fires on a real change.
+                    setForm((f) => ({ ...f, ...audienceChangePatch(e.target.value) }));
+                    setFieldErrors((fe) => ({ ...fe, audience: "" }));
+                  }}
                   data-testid="audience"
                 >
                   {AUDIENCE_OPTIONS.map((o) => (
@@ -342,7 +361,33 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
               {(fieldErrors.audience ||
                 (form.audience === "SELECTED_MEMBERS" && !form.memberIds.length)) && (
                 <p className="text-xs text-danger mt-1">
-                  {fieldErrors.audience || AUDIENCE_EMPTY_MESSAGE}
+                  {fieldErrors.audience || audienceEmptyMessage(form.audience)}
+                </p>
+              )}
+            </div>
+          )}
+
+          {form.audience === "GROUP" && (
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                Groups <span className="text-red-500">*</span>
+              </label>
+              {/* Mounted only for a GROUP audience, so an all-members or
+                  selected-members plan never fetches the group list. */}
+              <AudienceGroupPicker
+                communityId={communityId}
+                selected={form.groupIds}
+                onChange={(ids) => {
+                  setForm((f) => ({ ...f, groupIds: ids }));
+                  setFieldErrors((fe) => ({ ...fe, audience: "" }));
+                }}
+              />
+              {/* Proactive for the same reason as the member picker: Save is
+                  disabled while the selection is empty, so a submit-only
+                  message would never be seen. */}
+              {(fieldErrors.audience || (form.audience === "GROUP" && !form.groupIds.length)) && (
+                <p className="text-xs text-danger mt-1">
+                  {fieldErrors.audience || audienceEmptyMessage(form.audience)}
                 </p>
               )}
             </div>

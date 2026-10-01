@@ -12,7 +12,7 @@ import {
   REMINDER_CHANNELS,
   AMOUNT_MODES,
   AUDIENCE_OPTIONS,
-  AUDIENCE_EMPTY_MESSAGE,
+  audienceEmptyMessage,
   VISIBILITY_OPTIONS,
 } from "./constants";
 import {
@@ -24,6 +24,7 @@ import {
 import { PayoutAccountField, BillingDayField } from "./PlanFormFields";
 import PlanReview from "./PlanReview";
 import AudienceMemberPicker from "./AudienceMemberPicker";
+import AudienceGroupPicker from "./AudienceGroupPicker";
 
 // The native select chevron is drawn by hand throughout this file (an
 // absolutely-positioned triangle over `appearance-none`), so every select here
@@ -321,7 +322,29 @@ export function Step2({
           {(fieldErrors.audience ||
             (form.audience === "SELECTED_MEMBERS" && !(form.memberIds ?? []).length)) && (
             <p className="text-xs text-danger mt-1">
-              {fieldErrors.audience || AUDIENCE_EMPTY_MESSAGE}
+              {fieldErrors.audience || audienceEmptyMessage(form.audience)}
+            </p>
+          )}
+        </div>
+      )}
+
+      {form.audience === "GROUP" && (
+        <div>
+          <label className="block text-xs font-medium text-gray-700 mb-1">
+            Groups <span className="text-red-500">*</span>
+          </label>
+          {/* Mounted only for a GROUP audience, so an all-members or
+              selected-members plan never fetches the group list. */}
+          <AudienceGroupPicker
+            communityId={communityId}
+            selected={form.groupIds}
+            onChange={(ids) => onChange("groupIds", ids)}
+          />
+          {/* Proactive for the same reason as the member picker above. */}
+          {(fieldErrors.audience ||
+            (form.audience === "GROUP" && !(form.groupIds ?? []).length)) && (
+            <p className="text-xs text-danger mt-1">
+              {fieldErrors.audience || audienceEmptyMessage(form.audience)}
             </p>
           )}
         </div>
@@ -527,7 +550,7 @@ export function Step2({
   );
 }
 
-export function Step3({ planType, form, slug, accounts, memberCount = 0 }) {
+export function Step3({ planType, form, slug, accounts, memberCount = 0, groupCount = 0 }) {
   return (
     <PlanReview
       planType={planType}
@@ -535,6 +558,7 @@ export function Step3({ planType, form, slug, accounts, memberCount = 0 }) {
       slug={slug}
       accounts={accounts}
       memberCount={memberCount}
+      groupCount={groupCount}
     />
   );
 }
