@@ -14,6 +14,7 @@ import {
   regenerateMfaRecoveryCodes,
 } from "../../../../services/authService";
 import { getErrorMessage } from "../../../../utils/errorHandler";
+import { resolveMfaQrImageSrc } from "../../../../utils/mfaQrImageUrl";
 import { useCopyToClipboard } from "../../../../hooks/useCopyToClipboard";
 import { Button } from "../../../../components/ui/Button";
 import { toastSuccess } from "../../../../utils/toast";
@@ -77,9 +78,12 @@ function SetupFlow({ onSuccess, onCancel }) {
     copy(setupData?.secret);
   }
 
-  // Resolve the QR image: prefer an explicit image field, otherwise use
-  // the qrCodeUri as an <img src> if it looks like a data URI or URL.
-  const qrSrc = setupData?.qrCodeImage ?? setupData?.qrCodeDataUri ?? null;
+  // SECURITY: these are all server-supplied (POST /auth/mfa/totp/setup) and this
+  // value goes straight to <img src>. resolveMfaQrImageSrc validates each
+  // candidate and takes the first SAFE one, preserving the original preference
+  // order — see its docblock for why validating after a `??` chain would be
+  // wrong. Rejects rather than repairing: a rejected value renders nothing.
+  const qrSrc = resolveMfaQrImageSrc(setupData);
   const qrUri = setupData?.qrCodeUri ?? null;
 
   if (stage === "idle") {
