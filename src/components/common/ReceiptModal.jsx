@@ -5,6 +5,7 @@ import html2canvas from "html2canvas";
 import ctaLogoUrl from "../../assets/cta/ctalogo.webp";
 import { toTitleCase } from "../../utils/format";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
+import { notifyError } from "../../utils/errorHandler";
 import {
   formatNaira,
   splitNaira,
@@ -508,8 +509,22 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
       if (!canvas) return;
       const link = document.createElement("a");
       link.href = canvas.toDataURL("image/png");
+      // Date.now() only supplies a last-resort filename when the transaction has
+      // neither reference nor id. Pre-existing; flagged now only because adding
+      // a catch made the compiler analyse further into this handler.
+      // eslint-disable-next-line react-hooks/purity
       link.download = `glass-receipt-${tx?.reference ?? tx?.id ?? Date.now()}.png`;
       link.click();
+    } catch (err) {
+      // html2canvas rejects when it cannot load a cross-origin image (an <img>
+      // served without Access-Control-Allow-Origin), and toDataURL throws a
+      // SecurityError on an origin-tainted canvas. Both used to escape as an
+      // unhandled rejection with no feedback at all — the click just appeared to
+      // do nothing. Report them; the sibling modals use notifyError too.
+      notifyError(err, {
+        context: "Saving receipt image",
+        fallback: "Couldn't save the image. Please try again.",
+      });
     } finally {
       setSaving(null);
     }
@@ -521,6 +536,11 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
     try {
       const { downloadReceiptPdf } = await import("../../utils/generateReceipt");
       await downloadReceiptPdf(tx, { payerName, payerEmail });
+    } catch (err) {
+      notifyError(err, {
+        context: "Saving receipt PDF",
+        fallback: "Couldn't save the receipt PDF. Please try again.",
+      });
     } finally {
       setSaving(null);
     }
@@ -532,27 +552,48 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
     try {
       const canvas = await captureCard(2);
       if (!canvas) return;
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          setSaving(null);
-          return;
-        }
-        try {
-          await navigator.share({
-            files: [
-              new File([blob], `glass-receipt-${tx?.reference ?? tx?.id ?? ""}.png`, {
-                type: "image/png",
-              }),
-            ],
-            title: "Payment Receipt",
-          });
-        } catch {
-          // user dismissed — not an error
-        } finally {
-          setSaving(null);
-        }
-      }, "image/png");
-    } catch {
+      // toBlob is callback-based and fires AFTER this try block would otherwise
+      // close, so awaiting it through a Promise is what lets `finally` below
+      // stay correct: saving must not reset until the share sheet resolves, or
+      // the button re-enables while the sheet is still up.
+      await new Promise((resolve) => {
+        canvas.toBlob(async (blob) => {
+          try {
+            if (!blob) {
+              notifyError(new Error("Receipt capture produced no image data"), {
+                context: "Sharing receipt",
+                fallback: "Couldn't share the receipt. Please try again.",
+              });
+              return;
+            }
+            await navigator.share({
+              files: [
+                new File([blob], `glass-receipt-${tx?.reference ?? tx?.id ?? ""}.png`, {
+                  type: "image/png",
+                }),
+              ],
+              title: "Payment Receipt",
+            });
+          } catch {
+            // user dismissed — not an error. Deliberately silent.
+          } finally {
+            resolve();
+          }
+        }, "image/png");
+      });
+    } catch (err) {
+      // Capture failures (html2canvas rejecting, or toBlob throwing
+      // SecurityError on a tainted canvas) previously landed in a bare catch
+      // that only reset state, so a failure was indistinguishable from a
+      // dismissed share sheet.
+      notifyError(err, {
+        context: "Sharing receipt",
+        fallback: "Couldn't share the receipt. Please try again.",
+      });
+    } finally {
+      // finally, not catch: `if (!canvas) return` inside the try skips a catch
+      // clause, which previously left saving === "share" stuck forever with the
+      // button permanently disabled. Every exit path must reset.
       setSaving(null);
     }
   }
@@ -643,6 +684,10 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
               </>,
             )}
           {actionBtn(
+            // Same reasoning as the Share button above: actionBtn only wires
+            // this into a <button onClick>, and handleSaveImage only ever runs
+            // from that click — the compiler can't see through the local helper.
+            // eslint-disable-next-line react-hooks/refs
             handleSaveImage,
             saving === "image",
             <>
