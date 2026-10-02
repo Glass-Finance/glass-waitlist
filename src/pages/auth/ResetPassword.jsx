@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { resetPassword } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
@@ -13,9 +13,35 @@ import PasswordChecklist from "../../components/auth/PasswordChecklist";
 // for why these were merged.
 export default function ResetPassword() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const email = searchParams.get("email") ?? "";
-  const token = searchParams.get("token") ?? "";
+
+  // Credentials come from sessionStorage (written by ForgotPassword), never
+  // from the URL -- see the comment there for why.
+  //
+  // Read once in a lazy useState initializer rather than in the render body or
+  // an effect:
+  //   * in the render body it would re-run every render, and since the key is
+  //     consumed, the second render would find nothing and flash "this reset
+  //     link is invalid" the moment the user typed a character;
+  //   * in an effect it needs a second render to land, which either shows a
+  //     loading state or -- worse -- flashes the invalid-link state first;
+  //   * sessionStorage.getItem is synchronous, so the initializer has the value
+  //     before the first paint and there is no loading window at all.
+  //
+  // State is the working copy (survives re-renders); storage stays the durable
+  // copy (survives a page refresh). Same shape as SignIn.jsx's
+  // pendingVerificationEmail read.
+  const [credentials] = useState(() => {
+    try {
+      const raw = sessionStorage.getItem("glass_reset_otp");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return { email: parsed.email ?? "", token: parsed.token ?? "" };
+      }
+    } catch {
+      // Unparseable value -- fall through to the invalid-link state below.
+    }
+    return { email: "", token: "" };
+  });
 
   const [form, setForm] = useState({ newPassword: "", confirmPassword: "" });
   const [fieldErrors, setFieldErrors] = useState({ newPassword: "", confirmPassword: "" });
@@ -87,9 +113,12 @@ export default function ResetPassword() {
     setLoading(true);
     setError("");
     try {
+      // Consume the token only once the user actually submits, so a refresh
+      // part-way through the form doesn't strand them.
+      sessionStorage.removeItem("glass_reset_otp");
       await resetPassword({
-        email,
-        token,
+        email: credentials.email,
+        token: credentials.token,
         newPassword: form.newPassword,
         confirmPassword: form.confirmPassword,
       });
@@ -112,7 +141,7 @@ export default function ResetPassword() {
           <p className="text-sm text-gray-500">Choose a new password for your account.</p>
         </div>
 
-        {!email || !token ? (
+        {!credentials.email || !credentials.token ? (
           <p className="text-sm text-[#E53E3E]">
             This reset link is invalid or has expired.{" "}
             <Link to="/forgot-password" className="font-semibold text-[#1C2B8A]">

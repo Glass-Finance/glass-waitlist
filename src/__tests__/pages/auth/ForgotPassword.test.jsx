@@ -61,6 +61,9 @@ function deferred() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // The OTP now travels in sessionStorage rather than the URL, so it has to
+  // be cleared between tests or a previous test's token leaks into the next.
+  sessionStorage.clear();
 });
 
 describe("ForgotPassword email step", () => {
@@ -111,7 +114,7 @@ describe("ForgotPassword email step", () => {
 });
 
 describe("ForgotPassword code step", () => {
-  it("hands off to reset-password with the email and the entered code", async () => {
+  it("hands off to reset-password with the OTP in sessionStorage, never the URL", async () => {
     renderForgotPassword();
     await reachOtpStep();
 
@@ -119,7 +122,49 @@ describe("ForgotPassword code step", () => {
     fireEvent.click(screen.getByRole("button", { name: "Verify Code" }));
 
     const target = await screen.findByTestId("reset-target");
-    expect(target.textContent).toBe("/reset-password?email=sulaimon%40example.com&token=123456");
+    // The whole point of this change: a token in a query string leaks via
+    // browser history, the Referer header, and every proxy access log between
+    // the two pages.
+    expect(target.textContent).toBe("/reset-password");
+    expect(target.textContent).not.toContain("123456");
+    expect(target.textContent).not.toContain("token=");
+
+    const stored = JSON.parse(sessionStorage.getItem("glass_reset_otp"));
+    expect(stored.email).toBe("sulaimon@example.com");
+    expect(stored.token).toBe("123456");
+  });
+
+  it("lowercases the email it hands off, matching the reset endpoint's contract", async () => {
+    renderForgotPassword();
+    forgotPassword.mockResolvedValue({});
+    fireEvent.change(screen.getByPlaceholderText("e.g Bax**re@gmail.com"), {
+      target: { value: "Sulaimon@Example.com" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Send Reset Code|Sending/ }));
+    await screen.findByText("Enter Reset Code");
+
+    typeOtp("123456");
+    fireEvent.click(screen.getByRole("button", { name: "Verify Code" }));
+
+    await screen.findByTestId("reset-target");
+    expect(JSON.parse(sessionStorage.getItem("glass_reset_otp")).email).toBe(
+      "sulaimon@example.com",
+    );
+  });
+
+  it("still refuses to hand off on an incomplete code", async () => {
+    renderForgotPassword();
+    await reachOtpStep();
+
+    typeOtp("12345");
+    // The button is disabled until the code is complete, so nothing can hand off
+    // — no navigation, and crucially no half-filled credential in storage.
+    const verify = screen.getByRole("button", { name: "Verify Code" });
+    expect(verify.disabled).toBe(true);
+    fireEvent.click(verify);
+
+    expect(screen.queryByTestId("reset-target")).toBeNull();
+    expect(sessionStorage.getItem("glass_reset_otp")).toBeNull();
   });
 
   it("re-requests a code for the same email on resend", async () => {

@@ -56,9 +56,18 @@ export default function ForgotPassword() {
       setError("Please enter the full 6-digit code.");
       return;
     }
-    navigate(
-      `/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}&token=${encodeURIComponent(code)}`,
+    // Hand the reset credentials over in sessionStorage instead of the URL.
+    // A token in a query string leaks through browser history, the Referer
+    // header on any outbound request, and every proxy/server access log on the
+    // path between here and /reset-password. sessionStorage is tab-scoped and
+    // cleared when the tab closes, which is the right lifetime for a secret
+    // that is only valid for the next few minutes. ResetPassword reads and
+    // consumes it.
+    sessionStorage.setItem(
+      "glass_reset_otp",
+      JSON.stringify({ email: email.trim().toLowerCase(), token: code }),
     );
+    navigate("/reset-password");
   }
 
   async function handleResend() {
