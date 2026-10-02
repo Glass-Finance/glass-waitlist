@@ -16,6 +16,11 @@ vi.mock("../../../hooks/useJoinApproval");
 vi.mock("../../../hooks/useKyc", () => ({
   useKycSummary: () => ({ data: undefined, isLoading: false }),
 }));
+// The header's profile avatar reads the signed-in member off AuthContext;
+// this test isn't rendering an AuthProvider, so stand in for one.
+vi.mock("../../../store/AuthContext", () => ({
+  useAuth: () => ({ user: { firstName: "Ada", lastName: "Obi", email: "ada@example.com" } }),
+}));
 
 // Needs an AuthProvider this test isn't rendering -- irrelevant to the
 // Upcoming Payments/Payment History cards under test here.

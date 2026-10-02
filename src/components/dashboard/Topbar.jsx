@@ -28,20 +28,10 @@ import NotificationsPanel from "./NotificationsPanel";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { useClickOutside } from "../../hooks/useClickOutside";
 import PulseImg from "../common/PulseImg";
+import { getInitials } from "../../utils/getInitials";
 import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-// user.firstName/lastName come from AuthContext's refreshUser() (GET /user/me)
-// — the login/register response itself only has {id, email, role,
-// emailVerified}, no name fields, so there's nothing to parse off it directly.
-function getInitials(user) {
-  if (!user) return "?";
-  const first = user.firstName?.[0] ?? "";
-  const last = user.lastName?.[0] ?? "";
-  if (first || last) return (first + last).toUpperCase();
-  return (user.email ?? "?").slice(0, 2).toUpperCase();
-}
-
 function getDisplayName(user) {
   if (!user) return "Loading...";
   if (user.firstName) {

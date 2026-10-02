@@ -1,18 +1,19 @@
 import { useNavigate } from "react-router-dom";
-import { Bell, Mail, Menu } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useAuth } from "../../store/AuthContext";
 import PageLoadingState from "../../components/common/PageLoadingState";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import AutoPayPrompt from "../../components/common/AutoPayPrompt";
 import { usePayments, usePendingPaymentVerification } from "../../hooks/usePayments";
 import { useMyCommunities } from "../../hooks/useMyAccount";
 import { useNotifications } from "../../hooks/useNotifications";
-import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
 import { useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
 import JoinApprovedModal from "../../components/memberApp/JoinApprovedModal";
 import KycWizardModal from "../../components/kyc/KycWizardModal";
 import SideDrawer from "../../components/memberApp/SideDrawer";
 import KycStatusBadge from "../../components/memberApp/KycStatusBadge";
+import ProfileAvatar from "../../components/memberApp/ProfileAvatar";
 import { useKycSummary } from "../../hooks/useKyc";
 import { isKycApproved } from "../../utils/kycStatus";
 import { kycDisabled } from "../../lib/flags";
@@ -56,11 +57,7 @@ export default function Home() {
 
   usePendingPaymentVerification();
   const { unreadCount } = useNotifications();
-  const { invites } = useInvites();
-  const { joinRequests } = useMyJoinRequests();
-  const pendingInviteCount =
-    invites.filter((i) => (i.status ?? "").toUpperCase() === "PENDING").length +
-    joinRequests.length;
+  const { user } = useAuth();
 
   const { approved: approvedJoins, dismiss: dismissJoin } = useJoinApprovalWatcher();
   const activeApproval = approvedJoins[0] ?? null;
@@ -215,22 +212,11 @@ export default function Home() {
             )}
           </div>
 
+          {/* Profile photo sits at the far right of the header (the member's
+              entry point to their own profile), with the notification bell
+              directly beside it. Invites moved out of the header entirely —
+              the hamburger SideDrawer still carries the Invitations entry. */}
           <div className="flex items-center gap-2.5 flex-shrink-0">
-            {!hasNoCommunity && !showNothingHappening && (
-              <button
-                aria-label="Invitations"
-                onClick={() => navigate("/member/invites")}
-                className="relative w-[38px] h-[38px] rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
-              >
-                <Mail size={17} strokeWidth={1.8} className="text-ink" />
-                {pendingInviteCount > 0 && (
-                  <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
-                    {pendingInviteCount > 9 ? "9+" : pendingInviteCount}
-                  </span>
-                )}
-              </button>
-            )}
-
             <button
               aria-label="Notifications"
               onClick={() => navigate("/member/notifications")}
@@ -243,6 +229,12 @@ export default function Home() {
                 </span>
               )}
             </button>
+
+            <ProfileAvatar
+              user={user}
+              onClick={() => navigate("/member/profile")}
+              ariaLabel="Your profile"
+            />
           </div>
         </div>
 
