@@ -7,16 +7,10 @@ import {
   updateEmail,
   requestPhoneUpdate,
   updatePhone,
-  getMyCommunities,
   getMyMemberRecord,
   leaveCommunity,
 } from "../api/members";
-
-function unwrapList(res) {
-  const data = res.data?.data;
-  if (Array.isArray(data)) return data;
-  return data?.content ?? [];
-}
+import { fetchCompleteMyCommunityList } from "../api/communityList";
 
 // ─── Current user ─────────────────────────────────────────────────────────────
 export function useMe() {
@@ -105,21 +99,67 @@ export function useUpdatePhone() {
 }
 
 // ─── Communities ──────────────────────────────────────────────────────────────
-export function useMyCommunities() {
+//
+// THE single owner of the ["communities"] cache entry — the complete,
+// image-normalized list of communities this user belongs to.
+//
+// It was one of six registrations under this key, each with its own inline
+// queryFn. That was two defects at once:
+//
+//   1. All six called getMyCommunities(), a single request, and /communities/me
+//      is paginated (the backend defaults to 10). A user in more than 10
+//      communities silently lost the rest, so: useCommunityMap could not
+//      resolve a notification's community, useJoinApprovalWatcher missed an
+//      approval that landed off page 1, useTransactions / useTransactionDetail
+//      could not resolve an off-page community logo, and useMainPayments could
+//      not resolve an off-page active community (so it fell through to
+//      activeCommunities[0]). DiscoverCommunities showed "Join" for a community
+//      the user was already a member of.
+//
+//   2. Only this one normalized `logo`, so the other five read the raw
+//      server-controlled `logo.url` off the same cache entry -- and whichever
+//      observer happened to fetch first decided which shape everyone got.
+//
+// Both are fixed by having exactly one queryFn here. The page walk is NOT
+// reimplemented: it is fetchCompleteMyCommunityList() from
+// api/communityList.js, the same helper useCommunities() and AuthContext use.
+//
+// Shape: a flat array of community objects with `logo` normalized -- exactly
+// what this hook already returned, so useCommunityMap, memberApp Home and
+// MyCommunities.jsx are unaffected. Consumers that previously read the raw
+// array keep the same fields; they gain normalization and the missing pages.
+//
+// @param {object}  [options]
+// @param {boolean} [options.enabled]           observer-level gate
+// @param {*}        [options.refetchOnMount]   forwarded verbatim
+// @param {boolean} [options.skipAuthRedirect]  send `_skipAuthRedirect`.
+//   PaymentSuccess.jsx needs this via useTransactionDetail: a transient 401
+//   there must not hard-redirect someone who has already seen "Payment
+//   Successful". It is deliberately part of the query KEY, because it is a
+//   genuinely different request behavior -- sharing one cache entry across
+//   both would leave the redirect policy up to whichever observer mounted
+//   last. Only that page opts in, so only it gets a second entry.
+export function useMyCommunities({
+  enabled = true,
+  refetchOnMount,
+  skipAuthRedirect = false,
+} = {}) {
   return useQuery({
-    queryKey: ["communities"],
+    queryKey: skipAuthRedirect ? ["communities", { skipAuthRedirect: true }] : ["communities"],
     queryFn: async () => {
-      const res = await getMyCommunities();
-      // SECURITY: normalize at the queryFn so the value entering the shared
-      // ["communities"] cache is already safe for every consumer —
-      // MyCommunities.jsx, memberApp HomeSections.jsx, and useCommunityMap
-      // (which feeds notificationContent). Validating here rather than in each
-      // consumer is what makes this one change cover all of them.
-      return unwrapList(res).map((c) =>
-        c?.logo ? { ...c, logo: normalizeImageObject(c.logo) } : c,
+      const list = await fetchCompleteMyCommunityList(
+        skipAuthRedirect ? { config: { _skipAuthRedirect: true } } : {},
       );
+      // SECURITY: normalize at the queryFn so the value entering the shared
+      // ["communities"] cache is already safe for EVERY consumer -- all of
+      // them, not just useCommunityMap / MyCommunities / HomeSections.
+      // Validating here rather than in each consumer is what makes this one
+      // change cover all of them.
+      return list.map((c) => (c?.logo ? { ...c, logo: normalizeImageObject(c.logo) } : c));
     },
+    enabled,
     staleTime: 1000 * 60 * 5,
+    ...(refetchOnMount === undefined ? {} : { refetchOnMount }),
   });
 }
 

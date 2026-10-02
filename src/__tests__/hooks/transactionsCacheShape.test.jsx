@@ -4,20 +4,24 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useTransactions } from "../../hooks/useTransactions";
 import { usePayments } from "../../hooks/payments/useMainPayments";
 import { useGlobalOverview } from "../../hooks/payments/useGlobalOverview";
-import {
-  getMyTransactions,
-  getMyCommunities,
-  getMyObligations,
-  getPaymentLinks,
-  getMe,
-} from "../../api/members";
+import { getMyTransactions, getMyObligations, getPaymentLinks, getMe } from "../../api/members";
+import { fetchCompleteMyCommunityList } from "../../api/communityList";
 
 vi.mock("../../api/members", () => ({
   getMyTransactions: vi.fn(),
-  getMyCommunities: vi.fn(),
   getMyObligations: vi.fn(),
   getPaymentLinks: vi.fn(),
   getMe: vi.fn(),
+}));
+// The community list no longer comes from getMyCommunities(): all six consumers
+// now read the single ["communities"] entry owned by useMyCommunities(), which
+// sources it from fetchCompleteMyCommunityList(). This file's subject is the
+// ["transactions"] cache shape, not the community-list pagination, so it stubs
+// that one function with the same "here is my membership list" contract the old
+// mock provided. Every assertion below is unchanged.
+vi.mock("../../api/communityList", () => ({
+  fetchCompleteMyCommunityList: vi.fn(),
+  fetchCompleteMyCommunities: vi.fn(),
 }));
 
 const TRANSACTIONS_KEY = ["transactions"];
@@ -97,12 +101,10 @@ beforeEach(() => {
     JSON.stringify({ id: "c1", slug: "alpha", name: "Alpha" }),
   );
   getMyTransactions.mockResolvedValue(ENVELOPE(RAW_TRANSACTIONS));
-  getMyCommunities.mockResolvedValue(
-    ENVELOPE([
-      { id: "c1", slug: "alpha", name: "Alpha", memberStatus: "ACTIVE" },
-      { id: "c2", slug: "beta", name: "Beta", memberStatus: "ACTIVE" },
-    ]),
-  );
+  fetchCompleteMyCommunityList.mockResolvedValue([
+    { id: "c1", slug: "alpha", name: "Alpha", memberStatus: "ACTIVE" },
+    { id: "c2", slug: "beta", name: "Beta", memberStatus: "ACTIVE" },
+  ]);
   getMyObligations.mockResolvedValue(ENVELOPE([]));
   getPaymentLinks.mockResolvedValue(ENVELOPE([]));
   getMe.mockResolvedValue({ data: { data: { id: "user-1" } } });

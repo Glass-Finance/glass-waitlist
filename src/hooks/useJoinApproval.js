@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getMyCommunities } from "../api/members";
 import { fetchAllNotifications, selectNotificationItems } from "./useNotifications";
+import { useMyCommunities } from "./useMyAccount";
 import { toastSuccess } from "../utils/toast";
 
 // The backend sends no reliable signal to the requesting member when an
@@ -61,12 +61,6 @@ export function getPendingJoinRequests() {
   return readPending().filter((e) => !e.requestedAt || Date.now() - e.requestedAt < PENDING_TTL_MS);
 }
 
-function unwrapList(res) {
-  const data = res.data?.data;
-  if (Array.isArray(data)) return data;
-  return data?.content ?? [];
-}
-
 // GET /communities/join-requests/me was the obvious place to look for a
 // REJECTED outcome, but confirmed against the live backend it comes back
 // empty (totalElements: 0) even for an account with a real, confirmed
@@ -80,13 +74,11 @@ function escapeRegex(s) {
 }
 
 export function useJoinApprovalWatcher() {
-  // Same key/queryFn as the rest of the app — shares the cached list, so
-  // this adds no extra network traffic.
-  const { data: communities } = useQuery({
-    queryKey: ["communities"],
-    queryFn: async () => unwrapList(await getMyCommunities()),
-    staleTime: 1000 * 60 * 5,
-  });
+  // The complete community list, via the one hook that owns the ["communities"]
+  // entry. It used to be a local single-page query here, so a user in more than
+  // 10 communities never saw the approval that landed on page 2 and its
+  // Discover card stayed stuck on "Request sent".
+  const { data: communities } = useMyCommunities();
 
   // A rejected request never becomes a membership, so it can never show up
   // in `communities` above — the JOIN_REQUEST_REJECTED notification the

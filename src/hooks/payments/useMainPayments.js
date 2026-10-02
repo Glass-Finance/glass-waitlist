@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getMyObligations, getMe, getMyCommunities, getPaymentLinks } from "../../api/members";
+import { getMyObligations, getMe, getPaymentLinks } from "../../api/members";
+import { useMyCommunities } from "../useMyAccount";
 import { unwrapList, deriveStatus, fetchMyTransactions } from "./helpers";
 import { shapeObligation, shapePaymentLink, normalizeCommunity } from "./shape";
 import { isPaidObligationStatus } from "../../utils/paymentStatus";
@@ -63,15 +64,14 @@ export function usePayments(preferredCommunityIdentifier) {
   // right after accepting can render with the pre-accept communities list,
   // which silently breaks the community/payment-links resolution below for
   // a member who just joined.
-  const communitiesQuery = useQuery({
-    queryKey: ["communities"],
-    queryFn: async () => {
-      const res = await getMyCommunities();
-      return unwrapList(res);
-    },
-    staleTime: 1000 * 60 * 5,
-    refetchOnMount: "always",
-  });
+  // The complete community list from the one hook that owns the
+  // ["communities"] entry. This was a local single-page query, so a member whose
+  // ACTIVE community sat past row 10 was never resolved and the hook fell
+  // through to `activeCommunities[0]` — the same arbitrary pick PR #94 removed
+  // from the admin sidebar. `refetchOnMount: "always"` is preserved: an invite
+  // acceptance invalidates this query while Home is unmounted, so a member who
+  // just joined must not render with the pre-accept list.
+  const communitiesQuery = useMyCommunities({ refetchOnMount: "always" });
 
   // Active community: prefer whatever the member last selected in MyCommunities,
   // falling back to the first community returned by the API.
