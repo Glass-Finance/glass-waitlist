@@ -2,19 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Search, Users, Loader2, CheckCircle2, Clock } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMyCommunities } from "../../api/members";
 import { searchPublicCommunities } from "../../api/communities";
 import { submitJoinRequest } from "../../api/invites";
 import { recordPendingJoinRequest, useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
+import { useMyCommunities } from "../../hooks/useMyAccount";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import LoadingState from "../../components/common/LoadingState";
 import JoinApprovedModal from "../../components/memberApp/JoinApprovedModal";
 import { getErrorMessage } from "../../utils/errorHandler";
-
-function unwrapList(res) {
-  const d = res.data?.data;
-  return Array.isArray(d) ? d : (d?.content ?? []);
-}
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 function usePublicSearch(query) {
@@ -191,11 +186,12 @@ export default function DiscoverCommunities() {
   // The member's own communities + locally tracked requests — so a reload
   // doesn't reset "Request sent"/"Already a member" back to a Join button.
   // Same query key/fn as the rest of the app: shares the cache, no extra fetch.
-  const { data: myCommunities = [] } = useQuery({
-    queryKey: ["communities"],
-    queryFn: async () => unwrapList(await getMyCommunities()),
-    staleTime: 1000 * 60 * 5,
-  });
+  // The complete community list from the one hook that owns the
+  // ["communities"] entry. This was a local single-page query, so a member of
+  // more than 10 communities was shown a "Join" button for communities they
+  // were already in — the card's membership test below simply did not find
+  // them. Now every membership is in scope.
+  const { data: myCommunities = [] } = useMyCommunities();
 
   // Only surfaced here -- this page is where a member is actively waiting
   // on a request, so it's the only place an approval landing mid-session

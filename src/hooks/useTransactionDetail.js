@@ -1,13 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTransaction, getMyCommunities } from "../api/members";
+import { getTransaction } from "../api/members";
 import { lookupLocalFee } from "./usePayments";
+import { useMyCommunities } from "./useMyAccount";
 import { normalizeImageObject, normalizeImageUrl } from "../utils/normalizeImageFields";
-
-function unwrapList(res) {
-  const data = res.data?.data;
-  if (Array.isArray(data)) return data;
-  return data?.content ?? [];
-}
 
 // Full-detail shape for a single transaction, used by the Transaction
 // Details page. Deliberately keeps every field optional/defensive beyond
@@ -113,14 +108,14 @@ export function useTransactionDetail(transactionId, { skipAuthRedirect = false }
     staleTime: 1000 * 60 * 2,
   });
 
-  const communitiesQuery = useQuery({
-    queryKey: ["communities"],
-    queryFn: async () => {
-      const res = await getMyCommunities(config);
-      return unwrapList(res);
-    },
-    staleTime: 1000 * 60 * 5,
+  // The complete community list from the one hook that owns the
+  // ["communities"] entry — a local single-page query here previously meant an
+  // off-page community's receipt lost its logo. `skipAuthRedirect` rides along
+  // so PaymentSuccess keeps its "no hard redirect after a transient 401"
+  // guarantee on this request too, and the `enabled` gate is preserved.
+  const communitiesQuery = useMyCommunities({
     enabled: !!transactionId,
+    skipAuthRedirect,
   });
 
   const tx = detailQuery.data;

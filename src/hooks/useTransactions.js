@@ -1,13 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMyCommunities } from "../api/members";
 import { fetchMyTransactions } from "./payments/helpers";
+import { useMyCommunities } from "./useMyAccount";
 import { normalizeImageObject } from "../utils/normalizeImageFields";
-
-function unwrapList(res) {
-  const data = res.data?.data;
-  if (Array.isArray(data)) return data;
-  return data?.content ?? [];
-}
 
 // ─── All transactions (Payment History page) ──────────────────────────────────
 // ["transactions"] is one shared cache entry (also observed by usePayments'
@@ -30,22 +24,18 @@ export function useTransactions() {
     staleTime: 1000 * 60 * 2,
   });
 
-  const communitiesQuery = useQuery({
-    queryKey: ["communities"],
-    queryFn: async () => {
-      const res = await getMyCommunities();
-      return unwrapList(res);
-    },
-    staleTime: 1000 * 60 * 5,
-  });
+  // The complete community list from the one hook that owns the
+  // ["communities"] entry. This used to be a local single-page query, so a
+  // transaction belonging to an off-page community got no logo and kept
+  // whatever communityLogo the transaction payload happened to carry.
+  const communitiesQuery = useMyCommunities();
 
-  // SECURITY: this map is a SECOND, independent path by which a server logo
-  // reaches a transaction's `communityLogo` — it reconstructs the value from
-  // /communities/me rather than from the transaction payload that shape.js
-  // normalized. It runs its own query here (not useMyCommunities), so it is not
-  // covered by the ["communities"] boundary either. Normalize at construction;
-  // normalizing only shapeTransaction() would leave this enrichment able to
-  // reintroduce an unsanitized URL onto an already-shaped transaction.
+  // SECURITY: this map reconstructs a transaction's `communityLogo` from
+  // /communities/me rather than from the transaction payload shape.js
+  // normalized. useMyCommunities already normalizes `logo` at the shared
+  // ["communities"] boundary, so re-normalizing here would be a no-op — kept
+  // only as defense for the nested `c.community?.logo` shape, which the
+  // boundary does not touch.
   const logoBySlug = new Map(
     (communitiesQuery.data ?? []).map((c) => [
       c.slug ?? c.community?.slug,
