@@ -269,7 +269,7 @@ export default function ManagePayments() {
           ) : recurringPlans.length === 0 ? (
             <EmptyState
               illustration={managePaymentsEmptyIllustration}
-              illustrationClassName="w-24 h-auto mb-4"
+              illustrationClassName="w-[76px] h-auto mb-4"
               title="No Payment Plans Yet"
               titleClassName="text-lg font-semibold text-ink"
               subtitle="Your active payment plans can be managed here."
