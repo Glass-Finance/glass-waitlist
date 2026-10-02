@@ -52,6 +52,18 @@
   --animate-scaleIn: scaleIn 0.6s ease-out forwards;
   --animate-float: float 3s ease-in-out infinite;
 
+  /* Problem sections — durations/fill modes paired with the hand-written
+     keyframes further down this file. Referenced from the JSX as
+     animate-[var(--animate-mps-scroll)] and friends. */
+  --animate-mps-progress: mps-progress 8s linear forwards;
+  --animate-mps-enter: mps-enter 0.6s cubic-bezier(0.7, 0, 0.2, 1) both;
+  --animate-mps-scroll: mps-scroll 9s 0.4s linear infinite alternate;
+  --animate-mps-roll4: mps-roll4 5s 0.3s cubic-bezier(0.7, 0, 0.2, 1) forwards;
+  --animate-mps-roll6: mps-roll6 5s 0.3s forwards;
+  --animate-gps-pop: gps-pop 0.35s both;
+  --animate-gps-blink: gps-blink 1s steps(2) infinite;
+  --animate-gps-drift: gps-drift 16s ease-in-out infinite;
+
   /* ── Glass Design System — Foundations (from UI designer, mobile pass) ──
      Typography below is the mobile spec; desktop sizes to be added
      separately once supplied, not replacing these. Letter-spacing values
@@ -757,6 +769,137 @@ html.dashboard-compact {
   .kyc-success-scene::before,
   .kyc-success-scene::after,
   .kyc-confetti {
+    animation: none;
+  }
+}
+
+/* ── Problem sections: keyframes ───────────────────────────────────────────
+   These support the two marketing "problem" sections
+   (components/members/MembersProblem.jsx and
+   components/organizations/ProblemSection.jsx). Both are scripted,
+   timeline-driven components whose motion cannot be expressed as
+   Tailwind utilities alone, so the keyframes are hand-written here and
+   referenced from the JSX via arbitrary animation values, e.g.
+   `animate-[var(--animate-mps-scroll)]`.
+
+   Hand-written rather than @theme --animate-* entries because the reels
+   and progress bars need per-instance duration overrides and fill modes
+   that a fixed theme token can't carry. */
+
+@keyframes mps-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes mps-enter {
+  from {
+    transform: translateY(22px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes mps-scroll {
+  from {
+    top: 0;
+    transform: translateY(0);
+  }
+  to {
+    top: 100%;
+    transform: translateY(-100%);
+  }
+}
+
+/* Four-slot reel ("Sent / +12 / +47 / Buried") — holds on each beat
+   instead of sliding linearly, so the copy is readable as it settles. */
+@keyframes mps-roll4 {
+  0%,
+  18% {
+    transform: none;
+  }
+  25%,
+  43% {
+    transform: translateY(-25%);
+  }
+  50%,
+  68% {
+    transform: translateY(-50%);
+  }
+  75%,
+  100% {
+    transform: translateY(-75%);
+  }
+}
+
+/* Six-slot date reel — no holds, one beat per 1/6th. */
+@keyframes mps-roll6 {
+  0% {
+    transform: none;
+  }
+  16% {
+    transform: translateY(-16.666%);
+  }
+  33% {
+    transform: translateY(-33.333%);
+  }
+  50% {
+    transform: translateY(-50%);
+  }
+  66% {
+    transform: translateY(-66.666%);
+  }
+  83%,
+  100% {
+    transform: translateY(-83.333%);
+  }
+}
+
+/* Organizations section: message arrival pop. */
+@keyframes gps-pop {
+  from {
+    transform: translateY(8px) scale(0.97);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Organizations section: two-frame blink for unread dots. */
+@keyframes gps-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* Organizations section: slow drift on the decorative logo marks. */
+@keyframes gps-drift {
+  0%,
+  100% {
+    transform: rotate(var(--r, 0deg)) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: rotate(var(--r, 0deg)) translate3d(0, -12px, 0);
+  }
+}
+
+/* Hover-pause: while the pointer is over the accordion, every animation
+   inside it freezes. This is a JS-toggled runtime state (data-hold), so it
+   needs one real selector rather than a Tailwind variant on the class. */
+[data-hold] [class*="animate-"] {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Both sections opt their scripted motion out in JS as well; this is the
+     backstop for CSS-driven animation on the panels themselves. */
+  .animate-\[var\(--animate-mps-progress\)\],
+  .animate-\[var\(--animate-mps-scroll\)\] {
     animation: none;
   }
 }
