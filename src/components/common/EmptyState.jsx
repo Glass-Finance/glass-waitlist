@@ -17,6 +17,7 @@ export default function EmptyState({
   title,
   titleClassName,
   subtitle,
+  subtitleClassName,
   action,
   actionLabel,
   className = "",
@@ -56,9 +57,10 @@ export default function EmptyState({
       {subtitle && (
         <p
           className={
-            isBig
+            subtitleClassName ||
+            (isBig
               ? "text-base text-gray-400 mt-1.5 max-w-sm"
-              : "text-xs text-gray-400 mt-1 max-w-xs"
+              : "text-xs text-gray-400 mt-1 max-w-xs")
           }
         >
           {subtitle}
