@@ -214,12 +214,18 @@ describe("Permissions-Policy stays consistent with frame-src", () => {
     expect(sourcesFor("frame-src")).toContain("https://cdn.usesmileid.com");
   });
 
-  it("keeps geolocation and microphone denied", () => {
+  it("keeps geolocation denied and microphone granted only to self and Crisp", () => {
     const vercel = JSON.parse(readFileSync(join(repoRoot, "vercel.json"), "utf8"));
     const entry = vercel.headers
       .flatMap((route) => route.headers ?? [])
       .find((h) => h.key === "Permissions-Policy");
-    expect(entry.value).toMatch(/microphone=\(\)/);
+    // microphone was fully denied (()), which hard-blocked the Crisp chatbox
+    // voice-message feature before any permission prompt could appear. It is
+    // now delegated to self + the Crisp chatbox origin only, and the grant's
+    // origin must be one frame-src actually lets us frame (same invariant as
+    // the Smile ID camera test above).
+    expect(entry.value).toMatch(/microphone=\(self "https:\/\/\*\.crisp\.chat"\)/);
     expect(entry.value).toMatch(/geolocation=\(\)/);
+    expect(sourcesFor("frame-src")).toContain("https://*.crisp.chat");
   });
 });
