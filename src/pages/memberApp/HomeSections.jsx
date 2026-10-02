@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Bell, Check, ChevronDown, ChevronRight, Clock, Mail } from "lucide-react";
+import { Bell, Check, ChevronDown, ChevronRight, Clock, Menu } from "lucide-react";
 import noCommunityIcon from "../../assets/auth/no-community.webp";
 import paymentsDueIcon from "../../assets/memberApp/icon-payments-due.webp";
 import upcomingPaymentsIcon from "../../assets/memberApp/icon-upcoming-payments.webp";
 import paymentHistoryIcon from "../../assets/memberApp/icon-payment-history.webp";
 import { Button } from "../../components/ui/Button";
+import ProfileAvatar from "../../components/memberApp/ProfileAvatar";
 import {
   formatNaira,
   formatDateLong as formatDate,
@@ -370,8 +371,7 @@ export function PendingApprovalState({ navigate, community }) {
 
 export function MemberHomeHeader({
   hasNoCommunity,
-  showNothingHappening,
-  pendingInviteCount,
+  user,
   unreadCount,
   navigate,
   onOpenMenu,
@@ -390,7 +390,7 @@ export function MemberHomeHeader({
           aria-label="Open menu"
           className="flex items-center justify-center border-none cursor-pointer bg-transparent p-0 flex-shrink-0"
         >
-          <Bell size={28} strokeWidth={2} className="text-ink" />
+          <Menu size={28} strokeWidth={2} className="text-ink" />
         </button>
 
         {!hasNoCommunity && (
@@ -407,21 +407,6 @@ export function MemberHomeHeader({
       </div>
 
       <div className="flex items-center gap-2.5 flex-shrink-0">
-        {!hasNoCommunity && !showNothingHappening && (
-          <button
-            aria-label="Invitations"
-            onClick={() => navigate("/member/invites")}
-            className="relative w-[38px] h-[38px] rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
-          >
-            <Mail size={17} strokeWidth={1.8} className="text-ink" />
-            {pendingInviteCount > 0 && (
-              <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
-                {pendingInviteCount > 9 ? "9+" : pendingInviteCount}
-              </span>
-            )}
-          </button>
-        )}
-
         <button
           aria-label="Notifications"
           onClick={() => navigate("/member/notifications")}
@@ -434,6 +419,12 @@ export function MemberHomeHeader({
             </span>
           )}
         </button>
+
+        <ProfileAvatar
+          user={user}
+          onClick={() => navigate("/member/profile")}
+          ariaLabel="Your profile"
+        />
       </div>
     </div>
   );
