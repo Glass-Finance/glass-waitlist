@@ -24,7 +24,7 @@
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         {
           "key": "Permissions-Policy",
-          "value": "camera=(self \"https://cdn.usesmileid.com\"), microphone=(), geolocation=()"
+          "value": "camera=(self \"https://cdn.usesmileid.com\"), microphone=(self \"https://*.crisp.chat\"), geolocation=()"
         },
         {
           "key": "Content-Security-Policy",
