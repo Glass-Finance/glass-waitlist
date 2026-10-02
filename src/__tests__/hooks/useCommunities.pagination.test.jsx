@@ -178,9 +178,9 @@ describe("useCommunities page walk — multiple pages", () => {
     expect(requestedPageNumbers()).not.toContain(0);
   });
 
-  it("keeps the caller-supplied pageSize rather than raising it", async () => {
-    // The walk must not substitute a large page size; the backend default (or
-    // whatever the caller passed) still governs each request.
+  it("keeps the caller-supplied pageSize rather than overriding it", async () => {
+    // COMMUNITY_PAGE_SIZE is a DEFAULT the walk proposes, not an override: the
+    // caller spread lands after it, so an explicit pageSize still wins.
     clientGetMock.mockResolvedValue({ data: { data: singlePage([community(1)]) } });
 
     const { useCommunities } = await import("../../hooks/useCommunities");
@@ -192,18 +192,18 @@ describe("useCommunities page walk — multiple pages", () => {
     expect(params.pageNumber).toBe(1);
   });
 
-  it("sends no pageSize of its own when the caller supplies none", async () => {
-    // The walk must not "solve" the problem by asking for a huge page instead.
-    // The backend default governs unless a caller passes a pageSize, so that
-    // stays the one thing controlling response size.
+  it("requests COMMUNITY_PAGE_SIZE when the caller supplies no pageSize", async () => {
+    // AppConstant.PAGE_SIZE = 10 is the backend's default-when-absent, not a
+    // maximum, so the walk asks for 200 to reach the same complete list in
+    // ceil(N/200) round trips instead of ceil(N/10). 200 is already in
+    // production use on /finance/obligations/me and /finance/transactions/me.
     clientGetMock.mockResolvedValue({ data: { data: singlePage([community(1)]) } });
 
     const { result } = await renderUseCommunities();
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     const params = callsToCommunitiesMe()[0][1].params;
-    expect(params).not.toHaveProperty("pageSize");
-    expect(params).toEqual({ pageNumber: 1 });
+    expect(params).toEqual({ pageSize: 200, pageNumber: 1 });
   });
 
   it("requests pages sequentially, never in parallel", async () => {

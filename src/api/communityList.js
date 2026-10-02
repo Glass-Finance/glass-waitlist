@@ -32,13 +32,20 @@
  * Pages are fetched SEQUENTIALLY because page N+1 does not exist until page N
  * reports whether one remains.
  *
- * No pageSize is set here. The backend default governs, or whatever the caller
- * passed. Nothing in the backend caps pageSize (PageQueryDto has no validation
- * and createPageable passes it straight to PageRequest.of), but no
- * authenticated request to this endpoint has ever confirmed that a large
- * pageSize is accepted here, and AuthContext's bootstrap blocks first paint on
- * this call — so this stays on the documented default rather than inventing a
- * new contract on an unverified endpoint.
+ * pageSize is requested explicitly (see COMMUNITY_PAGE_SIZE below). Nothing in
+ * the backend caps it: PageQueryDto carries no validation annotation,
+ * createPageable passes the value straight to PageRequest.of, and the live
+ * OpenAPI schema declares no maximum. The same PageQueryDto base is already
+ * driven with pageSize:200 in production by /finance/obligations/me and
+ * /finance/transactions/me.
+ *
+ * The "pageSize:1000 caused a 400" note that used to live in api/communities.js
+ * was a MISDIAGNOSIS and is retired. That request also carried pageNumber=0
+ * (from a since-deleted `fetchAllPages` helper that started at 0), which becomes
+ * PageRequest.of(-1, ...) and is what actually raised
+ * IllegalArgumentException -> 400 "Illegal Argument Entered". Confirmed live on
+ * the identical PageQueryDto path: pageNumber=0&pageSize=2 -> 400, while
+ * pageNumber=1&pageSize=1000 -> 200.
  */
 import client from "./client";
 
@@ -49,13 +56,25 @@ import client from "./client";
 // never converges -- without it a malformed response would walk forever.
 const MAX_PAGES = 200;
 
+// Rows requested per round trip. AppConstant.PAGE_SIZE = 10 is the backend's
+// DEFAULT when the parameter is absent, not a maximum — so 10 only ever cost us
+// ceil(N/10) sequential requests to reach the same complete list the walk was
+// already fetching page by page. 200 is the same value this backend is already
+// driven with on /finance/obligations/me and /finance/transactions/me
+// (api/members.js), so it is in production use rather than a new contract.
+//
+// Placed BEFORE `...params` in the request below, so a caller that passes its
+// own pageSize still wins; `pageNumber` stays last because the walk owns it.
+const COMMUNITY_PAGE_SIZE = 200;
+
 /**
  * Fetch every page of GET /communities/me and return one aggregated envelope.
  *
  * @param {object}  [options]
  * @param {Record<string, unknown>}  [options.params]  query params merged into
- *                                    each request; a caller-supplied pageSize is
- *                                    preserved. `pageNumber` is owned by this walk.
+ *                                    each request; a caller-supplied pageSize
+ *                                    overrides COMMUNITY_PAGE_SIZE.
+ *                                    `pageNumber` is owned by this walk.
  * @param {Record<string, unknown>}  [options.config]  axios config merged into
  *                                    each request (e.g. `_skipAuthRedirect`).
  * @returns {Promise<Record<string, unknown>>} the aggregated envelope.
@@ -72,7 +91,7 @@ export async function fetchCompleteMyCommunities({ params = {}, config = {} } = 
   for (let attempt = 1; attempt <= MAX_PAGES; attempt += 1) {
     const res = await client.get("/communities/me", {
       ...config,
-      params: { ...params, pageNumber },
+      params: { pageSize: COMMUNITY_PAGE_SIZE, ...params, pageNumber },
     });
     const page = res.data.data ?? {};
 
