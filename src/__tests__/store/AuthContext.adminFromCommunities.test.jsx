@@ -441,7 +441,11 @@ describe("AuthContext admin derivation — pagination correctness", () => {
     expect(new Set(pages).size).toBe(pages.length);
   });
 
-  it("sends no pageSize of its own, leaving the backend default in force", async () => {
+  it("requests COMMUNITY_PAGE_SIZE, and nothing beyond pageNumber, on the bootstrap fetch", async () => {
+    // Bootstrap reads this list and blocks first paint on it, so the round
+    // trips matter most here: 200 rows instead of the 10-row default.
+    // pageNumber must still be the only thing the walk adds on its own — this
+    // asserts the request carries nothing else the caller did not ask for.
     seedStoredSession();
     stubProfile();
     client.get.mockImplementation(serveCommunities([OWNED]));
@@ -450,8 +454,8 @@ describe("AuthContext admin derivation — pagination correctness", () => {
 
     await waitFor(() => expect(screen.getByTestId("verified").textContent).toBe("true"));
     const params = communityRequests()[0][1].params;
-    expect(params).not.toHaveProperty("pageSize");
-    expect(params).toEqual({ pageNumber: 1 });
+    expect(params.pageSize).toBe(200);
+    expect(params).toEqual({ pageSize: 200, pageNumber: 1 });
   });
 
   it("fails restore closed when a later page rejects", async () => {
