@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import {
@@ -40,6 +41,7 @@ import { roleKeyword, isCommunityAdmin } from "../../utils/communityRole";
 import { useKycGate } from "../../hooks/useKycGate";
 import { isKycGatedCommunityRequestError } from "../../utils/kycStatus";
 import CommunityStaffKycNotice from "../../components/dashboard/CommunityStaffKycNotice";
+import KycWizardModal from "../../components/kyc/KycWizardModal";
 import { QuickAddMemberModal } from "./MembersSections";
 
 // Only these three roles should be assignable when inviting members.
@@ -152,6 +154,34 @@ export default function Members() {
     isError: kycGate.isError,
     exempt: kycGate.exempt,
   });
+
+  // The notice's "Start/Continue verification" action opens the same
+  // KycWizardModal CommunitiesHome and MyCommunities use — one verification
+  // flow, not a second. The modal's own useKycFlow owns the steps, the bounded
+  // status polling and the errors; this page only provides a way in, a way out
+  // and a resume.
+  const queryClient = useQueryClient();
+  const [kycWizardOpen, setKycWizardOpen] = useState(false);
+  // Dismissal never resumes: closing just puts the notice back.
+  const closeKycWizard = () => {
+    setKycWizardOpen(false);
+    kycGate.closeGate();
+  };
+  // onComplete fires only on an APPROVED outcome (useKycFlow), so this is the
+  // one path where the account's community permissions have actually changed.
+  //
+  // The community queries MUST be invalidated here. The KYC flow only
+  // invalidates its own ["kyc", ...] keys, so without this the members request
+  // would keep serving the pre-approval 403 (staleTime is 2 min) and the page
+  // would drop out of the KYC branch into the generic "Couldn't load members."
+  // error — verifying would appear to break the page. Invalidating the
+  // ["community", communityId] prefix is the established scope here
+  // (useCommunity.js, useInitiatePayment.js do the same).
+  const completeKycWizard = () => {
+    setKycWizardOpen(false);
+    kycGate.completeGate();
+    queryClient.invalidateQueries({ queryKey: ["community", communityId] });
+  };
 
   const filteredRoles = rolesData ? rolesData.filter((r) => ALLOWED_ROLE_NAMES.has(r.name)) : [];
   const usingFallbackRoles = !filteredRoles.length;
@@ -521,6 +551,7 @@ export default function Members() {
                       <CommunityStaffKycNotice
                         status={kycGate.status}
                         subject="your members list"
+                        onVerify={() => setKycWizardOpen(true)}
                       />
                     </td>
                   </tr>
@@ -644,6 +675,15 @@ export default function Members() {
           }
         />
       )}
+
+      {/* `kycGate.gateOpen` is OR'd in so a gate opened by enforce() elsewhere
+          still drives this modal — the same shape CommunitiesHome uses. */}
+      <KycWizardModal
+        open={kycWizardOpen || kycGate.gateOpen}
+        onClose={closeKycWizard}
+        onComplete={completeKycWizard}
+        historyPath="/dashboard/verify-identity/history"
+      />
     </div>
   );
 }
