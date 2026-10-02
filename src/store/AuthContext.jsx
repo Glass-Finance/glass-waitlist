@@ -19,7 +19,8 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef } f
 import { useQueryClient } from "@tanstack/react-query";
 import { login as apiLogin, logout as apiLogout, storeAuthSession } from "../services/authService";
 import { getMe } from "../api/members";
-import client, { setSessionRestoring } from "../api/client";
+import { setSessionRestoring } from "../api/client";
+import { fetchCompleteMyCommunityList } from "../api/communityList";
 import {
   KEY_TOKEN,
   SESSION_KEYS,
@@ -48,11 +49,19 @@ const AuthContext = createContext(null);
 // concurrent refreshUser()/restore() callers. The network pair fires once;
 // each caller still applies the result to its own React state, so a
 // stale/unmounted setter can never poison another mount.
+//
+// The communities half is fetchCompleteMyCommunityList(), which may issue more
+// than one request for a user in > 10 communities. Single-flight is what keeps
+// that safe for bootstrap: the whole walk runs at most once per hydration, and
+// the promise is cleared in .finally() so a later restore() starts a fresh one
+// rather than reusing a resolved result. It also means a failure on any page
+// rejects for every awaiting caller, which is what the fail-closed branch in
+// hydrateUserProfile() relies on.
 let hydrateFetchPromise = null;
 
 function fetchHydrationOnce() {
   if (!hydrateFetchPromise) {
-    hydrateFetchPromise = Promise.all([getMe(), client.get("/communities/me")]).finally(() => {
+    hydrateFetchPromise = Promise.all([getMe(), fetchCompleteMyCommunityList()]).finally(() => {
       hydrateFetchPromise = null;
     });
   }
@@ -104,8 +113,12 @@ async function buildUser(authData) {
     isAdmin: isPlatformAdmin,
   };
   try {
-    const res = await client.get("/communities/me");
-    user.isAdmin = isPlatformAdmin || hasAdminCommunity(res.data?.data?.content);
+    // The COMPLETE list, not the first page. /communities/me defaults to 10
+    // communities and was read raw here, so an admin whose single administered
+    // community sorted past row 10 resolved isAdmin: false -- which
+    // ProtectedRoute turns into a redirect away from every admin-gated route,
+    // locking a real admin out of the dashboard entirely.
+    user.isAdmin = isPlatformAdmin || hasAdminCommunity(await fetchCompleteMyCommunityList());
   } catch {
     // Platform admins retain global access even if community lookup fails.
   }
@@ -331,19 +344,22 @@ export function AuthProvider({ children }) {
   // closed; post-login enrichment keeps the just-verified login state).
   // The underlying GET pair is single-flight (fetchHydrationOnce) so
   // StrictMode double-mounts and concurrent callers share one network
-  // round-trip instead of firing duplicates.
+  // round-trip instead of firing duplicates. The communities half is the
+  // COMPLETE list -- see fetchCompleteMyCommunityList -- so admin standing is
+  // derived from every community the user belongs to, not the first page.
   const hydrateUserProfile = useCallback(async () => {
     let meRes;
-    let communitiesRes;
+    let communities;
     try {
-      [meRes, communitiesRes] = await fetchHydrationOnce();
+      // fetchCompleteMyCommunityList resolves to the community ARRAY, not an
+      // axios response, so `communities` is already the complete list.
+      [meRes, communities] = await fetchHydrationOnce();
     } catch {
       // Do NOT fall back to stale state here — the caller (restore())
       // treats a false return as "unverifiable" and fails closed.
       return false;
     }
     const profile = meRes.data?.data ?? meRes.data;
-    const communities = communitiesRes.data?.data?.content ?? [];
     if (!profile) return false;
     const ud = parseUserData(profile);
     setUser((prev) => {
