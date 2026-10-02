@@ -4,9 +4,12 @@ import { Users, Plus, Pencil, Archive, ArchiveRestore, Trash2, UserPlus } from "
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunityGroups, useGroupMutations, isArchivedGroup } from "../../hooks/useGroups";
 import { getErrorMessage } from "../../utils/errorHandler";
+import { useKycGate } from "../../hooks/useKycGate";
+import { isKycGatedCommunityRequestError } from "../../utils/kycStatus";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
+import CommunityStaffKycNotice from "../../components/dashboard/CommunityStaffKycNotice";
 import GroupFormModal from "./groups/GroupFormModal";
 import GroupMembersModal from "./groups/GroupMembersModal";
 
@@ -47,6 +50,20 @@ export default function Groups() {
 
   const { data, isLoading, isError, error, refetch } = useCommunityGroups(communityId, params);
   const { remove, archive, unarchive, create, update } = useGroupMutations(communityId);
+
+  // A community staff member whose KYC isn't approved is downgraded to
+  // COMMUNITY_MEMBER permissions server-side, so this list 403s even though
+  // their role is correct. That deserves an explanation, not a bare error --
+  // but only when we actually know the KYC status, so a 403 from any other
+  // cause (or during a summary outage) still falls through to the generic
+  // message below. Not enforced on load: this states the situation rather than
+  // blocking the page.
+  const kycGate = useKycGate();
+  const kycGated = isKycGatedCommunityRequestError(error, kycGate.status, {
+    isLoading: kycGate.isLoading,
+    isError: kycGate.isError,
+    exempt: kycGate.exempt,
+  });
 
   // The backend has already applied the status filter, so this is not filtered
   // again here. isArchivedGroup still drives the per-row Archived badge and the
@@ -114,7 +131,9 @@ export default function Groups() {
         </label>
       </div>
 
-      {isError ? (
+      {kycGated ? (
+        <CommunityStaffKycNotice status={kycGate.status} subject="your groups" className="mb-4" />
+      ) : isError ? (
         <p className="text-sm text-red-500 mb-4">
           {getErrorMessage(error, "Couldn't load groups.")}{" "}
           <button onClick={() => refetch()} className="underline">

@@ -225,6 +225,65 @@ export function isKycRequiredError(err) {
   );
 }
 
+// Whether a community-staff request was refused because this account's
+// identity verification isn't approved.
+//
+// `isKycRequiredError` above is NOT enough on its own here, and the reason is
+// worth keeping: it matches the message thrown by
+// `requireKycForCommunityStaff` ("Approved KYC is required for community staff
+// participation"), which guards the *explicit* staff-action flows. The members
+// and groups lists are refused by a different line —
+// `requirePermission`'s "Community permission is required: <perm>" — because
+// AccessControlService silently DOWNGRADES a COMMUNITY_OWNER/COMMUNITY_ADMIN to
+// COMMUNITY_MEMBER permissions when kycStatus isn't APPROVED, and then the
+// permission check fails generically. Matching on that message would never fire
+// for exactly the pages this exists to explain.
+//
+// So the signal is the pair, and BOTH halves are load-bearing:
+//
+//   1. the refusal looks like a community-permission refusal. Without this, any
+//      403 on a community page while the account happens to be KYC-incomplete
+//      gets blamed on KYC — including the case that matters most for honesty,
+//      a user who administers community A opening community B from the ?community=
+//      query param. They'd be told "your community role is active" about a
+//      community where it isn't. The message check is what separates "the
+//      permission you should have is gone" from every other 403.
+//   2. this account's KYC status is known and isn't approved. An unknown status
+//      (still loading, the summary endpoint failed, or no KYC record) is not
+//      evidence of anything: a 403 that lands while /kyc is down says nothing
+//      about KYC, and blaming it there sends the user off to verify for no
+//      reason.
+//
+// If the backend ever renames the message this matcher degrades to the generic
+// error, which is the safe direction to fail: the user sees the old unhelpful
+// error, not a confident wrong explanation. `isKycRequiredError` is still OR'd
+// in, so a backend that starts emitting the explicit KYC message on these
+// endpoints keeps working without a frontend change.
+//
+// `exempt` is checked first and short-circuits to false: platform staff and the
+// KYC kill switch are, by backend contract, never subject to the downgrade, so
+// any 403 they hit on a community page is about something else entirely.
+// Telling a platform admin to go verify their identity would be actively
+// misleading.
+//
+// @param {any} err the request error
+// @param {string|null} status this account's kycStatus
+// @param {{isLoading?: boolean, isError?: boolean, exempt?: boolean}} [gateState] gate state
+export function isKycGatedCommunityRequestError(err, status, gateState = {}) {
+  if (gateState.exempt) return false;
+  if (isKycRequiredError(err)) return true;
+  if (err?.response?.status !== 403) return false;
+  // Status not settled yet — wait rather than guess.
+  if (gateState.isLoading || gateState.isError) return false;
+  // No KYC record at all, or already approved: the 403 is about something else.
+  if (!status || isKycApproved(status)) return false;
+  // Must actually be a community-permission refusal. Verified live: the
+  // downgrade surfaces as "Community permission is required: <perm>" (both the
+  // members and groups lists report community.members.read). Matched on the
+  // prefix, not the whole string, so the permission name can change.
+  return /Community permission is required/.test(err?.response?.data?.description ?? "");
+}
+
 // One voice for every reactive block site. Admin copy speaks about the
 // member being promoted; accept copy speaks to the person accepting.
 export const KYC_ADMIN_BLOCK_COPY =
