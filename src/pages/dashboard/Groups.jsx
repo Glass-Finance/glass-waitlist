@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { Users, Plus, Pencil, Archive, ArchiveRestore, Trash2, UserPlus } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
@@ -10,6 +11,7 @@ import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import CommunityStaffKycNotice from "../../components/dashboard/CommunityStaffKycNotice";
+import KycWizardModal from "../../components/kyc/KycWizardModal";
 import GroupFormModal from "./groups/GroupFormModal";
 import GroupMembersModal from "./groups/GroupMembersModal";
 
@@ -50,6 +52,36 @@ export default function Groups() {
 
   const { data, isLoading, isError, error, refetch } = useCommunityGroups(communityId, params);
   const { remove, archive, unarchive, create, update } = useGroupMutations(communityId);
+  const queryClient = useQueryClient();
+
+  // The KYC notice's "Start/Continue verification" action opens the same
+  // KycWizardModal the other community surfaces use (CommunitiesHome,
+  // MyCommunities) -- one verification flow, not a second one. The modal owns
+  // the whole lifecycle: its own useKycFlow handles the steps, the bounded
+  // status polling and the errors. All this page owes it is a way in, a way
+  // out, and a resume.
+  const [kycWizardOpen, setKycWizardOpen] = useState(false);
+  // Dismissal never resumes: closing just puts the notice back.
+  const closeKycWizard = () => {
+    setKycWizardOpen(false);
+    kycGate.closeGate();
+  };
+  // onComplete fires only on an APPROVED outcome (useKycFlow), so this is the
+  // one path where the account's permissions have actually changed.
+  //
+  // The community queries MUST be invalidated here. The KYC flow only
+  // invalidates its own ["kyc", ...] keys, so without this the list would keep
+  // serving the pre-approval 403 (staleTime is 30s for groups, 2min for
+  // members) and the page would drop out of the KYC branch into the generic
+  // "Couldn't load groups." error -- verifying would appear to break the page.
+  // Invalidating the ["community", communityId] prefix is the established
+  // scope here (useCommunity.js, useInitiatePayment.js do the same), and covers
+  // groups, members and the other community sub-queries in one call.
+  const completeKycWizard = () => {
+    setKycWizardOpen(false);
+    kycGate.completeGate();
+    queryClient.invalidateQueries({ queryKey: ["community", communityId] });
+  };
 
   // A community staff member whose KYC isn't approved is downgraded to
   // COMMUNITY_MEMBER permissions server-side, so this list 403s even though
@@ -132,7 +164,12 @@ export default function Groups() {
       </div>
 
       {kycGated ? (
-        <CommunityStaffKycNotice status={kycGate.status} subject="your groups" className="mb-4" />
+        <CommunityStaffKycNotice
+          status={kycGate.status}
+          subject="your groups"
+          onVerify={() => setKycWizardOpen(true)}
+          className="mb-4"
+        />
       ) : isError ? (
         <p className="text-sm text-red-500 mb-4">
           {getErrorMessage(error, "Couldn't load groups.")}{" "}
@@ -287,6 +324,15 @@ export default function Groups() {
           }}
         />
       ) : null}
+
+      {/* `kycGate.gateOpen` is OR'd in so a gate opened by enforce() elsewhere
+          still drives this modal — the same shape CommunitiesHome uses. */}
+      <KycWizardModal
+        open={kycWizardOpen || kycGate.gateOpen}
+        onClose={closeKycWizard}
+        onComplete={completeKycWizard}
+        historyPath="/dashboard/verify-identity/history"
+      />
     </div>
   );
 }

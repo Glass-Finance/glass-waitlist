@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -44,6 +44,52 @@ vi.mock("../../../hooks/useKycGate", () => ({
   useKycGate: () => mockKycGate.current,
 }));
 
+// The page now opens the REAL KycWizardModal, so the flow's own data layer is
+// mocked at the hook boundary — the same approach
+// __tests__/components/kyc/KycWizardModal.test.jsx already uses, rather than
+// stubbing the modal out. That keeps these tests asserting that the shipped
+// wizard actually opens, not that a placeholder was rendered.
+const { mockKycVerification } = vi.hoisted(() => ({ mockKycVerification: { current: null } }));
+vi.mock("../../../hooks/useKycVerification", () => ({
+  useKycVerification: () => mockKycVerification.current,
+}));
+
+// Trimmed to the fields useKycFlow's step machine and footer read. Mirrors the
+// factory in KycWizardModal.test.jsx; `status` drives the branch, so the same
+// helper covers the start / continue / approved cases.
+function kycFlowState(status, overrides = {}) {
+  return {
+    summary: { status, canStart: true, attemptsAllowed: true },
+    isLoading: false,
+    isError: false,
+    error: null,
+    refetch: vi.fn(),
+    isFetching: false,
+    status,
+    canStart: true,
+    canRefreshToken: false,
+    attemptsAllowed: true,
+    activeAttemptId: null,
+    idType: "BVN",
+    setIdType: vi.fn(),
+    localError: "",
+    capturing: false,
+    confirmed: false,
+    startPending: false,
+    resumePending: false,
+    handleStart: vi.fn(),
+    handleResume: vi.fn(),
+    handleRefreshStatus: vi.fn(),
+    isApproved: status === "APPROVED",
+    isInReview: status === "IN_REVIEW",
+    isPending: status === "PENDING",
+    isNotStarted: status === "NOT_STARTED",
+    canRetry: true,
+    showResume: false,
+    ...overrides,
+  };
+}
+
 const Groups = (await import("../../../pages/dashboard/Groups")).default;
 
 const notice = () => screen.queryByTestId("community-staff-kyc-notice");
@@ -67,12 +113,21 @@ const serverError = () => ({ response: { status: 500, data: {} } });
 
 const failed = (error) => ({ isError: true, error });
 
+// Mirrors the real useKycGate surface the page uses. closeGate/completeGate
+// must be present and callable: the page calls them inside the wizard
+// handlers, and a missing method would throw and mask what the test is meant
+// to prove.
 const kyc = (status, extra = {}) => ({
   status,
   isApproved: false,
   isLoading: false,
   isError: false,
   exempt: false,
+  gateOpen: false,
+  closeGate: vi.fn(),
+  completeGate: vi.fn(),
+  openGate: vi.fn(),
+  enforce: vi.fn(),
   ...extra,
 });
 
@@ -99,6 +154,7 @@ const noopMutation = () => ({ mutateAsync: vi.fn(), isPending: false });
 
 beforeEach(() => {
   mockKycGate.current = kyc("APPROVED", { isApproved: true });
+  mockKycVerification.current = kycFlowState("NOT_STARTED");
   mockGroups.current = { communityId: "glass-crew", list: page([]) };
   mockMutations.current = {
     create: noopMutation(),
@@ -113,8 +169,14 @@ beforeEach(() => {
 
 afterEach(() => vi.clearAllMocks());
 
+// The page invalidates community queries once KYC is APPROVED, so the spy has
+// to live on the real client the page holds — hence hoisted and installed here
+// rather than asserted via a mock module.
+const { invalidateSpy } = vi.hoisted(() => ({ invalidateSpy: { current: null } }));
+
 function renderPage() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  invalidateSpy.current = vi.spyOn(client, "invalidateQueries");
   return render(
     <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={["/dashboard/groups?community=glass-crew"]}>
@@ -123,6 +185,10 @@ function renderPage() {
     </QueryClientProvider>,
   );
 }
+
+// The wizard is only ever opened by the notice's action, never on load.
+const wizardDialog = () => screen.queryByRole("dialog", { name: /Identity verification/i });
+const verifyButton = () => screen.queryByTestId("community-staff-kyc-verify");
 
 describe("Groups KYC-gated 403", () => {
   it("explains the KYC requirement instead of showing a bare error", () => {
@@ -158,18 +224,97 @@ describe("Groups KYC-gated 403", () => {
     }
   });
 
-  it("opens no wizard on load", () => {
-    // PR A only states the situation. The verification flow, and resuming into
-    // the page once it completes, is a separate change -- a modal appearing
-    // unbidden would also be the wrong UX for a page you might just be passing
-    // through.
+  it("offers the verification action but opens nothing unbidden", () => {
+    // The notice is an explanation, not an interception: the wizard waits for
+    // a deliberate click. A modal appearing on load would also be wrong for a
+    // page the user might just be passing through.
     mockKycGate.current = kyc("NOT_STARTED");
     mockGroups.current = { communityId: "glass-crew", list: page([], failed(downgrade403())) };
 
     renderPage();
 
     expect(notice()).not.toBeNull();
-    expect(screen.queryByTestId("community-staff-kyc-verify")).toBeNull();
+    expect(verifyButton()).not.toBeNull();
+    expect(wizardDialog()).toBeNull();
+  });
+});
+
+describe("Groups verification action", () => {
+  function gated() {
+    mockKycGate.current = kyc("NOT_STARTED");
+    mockGroups.current = { communityId: "glass-crew", list: page([], failed(downgrade403())) };
+  }
+
+  it("opens the shipped KYC wizard when the action is used", () => {
+    gated();
+    mockKycVerification.current = kycFlowState("NOT_STARTED");
+    renderPage();
+
+    expect(wizardDialog()).toBeNull();
+    // fireEvent, not a raw .click(): opening the modal is a state update that
+    // has to flush for the dialog to exist.
+    fireEvent.click(verifyButton());
+
+    // The real modal, not a stub: role=dialog / aria-label come from
+    // GlassModal, and the flow's own intro step is what renders.
+    expect(wizardDialog()).not.toBeNull();
+    expect(screen.getByRole("button", { name: /Get started/i })).toBeTruthy();
+  });
+
+  it("resumes an attempt already in flight rather than restarting it", () => {
+    // The verb comes from the notice's own isKycInFlight check, which reads the
+    // GATE's status — that's the account's real KYC state, independent of what
+    // the modal's own hook happens to be seeded with in a given test.
+    mockKycGate.current = kyc("PROCESSING");
+    mockGroups.current = { communityId: "glass-crew", list: page([], failed(downgrade403())) };
+    mockKycVerification.current = kycFlowState("PROCESSING", { showResume: true });
+    renderPage();
+
+    expect(verifyButton().textContent).toContain("Continue verification");
+    fireEvent.click(verifyButton());
+    expect(wizardDialog()).not.toBeNull();
+  });
+
+  it("invalidates community queries and closes when verification is approved", () => {
+    gated();
+    // Seed APPROVED so the flow's footer offers "Done", which is the only path
+    // that calls onComplete (useKycFlow only completes on an approved outcome).
+    mockKycVerification.current = kycFlowState("APPROVED");
+    renderPage();
+    fireEvent.click(verifyButton());
+    expect(wizardDialog()).not.toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: /^Done$/i }));
+
+    expect(wizardDialog()).toBeNull();
+    // Approved completion must go through the gate's own resume, not just
+    // close it — that is what CommunitiesHome/MyCommunities do.
+    expect(mockKycGate.current.completeGate).toHaveBeenCalled();
+    expect(mockKycGate.current.closeGate).not.toHaveBeenCalled();
+    // The load-bearing assertion. Without it the list keeps serving the
+    // pre-approval 403 (staleTime 30s) and the page falls into the generic
+    // "Couldn't load groups." error the moment the notice stops matching.
+    expect(invalidateSpy.current).toHaveBeenCalledWith({ queryKey: ["community", "glass-crew"] });
+  });
+
+  it("closes without invalidating or navigating when the wizard is dismissed", () => {
+    gated();
+    mockKycVerification.current = kycFlowState("NOT_STARTED");
+    renderPage();
+    fireEvent.click(verifyButton());
+
+    // "Not now" is the intro step's secondary action -> onDismiss.
+    fireEvent.click(screen.getByRole("button", { name: /Not now/i }));
+
+    expect(wizardDialog()).toBeNull();
+    // Dismissal is closeGate, never completeGate: the permissions haven't
+    // changed, so nothing should be refetched and nothing should resume.
+    expect(mockKycGate.current.closeGate).toHaveBeenCalled();
+    expect(mockKycGate.current.completeGate).not.toHaveBeenCalled();
+    expect(invalidateSpy.current).not.toHaveBeenCalledWith({
+      queryKey: ["community", "glass-crew"],
+    });
+    expect(notice()).not.toBeNull();
   });
 });
 

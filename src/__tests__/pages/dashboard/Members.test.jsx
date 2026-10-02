@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Members from "../../../pages/dashboard/Members";
 import { useActiveCommunityId } from "../../../hooks/useActiveCommunityId";
 import { useCommunity } from "../../../hooks/useCommunity";
@@ -102,10 +103,16 @@ beforeEach(() => {
 });
 
 function renderPage() {
+  // A QueryClientProvider is required now that the page reaches for
+  // useQueryClient() (it invalidates the community queries when a KYC
+  // verification completes). Nothing here queries, so a bare client is enough.
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
-    <MemoryRouter>
-      <Members />
-    </MemoryRouter>,
+    <QueryClientProvider client={client}>
+      <MemoryRouter>
+        <Members />
+      </MemoryRouter>
+    </QueryClientProvider>,
   );
 }
 
