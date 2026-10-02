@@ -6,14 +6,91 @@ import { searchPublicCommunities } from "../api/communities";
 import { isSuccessfulStatus } from "../utils/paymentStatus";
 import { normalizeImageObject } from "../utils/normalizeImageFields";
 
+// Safety valve for the page walk in fetchMyCommunities() below, in the same
+// bounded-loop style useExportJob.js uses for its poll loop (a named MAX_*
+// constant plus a counter). The termination signals below are three independent
+// guards, so this is the backstop for a backend or proxy that reports
+// `last: false` on its final page, or a totalPages that never converges --
+// without it a malformed response would walk forever.
+const MAX_PAGES = 200;
+
 // GET /api/v1/communities/me
 // Returns a PAGINATED envelope: { content: [...], pageNumber, pageSize, totalElements, totalPages, last }
 // Each community object includes memberRole, memberStatus, owned, logo{url,...}
 // -- but NOT a populated `metrics` object; that only comes back from the
 // single-community detail endpoint (see useCommunitiesWithMetrics below).
+//
+// Walks every page and concatenates the results, because this endpoint defaults
+// to AppConstant.PAGE_SIZE = 10 and every consumer here treats the list as
+// complete. A user in more than 10 communities silently lost the rest of them:
+// CommunitiesHome rendered an under-full grid, Topbar's notification panel and
+// useNotifications could not resolve a community off the first page, and
+// Sidebar's `adminCommunities.length === 1` inference could fire for an admin
+// whose other administered communities were simply not in the response.
+//
+// pageNumber is 1-based because the backend's is: createPageable() does
+// PageRequest.of(pageNumber - 1, ...), so 0 becomes PageRequest.of(-1, ...) and
+// the request is rejected with 400 "Illegal Argument Entered". First request is
+// explicitly page 1; pageSize is left alone so the backend's own default (or a
+// caller-supplied one) still governs.
+//
+// Sequentially, because page N+1 does not exist until page N reports whether
+// one is left. If a later page fails the rejection propagates out of this
+// function and React Query surfaces the error like any other failed query; no
+// partial result is cached and retry is left to React Query's own config.
+//
+// The accumulated result is a single envelope describing the whole collection
+// -- totalPages 1, last true -- so nothing downstream can mistake it for a
+// partial page and request more. Only that one value enters the cache; the
+// intermediate responses are not cached separately and need not be, since no
+// observer ever asks for a single page of this list.
+//
+// A response with no pagination metadata at all ({ content: [...] }, which
+// several tests and a bare-array backend both produce) is treated as a complete
+// single-page result rather than prompting a phantom second request.
 async function fetchMyCommunities(params = {}) {
-  const res = await client.get("/communities/me", { params });
-  return res.data.data; // { content, pageNumber, pageSize, totalElements, totalPages, last }
+  const aggregated = [];
+  let firstPage = null;
+  let totalElements = 0;
+  let pageSize = 0;
+  let pageNumber = 1;
+
+  for (let attempt = 1; attempt <= MAX_PAGES; attempt += 1) {
+    const res = await client.get("/communities/me", {
+      params: { ...params, pageNumber },
+    });
+    const page = res.data.data ?? {};
+
+    if (firstPage === null) {
+      firstPage = page;
+      totalElements = page.totalElements ?? 0;
+      pageSize = page.pageSize ?? 0;
+    }
+    aggregated.push(...(page.content ?? []));
+
+    // `last` is the backend's own answer and the primary signal. `totalPages`
+    // is the second, for a response that omits `last`. A missing `last` on the
+    // first page means the payload carried no pagination metadata at all, so it
+    // is a complete result and asking for page 2 would be wrong. An empty
+    // result reports totalPages 0, and 2 >= 0 stops the walk immediately.
+    if (page.last === true) break;
+    if (page.last === undefined && page.totalPages === undefined) break;
+    if (pageNumber >= (page.totalPages ?? Number.POSITIVE_INFINITY)) break;
+    pageNumber += 1;
+  }
+
+  return {
+    ...firstPage,
+    content: aggregated,
+    pageNumber: 1,
+    pageSize,
+    // The backend total, not `aggregated.length`: a walk cut short by
+    // MAX_PAGES has fewer rows than it claims, and the mismatch is the only
+    // signal that this list is incomplete.
+    totalElements,
+    totalPages: 1,
+    last: true,
+  };
 }
 
 export function useCommunities(params = {}) {
