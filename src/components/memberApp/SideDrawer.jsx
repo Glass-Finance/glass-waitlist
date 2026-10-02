@@ -3,7 +3,6 @@ import {
   Home as HomeIcon,
   CreditCard,
   Mail,
-  User,
   Settings,
   LogOut,
   X,
@@ -12,11 +11,13 @@ import {
 import { useAuth } from "../../store/AuthContext";
 import { toastSuccess } from "../../utils/toast";
 
+// No Profile entry here: the member app header now carries the profile
+// photo (components/memberApp/ProfileAvatar.jsx), which links straight to
+// /member/profile — a second way into the same page was redundant.
 const NAV_ITEMS = [
   { Icon: HomeIcon, label: "Home", to: "/member/home" },
   { Icon: CreditCard, label: "Manage Payments", to: "/member/manage-payments" },
   { Icon: Mail, label: "Invitations", to: "/member/invites" },
-  { Icon: User, label: "Profile", to: "/member/profile" },
   { Icon: Settings, label: "Settings", to: "/member/settings" },
 ];
 
