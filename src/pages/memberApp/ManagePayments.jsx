@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { usePayments, useManagePayments } from "../../hooks/usePayments";
 import PageLoadingState from "../../components/common/PageLoadingState";
+import EmptyState from "../../components/common/EmptyState";
+import managePaymentsEmptyIllustration from "../../assets/memberApp/empty-states/manage-payments-empty.webp";
 import Toggle from "../../components/common/Toggle";
 import ConfirmSheet from "../../components/memberApp/ConfirmSheet";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
@@ -253,21 +255,29 @@ export default function ManagePayments() {
       </div>
 
       <div className="px-4">
-        {/* Filter */}
-        <div className="mb-4">
-          <FilterDropdown value={filter} onChange={setFilter} />
-        </div>
+        {/* Filter — hidden while empty per design (there is nothing to filter) */}
+        {(isLoading || recurringPlans.length > 0) && (
+          <div className="mb-4">
+            <FilterDropdown value={filter} onChange={setFilter} />
+          </div>
+        )}
 
         {/* Cards */}
         <div className="flex flex-col gap-3.5">
           {isLoading ? (
             <PageLoadingState size={56} padding="36px 24px" />
+          ) : recurringPlans.length === 0 ? (
+            <EmptyState
+              illustration={managePaymentsEmptyIllustration}
+              illustrationClassName="w-24 h-auto mb-4"
+              title="No Payment Plans Yet"
+              titleClassName="text-lg font-semibold text-ink"
+              subtitle="Your active payment plans can be managed here."
+              subtitleClassName="text-[14px] text-gray-400 mt-2 max-w-none -mx-4"
+              className="pt-[31vh]"
+            />
           ) : filtered.length === 0 ? (
-            <p className="text-center text-ink-ghost text-sm mt-10">
-              {recurringPlans.length === 0
-                ? "You're not enrolled in any recurring plans yet."
-                : "No plans match this filter."}
-            </p>
+            <p className="text-center text-ink-ghost text-sm mt-10">No plans match this filter.</p>
           ) : (
             filtered.map((plan) => (
               <PlanCard
