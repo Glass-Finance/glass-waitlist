@@ -267,14 +267,17 @@ export default function ManagePayments() {
           {isLoading ? (
             <PageLoadingState size={56} padding="36px 24px" />
           ) : recurringPlans.length === 0 ? (
+            // Same vertical placement as the Notifications empty state:
+            // both centre their block in 55vh, but that page's content
+            // starts 54px lower (its tab strip), so it needs +2x that here.
             <EmptyState
               illustration={managePaymentsEmptyIllustration}
-              illustrationClassName="w-20 h-20 object-contain mb-3"
+              illustrationClassName="w-20 h-20 object-contain mb-2.5"
               title="No Payment Plans Yet"
               titleClassName="text-sm font-semibold text-ink"
               subtitle="Your active payment plans can be managed here."
-              subtitleClassName="text-xs text-ink-ghost mt-1 max-w-[240px] leading-relaxed"
-              className="pt-[31vh]"
+              subtitleClassName="text-xs text-ink-ghost mt-2.5 max-w-[240px] leading-relaxed"
+              className="min-h-[calc(55vh+122px)] justify-center"
             />
           ) : filtered.length === 0 ? (
             <p className="text-center text-ink-ghost text-sm mt-10">No plans match this filter.</p>
