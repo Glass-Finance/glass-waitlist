@@ -50,6 +50,26 @@ export const SESSION_ADJACENT_KEYS = [
   "glass_last_google_identity",
 ];
 
+/**
+ * Keys held in REAL sessionStorage rather than localStorage, cleared by
+ * clearSessionStorage() through a separate sessionStorage.removeItem pass.
+ *
+ * Kept apart from both lists above for two reasons. They are cleared with
+ * localStorage.removeItem, so registering a sessionStorage key there would clear
+ * nothing at all — a cleanup that looks correct in review and silently does
+ * nothing at runtime. And SESSION_KEYS additionally doubles as the set the
+ * cross-tab `storage` listener treats as "the session ended", so widening it
+ * would tear down every other tab's live session over one transient value.
+ *
+ * The contract for a key here: tab-scoped, short-lived, and must not outlive the
+ * session that produced it. glass_reset_otp is the password-reset token that
+ * ForgotPassword writes and ResetPassword consumes on submit — without this it
+ * survives logout for the rest of the tab's life, and whoever signs in next on
+ * that tab could reach /reset-password with the previous user's token already
+ * filled in.
+ */
+export const SESSION_TRANSIENT_KEYS = ["glass_reset_otp"];
+
 export const KEY_TOKEN = "accessToken";
 export const KEY_REFRESH_TOKEN = "refreshToken";
 export const KEY_USER = "glass_user";
@@ -182,6 +202,17 @@ export function clearSessionStorage() {
   try {
     SESSION_KEYS.forEach((key) => localStorage.removeItem(key));
     SESSION_ADJACENT_KEYS.forEach((key) => localStorage.removeItem(key));
+  } catch {
+    // ignore
+  }
+  // Separate pass, and deliberately NOT folded into the lists above: those are
+  // cleared with localStorage.removeItem, and sessionStorage is a different
+  // store. Listing a sessionStorage key there would silently clear nothing,
+  // which is how "the token is cleaned up" can be true in review and false at
+  // runtime. Same reason it can't join SESSION_KEYS: widening that list would
+  // make deleting one key tear down every other tab's live session.
+  try {
+    SESSION_TRANSIENT_KEYS.forEach((key) => sessionStorage.removeItem(key));
   } catch {
     // ignore
   }
