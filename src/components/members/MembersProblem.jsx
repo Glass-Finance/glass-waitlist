@@ -35,6 +35,9 @@ const STRIP_H = 78;
 const STORY_TOP = 54;
 const STORY_GAP = 22;
 
+/* Must match the mobile half of TILE_SCENE. */
+const TILE_SCENE_H = 200;
+
 /* Screenshot frames are display-capped by their container; these buckets
    cover 1x–2x without over-fetching. */
 const FRAME_WIDTHS = [400, 600, 800, 1200];
@@ -53,7 +56,7 @@ const EASE = "cubic-bezier(0.7,0,0.2,1)";
    frame's clipped top edge, like the design's), so it starts invisible and
    fades in. */
 const SCROLL_STACK =
-  "absolute inset-x-0 top-0 flex flex-col gap-2 invisible group-[.full]:visible group-[.full]:animate-[var(--animate-mps-scroll)]";
+  "absolute inset-x-0 top-0 flex flex-col gap-2 group-[.full]:animate-[var(--animate-mps-scroll)]";
 
 const REMINDER_FATE = ["Sent ✓", "+12 messages", "+47 messages", "Buried"];
 const PROOF_DATES = ["Mar 14", "Mar 9", "Feb 27", "Feb 11", "Jan 30", "Jan 8"];
@@ -79,6 +82,8 @@ const PANELS = [
   },
 ];
 
+/* All three anchor to the top: `cover` crops the bottom of these captures,
+   which is where their empty space is. */
 const TILES = [
   {
     id: "glass/problem/switch-1-chat",
@@ -95,7 +100,7 @@ const TILES = [
   {
     id: "glass/problem/switch-3-success",
     alt: "Transfer success",
-    position: "50% 45%",
+    position: "top",
     caption: "3 · Back to chat",
   },
 ];
@@ -151,6 +156,27 @@ const TILE = [
    one-up carousel: only the active tile is rendered, full width. */
 const TILE_ACTIVE =
   "group-[.full]:opacity-100 [flex-grow:2.4] shadow-[0_0_0_3px_#002FA7,0_18px_36px_rgba(0,47,167,0.3)] max-[1000px]:flex-[1_1_100%]";
+
+/* The tiles are tall portrait captures in a wide row. At the full scene
+   height `cover` matches on width and crops the sides, so the entire height
+   shows — including the blank lower half of each screenshot. Capping the
+   height flips the crop to vertical, trimming that gap and leaving the tiles
+   roughly square. */
+const TILE_SCENE = [
+  "h-[240px]!",
+  "group-[.full]:h-[240px]!",
+  "max-[1000px]:h-[200px]!",
+  "max-[1000px]:group-[.full]:h-[200px]!",
+  /* Shorter than the other panels' scene, so it is centred in the panel
+     rather than left hanging off the bottom. The mobile half is back in
+     normal flow (see SCENE), where offsets do not apply. */
+  "top-1/2!",
+  "-translate-y-1/2!",
+  "bottom-auto!",
+  "max-[1000px]:top-auto!",
+  "max-[1000px]:translate-y-0!",
+  "max-[1000px]:bottom-auto!",
+].join(" ");
 
 const MONO_KICKER =
   "block font-[JetBrains_Mono] text-[12px] font-semibold tracking-[0.08em] uppercase text-[#2547d0]";
@@ -254,7 +280,10 @@ export default function MembersProblem() {
         return;
       }
       if (story) {
-        el.style.height = `${STORY_TOP + STORY_GAP + storyH}px`;
+        // The tiles panel overrides the scene height (see TILE_SCENE), so it
+        // needs its own number here or the panel is padded with dead space.
+        const h = PANELS[i].kind === "tiles" ? TILE_SCENE_H : storyH;
+        el.style.height = `${STORY_TOP + STORY_GAP + h}px`;
         return;
       }
       const copy = el.querySelector("[data-mps-copy]");
@@ -347,17 +376,11 @@ export default function MembersProblem() {
         "--mps-mask-gradient": `url("${cldUrl("glass/problem/mask-dots-gradient", { width: 640 })}")`,
       }}
     >
-      {/* Ambient glow behind the section. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-[-200px] top-[-120px] h-[700px] [background:radial-gradient(34%_46%_at_10%_38%,rgba(110,130,215,0.22),transparent_72%),radial-gradient(30%_40%_at_92%_70%,rgba(110,130,215,0.14),transparent_72%)]"
-      />
-
       <div className="relative text-center">
         <span className="inline-flex items-center rounded-full border border-brand-deep/25 px-5 py-2 text-[13px] font-medium text-brand-deep">
           The Problem
         </span>
-        <h2 className="mx-auto mt-[26px] max-w-[20ch] text-[clamp(26px,5vw,58px)] font-bold leading-[1.15] tracking-[-0.02em] text-balance text-brand-ink">
+        <h2 className="mx-auto mt-[26px] text-[clamp(26px,5vw,58px)] font-bold leading-[1.15] tracking-[-0.02em] text-balance text-brand-ink">
           {HEADLINE}
         </h2>
         <p className="mx-auto mt-[18px] max-w-[56ch] text-[clamp(15px,2vw,17px)] leading-[1.7] text-black/60">
@@ -425,7 +448,7 @@ export default function MembersProblem() {
                   </p>
                 </div>
 
-                <div className={SCENE}>
+                <div className={`${SCENE} ${panel.kind === "tiles" ? TILE_SCENE : ""}`}>
                   {panel.kind === "chat" && (
                     <div className="flex h-full gap-5">
                       <div className={FRAME}>
