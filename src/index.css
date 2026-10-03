@@ -888,10 +888,14 @@ html.dashboard-compact {
   }
 }
 
-/* Hover-pause: while the pointer is over the accordion, every animation
-   inside it freezes. This is a JS-toggled runtime state (data-hold), so it
-   needs one real selector rather than a Tailwind variant on the class. */
-[data-hold] [class*="animate-"] {
+/* Hover-pause: while the pointer is over the accordion, the looping motion
+   freezes. Scoped to [data-loop] rather than every [class*="animate-"] so the
+   one-shot entrance animation still plays — otherwise tapping a panel (which
+   puts the pointer over the accordion, firing the hold) would leave that
+   panel stuck at its `from` keyframe, i.e. invisible.
+   This is a JS-toggled runtime state (data-hold), so it needs one real
+   selector rather than a Tailwind variant on the class. */
+[data-hold] [data-loop] {
   animation-play-state: paused;
 }
 

@@ -464,7 +464,7 @@ export default function ProblemSection() {
 
           <div
             data-role="stage"
-            className="relative min-h-[640px] overflow-hidden rounded-[20px] bg-[linear-gradient(160deg,#d8d9de,#bfc1c9)] max-[1040px]:min-h-[620px] max-[600px]:min-h-[740px]"
+            className="relative min-h-[640px] overflow-hidden rounded-[20px] bg-[linear-gradient(160deg,#d8d9de,#bfc1c9)] max-[1040px]:min-h-[620px] max-[600px]:min-h-[620px]"
           >
             {/* Decorative logo marks */}
             <img
@@ -619,7 +619,7 @@ export default function ProblemSection() {
             >
               <div
                 data-role="countingPhoto"
-                className="relative h-[480px] w-[min(100%,680px)] overflow-hidden rounded-[20px] shadow-[0_24px_50px_#00000026] max-[1040px]:h-[380px]"
+                className="relative h-[480px] w-[min(100%,680px)] overflow-hidden rounded-[20px] shadow-[0_24px_50px_#00000026] max-[1040px]:h-[380px] max-[600px]:h-[300px]"
               >
                 <img
                   src={cldUrl("glass/problem/naira-count", { width: 1000 })}
@@ -701,7 +701,7 @@ export default function ProblemSection() {
             >
               <div
                 data-role="askPhoto"
-                className="relative h-[480px] w-[min(100%,680px)] overflow-hidden rounded-[20px] shadow-[0_24px_50px_#00000026] max-[1040px]:h-[380px]"
+                className="relative h-[480px] w-[min(100%,680px)] overflow-hidden rounded-[20px] shadow-[0_24px_50px_#00000026] max-[1040px]:h-[380px] max-[600px]:h-[300px]"
               >
                 <img
                   src={cldUrl("glass/problem/member-phone", { width: 1000 })}

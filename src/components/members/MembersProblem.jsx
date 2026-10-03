@@ -123,12 +123,19 @@ const BODY_PANEL = [
   "absolute inset-0 px-8 pt-[34px] pb-[30px] transition-[clip-path,visibility] duration-700",
   `[transition-timing-function:${EASE}] [clip-path:inset(0_100%_0_0)] invisible`,
   "group-[.on]:visible group-[.on]:[clip-path:inset(0)] group-[.on]:[transition-delay:150ms,0s]",
+  /* Stacked layout: the panel grows with its content, so the body is in flow
+     rather than pinned to the panel box. */
+  "max-[1000px]:relative max-[1000px]:inset-auto max-[1000px]:px-5 max-[1000px]:pt-[26px] max-[1000px]:pb-7",
 ].join(" ");
 
 const SCENE = [
   "absolute left-8 right-8 bottom-10 h-(--mps-sht) transition-[height,bottom,left,right] duration-800",
   `[transition-timing-function:${EASE}] @container`,
   "group-[.full]:left-6 group-[.full]:right-6 group-[.full]:bottom-6 group-[.full]:h-(--mps-shf)",
+  /* In flow on phones: the offsets would shift a relatively-positioned box,
+     so they are all reset and the gap becomes a margin instead. */
+  "max-[1000px]:relative max-[1000px]:inset-auto max-[1000px]:left-auto max-[1000px]:right-auto max-[1000px]:bottom-auto max-[1000px]:mt-[22px] max-[1000px]:max-w-[760px]",
+  "max-[1000px]:group-[.full]:left-auto max-[1000px]:group-[.full]:right-auto max-[1000px]:group-[.full]:bottom-auto max-[1000px]:group-[.full]:mt-0",
 ].join(" ");
 
 const FRAME =
@@ -140,8 +147,10 @@ const TILE = [
   "duration-500 group-[.full]:opacity-50",
 ].join(" ");
 
+/* On phones the three tiles are too narrow to read, so the row becomes a
+   one-up carousel: only the active tile is rendered, full width. */
 const TILE_ACTIVE =
-  "group-[.full]:opacity-100 [flex-grow:2.4] shadow-[0_0_0_3px_#002FA7,0_18px_36px_rgba(0,47,167,0.3)]";
+  "group-[.full]:opacity-100 [flex-grow:2.4] shadow-[0_0_0_3px_#002FA7,0_18px_36px_rgba(0,47,167,0.3)] max-[1000px]:flex-[1_1_100%]";
 
 const MONO_KICKER =
   "block font-[JetBrains_Mono] text-[12px] font-semibold tracking-[0.08em] uppercase text-[#2547d0]";
@@ -181,7 +190,7 @@ function Reel({ items, className, animated }) {
       {/* Not animating (reduced motion, or the panel is not in its story
           beat): keep only the first line, since the reel would otherwise sit
           frozen part-way through a step. */}
-      <span className={`flex flex-col ${anim}`}>
+      <span data-loop={anim ? "" : undefined} className={`flex flex-col ${anim}`}>
         {items.map((item, i) => (
           <i key={item} className={`not-italic h-[1.3em] ${!anim && i > 0 ? "invisible" : ""}`}>
             {item}
@@ -331,7 +340,7 @@ export default function MembersProblem() {
 
   return (
     <section
-      className="relative mx-auto max-w-[1240px] overflow-x-clip px-4 pt-[72px] pb-[88px] font-[Inter,sans-serif] text-[17px] leading-[1.55] [--mps-sht:250px] [--mps-shf:492px] max-[1000px]:pt-[56px] max-[1000px]:pb-16 max-[1000px]:[--mps-sht:230px] max-[1000px]:[--mps-shf:430px]"
+      className="relative mx-auto max-w-[1240px] overflow-x-clip px-4 pt-[72px] pb-[88px] font-[Inter,sans-serif] text-[17px] leading-[1.55] [--mps-sht:250px] [--mps-shf:492px] max-[1000px]:pt-[56px] max-[1000px]:pb-16 max-[1000px]:[--mps-sht:170px] max-[1000px]:[--mps-shf:290px] max-[560px]:[--mps-sht:150px] max-[560px]:[--mps-shf:250px]"
       id="problem"
       style={{
         "--mps-mask-blue": `url("${cldUrl("glass/problem/mask-dots-blue", { width: 480 })}")`,
@@ -420,7 +429,7 @@ export default function MembersProblem() {
                   {panel.kind === "chat" && (
                     <div className="flex h-full gap-5">
                       <div className={FRAME}>
-                        <div className={SCROLL_STACK}>
+                        <div data-loop className={SCROLL_STACK}>
                           <div className="mx-3 mt-2.5 rounded-[10px] bg-[#002fa7] px-3.5 py-2.5 text-[14px] font-semibold leading-[1.35] text-white">
                             <small className="mb-0.5 block font-[JetBrains_Mono] text-[10px] font-semibold tracking-[0.1em] uppercase opacity-75">
                               Treasurer · 9:02
@@ -431,7 +440,7 @@ export default function MembersProblem() {
                         </div>
                       </div>
                       <div
-                        className={`min-w-0 flex-1 pt-1.5 ${on ? "animate-[var(--animate-mps-enter)] [animation-delay:1s]" : ""}`}
+                        className={`min-w-0 flex-1 pt-1.5 @max-[520px]:hidden ${on ? "animate-[var(--animate-mps-enter)] [animation-delay:1s]" : ""}`}
                       >
                         <small className={MONO_KICKER}>Your reminder</small>
                         <Reel
@@ -456,22 +465,25 @@ export default function MembersProblem() {
                         >
                           App switch {(step % TILES.length) + 1} / 3
                         </span>
-                        {TILES.map((tile, t) => (
-                          <div
-                            key={tile.id}
-                            className={`${TILE} ${on && playing && t === step % TILES.length ? TILE_ACTIVE : ""}`}
-                          >
-                            <Shot
-                              id={tile.id}
-                              alt={tile.alt}
-                              position={tile.position}
-                              width={400}
-                            />
-                            <span className="absolute inset-x-0 bottom-0 overflow-hidden bg-[linear-gradient(transparent,#0c1020d0)] px-3 pt-[26px] pb-2.5 text-[13px] font-semibold whitespace-nowrap text-white">
-                              {tile.caption}
-                            </span>
-                          </div>
-                        ))}
+                        {TILES.map((tile, t) => {
+                          const tileActive = on && playing && t === step % TILES.length;
+                          return (
+                            <div
+                              key={tile.id}
+                              className={`${TILE} ${tileActive ? TILE_ACTIVE : ""} ${tileActive ? "" : "max-[1000px]:hidden"}`}
+                            >
+                              <Shot
+                                id={tile.id}
+                                alt={tile.alt}
+                                position={tile.position}
+                                width={400}
+                              />
+                              <span className="absolute inset-x-0 bottom-0 overflow-hidden bg-[linear-gradient(transparent,#0c1020d0)] px-3 pt-[26px] pb-2.5 text-[13px] font-semibold whitespace-nowrap text-white max-[1000px]:px-2 max-[1000px]:text-[11px]">
+                                {tile.caption}
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -479,7 +491,7 @@ export default function MembersProblem() {
                   {panel.kind === "receipts" && (
                     <div className="flex h-full gap-5">
                       <div className={FRAME}>
-                        <div className={`${SCROLL_STACK} [animation-duration:12s]`}>
+                        <div data-loop className={`${SCROLL_STACK} [animation-duration:12s]`}>
                           {RECEIPTS.map((id) => (
                             <Shot key={id} id={id} alt="Payment receipt" width={600} />
                           ))}
@@ -504,6 +516,7 @@ export default function MembersProblem() {
 
                 {/* Story progress bar. */}
                 <i
+                  data-loop
                   aria-hidden="true"
                   className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-[linear-gradient(90deg,#002FA7,#4f46e5,#7c3aed)] group-[.on]:animate-[var(--animate-mps-progress)]"
                 />
