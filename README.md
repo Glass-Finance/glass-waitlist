@@ -4,20 +4,36 @@ Glass is a community finance platform — communities (schools, cooperatives, as
 
 > The repo is named `glass-waitlist` for historical reasons (it started as a landing page with a signup waitlist) — it's since grown into the full application.
 
-## Two-repo setup — read this before touching landing-page components
+## Two-repo setup — landing ownership (decided; read before touching landing components)
 
-There are **two separate repos and two separate Vercel deployments**:
+There are **two separate repos and two separate Vercel deployments**, and ownership of the public marketing site is now settled:
 
-| Repo                                                                      | Deploys to         | What it is                                                     |
-| ------------------------------------------------------------------------- | ------------------ | -------------------------------------------------------------- |
-| `glass-waitlist` (this repo)                                              | `app.glasspay.app` | The actual product — auth, onboarding, dashboards, member app. |
-| [`glass-waitlist-v1`](https://github.com/Glass-Finance/glass-waitlist-v1) | `glasspay.app`     | The public marketing site only — no auth, no dashboards.       |
+| Repo                                                                      | Deploys to         | Owns                                                                    |
+| ------------------------------------------------------------------------- | ------------------ | ----------------------------------------------------------------------- |
+| [`glass-waitlist-v1`](https://github.com/Glass-Finance/glass-waitlist-v1) | `glasspay.app`     | **The public marketing site. Source of truth for all landing content.** |
+| `glass-waitlist` (this repo)                                              | `app.glasspay.app` | The product — auth, onboarding, dashboards, member app, platform admin. |
 
-This repo still contains the public landing pages (`src/pages/OrganizationsHome.jsx`, `src/pages/MembersHome.jsx`, and their component trees under `src/components/organizations/`, `src/components/members/`, `src/components/howItWorks/`, plus the shared `Navbar`/`Footer`/`Security`/`Usecases`/`TrustedBy`/`Pricing`/`WhyGlass`), because **this is the source of truth for them**. `glass-waitlist-v1` carries its own copies, ported over by hand (or by asking Claude — see that repo's README for the exact steps).
+**Landing changes go in `glass-waitlist-v1`, not here.** `glasspay.app` is built and deployed only from that repo, so a landing edit made in this repo does not reach users and never will. This repo keeps a **deprecated, non-authoritative copy** of the landing pages purely as a historical reference; it is not maintained and is not a starting point for new work.
 
-**The rule:** if you change any landing-page component in this repo, `glasspay.app` will _not_ pick it up automatically — someone has to re-port the change into `glass-waitlist-v1`. If you're not going to do that in the same sitting, leave a note (PR description, Slack, whatever you use) so it doesn't quietly drift out of sync the way it did before this was documented.
+### The deprecated copy in this repo
 
-The only code difference between a component here and its `glass-waitlist-v1` copy should be navigation: this repo's `goToApp(path, navigate)` (`src/utils/deviceRedirect.js`) does an internal SPA navigate when already on the app domain and a cross-origin hard redirect otherwise; `glass-waitlist-v1` has its own copy of the same file/function with an identical API, so most components port over unchanged. The exception is any component that calls `navigate("/member/join")` (or similar) _directly_ instead of through `goToApp` — those routes don't exist on the marketing domain, so the `glass-waitlist-v1` copy needs that call rewritten to `goToApp("/member/join", navigate)`.
+- `src/pages/OrganizationsHome.jsx`, `src/pages/MembersHome.jsx`
+- `src/components/organizations/`, `src/components/members/`, `src/components/howItWorks/`
+- `src/components/Navbar.jsx`, `Footer.jsx`, `UseCases.jsx`, `TrustedBy.jsx`, `WhyGlass.jsx`, `SecurityFeatures.jsx`
+- `src/components/ui/BlurText.jsx`, `src/components/ui/VariableProximity.jsx` (+ `.css`)
+- `src/hooks/useScrollReveal.js`, `src/hooks/useSeoMeta.js`
+
+**Do not edit any of these.** `npm run check:landing-sync` is a CI-enforced guard that fails the build if any of them changes, because this repo previously documented itself as their source of truth and that is no longer true. It has already drifted substantially from the live site (see `docs/landing-ownership.md` for the recorded reconciliation state). To change landing content, open a PR against `glass-waitlist-v1`.
+
+### What deliberately stays in this repo
+
+- **`LandingPageRedirect`** (`src/App.jsx`) — on `app.glasspay.app` the landing paths `/`, `/members`, and the legal paths hop to `MARKETING_ORIGIN` so a shared app-host link still reaches the marketing site. This is a routing concern of the app host, not landing content; keep it.
+- **The legal pages** (`src/pages/legal/`, `src/components/legal/`) — routed in `App.jsx` and linked from in-app surfaces (sign-up `/terms`, KYC privacy link) and from emails, so they must resolve on the app host regardless of which repo owns the marketing pages.
+- **Shared infrastructure the app genuinely uses** — `src/components/common/CloudImage.jsx`, `lib/cloudinary.js`, `ui/Button.jsx`, `ui/TextInput.jsx`, `common/LoadingState.jsx`, `common/EmptyState.jsx`, `common/BrandedSpinner.jsx`, and `src/utils/deviceRedirect.js`. These have app-side importers and are not landing-owned.
+
+### Porting direction (informational)
+
+The copy in this repo is **behind** `glass-waitlist-v1`, which has newer product demos and corrected copy. Do not port this repo's version forward — port `glass-waitlist-v1` → live. `check:landing-sync` reports the delta so it stays visible without failing on the known legacy difference.
 
 ## Tech stack
 
@@ -26,7 +42,7 @@ The only code difference between a component here and its `glass-waitlist-v1` co
 - **Tailwind CSS 4** (CSS-first config, no `tailwind.config.js`)
 - **TanStack React Query 5** for server state (fetching, caching, mutations)
 - **Axios** for HTTP, with an interceptor-based auth-refresh flow (session lifecycle, role contracts, and auth payload notes live in `docs/authentication.md`)
-- **Framer Motion / GSAP / OGL** for animation on the public marketing pages
+- **Motion** (`motion`) for animation — `BlurText`, scroll-linked reveals, and the dashboard-overlay demo, all confined to the deprecated landing copy in this repo
 - **ESLint 9** for linting
 - **Vitest** for unit tests (jsdom environment), run in CI on every push/PR
 - **Sentry** for crash/error reporting, gated behind an optional env var (disabled unless configured)
@@ -68,21 +84,21 @@ There's no separate local/mock backend to stand up — `VITE_API_BASE_URL` point
 
 ## Scripts
 
-| Command                      | Description                                                                                                                                            |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `npm run dev`                | Start the Vite dev server                                                                                                                              |
-| `npm run build`              | Production build to `dist/` — runs `scripts/check-build-env.mjs` first and fails if required env vars (e.g. `VITE_TEST_MODE`) are missing or ambiguous |
-| `npm run lint`               | Run ESLint over the project (includes jsx-a11y)                                                                                                        |
-| `npm run typecheck`          | `tsc` over `src` plus a `checkJs` pass over `src/utils`, `src/api`, `src/lib` (`tsconfig.check.json`)                                                  |
-| `npm run format`             | Format supported source, configuration, and documentation files                                                                                        |
-| `npm run format:check`       | Verify formatting without changing files                                                                                                               |
-| `npm run test`               | Run the Vitest suite once (also runs in CI)                                                                                                            |
-| `npm run test:coverage`      | Vitest with coverage thresholds (regression gates — see `docs/testing-strategy.md`)                                                                    |
-| `npm run test:watch`         | Run Vitest in watch mode                                                                                                                               |
-| `npm run test:e2e`           | Playwright E2E against a local dev server with a fully mocked API (`e2e/`) — also a separate CI job                                                    |
-| `npm run probe:idempotency`  | Live double-charge probe against the real API (needs `GLASSPAY_TOKEN` + `GLASSPAY_PAYMENT_LINK`)                                                       |
-| `npm run check:landing-sync` | Diff shared landing components against `../glass-waitlist-v1` (skips if that repo isn't cloned)                                                        |
-| `npm run preview`            | Serve the production build locally                                                                                                                     |
+| Command                      | Description                                                                                                                                                                                              |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`                | Start the Vite dev server                                                                                                                                                                                |
+| `npm run build`              | Production build to `dist/` — runs `scripts/check-build-env.mjs` first and fails if required env vars (e.g. `VITE_TEST_MODE`) are missing or ambiguous                                                   |
+| `npm run lint`               | Run ESLint over the project (includes jsx-a11y)                                                                                                                                                          |
+| `npm run typecheck`          | `tsc` over `src` plus a `checkJs` pass over `src/utils`, `src/api`, `src/lib` (`tsconfig.check.json`)                                                                                                    |
+| `npm run format`             | Format supported source, configuration, and documentation files                                                                                                                                          |
+| `npm run format:check`       | Verify formatting without changing files                                                                                                                                                                 |
+| `npm run test`               | Run the Vitest suite once (also runs in CI)                                                                                                                                                              |
+| `npm run test:coverage`      | Vitest with coverage thresholds (regression gates — see `docs/testing-strategy.md`)                                                                                                                      |
+| `npm run test:watch`         | Run Vitest in watch mode                                                                                                                                                                                 |
+| `npm run test:e2e`           | Playwright E2E against a local dev server with a fully mocked API (`e2e/`) — also a separate CI job                                                                                                      |
+| `npm run probe:idempotency`  | Live double-charge probe against the real API (needs `GLASSPAY_TOKEN` + `GLASSPAY_PAYMENT_LINK`)                                                                                                         |
+| `npm run check:landing-sync` | CI-enforced guard: fails if any **deprecated** landing file in this repo is edited, since `glass-waitlist-v1` owns `glasspay.app`. Also prints the current drift delta. See `docs/landing-ownership.md`. |
+| `npm run preview`            | Serve the production build locally                                                                                                                                                                       |
 
 ## Project structure
 

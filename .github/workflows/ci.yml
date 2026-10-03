@@ -35,6 +35,21 @@ jobs:
       - name: Audit dependencies (high+)
         run: npm audit --audit-level=high
 
+      - name: Checkout marketing repo (landing ownership guard)
+        # glass-waitlist-v1 owns glasspay.app and all landing content. The
+        # landing-sync guard needs it present: without it the guard can only
+        # checksum, and a silent SKIP is how the previous 26-file drift shipped.
+        # Checked out as a SIBLING (../glass-waitlist-v1), which is where
+        # scripts/check-landing-sync.mjs looks.
+        uses: actions/checkout@v4
+        with:
+          repository: Glass-Finance/glass-waitlist-v1
+          ref: main
+          path: ../glass-waitlist-v1
+
+      - name: Landing ownership guard
+        run: npm run check:landing-sync
+
       - name: Format check
         run: npm run format:check
 

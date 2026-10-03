@@ -1,6 +1,8 @@
 # AGENTS.md
 
-Frontend-only Vite 8 + React 19 SPA (`src/main.jsx` → `src/App.jsx`): member app, community-admin dashboard, platform-admin panel, onboarding, and public landing pages. No backend, database, or migrations live here — the app talks to a separate Spring Boot API (`VITE_API_BASE_URL` + `/api/v1`, see `src/api/client.js`).
+Frontend-only Vite 8 + React 19 SPA (`src/main.jsx` → `src/App.jsx`): member app, community-admin dashboard, platform-admin panel, and onboarding. No backend, database, or migrations live here — the app talks to a separate Spring Boot API (`VITE_API_BASE_URL` + `/api/v1`, see `src/api/client.js`).
+
+**The public marketing site is not this repo.** `glass-waitlist-v1` owns `glasspay.app` and is the source of truth for all landing content. This repo keeps a deprecated landing copy for reference only — see `docs/landing-ownership.md`.
 
 ## Commands
 
@@ -35,7 +37,7 @@ Focused test: `npx vitest run src/__tests__/path/to.test.js` (suite runs `vitest
 - **Do not touch the session system without cause.** Single-flight refresh, cross-tab refresh lease, session-epoch invalidation, and rotation-reuse protection are load-bearing (`AuthContext.jsx`, `src/api/client.js`). A logout that wins a race must never be undone by an in-flight refresh.
 - **Roles are exact backend codes, not keywords.** Platform admin shell ⟺ `SUPER_ADMIN`, `OPERATIONS_ADMIN`, `COMPLIANCE_ADMIN` (`isPlatformAdminRole`). Community dashboard ⟺ `owned === true` or `COMMUNITY_OWNER`/`COMMUNITY_ADMIN` (`isCommunityAdmin`). There is no `MANAGER` role. Unknown codes fail closed. Verified against the backend in `docs/authentication.md`.
 - **Registration contract quirks (backend-verified):** `POST /auth/register` has no `confirmPassword` field; duplicate email returns **400**, never 409; `phoneRegion` is optional (defaults to `NG` server-side); `POST /auth/google` accepts only `{ clientToken }`, so Google sign-in during an invite flow falls back to manual acceptance on `/member/invites`. Never transmit the `?token=` invite value.
-- **Two repos, two deploys:** this repo → `app.glasspay.app`; `glass-waitlist-v1` → `glasspay.app` (marketing). Landing components here are the source of truth but do **not** auto-sync — re-port changes or flag the drift in the PR. Cross-domain navigation goes through `goToApp()` (`src/utils/deviceRedirect.js`), never raw `navigate()`.
+- **Two repos, two deploys, one owner each:** `glass-waitlist-v1` → `glasspay.app` (**owns all landing content — source of truth**); this repo → `app.glasspay.app` (the product). **Never make a landing change here** — a deprecated copy exists and `npm run check:landing-sync` fails CI if you touch it. Make landing changes in `glass-waitlist-v1`. Cross-domain navigation goes through `goToApp()` (`src/utils/deviceRedirect.js`), never raw `navigate()`. See `docs/landing-ownership.md`.
 - **Payments:** verify endpoint is async (queues a job, returns current DB status, often `INITIATED`) — poll, don't treat the first response as final; a premature `FAILED` can later correct to `SUCCESSFUL`. Payment-status interpretation belongs in the centralized status module; don't scatter new literals. See `docs/payments.md` and `docs/decisions/ADR-004-payment-idempotency.md`.
 - **Inline `<script>` edits in `index.html`** invalidate a `sha256-` entry in `vercel.json`: run `npm run build`, then `node scripts/compute-csp-hashes.mjs`, and swap in the hash. Google Identity Services hashes come from live CSP reports, not that script — don't remove them.
 - **JS-only app code** (`allowJs`, `checkJs: false`); Tailwind v4 CSS-first theme in `src/index.css` (no `tailwind.config.js`); fonts via `@fontsource` imports in `main.jsx`, never CSS `@import`.

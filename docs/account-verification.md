@@ -57,4 +57,4 @@ See `.env.example` and `docs/runbooks/incident-rollback.md`.
 ## Proposed/future direction
 
 - Optional: rename route `verify-phone` → `add-phone` with redirects if URL copy should match product language (not required for correctness).
-- Marketing copy under `glass-waitlist-v1` must be re-ported if landing “how it works” steps change here (see root `README.md` two-repo rule).
+- Landing content lives in `glass-waitlist-v1`, which owns `glasspay.app`. If a flow change here alters the "how it works" steps shown to users, raise it in `glass-waitlist-v1` — do not edit the deprecated landing copy in this repo (see `docs/landing-ownership.md`).

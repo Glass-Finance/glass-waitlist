@@ -1,0 +1,22 @@
+{
+  "$comment": "Checksums of the DEPRECATED landing copy in this repo. glass-waitlist-v1 owns glasspay.app and is the source of truth for landing content. Do not edit these files. Regenerate with `node scripts/check-landing-sync.mjs --update-lock` only as a deliberate, reviewed change -- see docs/landing-ownership.md.",
+  "owner": "glass-waitlist-v1 (https://github.com/Glass-Finance/glass-waitlist-v1)",
+  "files": {
+    "src/pages/OrganizationsHome.jsx": "02d0a40e69f850093adb28815e19ea86bd381079d74f70183e8e85aa5e939e91",
+    "src/pages/MembersHome.jsx": "15424cb25f1f7ac29ccf9e558dd73dc32057ed40d502f4f68117d710802b303a",
+    "src/components/Navbar.jsx": "8aa84beabfa017c6819e6ea4b774f5b004488235407a7e2fa585a052ed5b7847",
+    "src/components/Footer.jsx": "bebb2e2725526b428f9664de3bb1a0220d6300861b77b62f296bc8d0c0fcd27a",
+    "src/components/UseCases.jsx": "1fde3371c6b717bc593db6088086c760458885bdf786a664eb6c7a04d0e8098b",
+    "src/components/TrustedBy.jsx": "b3bd4efd280f85b049b3ba50c36e6e3a6f122712c9b823fd765a383603614201",
+    "src/components/WhyGlass.jsx": "efcd5014bcccb615f48039444cc4c13e7f2b3e2c7a95761ba35f606fdd5b89b4",
+    "src/components/SecurityFeatures.jsx": "9bd6b60bd1ed6b6094336a8520494b70518b53c3e32a7ab5b0aae462c8c16e64",
+    "src/components/ui/BlurText.jsx": "466f4138e4f6a7ef3b3876d94c9a27d5a24f3016119a5d881d5e52361b9460d6",
+    "src/components/ui/VariableProximity.jsx": "d67cfe9c14cd22f4b45b14eb883dfb59ad383e72d0379576120c2354c7e1564a",
+    "src/components/ui/VariableProximity.css": "abcc5948454b1f3a102a96fc45762097aa783d38696e3d75e05060a95681d26a",
+    "src/components/common/CTASection.jsx": "b948592a6d2bd58554285f1a5e1e744f38b8019b8aeb2ccf6599bfeca7e86762",
+    "src/components/common/ProblemSection.jsx": "389fe80c37cd4a474c7824a8c9f5a3ef35327efdc80af16bddbed57e42c81e05",
+    "src/components/common/SolutionSection.jsx": "20758dcd661dc2abf39a873ac71f395f96ee37e1a85a909c466829bbbeb13497",
+    "src/hooks/useScrollReveal.js": "9f5d7cfbbd39570b61b48e52bc8e6ca563e621ed7524617c662e9cf64e82a101",
+    "src/hooks/useSeoMeta.js": "7fcec75a689b89cc87a316a1b13b9ae505e5bd18a2323ccc08e5369115ea3a0d"
+  }
+}

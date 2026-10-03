@@ -74,6 +74,6 @@ npm run format:check && npm run lint && npm run typecheck && npm run test && npm
 npm run test:e2e
 # if adding tests:
 npm run test:coverage
-# if landing components changed and v1 is cloned:
+# landing ownership guard (CI-enforced; do not skip locally either):
 npm run check:landing-sync
 ```
