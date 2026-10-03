@@ -36,7 +36,7 @@ const STORY_TOP = 54;
 const STORY_GAP = 22;
 
 /* Must match the mobile half of TILE_SCENE. */
-const TILE_SCENE_H = 200;
+const TILE_SCENE_H = 300;
 
 /* Screenshot frames are display-capped by their container; these buckets
    cover 1x–2x without over-fetching. */
@@ -154,8 +154,20 @@ const TILE = [
 
 /* On phones the three tiles are too narrow to read, so the row becomes a
    one-up carousel: only the active tile is rendered, full width. */
-const TILE_ACTIVE =
-  "group-[.full]:opacity-100 [flex-grow:2.4] shadow-[0_0_0_3px_#002FA7,0_18px_36px_rgba(0,47,167,0.3)] max-[1000px]:flex-[1_1_100%]";
+/* The active tile used to grow 2.4x, which left it more than twice as wide
+   as the others. `cover` then matched on width and cropped the sides, so it
+   showed only ~40% of its screenshot while the narrow ones showed all of
+   it. A gentler 1.4x keeps the focus cue but keeps the widths close enough
+   that every tile shows most of the screen. On phones the tile is pinned
+   to roughly the screenshot's own aspect so the full capture fits. */
+const TILE_ACTIVE = [
+  "group-[.full]:opacity-100 [flex-grow:1.4]",
+  "shadow-[0_0_0_3px_#002FA7,0_18px_36px_rgba(0,47,167,0.3)]",
+  "max-[1000px]:flex-[1_1_auto]",
+  "max-[1000px]:mx-auto",
+  "max-[1000px]:w-full",
+  "max-[1000px]:max-w-[178px]",
+].join(" ");
 
 /* The tiles are tall portrait captures in a wide row. At the full scene
    height `cover` matches on width and crops the sides, so the entire height
@@ -163,10 +175,10 @@ const TILE_ACTIVE =
    height flips the crop to vertical, trimming that gap and leaving the tiles
    roughly square. */
 const TILE_SCENE = [
-  "h-[240px]!",
-  "group-[.full]:h-[240px]!",
-  "max-[1000px]:h-[200px]!",
-  "max-[1000px]:group-[.full]:h-[200px]!",
+  "h-[340px]!",
+  "group-[.full]:h-[340px]!",
+  "max-[1000px]:h-[300px]!",
+  "max-[1000px]:group-[.full]:h-[300px]!",
   /* Shorter than the other panels' scene, so it is centred in the panel
      rather than left hanging off the bottom. The mobile half is back in
      normal flow (see SCENE), where offsets do not apply. */
@@ -484,7 +496,7 @@ export default function MembersProblem() {
                         className={`relative flex h-full w-full gap-3 ${on ? "animate-[var(--animate-mps-enter)] [animation-delay:500ms]" : ""}`}
                       >
                         <span
-                          className={`absolute top-2.5 right-2.5 z-2 rounded-full bg-[#002fa7] px-3 py-1.5 font-[JetBrains_Mono] text-[12px] font-semibold text-white transition-opacity duration-400 group-[.full]:opacity-100 ${on ? "opacity-100" : "opacity-0"}`}
+                          className={`absolute top-2.5 right-2.5 z-2 rounded-full bg-[#002fa7] px-3 py-1.5 font-[JetBrains_Mono] text-[12px] font-semibold text-white transition-opacity duration-400 group-[.full]:opacity-100 max-[1000px]:top-1.5 max-[1000px]:right-1.5 max-[1000px]:px-2 max-[1000px]:py-0.5 max-[1000px]:text-[10px] ${on ? "opacity-100" : "opacity-0"}`}
                         >
                           App switch {(step % TILES.length) + 1} / 3
                         </span>
