@@ -31,6 +31,8 @@ import "@fontsource/urbanist/500.css";
 import "@fontsource/urbanist/600.css";
 import "@fontsource/urbanist/700.css";
 import "@fontsource/urbanist/800.css";
+import "@fontsource/jetbrains-mono/500.css";
+import "@fontsource/jetbrains-mono/600.css";
 
 import "./index.css";
 import { AuthProvider } from "./store/AuthContext.jsx";
