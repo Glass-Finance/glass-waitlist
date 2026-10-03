@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import {
   SESSION_KEYS,
+  SESSION_ADJACENT_KEYS,
+  SESSION_TRANSIENT_KEYS,
   KEY_TOKEN,
   getAccessToken,
   getRefreshToken,
@@ -15,6 +17,7 @@ import {
 describe("sessionStorage — single owner of session keys", () => {
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
   });
 
   it("owns the full session key list both clear paths must remove", () => {
@@ -65,6 +68,57 @@ describe("sessionStorage — single owner of session keys", () => {
     unsub();
     // Idempotent — safe for N queued 401s calling it in the same tick.
     expect(() => clearSessionStorage()).not.toThrow();
+  });
+
+  it("keeps SESSION_ADJACENT_KEYS at exactly the three localStorage keys it declares", () => {
+    // The transient pass must NOT have widened this list. These are cleared
+    // with localStorage.removeItem, so a sessionStorage key added here would
+    // clear nothing while looking like it was covered.
+    expect(SESSION_ADJACENT_KEYS).toEqual([
+      "glass_pending_join_requests",
+      "glass_notification_prefs",
+      "glass_last_google_identity",
+    ]);
+    // No overlap: the transient list is a different store entirely.
+    expect(SESSION_TRANSIENT_KEYS.some((k) => SESSION_ADJACENT_KEYS.includes(k))).toBe(false);
+    expect(SESSION_TRANSIENT_KEYS.some((k) => SESSION_KEYS.includes(k))).toBe(false);
+  });
+
+  it("clearSessionStorage removes glass_reset_otp from REAL sessionStorage", () => {
+    // The regression this exists to prevent: a reset token that survives logout
+    // is handed to whoever signs in next on the same tab.
+    sessionStorage.setItem("glass_reset_otp", JSON.stringify({ email: "a@b.com", token: "123" }));
+
+    clearSessionStorage();
+
+    expect(sessionStorage.getItem("glass_reset_otp")).toBeNull();
+  });
+
+  it("leaves unrelated sessionStorage keys alone", () => {
+    sessionStorage.setItem("unrelated-tab-state", "keep");
+
+    clearSessionStorage();
+
+    expect(sessionStorage.getItem("unrelated-tab-state")).toBe("keep");
+  });
+
+  it("still clears the localStorage session keys exactly as before", () => {
+    // The transient pass is additive: it must not have replaced or reordered
+    // the existing two localStorage loops.
+    SESSION_KEYS.forEach((k) => localStorage.setItem(k, "x"));
+    sessionStorage.setItem("glass_reset_otp", "t");
+
+    clearSessionStorage();
+
+    SESSION_KEYS.forEach((k) => expect(localStorage.getItem(k)).toBeNull());
+    expect(sessionStorage.getItem("glass_reset_otp")).toBeNull();
+  });
+
+  it("is idempotent for the transient pass too", () => {
+    sessionStorage.setItem("glass_reset_otp", "t");
+    clearSessionStorage();
+    expect(() => clearSessionStorage()).not.toThrow();
+    expect(sessionStorage.getItem("glass_reset_otp")).toBeNull();
   });
 
   it("read/writeStoredUser round-trips and tolerates corrupt JSON", () => {

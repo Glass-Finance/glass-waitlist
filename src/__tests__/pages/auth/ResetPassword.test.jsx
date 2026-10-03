@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import ResetPassword from "../../../pages/auth/ResetPassword";
 import { resetPassword } from "../../../services/authService";
+import { clearSessionStorage } from "../../../store/sessionStorage";
 
 // Shared by /reset-password and /member/reset-password. Covers the four
 // behaviors that matter here: the invalid/missing-link state, client-side
@@ -198,6 +199,29 @@ describe("ResetPassword token lifecycle", () => {
 
     await screen.findByTestId("sign-in-page");
     expect(sessionStorage.getItem(RESET_KEY)).toBeNull();
+  });
+
+  it("a later user on the same tab cannot inherit a token cleared by session end", async () => {
+    // The cross-account case, end to end: a reset is requested, the session
+    // ends before it is completed, and whoever uses the tab next must not find
+    // the previous user's token sitting in sessionStorage. This is why the key
+    // is in SESSION_TRANSIENT_KEYS and not merely left to the tab's lifetime.
+    sessionStorage.setItem(
+      RESET_KEY,
+      JSON.stringify({ email: "first-user@example.com", token: "first-users-token" }),
+    );
+    const first = renderReset({ seed: false });
+    await screen.findByPlaceholderText("Enter new password");
+    first.unmount();
+
+    // Session ends — logout, an unrecoverable 401, or a cross-tab sign-out.
+    clearSessionStorage();
+    expect(sessionStorage.getItem(RESET_KEY)).toBeNull();
+
+    // Second user opens the same route in the same tab.
+    renderReset({ seed: false });
+    expect(await screen.findByText(/This reset link is invalid or has expired\./)).toBeDefined();
+    expect(screen.queryByPlaceholderText("Enter new password")).toBeNull();
   });
 
   it("still has the token available after a re-render that precedes submission", async () => {
