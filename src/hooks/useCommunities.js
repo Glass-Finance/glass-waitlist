@@ -4,6 +4,7 @@ import { fetchAllCommunityTransactions } from "../api/transactions";
 import { searchPublicCommunities } from "../api/communities";
 import { fetchCompleteMyCommunities } from "../api/communityList";
 import { isSuccessfulStatus } from "../utils/paymentStatus";
+import { isCommunityAdmin } from "../utils/communityRole";
 import { normalizeImageObject } from "../utils/normalizeImageFields";
 
 // GET /api/v1/communities/me
@@ -108,9 +109,15 @@ export function useCommunitiesWithMetrics(params = {}) {
     queries: communities.map((c) => ({
       queryKey: ["community", c.slug ?? c.id, "members"],
       queryFn: () => fetchAllCommunityMembers(c.slug ?? c.id),
-      // Only fetch the full member list for communities where the user is an
-      // admin/owner — non-admin members get 403 on this endpoint.
-      enabled: !!listQuery.data && !!c.owned,
+      // Gated on isCommunityAdmin, NOT c.owned. The backend authorizes
+      // community.members.read for COMMUNITY_OWNER *and* COMMUNITY_ADMIN
+      // (V2 seed; V72 folds the other staff roles into COMMUNITY_ADMIN), so
+      // `owned` under-fetched for a promoted admin: they fell through to
+      // metrics.totalMembers, which counts inactive/suspended/exited members,
+      // and so the same community showed a different headcount to an owner than
+      // to an admin. A plain member is still excluded — the endpoint is
+      // permission-gated server-side and would 403.
+      enabled: !!listQuery.data && isCommunityAdmin(c),
       staleTime: 1000 * 60 * 2,
     })),
   });
@@ -123,7 +130,13 @@ export function useCommunitiesWithMetrics(params = {}) {
     queries: communities.map((c) => ({
       queryKey: ["community", c.slug ?? c.id, "transactions"],
       queryFn: () => fetchAllCommunityTransactions(c.slug ?? c.id),
-      enabled: !!listQuery.data && !!c.owned,
+      // Same predicate as the members block above, and for the same reason:
+      // community.transactions.read is granted to COMMUNITY_ADMIN as well as
+      // COMMUNITY_OWNER, so gating on `owned` left a promoted admin's
+      // "Total Collected" on the backend metric while an owner of the very same
+      // community got the client-computed sum — two different numbers for one
+      // community depending only on who is looking.
+      enabled: !!listQuery.data && isCommunityAdmin(c),
       staleTime: 1000 * 60 * 2,
     })),
   });
