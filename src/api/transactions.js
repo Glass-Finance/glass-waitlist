@@ -5,26 +5,31 @@ import client from "./client";
 // ─────────────────────────────────────────────────────────────────────────────
 
 // GET /api/v1/communities/{communityIdentifier}/finance/obligations
-// pageSize:1000 predates this comment and was already shipping fine. Adding
-// a `pageNumber` param on top of it (below) was confirmed live to return 400
-// "Illegal Argument Entered" -- for a 1-member community, so this isn't a
-// page-2-and-beyond edge case, the very first request fails. The same
-// pageNumber addition broke getCommunityMembers and getCommunityTransactions
-// identically, which points at this backend not accepting a `pageNumber`
-// param on these list endpoints at all (wrong param name, or no page-2+
-// support), not at pageSize specifically. Reverted to a single fetch with no
-// pageNumber until the actual accepted pagination scheme is confirmed --
-// don't guess a third time.
+// pageSize:1000 predates this comment and was already shipping fine. A
+// `pageNumber` param was once added on top of it and "confirmed live to return
+// 400 Illegal Argument Entered" — that reading was a MISDIAGNOSIS, and it has
+// been retired. `pageNumber` is supported on these endpoints and is 1-BASED:
+// the backend's createPageable() does PageRequest.of(pageNumber - 1, ...), so
+// pageNumber=0 becomes PageRequest.of(-1, ...) and that — not pageSize, and not
+// any unsupported-parameter problem — is what actually raised
+// IllegalArgumentException -> 400. The offending request came from a since-
+// deleted `fetchAllPages` helper that started its walk at 0. Confirmed live on
+// the identical PageQueryDto path: pageNumber=0&pageSize=2 -> 400, while
+// pageNumber=1&pageSize=1000 -> 200. Nothing caps pageSize: PageQueryDto carries
+// no validation annotation, createPageable passes the value straight to
+// PageRequest.of, and the live OpenAPI schema declares no maximum. See
+// src/api/communityList.js for the full corrected account.
 export const getCommunityObligations = (communityId, params = {}) =>
   client.get(`/communities/${communityId}/finance/obligations`, {
     params: { pageSize: 1000, ...params },
   });
 
-// NOT currently paginated -- see the comment on getCommunityObligations
-// above. A community with more than one page's worth of obligations may
-// still have this list silently truncated (the original F03/F16 risk);
-// that's preferable to every community being hard-broken by an unsupported
-// param.
+// Intentionally ONE request, not a page walk — so this list is not guaranteed
+// complete: a community with more obligations than fit in one page may have its
+// list silently truncated (the original F03/F16 risk). The limit is this
+// helper's choice, NOT a backend constraint. Anyone needing a guaranteed-
+// complete list should page explicitly with a 1-based pageNumber, or use the
+// page-walking helper in src/api/communityList.js.
 export const fetchAllCommunityObligations = (communityId) =>
   getCommunityObligations(communityId).then((res) => {
     const data = res.data?.data;
@@ -45,23 +50,26 @@ export const extendObligationDueDate = (communityId, obligationId, dueAt) =>
   });
 
 // GET /api/v1/communities/{communityIdentifier}/finance/transactions
-// See the comment on getCommunityObligations above -- a `pageNumber` param
-// added on top of this endpoint's existing pageSize:1000 was confirmed live
-// to return 400 "Illegal Argument Entered", for every community regardless
-// of size. Reverted to a single fetch with no pageNumber.
+// See the corrected pagination explanation on getCommunityObligations above:
+// `pageNumber` IS supported and is 1-based, pageSize:1000 IS accepted, and the
+// historical 400 was caused by pageNumber=0 — not by pageSize, and not by any
+// unsupported-parameter problem on this endpoint.
 export const getCommunityTransactions = (communityId, params = {}) =>
   client.get(`/communities/${communityId}/finance/transactions`, {
     params: { pageSize: 1000, ...params },
   });
 
-// NOT currently paginated -- see the comment on getCommunityTransactions
-// above. The backend's own collectedAmount metric only tracks settlements
-// and returns 0 even when members have paid in full (see useCommunities.js),
-// so callers that need an accurate collected total or per-member payment
-// status still derive it from this list rather than that metric -- it's
-// just not guaranteed complete for a community with more than one page's
-// worth of transactions (the original F03 risk), which is preferable to
-// every community being hard-broken by an unsupported param.
+// Intentionally ONE request, not a page walk — so this list is not guaranteed
+// complete: a community with more than 1000 transactions has the oldest ones
+// silently dropped (the original F03 risk). The limit is this helper's choice,
+// NOT a backend constraint; see the corrected pagination notes above.
+//
+// Note this list is NOT an authoritative "total collected". The backend's own
+// metrics.collectedAmount is a server-side aggregate with no page limit, and it
+// covers obligations plus unallocated successful payment-link transactions. It
+// is the more complete source for a collected total. This helper remains the
+// source for per-member payment status (last payment date, failed-payment
+// counts), which metrics does not expose — useMembersWithPayments needs those.
 export const fetchAllCommunityTransactions = (communityId) =>
   getCommunityTransactions(communityId).then((res) => {
     const data = res.data?.data;

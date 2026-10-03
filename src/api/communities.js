@@ -35,23 +35,32 @@ export const deleteCommunity = (communityId) => client.delete(`/communities/${co
 // unless the caller explicitly asks for something else.
 //
 // Deliberately no pageSize override here, unlike getCommunityObligations/
-// getCommunityTransactions -- this endpoint returned 400 "Illegal Argument
-// Entered" for pageSize:1000 (confirmed against the live backend, breaking
-// every community regardless of size, including a 1-member one), so
-// whatever cap it enforces is well below what obligations/transactions
-// accept. Reverted to the backend's own default page size until the real
-// limit is confirmed.
+// getCommunityTransactions. The earlier note on this endpoint claimed it
+// "returned 400 Illegal Argument Entered for pageSize:1000" and therefore
+// enforced some low cap: that was a MISDIAGNOSIS and is retired. There is no
+// such cap. The backend imposes NO maximum page size — AppConstant.PAGE_SIZE=10
+// is only the DEFAULT used when the parameter is absent, PageQueryDto carries no
+// validation annotation, createPageable passes the value straight to
+// PageRequest.of, and the live OpenAPI schema declares no maximum. pageSize:1000
+// is accepted here just as it is on the sibling endpoints. The historical 400
+// was caused by pageNumber=0, because `pageNumber` is 1-BASED and 0 becomes
+// PageRequest.of(-1, ...); it was never a page-size problem. See the full
+// corrected account, with live evidence, in src/api/communityList.js.
+//
+// CONSEQUENCE, left as-is here: sending no pageSize means this request takes the
+// backend default of 10, so a community with more than 10 members has its list
+// truncated. Fixing that is separate work from this comment correction.
 export const getCommunityMembers = (communityId, params = {}) =>
   client.get(`/communities/${communityId}/members`, {
     params: { status: "ACTIVE", ...params },
   });
 
-// NOT currently paginated -- see the comment on getCommunityMembers above.
-// A community with more members than one page's worth may still have its
-// roster/headcount silently truncated (the original F16 risk); that's
-// preferable to every community being hard-broken by an oversized pageSize
-// request. Revisit once the backend's actual max pageSize for this specific
-// endpoint is known.
+// Intentionally ONE request, not a page walk — so this list is not guaranteed
+// complete: a community with more members than fit in one page (see the
+// default-10 note above) may have its roster/headcount silently truncated (the
+// original F16 risk). The limit is this helper's choice, NOT a backend
+// constraint. Callers needing a guaranteed-complete roster should pass an
+// explicit pageSize, or page with a 1-based pageNumber.
 export const fetchAllCommunityMembers = (communityId, params = {}) =>
   getCommunityMembers(communityId, params).then((res) => {
     const data = res.data?.data;

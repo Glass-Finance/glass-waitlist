@@ -122,9 +122,25 @@ export function useCommunitiesWithMetrics(params = {}) {
     })),
   });
 
-  // Fetch transactions per community to compute actual collectedAmount —
-  // the backend's metrics.collectedAmount only tracks settlements (transfers
-  // to the community's account) and returns 0 even when members have paid.
+  // Fetch transactions per community to compute a client-side collectedAmount.
+  //
+  // HISTORY: this fan-out was a workaround for an older backend gap. Back then
+  // metrics.collectedAmount summed obligations only, so a community collecting
+  // via payment links that had no obligation attached read as 0 even when
+  // members had paid. That gap was closed in the backend (the "update collection
+  // metrics" change, 2026-09-02), which added the unallocated successful
+  // payment-link term. collectedAmount now covers obligations PLUS unallocated
+  // successful payment-link transactions — it does NOT count settlements, which
+  // live in a separate table and are never part of any Transaction row.
+  //
+  // TRADE-OFF, not a fix: this fetch is a single page (pageSize:1000, no
+  // pageNumber), so above 1000 transactions it silently drops the oldest rows
+  // and the client sum can UNDERCOUNT. metrics.collectedAmount has no such
+  // limit. Whether this leg is still worth its request cost is an open
+  // question — it is deliberately left in place, and no claim is made here that
+  // it is safe to remove. The populated backend metric and this client sum have
+  // not yet been compared against real production data.
+  //
   // Shares the ["community", id, "transactions"] cache key with useMembersWithPayments.
   const txListQueries = useQueries({
     queries: communities.map((c) => ({

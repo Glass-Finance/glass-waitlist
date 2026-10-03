@@ -2,14 +2,21 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import client from "../../api/client";
 import { fetchAllCommunityMembers } from "../../api/communities";
 
-// Regression: a `pageSize:1000` default on this endpoint was found live to
-// return 400 "Illegal Argument Entered" -- not silent truncation, a hard
-// break for every community regardless of size. Unlike the sibling
-// obligations/transactions endpoints (which do accept pageSize:1000 and are
-// safely paginated in transactions.js), this one gets no page-size override
-// and no pageNumber loop until its actual accepted range is confirmed
-// against the real backend. These tests pin the reverted, single-fetch
-// behavior so it doesn't regress back to the broken version.
+// Regression guard: this helper pins a SINGLE request with no pageSize and no
+// pageNumber, so callers relying on the current shape keep working.
+//
+// The original rationale for that shape — that pageSize:1000 returns 400
+// "Illegal Argument Entered" on this endpoint and that some low cap therefore
+// applies — was a MISDIAGNOSIS and is retired. There is no page-size cap; the
+// 400 came from pageNumber=0 (pageNumber is 1-based, so 0 becomes
+// PageRequest.of(-1, ...)). Note also that transactions.js does NOT paginate
+// despite an earlier claim here that it "safely paginates" — its helpers are
+// single-request too, just with an explicit pageSize:1000.
+//
+// These tests deliberately still assert the current behavior (one request, no
+// pagination params). Changing that behavior is separate work from correcting
+// the comments. See src/api/communityList.js for the corrected pagination
+// account with live evidence.
 
 vi.mock("../../api/client", () => ({
   default: { get: vi.fn() },
