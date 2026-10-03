@@ -345,13 +345,13 @@ export default function MembersProblem() {
       />
 
       <div className="relative text-center">
-        <span className="inline-block rounded-[10px] border border-[#e4e5ec] bg-white/90 px-[22px] py-[11px] text-[15px] font-medium tracking-[0.04em] text-[#0f1d6e] uppercase max-[560px]:text-[13px]">
+        <span className="inline-flex items-center rounded-full border border-brand-deep/25 px-5 py-2 text-[13px] font-medium text-brand-deep">
           The Problem
         </span>
-        <h2 className="mx-auto mt-[26px] max-w-[18ch] text-[clamp(2.2rem,5.8vw,4.4rem)] font-bold leading-[1.06] tracking-[-0.04em] text-balance text-[#0f1d6e]">
+        <h2 className="mx-auto mt-[26px] max-w-[20ch] text-[clamp(26px,5vw,58px)] font-bold leading-[1.15] tracking-[-0.02em] text-balance text-brand-ink">
           {HEADLINE}
         </h2>
-        <p className="mx-auto mt-[18px] max-w-[56ch] text-[clamp(17px,2vw,20px)] leading-[1.6] text-[#6b7280]">
+        <p className="mx-auto mt-[18px] max-w-[56ch] text-[clamp(15px,2vw,17px)] leading-[1.7] text-black/60">
           {LEDE}
         </p>
       </div>

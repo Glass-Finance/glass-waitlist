@@ -404,10 +404,10 @@ export default function ProblemSection() {
         {/* ── Header ── */}
         <header className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] items-end gap-x-16 gap-y-6 max-[1040px]:grid-cols-1 max-[1040px]:items-start">
           <div>
-            <div className="inline-flex items-center rounded-full border border-[rgba(28,43,138,0.25)] px-5 py-2 text-[13px] font-medium text-[#1c2b8a]">
-              The problem
+            <div className="inline-flex items-center rounded-full border border-brand-deep/25 px-5 py-2 text-[13px] font-medium text-brand-deep">
+              The Problem
             </div>
-            <h2 className="mt-[18px] max-w-[20ch] text-[clamp(26px,5vw,58px)] leading-[1.02] font-bold tracking-[-0.04em] text-balance text-[#0f1d6e]">
+            <h2 className="mt-[18px] max-w-[20ch] text-[clamp(26px,5vw,58px)] font-bold leading-[1.15] tracking-[-0.02em] text-balance text-brand-ink">
               Still spending weekends chasing payments?
             </h2>
           </div>
