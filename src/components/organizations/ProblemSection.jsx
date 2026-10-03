@@ -573,7 +573,11 @@ export default function ProblemSection() {
               data-role="scene"
               className="scene absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 invisible translate-x-10 [clip-path:inset(0_0_0_100%)] transition-[clip-path,transform,visibility] duration-750 [&.on]:visible [&.on]:translate-x-0 [&.on]:[clip-path:inset(0)] [&.on]:delay-0"
             >
-              <div className="flex flex-col items-center max-[600px]:flex-col">
+              {/* Phone and its callout sit side by side on desktop — the
+                  dashed connector in the note points at the phone, and a
+                  572px phone plus a note below it is taller than the 640px
+                  stage, which clipped the phone's top. Phones stack them. */}
+              <div className="flex items-center justify-center max-[600px]:flex-col max-[600px]:items-center">
                 <div className="relative h-[572px] w-[262px] flex-none rounded-[46px] bg-[linear-gradient(145deg,#d9d9dd,#8d8e94_40%,#c9cace_70%,#9a9ba1)] p-[5px] shadow-[0_0_0_1.5px_#6e6f75_inset,0_28px_40px_#00000040,0_6px_12px_#00000026] before:absolute before:-left-[3px] before:top-[118px] before:h-6 before:w-[3px] before:rounded-l-sm before:bg-[#8d8e94] before:shadow-[0_48px_0_#8d8e94,0_98px_0_#8d8e94] before:content-[''] after:absolute after:-right-[3px] after:top-40 after:h-[70px] after:w-[3px] after:rounded-r-sm after:bg-[#8d8e94] after:content-['']">
                   <div className="relative flex h-full flex-col overflow-hidden rounded-[41px] border-[3px] border-[#050506] bg-white font-[-apple-system,'SF_Pro_Text',Roboto,'Segoe_UI',system-ui,sans-serif] before:absolute before:top-2 before:left-1/2 before:z-3 before:h-[21px] before:w-18 before:-ml-9 before:rounded-full before:bg-black before:content-[''] after:absolute after:bottom-1.5 after:left-1/2 after:z-3 after:h-1 after:w-21 after:-ml-[42px] after:rounded after:bg-black after:content-['']">
                     <div className="flex h-10 items-center justify-between pt-2 pr-[26px] pl-[26px] text-[11.5px] font-semibold text-[#202124]">
