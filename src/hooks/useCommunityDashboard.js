@@ -22,10 +22,10 @@ async function fetchCommunity(id) {
 // ─────────────────────────────────────────────────────────────────────────────
 async function fetchMembers(id) {
   // fetchAllCommunityMembers defaults to status=ACTIVE — the raw endpoint
-  // includes soft-deleted members and inflates the count. It is a SINGLE
-  // fetch with no pageSize and no page-2+ loop, so a roster larger than the
-  // backend's default page size is silently truncated here (pageSize:1000 is
-  // rejected with 400 by this endpoint — see api/communities.js).
+  // includes soft-deleted members and inflates the count. It now paginates
+  // across every backend page (pageSize:200, 1-based pageNumber), so `id` here
+  // resolves to a complete ACTIVE roster rather than a single default-sized
+  // page. See src/api/communities.js for the termination rules.
   return fetchAllCommunityMembers(id);
 }
 
@@ -169,9 +169,17 @@ export function useCommunityDashboard(communityId) {
 
   const members = {
     list: membersQuery.data ?? [],
-    // Prefer the actual fetched list count — community metrics can lag after
-    // member deletions. Fall back to metrics only while the list is loading.
-    total: membersQuery.data != null ? membersQuery.data.length : (metrics.totalMembers ?? 0),
+    // ACTIVE count, from metrics.activeMembers — an authoritative server-side
+    // COUNT over ACTIVE rows, with no page limit. The previous source,
+    // `membersQuery.data.length`, came from a single un-paginated request that
+    // inherited the backend's default pageSize of 10, so it reported 10 for
+    // every larger community. The old comment justified preferring the list
+    // count because "metrics can lag after member deletions" — that reasoning
+    // applies to metrics.totalMembers (active + inactive + suspended + exited,
+    // which counts EXITED members and is therefore inflated), but NOT to
+    // activeMembers, where a removed member is EXITED and simply excluded.
+    // The list length remains the fallback if the detail request failed.
+    total: metrics.activeMembers ?? (membersQuery.data != null ? membersQuery.data.length : 0),
     inactive: metrics.inactiveMembers ?? 0,
     overdue: metrics.overdueMembers ?? 0,
   };

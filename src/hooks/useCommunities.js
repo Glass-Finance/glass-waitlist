@@ -100,9 +100,22 @@ export function useCommunitiesWithMetrics(params = {}) {
     })),
   });
 
-  // Fetch the ACTIVE member list per community so the card shows the real
-  // count — metrics.totalMembers from the backend includes soft-deleted
-  // members and is always higher than the true active headcount.
+  // Fetch the ACTIVE member rows per community.
+  //
+  // NOT the count source. The count comes from metrics.activeMembers below —
+  // an authoritative server-side COUNT over ACTIVE rows, with no page limit.
+  // This list previously supplied the count via `.length`, but it was a single
+  // un-paginated request inheriting the backend's default pageSize of 10, so
+  // every community above 10 active members displayed "10 Members" forever.
+  // It stays because it warms the ["community", id, "members"] cache key that
+  // useMembersWithPayments and useCommunityMembers also read, and because it is
+  // the fallback count when metrics are unavailable.
+  //
+  // metrics.totalMembers is deliberately NOT used as the active count: on the
+  // backend it is active + inactive + suspended + exited, so it counts
+  // soft-deleted (EXITED) members and is always higher than the true active
+  // headcount. Use activeMembers, which is ACTIVE only.
+  //
   // Shares the ["community", id, "members"] cache key with useMembersWithPayments
   // so the request is reused when the admin has already visited Members page.
   const memberListQueries = useQueries({
@@ -173,8 +186,14 @@ export function useCommunitiesWithMetrics(params = {}) {
       ...c,
       metrics: {
         ...baseMetrics,
+        // ACTIVE count. metrics.activeMembers is authoritative and
+        // permission-gated exactly like the rest of `metrics`, so for a plain
+        // member it is absent — as is `activeMemberList`, since this fan-out is
+        // admin-only — and the count stays null, which the card renders as "no
+        // count shown". Unchanged from before for that path. The member-list
+        // length is only a fallback for an admin whose detail request failed.
         totalMembers:
-          activeMemberList != null ? activeMemberList.length : (baseMetrics.totalMembers ?? null),
+          baseMetrics.activeMembers ?? (activeMemberList != null ? activeMemberList.length : null),
         collectedAmount:
           computedCollected != null ? computedCollected : (baseMetrics.collectedAmount ?? null),
       },
