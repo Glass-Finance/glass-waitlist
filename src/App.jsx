@@ -276,8 +276,8 @@ function App() {
             QR handoff instead of a half-responsive layout — including
             identity verification. Desktop users verify via the
             dashboard-styled page at /dashboard/verify-identity instead. */}
-          <Route element={<MemberDeviceGuard />}>
-            <Route element={<MemberProtectedRoute />}>
+          <Route element={<MemberProtectedRoute />}>
+            <Route element={<MemberDeviceGuard />}>
               <Route path="/member" element={<MemberAppLayout />}>
                 <Route index element={<Navigate to="home" replace />} />
                 <Route path="communities/search" element={<DiscoverCommunities />} />

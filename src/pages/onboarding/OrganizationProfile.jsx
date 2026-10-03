@@ -55,7 +55,7 @@ const CATEGORIES = [
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member"];
 
 const inputCls =
-  "w-full h-12 min-h-8 border bg-stacked-container px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+  "w-full h-12 min-h-8 border bg-stacked-container px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-brand transition-all";
 
 export default function OrganizationProfile() {
   const navigate = useNavigate();
@@ -197,11 +197,13 @@ export default function OrganizationProfile() {
       const community = res.data?.data;
       if (!community?.id) throw new Error("Community creation failed.");
 
-      // AuthContext's isAdmin reflects the communities list as of the last
-      // login/refresh, which didn't include this community yet since it
-      // didn't exist. Without this, ProtectedRoute's admin check bounces
-      // straight to the member app, which then hits the device guard on
-      // desktop and dead-ends at the QR handoff instead of the dashboard.
+      // Invalidate the communities cache so the next fetch re-derives
+      // isAdmin from the server response rather than trusting a stale
+      // snapshot. The updateUser call below is a routing necessity: the
+      // cache invalidation is async, and without an immediate isAdmin
+      // override ProtectedRoute would bounce the user to the member app
+      // (which dead-ends at the QR handoff on desktop) before the fresh
+      // communities list arrives.
       updateUser({ isAdmin: true });
 
       // Both the dashboard's community list (["communities", "me", ...] in
@@ -475,7 +477,7 @@ export default function OrganizationProfile() {
                 }}
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleDrop}
-                className={`w-full rounded-xl flex flex-col items-center justify-center py-12 px-6 cursor-pointer transition-all min-h-[200px] border-[1.5px] border-dashed ${dragOver ? "bg-[#EEF2FF] border-brand" : "bg-[#FAFAFA] border-[#C2C2C2]"}`}
+                className={`w-full rounded-xl flex flex-col items-center justify-center py-12 px-6 cursor-pointer transition-all min-h-[200px] border-[1.5px] border-dashed ${dragOver ? "bg-brand-wash border-brand" : "bg-surface-page border-hairline-disabled"}`}
               >
                 <input
                   ref={fileRef}
@@ -485,7 +487,12 @@ export default function OrganizationProfile() {
                   onChange={(e) => handleFile(e.target.files[0])}
                 />
                 {logoUrl ? (
-                  <img src={logoUrl} alt="preview" className="h-16 object-contain mb-2" />
+                  <img
+                    src={logoUrl}
+                    alt="preview"
+                    className="h-16 object-contain mb-2"
+                    loading="lazy"
+                  />
                 ) : (
                   <Upload size={28} className="text-gray-400 mb-3" />
                 )}

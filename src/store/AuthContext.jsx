@@ -435,9 +435,21 @@ export function AuthProvider({ children }) {
 
   // Only fires for token changes that happen AFTER the initial restore
   // (login, setSession, OAuth). The restore() above handles its own hydration.
+  // If hydration fails, fail closed — clear the session rather than leaving
+  // the user appearing authenticated with stale/unverified state.
   useEffect(() => {
-    if (token && !isRestoringRef.current) hydrateUserProfile();
-  }, [token, hydrateUserProfile]);
+    if (token && !isRestoringRef.current) {
+      hydrateUserProfile().then((verified) => {
+        if (!verified) {
+          clearSession();
+          queryClient.clear();
+          setToken(null);
+          setUser(null);
+          setSessionVerified(false);
+        }
+      });
+    }
+  }, [token, hydrateUserProfile, queryClient]);
 
   // ── Derive role helpers ────────────────────────────────────────────────────
   // Global platform admins and per-community admins both have desktop
@@ -451,7 +463,7 @@ export function AuthProvider({ children }) {
     token,
     loading,
     sessionVerified,
-    isAuthenticated: !!token,
+    isAuthenticated: !!token && sessionVerified,
     isPlatformAdmin,
     isAdmin,
     isMember,

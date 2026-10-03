@@ -20,7 +20,7 @@ function unwrapPage(res) {
     content: data?.content ?? [],
     totalElements: data?.totalElements ?? 0,
     totalPages: data?.totalPages ?? 1,
-    pageNumber: data?.pageNumber ?? 0,
+    pageNumber: data?.pageNumber ?? 1,
   };
 }
 

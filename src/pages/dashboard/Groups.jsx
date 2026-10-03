@@ -17,7 +17,12 @@ export default function Groups() {
   const communityId = useActiveCommunityId();
 
   const [search, setSearch] = useState("");
-  const [pageNumber, setPageNumber] = useState(0);
+  // 1-based, because the backend is: createPageable() does
+  // PageRequest.of(pageNumber - 1, ...), so 0 becomes PageRequest.of(-1, ...)
+  // and the request is rejected with 400 "Illegal Argument Entered". The
+  // backend's own default is AppConstant.PAGE_NUMBER = 1. useKyc.js already
+  // follows the same 1-based convention.
+  const [pageNumber, setPageNumber] = useState(1);
   const [showArchived, setShowArchived] = useState(false);
   const [editing, setEditing] = useState(null); // null | { group } | "new"
   const [managing, setManaging] = useState(null);
@@ -198,18 +203,18 @@ export default function Groups() {
       {totalPages > 1 ? (
         <div className="flex items-center justify-center gap-3 text-xs text-gray-500 mb-2">
           <button
-            onClick={() => setPageNumber((p) => Math.max(0, p - 1))}
-            disabled={pageNumber === 0}
+            onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
+            disabled={pageNumber <= 1}
             className="disabled:opacity-40"
           >
             Previous
           </button>
           <span>
-            Page {pageNumber + 1} of {totalPages} · {totalElements} total
+            Page {pageNumber} of {totalPages} · {totalElements} total
           </span>
           <button
             onClick={() => setPageNumber((p) => p + 1)}
-            disabled={pageNumber + 1 >= totalPages}
+            disabled={pageNumber >= totalPages}
             className="disabled:opacity-40"
           >
             Next

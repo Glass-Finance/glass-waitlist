@@ -313,6 +313,10 @@ export default function SignIn() {
   async function handleGoogleAuth(user) {
     destinationTakenRef.current = true;
     try {
+      // Establish the session before navigating — the user object from Google
+      // auth may lack role/community fields that buildUser() fetches from
+      // the backend, so we call setSession to populate the full session.
+      await setSession(user);
       navigate(await resolveDestination(user), { replace: true });
     } catch (err) {
       setError(notifyError(err, { context: "Google sign in" }));
@@ -405,7 +409,7 @@ export default function SignIn() {
             </p>
             <Link
               to="/member/join"
-              className="text-xs font-semibold mt-2 inline-block text-[#92400e]"
+              className="text-xs font-semibold mt-2 inline-block text-warning"
             >
               Back to registration →
             </Link>
@@ -468,7 +472,7 @@ export default function SignIn() {
               />
               <ErrorMessage message={fieldErrors.password || error} />
               <div className="flex justify-end mt-1.5">
-                <Link to="/forgot-password" className="text-label font-medium text-[#1C2B8A]">
+                <Link to="/forgot-password" className="text-label font-medium text-brand-deep">
                   Forgot password?
                 </Link>
               </div>
@@ -537,7 +541,7 @@ export default function SignIn() {
               draws, so this can't just always point to /sign-up. */}
           <Link
             to={isMemberSignIn ? "/member/join" : "/sign-up"}
-            className="font-semibold text-[#1C2B8A]"
+            className="font-semibold text-brand-deep"
           >
             Create Account
           </Link>

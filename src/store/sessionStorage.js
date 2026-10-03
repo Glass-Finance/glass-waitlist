@@ -48,6 +48,9 @@ export const SESSION_ADJACENT_KEYS = [
   // GoogleAuthButton.jsx — cached {email, picture, name} for the sign-in
   // button. Also TTL-bounded at 7 days for the never-logged-out case.
   "glass_last_google_identity",
+  // SignIn.jsx — pending verification email shown as a banner. Must not
+  // leak to the next user on the same device.
+  "glass_pending_member_verification",
 ];
 
 export const KEY_TOKEN = "accessToken";

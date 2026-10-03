@@ -68,7 +68,9 @@ describe("useCommunitiesWithMetrics transaction ownership gating", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     await waitFor(() => expect(getCommunityMock).toHaveBeenCalled());
     // Wait for the owned community's transactions to be fetched
-    await waitFor(() => expect(fetchAllCommunityTransactionsMock).toHaveBeenCalledWith("owned-community"));
+    await waitFor(() =>
+      expect(fetchAllCommunityTransactionsMock).toHaveBeenCalledWith("owned-community"),
+    );
 
     expect(fetchAllCommunityMembersMock).toHaveBeenCalledTimes(1);
     expect(fetchAllCommunityMembersMock).toHaveBeenCalledWith("owned-community");

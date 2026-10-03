@@ -150,7 +150,17 @@ function clearSessionAndRedirect() {
 // credentials" message instead of the generic "your session expired" copy
 // written for an authenticated call whose token lapsed — same reasoning
 // as above, just needed on the message side too.
-export const PRE_AUTH_PATHS = ["/auth/login", "/auth/google", "/auth/mfa/totp/verify-login"];
+export const PRE_AUTH_PATHS = [
+  "/auth/login",
+  "/auth/google",
+  "/auth/mfa/totp/verify-login",
+  "/auth/otp/request",
+  "/auth/otp/verify",
+  "/auth/password/forgot",
+  "/auth/password/reset",
+  "/auth/verify",
+  "/auth/verify/resend",
+];
 
 // ── Global response handler ───────────────────────────────────────────────────
 client.interceptors.response.use(

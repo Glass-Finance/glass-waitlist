@@ -35,7 +35,9 @@ function CreateCommunityAccountModal({ onClose }) {
     queryKey: ["admin-communities", "picker", debouncedSearch],
     queryFn: () =>
       getAdminCommunities({
-        pageNumber: 0,
+        // 1-based: createPageable -> PageRequest.of(pageNumber - 1), so 0 is
+        // rejected as an illegal argument.
+        pageNumber: 1,
         pageSize: 8,
         ...(debouncedSearch ? { search: debouncedSearch } : {}),
       }).then(unwrap),

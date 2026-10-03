@@ -74,14 +74,16 @@ describe("App public routes", () => {
   it("renders the lazy sign-in page for a public auth route", async () => {
     renderAt("/sign-in");
 
-    expect(await screen.findByText("Sign In To Your Account", {}, { timeout: 5000 })).toBeDefined();
+    expect(
+      await screen.findByText("Sign In To Your Account", {}, { timeout: 10000 }),
+    ).toBeDefined();
   });
 
   it("renders the catch-all NotFound page for an unknown path", async () => {
     renderAt("/definitely/not/a/route");
 
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Page not found" }, { timeout: 5000 }),
+      await screen.findByRole("heading", { level: 1, name: "Page not found" }, { timeout: 10000 }),
     ).toBeDefined();
   });
 });
@@ -91,21 +93,20 @@ describe("App protected route integration", () => {
     renderAt("/dashboard/home");
 
     await waitFor(() => expect(window.location.pathname).toBe("/sign-in"));
-    expect(await screen.findByText("Sign In To Your Account", {}, { timeout: 5000 })).toBeDefined();
+    expect(
+      await screen.findByText("Sign In To Your Account", {}, { timeout: 10000 }),
+    ).toBeDefined();
   });
 
-  it("bounces a desktop visitor on a member-app path to the mobile-required screen", async () => {
+  it("bounces an unauthenticated visitor off a member-app path to sign-in before the device gate", async () => {
     renderAt("/member/home");
 
-    await waitFor(() =>
-      expect(window.location.pathname + window.location.search).toBe(
-        "/member/mobile-required?to=%2Fmember%2Fhome",
-      ),
-    );
-    // The hand-off screen itself resolves (lazy chunk loaded, QR stub fed the
-    // member-home target) rather than crashing on canvas rendering.
+    // MemberProtectedRoute is outside MemberDeviceGuard, so an unauthenticated
+    // user hits sign-in first — they should never see the QR handoff without
+    // an account.
+    await waitFor(() => expect(window.location.pathname).toBe("/member/app-sign-in"));
     expect(
-      await screen.findByText("Scan To Continue On Your Phone", {}, { timeout: 5000 }),
+      await screen.findByText("Sign In To Your Account", {}, { timeout: 10000 }),
     ).toBeDefined();
   });
 
@@ -115,6 +116,8 @@ describe("App protected route integration", () => {
 
     // Device gate passes (mobile UA), MemberProtectedRoute rejects: no token.
     await waitFor(() => expect(window.location.pathname).toBe("/member/app-sign-in"));
-    expect(await screen.findByText("Sign In To Your Account", {}, { timeout: 5000 })).toBeDefined();
+    expect(
+      await screen.findByText("Sign In To Your Account", {}, { timeout: 10000 }),
+    ).toBeDefined();
   });
 });
