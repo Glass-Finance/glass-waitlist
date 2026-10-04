@@ -759,7 +759,7 @@ export default function ProblemSection() {
                 />
                 <div
                   data-role="askCaption"
-                  className="absolute inset-x-0 bottom-0 bg-[linear-gradient(to_top,rgba(14,14,16,0.94),rgba(14,14,16,0.62)_50%,transparent)] px-7 pt-[90px] pb-[26px] text-white [clip-path:inset(100%_0_0_0)] transition-[clip-path] duration-800 [&.show>em]:translate-y-0 after:ml-1 after:inline-block after:h-[0.95em] after:w-[3px] after:translate-y-[1px] after:bg-[#e0ab88] after:align-[2px] after:animate-[var(--animate-gps-blink)] after:content-['']"
+                  className="absolute inset-x-0 bottom-0 bg-[linear-gradient(to_top,rgba(14,14,16,0.94),rgba(14,14,16,0.62)_50%,transparent)] px-7 pt-[90px] pb-[26px] text-white [clip-path:inset(100%_0_0_0)] transition-[clip-path] duration-800 [&.show]:[clip-path:inset(0)] [&.show>em]:translate-y-0 after:ml-1 after:inline-block after:h-[0.95em] after:w-[3px] after:translate-y-[1px] after:bg-[#e0ab88] after:align-[2px] after:animate-[var(--animate-gps-blink)] after:content-['']"
                 >
                   <small className="flex items-center gap-2.5 text-[11.5px] font-semibold tracking-[0.12em] text-[#b9b9c0] uppercase before:w-[26px] before:border-t-2 before:border-[#e0ab88] before:content-['']">
                     Member · Chidi, 4B
