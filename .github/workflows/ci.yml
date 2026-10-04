@@ -62,12 +62,21 @@ jobs:
             coverage/lcov.info
           retention-days: 7
 
-      # Non-blocking by design: it reports frontend calls the backend has no
-      # route for (the class of bug that type-checks, lints and unit-tests
-      # clean), but a backend deploy that hasn't landed yet must not block a
-      # frontend PR. Read the log; add `--strict` locally to fail on drift.
-      - name: Endpoint audit (advisory)
-        run: npm run audit:endpoints
+      # Blocking on drift: this is the only step that catches a frontend call to
+      # a route the backend doesn't have — it type-checks, lints, builds and
+      # passes unit tests exactly like a real call, so nothing else complains.
+      #
+      # f6d7bb1 made this advisory so "a backend deploy that hasn't landed yet
+      # must not fail a frontend PR". That case still doesn't block: add the
+      # route to PENDING_BACKEND_LIST in scripts/endpoint-audit.mjs (each entry
+      # owes a reason) and it reports as PENDING, never as UNMATCHED.
+      # UNCONNECTED never fails the build either — only UNMATCHED does.
+      #
+      # An unreachable spec still exits 0 (a backend outage must not block a
+      # frontend PR), but now raises a warning annotation instead of a bare
+      # SKIP line in the log, so a skipped audit is visible rather than silent.
+      - name: Endpoint audit
+        run: npm run audit:endpoints -- --strict
 
       - name: Build
         run: npm run build

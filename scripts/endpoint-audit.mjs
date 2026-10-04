@@ -112,6 +112,18 @@ function baseUrlFromEnv() {
     .replace(/^["']|["']$/g, "");
 }
 
+// A SKIP is not a pass. The "SKIP:" lines below say so for anyone reading the
+// log, but in CI they scroll past as a green step while nothing was ever
+// compared — the very failure mode this script exists to prevent. Surface the
+// skip as a GitHub Actions warning so it shows up on the PR itself. Still
+// exit 0: a backend outage must not block a frontend PR (see ci.yml).
+function skipExit(annotation) {
+  if (process.env.GITHUB_ACTIONS === "true") {
+    console.log(`::warning::Endpoint audit skipped — ${annotation}`);
+  }
+  process.exit(0);
+}
+
 async function loadOpenApi() {
   if (openapiFile) {
     const path = join(root, openapiFile);
@@ -124,7 +136,7 @@ async function loadOpenApi() {
   const base = option("--api") ?? baseUrlFromEnv();
   if (!base) {
     console.log("SKIP: no API base URL. Pass --api, set VITE_API_BASE_URL, or add it to .env.");
-    process.exit(0);
+    skipExit("no API base URL configured");
   }
   const url = `${base.replace(/\/+$/, "")}/v3/api-docs`;
   try {
@@ -134,7 +146,7 @@ async function loadOpenApi() {
   } catch (err) {
     console.log(`SKIP: could not read ${url} (${err.message}).`);
     console.log("      Offline or unreachable is not a pass — run with --openapi <file> to check.");
-    process.exit(0);
+    skipExit(`could not read ${url} (${err.message})`);
   }
 }
 
