@@ -54,6 +54,15 @@ vi.mock("../../../hooks/useKycVerification", () => ({
   useKycVerification: () => mockKycVerification.current,
 }));
 
+// The wizard reads the signed-in member for its Glass Pass rail, so the auth
+// context is mocked at the boundary like every other consumer in this file —
+// the wizard is still the real component.
+vi.mock("../../../store/AuthContext.jsx", () => ({
+  useAuth: () => ({
+    user: { firstName: "Adaeze", lastName: "Okafor", email: "adaeze@example.com" },
+  }),
+}));
+
 // Trimmed to the fields useKycFlow's step machine and footer read. Mirrors the
 // factory in KycWizardModal.test.jsx; `status` drives the branch, so the same
 // helper covers the start / continue / approved cases.
@@ -256,9 +265,11 @@ describe("Groups verification action", () => {
     fireEvent.click(verifyButton());
 
     // The real modal, not a stub: role=dialog / aria-label come from
-    // GlassModal, and the flow's own intro step is what renders.
+    // GlassModal, and the flow's own first step is what renders. A fresh
+    // account lands on the ID choice — the overview step is now the Glass
+    // Pass rail, so there is no "Get started" hand-off any more.
     expect(wizardDialog()).not.toBeNull();
-    expect(screen.getByRole("button", { name: /Get started/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Continue with/i })).toBeTruthy();
   });
 
   it("resumes an attempt already in flight rather than restarting it", () => {
