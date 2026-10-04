@@ -888,6 +888,32 @@ html.dashboard-compact {
   }
 }
 
+/* Problem section stage height follows the active scene on phones.
+
+   All five scenes share one gray stage, but they carry very different
+   content: a 572px phone (steps 1-2), a 300px photo (steps 3 and 5) and a
+   206px spreadsheet (step 4). The scenes are absolutely positioned, so the
+   stage can't size itself to them, and a single 620px height left up to
+   414px of empty gray on a phone. The timeline writes the active scene onto
+   the stage as data-scene, and this sizes it to match.
+
+   A real attribute selector rather than a Tailwind variant on the class,
+   for the same reason as the hover-pause rule below: unlayered rules beat
+   Tailwind's layered utilities regardless of specificity, so these win over
+   the stage's own min-h classes without needing !important. */
+@media (max-width: 600px) {
+  [data-role="stage"][data-scene="1"] {
+    min-height: 720px; /* stacked phone + callout: 572 + 16 + 77 of note */
+  }
+  [data-role="stage"][data-scene="2"],
+  [data-role="stage"][data-scene="4"] {
+    min-height: 380px;
+  }
+  [data-role="stage"][data-scene="3"] {
+    min-height: 280px;
+  }
+}
+
 /* Hover-pause: while the pointer is over the accordion, the looping motion
    freezes. Scoped to [data-loop] rather than every [class*="animate-"] so the
    one-shot entrance animation still plays — otherwise tapping a panel (which

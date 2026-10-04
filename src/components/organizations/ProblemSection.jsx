@@ -66,6 +66,10 @@ const CLS = {
     "m-auto grid size-6 place-items-center rounded-full border-2 border-[#aaa] text-[14px] text-[#aaa] not-italic",
   receiptTrail: "mt-3.5 flex items-start",
   receiptStep: "flex w-[92px] flex-none flex-col items-center gap-[7px] text-[13px] text-[#eee]",
+  // The step's own content has to be a centred column: as a plain block the
+  // <small> timestamps fall back to inline flow and collide with the label
+  // above them and the neighbouring column.
+  receiptStepBody: "flex flex-col items-center gap-[7px]",
   receiptLine: "mt-2.5 h-0.5 flex-1 bg-[#2bc48a]",
   receiptStepTime: "text-[10.5px] text-[#9a9a9a]",
   receiptRow: "flex justify-between px-0.5 py-2.5 text-[15px] text-[#a8a8a8]",
@@ -81,12 +85,18 @@ const CLS = {
 
   /* Spreadsheet */
   cellHead:
-    "h-[21px] border border-[#dcdcdc] bg-[#efefef] px-1.5 text-center text-[11.5px] leading-[1.5] text-[#555]",
+    "h-[21px] border border-[#dcdcdc] bg-[#efefef] px-1.5 text-center text-[11.5px] leading-[1.5] font-normal text-[#555]",
   cellRowHead:
-    "h-[21px] w-[30px] border border-[#dcdcdc] bg-[#efefef] px-1.5 text-[11.5px] text-[#555]",
+    "h-[21px] w-[30px] border border-[#dcdcdc] bg-[#efefef] px-1.5 text-center text-[11.5px] leading-[1.5] font-normal text-[#555]",
   cell: "h-[21px] border border-[#dcdcdc] px-1.5 text-[12px] leading-[1.5] whitespace-nowrap overflow-hidden relative",
+  // Full class rather than a border-colour override on `cell`: two competing
+  // `border-*` utilities on one element are resolved by stylesheet order, not
+  // by the order they appear in the class attribute.
+  cellData:
+    "h-[21px] border border-[#222] px-1.5 text-[12px] leading-[1.5] whitespace-nowrap overflow-hidden relative",
   cellMoney: "text-right",
-  cellTotals: "border-[#222] bg-[#d9e8dc] text-center font-bold",
+  cellTotals:
+    "h-[21px] border border-[#222] bg-[#d9e8dc] px-1.5 text-[12px] leading-[1.5] text-center font-bold",
   cellBold: "font-bold",
   cellSelected: "relative z-2 outline-2 -outline-offset-2 outline-[#217346]",
   cellBad: "bg-[#fde2e0] font-bold text-[#b3261e]",
@@ -125,15 +135,21 @@ const RECEIPT_SCREENSHOT = `
         </div>
         <div class="${CLS.receiptTrail}">
           <div class="${CLS.receiptStep}">
-            <div>✓<br>Payment<br>Submitted<small class="${CLS.receiptStepTime}">09-25 6:09:41 PM</small></div>
+            <div class="${CLS.receiptStepBody}">
+              ✓<br>Payment<br>Submitted<small class="${CLS.receiptStepTime}">09-25 6:09:41 PM</small>
+            </div>
           </div>
           <span class="${CLS.receiptLine}"></span>
           <div class="${CLS.receiptStep}">
-            <div>✓<br>Debit<br>Successful<small class="${CLS.receiptStepTime}">09-25 6:09:42 PM</small></div>
-          </span>
+            <div class="${CLS.receiptStepBody}">
+              ✓<br>Debit<br>Successful<small class="${CLS.receiptStepTime}">09-25 6:09:42 PM</small>
+            </div>
+          </div>
           <span class="${CLS.receiptLine}"></span>
           <div class="${CLS.receiptStep}">
-            <div>✓<br>Money<br>Credited<small class="${CLS.receiptStepTime}">09-25 6:09:42 PM</small></div>
+            <div class="${CLS.receiptStepBody}">
+              ✓<br>Money<br>Credited<small class="${CLS.receiptStepTime}">09-25 6:09:42 PM</small>
+            </div>
           </div>
         </div>
         <div class="${CLS.receiptRow}">Transfer Amount<b class="${CLS.receiptRowValue}">₦25,000.00</b></div>
@@ -174,21 +190,25 @@ export default function ProblemSection() {
     ];
     const COLS = "ABCDEFG";
 
-    /* Build the empty grid once: a header row plus 13 numbered rows. */
+    /* Build the grid once: a header row plus 13 numbered rows. Injected into
+       the <table data-role="grid">, so the tags survive and lay out as a real
+       spreadsheet grid. Cells carry `data-role` (not `id`) because that is
+       what `$` resolves — `cell("A5")` looks up `[data-role="A5"]`. */
     function buildGrid() {
-      const head = ['<tr><th class="rh"></th>']
-        .concat(COLS.split("").map((c) => `<th>${c}</th>`))
+      const head = [`<tr><th class="${CLS.cellRowHead}"></th>`]
+        .concat(COLS.split("").map((c) => `<th class="${CLS.cellHead}">${c}</th>`))
         .join("")
         .concat("</tr>");
       let html = head;
       for (let r = 1; r <= 13; r++) {
-        html += `<tr><th class="rh">${r}</th>`;
+        html += `<tr><th class="${CLS.cellRowHead}">${r}</th>`;
         for (let c = 0; c < 7; c++) {
           // Rows 4-10 carry the data block (the "headline" row is row 4).
-          const filled = r >= 4 && r <= 10 && c < 6 ? " d" : "";
-          const headline = r === 4 && c < 6 ? " hd" : "";
-          const money = c > 1 ? " r" : "";
-          html += `<td id="${COLS[c]}${r}" class="${(filled + headline + money).trim()}"></td>`;
+          let cls = r >= 4 && r <= 10 && c < 6 ? CLS.cellData : CLS.cell;
+          if (r === 4 && c < 6) cls = CLS.cellTotals;
+          // Money columns are right-aligned, except in the centred headline row.
+          else if (c > 1) cls += " " + CLS.cellMoney;
+          html += `<td data-role="${COLS[c]}${r}" class="${cls}"></td>`;
         }
         html += "</tr>";
       }
@@ -199,15 +219,27 @@ export default function ProblemSection() {
       );
     }
 
+    /** Add or remove a CLS entry. classList takes ONE token at a time and
+        throws on a string with spaces, so the utility strings in CLS have to
+        be handed over a class at a time. */
+    function paint(el, cls, on) {
+      if (!el || !cls) return;
+      for (const c of cls.split(/\s+/)) {
+        if (!c) continue;
+        if (on) el.classList.add(c);
+        else el.classList.remove(c);
+      }
+    }
+
     /** Move the selection outline to a cell and optionally fill it. */
     function cell(id, value, formula, cls) {
-      if (current) current.classList.remove(CLS.cellSelected);
+      if (current) paint(current, CLS.cellSelected, false);
       current = $(id);
-      current.classList.add(CLS.cellSelected);
+      paint(current, CLS.cellSelected, true);
       $("nameBox").textContent = id;
       $("formulaBar").textContent = formula || value || "";
       if (value !== undefined && value !== "") current.textContent = value;
-      if (cls) current.classList.add(cls);
+      if (cls) paint(current, cls, true);
     }
 
     /* The five scenes, each an async beat. `z` waits, and throws if the
@@ -292,22 +324,29 @@ export default function ProblemSection() {
           await z(170);
         }
         cell("B10", "Total");
-        $("B10").classList.add(CLS.cellBold);
+        paint($("B10"), CLS.cellBold, true);
         cell("F10", "280,000", "=SUM(F5:F9)", CLS.cellBold);
         await z(500);
         cell("A12", "Bank statement");
         cell("F12", "275,000");
         await z(500);
         cell("A13", "Difference", "=F10-F12");
-        $("F13").classList.add(CLS.cellBad);
-        $("F13").classList.add(CLS.cellBold);
+        paint($("A13"), CLS.cellBad, true);
+        // The value belongs here: the port coloured F13 but never wrote to it,
+        // so the mismatch the whole scene is about ended on a blank cell.
+        cell("F13", "-5,000", "=F10-F12", CLS.cellBad);
+        paint($("F13"), CLS.cellBold, true);
         await z(2400);
       },
 
       async function asking(z) {
         const caption = $("askCaption");
+        const line = $("askLine");
         const pic = $("askPhoto");
-        caption.textContent = "";
+        // Type into the span, never the caption itself — setting the
+        // caption's textContent would delete the <em> wrapper (and with it
+        // the large type and the slide-up) before the line is ever typed.
+        line.textContent = "";
         caption.classList.remove("show");
         pic.classList.remove("zoom");
         void pic.offsetWidth;
@@ -317,9 +356,9 @@ export default function ProblemSection() {
         await z(500);
 
         // Type the member's question out.
-        const line = "Did mine reflect?";
-        for (let i = 1; i <= line.length; i++) {
-          caption.textContent = line.slice(0, i);
+        const text = "Did mine reflect?";
+        for (let i = 1; i <= text.length; i++) {
+          line.textContent = text.slice(0, i);
           await z(90);
         }
         await z(2200);
@@ -345,6 +384,10 @@ export default function ProblemSection() {
             m.classList.toggle("done", k < i);
           });
           $$("scene").forEach((s, k) => s.classList.toggle("on", k === i));
+          // Marks the stage so its height can follow the active scene's content
+          // on phones (see the [data-role="stage"][data-scene] rules in
+          // index.css — the scenes are absolute, so the stage can't size to them).
+          $("stage").dataset.scene = String(i);
           await SCENES[i](wait);
           if (i < SCENES.length - 1) await wait(500);
         }
@@ -464,21 +507,20 @@ export default function ProblemSection() {
 
           <div
             data-role="stage"
-            className="relative min-h-[640px] overflow-hidden rounded-[20px] bg-[linear-gradient(160deg,#d8d9de,#bfc1c9)] max-[1040px]:min-h-[620px] max-[600px]:min-h-[620px]"
+            className="relative min-h-[640px] overflow-hidden rounded-[20px] bg-[linear-gradient(160deg,#d8d9de,#bfc1c9)] transition-[min-height] duration-500 max-[1040px]:min-h-[620px] max-[600px]:min-h-[620px]"
           >
             {/* Decorative logo marks */}
             <img
               src={cldUrl("glass/problem/logo-mark-lg", { width: 520 })}
               alt=""
               aria-hidden="true"
-              className="pointer-events-none absolute animate-[var(--animate-gps-drift)]"
-              style={{ right: -30, top: -10, width: 520 }}
+              className="pointer-events-none absolute right-[-30px] top-[-10px] w-[520px] animate-[var(--animate-gps-drift)] max-[600px]:right-0 max-[600px]:w-[210px]"
             />
             <img
               src={cldUrl("glass/problem/logo-mark-sm", { width: 150 })}
               alt=""
               aria-hidden="true"
-              className="pointer-events-none absolute bottom-[30px] left-0 w-[150px] animate-[var(--animate-gps-drift)]"
+              className="pointer-events-none absolute bottom-[30px] left-0 w-[150px] animate-[var(--animate-gps-drift)] max-[600px]:bottom-[16px] max-[600px]:w-[90px]"
               style={{ animationDelay: "-6s" }}
             />
 
@@ -683,7 +725,10 @@ export default function ProblemSection() {
                         className="min-h-6 flex-1 px-2 py-1 before:text-[#888] before:font-semibold before:not-italic before:content-['fx_']"
                       />
                     </div>
-                    <div data-role="grid" className="h-[300px] overflow-hidden" />
+                    <table
+                      data-role="grid"
+                      className="h-[326px] w-full table-fixed border-collapse border-[#dcdcdc] max-[600px]:h-[300px]"
+                    />
                     <div className="flex gap-0.5 border-t border-[#d4d4d4] bg-[#f4f4f5] px-2 py-1 text-[11.5px]">
                       <span className="rounded-b bg-white px-3 py-[3px] font-semibold text-[#217346] shadow-[inset_0_2px_0_#217346]">
                         Sheet1
