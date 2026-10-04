@@ -66,3 +66,12 @@ updates:
         update-types: [version-update:semver-major]
       - dependency-name: "@tanstack/react-query"
         update-types: [version-update:semver-major]
+      # 0.x: the MINOR is this package's breaking axis, not the major. 0.5.0
+      # shipped breaking changes to react-refresh/only-export-components and
+      # renamed customHOCs -> extraHOCs, which broke lint on main (#58). Block
+      # minor + major; safe patches still ride the dev group and land as
+      # lockfile-only bumps because versioning-strategy is increase-if-necessary.
+      - dependency-name: eslint-plugin-react-refresh
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-major

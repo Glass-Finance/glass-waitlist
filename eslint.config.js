@@ -47,6 +47,22 @@ export default defineConfig([
       // of recommended (alt-text, ARIA validity, roles, etc.) stays error-
       // level so new UI can't regress. Re-enable the five as their debt is
       // paid down — see docs/testing-strategy.md.
+      // react-refresh 0.5 tightened only-export-components: a variable export
+      // is only a component if it initialises to a function, or to a call of a
+      // recognised HOC. illustrations.jsx builds all 14 of its scenes/glyphs
+      // through the local sceneFor/glyphFor factories, so declare them here.
+      // NOTE: flat config REPLACES inherited rule options rather than merging
+      // them, so the two flags that reactRefresh.configs.vite (in extends[])
+      // supplies must be restated -- dropping allowConstantExport makes
+      // InviteLanding.jsx fail on its PENDING_INVITE_KEY literal export.
+      "react-refresh/only-export-components": [
+        "error",
+        {
+          allowConstantExport: true,
+          allowCompoundComponents: true,
+          extraHOCs: ["sceneFor", "glyphFor"],
+        },
+      ],
       ...jsxA11y.configs.recommended.rules,
       "jsx-a11y/label-has-associated-control": "off",
       "jsx-a11y/click-events-have-key-events": "off",
