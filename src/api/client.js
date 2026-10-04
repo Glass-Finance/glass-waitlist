@@ -177,6 +177,21 @@ export const PRE_AUTH_PATHS = [
   "/auth/password/reset",
   "/auth/verify",
   "/auth/verify/resend",
+  // Account creation, for the same reason as every group above: register()
+  // and the two phone-OTP endpoints that hand it a confirmToken run in the
+  // sign-up and member-join flows, which by definition have no session yet,
+  // and a rejected OTP is the likeliest 401 shape here. With no refresh token
+  // the interceptor would take its "log out" branch and hard-navigate off the
+  // form, discarding everything the applicant typed before their own catch
+  // block could explain the failure. Listed defensively like the MFA routes
+  // above — the backend reports these as 400/429, so this is the guard
+  // against ever yanking the form away.
+  //
+  // "/auth/register" substring-matches no other live route (the sign-up
+  // resend path is /auth/verify/resend, already listed above).
+  "/auth/register",
+  "/auth/phone/request-otp",
+  "/auth/phone/verify-otp",
 ];
 
 // ── Global response handler ───────────────────────────────────────────────────

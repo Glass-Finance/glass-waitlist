@@ -236,6 +236,24 @@ describe("client.js auth-refresh interceptor", () => {
     }
   });
 
+  it("treats the registration routes as pre-auth, so a rejected sign-up never triggers refresh-and-redirect", () => {
+    // register() and the phone OTPs that feed it a confirmToken run in the
+    // sign-up and member-join flows, so no session exists yet. A 401 here is
+    // a rejected code, not a lapsed session — and with no refresh token the
+    // interceptor's "no refresh token" branch hard-navigates to sign-in,
+    // wiping the form the applicant was halfway through filling in.
+    for (const path of ["/auth/register", "/auth/phone/request-otp", "/auth/phone/verify-otp"]) {
+      expect(PRE_AUTH_PATHS).toContain(path);
+    }
+    // Substring scoping: each entry must reach only its own route. The
+    // member-join and settings phone routes are session-authenticated and must
+    // keep taking the refresh path, so none of them may contain an entry above.
+    for (const url of ["/user/phone", "/auth/logout", "/auth/token/refresh"]) {
+      const hit = PRE_AUTH_PATHS.find((p) => url.includes(p));
+      expect(hit, `${url} must not be treated as pre-auth (matched "${hit}")`).toBeUndefined();
+    }
+  });
+
   it("does not let any pre-auth entry substring-match a session-authenticated route", () => {
     // Matching is `url.includes(preAuthPath)`, so an over-broad pre-auth prefix
     // would silently classify a route that genuinely needs the refresh path and
