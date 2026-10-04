@@ -1,20 +1,25 @@
 import { KYC_SUBMITTABLE_ID_TYPE_OPTIONS } from "../../../utils/kycStatus";
 import { GlyphCheckMark, TrustNote } from "../illustrations";
 
-// Step 2 — ID type. Selectable cards with the brand ring on the selected
-// one (existing pattern from the verify pages, tokenized), plus the trust
-// note directly under the sensitive choice (brief item 5).
+// Step 1 — Pick your ID. Selectable cards with the brand ring on the selected
+// one, plus the trust note directly under the sensitive choice.
 //
 // Only submittable values are offered: the backend's KycIdType enum is
-// BVN/NIN_V2, so any other card here is a dead end the user can pick.
+// BVN/NIN_V2, so any other card here is a dead end the user can pick. The
+// cards stay plain — no dial codes or recovery hints, since Glass has no USSD
+// surface to point at.
 export default function IdTypeStep({ idType, setIdType, disabled = false }) {
   return (
     <div className="flex flex-col gap-3.5">
       <div>
-        <h3 className="text-[15px] font-bold text-ink m-0">Which ID will you use?</h3>
+        <p className="text-[10px] uppercase tracking-[0.09em] text-ink-faint m-0">
+          Identity check · about 2 minutes
+        </p>
+        <h3 className="text-[15px] font-bold text-ink mt-1 mb-0">
+          Pick the ID you&apos;ll verify with
+        </h3>
         <p className="text-[13px] text-ink-muted mt-1 mb-0 leading-[1.55]">
-          Pick the document you have on hand — you&apos;ll verify with it inside Smile ID&apos;s
-          secure window.
+          Identity verification is required to create or manage communities.
         </p>
       </div>
 

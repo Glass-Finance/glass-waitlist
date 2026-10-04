@@ -5,17 +5,67 @@ import {
   GlyphIdCard,
   GlyphFaceScan,
   GlyphStatus,
+  GlyphCheckMark,
 } from "../illustrations";
 import StatusNarrative from "../StatusNarrative";
-import { KYC_NARRATIVE_LINES } from "../narrativeLines";
-import { kycStatusLabel, isKycInFlight, isKycTerminal } from "../../../utils/kycStatus";
+import { KYC_NARRATIVE_LINES, KYC_TIMELINE_STEPS } from "../narrativeLines";
+import { GLASS_PASS_UNLOCKS } from "../unlocks";
+import {
+  kycStatusLabel,
+  idTypeLabel,
+  isKycInFlight,
+  isKycTerminal,
+} from "../../../utils/kycStatus";
 import { Button } from "../../../components/ui/Button";
 
-// Step 4 — Status. Owns every post-capture state: the live narrative while
-// work is happening (brief item 3), then the resolved cards (verified /
-// under review / resume / retry / blocked). Precedence is strict: settled
-// server states always win over the narrative so a finished check never
-// keeps "cycling".
+// Step 3 — Result. Owns every post-capture state: the live timeline while
+// work is happening, then the resolved cards (verified / under review /
+// resume / retry / blocked). Precedence is strict: settled server states
+// always win over the narrative so a finished check never keeps "cycling".
+
+// "Before you try again" — the three things that actually fix a failed
+// selfie/mismatch. A retry with no guidance is how people fail twice.
+// A function, not a constant, because the third tip names the chosen ID.
+const retryTips = (idLabel) => [
+  "Face a window or lamp so your face is lit evenly.",
+  "Take off hats, sunglasses and masks.",
+  `Check your ${idLabel} digits before you submit.`,
+];
+
+function KycTimeline({ activeIndex, idLabel }) {
+  return (
+    <ol className="flex flex-col gap-2.5 list-none p-0 m-0">
+      {KYC_TIMELINE_STEPS.map(({ key, label }, i) => {
+        const done = i < activeIndex;
+        const active = i === activeIndex;
+        return (
+          <li key={key} className="flex items-start gap-2.5">
+            <span
+              className={[
+                "w-[17px] h-[17px] rounded-full flex items-center justify-center flex-shrink-0 mt-[1px] transition-colors",
+                done
+                  ? "bg-brand text-white"
+                  : active
+                    ? "bg-white ring-2 ring-brand"
+                    : "bg-stacked-container border border-hairline-neutral",
+              ].join(" ")}
+            >
+              {done && <GlyphCheckMark size={9} />}
+            </span>
+            <span
+              className={[
+                "text-[12px] leading-tight",
+                done || active ? "text-ink font-medium" : "text-ink-faint",
+              ].join(" ")}
+            >
+              {label.replace(/\{id\}/g, idLabel)}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
 export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
   const {
     summary,
@@ -29,6 +79,7 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
     showResume,
     attemptsAllowed,
     canStart,
+    idType,
     localError,
     isFetching,
     handleResume,
@@ -127,6 +178,22 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
               You can create and manage communities.
             </p>
           </div>
+
+          {/* What just unlocked — the same three rows the Glass Pass rail
+              shows, so the win is stated rather than left implied. */}
+          <ul className="flex flex-col gap-2 list-none p-0 m-0 mt-3 pt-3 border-t border-surface-container-border">
+            {GLASS_PASS_UNLOCKS.map(({ id, Glyph, text }) => (
+              <li key={id} className="flex items-center gap-2.5">
+                <span className="w-[24px] h-[24px] rounded-lg bg-success-tint flex items-center justify-center flex-shrink-0">
+                  <Glyph size={14} />
+                </span>
+                <span className="text-[12px] text-ink-strong leading-tight">{text}</span>
+                <span className="ml-auto w-[15px] h-[15px] rounded-full bg-success text-white flex items-center justify-center flex-shrink-0">
+                  <GlyphCheckMark size={9} />
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
@@ -146,28 +213,38 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
       )}
 
       {!isApproved && narrativeActive && (
-        <StatusNarrative
-          key={busy ? (startPending ? "launching" : "capturing") : "processing"}
-          phase={busy ? (startPending ? "launching" : "capturing") : "processing"}
-          lines={
-            busy
-              ? startPending
-                ? KYC_NARRATIVE_LINES.launching
-                : KYC_NARRATIVE_LINES.capturing
-              : KYC_NARRATIVE_LINES.processing
-          }
-          icon={
-            busy ? (
-              capturing ? (
-                <GlyphFaceScan size={19} />
+        <>
+          {/* The checklist and the rotating line are complementary: the list
+              says where we are, the line says we're still moving. */}
+          <div className="px-1">
+            <KycTimeline
+              activeIndex={busy ? (startPending ? 0 : 1) : 2}
+              idLabel={idTypeLabel(idType)}
+            />
+          </div>
+          <StatusNarrative
+            key={busy ? (startPending ? "launching" : "capturing") : "processing"}
+            phase={busy ? (startPending ? "launching" : "capturing") : "processing"}
+            lines={
+              busy
+                ? startPending
+                  ? KYC_NARRATIVE_LINES.launching
+                  : KYC_NARRATIVE_LINES.capturing
+                : KYC_NARRATIVE_LINES.processing
+            }
+            icon={
+              busy ? (
+                capturing ? (
+                  <GlyphFaceScan size={19} />
+                ) : (
+                  <GlyphIdCard size={19} />
+                )
               ) : (
-                <GlyphIdCard size={19} />
+                <GlyphStatus size={19} />
               )
-            ) : (
-              <GlyphStatus size={19} />
-            )
-          }
-        />
+            }
+          />
+        </>
       )}
 
       {!isApproved && showResume && !confirmed && !narrativeActive && (
@@ -243,6 +320,20 @@ export default function StatusStep({ kyc, settled, onRetry, onHistory }) {
                   {reason ??
                     "The check didn't complete. You can try again with the same or a different ID."}
                 </p>
+                <div className="mt-3 rounded-xl bg-stacked-container px-3 py-2.5">
+                  <p className="text-[11.5px] font-semibold text-ink m-0">Before you try again</p>
+                  <ul className="flex flex-col gap-1 list-none p-0 m-0 mt-1.5">
+                    {retryTips(idTypeLabel(idType)).map((tip) => (
+                      <li
+                        key={tip}
+                        className="flex items-start gap-1.5 text-[11.5px] text-ink-muted leading-[1.45]"
+                      >
+                        <span className="w-[4px] h-[4px] rounded-full bg-ink-faint flex-shrink-0 mt-[6px]" />
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
                 <button
                   onClick={onRetry}
                   className="mt-2.5 text-xs font-medium text-brand bg-transparent border-none cursor-pointer p-0"

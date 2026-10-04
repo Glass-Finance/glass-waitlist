@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useKycVerification } from "../../hooks/useKycVerification";
-import { isKycApproved, isKycInFlight, isKycTerminal } from "../../utils/kycStatus";
+import { isKycApproved, isKycInFlight, isKycTerminal, idTypeLabel } from "../../utils/kycStatus";
 import { getErrorMessage } from "../../utils/errorHandler";
 import { Button } from "../ui/Button";
 import LoadingState from "../common/LoadingState";
 import KycStepper from "./KycStepper";
-import IntroStep from "./steps/IntroStep";
 import IdTypeStep from "./steps/IdTypeStep";
-import CapturePrepStep from "./steps/CapturePrepStep";
+import NextUpStep from "./steps/NextUpStep";
 import StatusStep from "./steps/StatusStep";
+import { deriveGlassPassState } from "./unlocks";
 
 // Step machine + node builders for the KYC verification flow. One hook
 // feeds two surfaces: KycWizardModal (portal, fixed header/footer) and the
@@ -27,7 +27,7 @@ const MAX_POLLS = 20; // ~2 minutes
 // onComplete fires when the user hits Done on an APPROVED outcome — gates
 // pass it so "Done" resumes the interrupted action (create/manage) instead
 // of only closing; dismissals and unapproved Dones fall through to onDismiss.
-export default function useKycFlow({ reason, onDismiss, onHistory, onComplete } = {}) {
+export default function useKycFlow({ onDismiss, onHistory, onComplete } = {}) {
   const kyc = useKycVerification();
   const {
     summary,
@@ -53,8 +53,10 @@ export default function useKycFlow({ reason, onDismiss, onHistory, onComplete } 
   // (react-hooks/refs) and no setState-in-effect.
   const [polls, setPolls] = useState(0);
 
-  // Smart initial step: fresh/retryable accounts get the payoff intro;
-  // anything already in motion lands directly on the status step.
+  // Smart initial step: a fresh or retryable account starts on the ID choice;
+  // anything already in motion lands directly on the status step. There is no
+  // overview step any more — the Glass Pass rail carries that context for the
+  // whole flow instead.
   useEffect(() => {
     if (step !== null || isLoading || !summary) return;
     const pick = () => {
@@ -68,15 +70,15 @@ export default function useKycFlow({ reason, onDismiss, onHistory, onComplete } 
       ) {
         return "status";
       }
-      return "overview";
+      return "id-type";
     };
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setStep(pick());
   }, [step, isLoading, summary, status, isInReview, showResume, canStart]);
 
   // Smile ID handed back an error (cancelled/closed/failed start) while we
-  // optimistically jumped to the status step — walk back to capture prep so
-  // the error and a retry live where the user can act on them. Never fires
+  // optimistically jumped to the status step — walk back to the hand-off step
+  // so the error and a retry live where the user can act on them. Never fires
   // mid-capture, after a successful submit, or for an in-flight/resumable
   // attempt.
   useEffect(() => {
@@ -84,7 +86,7 @@ export default function useKycFlow({ reason, onDismiss, onHistory, onComplete } 
     if (!kyc.localError || capturing || startPending || confirmed) return;
     if (kyc.isPending || isInReview || showResume) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setStep("capture");
+    setStep("next-up");
   }, [
     step,
     kyc.localError,
@@ -171,20 +173,15 @@ export default function useKycFlow({ reason, onDismiss, onHistory, onComplete } 
   // as event handlers later.
   let footerNode = null;
   if (step !== null && !isLoading && !(isError && !summary)) {
-    if (step === "overview") {
+    if (step === "id-type") {
       footerNode = row(
         onDismiss ? secondary("Not now", onDismiss) : null,
-        primary("Get started", () => setStep("id-type")),
+        primary(`Continue with ${idTypeLabel(kyc.idType)}`, () => setStep("next-up")),
       );
-    } else if (step === "id-type") {
-      footerNode = row(
-        secondary("Back", () => setStep("overview")),
-        primary("Continue", () => setStep("capture")),
-      );
-    } else if (step === "capture") {
+    } else if (step === "next-up") {
       footerNode = row(
         secondary("Back", () => setStep("id-type")),
-        primary(startPending ? "Starting…" : "Open secure capture", startFlow, {
+        primary(startPending ? "Starting…" : "Open Smile ID", startFlow, {
           loading: startPending,
         }),
       );
@@ -248,11 +245,10 @@ export default function useKycFlow({ reason, onDismiss, onHistory, onComplete } 
     stepper = <KycStepper current={step} />;
     body = (
       <>
-        {step === "overview" && <IntroStep reason={reason} />}
         {step === "id-type" && (
           <IdTypeStep idType={kyc.idType} setIdType={kyc.setIdType} disabled={busy} />
         )}
-        {step === "capture" && <CapturePrepStep idType={kyc.idType} />}
+        {step === "next-up" && <NextUpStep idType={kyc.idType} />}
         {step === "status" && (
           <StatusStep
             kyc={kyc}
@@ -267,6 +263,20 @@ export default function useKycFlow({ reason, onDismiss, onHistory, onComplete } 
     body = null;
   }
 
+  // The Glass Pass rail reads the same machine the body does, so the pass can
+  // never claim a different state than the card explaining it.
+  const pass = deriveGlassPassState({
+    isApproved,
+    isInReview,
+    isPaused: !isApproved && !attemptsAllowed,
+    isTerminal: terminal,
+    showResume,
+    busy,
+    inFlight,
+    startPending,
+    idLabel: idTypeLabel(kyc.idType),
+  });
+
   return {
     kyc,
     step,
@@ -277,5 +287,6 @@ export default function useKycFlow({ reason, onDismiss, onHistory, onComplete } 
     stepper,
     body,
     footer: footerNode,
+    pass,
   };
 }
