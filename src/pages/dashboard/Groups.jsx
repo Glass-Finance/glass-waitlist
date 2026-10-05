@@ -9,6 +9,7 @@ import { useKycGate } from "../../hooks/useKycGate";
 import { isKycGatedCommunityRequestError } from "../../utils/kycStatus";
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
+import { Button } from "../../components/ui/Button";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
 import CommunityStaffKycNotice from "../../components/dashboard/CommunityStaffKycNotice";
 import KycWizardModal from "../../components/kyc/KycWizardModal";
@@ -133,12 +134,14 @@ export default function Groups() {
             Split your members into named groups, then bill a whole group at once.
           </p>
         </div>
-        <button
+        <Button
           onClick={() => setEditing("new")}
-          className="inline-flex items-center gap-1.5 bg-brand text-white text-xs font-bold px-3.5 py-2 rounded-lg border-none cursor-pointer hover:opacity-90"
+          fullWidth={false}
+          size="sm"
+          className="px-3.5 inline-flex items-center gap-1.5"
         >
           <Plus size={14} /> New group
-        </button>
+        </Button>
       </div>
 
       <div className="mb-4 flex items-center gap-3 flex-shrink-0">

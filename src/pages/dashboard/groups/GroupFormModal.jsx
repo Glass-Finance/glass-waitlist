@@ -1,5 +1,6 @@
 import { useState } from "react";
 import ModalShell from "../../../components/dashboard/ModalShell";
+import { Button } from "../../../components/ui/Button";
 
 // State is seeded from props in the useState initialiser, not synced by an
 // effect. The caller passes a `key` that changes with the group being edited, so
@@ -72,13 +73,9 @@ export default function GroupFormModal({ group, onClose, onSave, saving }) {
           >
             Cancel
           </button>
-          <button
-            type="submit"
-            disabled={saving}
-            className="text-xs font-bold text-white bg-brand border-none cursor-pointer px-4 py-2 rounded-lg disabled:opacity-50"
-          >
+          <Button type="submit" loading={saving} fullWidth={false} size="sm" className="px-4">
             {saving ? "Saving…" : isEdit ? "Save changes" : "Create group"}
-          </button>
+          </Button>
         </div>
       </form>
     </ModalShell>
