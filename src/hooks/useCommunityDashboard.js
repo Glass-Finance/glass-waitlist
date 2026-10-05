@@ -22,10 +22,10 @@ async function fetchCommunity(id) {
 // ─────────────────────────────────────────────────────────────────────────────
 async function fetchMembers(id) {
   // fetchAllCommunityMembers defaults to status=ACTIVE — the raw endpoint
-  // includes soft-deleted members and inflates the count. It is a SINGLE
-  // fetch with no pageSize and no page-2+ loop, so a roster larger than the
-  // backend's default page size is silently truncated here (pageSize:1000 is
-  // rejected with 400 by this endpoint — see api/communities.js).
+  // includes soft-deleted members and inflates the count. It now paginates
+  // across every backend page (pageSize:200, 1-based pageNumber), so `id` here
+  // resolves to a complete ACTIVE roster rather than a single default-sized
+  // page. See src/api/communities.js for the termination rules.
   return fetchAllCommunityMembers(id);
 }
 
@@ -134,8 +134,29 @@ export function useCommunityDashboard(communityId) {
   // ── Stat-card friendly shape, pulled straight from community.metrics ────────
   const metrics = communityQuery.data?.metrics ?? {};
 
-  // Compute collected from actual successful transactions — backend's
-  // collectedAmount only tracks settlements and returns 0 even after payments.
+  // Client-side "total contributions" computed from the successful transactions
+  // in this community's transaction list (same SUCCESS/SUCCESSFUL/PAID filter as
+  // useCommunitiesWithMetrics).
+  //
+  // HISTORY: this was justified by a backend metric that "only tracks
+  // settlements and returns 0 even after payments". That explanation is OBSOLETE
+  // and should not be carried forward. metrics.collectedAmount now covers
+  // obligations PLUS unallocated successful payment-link transactions; it never
+  // counted settlements, which live in a separate table.
+  //
+  // WHY IT STILL COMPUTES HERE: this dashboard derives the stat card from the
+  // transaction list it already loads, so it reads from that list rather than
+  // metrics.collectedAmount. That is the current wiring, not a claim that the
+  // list is the better source. metrics.collectedAmount is a server-side
+  // aggregate with no page limit.
+  //
+  // CAVEAT: the transaction fetch is a single page (pageSize:1000), so with more
+  // than 1000 transactions this sum can UNDERCOUNT by dropping the oldest rows.
+  //
+  // Deliberately left as-is. No claim is made here that this query is safe to
+  // remove, and metrics.collectedAmount has NOT been production-compared against
+  // this computed value. See src/hooks/useCommunities.js and
+  // src/api/transactions.js for the same caveat on the communities home view.
   const computedCollected = (transactionsQuery.data ?? [])
     .filter((t) => isSuccessfulStatus(t.status))
     .reduce((sum, t) => sum + (t.amount ?? 0), 0);
@@ -148,9 +169,17 @@ export function useCommunityDashboard(communityId) {
 
   const members = {
     list: membersQuery.data ?? [],
-    // Prefer the actual fetched list count — community metrics can lag after
-    // member deletions. Fall back to metrics only while the list is loading.
-    total: membersQuery.data != null ? membersQuery.data.length : (metrics.totalMembers ?? 0),
+    // ACTIVE count, from metrics.activeMembers — an authoritative server-side
+    // COUNT over ACTIVE rows, with no page limit. The previous source,
+    // `membersQuery.data.length`, came from a single un-paginated request that
+    // inherited the backend's default pageSize of 10, so it reported 10 for
+    // every larger community. The old comment justified preferring the list
+    // count because "metrics can lag after member deletions" — that reasoning
+    // applies to metrics.totalMembers (active + inactive + suspended + exited,
+    // which counts EXITED members and is therefore inflated), but NOT to
+    // activeMembers, where a removed member is EXITED and simply excluded.
+    // The list length remains the fallback if the detail request failed.
+    total: metrics.activeMembers ?? (membersQuery.data != null ? membersQuery.data.length : 0),
     inactive: metrics.inactiveMembers ?? 0,
     overdue: metrics.overdueMembers ?? 0,
   };

@@ -34,29 +34,83 @@ export const deleteCommunity = (communityId) => client.delete(`/communities/${co
 // fetch keeps returning removed members forever. Default to status=ACTIVE
 // unless the caller explicitly asks for something else.
 //
-// Deliberately no pageSize override here, unlike getCommunityObligations/
-// getCommunityTransactions -- this endpoint returned 400 "Illegal Argument
-// Entered" for pageSize:1000 (confirmed against the live backend, breaking
-// every community regardless of size, including a 1-member one), so
-// whatever cap it enforces is well below what obligations/transactions
-// accept. Reverted to the backend's own default page size until the real
-// limit is confirmed.
+// There is no page-size cap on this endpoint. AppConstant.PAGE_SIZE=10 is only
+// the DEFAULT used when the parameter is absent, PageQueryDto carries no
+// validation annotation, createPageable passes the value straight to
+// PageRequest.of, and the live OpenAPI schema declares no maximum. An earlier
+// note here claimed pageSize:1000 returned 400 "Illegal Argument Entered" and
+// therefore that a low cap applied: that was a MISDIAGNOSIS and is retired. The
+// historical 400 was caused by pageNumber=0, because `pageNumber` is 1-BASED and
+// 0 becomes PageRequest.of(-1, ...); it was never a page-size problem. See the
+// full corrected account, with live evidence, in src/api/communityList.js.
+//
+// Single page. This is the primitive; fetchAllCommunityMembers below walks it.
 export const getCommunityMembers = (communityId, params = {}) =>
   client.get(`/communities/${communityId}/members`, {
     params: { status: "ACTIVE", ...params },
   });
 
-// NOT currently paginated -- see the comment on getCommunityMembers above.
-// A community with more members than one page's worth may still have its
-// roster/headcount silently truncated (the original F16 risk); that's
-// preferable to every community being hard-broken by an oversized pageSize
-// request. Revisit once the backend's actual max pageSize for this specific
-// endpoint is known.
-export const fetchAllCommunityMembers = (communityId, params = {}) =>
-  getCommunityMembers(communityId, params).then((res) => {
+// Rows requested per round trip. 200 is already driven on this backend for
+// /finance/obligations/me and /finance/transactions/me, so it is in production
+// use rather than a new contract. Placed BEFORE `...params` so a caller that
+// passes its own pageSize still wins.
+const COMMUNITY_MEMBER_PAGE_SIZE = 200;
+
+// Backstop against a backend or proxy that never reports a terminal page, or a
+// totalPages that never converges. Same named-constant style and bounded-loop
+// shape as communityList.js. At 200 rows/page this implies a 40,000-row ceiling.
+const MAX_MEMBER_PAGES = 200;
+
+// Every ACTIVE member row, across all backend pages.
+//
+// This genuinely paginates. It previously issued ONE request with no pageSize,
+// so it silently inherited AppConstant.PAGE_SIZE=10 and every community above
+// 10 active members was truncated — which in turn pinned the member counts on
+// Communities Home and the dashboard to 10, and capped the Members table's
+// join. That was the F16 risk these comments used to describe as acceptable.
+//
+// Behaviour mirrors fetchCompleteMyCommunities() in src/api/communityList.js:
+//   - pageNumber is 1-BASED (the backend's is too; 0 would 400)
+//   - pages are fetched SEQUENTIALLY, because page N+1 does not exist until
+//     page N reports whether one remains
+//   - `last` is the primary termination signal, `totalPages` the second
+//   - a first page carrying neither `last` nor `totalPages` means the payload
+//     had no pagination metadata at all, so it is already complete
+//   - an empty result reports totalPages 0, and 1 >= 0 stops immediately
+//   - a request failure rejects rather than returning a short list that a
+//     caller would mistake for the whole roster
+//
+// Returns a flat array, NOT the PageResponse envelope, so existing callers
+// (and the shared ["community", id, "members"] cache shape) are unaffected.
+// MAX_MEMBER_PAGES is the only way to stop short, and the truncated result is
+// then indistinguishable from a complete one — the same limitation the
+// communities walk has, and why the limit is generous.
+export async function fetchAllCommunityMembers(communityId, params = {}) {
+  const aggregated = [];
+  let pageNumber = 1;
+
+  for (let page = 0; page < MAX_MEMBER_PAGES; page += 1) {
+    const res = await getCommunityMembers(communityId, {
+      pageSize: COMMUNITY_MEMBER_PAGE_SIZE,
+      ...params,
+      pageNumber,
+    });
     const data = res.data?.data;
-    return Array.isArray(data) ? data : (data?.content ?? []);
-  });
+
+    // Tolerate a plain-array payload (no envelope) as the previous single-fetch
+    // version did: there is no pagination state to consult, so it is complete.
+    if (Array.isArray(data)) return [...aggregated, ...data];
+
+    aggregated.push(...(data?.content ?? []));
+
+    if (data?.last === true) break;
+    if (data?.last === undefined && data?.totalPages === undefined) break;
+    if (pageNumber >= (data?.totalPages ?? Number.POSITIVE_INFINITY)) break;
+    pageNumber += 1;
+  }
+
+  return aggregated;
+}
 
 // GET /api/v1/communities/{communityIdentifier}/members/{memberId}
 export const getCommunityMember = (communityId, memberId) =>
