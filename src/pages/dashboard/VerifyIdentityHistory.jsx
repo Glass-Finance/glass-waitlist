@@ -65,7 +65,7 @@ export default function VerifyIdentityHistory() {
   const attempts = data?.content ?? [];
 
   return (
-    <div className="relative flex flex-col min-h-full bg-cover bg-center bg-no-repeat bg-mobile-auth-default">
+    <div className="relative flex flex-col min-h-full">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-7 pt-7 pb-5">
         <div className="flex items-center gap-3 min-w-0">
