@@ -79,3 +79,37 @@ export const fetchAllCommunityTransactions = (communityId) =>
 // GET /api/v1/communities/{communityIdentifier}/finance/transactions/{transactionId}
 export const getCommunityTransaction = (communityId, transactionId) =>
   client.get(`/communities/${communityId}/finance/transactions/${transactionId}`);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COMMUNITY SETTLEMENTS — read-only
+// ─────────────────────────────────────────────────────────────────────────────
+// The community-scoped settlement endpoints. Both are paged 1-based (see the
+// corrected pagination notes above) and both are gated on
+// `community.reconciliation.read` in the service layer — a COMMUNITY_MEMBER or
+// COLLECTIONS_OFFICER gets 403, which the page renders as an access panel
+// rather than an error.
+//
+// Two backend behaviours the UI has to absorb:
+//   * MISMATCHED and REVIEWED settlements are filtered out of the list AND the
+//     detail endpoint 404s on them, so a community caller only ever observes
+//     PENDING / PROCESSING / SUCCESS / FAILED.
+//   * The response is a redacted subset of the admin SettlementResponse: no
+//     gatewaySettlementId, fees, variance or failureReason. CommunitySettlementResponse
+//     is the whole contract — don't render columns the admin section has.
+//
+// No export helper here on purpose: POST .../settlements/export exists and is
+// already wrapped in api/exports.js (exportCommunitySettlements), but it needs
+// `community.reconciliation.export` — a different permission from the read this
+// screen does — so wiring it is a separate decision.
+
+// GET /api/v1/communities/{communityIdentifier}/finance/settlements
+// Path is spelled inline rather than composed through a helper on purpose:
+// scripts/endpoint-audit.mjs extracts call paths with a regex that only matches a
+// template literal sitting directly in the call (see src/api/groups.js).
+export const getCommunitySettlements = (communityId, params = {}) =>
+  client.get(`/communities/${communityId}/finance/settlements`, { params });
+
+// GET /api/v1/communities/{communityIdentifier}/finance/settlements/{settlementId}
+// Carries `transactions`; the list rows always come back with it null.
+export const getCommunitySettlement = (communityId, settlementId) =>
+  client.get(`/communities/${communityId}/finance/settlements/${settlementId}`);

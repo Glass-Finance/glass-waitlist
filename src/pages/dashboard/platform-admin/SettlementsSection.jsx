@@ -171,7 +171,11 @@ export default function SettlementsSection() {
               options={[
                 { value: "ALL", label: "All statuses" },
                 { value: "PENDING", label: "Pending" },
-                { value: "MATCHED", label: "Matched" },
+                // SettlementStatus has no MATCHED member -- the settled state is
+                // SUCCESS (and PROCESSING while it is still moving). The option
+                // used to send "MATCHED", which binds to nothing and so always
+                // returned an empty page.
+                { value: "SUCCESS", label: "Matched" },
                 { value: "MISMATCHED", label: "Mismatched" },
               ]}
             />

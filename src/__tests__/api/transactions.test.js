@@ -3,6 +3,8 @@ import client from "../../api/client";
 import {
   fetchAllCommunityTransactions,
   fetchAllCommunityObligations,
+  getCommunitySettlements,
+  getCommunitySettlement,
 } from "../../api/transactions";
 
 // Regression: adding a `pageNumber` param to these endpoints was confirmed
@@ -61,5 +63,35 @@ describe("fetchAllCommunityObligations", () => {
     expect(client.get).toHaveBeenCalledWith("/communities/community-1/finance/obligations", {
       params: { pageSize: 1000 },
     });
+  });
+});
+
+// The settlement paths are spelled inline in the api module on purpose:
+// scripts/endpoint-audit.mjs extracts call paths with a regex that only matches
+// a template literal sitting directly in the call, so composing them through a
+// helper would make both routes look like frontend calls to routes that don't
+// exist and (since the audit is --strict in CI) fail the build. Pinning the
+// exact strings here keeps that indirection from creeping back in.
+describe("community settlement routes", () => {
+  beforeEach(() => {
+    client.get.mockReset();
+  });
+
+  it("GETs the paged community settlement list", async () => {
+    client.get.mockResolvedValueOnce({ data: { data: { content: [] } } });
+
+    await getCommunitySettlements("glass-crew", { pageNumber: 1, pageSize: 20 });
+
+    expect(client.get).toHaveBeenCalledWith("/communities/glass-crew/finance/settlements", {
+      params: { pageNumber: 1, pageSize: 20 },
+    });
+  });
+
+  it("GETs one settlement by id", async () => {
+    client.get.mockResolvedValueOnce({ data: { data: { id: "s1" } } });
+
+    await getCommunitySettlement("glass-crew", "s1");
+
+    expect(client.get).toHaveBeenCalledWith("/communities/glass-crew/finance/settlements/s1");
   });
 });
