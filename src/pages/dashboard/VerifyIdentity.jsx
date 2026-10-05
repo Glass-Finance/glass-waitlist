@@ -10,9 +10,11 @@ import useKycFlow from "../../components/kyc/useKycFlow";
 // drift apart. The Smile ID state machine itself lives in
 // useKycVerification — this file only supplies the page shell.
 //
-// The root carries bg-mobile-auth-default — the same left-center glow
-// backdrop MemberAppLayout puts behind every member-app page — so the
-// verification surface keeps the branded backdrop inside the dashboard.
+// The root deliberately sets no background: DashboardLayout already paints
+// the shared page backdrop (bg-page-default), and every other dashboard page
+// inherits it. The old bg-mobile-auth-default here was a phone-sized image
+// (393x861) stretched across a desktop-wide layout, which tinted the whole
+// surface.
 export default function VerifyIdentity() {
   const navigate = useNavigate();
   const flow = useKycFlow({
@@ -21,7 +23,7 @@ export default function VerifyIdentity() {
   });
 
   return (
-    <div className="relative flex flex-col min-h-full bg-cover bg-center bg-no-repeat bg-mobile-auth-default">
+    <div className="relative flex flex-col min-h-full">
       {/* Header — dashboard page-header pattern (see CommunitiesHome) */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-7 pt-7 pb-5">
         <div className="flex items-center gap-3 min-w-0">

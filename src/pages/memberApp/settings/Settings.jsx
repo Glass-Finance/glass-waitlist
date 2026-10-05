@@ -139,7 +139,11 @@ export default function Settings() {
                     <p className="text-xs text-ink-ghost mt-0.5 mx-0 mb-0">{desc}</p>
                   </div>
                   {kyc && kycSummary?.status && (
-                    <KycStatusBadge status={kycSummary.status} className="mr-1 flex-shrink-0" />
+                    <KycStatusBadge
+                      status={kycSummary.status}
+                      showLabel={false}
+                      className="flex-shrink-0"
+                    />
                   )}
                   <ChevronRight size={16} className="text-[#ccc] flex-shrink-0" />
                 </button>

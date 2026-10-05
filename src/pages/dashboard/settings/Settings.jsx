@@ -7,6 +7,10 @@ import { useActiveCommunityId } from "../../../hooks/useActiveCommunityId";
 import { useCommunities } from "../../../hooks/useCommunities";
 import { isCommunityAdmin } from "../../../utils/communityRole";
 import EmptyState from "../../../components/common/EmptyState";
+import { useKycSummary } from "../../../hooks/useKyc";
+import KycStatusBadge from "../../../components/memberApp/KycStatusBadge";
+import KycWizardModal from "../../../components/kyc/KycWizardModal";
+import { kycDisabled } from "../../../lib/flags";
 
 // The communities overview owns the "pick one community" empty state -- the
 // guard redirects unresolved community-scoped routes back here.
@@ -47,6 +51,18 @@ const ACCOUNT_ITEMS = [
     label: "Notifications",
     desc: "Choose which updates you get by email and SMS.",
     path: "/dashboard/settings/account/notifications",
+  },
+  // KYC is personal, not community-scoped: it gates what *you* can create and
+  // manage, so it deliberately carries no ?community= and every community
+  // owner/admin sees their own status here (see scopedPath). Tapping it opens
+  // the wizard in place instead of navigating -- same as the member app --
+  // because a full-screen redirect would lose the Settings context the user
+  // opened it from.
+  {
+    label: "Identity Verification",
+    desc: "Verify your identity to create and manage communities.",
+    path: "/dashboard/verify-identity",
+    kyc: true,
   },
 ];
 
@@ -143,21 +159,31 @@ function BreadcrumbParent({ parent, community }) {
 // One nav helper for every clickable Settings destination. Only
 // community-scoped rows get ?community= threaded on; account-level rows are
 // left exactly as they were, and the bare tab paths stay bare.
-function MenuList({ items, community }) {
+//
+// kycSummary/onOpenKyc are optional and default to inert, so the Finance and
+// Community lists keep rendering plain navigation rows with no behaviour
+// change.
+function MenuList({ items, community, kycSummary, onOpenKyc }) {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col gap-3 w-full">
       {items.map((item, i) => (
         <button
           key={i}
-          onClick={() => navigate(scopedPath(item.path, community))}
-          className="w-full flex items-center justify-between px-5 py-4 bg-surface-container rounded-xl text-left hover:bg-gray-50 transition-all cursor-pointer border border-surface-container-border"
+          onClick={() => (item.kyc ? onOpenKyc() : navigate(scopedPath(item.path, community)))}
+          className="w-full flex items-center gap-4 px-5 py-4 bg-surface-container rounded-xl text-left hover:bg-gray-50 transition-all cursor-pointer border border-surface-container-border"
         >
-          <div>
+          <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-900">{item.label}</p>
             <p className="text-xs text-gray-500 mt-0.5">{item.desc}</p>
           </div>
-          <ChevronRight size={15} className="text-gray-400 flex-shrink-0 ml-4" />
+          {/* Live status beside the row. This list is full-width, so the pill
+              keeps its label here -- only the phone-width member list drops to
+              the icon (KycStatusBadge showLabel). */}
+          {item.kyc && kycSummary?.status && (
+            <KycStatusBadge status={kycSummary.status} className="flex-shrink-0" />
+          )}
+          <ChevronRight size={15} className="text-gray-400 flex-shrink-0" />
         </button>
       ))}
     </div>
@@ -194,6 +220,14 @@ export default function Settings() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const searchRef = useRef(null);
+
+  // KYC launches the wizard in place instead of navigating, so the row is
+  // gated on the same feature flag the member app uses -- otherwise a flagged
+  // user would tap a row that opens a wizard the gate was meant to suppress.
+  const hideKyc = kycDisabled();
+  const { data: kycSummary } = useKycSummary();
+  const [kycWizardOpen, setKycWizardOpen] = useState(false);
+  const accountItems = hideKyc ? ACCOUNT_ITEMS.filter((i) => !i.kyc) : ACCOUNT_ITEMS;
 
   // Platform admins only get Security — redirect other settings paths there.
   // Must come after every hook above: hooks can't be called conditionally,
@@ -248,12 +282,20 @@ export default function Settings() {
           (s) => s.label.toLowerCase().includes(q) || s.desc.toLowerCase().includes(q),
           // Don't advertise community-scoped destinations while no community
           // resolves -- selecting one would just bounce back here.
-        ).filter((s) => !s.communityScoped || !needsCommunityChoice)
+        )
+          .filter((s) => !s.communityScoped || !needsCommunityChoice)
+          // Same reason the row itself is filtered out of accountItems: never
+          // offer a flag-disabled destination from search either.
+          .filter((s) => !s.kyc || !hideKyc)
       : [];
 
   function handleSearchSelect(item) {
     setSearchQuery("");
     setSearchOpen(false);
+    if (item.kyc) {
+      setKycWizardOpen(true);
+      return;
+    }
     navigate(scopedPath(item.path, scopedCommunity));
   }
 
@@ -350,7 +392,13 @@ export default function Settings() {
       )}
 
       {/* Menu lists — platform admins are redirected to Security above */}
-      {!isPlatformAdmin && isAccountMenu && <MenuList items={ACCOUNT_ITEMS} />}
+      {!isPlatformAdmin && isAccountMenu && (
+        <MenuList
+          items={accountItems}
+          kycSummary={kycSummary}
+          onOpenKyc={() => setKycWizardOpen(true)}
+        />
+      )}
       {!isPlatformAdmin &&
         isFinanceMenu &&
         (!needsCommunityChoice ? (
@@ -368,6 +416,12 @@ export default function Settings() {
 
       {/* Sub-page content */}
       {(isPlatformAdmin || (!isAccountMenu && !isFinanceMenu && !isCommunityMenu)) && <Outlet />}
+
+      <KycWizardModal
+        open={kycWizardOpen}
+        onClose={() => setKycWizardOpen(false)}
+        historyPath="/dashboard/verify-identity/history"
+      />
     </div>
   );
 }

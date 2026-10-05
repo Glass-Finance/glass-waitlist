@@ -45,7 +45,7 @@ function WizardContent({ onClose, historyPath, onComplete }) {
       label="Identity verification"
       title="Identity verification"
       closeDisabled={flow.closeDisabled}
-      headerClassName="bg-brand-tint/50 backdrop-blur-xl border-b border-brand/10"
+      headerClassName="border-b border-gray-100"
       headerExtra={
         <div className="relative overflow-hidden px-5 sm:px-6 pb-3.5 pt-1">
           <img
