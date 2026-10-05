@@ -26,6 +26,24 @@ export function initMonitoring() {
     dsn: SENTRY_DSN,
     environment: import.meta.env.MODE,
     tracesSampleRate: resolveTracesSampleRate(),
+    // Sentry v11 collects more telemetry by default than v10 did when
+    // `sendDefaultPii` was unset (cookies, http bodies, user info, ...).
+    // This baseline reproduces the restrictive v10 defaults verbatim from
+    // the official v10-to-v11 migration guide, so upgrading the SDK does
+    // not silently widen what error reports carry.
+    dataCollection: {
+      userInfo: false,
+      cookies: false,
+      httpHeaders: {
+        request: { deny: ["forwarded", "-ip", "remote-", "via", "-user"] },
+        response: { deny: ["forwarded", "-ip", "remote-", "via", "-user"] },
+      },
+      httpBodies: [],
+      urlQueryParams: { deny: ["forwarded", "-ip", "remote-", "via", "-user"] },
+      genAI: { inputs: false, outputs: false },
+      databaseQueryData: false,
+      graphQL: { document: false, variables: false },
+    },
   });
   enabled = true;
 }
