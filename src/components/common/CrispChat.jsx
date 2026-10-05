@@ -18,7 +18,7 @@ export default function CrispChat() {
   const bound = useRef({ user: null, token: null });
   const websiteId = import.meta.env.VITE_CRISP_WEBSITE_ID;
 
-  const { data: tokenId } = useCrispToken(user?.id);
+  const { data: tokenId } = useCrispToken();
 
   useEffect(() => {
     if (!websiteId || configured.current) return;
