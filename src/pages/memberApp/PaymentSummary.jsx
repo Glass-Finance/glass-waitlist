@@ -214,7 +214,7 @@ export default function PaymentSummary() {
   if (isLoading) {
     return (
       <div className="flex flex-col min-h-screen">
-        <PageLoadingState label="Loading payment details…" />
+        <PageLoadingState />
       </div>
     );
   }

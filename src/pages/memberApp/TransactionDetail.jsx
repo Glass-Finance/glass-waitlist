@@ -73,7 +73,7 @@ export default function TransactionDetail() {
       </div>
 
       {isLoading ? (
-        <PageLoadingState label="Loading transaction…" />
+        <PageLoadingState />
       ) : error || !tx ? (
         <div className="py-10 px-5 text-center">
           <p className="text-sm text-danger">Couldn't load this transaction.</p>

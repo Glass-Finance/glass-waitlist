@@ -121,7 +121,7 @@ export default function UpcomingPayments() {
       <div className="mx-4 flex flex-col gap-3">
         {isLoading ? (
           <div className="border border-surface-container-border bg-white rounded-2xl">
-            <PageLoadingState label="Loading your payments…" size={56} padding="36px 24px" />
+            <PageLoadingState size={56} padding="36px 24px" />
           </div>
         ) : loadError ? (
           <div className="border border-surface-container-border bg-white rounded-2xl text-center py-5">

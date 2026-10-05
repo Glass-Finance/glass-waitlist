@@ -35,7 +35,7 @@ function Dropdown({ value, onChange, options }) {
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="appearance-none bg-white border border-surface-container-border rounded-lg pl-3 pr-8 py-2 text-sm text-ink outline-none cursor-pointer min-w-[130px]"
+        className="appearance-none bg-white border border-surface-container-border rounded-lg pl-3 pr-8 py-2 text-sm text-ink outline-none cursor-pointer min-w-[130px] focus:border-[#002FA7] transition-colors"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -87,7 +87,7 @@ export default function VerifyIdentityHistory() {
           />
         </div>
 
-        {isLoading && <PageLoadingState label="Loading your verification history…" />}
+        {isLoading && <PageLoadingState />}
 
         {isError && (
           <div className="border border-surface-container-border bg-white rounded-2xl p-5 text-center">
