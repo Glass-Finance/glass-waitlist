@@ -252,7 +252,7 @@ export default function Home() {
         )}
 
         {isLoading ? (
-          <PageLoadingState label="Loading your community…" />
+          <PageLoadingState />
         ) : hasPendingCommunity ? (
           <PendingApprovalState navigate={navigate} community={pendingCommunity} />
         ) : hasNoCommunity ? (

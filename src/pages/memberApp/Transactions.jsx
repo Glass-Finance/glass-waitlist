@@ -183,7 +183,7 @@ export default function Transactions() {
       </div>
 
       {isLoading ? (
-        <PageLoadingState label="Loading your payment history…" size={56} padding="36px 24px" />
+        <PageLoadingState size={56} padding="36px 24px" />
       ) : error ? (
         <div className="text-center py-8">
           <p className="text-danger text-sm mb-3">Couldn't load transactions.</p>
