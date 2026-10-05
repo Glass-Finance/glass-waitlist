@@ -414,27 +414,40 @@ export default function CommunitiesHome() {
 
   return (
     <div className="relative flex flex-col min-h-full">
-      {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-7 pt-7 pb-5">
-        <div>
-          <h1 className="text-lg font-semibold text-ink">Your Communities</h1>
-          {user?.firstName && (
-            <p className="text-xs text-gray-400 mt-0.5">Welcome back, {user.firstName}</p>
-          )}
-        </div>
-        <div data-tour="communities-home-actions" className="flex gap-2.5 items-center">
+      {/* Header. On phones the KYC chip rides on the title line, pushed to its
+          right edge, and the two actions take the full width below it — sharing
+          one row squeezed the labels onto two lines ("Join / Community").
+          From md up the actions stay right-aligned and the chip moves to the
+          far right, after them. */}
+      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-3 px-4 pt-7 pb-5 md:items-center md:px-7">
+        {/* Title and KYC chip travel together: full width on phones, so
+            justify-between parks the chip at the right edge of the title line. */}
+        <div className="flex w-full min-w-0 items-start justify-between gap-3 md:w-auto">
+          <div className="min-w-0">
+            <h1 className="text-lg font-semibold text-ink">Your Communities</h1>
+            {user?.firstName && (
+              <p className="text-xs text-gray-400 mt-0.5">Welcome back, {user.firstName}</p>
+            )}
+          </div>
+
           {!kycDisabled() && kycGate.status && (
             <button
               onClick={() => setKycWizardOpen(true)}
-              className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0"
+              className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0 mt-1 md:self-center md:mt-0"
               aria-label="Identity verification status"
             >
               <KycStatusBadge status={kycGate.status} />
             </button>
           )}
+        </div>
+
+        <div
+          data-tour="communities-home-actions"
+          className="flex w-full gap-2.5 md:w-auto md:items-center"
+        >
           <button
             onClick={() => navigate("/onboarding/choose-path", { state: { intent: "join" } })}
-            className="h-10 px-3.5 rounded-lg border border-hairline text-brand bg-white text-xs font-medium hover:bg-gray-50 transition-all flex items-center justify-center"
+            className="h-10 flex-1 px-3.5 rounded-lg border border-hairline text-brand bg-white text-xs font-medium hover:bg-gray-50 transition-all flex items-center justify-center whitespace-nowrap md:flex-none"
           >
             Join Community
           </button>
@@ -444,7 +457,7 @@ export default function CommunitiesHome() {
             }}
             disabled={kycGate.isLoading}
             aria-busy={kycGate.isLoading}
-            className="h-10 px-3.5 rounded-lg bg-brand text-white text-xs font-medium hover:opacity-90 transition-all flex items-center justify-center disabled:opacity-60 disabled:cursor-wait"
+            className="h-10 flex-1 px-3.5 rounded-lg bg-brand text-white text-xs font-medium hover:opacity-90 transition-all flex items-center justify-center whitespace-nowrap disabled:opacity-60 disabled:cursor-wait md:flex-none"
           >
             {kycGate.isLoading ? (
               <>
