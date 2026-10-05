@@ -370,7 +370,7 @@ export default function UseCases() {
                     onMouseLeave={() => {
                       if (tease === cat) flipThen(() => setTease(null), TEASE_MS, "ease-out");
                     }}
-                    className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/60"
+                    className="absolute inset-0 focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-brand/60"
                   />
                 )}
               </div>

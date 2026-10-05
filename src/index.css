@@ -282,8 +282,55 @@
   outline: 2px solid var(--color-brand);
   outline-offset: 2px;
 }
+/* Form controls are the one documented exception, and they must be exempt HERE
+   rather than in `@layer base`: an unlayered rule outranks every layer, so the
+   global `:focus-visible` above would otherwise beat both the component's own
+   `outline-none` and the base safety net further down. Text inputs match
+   `:focus-visible` even on a mouse click, so every field would paint a 2px
+   offset brand outline *around* the border it was already turning brand-blue —
+   i.e. the doubled border this whole audit exists to remove.
+
+   Kept as a sibling selector of the same specificity (0,4,1 for the input form)
+   placed after it, so it wins on order alone: no `!important`, and buttons,
+   links, and every other non-form interactive keep the global keyboard
+   indicator untouched. The focus *border* these fields show instead comes from
+   the component's own `focus:border-*`, backed by the `@layer base` rule. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+/* ── Input focus: border colour change, not a ring ──────────────────────────
+   The Glass focus treatment for a text field is the border itself changing to
+   --color-brand (see the canonical variant map in components/ui/TextInput.jsx
+   — stroke-only, deliberately no background fill). This is the SAFETY NET for
+   that, not a second source of truth: a control that forgets its own
+   `focus:border-*` class would otherwise focus with no visible feedback at all.
+
+   Note the two halves of the job live at different cascade levels, which is the
+   whole point of splitting them. `border-color` belongs down here in
+   `@layer base`, so that component utilities (`focus:border-*`, `border-danger`)
+   still override it — a later layer always wins over an earlier one regardless
+   of specificity. The `outline` half cannot work from inside a layer at all,
+   because the global `:focus-visible` rule is unlayered and outranks layers;
+   that's why the form-control outline exemption sits up there with it instead.
+   Deliberately no `!important`, which would invert exactly this ordering.
+
+   Checkbox/radio/file are excluded: those are drawn by the platform and
+   already signal state through `accent-brand` plus the UA focus ring, so
+   rewriting their border colour would fight the native control rather than
+   restyle it. */
+@layer base {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--color-brand);
+  }
 }
 
 html {

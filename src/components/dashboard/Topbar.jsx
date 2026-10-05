@@ -218,7 +218,7 @@ export default function Topbar({
         className="relative flex-1 max-w-[420px] hidden md:block"
         ref={searchRef}
       >
-        <div className="flex items-center gap-2 bg-gray-100 rounded-md px-3.5 py-2.5 focus-within:ring-1 focus-within:ring-[var(--color-brand)]">
+        <div className="flex items-center gap-2 bg-gray-100 rounded-md px-3.5 py-2.5 border border-transparent focus-within:border-[#002FA7] transition-colors">
           {searching ? (
             <Loader2 size={13} className="text-gray-400 flex-shrink-0 animate-spin" />
           ) : (
