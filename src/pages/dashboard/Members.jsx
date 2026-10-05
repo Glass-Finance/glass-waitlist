@@ -80,7 +80,7 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
             <select
               value={plan}
               onChange={(e) => setPlan(e.target.value)}
-              className="w-full px-2.5 py-2 rounded-lg border border-gray-200 text-xs bg-white"
+              className="w-full px-2.5 py-2 rounded-lg border border-gray-200 text-xs bg-white focus:border-[#002FA7] transition-colors"
             >
               <option value="">All plans</option>
               {planOptions.map((p) => (
@@ -95,7 +95,7 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full px-2.5 py-2 rounded-lg border border-gray-200 text-xs bg-white"
+              className="w-full px-2.5 py-2 rounded-lg border border-gray-200 text-xs bg-white focus:border-[#002FA7] transition-colors"
             >
               <option value="">All statuses</option>
               <option value="Paid">Paid</option>
@@ -415,7 +415,7 @@ export default function Members() {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-5 pb-3 gap-2">
-            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-surface-container-border w-full sm:flex-1 sm:min-w-0 sm:max-w-xs focus-within:ring-1 focus-within:ring-[var(--color-brand)]">
+            <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-surface-container-border w-full sm:flex-1 sm:min-w-0 sm:max-w-xs focus-within:border-[#002FA7] transition-colors">
               <Search size={12} className="text-gray-400" />
               <input
                 value={search}

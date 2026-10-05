@@ -100,7 +100,7 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
         if (!isRead) onMarkRead?.(n.id);
         onNavigate?.(notificationsListDestination(n, community));
       }}
-      className={`flex items-start gap-2.5 w-full py-3 px-3.5 border-none cursor-pointer text-left transition-[background] duration-150 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--color-brand)] ${isRead ? "bg-transparent rounded-none border-b border-[#EFEFEF]" : "bg-[#F5F5F7] rounded-xl"}`}
+      className={`flex items-start gap-2.5 w-full py-3 px-3.5 border-none cursor-pointer text-left transition-[background] duration-150 outline-none focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-brand ${isRead ? "bg-transparent rounded-none border-b border-[#EFEFEF]" : "bg-[#F5F5F7] rounded-xl"}`}
     >
       <NotifAvatar n={n} />
 

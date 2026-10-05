@@ -27,8 +27,6 @@ function SuspendModal({ user, onClose }) {
     meta: { successMessage: "User suspended" },
   });
 
-  const f = { border: "1px solid #D0D0D0" };
-
   return (
     <ModalShell title="Suspend User" subtitle={user.email} onClose={onClose}>
       <form
@@ -45,10 +43,7 @@ function SuspendModal({ user, onClose }) {
             onChange={(e) => setReason(e.target.value)}
             rows={3}
             required
-            className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors"
-            style={f}
-            onFocus={(e) => (e.target.style.borderColor = "var(--color-danger-bright)")}
-            onBlur={(e) => Object.assign(e.target.style, f)}
+            className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors border border-[#D0D0D0] focus:border-[#002FA7]"
             placeholder="Why is this user being suspended?"
           />
         </div>
@@ -115,7 +110,6 @@ function UnsuspendModal({ user, onClose, onConfirm, unsuspending }) {
 
 function MarkForDeletionModal({ user, onClose, onConfirm, marking }) {
   const [reason, setReason] = useState("");
-  const f = { border: "1px solid #D0D0D0" };
 
   return (
     <ModalShell title="Mark User for Deletion" subtitle={user.email} onClose={onClose}>
@@ -138,10 +132,7 @@ function MarkForDeletionModal({ user, onClose, onConfirm, marking }) {
             onChange={(e) => setReason(e.target.value)}
             rows={3}
             required
-            className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors"
-            style={f}
-            onFocus={(e) => (e.target.style.borderColor = "var(--color-danger-bright)")}
-            onBlur={(e) => Object.assign(e.target.style, f)}
+            className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors border border-[#D0D0D0] focus:border-[#002FA7]"
             placeholder="Why is this account being marked for deletion?"
           />
         </div>
@@ -169,7 +160,6 @@ function MarkForDeletionModal({ user, onClose, onConfirm, marking }) {
 
 function AnonymizeModal({ user, onClose, onConfirm, anonymizing }) {
   const [reason, setReason] = useState("");
-  const f = { border: "1px solid #D0D0D0" };
 
   return (
     <ModalShell title="Anonymize User" subtitle={user.email} onClose={onClose}>
@@ -192,10 +182,7 @@ function AnonymizeModal({ user, onClose, onConfirm, anonymizing }) {
             onChange={(e) => setReason(e.target.value)}
             rows={3}
             required
-            className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors"
-            style={f}
-            onFocus={(e) => (e.target.style.borderColor = "var(--color-danger-bright)")}
-            onBlur={(e) => Object.assign(e.target.style, f)}
+            className="w-full px-3 py-2.5 rounded-lg text-xs text-gray-800 outline-none resize-none transition-colors border border-[#D0D0D0] focus:border-[#002FA7]"
             placeholder="Why is this account being anonymized now?"
           />
         </div>

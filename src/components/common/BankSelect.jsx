@@ -71,7 +71,12 @@ export default function BankSelect({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className={`w-full flex items-center justify-between gap-2 text-left cursor-pointer ${triggerClassName}`}
+        // The trigger is a <button> standing in for a <select>, so it carries the
+        // same canonical focus treatment every other field does -- the border
+        // itself changing colour, no ring. Both call sites already pass an
+        // inputCls with focus:border, so this is belt-and-braces for a trigger
+        // that gets mounted without one.
+        className={`w-full flex items-center justify-between gap-2 text-left cursor-pointer focus:border-[#002FA7] ${triggerClassName}`}
       >
         <span className="flex items-center gap-2 min-w-0">
           {selected && <BankLogo bank={selected} size={18} />}
