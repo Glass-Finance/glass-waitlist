@@ -6,6 +6,7 @@ import Settings from "../../../../pages/dashboard/settings/Settings";
 import { useAuth } from "../../../../store/AuthContext";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
 import { useCommunities } from "../../../../hooks/useCommunities";
+import { useKycSummary } from "../../../../hooks/useKyc";
 
 // Settings sits deliberately outside CommunityAdminGuard, because the account
 // level pages (profile, security, notifications) apply to no single community.
@@ -29,6 +30,15 @@ import { useCommunities } from "../../../../hooks/useCommunities";
 vi.mock("../../../../store/AuthContext", () => ({ useAuth: vi.fn() }));
 vi.mock("../../../../hooks/useActiveCommunityId", () => ({ useActiveCommunityId: vi.fn() }));
 vi.mock("../../../../hooks/useCommunities", () => ({ useCommunities: vi.fn() }));
+// The KYC row reads the account-level verification summary, which is a React
+// Query hook -- mocked at the same boundary as the others so this file stays
+// about community context instead of standing up a QueryClient. The wizard
+// modal is stubbed for the same reason: these tests assert the row's presence,
+// its status, and that it opens the wizard *in place*, not the wizard's guts.
+vi.mock("../../../../hooks/useKyc", () => ({ useKycSummary: vi.fn() }));
+vi.mock("../../../../components/kyc/KycWizardModal", () => ({
+  default: ({ open }) => (open ? <div>KYC wizard open</div> : null),
+}));
 
 const OWNED = { id: "comm-A", slug: "comm-a", name: "Alumni", owned: true };
 const OTHER_OWNED = { id: "comm-B", slug: "comm-b", name: "Church", owned: true };
@@ -55,6 +65,9 @@ beforeEach(() => {
     data: { communities: [OWNED, OTHER_OWNED] },
     isLoading: false,
   });
+  // No status by default, so existing assertions see the same menu they did
+  // before the KYC row was added.
+  useKycSummary.mockReturnValue({ data: undefined });
 });
 
 // Renders the real Settings page inside a router that reports the full current
@@ -261,5 +274,48 @@ describe("Settings community context -- never silently picks a community", () =>
 
     expect(screen.queryByText("Choose a community")).toBeNull();
     expect(screen.getByText("Community Profile")).toBeTruthy();
+  });
+});
+
+// KYC is personal, not community-scoped: it gates what *you* can create and
+// manage, so it must never be threaded with ?community= or hidden by the
+// choose-a-community state above.
+describe("Settings -- Identity Verification row", () => {
+  it("offers KYC on the account menu even when no community resolves", () => {
+    useActiveCommunityId.mockReturnValue(null);
+    renderSettings("/dashboard/settings/account");
+
+    expect(screen.getByText("Identity Verification")).toBeTruthy();
+  });
+
+  it("does not thread ?community= onto KYC when several communities resolve", async () => {
+    useActiveCommunityId.mockReturnValue("comm-a");
+    const user = userEvent.setup();
+    renderSettings("/dashboard/settings/account");
+
+    await user.click(screen.getByRole("button", { name: /identity verification/i }));
+
+    // Opens the wizard in place rather than navigating -- and either way the
+    // account-level row must carry no community scope.
+    expect(screen.queryByTestId("location").textContent).not.toContain("community=");
+  });
+
+  it("opens the wizard instead of leaving Settings", async () => {
+    const user = userEvent.setup();
+    renderSettings("/dashboard/settings/account");
+
+    await user.click(screen.getByRole("button", { name: /identity verification/i }));
+
+    expect(screen.getByText("KYC wizard open")).toBeTruthy();
+    // Still on the account menu behind the modal -- the Settings context the
+    // user opened it from is preserved.
+    expect(currentUrl()).toBe("/dashboard/settings/account");
+  });
+
+  it("shows the live account status beside the row", () => {
+    useKycSummary.mockReturnValue({ data: { status: "NOT_STARTED" } });
+    renderSettings("/dashboard/settings/account");
+
+    expect(screen.getByText("Not started")).toBeTruthy();
   });
 });
