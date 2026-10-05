@@ -46,10 +46,17 @@ function StatusBadge({ status }) {
 }
 
 /** Native date input → ISO instant, omitting blanks so the filter stays unset. */
-function toInstant(value) {
+function toInstant(value, endOfDay = false) {
   if (!value) return undefined;
-  const d = new Date(value);
-  return Number.isNaN(d.getTime()) ? undefined : d.toISOString();
+  // Parse as a LOCAL date rather than letting `new Date("2026-09-30")` read it
+  // as UTC midnight — that silently dropped everything settled later on the
+  // chosen end date, and (for anyone east of UTC) shifted the start bound too.
+  const [y, m, d] = value.split("-").map(Number);
+  if (!y || !m || !d) return undefined;
+  const date = endOfDay
+    ? new Date(y, m - 1, d, 23, 59, 59, 999)
+    : new Date(y, m - 1, d, 0, 0, 0, 0);
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 }
 
 function SettlementDetail({ communityId, settlementId, onClose }) {
@@ -161,7 +168,7 @@ export default function SettlementsList() {
       search: debouncedSearch.trim() || undefined,
       status: status !== "ALL" ? status : undefined,
       settledFrom: toInstant(from),
-      settledTo: toInstant(to),
+      settledTo: toInstant(to, true),
       pageNumber,
       pageSize: PAGE_SIZE,
     }),
@@ -276,7 +283,20 @@ export default function SettlementsList() {
                   <tr
                     key={s.id}
                     onClick={() => setOpenSettlementId(s.id)}
-                    className={`hover:bg-gray-50 transition-colors cursor-pointer ${i < items.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}`}
+                    // Row-click alone is mouse-only, so the drawer was
+                    // unreachable by keyboard and unannounced to screen
+                    // readers. tabIndex + role + Enter/Space make the same
+                    // affordance real for everyone.
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`View settlement settled ${fmtDateTime(s.settledAt)}`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setOpenSettlementId(s.id);
+                      }
+                    }}
+                    className={`hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand transition-colors cursor-pointer ${i < items.length - 1 ? "border-b border-surface-sunken" : "border-b-0"}`}
                   >
                     <td className="px-4 py-3 text-[11px] text-gray-500 whitespace-nowrap">
                       {fmtDateTime(s.settledAt)}

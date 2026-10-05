@@ -130,7 +130,11 @@ describe("SettlementsList", () => {
     fireEvent.change(screen.getByLabelText("Settled from"), { target: { value: "2026-09-01" } });
     await waitFor(() => {
       const last = mockList.mock.calls.at(-1)[1];
-      expect(last.settledFrom).toMatch(/^2026-09-01T/);
+      // Asserted in local terms: the input is a local date, so the instant it
+      // becomes depends on the viewer's timezone (local midnight, not UTC).
+      const from = new Date(last.settledFrom);
+      expect([from.getFullYear(), from.getMonth() + 1, from.getDate()]).toEqual([2026, 9, 1]);
+      expect(from.getHours()).toBe(0);
       expect(last.settledTo).toBeUndefined();
     });
   });
@@ -203,6 +207,34 @@ describe("SettlementsList", () => {
     fireEvent.click(firstRow());
     expect(await screen.findByText(/no longer available/i)).toBeDefined();
     expect(screen.queryByText("Failed to load")).toBeNull();
+  });
+
+  it("includes the whole end date in the range", async () => {
+    // Regression: new Date("2026-09-30") is UTC midnight, so a settlement made
+    // later that day was cut off by the "to" bound.
+    renderPage();
+    await waitFor(() => expect(mockList).toHaveBeenCalled());
+
+    fireEvent.change(screen.getByLabelText("Settled to"), { target: { value: "2026-09-30" } });
+    await waitFor(() => {
+      const settledTo = new Date(mockList.mock.calls.at(-1)[1].settledTo);
+      expect(settledTo.getHours()).toBe(23);
+      expect(settledTo.getMinutes()).toBe(59);
+      // Still the chosen day, not the next one.
+      expect(settledTo.getDate()).toBe(30);
+    });
+  });
+
+  it("opens the drawer from the keyboard, not just a click", async () => {
+    mockDetail.mockResolvedValue(axiosEnvelope(settlement({ transactions: [] })));
+    renderPage();
+
+    const row = await screen.findByRole("button", { name: /view settlement/i });
+    row.focus();
+    expect(document.activeElement).toBe(row);
+    fireEvent.keyDown(row, { key: "Enter" });
+
+    await waitFor(() => expect(mockDetail).toHaveBeenCalledWith("glass-crew", "s1"));
   });
 
   it("pages forward with a 1-based pageNumber", async () => {
