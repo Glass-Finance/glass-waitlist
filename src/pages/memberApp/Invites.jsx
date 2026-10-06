@@ -258,45 +258,54 @@ export default function Invites() {
               return (
                 <div
                   key={req.id}
-                  className="border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3 flex items-center gap-3"
+                  className="border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3"
                 >
-                  <Avatar name={req.community?.name} logo={req.community?.logo} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-ink m-0 whitespace-nowrap overflow-hidden text-ellipsis">
-                      {req.community?.name ?? "Community"}
-                    </p>
-                    <p className="text-xs text-ink-ghost mt-0.5 mx-0 mb-0">
-                      {meta.subtitle(req.community?.name)}
-                    </p>
-                    {req.reviewComment && (
-                      <p className="text-xs text-ink m-0 mt-1.5 mb-0">
-                        <span className="font-semibold">Note from the community: </span>
-                        {req.reviewComment}
+                  {/* Header row mirrors the invite cards above. The action
+                      buttons live on their own line rather than as a third
+                      column: squeezed into one row on a ~360px phone, the
+                      community name (nowrap) and the review note were left a
+                      few dozen pixels. */}
+                  <div className="flex items-center gap-3">
+                    <Avatar name={req.community?.name} logo={req.community?.logo} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-ink m-0 whitespace-nowrap overflow-hidden text-ellipsis">
+                        {req.community?.name ?? "Community"}
                       </p>
-                    )}
+                      <p className="text-xs text-ink-ghost mt-0.5 mx-0 mb-0">
+                        {meta.subtitle(req.community?.name)}
+                      </p>
+                    </div>
+                    <span
+                      className={`flex items-center gap-1 text-[11px] font-semibold ${meta.badge} py-[5px] px-2.5 rounded-full flex-shrink-0`}
+                    >
+                      <StatusIcon size={11} strokeWidth={2} />
+                      {meta.label}
+                    </span>
                   </div>
-                  <span
-                    className={`flex items-center gap-1 text-[11px] font-semibold ${meta.badge} py-[5px] px-2.5 rounded-full flex-shrink-0 self-start`}
-                  >
-                    <StatusIcon size={11} strokeWidth={2} />
-                    {meta.label}
-                  </span>
+
+                  {/* Full card width, so a rejection reason has room to wrap. */}
+                  {req.reviewComment && (
+                    <p className="text-xs text-ink m-0 mt-2.5 mb-0">
+                      <span className="font-semibold">Note from the community: </span>
+                      {req.reviewComment}
+                    </p>
+                  )}
 
                   {req.status === "PENDING" && (
-                    <div className="flex flex-col gap-1.5 flex-shrink-0">
+                    <div className="flex gap-2 mt-3">
                       {confirmingWithdraw ? (
                         <>
                           <button
                             onClick={() => handleWithdraw(req)}
                             disabled={isRevoking}
-                            className="text-[13px] font-semibold text-white bg-danger-bright border-none rounded-lg px-3 py-2 cursor-pointer disabled:opacity-60"
+                            className="flex-1 py-2.5 px-0 rounded-lg border-none bg-danger-bright text-white text-[13px] font-semibold cursor-pointer disabled:opacity-60"
                           >
                             {isRevoking ? "Withdrawing…" : "Yes, withdraw"}
                           </button>
                           <button
                             onClick={() => setConfirmingWithdrawId(null)}
                             disabled={isRevoking}
-                            className="text-[13px] font-semibold text-ink-strong bg-white border-[1.5px] border-surface-container-border rounded-lg px-3 py-2 cursor-pointer disabled:opacity-60"
+                            className="flex-1 py-2.5 px-0 rounded-lg border-[1.5px] border-surface-container-border bg-white text-ink-strong text-[13px] font-semibold cursor-pointer disabled:opacity-60"
                           >
                             Keep it
                           </button>
@@ -304,7 +313,7 @@ export default function Invites() {
                       ) : (
                         <button
                           onClick={() => setConfirmingWithdrawId(req.id)}
-                          className="text-[13px] font-semibold text-ink-strong bg-white border-[1.5px] border-surface-container-border rounded-lg px-3 py-2 cursor-pointer"
+                          className="flex-1 py-2.5 px-0 rounded-lg border-[1.5px] border-surface-container-border bg-white text-ink-strong text-[13px] font-semibold cursor-pointer"
                         >
                           Withdraw
                         </button>
