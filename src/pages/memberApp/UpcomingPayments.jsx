@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronLeft, Download, Loader2 } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
 import PageLoadingState from "../../components/common/PageLoadingState";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import { formatNaira, formatDate, toTitleCase } from "../../utils/format";
+import { useExportJob } from "../../hooks/useExportJob";
+import { exportMyObligations } from "../../api/exports";
 
 const FILTER_OPTIONS = ["All", "Recurring", "One-time"];
 
@@ -82,6 +84,16 @@ export default function UpcomingPayments() {
   const [filter, setFilter] = useState("All");
   const { data, isLoading, error: loadError, refresh } = usePayments();
 
+  // Real backend export job (see useExportJob.js) instead of a client-side CSV,
+  // which would only cover the payments already loaded on this page. The
+  // Recurring/One-time picker is a client-side filter and ObligationQueryDto
+  // has no equivalent server-side field, so the export covers every obligation
+  // the backend holds for this member.
+  const { run: runExport, isExporting } = useExportJob();
+  function exportCsv() {
+    runExport(() => exportMyObligations({}));
+  }
+
   const upcoming = data?.upcoming ?? [];
   const filtered = upcoming.filter((item) => {
     if (filter === "All") return true;
@@ -110,6 +122,18 @@ export default function UpcomingPayments() {
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </button>
         <h1 className="text-lg font-medium text-ink m-0">Upcoming Payments</h1>
+        <button
+          onClick={exportCsv}
+          disabled={isExporting}
+          aria-label={isExporting ? "Preparing export" : "Export upcoming payments as CSV"}
+          className="absolute right-5 w-9 h-9 rounded-full bg-white border border-surface-container-border flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isExporting ? (
+            <Loader2 size={15} className="animate-spin" color="var(--color-ink-strong)" />
+          ) : (
+            <Download size={15} color="var(--color-ink-strong)" />
+          )}
+        </button>
       </div>
 
       {/* Filter */}

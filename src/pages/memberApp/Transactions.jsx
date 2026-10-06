@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronLeft, Download, Loader2 } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import PageLoadingState from "../../components/common/PageLoadingState";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { transactionStatusLabel, transactionStatusStyle } from "../../utils/transactionStatus";
+import { useExportJob } from "../../hooks/useExportJob";
+import { exportMyTransactions } from "../../api/exports";
 
 const STATUS_OPTIONS = ["All Status", "Success", "Failed", "Pending"];
 
@@ -108,6 +110,19 @@ export default function Transactions() {
   const [selectedMonth, setSelectedMonth] = useState(null);
   const { data: transactions = [], isLoading, error, refetch } = useTransactions();
 
+  // Real backend export job rather than a client-side CSV, which would only
+  // cover rows already loaded on the page (see useExportJob.js). The status
+  // filter is passed through because TransactionQueryDto supports it
+  // server-side; the month picker is a client-side grouping over the full list,
+  // so it deliberately isn't forwarded -- the export covers every payment of
+  // the member's, matching what the backend holds for them.
+  const { run: runExport, isExporting } = useExportJob();
+  const STATUS_PARAM = { Success: "SUCCESS", Failed: "FAILED", Pending: "PENDING" };
+  function exportCsv() {
+    const status = STATUS_PARAM[statusFilter];
+    runExport(() => exportMyTransactions(status ? { status } : {}));
+  }
+
   // Month options come from the full (unfiltered-by-status) list, so
   // switching the status filter never changes which months are pickable —
   // only which of that month's rows are visible.
@@ -167,6 +182,18 @@ export default function Transactions() {
         <h1 className="text-lg font-medium text-ink m-0 flex-1 text-center mr-9">
           Payment History
         </h1>
+        <button
+          onClick={exportCsv}
+          disabled={isExporting}
+          aria-label={isExporting ? "Preparing export" : "Export payment history as CSV"}
+          className="border border-surface-container-border w-9 h-9 rounded-full bg-white flex items-center justify-center cursor-pointer flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isExporting ? (
+            <Loader2 size={15} className="animate-spin" color="var(--color-ink-strong)" />
+          ) : (
+            <Download size={15} color="var(--color-ink-strong)" />
+          )}
+        </button>
       </div>
 
       {/* ── Status + month filters ── */}
