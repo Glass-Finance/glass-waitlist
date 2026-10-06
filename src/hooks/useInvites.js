@@ -4,6 +4,7 @@ import {
   acceptInvite,
   rejectInvite,
   getMyCommunityJoinRequests,
+  revokeMyJoinRequest,
 } from "../api/invites";
 import { normalizeImageObject } from "../utils/normalizeImageFields";
 
@@ -90,14 +91,14 @@ export function useInvites() {
 }
 
 // Join requests the member submitted themselves (via a community's generic
-// shareable link, see useJoinCommunityParam) — read-only here, no
-// accept/reject, since they're the one waiting on the *admin* to act, not
-// the other way around like a personalized invite. Untested against the
-// live backend yet — /communities/join-requests/me is the endpoint that
-// matches every other "my X" endpoint's /communities/-prefixed convention
-// (getMyCommunities, getMyInvites), but there's also an unprefixed
-// /join-requests/me defined in api/invites.js; swap here first if this
-// turns out to be the wrong one.
+// shareable link, see useJoinCommunityParam). No accept/reject — they're the
+// one waiting on the *admin* to act, not the other way around like a
+// personalized invite — but a PENDING request can be withdrawn, because the
+// backend allows exactly that (requester-only, PENDING-only).
+//
+// The endpoint ambiguity noted here before ("/communities/join-requests/me vs
+// the unprefixed /join-requests/me") is settled: CI runs `audit:endpoints
+// --strict`, so this /communities/-prefixed path is confirmed deployed.
 export function useMyJoinRequests() {
   const query = useQuery({
     queryKey: ["join-requests", "me"],
@@ -114,5 +115,29 @@ export function useMyJoinRequests() {
     joinRequests: query.data ?? [],
     isLoading: query.isLoading,
     error: query.error,
+  };
+}
+
+/**
+ * Withdraw one of the member's own PENDING join requests.
+ *
+ * Unlike accept/decline this does NOT optimistically drop the row: revoking
+ * leaves the request in the list as REVOKED (the member may want to see that
+ * it happened, and re-requesting later is a separate action), so a plain
+ * invalidation is both simpler and more truthful than a rollback dance.
+ */
+export function useRevokeMyJoinRequest() {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: ({ communityId, requestId }) => revokeMyJoinRequest(communityId, requestId),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["join-requests", "me"] });
+    },
+    meta: { successMessage: "Join request withdrawn" },
+  });
+
+  return {
+    revokeJoinRequest: (communityId, requestId) => mutation.mutateAsync({ communityId, requestId }),
+    isRevoking: mutation.isPending,
   };
 }

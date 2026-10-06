@@ -1,7 +1,7 @@
-import { useInvites, useMyJoinRequests } from "../../hooks/useInvites";
+import { useInvites, useMyJoinRequests, useRevokeMyJoinRequest } from "../../hooks/useInvites";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, Clock, Home, Info } from "lucide-react";
+import { CheckCircle2, ChevronLeft, Clock, Home, Info, Undo2, XCircle } from "lucide-react";
 import { getInvite } from "../../api/invites";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import PageLoadingState from "../../components/common/PageLoadingState";
@@ -11,6 +11,35 @@ import { isKycRequiredError, KYC_ACCEPT_BLOCK_COPY } from "../../utils/kycStatus
 import { getErrorMessage } from "../../utils/errorHandler";
 // Same empty-state illustration the Notifications page's Invites tab uses.
 import invitesEmptyIllustration from "../../assets/memberApp/empty-states/notifications-invites-empty.webp";
+
+// CommunityJoinRequestStatus has four members; the copy is per-status because
+// "Your request to join is pending" was previously hardcoded for all of them.
+const JOIN_REQUEST_STATUS = {
+  PENDING: {
+    label: "Pending",
+    subtitle: () => "Waiting for the community to approve your request",
+    badge: "text-warning bg-[#FEF3C7]",
+    icon: Clock,
+  },
+  APPROVED: {
+    label: "Approved",
+    subtitle: (name) => `You're now a member of ${name ?? "this community"}`,
+    badge: "text-success-deep bg-success-tint",
+    icon: CheckCircle2,
+  },
+  REJECTED: {
+    label: "Declined",
+    subtitle: () => "The community declined your request",
+    badge: "text-danger bg-danger-tint",
+    icon: XCircle,
+  },
+  REVOKED: {
+    label: "Withdrawn",
+    subtitle: () => "You withdrew this request",
+    badge: "text-ink-ghost bg-surface-sunken",
+    icon: Undo2,
+  },
+};
 
 function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
@@ -38,6 +67,11 @@ export default function Invites() {
   const { invites, isLoading, error, accept, reject, isAccepting, isRejecting, refresh } =
     useInvites();
   const { joinRequests, isLoading: joinRequestsLoading } = useMyJoinRequests();
+  const { revokeJoinRequest, isRevoking } = useRevokeMyJoinRequest();
+  // Two-step confirm inline on the row: withdrawing is one-way, and this page
+  // already puts a bare Decline button per card, so a destructive tap deserves
+  // a second beat rather than a modal this page has no precedent for.
+  const [confirmingWithdrawId, setConfirmingWithdrawId] = useState(null);
 
   // A "Review Invite" email link lands on /invite?inviteId=... which stashes
   // the id here before redirecting to this (unfiltered) list — resolve it
@@ -97,6 +131,18 @@ export default function Invites() {
 
   async function handleReject(invite) {
     await reject(invite.id);
+  }
+
+  async function handleWithdraw(req) {
+    try {
+      // req.community.id is the identifier the revoke route needs (same value
+      // the list was fetched under); fall back to the id in the URL path only
+      // if the payload omitted it.
+      const communityId = req.community?.id ?? req.communityId;
+      await revokeJoinRequest(communityId, req.id);
+    } finally {
+      setConfirmingWithdrawId(null);
+    }
   }
 
   return (
@@ -199,28 +245,75 @@ export default function Invites() {
             ))}
 
             {/* Join requests the member submitted themselves via a community's
-                generic shareable link — read-only, since the admin is the one
-                who needs to act, not the member. */}
-            {joinRequests.map((req) => (
-              <div
-                key={req.id}
-                className="border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3 flex items-center gap-3"
-              >
-                <Avatar name={req.community?.name} logo={req.community?.logo} />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-ink m-0 whitespace-nowrap overflow-hidden text-ellipsis">
-                    {req.community?.name ?? "Community"}
-                  </p>
-                  <p className="text-xs text-ink-ghost mt-0.5 mx-0 mb-0">
-                    Your request to join is pending
-                  </p>
+                generic shareable link. These aren't all pending — the admin
+                may have approved or rejected them since, so the real status
+                drives the copy (it used to hardcode "pending", which left an
+                approved request looking ignored and hid the review comment on
+                a rejection). */}
+            {joinRequests.map((req) => {
+              const meta = JOIN_REQUEST_STATUS[req.status] ?? JOIN_REQUEST_STATUS.PENDING;
+              const StatusIcon = meta.icon;
+              const confirmingWithdraw = confirmingWithdrawId === req.id;
+
+              return (
+                <div
+                  key={req.id}
+                  className="border border-surface-container-border bg-white rounded-2xl p-3.5 mb-3 flex items-center gap-3"
+                >
+                  <Avatar name={req.community?.name} logo={req.community?.logo} />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-ink m-0 whitespace-nowrap overflow-hidden text-ellipsis">
+                      {req.community?.name ?? "Community"}
+                    </p>
+                    <p className="text-xs text-ink-ghost mt-0.5 mx-0 mb-0">
+                      {meta.subtitle(req.community?.name)}
+                    </p>
+                    {req.reviewComment && (
+                      <p className="text-xs text-ink m-0 mt-1.5 mb-0">
+                        <span className="font-semibold">Note from the community: </span>
+                        {req.reviewComment}
+                      </p>
+                    )}
+                  </div>
+                  <span
+                    className={`flex items-center gap-1 text-[11px] font-semibold ${meta.badge} py-[5px] px-2.5 rounded-full flex-shrink-0 self-start`}
+                  >
+                    <StatusIcon size={11} strokeWidth={2} />
+                    {meta.label}
+                  </span>
+
+                  {req.status === "PENDING" && (
+                    <div className="flex flex-col gap-1.5 flex-shrink-0">
+                      {confirmingWithdraw ? (
+                        <>
+                          <button
+                            onClick={() => handleWithdraw(req)}
+                            disabled={isRevoking}
+                            className="text-[13px] font-semibold text-white bg-danger-bright border-none rounded-lg px-3 py-2 cursor-pointer disabled:opacity-60"
+                          >
+                            {isRevoking ? "Withdrawing…" : "Yes, withdraw"}
+                          </button>
+                          <button
+                            onClick={() => setConfirmingWithdrawId(null)}
+                            disabled={isRevoking}
+                            className="text-[13px] font-semibold text-ink-strong bg-white border-[1.5px] border-surface-container-border rounded-lg px-3 py-2 cursor-pointer disabled:opacity-60"
+                          >
+                            Keep it
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => setConfirmingWithdrawId(req.id)}
+                          className="text-[13px] font-semibold text-ink-strong bg-white border-[1.5px] border-surface-container-border rounded-lg px-3 py-2 cursor-pointer"
+                        >
+                          Withdraw
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <span className="flex items-center gap-1 text-[11px] font-semibold text-warning bg-[#FEF3C7] py-[5px] px-2.5 rounded-full flex-shrink-0">
-                  <Clock size={11} strokeWidth={2} />
-                  Pending
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </>
         )}
       </div>
