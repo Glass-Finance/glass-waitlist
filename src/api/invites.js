@@ -51,3 +51,9 @@ export const submitJoinRequest = (communityId) =>
 // GET /api/v1/communities/join-requests/me
 // (Bare /join-requests/me is not documented — removed.)
 export const getMyCommunityJoinRequests = () => client.get("/communities/join-requests/me");
+
+// PATCH /api/v1/communities/{communityIdentifier}/join-requests/{requestId}/revoke
+// Requester-only and PENDING-only: the member withdrawing their own request.
+// The backend 403s anyone else, so this is deliberately not an admin action.
+export const revokeMyJoinRequest = (communityId, requestId) =>
+  client.patch(`/communities/${communityId}/join-requests/${requestId}/revoke`);
