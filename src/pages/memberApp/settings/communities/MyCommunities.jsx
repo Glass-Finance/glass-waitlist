@@ -1,7 +1,7 @@
 import { useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
-import { goBackInApp } from "../../../utils/memberBack";
+import { goBackInApp } from "../../../../utils/memberBack";
 import { AlertTriangle, ChevronLeft, ChevronRight, Loader2, LogOut, Plus, X } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";

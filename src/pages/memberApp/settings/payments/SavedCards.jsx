@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { goBackInApp } from "../../../utils/memberBack";
+import { goBackInApp } from "../../../../utils/memberBack";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { ChevronLeft, CreditCard, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";

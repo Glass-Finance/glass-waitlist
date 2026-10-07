@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
-import { goBackInApp } from "../../../utils/memberBack";
+import { goBackInApp } from "../../../../utils/memberBack";
 import { ChevronLeft } from "lucide-react";
 import {
   usePayments,
