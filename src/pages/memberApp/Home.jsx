@@ -201,11 +201,23 @@ export default function Home() {
                   navigate={navigate}
                 />
               )}
+
+              {/* No community switcher means no horizontal contention on this
+                  row, so the pill compacts next to the menu button. */}
+              {showKycBadge && hasNoCommunity && (
+                <button
+                  onClick={() => setKycWizardOpen(true)}
+                  className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0"
+                  aria-label="Identity verification status"
+                >
+                  <KycStatusBadge status={kycSummary.status} />
+                </button>
+              )}
             </div>
 
-            {/* KYC status sits on its own layer under the switcher row so a
-                long community name never fights it for horizontal space. */}
-            {showKycBadge && (
+            {/* With a community switcher on the row above, the pill lives on
+                its own layer so a long community name never overlaps it. */}
+            {showKycBadge && !hasNoCommunity && (
               <button
                 onClick={() => setKycWizardOpen(true)}
                 className="bg-transparent border-none cursor-pointer p-0 self-start ml-[43px] flex-shrink-0"
