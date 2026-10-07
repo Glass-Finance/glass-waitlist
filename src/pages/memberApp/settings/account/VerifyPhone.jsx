@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { goBackInApp } from "../../../../utils/memberBack";
 import { ChevronLeft, ShieldCheck } from "lucide-react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import OtpBoxes from "../../../../components/common/OtpBoxes";
+import { renderDashedOtpBoxes } from "../../../../components/common/otpBoxes";
 import { useMe, useRequestPhoneUpdate, useUpdatePhone } from "../../../../hooks/useMyAccount";
 import { useAuth } from "../../../../store/AuthContext";
 import { useCountdown, formatCountdown } from "../../../../hooks/useCountdown";
@@ -100,7 +102,7 @@ export default function VerifyPhone() {
       });
       await refreshUser();
       setStep("success");
-      setTimeout(() => navigate(-1), 1800);
+      setTimeout(() => goBackInApp(navigate, "/member/profile"), 1800);
     } catch (err) {
       setOtpError(
         notifyError(err, {
@@ -155,7 +157,7 @@ export default function VerifyPhone() {
         <>
           <StepHeader
             title={isUpdate ? "Update Your Phone Number" : "Add Your Phone Number"}
-            onBack={() => navigate(-1)}
+            onBack={() => goBackInApp(navigate, "/member/profile")}
           />
           <div className="px-4">
             <div className="border border-surface-container-border bg-white rounded-2xl p-4">
@@ -205,7 +207,7 @@ export default function VerifyPhone() {
             </button>
 
             <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6">
-              <OtpBoxes key={resendCount} value={otp} onChange={setOtp} length={6} autoFocus />
+              <OtpBoxes key={resendCount} value={otp} onChange={setOtp} length={6} autoFocus renderBoxes={renderDashedOtpBoxes} />
               {otpError && <p className="text-sm text-red-500 text-center -mt-2">{otpError}</p>}
               <Button
                 type="submit"

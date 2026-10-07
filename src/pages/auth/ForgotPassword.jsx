@@ -8,6 +8,7 @@ import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
 import OtpBoxes from "../../components/common/OtpBoxes";
+import { renderDashedOtpBoxes } from "../../components/common/otpBoxes";
 
 // Codes are valid for 15 minutes (see the same figure quoted to users in
 // SignIn.jsx and member/Join.jsx).
@@ -172,18 +173,7 @@ export default function ForgotPassword() {
                     onChange={handleOtpChange}
                     length={6}
                     autoFocus
-                    renderBoxes={(digits, activeIndex) => (
-                      <div className="flex gap-4 justify-center pointer-events-none">
-                        {digits.map((d, i) => (
-                          <div
-                            key={i}
-                            className={`w-16 h-16 flex-shrink-0 flex items-center justify-center text-[22px] font-bold rounded-lg text-[#111827] transition-[border-color] duration-150 border-[1.5px] ${d || i === activeIndex ? "border-[#1C2B8A]" : "border-surface-container-border"}`}
-                          >
-                            {d}
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    renderBoxes={renderDashedOtpBoxes}
                   />
                 </div>
                 <ErrorMessage message={error} />
