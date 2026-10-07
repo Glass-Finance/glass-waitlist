@@ -4,7 +4,7 @@ import { goBackInApp } from "../../../../utils/memberBack";
 import { ChevronLeft, ShieldCheck } from "lucide-react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import OtpBoxes from "../../../../components/common/OtpBoxes";
-import { renderDashedOtpBoxes } from "../../../../components/common/otpBoxes";
+import { renderDashedOtpBoxes } from "../../../../components/common/otpBoxesRenderer";
 import { useMe, useRequestPhoneUpdate, useUpdatePhone } from "../../../../hooks/useMyAccount";
 import { useAuth } from "../../../../store/AuthContext";
 import { useCountdown, formatCountdown } from "../../../../hooks/useCountdown";

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { goBackInApp } from "../../../../utils/memberBack";
 import { ChevronLeft, ChevronDown, Inbox } from "lucide-react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import PageLoadingState from "../../../../components/common/PageLoadingState";
@@ -70,7 +71,7 @@ export default function VerifyIdentityHistory() {
       <GlassLogoGlow />
       <div className="flex items-center justify-center relative pt-6 px-5 pb-4">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => goBackInApp(navigate, "/member/verify-identity")}
           className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
+import { goBackInApp } from "../../../utils/memberBack";
 import { AlertTriangle, ChevronLeft, ChevronRight, Loader2, LogOut, Plus, X } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
@@ -151,7 +152,7 @@ export default function MyCommunities() {
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => goBackInApp(navigate, "/member/settings")}
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />

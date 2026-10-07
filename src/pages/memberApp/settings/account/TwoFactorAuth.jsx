@@ -4,6 +4,7 @@ import PageLoadingState from "../../../../components/common/PageLoadingState";
 import LoadingState from "../../../../components/common/LoadingState";
 import SuccessBadge from "../../../../components/common/SuccessBadge";
 import { useNavigate } from "react-router-dom";
+import { goBackInApp } from "../../../../utils/memberBack";
 import { ChevronLeft, ShieldCheck, Shield, Copy, Check } from "lucide-react";
 import { useMe } from "../../../../hooks/useMyAccount";
 import { useQueryClient } from "@tanstack/react-query";
@@ -373,7 +374,7 @@ export default function TwoFactorAuth() {
       {/* Header */}
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
         <button
-          onClick={() => (flow ? setFlow(null) : navigate(-1))}
+          onClick={() => (flow ? setFlow(null) : goBackInApp(navigate, "/member/security"))}
           className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />

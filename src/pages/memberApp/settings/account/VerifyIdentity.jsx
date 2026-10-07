@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { goBackInApp } from "../../../../utils/memberBack";
 import { ChevronLeft, History } from "lucide-react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import useKycFlow from "../../../../components/kyc/useKycFlow";
@@ -28,7 +29,7 @@ function StepHeader({ title, onBack, right }) {
 export default function VerifyIdentity() {
   const navigate = useNavigate();
   const flow = useKycFlow({
-    onDismiss: () => navigate(-1),
+    onDismiss: () => goBackInApp(navigate, "/member/profile"),
     onHistory: () => navigate("/member/verify-identity/history"),
   });
 
@@ -37,7 +38,7 @@ export default function VerifyIdentity() {
       <GlassLogoGlow />
       <StepHeader
         title="Identity Verification"
-        onBack={() => navigate(-1)}
+        onBack={() => goBackInApp(navigate, "/member/profile")}
         right={
           <button
             onClick={() => navigate("/member/verify-identity/history")}
