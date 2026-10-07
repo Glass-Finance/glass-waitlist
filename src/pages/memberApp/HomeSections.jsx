@@ -48,7 +48,7 @@ export function CommunitySwitcher({
             fallback={<span>{communityInitial}</span>}
           />
         </div>
-        <span className="text-sm font-medium text-ink whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
+        <span className="text-sm font-medium text-ink whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
           {communityName}
         </span>
         <ChevronDown
