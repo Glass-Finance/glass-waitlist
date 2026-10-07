@@ -201,6 +201,13 @@ export default function Home() {
               />
             )}
 
+          </div>
+
+          {/* Profile photo sits at the far right of the header (the member's
+              entry point to their own profile), with the notification bell
+              directly beside it. Invites moved out of the header entirely —
+              the hamburger SideDrawer still carries the Invitations entry. */}
+          <div className="flex items-center gap-2.5 flex-shrink-0">
             {showKycBadge && (
               <button
                 onClick={() => setKycWizardOpen(true)}
@@ -210,13 +217,7 @@ export default function Home() {
                 <KycStatusBadge status={kycSummary.status} />
               </button>
             )}
-          </div>
 
-          {/* Profile photo sits at the far right of the header (the member's
-              entry point to their own profile), with the notification bell
-              directly beside it. Invites moved out of the header entirely —
-              the hamburger SideDrawer still carries the Invitations entry. */}
-          <div className="flex items-center gap-2.5 flex-shrink-0">
             <button
               aria-label="Notifications"
               onClick={() => navigate("/member/notifications")}
