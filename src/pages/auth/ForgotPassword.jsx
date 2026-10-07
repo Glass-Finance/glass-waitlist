@@ -8,7 +8,7 @@ import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
 import { useCountdown, formatCountdown } from "../../hooks/useCountdown";
 import OtpBoxes from "../../components/common/OtpBoxes";
-import { renderDashedOtpBoxes } from "../../components/common/otpBoxes";
+import { renderDashedOtpBoxes } from "../../components/common/otpBoxesRenderer";
 
 // Codes are valid for 15 minutes (see the same figure quoted to users in
 // SignIn.jsx and member/Join.jsx).
