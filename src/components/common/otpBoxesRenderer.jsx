@@ -40,6 +40,8 @@ const AUTOFILL_OVERRIDE_CSS = `
 }
 `;
 
+export { OtpBoxes as renderDashedOtpBoxes };
+
 export default function OtpBoxes({
   value,
   onChange,
