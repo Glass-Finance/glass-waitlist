@@ -6,6 +6,7 @@ import upcomingPaymentsIcon from "../../assets/memberApp/icon-upcoming-payments.
 import paymentHistoryIcon from "../../assets/memberApp/icon-payment-history.webp";
 import { Button } from "../../components/ui/Button";
 import ProfileAvatar from "../../components/memberApp/ProfileAvatar";
+import PulseImg from "../../components/common/PulseImg";
 import {
   formatNaira,
   formatDateLong as formatDate,
@@ -39,19 +40,13 @@ export function CommunitySwitcher({
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-[7px] min-w-0 bg-transparent border-none cursor-pointer p-0"
       >
-        <div
-          className={`w-7 h-7 rounded-md flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 overflow-hidden ${communityLogo?.url ? "bg-transparent" : "bg-brand-deep"}`}
-        >
-          {communityLogo?.url ? (
-            <img
-              src={communityLogo.url}
-              alt=""
-              decoding="async"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            communityInitial
-          )}
+        <div className="w-7 h-7 rounded-md flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 overflow-hidden bg-brand-deep">
+          <PulseImg
+            src={communityLogo?.url}
+            className="w-full h-full"
+            skeletonClassName="bg-black/10"
+            fallback={<span>{communityInitial}</span>}
+          />
         </div>
         <span className="text-sm font-medium text-ink whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
           {communityName}

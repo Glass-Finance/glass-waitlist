@@ -1,5 +1,6 @@
 import { LogOut } from "lucide-react";
 import { safeImageUrl } from "../../utils/safeImageUrl";
+import PulseImg from "../common/PulseImg";
 
 export function MobileOverlay({ mobileOpen, onClose }) {
   if (!mobileOpen) return null;
@@ -57,11 +58,12 @@ export function UserIdentity({ user, initials, displayName }) {
   return (
     <div className="py-2.5 px-3 border-t border-[var(--color-hairline)] flex items-center gap-2">
       <div className="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--color-brand),var(--color-accent-indigo))] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 overflow-hidden">
-        {avatarSrc ? (
-          <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
-        ) : (
-          initials
-        )}
+        <PulseImg
+          src={avatarSrc}
+          className="w-full h-full"
+          skeletonClassName="bg-black/10"
+          fallback={<span>{initials}</span>}
+        />
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[11px] font-semibold m-0 whitespace-nowrap overflow-hidden text-ellipsis">

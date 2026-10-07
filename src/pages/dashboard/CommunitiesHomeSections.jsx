@@ -1,4 +1,5 @@
 import { Clock, Users } from "lucide-react";
+import PulseImg from "../../components/common/PulseImg";
 import { formatNaira as sharedFormatNaira } from "../../utils/format";
 import { isCommunityAdmin, roleKeyword } from "../../utils/communityRole";
 
@@ -34,23 +35,25 @@ export function CommunityCard({ community, onClick }) {
       <div className="p-5 flex-1">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            {logoUrl ? (
-              <img
+            {/* Gradient tile always present; the logo covers it when it loads.
+                Keying it on "has a URL" instead meant a failed load showed a
+                broken-image glyph rather than the community's initials. */}
+            <div
+              className={`w-10 h-10 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
+                isAdmin
+                  ? "bg-gradient-to-br from-[var(--color-brand)] to-[#4f6fe5]"
+                  : "bg-gradient-to-br from-gray-500 to-gray-400"
+              }`}
+            >
+              <PulseImg
                 src={logoUrl}
                 alt={community.name}
-                className="w-10 h-10 rounded object-cover flex-shrink-0"
+                className="w-full h-full"
+                imgClassName="rounded object-cover"
+                skeletonClassName="bg-black/10"
+                fallback={<span>{tag}</span>}
               />
-            ) : (
-              <div
-                className={`w-10 h-10 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
-                  isAdmin
-                    ? "bg-gradient-to-br from-[var(--color-brand)] to-[#4f6fe5]"
-                    : "bg-gradient-to-br from-gray-500 to-gray-400"
-                }`}
-              >
-                {tag}
-              </div>
-            )}
+            </div>
             <div>
               <p className="text-xs font-semibold text-ink">{community.name ?? community.slug}</p>
               {memberCount != null && (

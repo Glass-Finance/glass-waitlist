@@ -50,7 +50,14 @@ describe("SidebarPrimitives.UserIdentity avatar image", () => {
     const container = renderIdentity({ url: "https://cdn.example.com/avatar.png" });
 
     const img = container.querySelector("img");
-    expect(img.getAttribute("class")).toBe("w-full h-full object-cover");
+    // Sizing/cropping classes are asserted individually now: the avatar goes
+    // through PulseImg (for the load-failure fallback) instead of a bare <img>,
+    // and PulseImg composes its own base classes plus a fade around them. The
+    // exact string is no longer the contract, but none of these may change.
+    const cls = img.getAttribute("class");
+    for (const c of ["w-full", "h-full", "object-cover"]) {
+      expect(cls.split(/\s+/)).toContain(c);
+    }
     expect(img.getAttribute("alt")).toBe("");
   });
 

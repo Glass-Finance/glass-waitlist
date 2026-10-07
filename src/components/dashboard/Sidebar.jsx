@@ -38,6 +38,7 @@ import { useMyMemberRecord } from "../../hooks/useMyAccount";
 import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
 import { toastSuccess } from "../../utils/toast";
 import { MobileOverlay, SidebarLogo, LogoutButton, UserIdentity } from "./SidebarPrimitives";
+import PulseImg from "../common/PulseImg";
 
 // ─── Nav items ────────────────────────────────────────────────────────────────
 // `path` is the route under /dashboard; "home" maps to the per-community
@@ -521,22 +522,19 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                           onCloseMobile?.();
                         }}
                         title={c.name}
-                        className={`w-9 h-9 rounded-sm border-none cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 bg-white ${
-                          c.logo?.url ? "" : "text-brand"
-                        }`}
+                        className="w-9 h-9 rounded-sm border-none cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 bg-white"
                       >
-                        {c.logo?.url ? (
-                          <img
-                            src={c.logo.url}
-                            alt={c.name}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                            }}
-                          />
-                        ) : (
-                          initials || "?"
-                        )}
+                        {/* The old handler set display:none on a failed image,
+                            which left an empty white tile in the rail -- the
+                            initials were only rendered when there was no URL.
+                            PulseImg renders them for a failed load too. */}
+                        <PulseImg
+                          src={c.logo?.url}
+                          alt={c.name}
+                          className="w-full h-full"
+                          skeletonClassName="bg-black/5"
+                          fallback={<span className="text-brand">{initials || "?"}</span>}
+                        />
                       </button>
                     </div>
                   );

@@ -27,7 +27,17 @@ export default function ProfileAvatar({ user, onClick, className = "", ariaLabel
 
   const avatar = (
     <div className="w-[38px] h-[38px] rounded-full bg-gradient-to-br from-[var(--color-brand)] to-accent-indigo flex items-center justify-center text-white font-bold text-[13px] flex-shrink-0 select-none overflow-hidden">
-      {photoUrl ? <PulseImg src={photoUrl} alt="" className="w-full h-full" /> : getInitials(user)}
+      {/* Pass the initials as PulseImg's fallback rather than only choosing
+          between image and initials here: with the URL present but the
+          request failing (signed URL expired, storage migration, deleted
+          object) the old ternary rendered an <img> that stayed at opacity-0,
+          i.e. a bare gradient circle with no photo and no initials. */}
+      <PulseImg
+        src={photoUrl}
+        alt=""
+        className="w-full h-full"
+        fallback={<span>{getInitials(user)}</span>}
+      />
     </div>
   );
 

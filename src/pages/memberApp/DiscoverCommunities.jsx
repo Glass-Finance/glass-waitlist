@@ -7,6 +7,7 @@ import { submitJoinRequest } from "../../api/invites";
 import { recordPendingJoinRequest, useJoinApprovalWatcher } from "../../hooks/useJoinApproval";
 import { useMyCommunities } from "../../hooks/useMyAccount";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
+import PulseImg from "../../components/common/PulseImg";
 import LoadingState from "../../components/common/LoadingState";
 import JoinApprovedModal from "../../components/memberApp/JoinApprovedModal";
 import { getErrorMessage } from "../../utils/errorHandler";
@@ -83,14 +84,18 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
       {/* Header row */}
       <div className="flex items-center gap-3 px-4 pt-4 pb-3.5 border-b border-outline-on-surface">
         {/* Logo */}
-        <div
-          className={`w-11 h-11 rounded-[10px] flex-shrink-0 overflow-hidden flex items-center justify-center text-lg ${logoUrl ? "bg-transparent border-none" : "bg-[#F0F0F0] border border-[#E0E0E0]"}`}
-        >
-          {logoUrl ? (
-            <img src={logoUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
-          ) : (
-            (community.name?.charAt(0) ?? "C")
-          )}
+        {/* The neutral background is unconditional now: with the old
+            `logoUrl ? transparent : grey` toggle a logo whose URL had failed
+            left a browser broken-image glyph, because the letter was only
+            rendered when there was no URL at all. A loaded image covers the
+            background completely, so keeping it costs nothing. */}
+        <div className="w-11 h-11 rounded-[10px] flex-shrink-0 overflow-hidden flex items-center justify-center text-lg bg-[#F0F0F0] border border-[#E0E0E0]">
+          <PulseImg
+            src={logoUrl}
+            className="w-full h-full"
+            skeletonClassName="bg-black/5"
+            fallback={<span>{community.name?.charAt(0) ?? "C"}</span>}
+          />
         </div>
 
         {/* Name + category */}

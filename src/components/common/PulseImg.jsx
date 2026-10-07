@@ -44,33 +44,56 @@ export default function PulseImg({
   className = "",
   imgClassName = "",
   skeletonClassName = "bg-black/10",
+  // Rendered inside the same wrapper when the image can't be shown -- either
+  // the URL is missing/unsafe, or the request FAILED. The failure case is why
+  // this exists: a stored file URL can 404/403/expire (signed URLs, a storage
+  // migration, a deleted object), and without an error path the <img> sits at
+  // opacity-0 forever behind the skeleton, so the caller got a bare coloured
+  // block and no indication anything had gone wrong.
+  fallback = null,
+  // Pulled out of ...imgProps so it can be chained rather than clobbered --
+  // callers that pass their own onError (e.g. AdminPaymentModal) were relying
+  // on it surviving the spread.
+  onError,
   // eslint-disable-next-line no-unused-vars -- deliberately discarded, see note above
   srcSet: _discardedSrcSet,
   ...imgProps
 }) {
   const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const safeSrc = safeImageUrl(src);
-  if (!safeSrc) return null;
+  // No usable URL and nothing to fall back to keeps the original contract of
+  // rendering nothing at all.
+  if (!safeSrc && !fallback) return null;
+  const showFallback = !safeSrc || failed;
 
   return (
     <span className={`relative block overflow-hidden ${className}`}>
-      {!loaded && (
+      {!showFallback && !loaded && (
         <span
           aria-hidden="true"
           className={`absolute inset-0 animate-pulse ${skeletonClassName}`}
         />
       )}
-      <img
-        {...imgProps}
-        src={safeSrc}
-        alt={alt}
-        decoding="async"
-        onLoad={() => setLoaded(true)}
-        className={`block w-full h-full object-cover transition-opacity duration-300 ${
-          loaded ? "opacity-100" : "opacity-0"
-        } ${imgClassName}`}
-      />
+      {showFallback ? (
+        fallback
+      ) : (
+        <img
+          {...imgProps}
+          src={safeSrc}
+          alt={alt}
+          decoding="async"
+          onLoad={() => setLoaded(true)}
+          onError={(e) => {
+            onError?.(e);
+            setFailed(true);
+          }}
+          className={`block w-full h-full object-cover transition-opacity duration-300 ${
+            loaded ? "opacity-100" : "opacity-0"
+          } ${imgClassName}`}
+        />
+      )}
     </span>
   );
 }
