@@ -37,6 +37,17 @@ describe("PulseImg fallback", () => {
     expect(container.firstChild).toBeNull();
   });
 
+  it("centres the fallback in the box, not the top-left corner", () => {
+    const { container } = render(<PulseImg src="javascript:alert(1)" fallback={<span>GC</span>} />);
+    // The initials used to land in the top-left because PulseImg's wrapper is
+    // a plain block and the fallback was a bare child of it.
+    const layer = container.querySelector("span.absolute.inset-0");
+    expect(layer).toBeTruthy();
+    expect(layer.className).toContain("items-center");
+    expect(layer.className).toContain("justify-center");
+    expect(layer.textContent).toContain("GC");
+  });
+
   it("calls a caller-supplied onError as well as falling back", () => {
     const onError = vi.fn();
     const { container } = render(

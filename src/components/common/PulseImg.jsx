@@ -77,7 +77,13 @@ export default function PulseImg({
         />
       )}
       {showFallback ? (
-        fallback
+        // Centred in its own absolutely-positioned layer rather than by making
+        // the wrapper a flex container: that keeps the <img> path (which fills
+        // the box at w-full h-full) and the absolutely-positioned skeleton
+        // exactly as they were, and only the fallback gains centring. Callers
+        // used to wrap this in their own flex container, so the initials
+        // rendered top-left once the fallback moved in here.
+        <span className="absolute inset-0 flex items-center justify-center">{fallback}</span>
       ) : (
         <img
           {...imgProps}
