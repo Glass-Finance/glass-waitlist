@@ -179,28 +179,41 @@ export default function Home() {
         <GlassLogoGlow />
         <SideDrawer open={menuOpen} onClose={() => setMenuOpen(false)} />
 
-        <div className="flex items-center justify-between pt-[25px] px-5 pb-5">
-          <div className="flex items-center gap-[15px] min-w-0">
-            <button
-              onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
-              className="flex items-center justify-center border-none cursor-pointer bg-transparent p-0 flex-shrink-0"
-            >
-              <Menu size={28} strokeWidth={2} className="text-ink" />
-            </button>
+        <div className="flex items-start justify-between pt-[25px] px-5 pb-5">
+          <div className="flex flex-col gap-[7px] min-w-0">
+            <div className="flex items-center gap-[15px] min-w-0">
+              <button
+                onClick={() => setMenuOpen(true)}
+                aria-label="Open menu"
+                className="flex items-center justify-center border-none cursor-pointer bg-transparent p-0 flex-shrink-0"
+              >
+                <Menu size={28} strokeWidth={2} className="text-ink" />
+              </button>
 
-            {!hasNoCommunity && (
-              <CommunitySwitcher
-                communities={myCommunities}
-                activeIdentifier={activeCommunityIdentifier}
-                communityName={communityName}
-                communityInitial={communityInitial}
-                communityLogo={communityLogo}
-                onSelect={handleSwitchCommunity}
-                navigate={navigate}
-              />
+              {!hasNoCommunity && (
+                <CommunitySwitcher
+                  communities={myCommunities}
+                  activeIdentifier={activeCommunityIdentifier}
+                  communityName={communityName}
+                  communityInitial={communityInitial}
+                  communityLogo={communityLogo}
+                  onSelect={handleSwitchCommunity}
+                  navigate={navigate}
+                />
+              )}
+            </div>
+
+            {/* KYC status sits on its own layer under the switcher row so a
+                long community name never fights it for horizontal space. */}
+            {showKycBadge && (
+              <button
+                onClick={() => setKycWizardOpen(true)}
+                className="bg-transparent border-none cursor-pointer p-0 self-start ml-[43px] flex-shrink-0"
+                aria-label="Identity verification status"
+              >
+                <KycStatusBadge status={kycSummary.status} />
+              </button>
             )}
-
           </div>
 
           {/* Profile photo sits at the far right of the header (the member's
@@ -208,16 +221,6 @@ export default function Home() {
               directly beside it. Invites moved out of the header entirely —
               the hamburger SideDrawer still carries the Invitations entry. */}
           <div className="flex items-center gap-2.5 flex-shrink-0">
-            {showKycBadge && (
-              <button
-                onClick={() => setKycWizardOpen(true)}
-                className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0"
-                aria-label="Identity verification status"
-              >
-                <KycStatusBadge status={kycSummary.status} />
-              </button>
-            )}
-
             <button
               aria-label="Notifications"
               onClick={() => navigate("/member/notifications")}
