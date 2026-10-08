@@ -4,7 +4,7 @@ import { goBackInApp } from "../../../../utils/memberBack";
 import { ChevronLeft, ShieldCheck } from "lucide-react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import OtpBoxes from "../../../../components/common/OtpBoxes";
-import { renderDashedOtpBoxes } from "../../../../components/common/otpBoxesRenderer";
+import { renderDashedOtpBoxes } from "../../../../components/common/renderDashedOtpBoxes";
 import { useMe, useRequestPhoneUpdate, useUpdatePhone } from "../../../../hooks/useMyAccount";
 import { useAuth } from "../../../../store/AuthContext";
 import { useCountdown, formatCountdown } from "../../../../hooks/useCountdown";
@@ -207,7 +207,14 @@ export default function VerifyPhone() {
             </button>
 
             <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6">
-              <OtpBoxes key={resendCount} value={otp} onChange={setOtp} length={6} autoFocus renderBoxes={renderDashedOtpBoxes} />
+              <OtpBoxes
+                key={resendCount}
+                value={otp}
+                onChange={setOtp}
+                length={6}
+                autoFocus
+                renderBoxes={renderDashedOtpBoxes}
+              />
               {otpError && <p className="text-sm text-red-500 text-center -mt-2">{otpError}</p>}
               <Button
                 type="submit"

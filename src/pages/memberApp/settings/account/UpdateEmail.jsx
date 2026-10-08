@@ -4,7 +4,7 @@ import { goBackInApp } from "../../../../utils/memberBack";
 import { ChevronLeft } from "lucide-react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import OtpBoxes from "../../../../components/common/OtpBoxes";
-import { renderDashedOtpBoxes } from "../../../../components/common/otpBoxesRenderer";
+import { renderDashedOtpBoxes } from "../../../../components/common/renderDashedOtpBoxes";
 import { useMe, useUpdateEmail } from "../../../../hooks/useMyAccount";
 import { useAuth } from "../../../../store/AuthContext";
 import { useCountdown, formatCountdown } from "../../../../hooks/useCountdown";
@@ -151,7 +151,10 @@ export default function UpdateEmail() {
 
       {step === "form" && (
         <>
-          <StepHeader title="Update Your Email" onBack={() => goBackInApp(navigate, "/member/profile")} />
+          <StepHeader
+            title="Update Your Email"
+            onBack={() => goBackInApp(navigate, "/member/profile")}
+          />
           <div className="px-4">
             <div className="border border-surface-container-border bg-white rounded-2xl p-4">
               <label className="text-xs text-ink-ghost block mb-1.5">Email Address</label>
@@ -189,7 +192,14 @@ export default function UpdateEmail() {
             </button>
 
             <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6">
-              <OtpBoxes key={resendCount} value={otp} onChange={setOtp} length={6} autoFocus renderBoxes={renderDashedOtpBoxes} />
+              <OtpBoxes
+                key={resendCount}
+                value={otp}
+                onChange={setOtp}
+                length={6}
+                autoFocus
+                renderBoxes={renderDashedOtpBoxes}
+              />
               {otpError && <p className="text-sm text-red-500 text-center -mt-2">{otpError}</p>}
               <Button
                 type="submit"
