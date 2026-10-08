@@ -1,12 +1,81 @@
 import { forwardRef } from "react";
 
-// Single source of truth for the app's primary CTA button — every auth and
-// onboarding screen (Sign In, Sign Up, Join, Reset Password, Choose Path,
-// Paying Member, Organization/Payment setup, Add Members, Check Email,
-// Mobile Required) previously hand-rolled its own copy of this, which is how
-// three different corner radii and one off-brand hex (#2535c3 instead of
-// --color-brand) crept in across the app. Always uses --color-brand
-// (bg-brand) -- never hardcode the button color elsewhere.
+// Implements the six button roles and five sizes in DESIGN-SYSTEM.md §2,
+// extracted from the Figma file "Glass Design By AQ". Read that section
+// before changing anything here -- it records the exact padding, height,
+// label size, radius and state values, and which hex values are banned.
+//
+// 76 call sites use this component. Anything you add needs a reason that
+// isn't "the old one was easier".
+
+// Legacy aliases for the three roles this component shipped before
+// DESIGN-SYSTEM.md. "brand" was the old primary, "danger" the old critical,
+// "secondary" a *filled* grey pill that Figma does not define -- it now maps
+// to the outline role, which is what those call sites were reaching for (they
+// were all Cancel buttons).
+const LEGACY_VARIANTS = {
+  brand: "primary",
+  danger: "critical",
+  secondary: "outline",
+};
+
+// Figma padding is given as T/R/B/L and produces these exact heights with
+// the label sizes below. Height classes keep them locked together: editing
+// one means editing the other.
+const SIZES = {
+  //       py       px      height label
+  xs: { pad: "py-2", px: "px-3", h: "h-8", text: "text-[12px]" }, // X-s 8/12/8/12  h32
+  sm: { pad: "py-2", px: "px-4", h: "h-10", text: "text-[14px]" }, // S   8/16/8/16  h40
+  md: { pad: "py-3", px: "px-6", h: "h-12", text: "text-[14px]" }, // M  12/24/12/24 h48
+  lg: { pad: "py-4", px: "px-8", h: "h-14", text: "text-[16px]" }, // L  16/32/16/32 h56
+  xl: { pad: "py-5", px: "px-10", h: "h-16", text: "text-[16px]" }, // XL 20/40/20/40 h64
+};
+
+// Six roles. Outline is three colour roles of one component (Figma's
+// Secondary/Outline, Outline Secondary Button and Outline Caution Button
+// are geometrically identical sets differing only in label colour), hence
+// three entries instead of one.
+//
+// Hover/Pressed are black overlays on the fill (DESIGN-SYSTEM.md §2.3), so
+// they are precomputed hexes (#002f9b / #002b8f for brand, #c20000 /
+// #ad0000 for critical) rather than element opacity: hover:opacity-90 also
+// fades the label and reads as black @10%, which is neither. Disabled keeps
+// the fill per spec and is dimmed by opacity only because Figma gives no
+// separate disabled colour.
+const VARIANTS = {
+  primary: {
+    on: "bg-brand text-white hover:bg-brand-hover active:bg-brand-pressed",
+    off: "bg-brand text-white opacity-60",
+  },
+  critical: {
+    on: "bg-danger text-white hover:bg-[#c20000] active:bg-[#ad0000]",
+    off: "bg-danger text-white opacity-60",
+  },
+  outline: {
+    on: "bg-transparent text-brand border border-black/10 hover:bg-black/5 active:bg-black/10",
+    off: "bg-transparent text-brand border border-black/10 opacity-60",
+  },
+  "outline-neutral": {
+    on: "bg-transparent text-black border border-black/10 hover:bg-black/5 active:bg-black/10",
+    off: "bg-transparent text-black border border-black/10 opacity-60",
+  },
+  "outline-caution": {
+    on: "bg-transparent text-danger border border-black/10 hover:bg-black/5 active:bg-black/10",
+    off: "bg-transparent text-danger border border-black/10 opacity-60",
+  },
+  tonal: {
+    on: "bg-white/60 text-brand border border-black/10 hover:bg-white/75 active:bg-white/90",
+    off: "bg-white/60 text-brand border border-black/10 opacity-60",
+  },
+  tertiary: {
+    on: "bg-transparent text-brand hover:bg-black/5 active:bg-black/10",
+    off: "bg-transparent text-brand opacity-60",
+  },
+};
+
+const SIZES_KEYS = Object.keys(SIZES);
+const VARIANTS_KEYS = Object.keys(VARIANTS);
+
 export const Button = forwardRef(function Button(
   {
     children,
@@ -15,42 +84,62 @@ export const Button = forwardRef(function Button(
     disabled,
     loading,
     fullWidth = true,
-    // "lg" matches the taller auth-page inputs (Sign In, Sign Up, Join,
-    // Reset Password, Choose Path, Paying Member, Check Email, Mobile
-    // Required). "sm" matches the more compact card-form inputs used by
-    // the Organization/Payment/Members onboarding funnel -- a button that
-    // height-matches its own page's inputs, not a fixed size everywhere.
+    // Old default behaviour: `py-4` + `text-button` = 56px tall, 14px
+    // label. The spec's Large is 56px with a 16px label / 32px sides, so
+    // the default keeps the 56px height those call sites were sized for.
     size = "lg",
-    // "brand" (default, unchanged) is the primary CTA everywhere. "danger"
-    // and "secondary" cover the two other button roles that kept getting
-    // hand-rolled with their own bespoke classes instead of going through
-    // this component (e.g. Security.jsx's Disable MFA / Cancel) -- adding
-    // them here instead of a third bespoke copy.
-    variant = "brand",
+    variant = "primary",
     className = "",
     ...rest
   },
   ref,
 ) {
   const isDisabled = disabled || loading;
-  const sizeClasses = size === "sm" ? "py-3 text-sm" : "py-4 text-button";
-  const variantClasses = isDisabled
-    ? "text-white bg-[#B0B8D8]"
-    : variant === "danger"
-      ? "text-white bg-danger hover:opacity-90"
-      : variant === "secondary"
-        ? "text-gray-600 bg-gray-100 hover:bg-gray-200"
-        : "text-white bg-brand hover:opacity-90";
+
+  const resolvedVariant = LEGACY_VARIANTS[variant] ?? variant;
+  const spec = VARIANTS[resolvedVariant] ?? VARIANTS.primary;
+  const sizeSpec = SIZES[size] ?? SIZES.md;
+
+  const classes = [
+    fullWidth ? "w-full" : "",
+    // 4px radius at every state -- DESIGN-SYSTEM.md §2.1. Figma conflicts
+    // with itself on the hover radius of some variants; the smaller value
+    // wins, so there is no state-dependent radius swap. rounded-g-1 is the
+    // Figma-derived token, not Tailwind's rounded-lg (8px).
+    "rounded-g-1",
+    sizeSpec.pad,
+    sizeSpec.px,
+    sizeSpec.h,
+    sizeSpec.text,
+    "font-medium",
+    "cursor-pointer",
+    "transition-colors duration-150",
+    // Focused state is a #0f53ff outline (DESIGN-SYSTEM.md §2.3), driven
+    // by the same token the global :focus-visible rule now uses.
+    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
+    isDisabled ? "cursor-not-allowed" : "",
+    isDisabled ? spec.off : spec.on,
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <button
       ref={ref}
       type={type}
       onClick={onClick}
       disabled={isDisabled}
-      className={`${fullWidth ? "w-full " : ""}rounded-lg ${sizeClasses} font-medium transition-all duration-150 active:scale-[0.98] cursor-pointer disabled:cursor-not-allowed ${variantClasses} ${className}`}
+      aria-busy={loading || undefined}
+      className={classes}
       {...rest}
     >
       {children}
     </button>
   );
 });
+
+Button.displayName = "Button";
+
+export const BUTTON_SIZES = SIZES_KEYS;
+export const BUTTON_VARIANTS = VARIANTS_KEYS;

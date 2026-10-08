@@ -9,6 +9,15 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    // Vitest's default is 5s, which is too tight for the tests that pull
+    // modules in with `await import(...)` inside the test body -- there are 47
+    // such imports across 17 files, and they bill module loading against the
+    // timeout. communityListConsumers.test.jsx does three sequential imports
+    // plus async API mocking plus waitFor, and it sat right on the boundary:
+    // it failed intermittently even at --maxWorkers=1, and reliably under
+    // parallelism. Raising the budget does not weaken the assertion; it stops
+    // a legitimately slow test from reading as a regression.
+    testTimeout: 15000,
     // e2e/ is Playwright (npm run test:e2e), not Vitest — without this the
     // default *.spec.js glob swallows those files and fails on the
     // @playwright/test import.

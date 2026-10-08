@@ -25,7 +25,7 @@ import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useCommunities } from "../../hooks/useCommunities";
 import { searchCommunity } from "../../api/communities";
 import NotificationsPanel from "./NotificationsPanel";
-import { formatNaira, toTitleCase } from "../../utils/format";
+import { formatNaira, toPascalCaseName } from "../../utils/format";
 import { useClickOutside } from "../../hooks/useClickOutside";
 import PulseImg from "../common/PulseImg";
 import { getInitials } from "../../utils/getInitials";
@@ -35,7 +35,9 @@ import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRol
 function getDisplayName(user) {
   if (!user) return "Loading...";
   if (user.firstName) {
-    return toTitleCase(`${user.firstName} ${user.lastName ?? ""}`.trim());
+    // Pascal-cased: this is the signed-in member's own name, and whatever
+    // they typed at registration isn't guaranteed to be capitalised.
+    return toPascalCaseName(`${user.firstName} ${user.lastName ?? ""}`.trim());
   }
   return user.email ?? "User";
 }
@@ -283,7 +285,7 @@ export default function Topbar({
                         className="w-full flex items-center justify-between gap-2.5 px-4 py-2 hover:bg-gray-50 text-left bg-transparent border-none cursor-pointer"
                       >
                         <span className="text-xs font-medium text-gray-900">
-                          {toTitleCase(`${m.firstName ?? ""} ${m.lastName ?? ""}`.trim())}
+                          {toPascalCaseName(`${m.firstName ?? ""} ${m.lastName ?? ""}`.trim())}
                         </span>
                         <span className="text-[11px] text-gray-400">{m.email}</span>
                       </button>

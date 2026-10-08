@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Crisp } from "crisp-sdk-web";
 import { useAuth } from "../../store/AuthContext.jsx";
 import { useCrispToken } from "../../hooks/useCrispToken";
+import { toPascalCaseName } from "../../utils/format";
 
 // Support chat — configured once, then reconciled with the auth state.
 //
@@ -18,7 +19,7 @@ export default function CrispChat() {
   const bound = useRef({ user: null, token: null });
   const websiteId = import.meta.env.VITE_CRISP_WEBSITE_ID;
 
-  const { data: tokenId } = useCrispToken(user?.id);
+  const { data: tokenId } = useCrispToken();
 
   useEffect(() => {
     if (!websiteId || configured.current) return;
@@ -65,7 +66,7 @@ export default function CrispChat() {
     // financial data stay out of the third-party chat log (NDPR) — the id
     // is enough for an agent to look the account up.
     Crisp.user.setEmail(user.email);
-    const name = [user.firstName, user.lastName].filter(Boolean).join(" ");
+    const name = toPascalCaseName([user.firstName, user.lastName].filter(Boolean).join(" "));
     if (name) Crisp.user.setNickname(name);
     const sessionData = { user_id: userId };
     if (user.role) sessionData.role = user.role;

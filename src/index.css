@@ -37,12 +37,58 @@
   --color-brand-tint: #e6eeff;
   --color-hairline: #e0e0eb;
 
+  /* DESIGN-SYSTEM.md §1/§2 — tokens extracted from the Figma file
+     "Glass Design By AQ" on 2026-10-07. Read that first before adding a
+     colour, radius or button prop; it lists the values that are banned
+     precisely because they used to live here unremarked. */
+
+  /* Figma's focus-ring colour. Previously the global :focus-visible ring
+     reused --color-brand, which meant keyboard focus was invisible on the
+     navy landing sections (brand blue on navy). */
+  --color-focus: #0f53ff;
+
+  /* Figma "Critical Action Button Primary" fill. The old --color-danger
+     (#dc2626, Tailwind red-600) was a different red from the design file. */
+  --color-danger: #db0000;
+
+  /* Figma's hover/pressed are black overlays stacked on the brand fill
+     (black @6% / @12%), not element opacity. Precomputed so a button can
+     darken without an overlay layer. */
+  --color-brand-hover: #002f9b;
+  --color-brand-pressed: #002b8f;
+
+  /* Figma's deep navy for headings/CTA labels. Replaces the six
+     near-identical navies (#0f1d6e, #1c2b8a, #0b0f2e, #0d1a6e, #0c1020,
+     #0d1022, #0f1640) that had drifted apart; none matched the design. */
+  --color-brand-navy: #001f6e;
+
+  /* Figma's blue tint ramp, lightest to darkest. */
+  --color-brand-100: #ccdaff;
+  --color-brand-200: #bdd0fe;
+  --color-brand-300: #dbe6ff;
+  --color-brand-400: #94b1fb;
+  --color-brand-500: #6a8ff0;
+
+  /* Figma's purple. Replaces --color-accent-purple (#7c3aed) and
+     --color-accent-indigo (#4f46e5), neither of which is in the design. */
+  --color-brand-purple: #6b2fb5;
+
+  /* Figma's corner-radius scale: four values, nothing else. 4px is used by
+     every button at every state -- where Figma conflicts with itself on
+     hover radius, the smaller value wins (DESIGN-SYSTEM.md §2.1).
+     Deliberately NOT --radius-xs/sm/md/lg: those are Tailwind's built-in
+     scale, and remapping them to 12/16 would enlarge every card and input
+     that already uses rounded-md/rounded-lg. These are additive. */
+  --radius-g-1: 4px;
+  --radius-g-2: 8px;
+  --radius-g-3: 12px;
+  --radius-g-4: 16px;
+
   /* Success/danger pair used by payment-outcome screens (member app's
      PaymentSuccess, dashboard's PaymentCallback) — the same two hex values
      were hardcoded identically in both files. */
   --color-success: #16a34a;
   --color-success-tint: #dcfce7;
-  --color-danger: #dc2626;
   --color-danger-tint: #fee2e2;
 
   --animate-fadeIn: fadeIn 0.8s ease-out forwards;
@@ -279,7 +325,10 @@
    `outline-none` for visual reasons, which otherwise leaves keyboard focus
    with no indicator at all. */
 :focus-visible {
-  outline: 2px solid var(--color-brand);
+  /* --color-focus (#0f53ff), not --color-brand. DESIGN-SYSTEM.md §2.3:
+     Figma's Focused state is a #0f53ff stroke. Reusing brand blue made
+     keyboard focus invisible on the navy landing/dark sections. */
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 /* Form controls are the one documented exception, and they must be exempt HERE

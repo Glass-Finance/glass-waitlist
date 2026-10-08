@@ -1,4 +1,5 @@
 import { AlertTriangle, X } from "lucide-react";
+import { Button } from "../ui/Button";
 
 // Generalized version of the bottom-sheet confirm pattern first built for
 // MyCommunities.jsx's LeaveConfirmModal -- a real in-app disclaimer instead
@@ -29,7 +30,7 @@ export default function ConfirmSheet({
           <button
             onClick={onCancel}
             disabled={confirming}
-            className="bg-transparent border-none cursor-pointer p-1 text-ink-faint"
+            className="bg-transparent border-none cursor-pointer p-1 rounded-g-1 text-ink-faint hover:text-ink-muted hover:bg-black/5 active:bg-black/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:opacity-60 transition-colors"
             aria-label="Cancel"
           >
             <X size={18} />
@@ -47,20 +48,30 @@ export default function ConfirmSheet({
           </p>
         </div>
         <div className="flex flex-col gap-2.5 mt-6">
-          <button
+          {/* Both actions route through ui/Button (DESIGN-SYSTEM.md §2): the
+              sheet previously hand-rolled rounded-xl pills at weight 600 with
+              no pressed or focus-visible state at all. fullWidth is left at its
+              default (true) because these sit stacked in a flex-col and were
+              w-full before — ConfirmDialog passes fullWidth={false} because its
+              pair shares a row and sizes itself with flex-1 instead. */}
+          <Button
+            type="button"
             onClick={onConfirm}
-            disabled={confirming}
-            className={`w-full py-3.5 px-0 rounded-xl border-none text-white text-[14.5px] font-semibold ${danger ? "bg-danger" : "bg-brand"} ${confirming ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
+            loading={confirming}
+            variant={danger ? "critical" : "primary"}
+            size="lg"
           >
             {confirming ? (confirmingLabel ?? "Please wait…") : confirmLabel}
-          </button>
-          <button
+          </Button>
+          <Button
+            type="button"
             onClick={onCancel}
             disabled={confirming}
-            className="w-full py-3.5 px-0 rounded-xl border border-hairline-neutral bg-white text-ink-strong text-[14.5px] font-semibold cursor-pointer"
+            variant="outline-neutral"
+            size="lg"
           >
             Cancel
-          </button>
+          </Button>
         </div>
       </div>
     </div>

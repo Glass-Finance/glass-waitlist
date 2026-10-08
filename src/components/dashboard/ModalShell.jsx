@@ -21,6 +21,18 @@ import { X } from "lucide-react";
 // UX rule is that the primary action must never be scrolled to reach, so
 // decision buttons/reason forms belong here, not at the end of a long
 // scrollable body.
+// Close-button styling, shared by both variants below so they can't drift.
+// Stays a raw <button> rather than going through ui/Button: Figma defines no
+// icon-button role, and forcing a square icon through the label-bearing
+// component would need an invented spec value. Radius, focus ring and
+// pressed state still have to match DESIGN-SYSTEM.md §2 like every other
+// control — the deviation is only "which component", not "which spec".
+const CLOSE_BTN =
+  "p-1.5 rounded-g-1 bg-transparent border-none cursor-pointer text-gray-400 " +
+  "hover:text-gray-700 hover:bg-gray-100 active:bg-gray-200 active:text-gray-800 " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+  "transition-colors";
+
 export default function ModalShell({ title, subtitle, onClose, children, footer }) {
   // Escape-to-close -- every dashboard modal built on this shell gets this
   // for free; hand-rolled modals elsewhere in the app don't have it yet.
@@ -48,10 +60,7 @@ export default function ModalShell({ title, subtitle, onClose, children, footer 
               <h2 className="text-sm font-bold text-gray-900">{title}</h2>
               {subtitle && <p className="text-[11px] text-gray-400 mt-0.5">{subtitle}</p>}
             </div>
-            <button
-              onClick={onClose}
-              className="p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
-            >
+            <button onClick={onClose} aria-label="Close" className={CLOSE_BTN}>
               <X size={15} />
             </button>
           </div>
@@ -59,7 +68,7 @@ export default function ModalShell({ title, subtitle, onClose, children, footer 
           <button
             onClick={onClose}
             aria-label="Close"
-            className="absolute top-4 right-4 p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+            className={`absolute top-4 right-4 ${CLOSE_BTN}`}
           >
             <X size={15} />
           </button>

@@ -15,7 +15,11 @@ import { useAuth } from "../../store/AuthContext";
 import LoadingState from "../common/LoadingState";
 import EmptyState from "../common/EmptyState";
 import notificationsIllustration from "../../assets/dashboard/empty-states/notifications-illustration.webp";
-import { formatRelativeDateTime as formatTimestamp, dayLabel } from "../../utils/format";
+import {
+  formatRelativeDateTime as formatTimestamp,
+  dayLabel,
+  toPascalCaseName,
+} from "../../utils/format";
 
 // Resolve community info for display AND for the owned/member routing
 // split below — shares notificationContent.js's resolveCommunity (id
@@ -56,7 +60,9 @@ function NotifAvatar({ n }) {
   const type = n.notificationType ?? n.type;
   const { user } = useAuth();
   const isSelf = isSelfAccountType(type);
-  const selfName = [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email;
+  // Avatar alt text, so it's read aloud -- keep it properly cased.
+  const selfName =
+    toPascalCaseName([user?.firstName, user?.lastName].filter(Boolean).join(" ")) || user?.email;
 
   if (isSelf && user?.profileImage?.url) {
     return (
