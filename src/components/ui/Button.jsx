@@ -29,6 +29,15 @@ const SIZES = {
   md: { pad: "py-3", px: "px-6", h: "h-12", text: "text-[14px]" }, // M  12/24/12/24 h48
   lg: { pad: "py-4", px: "px-8", h: "h-14", text: "text-[16px]" }, // L  16/32/16/32 h56
   xl: { pad: "py-5", px: "px-10", h: "h-16", text: "text-[16px]" }, // XL 20/40/20/40 h64
+  // Icon-only: square, no horizontal padding, because there is no label to
+  // clear. Hit areas are the squares the Figma file actually draws (24/32/40
+  // were all present; 48 is carried over from the button scale because 40 is
+  // below the 44px touch-target guidance on phones). No text size -- the
+  // child is an icon, and inlining a label into one of these would defeat
+  // the point of the role. Pair with aria-label; Button does not add one.
+  "icon-sm": { pad: "", px: "", h: "h-8 w-8", text: "" }, // 32
+  "icon-md": { pad: "", px: "", h: "h-10 w-10", text: "" }, // 40
+  "icon-lg": { pad: "", px: "", h: "h-12 w-12", text: "" }, // 48
 };
 
 // Six roles. Outline is three colour roles of one component (Figma's
@@ -50,6 +59,19 @@ const VARIANTS = {
   critical: {
     on: "bg-danger text-white hover:bg-[#c20000] active:bg-[#ad0000]",
     off: "bg-danger text-white opacity-60",
+  },
+  // Success and Warning are NOT in the Figma file -- it defines no such
+  // button role. Added on instruction, using the fills the file itself
+  // reaches for elsewhere (success #008000 at 435 nodes, warning #9a6500 at
+  // 91), so they are consistent with the design rather than invented. Marked
+  // in DESIGN-SYSTEM.md §2 as an extension, not as spec.
+  success: {
+    on: "bg-success text-white hover:bg-[#007300] active:bg-[#006600]",
+    off: "bg-success text-white opacity-60",
+  },
+  warning: {
+    on: "bg-warning text-white hover:bg-[#8a5a00] active:bg-[#7a4f00]",
+    off: "bg-warning text-white opacity-60",
   },
   outline: {
     on: "bg-transparent text-brand border border-black/10 hover:bg-black/5 active:bg-black/10",
@@ -99,9 +121,11 @@ export const Button = forwardRef(function Button(
   const resolvedVariant = LEGACY_VARIANTS[variant] ?? variant;
   const spec = VARIANTS[resolvedVariant] ?? VARIANTS.primary;
   const sizeSpec = SIZES[size] ?? SIZES.md;
+  // Icon sizes are square; w-full would stretch them into an ellipse.
+  const isIconSize = size.startsWith("icon-");
 
   const classes = [
-    fullWidth ? "w-full" : "",
+    fullWidth && !isIconSize ? "w-full" : "",
     // 4px radius at every state -- DESIGN-SYSTEM.md §2.1. Figma conflicts
     // with itself on the hover radius of some variants; the smaller value
     // wins, so there is no state-dependent radius swap. rounded-g-1 is the

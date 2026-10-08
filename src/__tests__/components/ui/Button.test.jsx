@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { Bell, X } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 
 // Guards DESIGN-SYSTEM.md §2. These assertions are deliberately literal:
@@ -31,6 +32,73 @@ describe("Button — design system conformance", () => {
     expect(cls).toContain(px);
     expect(cls).toContain(h);
     expect(cls).toContain(text);
+  });
+
+  describe("icon sizes", () => {
+    it.each([
+      ["icon-sm", "h-8 w-8"],
+      ["icon-md", "h-10 w-10"],
+      ["icon-lg", "h-12 w-12"],
+    ])("%s is square and carries no horizontal padding", (size, box) => {
+      render(
+        <Button size={size} aria-label="Notifications">
+          <Bell />
+        </Button>,
+      );
+      const cls = screen.getByRole("button").className;
+      expect(cls).toContain(box);
+      // No label to clear, so no px-* and no text size.
+      expect(cls).not.toMatch(/\bpx-/);
+      expect(cls).not.toMatch(/text-\[/);
+    });
+
+    it("stays square even with the fullWidth default of true", () => {
+      render(
+        <Button size="icon-md" aria-label="Close">
+          <X />
+        </Button>,
+      );
+      expect(screen.getByRole("button").className).not.toContain("w-full");
+    });
+
+    it("still carries the 4px radius and all five states", () => {
+      render(
+        <Button size="icon-md" aria-label="Notifications">
+          <Bell />
+        </Button>,
+      );
+      const cls = screen.getByRole("button").className;
+      expect(cls).toContain("rounded-g-1");
+      expect(cls).toContain("hover:");
+      expect(cls).toContain("active:");
+      expect(cls).toContain("focus-visible:outline-focus");
+    });
+  });
+
+  describe("success and warning roles", () => {
+    // These two are an extension: Figma defines no such role. They use the
+    // fills the file reaches for elsewhere (#008000 / #9a6500), so they stay
+    // consistent with the design rather than inventing a palette.
+    it("success fills with the Figma green", () => {
+      render(<Button variant="success">Confirmed</Button>);
+      expect(screen.getByRole("button").className).toContain("bg-success");
+    });
+
+    it("warning fills with the Figma amber", () => {
+      render(<Button variant="warning">Heads up</Button>);
+      expect(screen.getByRole("button").className).toContain("bg-warning");
+    });
+
+    it.each(["success", "warning"])(
+      "%s carries all five states like every other role",
+      (variant) => {
+        render(<Button variant={variant}>Go</Button>);
+        const cls = screen.getByRole("button").className;
+        expect(cls).toContain("hover:");
+        expect(cls).toContain("active:");
+        expect(cls).toContain("focus-visible:outline-focus");
+      },
+    );
   });
 
   it("uses 4px radius at every state, per the smaller-value-wins rule", () => {

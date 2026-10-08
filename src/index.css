@@ -87,8 +87,7 @@
   /* Success/danger pair used by payment-outcome screens (member app's
      PaymentSuccess, dashboard's PaymentCallback) — the same two hex values
      were hardcoded identically in both files. */
-  --color-success: #16a34a;
-  --color-success-tint: #dcfce7;
+  --color-success-tint: #ccffcc;
   --color-danger-tint: #fee2e2;
 
   --animate-fadeIn: fadeIn 0.8s ease-out forwards;
@@ -279,13 +278,31 @@
   --color-success-bright: #0ece7b;
   --color-danger-bright: #e11d48;
   --color-danger-bright-2: #ef4444;
-  --color-warning: #b45309;
+
+  /* ---------------------------------------------------------------------------
+     Status fills, from the Figma file's own observed usage (DESIGN-SYSTEM.md
+     §1). These are the values the design file actually reaches for, and they
+     replace the Tailwind palette that was sitting here:
+       #008000 435 nodes — the file's dominant green
+       #ccffcc 183 nodes — its light green (chip/banner fill)
+       #9a6500  91 nodes — its dominant amber
+       #ffffdb  56 nodes — its pale amber
+       #ffcccc  27 nodes — its pale red
+     The previous #16a34a / #b45309 / #ecfdf5 / #fffbeb / #fef2f2 are all
+     Tailwind green-600 / amber-700 / emerald-50 / amber-50 / red-50 and
+     appear nowhere in the file.
+     BLAST RADIUS: --color-success had 192 references and --color-warning 74,
+     so this is a visible change across status chips, banners and buttons --
+     intentional, but review it rather than taking it on faith.
+  --------------------------------------------------------------------------- */
+  --color-success: #008000;
+  --color-warning: #9a6500;
 
   /* Status washes — the pale fills these statuses sit on. */
-  --color-success-wash: #ecfdf5;
-  --color-danger-wash: #fef2f2;
+  --color-success-wash: #ccffcc;
+  --color-danger-wash: #ffcccc;
   --color-danger-wash-2: #fff1f2;
-  --color-warning-wash: #fffbeb;
+  --color-warning-wash: #ffffdb;
   --color-accent-purple-wash: #f3eeff;
 
   /* Hairlines. --color-hairline is the original above; the rest are the
