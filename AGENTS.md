@@ -16,7 +16,13 @@ Validate in CI order (`.github/workflows/ci.yml`) before opening a PR:
 npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build
 ```
 
-Focused test: `npx vitest run src/__tests__/path/to.test.js` (suite runs `vitest run --pool=forks --maxWorkers=1`, jsdom). Tests live in `src/__tests__/` mirroring `src/`; mock API modules at the boundary, never require prod credentials.
+Focused test: `npx vitest run src/__tests__/path/to.test.js` (suite runs plain `vitest run`, jsdom). Tests live in `src/__tests__/` mirroring `src/`; mock API modules at the boundary, never require prod credentials.
+
+The suite used to be pinned to `--pool=forks --maxWorkers=1`, serialised, which took ~21 min for 148 files. That was never a deliberate decision — it arrived in `51ecd6c` ("chore: add prettier formatting") alongside an unrelated reformat, and no commit or doc explains it. Vitest's default `isolate: true` already gives every file a fresh module registry and jsdom, so serialising bought nothing but wall-clock. The scripts are now plain `vitest run` and let Vitest size the pool itself; don't reintroduce a fixed worker count without measuring memory first, since each forked worker carries its own jsdom.
+
+`testTimeout` is raised to 15s (Vitest's default is 5s) for the tests that pull modules in with `await import(...)` inside the test body — 47 such imports across 17 files, all of which bill module loading against the timeout. This is not slack for slow tests; `communityListConsumers.test.jsx` sat right on the 5s boundary and failed intermittently even serialised.
+
+If you see cross-file state leakage, fix the leaking test before reaching for `isolate: false` — that is where the real flakiness lives.
 
 ```bash
 npm run audit:endpoints                    # frontend calls vs the backend's real routes (OpenAPI)
