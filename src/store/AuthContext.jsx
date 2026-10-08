@@ -369,6 +369,16 @@ export function AuthProvider({ children }) {
       const updated = {
         ...prev,
         email: profile.email ?? prev.email,
+        // The account's stable external reference (auth.users
+        // .external_user_reference), exposed by GET /user/me as
+        // `externalReference`. Read-only from our side: the backend generates it
+        // once and never updates it. CrispChat passes it to Crisp.setTokenId()
+        // so a support conversation follows the user across devices.
+        //
+        // `?? prev.` so a re-hydration that fails to carry the field (older
+        // backend, partial response) can't downgrade a token we already hold to
+        // undefined — losing it would silently unbind the Crisp session.
+        externalReference: profile.externalReference ?? prev.externalReference,
         role,
         firstName: ud.firstName,
         lastName: ud.lastName,
