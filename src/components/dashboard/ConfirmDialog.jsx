@@ -32,36 +32,34 @@ export default function ConfirmDialog({
           </p>
         )}
         <div className="flex gap-3 pt-1">
-          <button
+          {/* Both actions go through ui/Button, so the destructive path gets
+              the same radius, weight and five states as the benign one. The
+              Cancel button used to be a filled grey pill (rounded-xl,
+              bg-gray-100, font-semibold) — the role collapse DESIGN-SYSTEM.md
+              §4.3 calls out. It's the outline-neutral role now. */}
+          <Button
             type="button"
             onClick={onClose}
             disabled={confirming}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none disabled:opacity-60"
+            fullWidth={false}
+            variant="outline-neutral"
+            size="sm"
+            className="flex-1"
           >
             Cancel
-          </button>
-          {danger ? (
-            <button
-              type="button"
-              onClick={onConfirm}
-              disabled={confirming}
-              className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-danger"
-            >
-              {confirming && <Loader2 size={12} className="animate-spin" />}
-              {confirming ? (confirmingLabel ?? "Please wait…") : confirmLabel}
-            </button>
-          ) : (
-            <Button
-              type="button"
-              onClick={onConfirm}
-              loading={confirming}
-              fullWidth={false}
-              className="flex-1 flex items-center justify-center gap-1.5"
-            >
-              {confirming && <Loader2 size={12} className="animate-spin" />}
-              {confirming ? (confirmingLabel ?? "Please wait…") : confirmLabel}
-            </Button>
-          )}
+          </Button>
+          <Button
+            type="button"
+            onClick={onConfirm}
+            loading={confirming}
+            fullWidth={false}
+            variant={danger ? "critical" : "primary"}
+            size="sm"
+            className="flex-1 flex items-center justify-center gap-1.5"
+          >
+            {confirming && <Loader2 size={12} className="animate-spin" />}
+            {confirming ? (confirmingLabel ?? "Please wait…") : confirmLabel}
+          </Button>
         </div>
       </div>
     </ModalShell>
