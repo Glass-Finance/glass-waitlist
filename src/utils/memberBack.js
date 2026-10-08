@@ -60,7 +60,9 @@ export function useTrapBackInApp() {
   const navigate = useNavigate();
   const location = useLocation();
   const sentinelOnTop = useRef(false);
-  const sentinelUrl = useRef(null);
+  // Empty string rather than null so the ref's inferred type is string;
+  // "no sentinel armed" is represented by sentinelOnTop, not by this.
+  const sentinelUrl = useRef("");
 
   // Disarm when the user navigates to a different page — the sentinel entry is
   // overwritten by the real one, so it can no longer be the pop source.
