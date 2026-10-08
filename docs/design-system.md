@@ -105,7 +105,23 @@ Six roles. All **Inter**, label weight **500**, border radius **4px at rest**.
 | **Tertiary** | none           | `#002fa7` · `#db0000`             | none                | 4px, height 24      |
 | **Critical** | `#db0000`      | `#ffffff`                         | —                   | 4px                 |
 | **Tonal**    | `#ffffff @60%` | `#002fa7`                         | `#000000 @10%`, 1px | 4px                 |
-| _(focus)_    | —              | —                                 | `#0f53ff`           | —                   |
+
+> ### ⚠️ Extension: Success and Warning are NOT in Figma
+>
+> The Figma file defines **no** success or warning button role. These two were added on the
+> design owner's instruction, and are marked here as an **extension rather than spec** — if the
+> file later grows a real status role, prefer that.
+>
+> To avoid inventing a palette, both use fills the file **already reaches for elsewhere**:
+> `#008000` (its dominant green, 435 nodes) and `#9a6500` (its dominant amber, 91 nodes).
+> Washes are `#ccffcc` (183) and `#ffffdb` (56); the danger wash is `#ffcccc` (27). These
+> replaced Tailwind's green-600 / amber-700 / emerald-50 / amber-50 / red-50, none of which
+> appear anywhere in the file.
+>
+> `_SUCCESS_` · `_WARNING_` — fill as above, label `#ffffff`, 4px, full state set.
+> **Blast radius:** `--color-success` had 192 references and `--color-warning` 74, so adopting
+> these values is a visible change across status chips, banners and buttons. Review it.
+> | _(focus)_ | — | — | `#0f53ff` | — |
 
 > ### Radius decision: 4px, everywhere
 >
@@ -142,6 +158,34 @@ Heights are the quick check: **32 · 40 · 48 · 56 · 64.** Tertiary is 24.
 Critical's X-large uses `20/24/20/24` (h=64) — narrower horizontally than Primary's
 `20/40/20/40`.
 
+### 2.2a Icon-only sizes (extension)
+
+> ### ⚠️ Extension: Figma defines no icon-button role
+>
+> Every role in §2.1 assumes a text label, so the app's icon-only buttons — hamburger, bell,
+> close, chevron, overflow, trash — had nothing to route through. Added on the design owner's
+> instruction as **three sizes**, not a new role: they reuse the existing role fills and states
+> and differ only in geometry.
+>
+> | Size      | Box   | Padding | Label |
+> | --------- | ----- | ------- | ----- |
+> | `icon-sm` | 32×32 | none    | none  |
+> | `icon-md` | 40×40 | none    | none  |
+> | `icon-lg` | 48×48 | none    | none  |
+>
+> 24/32/40 squares were all present in the file; 48 is carried over from the button scale
+> because 40 is below the 44px touch-target guidance on phones. **No horizontal padding** —
+> there is no label to clear — and no text size, since the child is an icon.
+>
+> `ui/Button` does **not** add an `aria-label` for you. An icon-only button with no accessible
+> name is unusable by screen reader and voice control, so pass one explicitly:
+>
+> ```jsx
+> <Button size="icon-md" aria-label="Notifications">
+>   <Bell />
+> </Button>
+> ```
+
 ### 2.3 States
 
 | State    | Primary                                             |
@@ -171,11 +215,11 @@ Full evidence in `design-audit.md`.
 > three highest-leverage shared components — `ModalShell` (17 importers),
 > `ConfirmDialog` (7), `ConfirmSheet` (3) — which corrects ~54 buttons for
 > three file edits. Icon-only buttons (hamburger, bell, close, chevron, trash)
-> are deliberately left as raw `<button>` and normalised in place rather than
-> routed through `ui/Button`: Figma defines no icon-button role, so a component
-> for them would mean inventing a spec value. See §6.7. They are a large share
-> of what remains, so the raw-button count will keep outrunning the fixed
-> count for a while — expected, not a stall.
+> were deliberately left as raw `<button>` and normalised in place, because Figma
+> defined no icon-button role and routing them through `ui/Button` would have meant inventing a
+> spec value. **That is no longer true:** §2.2a adds three icon-only sizes, so icon buttons can
+> now be migrated like anything else. They are a large share of what remains, so the raw-button
+> count will keep outrunning the fixed count for a while — expected, not a stall.
 
 ### 3.1 App — `glass-waitlist`
 
@@ -394,9 +438,9 @@ are given an `aria-label` so neither is an unnamed button.
    hover radius. Recorded in §2.1.
 2. **`#0f53ff` at 6 uses.** Too low-frequency to treat as a confident token. Applied as the
    global focus ring per §2.1, but confirm it's the intended focus colour and not a one-off.
-3. **No success/warning role.** The code needs green and amber states; Figma defines none.
-   New roles need specifying. `--color-success`/`--color-warning` are currently off-palette
-   (#16a34a, #b45309).
+3. ~~**No success/warning role.**~~ **Resolved as an extension:** `success` and `warning` roles
+   added in §2.1 using the file's own dominant green `#008000` and amber `#9a6500`, replacing
+   the off-palette `#16a34a`/`#b45309`. Flagged as an extension, not spec.
 4. **Success/status palette.** Figma has `#008000`, `#1d6b40`, `#9a6500`, `#ffffdb` in use but
    no coherent scale. Is there a status ramp somewhere else?
 5. **Icons and other components.** Out of scope here. 376 components, 51 sets, none cleaned
@@ -405,12 +449,8 @@ are given an `aria-label` so neither is an unnamed button.
 6. **Six near-identical navies.** `#0f1d6e`, `#1c2b8a`, `#0b0f2e`, `#0d1a6e`, `#0c1020`,
    `#0d1022`, `#0f1640` all collapse to `#001f6e`. Confirm, since `--color-brand-deep` and
    `--color-brand-night` currently carry extra meaning in dark sections.
-7. **No icon-button role exists.** The app is full of icon-only buttons — hamburger, bell,
-   close, chevron, overflow menu, trash — and §2's six roles all assume a text label. The
-   button sweep is treating them as a recorded deviation: they stay raw `<button>` elements
-   rather than being forced through `ui/Button` (which would need an invented square-label
-   size), but they still have to carry the 4px radius and the full state set like anything
-   else. If you want them first-class, the spec needs an icon role — square-ish, no
-   horizontal padding, and a defined hit-area size — and then `ui/Button` can grow a real
-   variant for them. Until then they are the largest single category left in §3.1, and the
-   sweep will keep normalising them in place rather than migrating them.
+7. ~~**No icon-button role exists.**~~ **Resolved as an extension:** three icon-only sizes
+   (`icon-sm` 32, `icon-md` 40, `icon-lg` 48) added in §2.2a — square, no horizontal padding,
+   full state set, reusing the existing role fills. They are _sizes_ rather than a role, so
+   `ui/Button` keeps a single variant axis. The sweep can now migrate every remaining raw
+   `<button>`, icon ones included.
