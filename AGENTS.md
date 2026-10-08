@@ -34,6 +34,7 @@ A call to a route the backend doesn't have type-checks, lints, builds and unit-t
 - `src/services/` — auth payload builders + thin endpoint wrappers (`authPayloads.js`, `authService.js`). Build auth payloads with the builders; don't hand-roll request shapes.
 - `src/store/AuthContext.jsx` — session source of truth. See `docs/authentication.md`.
 - `docs/` — architecture, auth, authorization, payments, account/phone/KYC flows, data-fetching, error-handling, testing strategy, ADRs. Check the relevant file before inventing a pattern.
+- **`docs/design-system.md` — the design source of truth** (colours, radii, button roles/sizes/states), extracted from the Figma file "Glass Design By AQ". Check it before choosing any colour, radius or button classes; it lists the banned values too. Mirrors `../DESIGN-SYSTEM.md` at the workspace root — keep them in sync.
 - **Sign-in accepts an email or phone number (one identifier field); phone is added later in Settings (copy = Add, not Verify)** — `docs/account-verification.md`.
 - **KYC (Smile ID)** — `docs/kyc.md`.
 - `docs/team-conventions.md` — human team working agreements (PR flow, ownership of coverage floors / ADRs / AGENTS.md, e2e mocking preferences, how to avoid parallel-infra collisions). Read when coordinating with other contributors.
@@ -48,6 +49,7 @@ A call to a route the backend doesn't have type-checks, lints, builds and unit-t
 - **Inline `<script>` edits in `index.html`** invalidate a `sha256-` entry in `vercel.json`: run `npm run build`, then `node scripts/compute-csp-hashes.mjs`, and swap in the hash. Google Identity Services hashes come from live CSP reports, not that script — don't remove them.
 - **Input focus uses a border colour change, not a focus ring.** Preserve semantic error/success focus colours where explicitly required. Canonical example: `src/components/ui/TextInput.jsx` (`focus:border-brand`). Don't add `focus:ring-*`, `focus-within:ring-*`, or a focus background fill — the brand-coloured ring reads as a second edge outside the border. For a borderless composite control (search box, chip container) use `focus-within:border-brand`, adding a resting `border border-transparent` first if the element has no border so focus doesn't shift layout. Form controls are the documented exception to the global `:focus-visible` outline in `src/index.css` (unlayered, so it outranks both utilities and the `@layer base` safety net for `border-color`); buttons and links keep that outline.
 - **JS-only app code** (`allowJs`, `checkJs: false`); Tailwind v4 CSS-first theme in `src/index.css` (no `tailwind.config.js`); fonts via `@fontsource` imports in `main.jsx`, never CSS `@import`.
+- **Colour, radius and buttons come from `docs/design-system.md`** (extracted from Figma "Glass Design By AQ"). Never introduce a hex that isn't listed there — especially not `#2547d0`, `#2535c3`, `#7c3aed`, `#4f46e5`, `#dc2626` or the six invented navies. Radius is 4px (`rounded-g-1`) at every state; radius 4/8/12/16 is the whole scale. Buttons go through `ui/Button` (`variant` × `size`), not raw `<button>` with bespoke classes — a raw `<button>` needs a reason.
 
 ## Workflow
 
