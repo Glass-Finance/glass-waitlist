@@ -36,6 +36,7 @@ import { useAuth } from "../../store/AuthContext";
 import { useCommunities } from "../../hooks/useCommunities";
 import { useMyMemberRecord } from "../../hooks/useMyAccount";
 import { resolveIsPayingAdmin, isCommunityAdmin } from "../../utils/communityRole";
+import { toPascalCaseName } from "../../utils/format";
 import { toastSuccess } from "../../utils/toast";
 import { MobileOverlay, SidebarLogo, LogoutButton, UserIdentity } from "./SidebarPrimitives";
 import PulseImg from "../common/PulseImg";
@@ -136,11 +137,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { logout, user, isPlatformAdmin } = useAuth();
-  const userDisplayName = (
-    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
-    user?.email ||
-    ""
-  ).replace(/\b\w/g, (c) => c.toUpperCase());
+  const userDisplayName = toPascalCaseName(
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.email || "",
+  );
   const userInitials =
     user?.firstName || user?.lastName
       ? `${(user?.firstName ?? "")[0] ?? ""}${(user?.lastName ?? "")[0] ?? ""}`.toUpperCase()

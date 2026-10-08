@@ -1,6 +1,7 @@
 import ProfileAvatar from "../memberApp/ProfileAvatar";
 import { GlyphCheckMark, GlyphLock } from "./illustrations";
 import { GLASS_PASS_UNLOCKS } from "./unlocks";
+import { toPascalCaseName } from "../../utils/format";
 
 // The Glass Pass rail — the wizard's left column on sm+ and a single compact
 // card above the wizard on phones (the modal becomes a bottom sheet there, so
@@ -131,9 +132,11 @@ export default function GlassPassRail({ user, pass, variant = "full" }) {
 
 // First name is what the rest of the app shows; fall back through the pair and
 // finally to the email local-part so the rail is never blank mid-hydration.
+// Pascal-cased: the backend sends whatever the member typed at registration, so
+// an all-lowercase "cynthia ee" was rendering verbatim in the identity card.
 function displayName(user) {
   const full = [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
-  if (full) return full;
+  if (full) return toPascalCaseName(full);
   const emailName = user?.email?.split("@")[0];
-  return emailName || "Glass member";
+  return toPascalCaseName(emailName) || "Glass member";
 }

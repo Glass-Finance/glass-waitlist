@@ -85,6 +85,28 @@ export function toTitleCase(str: string | null | undefined): string | null | und
   return str.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+// Pascal-case a *person's* name for display: "cynthia ee" -> "Cynthia Ee".
+// Separate from toTitleCase above on purpose. toTitleCase is shared by ~30
+// call sites that also format bank names, card types and payment channels,
+// and those must NOT have their tails lowercased -- "MTN" has to stay "MTN",
+// not become "Mtn". Only names get the lowercase-tail treatment.
+//
+// Two things pass through untouched, per the design owner:
+//   - anything containing an apostrophe ("O'Shea") -- the capitalisation
+//     around the apostrophe is the person's own choice, so don't second-guess it
+//   - anything containing a non-ASCII character ("maría") -- accents stay
+//     intact and the surrounding case is preserved
+export function toPascalCaseName(str: string | null | undefined): string | null | undefined {
+  if (!str) return str;
+  const trimmed = str.trim();
+  if (!trimmed) return trimmed;
+  if (trimmed.includes("'") || /[^\x00-\x7F]/.test(trimmed)) return trimmed;
+  return trimmed
+    .split(/\s+/)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+}
+
 type DateInput = string | number | Date | null | undefined;
 
 // "Jul 11, 2026" — the dominant date-display style across the app.

@@ -3,6 +3,7 @@ import {
   formatNaira,
   formatNairaCompact,
   toTitleCase,
+  toPascalCaseName,
   formatDate,
   formatDateShort,
   formatDateLong,
@@ -75,6 +76,56 @@ describe("toTitleCase", () => {
     expect(toTitleCase("")).toBe("");
     expect(toTitleCase(null)).toBe(null);
     expect(toTitleCase(undefined)).toBe(undefined);
+  });
+});
+
+describe("toPascalCaseName", () => {
+  it("capitalizes the first letter of each name part", () => {
+    expect(toPascalCaseName("cynthia ee")).toBe("Cynthia Ee");
+    expect(toPascalCaseName("robert")).toBe("Robert");
+    expect(toPascalCaseName("john doe")).toBe("John Doe");
+    expect(toPascalCaseName("alex john smith")).toBe("Alex John Smith");
+    expect(toPascalCaseName("vanessa")).toBe("Vanessa");
+  });
+
+  it("lowercases the tail of each part", () => {
+    expect(toPascalCaseName("ROBERT")).toBe("Robert");
+    expect(toPascalCaseName("cynthia EE")).toBe("Cynthia Ee");
+  });
+
+  it("preserves names with apostrophes untouched", () => {
+    expect(toPascalCaseName("O'Shea")).toBe("O'Shea");
+    expect(toPascalCaseName("O'CONNOR")).toBe("O'CONNOR");
+    expect(toPascalCaseName("d'artagnan")).toBe("d'artagnan");
+  });
+
+  it("preserves names with accented characters untouched", () => {
+    expect(toPascalCaseName("maría")).toBe("maría");
+    expect(toPascalCaseName("josé")).toBe("josé");
+    expect(toPascalCaseName("renée")).toBe("renée");
+  });
+
+  it("trims and collapses internal whitespace", () => {
+    expect(toPascalCaseName("  john   doe  ")).toBe("John Doe");
+  });
+
+  it("leaves already-PascalCase names alone", () => {
+    expect(toPascalCaseName("Robert")).toBe("Robert");
+    expect(toPascalCaseName("John Doe")).toBe("John Doe");
+  });
+
+  it("passes through falsy values unchanged", () => {
+    expect(toPascalCaseName("")).toBe("");
+    expect(toPascalCaseName(null)).toBe(null);
+    expect(toPascalCaseName(undefined)).toBe(undefined);
+  });
+
+  it("does not touch toTitleCase -- acronyms and brands must survive", () => {
+    // These share the module with names but are NOT names; toTitleCase keeps
+    // its original uppercase-preserving behavior.
+    expect(toTitleCase("MTN")).toBe("MTN");
+    expect(toTitleCase("ATM")).toBe("ATM");
+    expect(toTitleCase("USD")).toBe("USD");
   });
 });
 
