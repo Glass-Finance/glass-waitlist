@@ -10,6 +10,7 @@ import ReceiptDownloadButton from "../../components/dashboard/ReceiptDownloadBut
 import LoadingState from "../../components/common/LoadingState";
 import EmptyState from "../../components/common/EmptyState";
 import ConfirmDialog from "../../components/dashboard/ConfirmDialog";
+import { Button } from "../../components/ui/Button";
 import StatCard from "../../components/dashboard/StatCard";
 import { formatNaira, formatDate } from "../../utils/format";
 import { resolveDisplayName, resolveEmail, resolvePhone } from "../../utils/memberName";
@@ -131,13 +132,16 @@ export default function MemberDetail() {
             A full picture of the members of your community
           </p>
         </div>
-        <button
+        <Button
           onClick={handleRemove}
-          disabled={removeMember.isPending}
-          className="flex items-center gap-1.5 px-4 py-2 rounded text-xs font-medium text-white hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50 bg-danger"
+          loading={removeMember.isPending}
+          fullWidth={false}
+          variant="critical"
+          size="sm"
+          className="flex items-center gap-1.5"
         >
           <UserMinus size={14} /> Remove Member
-        </button>
+        </Button>
       </div>
 
       {/* Stats */}

@@ -244,19 +244,26 @@ function DisableFlow({ onSuccess, onCancel }) {
       </p>
       <CodeInput value={code} onChange={setCode} disabled={loading} />
       {error && <p className="text-[13px] text-danger m-0">{error}</p>}
-      <button
+      <Button
         onClick={handleDisable}
-        disabled={code.length !== 6 || loading}
-        className={`p-3.5 rounded-xl border-none text-white text-[15px] font-semibold ${code.length === 6 ? "cursor-pointer bg-danger" : "cursor-not-allowed bg-[#E0E0E0]"} ${loading ? "opacity-70" : "opacity-100"}`}
+        disabled={code.length !== 6}
+        loading={loading}
+        fullWidth={false}
+        variant="critical"
+        size="md"
+        className="w-full"
       >
         {loading ? "Disabling…" : "Disable MFA"}
-      </button>
-      <button
+      </Button>
+      <Button
         onClick={onCancel}
-        className="p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
+        fullWidth={false}
+        variant="outline-neutral"
+        size="md"
+        className="w-full"
       >
         Cancel
-      </button>
+      </Button>
     </div>
   );
 }

@@ -121,20 +121,24 @@ function RemoveAccountModal({ onClose, onConfirm, isDeleting }) {
             This can't be undone.
           </p>
           <div className="flex justify-end gap-3">
-            <button
+            <Button
               onClick={onClose}
               disabled={isDeleting}
-              className="px-4 py-2 rounded-full text-sm font-semibold text-gray-600 bg-transparent border-none cursor-pointer hover:bg-gray-100 transition-colors disabled:opacity-50"
+              fullWidth={false}
+              variant="outline-neutral"
+              size="sm"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={onConfirm}
-              disabled={isDeleting}
-              className="px-4 py-2 rounded-full text-sm font-semibold text-white bg-red-600 hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
+              loading={isDeleting}
+              fullWidth={false}
+              variant="critical"
+              size="sm"
             >
               {isDeleting ? "Removing…" : "Remove Account"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

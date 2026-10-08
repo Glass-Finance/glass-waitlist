@@ -295,28 +295,38 @@ export default function Invites() {
                     <div className="flex gap-2 mt-3">
                       {confirmingWithdraw ? (
                         <>
-                          <button
+                          <Button
                             onClick={() => handleWithdraw(req)}
                             disabled={isRevoking}
-                            className="flex-1 py-2.5 px-0 rounded-lg border-none bg-danger-bright text-white text-[13px] font-semibold cursor-pointer disabled:opacity-60"
+                            loading={isRevoking}
+                            fullWidth={false}
+                            variant="critical"
+                            size="sm"
+                            className="flex-1"
                           >
                             {isRevoking ? "Withdrawing…" : "Yes, withdraw"}
-                          </button>
-                          <button
+                          </Button>
+                          <Button
                             onClick={() => setConfirmingWithdrawId(null)}
                             disabled={isRevoking}
-                            className="flex-1 py-2.5 px-0 rounded-lg border-[1.5px] border-surface-container-border bg-white text-ink-strong text-[13px] font-semibold cursor-pointer disabled:opacity-60"
+                            fullWidth={false}
+                            variant="outline-neutral"
+                            size="sm"
+                            className="flex-1"
                           >
                             Keep it
-                          </button>
+                          </Button>
                         </>
                       ) : (
-                        <button
+                        <Button
                           onClick={() => setConfirmingWithdrawId(req.id)}
-                          className="flex-1 py-2.5 px-0 rounded-lg border-[1.5px] border-surface-container-border bg-white text-ink-strong text-[13px] font-semibold cursor-pointer"
+                          fullWidth={false}
+                          variant="outline-neutral"
+                          size="sm"
+                          className="flex-1"
                         >
                           Withdraw
-                        </button>
+                        </Button>
                       )}
                     </div>
                   )}

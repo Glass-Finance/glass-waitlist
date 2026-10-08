@@ -1,4 +1,5 @@
 import OtpBoxes from "../../../../components/common/OtpBoxes";
+import { Button } from "../../../../components/ui/Button";
 
 export function DeleteAccountModal({
   user,
@@ -55,19 +56,27 @@ export function DeleteAccountModal({
             />
             {deleteError && <p className="text-xs text-red-500 mb-3">{deleteError}</p>}
             <div className="flex gap-2">
-              <button
+              <Button
                 onClick={onClose}
-                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors bg-stacked-container"
+                disabled={deleteLoading}
+                fullWidth={false}
+                variant="outline-neutral"
+                size="sm"
+                className="flex-1"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={onRequestCode}
-                disabled={deleteConfirm !== "DELETE" || deleteLoading}
-                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50 bg-danger"
+                disabled={deleteConfirm !== "DELETE"}
+                loading={deleteLoading}
+                fullWidth={false}
+                variant="critical"
+                size="sm"
+                className="flex-1"
               >
                 {deleteLoading ? "Sending code…" : "Continue"}
-              </button>
+              </Button>
             </div>
           </>
         ) : (
@@ -91,19 +100,27 @@ export function DeleteAccountModal({
             </div>
             {deleteError && <p className="text-xs text-red-500 mb-3 text-center">{deleteError}</p>}
             <div className="flex gap-2">
-              <button
+              <Button
                 onClick={onClose}
-                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors bg-stacked-container"
+                disabled={deleteLoading}
+                fullWidth={false}
+                variant="outline-neutral"
+                size="sm"
+                className="flex-1"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={onConfirmDeletion}
-                disabled={deletionCode.some((digit) => !digit) || deleteLoading}
-                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50 bg-danger"
+                disabled={deletionCode.some((digit) => !digit)}
+                loading={deleteLoading}
+                fullWidth={false}
+                variant="critical"
+                size="sm"
+                className="flex-1"
               >
                 {deleteLoading ? "Deleting…" : "Delete Account"}
-              </button>
+              </Button>
             </div>
           </>
         )}
