@@ -2,6 +2,7 @@
 
 **Source of truth:** Figma file _Glass Design By AQ_ — `figma.com/design/OzgMHnZ528nzYyElv5LZDd`
 **Extracted:** 2026-10-07 via Figma REST API (`GET /v1/files/OzgMHnZ528nzYyElv5LZDd`)
+**Re-audited:** 2026-10-09 — full-file pass; typography, icons and the component sheet inventoried (§7–§9)
 **Applies to:** `glass-waitlist` (app → app.glasspay.app) and `glass-waitlist-v1` (marketing → glasspay.app)
 
 > This document is normative. When code disagrees with this file, the code is wrong — unless
@@ -68,10 +69,14 @@ Ordered lightest → darkest: `#ccdaff` · `#bdd0fe` · `#dbe6ff` · `#94b1fb` �
 ### 1.5 Radius scale
 
 **4 · 8 · 12 · 16.** Observed node counts: 4 → 1,792 · 12 → 441 · 8 → 357 · 16 → 56.
-Four values. Anything else (`rounded-md` 6, `rounded-2xl` 16, `rounded-full` 9999, arbitrary
-`[10px]`/`[20px]`/`[46px]`) is off-system.
+Four values. Anything else (`rounded-md` 6, `rounded-2xl` 16, arbitrary `[10px]`/`[20px]`/`[46px]`) is off-system.
+
+> **Pill exception (confirmed 2026-10-09):** `rounded-full` is legal on **toggle tracks**
+> (Figma r=100), **frequency badges** (r=24/999) and **status chips** — the file uses pills
+> there deliberately. It stays banned on buttons, cards, inputs and modals.
 
 > Note: an earlier version of `design-audit.md` claimed a `6` in the scale. There is no 6.
+> One `Dialog` node carries r=24, outside the scale — provisional, see §9.3.
 
 ### 1.6 Banned values
 
@@ -443,9 +448,9 @@ are given an `aria-label` so neither is an unnamed button.
    the off-palette `#16a34a`/`#b45309`. Flagged as an extension, not spec.
 4. **Success/status palette.** Figma has `#008000`, `#1d6b40`, `#9a6500`, `#ffffdb` in use but
    no coherent scale. Is there a status ramp somewhere else?
-5. **Icons and other components.** Out of scope here. 376 components, 51 sets, none cleaned
-   up. The decorative `dashboard-overlay/` mocks use inline styles and radius 7 — decide
-   whether they must conform at all.
+5. ~~**Icons and other components.**~~ **Inventoried 2026-10-09:** typography in §7, icons in
+   §8, the full component sheet in §9. Still open: the decorative `dashboard-overlay/` mocks
+   (inline styles, radius 7) remain exempt — confirm they never need to conform.
 6. **Six near-identical navies.** `#0f1d6e`, `#1c2b8a`, `#0b0f2e`, `#0d1a6e`, `#0c1020`,
    `#0d1022`, `#0f1640` all collapse to `#001f6e`. Confirm, since `--color-brand-deep` and
    `--color-brand-night` currently carry extra meaning in dark sections.
@@ -454,3 +459,217 @@ are given an `aria-label` so neither is an unnamed button.
    full state set, reusing the existing role fills. They are _sizes_ rather than a role, so
    `ui/Button` keeps a single variant axis. The sweep can now migrate every remaining raw
    `<button>`, icon ones included.
+8. **Icon glyph scale is provisional (§8.4).** Figma's icon components don't serialize width/
+   height via the REST API, so the 16/20/24/32/40 glyph scale is derived from the icon-button
+   boxes, not measured. Confirm — especially the normalisation of the app's `w-9` (36px, 60
+   sites) and `w-7` (28px, 35 sites).
+9. **Dialog radius.** The Figma `Dialog` node carries r=24 — outside the 4/8/12/16 scale and on
+   a single node. Code uses 16 (`rounded-2xl`) + 20px sheets. Keeping the code values until
+   the owner rules; if 24 is real, §1.5 grows a fifth step.
+10. **Marketing display type has no spec.** The Figma file contains app screens only; its
+    largest text is 24px. Marketing heroes run `clamp(26px…62px)` and `font-extrabold` (800,
+    which §7 bans as above the file's max weight of 700). Sizes stay unruled until the owner
+    exports marketing frames; weights should come down to ≤700 now.
+
+---
+
+## 7. Typography
+
+Full-file pass 2026-10-09 — 587 text nodes.
+
+**The file is single-font: Inter.** Every product text node is Inter. The only exception is
+one stray `Urbanist` label on the "Color Tonals" annotation — design-sheet chrome, not
+product UI.
+
+### 7.1 Scale (product UI)
+
+| Size | Weight | Line-height | Where                               | Freq |
+| ---- | ------ | ----------- | ----------------------------------- | ---- |
+| 12   | 500    | 14.5–24     | small buttons, chips                | 59   |
+| 14   | 400    | 20          | table cells, meta text              | 31   |
+| 14   | 500    | 20 / 24     | buttons (small/medium), labels      | 33   |
+| 16   | 400    | 24          | body, table cell text               | 77   |
+| 16   | 500    | 24          | buttons (large), inputs, prefixes   | 190  |
+| 18   | 500    | 21.8–24     | card titles, settings rows          | 16   |
+| 22   | 500    | 28          | table titles, dialog titles, values | 11   |
+| 24   | 500    | 29          | rare                                | 2    |
+
+Weights present: **400, 500, 600** (2 nodes), **700** (names/emails in mock data + one C2
+chip). **500 is the default.** 400 for body/table text. 600/700 appear only in mock data and
+annotations — do not promote them to product headings without the owner saying so.
+
+Letter-spacing: body is 0; the 12/14px button labels carry ~1% (Figma stores 0.012–0.014 px
+at those sizes). `ui/Button` applies none today — provisional, do not invent tracking
+elsewhere.
+
+### 7.2 Code verdicts
+
+| Item                                       | Verdict                                                                                                                                                                   |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inter via `--font-sans`                    | **Fine.** Both repos, loaded via `@fontsource` in `main.jsx` (never CSS `@import`).                                                                                       |
+| `--font-dm` (DM Sans) + `.font-dm`         | **Change: delete.** Zero Figma use. Declared in both `index.css`; used by nothing.                                                                                        |
+| `--font-playfair` + `.font-playfair`       | **Change: delete.** Same.                                                                                                                                                 |
+| `--font-urbanist` + `.font-urbanist`       | **Change (1 site).** `WhyGlass.jsx:81` in both repos wraps a landing section in `font-urbanist`. Figma has no Urbanist product text. Switch to Inter — visible but small. |
+| Marketing display sizes `clamp(26px…62px)` | **Not banned — out of file.** See open question §6.10.                                                                                                                    |
+| `font-extrabold` (800), 3 sites in v1      | **Change: use 700.** 800 exceeds the file's max weight.                                                                                                                   |
+| Buttons 12/14/16px @ weight 500            | **Fine** — §2.2 already enforces this.                                                                                                                                    |
+
+---
+
+## 8. Icons
+
+### 8.1 Library: lucide-react — keep it
+
+The code's icon library is **`lucide-react`** (122 files in the app, 7 in v1). Keep it. The
+Figma Icons section (`1:4232`, ~58 components) is a grab bag of iconify sets —
+`material-symbols-light`, `lets-icons`, `iconamoon`, `vuesax`, `fluent`, `tdesign`, `weui` —
+plus hand-drawn vectors. Rebuilding on those sets would mean adding seven icon dependencies
+and restyling every surface. The spec is the **shape**, not the source: match the mapping
+below.
+
+### 8.2 Mapping — Figma name → lucide
+
+| Figma                                   | lucide          | Notes                      |
+| --------------------------------------- | --------------- | -------------------------- |
+| `Icon/Add`                              | `Plus`          |                            |
+| `Icon/Remove`                           | `Minus`         |                            |
+| `Icon/Dropdown`, `formField/Dropdown`   | `ChevronDown`   |                            |
+| `Icon/Back`, `Mobile Back Button`       | `ChevronLeft`   |                            |
+| `Icon/Arrow`                            | `ArrowRight`    |                            |
+| `Icon/Cancel`                           | `X`             |                            |
+| `Icon/Menu`                             | `Menu`          |                            |
+| `Icon/Copy`                             | `Copy`          |                            |
+| `Icon/Download`, `Icon/Download2`       | `Download`      |                            |
+| `Icon/Email`                            | `Mail`          |                            |
+| `Icon/Call`                             | `Phone`         |                            |
+| `Icon/Notification`                     | `Bell`          |                            |
+| `Icon/Filter`                           | `Filter`        |                            |
+| `Icon/SendReminder`                     | `Send`          |                            |
+| `InputField/Search`                     | `Search`        |                            |
+| `formField/Calender`                    | `Calendar`      |                            |
+| `formField/showPassword`                | `Eye`           |                            |
+| `formField/hidePassword`                | `EyeOff`        |                            |
+| `formField/Verified`, `SmallVerified`   | `BadgeCheck`    |                            |
+| `dropdownMenuIcon/Delete`               | `Trash2`        |                            |
+| `dropdownMenuIcon/Edit`                 | `Pencil`        |                            |
+| `dropdownMenuIcon/Pause`                | `Pause`         |                            |
+| `dropdownMenuIcon/time`                 | `Clock`         |                            |
+| `dropdownMenuIcon/memberList`           | `Users`         |                            |
+| `navMenuIcons/Category`                 | `LayoutGrid`    |                            |
+| `navMenuIcons/Members`, `Users`         | `Users`         |                            |
+| `navMenuIcons/User`                     | `User`          |                            |
+| `navMenuIcons/Payments`                 | `CreditCard`    |                            |
+| `navMenuIcons/Autopay`                  | `RefreshCw`     |                            |
+| `navMenuIcons/PayoutAccount`            | `Wallet`        |                            |
+| `navMenuIcons/Role`                     | `UserCog`       |                            |
+| `navMenuIcons/Security`                 | `Shield`        |                            |
+| `navMenuIcons/Community`                | `Building2`     | confirm per surface        |
+| `navMenuIcons/Settings`                 | `Settings`      |                            |
+| `PopUpIcon/Caution`                     | `AlertTriangle` |                            |
+| `PopUpIcon/Info`, material-symbols info | `Info`          |                            |
+| `StatusIcon/Checkmark`                  | `CheckCircle2`  | see §8.3 for illustrations |
+
+### 8.3 Status & selection icons are illustrations, not glyphs
+
+`StatusIcon/*` (Checkmark, AddUser, Plans, Amount, failedPayments, Time, InactiveUser,
+Users), `SelectionCard/*` (Recurring, Persons, Memberadd, NonPaying, PayingMember, Flash),
+`FeedbackIcon/Success` and `PopUpIcon/*` are **multicolour filled illustrations**, not line
+glyphs. `common/SuccessBadge.jsx` is already the reference implementation of
+`FeedbackIcon/Success` — it was measured off the design asset (seal bbox, check polyline,
+accent positions); keep it in sync if that asset ever changes. For the rest, use a coloured
+lucide glyph inside a status-wash circle (`bg-<wash>` + `text-<status>`, palette §2.1
+extension note and §9.1) until the owner exports real assets. **Do not hand-trace vectors.**
+
+### 8.4 Sizes
+
+Glyph boxes do not serialize in the REST payload (width/height null on all 58 icon
+components), so this scale is **provisional** (open question §6.8), derived from the
+icon-button boxes (§2.2a) and the button label scale:
+
+| Step      | Glyph | Tailwind |
+| --------- | ----- | -------- |
+| `icon-xs` | 16    | `w-4`    |
+| `icon-sm` | 20    | `w-5`    |
+| `icon-md` | 24    | `w-6`    |
+| `icon-lg` | 32    | `w-8`    |
+| `icon-xl` | 40    | `w-10`   |
+
+Glyph inside a §2.2a icon-only button: box − 16px padding budget → 16 / 24 / 32 for
+`icon-sm`/`icon-md`/`icon-lg` buttons.
+
+Observed in the app: `w-9` (36px) ×60 and `w-7` (28px) ×35 — both off-scale. **Change to the
+nearest step** (36 → 32 or 40; 28 → 24 or 32) when the file is already open for other work.
+`w-4`/`w-5`/`w-6`/`w-8`/`w-10` are fine. Icons on touch targets keep the 44px minimum
+(§2.2a rationale).
+
+---
+
+## 9. Components
+
+Full inventory of the Components section (`1:12168`), 2026-10-09. Verdicts: **fine** (exists,
+conforms) · **change** (exists but diverges — action named) · **missing** (no shared
+counterpart; values below are the spec when it gets built) · **n/a** (asset or exempt).
+
+### 9.1 Badges — the palette is the spec
+
+| Badge                         | Fill                | Label     | Radius | Code verdict                                     |
+| ----------------------------- | ------------------- | --------- | ------ | ------------------------------------------------ |
+| Status = Paid                 | `#ccffcc`           | `#008000` | 4      | **missing** — ad-hoc spans, no shared chip       |
+| Status = Unpaid               | `#ffcccc`           | `#db0000` | 4      | **missing**                                      |
+| Status = Pending              | `#ffffdb`           | `#9a6500` | 4      | **missing**                                      |
+| Role = Member                 | `#ffffdb`           | `#9a6500` | 4      | **missing** — yes, Member is amber, like Pending |
+| Role = Admin                  | `#e4d7f4`           | `#6b2fb5` | 4      | **missing**                                      |
+| Freq = Weekly                 | `#ccdaff`           | `#002fa7` | pill   | **missing**                                      |
+| Freq = Monthly                | `#ffffdb`           | `#9a6500` | pill   | **missing**                                      |
+| Freq = One-time               | `#e4d7f4`           | `#6b2fb5` | pill   | **missing**                                      |
+| Mobile payment Success/Failed | same as Paid/Unpaid | —         | 4      | **missing**                                      |
+
+Pills are legal here (§1.5 carve-out). Frequency-badge text is 14/500; status chips 16/500.
+
+### 9.2 Inputs & controls
+
+| Component                 | Figma                                                                          | Code                                            | Verdict                                                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Input fields              | r=4; fill white@60% **or** outline `#000000@20%`; placeholder 16/500 black@60% | `ui/TextInput` — `rounded-lg` (8px)             | **change**: radius → `rounded-g-1` (4px). Keep the border-colour focus rule (AGENTS.md) — do not add a ring. |
+| Input + Label             | 5 types × L/S; active stroke `#002fa7`                                         | TextInput + inline labels                       | **fine** — `focus:border-brand` already matches                                                              |
+| DIgital input Field (OTP) | digit cells                                                                    | `common/OtpBoxes` + `otpBoxesRenderer`          | **fine**                                                                                                     |
+| Toggle + State / + Size   | track pill r=100; on `#002fa7`, off `#000000@10%`; knob white                  | `common/Toggle` — on brand ✓, off `bg-gray-300` | **change**: off track → `bg-black/10`                                                                        |
+| Segmented Control         | r=4; active white@60%, inactive transparent; text black@60% / black            | dashboard tabs ad-hoc                           | **missing** — build on first dashboard-tab touch                                                             |
+| Checkbox                  | box + checked/unchecked/cancel states                                          | none shared                                     | **missing**                                                                                                  |
+| Selection Card            | selected/default                                                               | member-add flows hand-roll                      | **missing**                                                                                                  |
+| Checkmark set             | checked / unchecked / cancel                                                   | lucide `Check` / `Minus`                        | **fine** via §8 mapping                                                                                      |
+
+### 9.3 Overlays & menus
+
+| Component              | Figma                                                         | Code                                                                    | Verdict                                                                                           |
+| ---------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Dialog                 | r=**24**, fill white@60% + `#000000@10%` stroke; title 22/500 | `ModalShell`/`GlassModal`: `rounded-2xl` (16), sheet `rounded-t-[20px]` | **keep code for now** — 24 is outside the §1.5 scale and appears on one node (open question §6.9) |
+| Input Modal            | form dialog                                                   | `GlassModal`                                                            | **fine**                                                                                          |
+| Dropdown Menu + Labels | default / critical rows                                       | dashboard overflow menus ad-hoc                                         | **missing**; critical row = `text-danger`                                                         |
+| Mobile Back Button     | chevron-in-circle                                             | member app back (`goBackInApp`)                                         | **fine**                                                                                          |
+
+### 9.4 Feedback & status
+
+| Component              | Figma                                                | Code                           | Verdict                                        |
+| ---------------------- | ---------------------------------------------------- | ------------------------------ | ---------------------------------------------- |
+| Banner/Feedback        | fill `#ccdaff`, stroke `#002fa7@20%`, r=4            | app banners ad-hoc             | **missing**                                    |
+| Banner/Action          | same family, action variant                          | ad-hoc                         | **missing**                                    |
+| Notifications row      | unread `#f3f4f6` r=8; read outline `#000000@10%` r=8 | `dashboard/NotificationsPanel` | **change**: align unread/read states per Figma |
+| status Icons (L/S)     | coloured illustrations                               | lucide + wash (§8.3)           | **fine** per §8.3                              |
+| Helper Texts with Icon | check icon + helper line                             | TextInput error state only     | **change**: add optional helper line           |
+
+### 9.5 Structure
+
+| Component                     | Figma                                                                         | Code                          | Verdict                                                                 |
+| ----------------------------- | ----------------------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------- |
+| Navigation Menu/Header        | sidebar nav + topbar                                                          | `dashboard/Sidebar`, `Topbar` | **fine** — adopt §8 mapping for `navMenuIcons/*`                        |
+| Table Header / Cells          | payment status / period / text cells                                          | dashboard tables ad-hoc       | **missing** — build on first table touch                                |
+| Settings Card                 | r=4, white@60% + `#000000@10%`, chevron                                       | settings rows ad-hoc          | **change**: shared card on next settings pass                           |
+| Drop-In Box / Upload Link Bar | states: dropping/on-drop/default/dropped; default/disabled/uploading/uploaded | KYC upload flows hand-roll    | **missing**                                                             |
+| Community Logos               | asset set                                                                     | `src/assets`                  | **n/a** (assets)                                                        |
+| Social Button (Google)        | r=8, white@60% + `#000000@10%`, label 16/500                                  | SignUp Google button          | **change**: verify radius/fill (r=8 is legal — Social is not a §2 role) |
+
+### 9.6 Exempt
+
+The `dashboard-overlay/` product mocks (inline styles, radius 7) stay **exempt** — decorative
+reference renders, not conformance targets (§6.5).
