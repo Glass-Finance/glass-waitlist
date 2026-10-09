@@ -22,6 +22,7 @@ import {
   TableShell,
   TableFooter,
 } from "./SharedUI";
+import { Button } from "../../../components/ui/Button";
 
 function CreateCommunityAccountModal({ onClose }) {
   const queryClient = useQueryClient();
@@ -244,13 +245,9 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
         )}
 
         <div className="flex gap-3 pt-1">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
-          >
+          <Button type="button" onClick={onClose} fullWidth={false} size="sm" className="flex-1">
             Cancel
-          </button>
+          </Button>
           <button
             type="submit"
             disabled={!decision || submitting || isLoading || (commentRequired && !comment.trim())}

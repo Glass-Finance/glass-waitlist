@@ -9,6 +9,7 @@ import { getErrorMessage } from "../../../../utils/errorHandler";
 import { resizeImageFile } from "../../../../utils/resizeImage";
 import { safeImageUrl } from "../../../../utils/safeImageUrl";
 import { deleteCommunity } from "../../../../api/communities";
+import { Button } from "../../../../components/ui/Button";
 import { APP_ORIGIN } from "../../../../utils/deviceRedirect";
 
 const INVITE_HOST = APP_ORIGIN.replace(/^https?:\/\//, "");
@@ -245,17 +246,15 @@ export default function CommunityProfile() {
         {error && <p className="text-xs text-red-500 mt-3">{error}</p>}
 
         <div className="flex justify-end mt-4">
-          <button
+          <Button
             onClick={handleSave}
             disabled={updateCommunity.isPending}
-            className={`h-12 px-4 rounded-lg text-xs font-medium transition-all cursor-pointer disabled:cursor-not-allowed flex items-center justify-center ${
-              updateCommunity.isPending
-                ? "bg-[#C5C5C5] text-white border-none"
-                : "text-brand hover:bg-brand hover:text-white border border-brand"
-            }`}
+            variant="outline"
+            size="md"
+            className="text-xs"
           >
             {saved ? "Saved!" : updateCommunity.isPending ? "Saving…" : "Save Changes"}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -325,23 +324,31 @@ export default function CommunityProfile() {
             {deleteError && <p className="text-xs text-red-500 mb-3">{deleteError}</p>}
 
             <div className="flex gap-2">
-              <button
+              <Button
                 onClick={() => {
                   setDeleteModal(false);
                   setDeleteConfirm("");
                   setDeleteError("");
                 }}
-                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors bg-stacked-container"
+                disabled={deleteLoading}
+                fullWidth={false}
+                variant="outline-neutral"
+                size="sm"
+                className="flex-1"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleDeleteCommunity}
-                disabled={deleteConfirm !== community?.name || deleteLoading}
-                className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-white cursor-pointer transition-colors disabled:opacity-50 bg-danger"
+                disabled={deleteConfirm !== community?.name}
+                loading={deleteLoading}
+                fullWidth={false}
+                variant="critical"
+                size="sm"
+                className="flex-1"
               >
                 {deleteLoading ? "Deleting…" : "Delete Community"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

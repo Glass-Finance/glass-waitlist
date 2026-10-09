@@ -461,7 +461,7 @@ export default function ProblemSection() {
 
         {/* ── Story controls ── */}
         <div className="mt-14 flex flex-wrap items-center justify-between gap-x-6 gap-y-2.5">
-          <h3 className="m-0 text-[clamp(1.15rem,2vw,1.4rem)] font-semibold tracking-[-0.02em] text-[#0f1d6e]">
+          <h3 className="m-0 text-[clamp(1.15rem,2vw,1.4rem)] font-semibold tracking-[-0.02em] text-brand-navy">
             One ₦25,000 dues payment, followed from Friday to Sunday
           </h3>
           <div className="flex items-center gap-3.5 text-[12px]">
@@ -495,7 +495,7 @@ export default function ProblemSection() {
                 <div className="text-[11.5px] font-semibold tracking-[0.05em] text-[#6b7280] uppercase max-[1040px]:hidden">
                   {when}
                 </div>
-                <h4 className="mt-0.5 text-[18px] tracking-[-0.01em] text-[#9a9db3] transition duration-300 group-[.active]:text-[#0f1d6e] group-[.done]:text-[#0f1d6e] max-[1040px]:hidden max-[1040px]:group-[.active]:block max-[1040px]:group-[.active]:mt-0 max-[1040px]:group-[.active]:ml-2">
+                <h4 className="mt-0.5 text-[18px] tracking-[-0.01em] text-[#9a9db3] transition duration-300 group-[.active]:text-brand-navy group-[.done]:text-brand-navy max-[1040px]:hidden max-[1040px]:group-[.active]:block max-[1040px]:group-[.active]:mt-0 max-[1040px]:group-[.active]:ml-2">
                   {where}
                 </h4>
                 <p className="mt-0 max-h-0 translate-y-[-8px] overflow-hidden text-[15px] leading-[1.45] transition duration-500 group-[.active]:mt-1 group-[.active]:max-h-20 group-[.active]:translate-y-0 max-[1040px]:hidden">
@@ -651,7 +651,7 @@ export default function ProblemSection() {
                   className="mt-[120px] flex items-center [clip-path:inset(0_100%_0_0)] transition-[clip-path] duration-700 [&.show]:[clip-path:inset(0)] max-[600px]:mt-3 max-[600px]:flex-col max-[600px]:items-center"
                 >
                   <i className="w-[46px] flex-none border-t-2 border-dashed border-[#e0ab88] max-[600px]:h-7 max-[600px]:w-auto max-[600px]:border-t-0 max-[600px]:border-l-2" />
-                  <span className="max-w-[210px] rounded-lg border-l-4 border-[#e0ab88] bg-white px-4 py-3 text-[15px] leading-[1.35] font-medium text-[#0f1d6e] shadow-[0_8px_24px_#0000001a]">
+                  <span className="max-w-[210px] rounded-lg border-l-4 border-[#e0ab88] bg-white px-4 py-3 text-[15px] leading-[1.35] font-medium text-brand-navy shadow-[0_8px_24px_#0000001a]">
                     Who is C Okafor? Which member? Which due?
                   </span>
                 </div>
@@ -776,7 +776,7 @@ export default function ProblemSection() {
         {/* ── Verdict ── */}
         <div
           data-role="verdict"
-          className="mt-6 rounded-xl border border-[#e2e4ee] bg-white px-7 py-[22px] text-[clamp(1.1rem,2vw,1.4rem)] leading-[1.35] text-[#0f1d6e] [clip-path:inset(0_100%_0_0)] transition-[clip-path] duration-800 [&.on]:[clip-path:inset(0)]"
+          className="mt-6 rounded-xl border border-[#e2e4ee] bg-white px-7 py-[22px] text-[clamp(1.1rem,2vw,1.4rem)] leading-[1.35] text-brand-navy [clip-path:inset(0_100%_0_0)] transition-[clip-path] duration-800 [&.on]:[clip-path:inset(0)]"
         >
           <b className="font-bold">Five places hold one payment.</b>{" "}
           <span className="text-[#6b7280]">None of them is the record.</span>
@@ -788,7 +788,7 @@ export default function ProblemSection() {
             <div className="text-[12px] font-semibold tracking-[0.14em] text-[#002fa7] uppercase">
               Time
             </div>
-            <h4 className="mt-3 max-w-[20ch] text-[clamp(1.45rem,2.5vw,1.85rem)] leading-[1.18] font-semibold tracking-[-0.025em] text-balance text-[#0f1d6e]">
+            <h4 className="mt-3 max-w-[20ch] text-[clamp(1.45rem,2.5vw,1.85rem)] leading-[1.18] font-semibold tracking-[-0.025em] text-balance text-brand-navy">
               How much time is your team losing to manual reconciliation?
             </h4>
             <p className="mt-3.5 max-w-[34ch]">
@@ -799,7 +799,7 @@ export default function ProblemSection() {
             <div className="text-[12px] font-semibold tracking-[0.14em] text-[#002fa7] uppercase">
               Trust
             </div>
-            <h4 className="mt-3 max-w-[20ch] text-[clamp(1.45rem,2.5vw,1.85rem)] leading-[1.18] font-semibold tracking-[-0.025em] text-balance text-[#0f1d6e]">
+            <h4 className="mt-3 max-w-[20ch] text-[clamp(1.45rem,2.5vw,1.85rem)] leading-[1.18] font-semibold tracking-[-0.025em] text-balance text-brand-navy">
               Can your members clearly see how funds are managed?
             </h4>
             <p className="mt-3.5 max-w-[34ch]">

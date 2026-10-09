@@ -100,12 +100,9 @@ function SetupFlow({ onSuccess, onCancel }) {
         </div>
 
         <Button onClick={startSetup}>Set Up MFA</Button>
-        <button
-          onClick={onCancel}
-          className="p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
-        >
+        <Button onClick={onCancel} fullWidth={false} size="md">
           Cancel
-        </button>
+        </Button>
       </div>
     );
   }
@@ -162,12 +159,9 @@ function SetupFlow({ onSuccess, onCancel }) {
         <Button onClick={verifySetup} disabled={code.length !== 6} loading={stage === "verifying"}>
           {stage === "verifying" ? "Activating…" : "Activate MFA"}
         </Button>
-        <button
-          onClick={onCancel}
-          className="p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
-        >
+        <Button onClick={onCancel} fullWidth={false} size="md">
           Cancel
-        </button>
+        </Button>
       </div>
     );
   }
@@ -244,19 +238,26 @@ function DisableFlow({ onSuccess, onCancel }) {
       </p>
       <CodeInput value={code} onChange={setCode} disabled={loading} />
       {error && <p className="text-[13px] text-danger m-0">{error}</p>}
-      <button
+      <Button
         onClick={handleDisable}
-        disabled={code.length !== 6 || loading}
-        className={`p-3.5 rounded-xl border-none text-white text-[15px] font-semibold ${code.length === 6 ? "cursor-pointer bg-danger" : "cursor-not-allowed bg-[#E0E0E0]"} ${loading ? "opacity-70" : "opacity-100"}`}
+        disabled={code.length !== 6}
+        loading={loading}
+        fullWidth={false}
+        variant="critical"
+        size="md"
+        className="w-full"
       >
         {loading ? "Disabling…" : "Disable MFA"}
-      </button>
-      <button
+      </Button>
+      <Button
         onClick={onCancel}
-        className="p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
+        fullWidth={false}
+        variant="outline-neutral"
+        size="md"
+        className="w-full"
       >
         Cancel
-      </button>
+      </Button>
     </div>
   );
 }
@@ -310,13 +311,13 @@ function RegenerateFlow({ onSuccess, onCancel }) {
             </code>
           ))}
         </div>
-        <button
+        <Button
           onClick={() => copy(recoveryCodes.join("\n"))}
           className="flex items-center justify-center gap-2 p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
         >
           {copied ? <Check size={16} /> : <Copy size={16} />}
           {copied ? "Copied" : "Copy all codes"}
-        </button>
+        </Button>
         <Button onClick={onSuccess}>Done</Button>
       </div>
     );
@@ -343,13 +344,9 @@ function RegenerateFlow({ onSuccess, onCancel }) {
       >
         {loading ? "Generating…" : "Generate New Codes"}
       </button>
-      <button
-        onClick={onCancel}
-        disabled={loading}
-        className="p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
-      >
+      <Button onClick={onCancel} disabled={loading} fullWidth={false} size="md">
         Cancel
-      </button>
+      </Button>
     </div>
   );
 }

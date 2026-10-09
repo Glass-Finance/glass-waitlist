@@ -71,7 +71,7 @@ export default function TopBar() {
               minWidth: 12,
               height: 12,
               padding: "0 2px",
-              background: "#DC2626",
+              background: "var(--color-danger)",
               borderRadius: 99,
               border: "1.5px solid #fff",
               display: "flex",

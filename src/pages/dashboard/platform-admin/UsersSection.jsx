@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, ShieldAlert, ShieldCheck, Users, Trash2, EyeOff } from "lucide-react";
 import ModalShell from "../../../components/dashboard/ModalShell";
+import { Button } from "../../../components/ui/Button";
 import { toTitleCase } from "../../../utils/format";
 import {
   getAdminUsers,
@@ -48,17 +49,25 @@ function SuspendModal({ user, onClose }) {
           />
         </div>
         <div className="flex gap-3 pt-1">
-          <button
+          <Button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
+            disabled={mutation.isPending}
+            fullWidth={false}
+            variant="outline-neutral"
+            size="sm"
+            className="flex-1"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            disabled={mutation.isPending || !reason.trim()}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-danger-bright"
+            disabled={!reason.trim()}
+            loading={mutation.isPending}
+            fullWidth={false}
+            variant="critical"
+            size="sm"
+            className="flex-1 flex items-center justify-center gap-1.5"
           >
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -66,7 +75,7 @@ function SuspendModal({ user, onClose }) {
               <ShieldAlert size={12} />
             )}
             {mutation.isPending ? "Suspending…" : "Suspend"}
-          </button>
+          </Button>
         </div>
       </form>
     </ModalShell>
@@ -82,18 +91,25 @@ function UnsuspendModal({ user, onClose, onConfirm, unsuspending }) {
           sign in and use their Account again.
         </p>
         <div className="flex gap-3 pt-1">
-          <button
+          <Button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
+            disabled={unsuspending}
+            fullWidth={false}
+            variant="outline-neutral"
+            size="sm"
+            className="flex-1"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={onConfirm}
-            disabled={unsuspending}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-success-deep"
+            loading={unsuspending}
+            fullWidth={false}
+            variant="success"
+            size="sm"
+            className="flex-1 flex items-center justify-center gap-1.5"
           >
             {unsuspending ? (
               <Loader2 size={12} className="animate-spin" />
@@ -101,7 +117,7 @@ function UnsuspendModal({ user, onClose, onConfirm, unsuspending }) {
               <ShieldCheck size={12} />
             )}
             {unsuspending ? "Unsuspending…" : "Unsuspend"}
-          </button>
+          </Button>
         </div>
       </div>
     </ModalShell>
@@ -137,21 +153,29 @@ function MarkForDeletionModal({ user, onClose, onConfirm, marking }) {
           />
         </div>
         <div className="flex gap-3 pt-1">
-          <button
+          <Button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
+            disabled={marking}
+            fullWidth={false}
+            variant="outline-neutral"
+            size="sm"
+            className="flex-1"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            disabled={marking || !reason.trim()}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-danger-bright"
+            disabled={!reason.trim()}
+            loading={marking}
+            fullWidth={false}
+            variant="critical"
+            size="sm"
+            className="flex-1 flex items-center justify-center gap-1.5"
           >
             {marking ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
             {marking ? "Marking…" : "Mark for Deletion"}
-          </button>
+          </Button>
         </div>
       </form>
     </ModalShell>
@@ -187,21 +211,29 @@ function AnonymizeModal({ user, onClose, onConfirm, anonymizing }) {
           />
         </div>
         <div className="flex gap-3 pt-1">
-          <button
+          <Button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
+            disabled={anonymizing}
+            fullWidth={false}
+            variant="outline-neutral"
+            size="sm"
+            className="flex-1"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            disabled={anonymizing || !reason.trim()}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none bg-[#7f1d1d]"
+            disabled={!reason.trim()}
+            loading={anonymizing}
+            fullWidth={false}
+            variant="critical"
+            size="sm"
+            className="flex-1 flex items-center justify-center gap-1.5"
           >
             {anonymizing ? <Loader2 size={12} className="animate-spin" /> : <EyeOff size={12} />}
             {anonymizing ? "Anonymizing…" : "Anonymize Now"}
-          </button>
+          </Button>
         </div>
       </form>
     </ModalShell>
@@ -394,13 +426,16 @@ export default function UsersSection() {
                     >
                       <Trash2 size={11} /> Delete
                     </button>
-                    <button
+                    <Button
                       onClick={() => setAnonymizing(u)}
                       title="Anonymize now (requires the account already be marked for deletion)"
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-white bg-[#7f1d1d] hover:opacity-90 transition-all cursor-pointer border-none"
+                      fullWidth={false}
+                      variant="critical"
+                      size="xs"
+                      className="flex items-center gap-1"
                     >
                       <EyeOff size={11} /> Anonymize
-                    </button>
+                    </Button>
                   </div>
                 </td>
               </tr>

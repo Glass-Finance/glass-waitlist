@@ -214,12 +214,15 @@ export function HeroCard({ nextDue, onPay, error, onRefresh }) {
           <span>Due {formatDate(nextDue.dueDate)}</span>
         </div>
 
-        <button
+        <Button
           onClick={() => onPay(nextDue)}
-          className={`w-full py-3.5 rounded border-none text-white text-[15px] font-semibold cursor-pointer ${isOverdue ? "bg-danger" : "bg-brand"}`}
+          fullWidth={false}
+          variant={isOverdue ? "critical" : "primary"}
+          size="md"
+          className="w-full"
         >
           Pay Now
-        </button>
+        </Button>
       </div>
     </div>
   );

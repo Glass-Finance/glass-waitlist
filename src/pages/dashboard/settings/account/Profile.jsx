@@ -447,17 +447,15 @@ export default function Profile() {
             {error && <p className="text-xs text-red-500 mb-3">{error}</p>}
 
             <div className="flex justify-end">
-              <button
+              <Button
                 onClick={handleSave}
                 disabled={updateProfile.isPending || !isDirty}
-                className={`h-12 px-4 rounded-lg text-xs font-medium transition-all cursor-pointer disabled:cursor-not-allowed flex items-center justify-center ${
-                  updateProfile.isPending || !isDirty
-                    ? "bg-[#C5C5C5] text-white border-none"
-                    : "text-brand hover:bg-brand hover:text-white border border-brand"
-                }`}
+                variant="outline"
+                size="md"
+                className="text-xs"
               >
                 {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
-              </button>
+              </Button>
             </div>
           </div>
         </>

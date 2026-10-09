@@ -155,7 +155,7 @@ function Avatar({ name, logo }) {
   const initials = (name ?? "?").trim().slice(0, 2).toUpperCase();
   return (
     <div
-      className={`w-10 h-10 rounded-[10px] text-brand-deep flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden ${logo?.url ? "bg-transparent border-none" : "bg-[#1C2B8A22] border border-[#1C2B8A44]"}`}
+      className={`w-10 h-10 rounded-[10px] text-brand-deep flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden ${logo?.url ? "bg-transparent border-none" : "bg-[rgba(0,31,110,0.133)] border border-[rgba(0,31,110,0.267)]"}`}
     >
       {logo?.url ? (
         <img

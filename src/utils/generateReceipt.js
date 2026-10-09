@@ -130,8 +130,9 @@ export async function downloadReceiptPdf(tx, { payerName, payerEmail } = {}) {
   const margin = 56;
   const headerH = 150;
 
-  // Full-width gradient header band — purple (#7C3AED) to Glass blue (#002FA7)
-  drawGradientBand(doc, 0, 0, W, headerH, [124, 58, 237], [0, 47, 167]);
+  // Full-width gradient header band - Figma purple (#6b2fb5) to Glass blue
+  // (#002fa7). Was #7C3AED, Tailwind violet, which is not in the design file.
+  drawGradientBand(doc, 0, 0, W, headerH, [107, 47, 181], [0, 47, 167]);
 
   // Scalloped ticket edge -- white circles centered on the page's top edge,
   // clipped by the page boundary so only their bottom half shows, biting

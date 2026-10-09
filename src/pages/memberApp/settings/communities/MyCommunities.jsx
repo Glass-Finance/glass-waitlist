@@ -8,6 +8,7 @@ import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
 import PageLoadingState from "../../../../components/common/PageLoadingState";
 import KycWizardModal from "../../../../components/kyc/KycWizardModal";
 import KycStatusBadge from "../../../../components/memberApp/KycStatusBadge";
+import { Button } from "../../../../components/ui/Button";
 import { useKycGate } from "../../../../hooks/useKycGate";
 import { kycDisabled } from "../../../../lib/flags";
 
@@ -65,20 +66,26 @@ function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
           </p>
         </div>
         <div className="flex flex-col gap-2.5 mt-6">
-          <button
+          <Button
             onClick={onConfirm}
-            disabled={leaving}
-            className={`w-full py-3.5 px-0 rounded-xl border-none bg-danger text-white text-[14.5px] font-semibold ${leaving ? "cursor-default opacity-70" : "cursor-pointer opacity-100"}`}
+            loading={leaving}
+            fullWidth={false}
+            variant="critical"
+            size="md"
+            className="w-full"
           >
             {leaving ? "Leaving…" : "Yes, leave community"}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={onCancel}
             disabled={leaving}
-            className="border border-surface-container-border w-full py-3.5 px-0 rounded-xl bg-white text-ink-strong text-[14.5px] font-semibold cursor-pointer"
+            fullWidth={false}
+            variant="outline-neutral"
+            size="md"
+            className="w-full"
           >
             Cancel
-          </button>
+          </Button>
         </div>
       </div>
     </div>

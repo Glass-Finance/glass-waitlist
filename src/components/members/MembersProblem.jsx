@@ -191,7 +191,7 @@ const TILE_SCENE = [
 ].join(" ");
 
 const MONO_KICKER =
-  "block font-[JetBrains_Mono] text-[12px] font-semibold tracking-[0.08em] uppercase text-[#2547d0]";
+  "block font-[JetBrains_Mono] text-[12px] font-semibold tracking-[0.08em] uppercase text-brand";
 
 const REEL_TEXT = "text-[clamp(26px,3vw,38px)] font-bold leading-[1.3] tracking-[-0.03em]";
 
@@ -426,7 +426,7 @@ export default function MembersProblem() {
               />
               <i
                 aria-hidden="true"
-                className="pointer-events-none absolute -top-[60px] -right-[70px] h-[325px] w-[380px] rotate-[8deg] bg-[linear-gradient(90deg,#002FA7,#4f46e5,#7c3aed)] opacity-0 [mask-image:var(--mps-mask-gradient)] [mask-size:contain] [mask-position:center] [mask-repeat:no-repeat] transition-opacity delay-300 duration-600 group-[.on]:opacity-16 max-[1000px]:-top-10 max-[1000px]:-right-[50px] max-[1000px]:h-[197px] max-[1000px]:w-[230px]"
+                className="pointer-events-none absolute -top-[60px] -right-[70px] h-[325px] w-[380px] rotate-[8deg] bg-[linear-gradient(90deg,var(--color-brand),var(--color-brand-purple))] opacity-0 [mask-image:var(--mps-mask-gradient)] [mask-size:contain] [mask-position:center] [mask-repeat:no-repeat] transition-opacity delay-300 duration-600 group-[.on]:opacity-16 max-[1000px]:-top-10 max-[1000px]:-right-[50px] max-[1000px]:h-[197px] max-[1000px]:w-[230px]"
               />
 
               {/* Collapsed rail. */}
@@ -434,13 +434,13 @@ export default function MembersProblem() {
                 className={`${RAIL} ${on ? "translate-y-[105%]" : ""} max-[1000px]:flex-row max-[1000px]:py-0 max-[1000px]:pr-[22px] max-[1000px]:pl-[52px] ${on ? "max-[1000px]:-translate-y-[105%]" : ""}`}
               >
                 <span
-                  className={`max-h-[400px] text-[19px] font-bold tracking-[-0.01em] whitespace-nowrap text-[#0f1d6e] [writing-mode:vertical-rl] max-[1000px]:my-0 max-[1000px]:mr-auto max-[1000px]:ml-[14px] max-[1000px]:h-auto max-[1000px]:text-[18px] max-[1000px]:whitespace-normal max-[1000px]:[writing-mode:horizontal-tb] max-[1000px]:transform-none`}
+                  className={`max-h-[400px] text-[19px] font-bold tracking-[-0.01em] whitespace-nowrap text-brand-navy [writing-mode:vertical-rl] max-[1000px]:my-0 max-[1000px]:mr-auto max-[1000px]:ml-[14px] max-[1000px]:h-auto max-[1000px]:text-[18px] max-[1000px]:whitespace-normal max-[1000px]:[writing-mode:horizontal-tb] max-[1000px]:transform-none`}
                 >
                   {panel.title}
                 </span>
                 <span
                   aria-hidden="true"
-                  className={`grid size-[34px] place-items-center rounded-[9px] border-[1.5px] border-[#e4e5ec] text-[18px] text-[#0f1d6e] transition-colors group-hover:bg-[#002fa7] group-hover:text-white group-hover:border-[#002fa7] max-[1000px]:group-hover:bg-transparent max-[1000px]:group-hover:text-[#0f1d6e] max-[1000px]:group-hover:border-[#e4e5ec]`}
+                  className={`grid size-[34px] place-items-center rounded-[9px] border-[1.5px] border-[#e4e5ec] text-[18px] text-brand-navy transition-colors group-hover:bg-[#002fa7] group-hover:text-white group-hover:border-[#002fa7] max-[1000px]:group-hover:bg-transparent max-[1000px]:group-hover:text-brand-navy max-[1000px]:group-hover:border-[#e4e5ec]`}
                 >
                   +
                 </span>
@@ -452,7 +452,7 @@ export default function MembersProblem() {
                   data-mps-copy
                   className="max-h-[220px] overflow-hidden transition-[opacity,transform,max-height] duration-500 group-[.full]:max-h-0 group-[.full]:translate-y-[-14px] group-[.full]:opacity-0 max-[1000px]:max-h-none"
                 >
-                  <h3 className="max-w-[20ch] text-[clamp(26px,3vw,36px)] font-bold leading-[1.12] tracking-[-0.03em] text-[#0f1d6e] max-[1000px]:max-w-none max-[1000px]:text-[26px]">
+                  <h3 className="max-w-[20ch] text-[clamp(26px,3vw,36px)] font-bold leading-[1.12] tracking-[-0.03em] text-brand-navy max-[1000px]:max-w-none max-[1000px]:text-[26px]">
                     {panel.title}
                   </h3>
                   <p className="mt-3 max-w-[46ch] text-[17px] leading-[1.5] text-[#6b7280] max-[1000px]:text-[16px]">
@@ -513,7 +513,7 @@ export default function MembersProblem() {
                                 position={tile.position}
                                 width={400}
                               />
-                              <span className="absolute inset-x-0 bottom-0 overflow-hidden bg-[linear-gradient(transparent,#0c1020d0)] px-3 pt-[26px] pb-2.5 text-[13px] font-semibold whitespace-nowrap text-white max-[1000px]:px-2 max-[1000px]:text-[11px]">
+                              <span className="absolute inset-x-0 bottom-0 overflow-hidden bg-[linear-gradient(transparent,rgba(0,31,110,0.816))] px-3 pt-[26px] pb-2.5 text-[13px] font-semibold whitespace-nowrap text-white max-[1000px]:px-2 max-[1000px]:text-[11px]">
                                 {tile.caption}
                               </span>
                             </div>
@@ -553,7 +553,7 @@ export default function MembersProblem() {
                 <i
                   data-loop
                   aria-hidden="true"
-                  className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-[linear-gradient(90deg,#002FA7,#4f46e5,#7c3aed)] group-[.on]:animate-[var(--animate-mps-progress)]"
+                  className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-[linear-gradient(90deg,var(--color-brand),var(--color-brand-purple))] group-[.on]:animate-[var(--animate-mps-progress)]"
                 />
               </div>
             </article>
@@ -568,7 +568,7 @@ export default function MembersProblem() {
             height="22"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#0f1d6e"
+            stroke="var(--color-brand-navy)"
             strokeWidth="1.8"
             strokeLinecap="round"
             aria-hidden="true"
@@ -577,7 +577,7 @@ export default function MembersProblem() {
           </svg>
         </i>
         <div>
-          <b className="block text-[17px] font-bold text-[#0f1d6e]">Your Solution Awaits.</b>
+          <b className="block text-[17px] font-bold text-brand-navy">Your Solution Awaits.</b>
           <span className="block text-[15.5px] text-[#6b7280]">
             Experience financial transparency.
           </span>
