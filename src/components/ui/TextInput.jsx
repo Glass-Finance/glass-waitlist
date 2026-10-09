@@ -63,7 +63,7 @@ export const TextInput = forwardRef(function TextInput(
         // Pinned to text-base (16px/24px) rather than the text-placeholder
         // token -- that token is being sized down for the dashboard/onboarding
         // inputs, but auth's fields were already tuned separately and stay put.
-        className={`w-full rounded-lg border px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${invalid ? "border-danger focus:border-brand" : VARIANTS[variant]} ${className}`}
+        className={`w-full rounded-g-1 border px-4 py-3.5 text-base text-gray-900 placeholder:text-gray-400 outline-none transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${invalid ? "border-danger focus:border-brand" : VARIANTS[variant]} ${className}`}
         {...rest}
       />
       {rightElement && (
