@@ -12,7 +12,7 @@ import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import BlurText from "../ui/BlurText";
 import CloudImage from "./CloudImage";
-import { Button } from "../ui/Button";
+import { LandingCta } from "../ui/LandingCta";
 
 /* ─── Icon layout config ───────────────────────────────────────────── */
 const icons = [
@@ -279,12 +279,10 @@ export default function CTASection({
 
         {/* ── Button ── */}
         {magnetic ? (
-          <Button
+          <LandingCta
             ref={btnRef}
             onClick={onButtonClick}
-            fullWidth={false}
-            size="md"
-            className="inline-flex items-center gap-2 relative z-[5]"
+            className="relative z-[5]"
             style={{
               boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
               transition: "transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s ease",
@@ -317,14 +315,12 @@ export default function CTASection({
             >
               <ArrowRight className="w-4 h-4" />
             </motion.span>
-          </Button>
+          </LandingCta>
         ) : (
-          <Button
+          <LandingCta
             ref={btnRef}
             onClick={onButtonClick}
-            fullWidth={false}
-            size="md"
-            className="inline-flex items-center gap-2 relative z-[5]"
+            className="relative z-[5]"
             style={{
               boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
               transition: "transform 0.2s ease, box-shadow 0.2s ease",
@@ -347,7 +343,7 @@ export default function CTASection({
             >
               <ArrowRight className="w-4 h-4" />
             </motion.span>
-          </Button>
+          </LandingCta>
         )}
       </div>
     </section>

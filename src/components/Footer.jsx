@@ -4,7 +4,7 @@ import { Crisp } from "crisp-sdk-web";
 import { goToApp } from "../utils/deviceRedirect";
 import glassLogo from "../assets/Glass.webp";
 import BlurText from "./ui/BlurText";
-import { Button } from "./ui/Button";
+import { LandingCta } from "./ui/LandingCta";
 
 // Help Centre opens the support chat when Crisp is configured; the mailto
 // href stays as the no-JS / chat-disabled fallback.
@@ -76,14 +76,12 @@ export default function Footer() {
           <p className="text-[16px] text-white/60 max-w-[720px] mx-auto leading-relaxed mb-10">
             Join communities already running transparent finances on Glass.
           </p>
-          <Button
+          <LandingCta
             onClick={() => goToApp("/sign-up", navigate)}
-            fullWidth={false}
-            size="lg"
-            className="inline-flex items-center gap-2 hover:-translate-y-0.5 transition-transform hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/20"
+            className="shadow-lg shadow-black/20"
           >
             Get Started Free
-          </Button>
+          </LandingCta>
         </div>
       </div>
 

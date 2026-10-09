@@ -71,9 +71,10 @@ Ordered lightest → darkest: `#ccdaff` · `#bdd0fe` · `#dbe6ff` · `#94b1fb` �
 **4 · 8 · 12 · 16.** Observed node counts: 4 → 1,792 · 12 → 441 · 8 → 357 · 16 → 56.
 Four values. Anything else (`rounded-md` 6, `rounded-2xl` 16, arbitrary `[10px]`/`[20px]`/`[46px]`) is off-system.
 
-> **Pill exception (confirmed 2026-10-09):** `rounded-full` is legal on **toggle tracks**
-> (Figma r=100), **frequency badges** (r=24/999) and **status chips** — the file uses pills
-> there deliberately. It stays banned on buttons, cards, inputs and modals.
+> **Pill exception (confirmed 2026-10-09, extended 2026-10-10):** `rounded-full` is legal on
+> **toggle tracks** (Figma r=100), **frequency badges** (r=24/999), **status chips**, and
+> **landing CTAs** (r=60, see §2.2b) — the file uses pills there deliberately. It stays banned
+> on product buttons, cards, inputs and modals.
 
 > Note: an earlier version of `design-audit.md` claimed a `6` in the scale. There is no 6.
 > One `Dialog` node carries r=24, outside the scale — provisional, see §9.3.
@@ -190,6 +191,33 @@ Critical's X-large uses `20/24/20/24` (h=64) — narrower horizontally than Prim
 >   <Bell />
 > </Button>
 > ```
+
+### 2.2b Landing CTA (extension — the white pill)
+
+> ### ⚠️ Extension: the marketing CTAs are a role of their own
+>
+> The six roles in §2.1 are **product** buttons. The Figma landing frames (MacBook Air 3–8,
+> Home Page section) draw their CTAs differently, confirmed node-by-node 2026-10-10:
+>
+> | Property | Value                      | Evidence                                      |
+> | -------- | -------------------------- | --------------------------------------------- |
+> | Fill     | `#fafbfc` (near-white)     | every "Get Started" / "Create Your Community" |
+> | Radius   | 60 → pill (`rounded-full`) | r=60 on all instances                         |
+> | Height   | 50                         | 50 on all instances                           |
+> | Label    | Inter 500, 15px, `#000000` | text nodes                                    |
+>
+> These are **not** an inversion of Primary and must not be styled via `variant="primary"`.
+> They are their own treatment: near-white pill on the brand-navy sections (and on light
+> sections too — the fill is the same). Hover/pressed states are not measurable via REST;
+> the shared component ships a conservative lift (`-translate-y-0.5` + shadow) until the
+> owner rules.
+>
+> **Scope — exactly these sites** (v1 marketing + the app repo's marketing twins):
+> nav "Get Started Free" (desktop + mobile), CTA-section "Create Your Community" /
+> "Join Your Community", hero "Create Your Community" / "Join A Community", footer
+> "Get Started Free". Implementation is the shared `ui/LandingCta` component — do not
+> hand-roll the styles at a call site. **Product surfaces (dashboard, auth, member app)
+> never use it.** "Sign In" stays on the outline/text treatment even on landing.
 
 ### 2.3 States
 
@@ -470,10 +498,12 @@ are given an `aria-label` so neither is an unnamed button.
     largest text is 24px. Marketing heroes run `clamp(26px…62px)` and `font-extrabold` (800,
     which §7 bans as above the file's max weight of 700). Sizes stay unruled until the owner
     exports marketing frames; weights should come down to ≤700 now.
-11. ~~**CTA on navy sections.**~~ **Resolved (user decision, 2026-10-09): accepted as-is.**
-    The nine marketing CTAs on brand-navy sections render `bg-brand` (blue-on-navy). The
-    contrast tradeoff is known and accepted; no inverted variant will be added. Revisit only
-    if the owner exports a white-on-navy CTA role.
+11. ~~**CTA on navy sections.**~~ **Re-resolved (user decision, 2026-10-10): white pill.**
+    An earlier ruling (2026-10-09) accepted the blue-on-navy `variant="primary"` CTAs as-is.
+    Re-checked against the Figma landing frames, the file draws every landing CTA as a
+    `#fafbfc` near-white pill (r=60, h=50) — see §2.2b. The shared `ui/LandingCta`
+    component now implements that at the nine marketing call sites; the blue-on-navy
+    shortcut is retired.
 
 ---
 
