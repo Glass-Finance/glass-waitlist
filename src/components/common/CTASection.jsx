@@ -12,6 +12,7 @@ import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import BlurText from "../ui/BlurText";
 import CloudImage from "./CloudImage";
+import { Button } from "../ui/Button";
 
 /* ─── Icon layout config ───────────────────────────────────────────── */
 const icons = [
@@ -278,10 +279,12 @@ export default function CTASection({
 
         {/* ── Button ── */}
         {magnetic ? (
-          <button
+          <Button
             ref={btnRef}
             onClick={onButtonClick}
-            className="inline-flex items-center gap-2 bg-white text-brand-ink font-semibold rounded-full border-none cursor-pointer relative z-[5] [font-size:clamp(12px,3.5vw,15px)] [padding:clamp(10px,2.5vw,14px)_clamp(16px,5vw,32px)]"
+            fullWidth={false}
+            size="md"
+            className="inline-flex items-center gap-2 relative z-[5]"
             style={{
               boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
               transition: "transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s ease",
@@ -314,12 +317,14 @@ export default function CTASection({
             >
               <ArrowRight className="w-4 h-4" />
             </motion.span>
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             ref={btnRef}
             onClick={onButtonClick}
-            className="inline-flex items-center gap-2 bg-white text-brand-ink text-[15px] font-semibold py-3.5 px-8 rounded-full border-none cursor-pointer relative z-[5]"
+            fullWidth={false}
+            size="md"
+            className="inline-flex items-center gap-2 relative z-[5]"
             style={{
               boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
               transition: "transform 0.2s ease, box-shadow 0.2s ease",
@@ -342,7 +347,7 @@ export default function CTASection({
             >
               <ArrowRight className="w-4 h-4" />
             </motion.span>
-          </button>
+          </Button>
         )}
       </div>
     </section>

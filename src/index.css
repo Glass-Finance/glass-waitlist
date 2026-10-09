@@ -263,15 +263,28 @@
   --color-ink-cool: #9099b2;
 
   /* Brand blue family. --color-brand / --color-brand-tint are the originals
-     above; these are the deeper and lighter members of the same family. */
-  --color-brand-deep: #1c2b8a;
-  --color-brand-ink: #0f1d6e;
+     above; these are the deeper and lighter members of the same family.
+
+     brand-deep and brand-ink were #1c2b8a and #0f1d6e, two of the six
+     invented "brand navy" hexes §1.6 lists. Figma has one navy, #001f6e, and
+     both collapse onto it: 19 call sites, including the CTA section and
+     footer the Primary buttons now sit on. Keeping two names for one value
+     is deliberate — the call sites read the same, and nothing new has to
+     learn which navy to pick. brand-night / brand-night-deep above did the
+     same thing, which is why this is now four names and one colour. */
+  --color-brand-deep: #001f6e;
+  --color-brand-ink: #001f6e;
   --color-brand-link: #1b2fe8;
   --color-brand-mist: #d7e2ff;
   --color-brand-wash: #eef2ff;
   --color-brand-glow: #f0f4ff;
-  --color-brand-night: #0b0f2e;
-  --color-brand-night-deep: #07091f;
+  /* The two invented navies #0b0f2e / #07091f, which §1.6 bans. Figma has
+     one navy and this collapses the pair onto it: the scrolled navbar and
+     the mobile sheet now share #001f6e, so their depth layering comes from
+     the border and shadow rather than a second hex the design file does not
+     contain. Both names are kept so the six call sites read the same. */
+  --color-brand-night: #001f6e;
+  --color-brand-night-deep: #001f6e;
 
   /* Accents used for non-semantic emphasis.
 

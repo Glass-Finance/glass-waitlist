@@ -491,7 +491,7 @@ export default function SignIn() {
               />
               <ErrorMessage message={fieldErrors.password || error} />
               <div className="flex justify-end mt-1.5">
-                <Link to="/forgot-password" className="text-label font-medium text-[#1C2B8A]">
+                <Link to="/forgot-password" className="text-label font-medium text-brand-navy">
                   Forgot password?
                 </Link>
               </div>
@@ -560,7 +560,7 @@ export default function SignIn() {
               draws, so this can't just always point to /sign-up. */}
           <Link
             to={isMemberSignIn ? "/member/join" : "/sign-up"}
-            className="font-semibold text-[#1C2B8A]"
+            className="font-semibold text-brand-navy"
           >
             Create Account
           </Link>

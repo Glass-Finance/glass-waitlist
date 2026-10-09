@@ -144,7 +144,7 @@ export default function ResetPassword() {
         {!credentials.email || !credentials.token ? (
           <p className="text-sm text-[#E53E3E]">
             This reset link is invalid or has expired.{" "}
-            <Link to="/forgot-password" className="font-semibold text-[#1C2B8A]">
+            <Link to="/forgot-password" className="font-semibold text-brand-navy">
               Request a new one
             </Link>
           </p>
@@ -212,7 +212,7 @@ export default function ResetPassword() {
 
         <p className="text-sm text-center text-gray-500 pb-2">
           Remember your password?{" "}
-          <Link to="/sign-in" className="font-semibold text-[#1C2B8A]">
+          <Link to="/sign-in" className="font-semibold text-brand-navy">
             Sign In
           </Link>
         </p>

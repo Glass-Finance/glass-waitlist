@@ -3,6 +3,7 @@ import { ChevronRight, Menu, X } from "lucide-react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { goToApp } from "../utils/deviceRedirect";
 import { motion, useScroll, useSpring } from "motion/react";
+import { Button } from "./ui/Button";
 
 const scrollTo = (id) =>
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -181,13 +182,15 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-3 shrink-0">
             {viewMode === "organizations" ? (
               <>
-                <button
+                <Button
                   onClick={() => goToApp("/sign-up", navigate)}
-                  className="flex items-center gap-1.5 bg-white text-brand-night px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20 cursor-pointer"
+                  fullWidth={false}
+                  size="sm"
+                  className="shadow-lg shadow-black/20"
                 >
                   Get Started Free
                   <ChevronRight className="w-3.5 h-3.5" />
-                </button>
+                </Button>
                 <button
                   onClick={() => goToApp("/sign-in", navigate)}
                   className="text-[13.5px] text-white hover:text-white/70 transition-colors font-medium"
@@ -196,12 +199,14 @@ export default function Navbar() {
                 </button>
               </>
             ) : (
-              <button
+              <Button
                 onClick={() => goToApp("/sign-in", navigate)}
-                className="flex items-center gap-1.5 bg-white text-brand-night px-5 py-2.5 rounded-full text-[13.5px] font-bold transition-all hover:opacity-90 hover:-translate-y-px shadow-lg shadow-black/20 cursor-pointer"
+                fullWidth={false}
+                size="sm"
+                className="shadow-lg shadow-black/20"
               >
                 Sign In
-              </button>
+              </Button>
             )}
           </div>
 
@@ -238,15 +243,17 @@ export default function Navbar() {
 
               {viewMode === "organizations" ? (
                 <div className="flex flex-col gap-3">
-                  <button
+                  <Button
                     onClick={() => {
                       goToApp("/sign-up", navigate);
                       setMenuOpen(false);
                     }}
-                    className="w-full flex items-center justify-center gap-2 bg-white text-brand-night py-3 rounded-full text-[14px] font-bold cursor-pointer"
+                    fullWidth={false}
+                    size="sm"
+                    className="shadow-lg shadow-black/20"
                   >
                     Get Started Free <ChevronRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                   <button
                     onClick={() => {
                       goToApp("/sign-in", navigate);
@@ -258,15 +265,17 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <button
+                <Button
                   onClick={() => {
                     goToApp("/sign-in", navigate);
                     setMenuOpen(false);
                   }}
-                  className="w-full flex items-center justify-center gap-2 bg-white text-brand-night py-3 rounded-full text-[14px] font-bold cursor-pointer"
+                  fullWidth={false}
+                  size="sm"
+                  className="shadow-lg shadow-black/20"
                 >
                   Sign In
-                </button>
+                </Button>
               )}
             </div>
           </div>
