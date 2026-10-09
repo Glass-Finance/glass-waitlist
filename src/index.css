@@ -300,6 +300,10 @@
      the receipt header, which already runs that way. */
   --color-accent-indigo: #002fa7;
   --color-accent-purple: #6b2fb5;
+  /* Figma's pale purple for Role=Admin and Frequency=One-time badges
+     (§9.1, #e4d7f4). Distinct from --color-accent-purple-wash below,
+     which is the lighter #f3eeff used for notification tints. */
+  --color-accent-purple-tint: #e4d7f4;
   --color-accent-gold: #d4a017;
 
   /* Status text. Distinct from the --color-success / --color-danger above,
