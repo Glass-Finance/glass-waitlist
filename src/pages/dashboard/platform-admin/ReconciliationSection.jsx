@@ -233,7 +233,14 @@ function FindingReviewModal({ finding, mode, onClose }) {
         )}
 
         <div className="flex gap-2">
-          <Button onClick={onClose} fullWidth={false} size="sm" className="flex-1">
+          <Button
+            type="button"
+            variant="outline-neutral"
+            onClick={onClose}
+            fullWidth={false}
+            size="sm"
+            className="flex-1"
+          >
             Cancel
           </Button>
           <Button
