@@ -1,6 +1,8 @@
 // Shared by DiscoverCommunities.jsx and Home.jsx — both watch
 // useJoinApprovalWatcher() and need the same "you're in" popup wherever the
 // approval happens to land.
+import { Button } from "../ui/Button";
+
 export default function JoinApprovedModal({ entry, onOpen, onDismiss }) {
   if (!entry) return null;
   return (
@@ -14,12 +16,9 @@ export default function JoinApprovedModal({ entry, onOpen, onDismiss }) {
         <p className="text-[13.5px] text-ink-strong mb-[22px] leading-relaxed">
           Your request to join <strong>{entry.name}</strong> was approved — you're now a member.
         </p>
-        <button
-          onClick={() => onOpen(entry)}
-          className="w-full py-[13px] rounded-[10px] border-none bg-success-strong text-white text-sm font-semibold cursor-pointer mb-2.5"
-        >
+        <Button onClick={() => onOpen(entry)} variant="success" size="md" className="mb-2.5">
           Open Community
-        </button>
+        </Button>
         <button
           onClick={() => onDismiss(entry)}
           className="w-full py-2.5 rounded-[10px] border-none bg-transparent text-ink-muted text-[13px] font-medium cursor-pointer"

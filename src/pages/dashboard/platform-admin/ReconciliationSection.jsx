@@ -233,12 +233,9 @@ function FindingReviewModal({ finding, mode, onClose }) {
         )}
 
         <div className="flex gap-2">
-          <button
-            onClick={onClose}
-            className="flex-1 px-4 py-2 rounded-lg text-xs font-medium text-gray-700 cursor-pointer transition-colors bg-stacked-container"
-          >
+          <Button onClick={onClose} fullWidth={false} size="sm" className="flex-1">
             Cancel
-          </button>
+          </Button>
           <Button
             onClick={() => (isResolve ? resolve.mutate() : review.mutate())}
             loading={review.isPending || resolve.isPending}

@@ -247,8 +247,15 @@
      last such utility is removed. */
   --color-white: #ffffff;
 
-  /* Ink — the neutral text ramp, darkest to lightest. */
-  --color-ink: #111111;
+  /* Ink — the neutral text ramp, darkest to lightest.
+
+     --color-ink was #111111, which §1.6 bans as off-palette text; Figma's
+     text dark is #000000. Blast radius: this token alone has ~333 call
+     sites, so every piece of body text shifts by 17/255 on red. The change
+     is barely visible on its own, which is precisely why it was worth
+     doing by token rather than call site — there is no reason for any of
+     those 333 places to carry a colour Figma does not contain. */
+  --color-ink: #000000;
   --color-ink-strong: #374151;
   --color-ink-muted: #6b7280;
   --color-ink-faint: #9ca3af;
@@ -266,17 +273,41 @@
   --color-brand-night: #0b0f2e;
   --color-brand-night-deep: #07091f;
 
-  /* Accents used for non-semantic emphasis. */
-  --color-accent-indigo: #4f46e5;
-  --color-accent-purple: #7c3aed;
+  /* Accents used for non-semantic emphasis.
+
+     DESIGN-SYSTEM.md §1.6 bans Tailwind's indigo and violet: neither
+     #4f46e5 nor #7c3aed is in the Figma file. These are repointed rather
+     than renamed, so the ~24 call sites (avatars, receipt gradients, chart
+     strokes, plan badges) move together and stay on-palette:
+
+       accent-purple -> Figma's purple, #6b2fb5
+       accent-indigo -> the brand blue, #002fa7
+
+     Indigo maps to brand rather than to purple on purpose: both appear as
+     adjacent stops of the same two-stop gradient in ReceiptModal, the
+     Sidebar avatars and TopBar. Mapping both to purple would collapse those
+     gradients to a flat fill; purple -> brand keeps a gradient and matches
+     the receipt header, which already runs that way. */
+  --color-accent-indigo: #002fa7;
+  --color-accent-purple: #6b2fb5;
   --color-accent-gold: #d4a017;
 
   /* Status text. Distinct from the --color-success / --color-danger above,
      which are the light-on-tint chip colors. */
-  --color-success-strong: #059669;
+  /* Repointed from #059669 (Tailwind emerald-600), which §1.6 bans: the
+     app had two greens for one meaning and neither was in the design file.
+     #16a34a, the other one, is retired below. 17 call sites. */
+  --color-success-strong: #008000;
   --color-success-deep: #15803d;
   --color-success-bright: #0ece7b;
-  --color-danger-bright: #e11d48;
+  /* Repointed from #e11d48 (Tailwind rose-500), which DESIGN-SYSTEM.md §1.6
+     bans: the app had five reds for one role and this was the last one
+     standing, after #dc2626, #7f1d1d, bg-red-600 and bg-danger-bright were
+     migrated. 19 call sites -- overdue-plan chips, status dots, filter
+     pills, chart strokes -- move with it. It stays a distinct token from
+     --color-danger so those call sites keep their own name; the value is
+     now the same, which is the point. */
+  --color-danger-bright: #db0000;
   --color-danger-bright-2: #ef4444;
 
   /* ---------------------------------------------------------------------------
@@ -694,11 +725,14 @@ section {
   position: relative;
 }
 
-/* Long-form legal document text (Privacy Policy, Terms of Service) */
+/* Long-form legal document text (Privacy Policy, Terms of Service).
+     Was #111827, a Tailwind gray-900 that DESIGN-SYSTEM.md §1.6 bans as
+     off-palette text; Figma's text dark is #000000. --color-ink is the
+     app's existing name for it. */
 .legal-prose h2 {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--color-ink);
   margin: 2.25rem 0 0.75rem;
 }
 .legal-prose h2:first-child {
@@ -721,7 +755,7 @@ section {
   margin-bottom: 0.4rem;
 }
 .legal-prose strong {
-  color: #111827;
+  color: var(--color-ink);
   font-weight: 600;
 }
 .legal-prose a {

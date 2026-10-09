@@ -32,7 +32,7 @@ export default function Navbar() {
   return (
     <>
       <motion.div
-        className="[transform-origin:0%_50%] bg-[linear-gradient(90deg,var(--color-brand)_0%,#4f46e5_60%,#7c3aed_100%)] h-[3px] fixed top-0 left-0 right-0 z-[200] pointer-events-none"
+        className="[transform-origin:0%_50%] bg-[linear-gradient(90deg,var(--color-brand)_0%,var(--color-brand-purple)_100%)] h-[3px] fixed top-0 left-0 right-0 z-[200] pointer-events-none"
         style={{ scaleX }}
       />
       <nav

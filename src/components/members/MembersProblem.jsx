@@ -191,7 +191,7 @@ const TILE_SCENE = [
 ].join(" ");
 
 const MONO_KICKER =
-  "block font-[JetBrains_Mono] text-[12px] font-semibold tracking-[0.08em] uppercase text-[#2547d0]";
+  "block font-[JetBrains_Mono] text-[12px] font-semibold tracking-[0.08em] uppercase text-brand";
 
 const REEL_TEXT = "text-[clamp(26px,3vw,38px)] font-bold leading-[1.3] tracking-[-0.03em]";
 
@@ -426,7 +426,7 @@ export default function MembersProblem() {
               />
               <i
                 aria-hidden="true"
-                className="pointer-events-none absolute -top-[60px] -right-[70px] h-[325px] w-[380px] rotate-[8deg] bg-[linear-gradient(90deg,#002FA7,#4f46e5,#7c3aed)] opacity-0 [mask-image:var(--mps-mask-gradient)] [mask-size:contain] [mask-position:center] [mask-repeat:no-repeat] transition-opacity delay-300 duration-600 group-[.on]:opacity-16 max-[1000px]:-top-10 max-[1000px]:-right-[50px] max-[1000px]:h-[197px] max-[1000px]:w-[230px]"
+                className="pointer-events-none absolute -top-[60px] -right-[70px] h-[325px] w-[380px] rotate-[8deg] bg-[linear-gradient(90deg,var(--color-brand),var(--color-brand-purple))] opacity-0 [mask-image:var(--mps-mask-gradient)] [mask-size:contain] [mask-position:center] [mask-repeat:no-repeat] transition-opacity delay-300 duration-600 group-[.on]:opacity-16 max-[1000px]:-top-10 max-[1000px]:-right-[50px] max-[1000px]:h-[197px] max-[1000px]:w-[230px]"
               />
 
               {/* Collapsed rail. */}
@@ -553,7 +553,7 @@ export default function MembersProblem() {
                 <i
                   data-loop
                   aria-hidden="true"
-                  className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-[linear-gradient(90deg,#002FA7,#4f46e5,#7c3aed)] group-[.on]:animate-[var(--animate-mps-progress)]"
+                  className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-[linear-gradient(90deg,var(--color-brand),var(--color-brand-purple))] group-[.on]:animate-[var(--animate-mps-progress)]"
                 />
               </div>
             </article>

@@ -146,7 +146,7 @@ export default function SidebarNav({ nav }) {
                   height: 14,
                   padding: "0 3px",
                   borderRadius: 99,
-                  background: "#DC2626",
+                  background: "var(--color-danger)",
                   color: "var(--color-white)",
                   fontSize: 8,
                   fontWeight: 700,

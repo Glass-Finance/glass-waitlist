@@ -725,7 +725,11 @@ export default function Security() {
               className="px-3 py-1.5 rounded-lg text-xs font-semibold border cursor-pointer transition-all"
               style={
                 mfaEnabled
-                  ? { border: "1px solid #FECACA", color: "#DC2626", background: "#FFF5F5" }
+                  ? {
+                      border: "1px solid var(--color-danger-wash)",
+                      color: "var(--color-danger)",
+                      background: "var(--color-danger-wash-2)",
+                    }
                   : {
                       border: "1px solid var(--color-brand)",
                       color: "var(--color-brand)",

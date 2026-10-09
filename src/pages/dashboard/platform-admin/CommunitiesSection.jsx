@@ -98,13 +98,9 @@ function CommissionModal({ community, onClose }) {
         )}
 
         <div className="flex gap-3 pt-1">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
-          >
+          <Button type="button" onClick={onClose} fullWidth={false} size="sm" className="flex-1">
             Cancel
-          </button>
+          </Button>
           <Button
             type="submit"
             loading={mutation.isPending}
@@ -172,13 +168,9 @@ function CommunitySettingsModal({ community, onClose }) {
         </div>
 
         <div className="flex gap-3 pt-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
-          >
+          <Button type="button" onClick={onClose} fullWidth={false} size="sm" className="flex-1">
             Cancel
-          </button>
+          </Button>
           <Button
             type="submit"
             loading={mutation.isPending}
