@@ -521,7 +521,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                           onCloseMobile?.();
                         }}
                         title={c.name}
-                        className="w-9 h-9 rounded-sm border-none cursor-pointer flex items-center justify-center font-extrabold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 bg-white"
+                        className="w-9 h-9 rounded-sm border-none cursor-pointer flex items-center justify-center font-bold text-[11px] transition-all select-none overflow-hidden flex-shrink-0 bg-white"
                       >
                         {/* The old handler set display:none on a failed image,
                             which left an empty white tile in the rail -- the

@@ -261,7 +261,7 @@ export default function CTASection({
         </div>
 
         {/* ── Headline ── */}
-        <h2 className="text-[clamp(24px,4.5vw,52px)] font-extrabold text-white leading-[1.1] tracking-[-0.02em] max-w-[580px] mb-3.5 relative z-[5]">
+        <h2 className="text-[clamp(24px,4.5vw,52px)] font-bold text-white leading-[1.1] tracking-[-0.02em] max-w-[580px] mb-3.5 relative z-[5]">
           <BlurText
             text={headline}
             animateBy="words"

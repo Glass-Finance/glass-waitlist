@@ -203,7 +203,7 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
       {identity ? (
         <div
           aria-hidden="true"
-          className="w-full flex items-center gap-3 rounded-xl px-4 py-3 border-[1.5px] border-hairline bg-white transition-colors duration-150 group-hover:bg-gray-50"
+          className="w-full flex items-center gap-3 rounded-g-2 px-4 py-3 border border-black/10 bg-white/60 transition-colors duration-150 group-hover:bg-gray-50"
         >
           {identity.picture && !avatarFailed ? (
             <img
@@ -228,7 +228,7 @@ export default function GoogleAuthButton({ onAuthenticated, label = "continue_wi
       ) : (
         <div
           aria-hidden="true"
-          className="w-full flex items-center justify-center gap-2.5 rounded-xl px-4 py-3.5 border-[1.5px] border-hairline bg-white text-button font-semibold text-gray-700 transition-colors duration-150 group-hover:bg-gray-50"
+          className="w-full flex items-center justify-center gap-2.5 rounded-g-2 px-4 py-3.5 border border-black/10 bg-white/60 text-base font-medium text-black transition-colors duration-150 group-hover:bg-gray-50"
         >
           <GoogleGlyph />
           <span className="truncate min-w-0">{LABELS[label] ?? LABELS.continue_with}</span>

@@ -470,6 +470,10 @@ are given an `aria-label` so neither is an unnamed button.
     largest text is 24px. Marketing heroes run `clamp(26px…62px)` and `font-extrabold` (800,
     which §7 bans as above the file's max weight of 700). Sizes stay unruled until the owner
     exports marketing frames; weights should come down to ≤700 now.
+11. ~~**CTA on navy sections.**~~ **Resolved (user decision, 2026-10-09): accepted as-is.**
+    The nine marketing CTAs on brand-navy sections render `bg-brand` (blue-on-navy). The
+    contrast tradeoff is known and accepted; no inverted variant will be added. Revisit only
+    if the owner exports a white-on-navy CTA role.
 
 ---
 
@@ -504,15 +508,16 @@ elsewhere.
 
 ### 7.2 Code verdicts
 
-| Item                                       | Verdict                                                                                                                                                                   |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Inter via `--font-sans`                    | **Fine.** Both repos, loaded via `@fontsource` in `main.jsx` (never CSS `@import`).                                                                                       |
-| `--font-dm` (DM Sans) + `.font-dm`         | **Change: delete.** Zero Figma use. Declared in both `index.css`; used by nothing.                                                                                        |
-| `--font-playfair` + `.font-playfair`       | **Change: delete.** Same.                                                                                                                                                 |
-| `--font-urbanist` + `.font-urbanist`       | **Change (1 site).** `WhyGlass.jsx:81` in both repos wraps a landing section in `font-urbanist`. Figma has no Urbanist product text. Switch to Inter — visible but small. |
-| Marketing display sizes `clamp(26px…62px)` | **Not banned — out of file.** See open question §6.10.                                                                                                                    |
-| `font-extrabold` (800), 3 sites in v1      | **Change: use 700.** 800 exceeds the file's max weight.                                                                                                                   |
-| Buttons 12/14/16px @ weight 500            | **Fine** — §2.2 already enforces this.                                                                                                                                    |
+| Item                                                           | Verdict                                                                                                                                                                      |
+| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inter via `--font-sans`                                        | **Fine.** Both repos, loaded via `@fontsource` in `main.jsx` (never CSS `@import`).                                                                                          |
+| `--font-dm` (DM Sans) + `.font-dm`                             | **Change: delete.** Zero Figma use. Declared in both `index.css`; used by nothing.                                                                                           |
+| `--font-playfair` + `.font-playfair`                           | **Change: delete.** Same.                                                                                                                                                    |
+| `--font-urbanist` + `.font-urbanist`                           | **Change (1 site).** `WhyGlass.jsx:81` in both repos wraps a landing section in `font-urbanist`. Figma has no Urbanist product text. Switch to Inter — visible but small.    |
+| Marketing display sizes `clamp(26px…62px)`                     | **Not banned — out of file.** See open question §6.10.                                                                                                                       |
+| `font-extrabold` (800), 3 v1 + 4 app sites                     | **Change: use 700.** 800 exceeds the file's max weight — and neither repo even loads Inter 800.                                                                              |
+| Buttons 12/14/16px @ weight 500                                | **Fine** — §2.2 already enforces this.                                                                                                                                       |
+| JetBrains Mono accent chips (`MembersProblem.jsx`, both repos) | **Accepted deviation.** The file has no mono text; these uppercase-tracked label chips are a deliberate landing-page accent. Do not extend mono elsewhere without the owner. |
 
 ---
 
@@ -597,10 +602,12 @@ icon-button boxes (§2.2a) and the button label scale:
 Glyph inside a §2.2a icon-only button: box − 16px padding budget → 16 / 24 / 32 for
 `icon-sm`/`icon-md`/`icon-lg` buttons.
 
-Observed in the app: `w-9` (36px) ×60 and `w-7` (28px) ×35 — both off-scale. **Change to the
-nearest step** (36 → 32 or 40; 28 → 24 or 32) when the file is already open for other work.
-`w-4`/`w-5`/`w-6`/`w-8`/`w-10` are fine. Icons on touch targets keep the 44px minimum
-(§2.2a rationale).
+Observed in the app: `w-9` (36px) ×60 and `w-7` (28px) ×35 — both off-scale. **Reclassified
+2026-10-09:** these are icon-button _boxes_, avatar chips and logo assets (`w-9 h-9` /
+`w-7 h-7` containers), not bare glyph sites — zero bare-glyph hits. They are queued with the
+icon-button migration (§2.2a boxes are 32/40/48) rather than this scale; do not bulk-rewrite
+them. `w-4`/`w-5`/`w-6`/`w-8`/`w-10` remain fine. Icons on touch targets keep the 44px
+minimum (§2.2a rationale).
 
 ---
 
