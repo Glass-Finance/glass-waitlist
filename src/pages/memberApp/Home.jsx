@@ -236,18 +236,20 @@ export default function Home() {
               directly beside it. Invites moved out of the header entirely —
               the hamburger SideDrawer still carries the Invitations entry. */}
           <div className="flex items-center gap-2.5 flex-shrink-0">
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-md"
               aria-label="Notifications"
               onClick={() => navigate("/member/notifications")}
-              className="relative w-[38px] h-[38px] rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
+              className="relative flex-shrink-0"
             >
-              <Bell size={17} strokeWidth={1.8} className="text-ink" />
+              <Bell size={17} strokeWidth={1.8} />
               {unreadCount > 0 && (
                 <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
-            </button>
+            </Button>
 
             <ProfileAvatar
               user={user}

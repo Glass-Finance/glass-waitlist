@@ -96,15 +96,16 @@ export function CommunitySwitcher({
 
           <div className="h-px bg-surface-container-border/50 my-1.5" />
 
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
             onClick={() => {
               setOpen(false);
               navigate("/member/communities");
             }}
-            className="w-full px-3 py-2.5 text-center bg-transparent border-none cursor-pointer text-sm font-normal text-brand"
           >
             Browse Your Communities
-          </button>
+          </Button>
         </div>
       )}
     </div>
@@ -253,12 +254,9 @@ export function UpcomingRow({ payment, onPay }) {
         <span className={`text-[11px] font-semibold py-[3px] px-2.5 rounded-full ${badgeCls}`}>
           {badgeLabel}
         </span>
-        <button
-          onClick={() => onPay(payment)}
-          className="py-[7px] px-4 rounded border-[1.5px] border-brand bg-white text-brand text-xs font-semibold cursor-pointer whitespace-nowrap"
-        >
+        <Button variant="outline" size="sm" onClick={() => onPay(payment)}>
           Pay Now
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -308,12 +306,14 @@ export function NoCommunityState({ navigate }) {
         Join A Community
       </Button>
 
-      <button
+      <Button
+        variant="tertiary"
+        size="sm"
+        fullWidth={false}
         onClick={() => navigate("/member/notifications")}
-        className="bg-transparent border-none text-brand text-sm font-semibold cursor-pointer"
       >
         Check Your Invites
-      </button>
+      </Button>
     </div>
   );
 }
@@ -339,12 +339,14 @@ export function NothingHappeningState({ navigate }) {
         Browse Communities
       </Button>
 
-      <button
+      <Button
+        variant="tertiary"
+        size="sm"
+        fullWidth={false}
         onClick={() => navigate("/member/notifications")}
-        className="bg-transparent border-none text-brand text-sm font-semibold cursor-pointer"
       >
         Check Your Invites
-      </button>
+      </Button>
     </div>
   );
 }
@@ -360,12 +362,14 @@ export function PendingApprovalState({ navigate, community }) {
         Your request to join {community?.name ?? "this community"} is awaiting admin approval.
       </p>
       <p className="text-[13px] text-ink-ghost mb-9">You'll get access once it's approved.</p>
-      <button
+      <Button
+        variant="outline"
+        size="md"
+        fullWidth={false}
         onClick={() => navigate("/member/communities/search")}
-        className="bg-transparent border-[1.5px] border-brand rounded-[10px] py-3 px-6 text-brand font-semibold cursor-pointer"
       >
         Browse Other Communities
-      </button>
+      </Button>
     </div>
   );
 }
@@ -410,18 +414,20 @@ export function MemberHomeHeader({
       </div>
 
       <div className="flex items-center gap-2.5 flex-shrink-0">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
           aria-label="Notifications"
           onClick={() => navigate("/member/notifications")}
-          className="relative w-[38px] h-[38px] rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
+          className="relative flex-shrink-0"
         >
-          <Bell size={17} strokeWidth={1.8} className="text-ink" />
+          <Bell size={17} strokeWidth={1.8} />
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
-        </button>
+        </Button>
 
         <ProfileAvatar
           user={user}

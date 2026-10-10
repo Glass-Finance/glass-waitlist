@@ -106,13 +106,9 @@ export default function InvitePopup() {
         </Button>
 
         {/* Decline link */}
-        <button
-          onClick={handleDecline}
-          disabled={isBusy}
-          className={`block w-full bg-transparent border-none text-brand text-sm font-semibold ${isBusy ? "cursor-not-allowed" : "cursor-pointer"} ${remaining > 1 ? "mb-2.5" : "mb-0"}`}
-        >
+        <Button variant="tertiary" size="sm" onClick={handleDecline} disabled={isBusy}>
           Decline Invite
-        </button>
+        </Button>
 
         {/* Multiple invites — view all */}
         {remaining > 1 && (

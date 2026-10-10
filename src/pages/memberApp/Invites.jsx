@@ -202,13 +202,15 @@ export default function Invites() {
               <Home size={14} />
               Go to Home
             </Button>
-            <button
+            <Button
+              variant="outline"
+              size="sm"
+              fullWidth={false}
               onClick={refresh}
               disabled={isLoading}
-              className="py-[9px] px-[18px] rounded-lg border-[1.5px] border-brand bg-white text-brand text-[13px] font-semibold cursor-pointer"
             >
               Check Again
-            </button>
+            </Button>
           </div>
         ) : (
           <>
@@ -229,20 +231,24 @@ export default function Invites() {
                 </div>
 
                 <div className="flex gap-2">
-                  <button
+                  <Button
+                    variant="outline-neutral"
+                    size="sm"
+                    className="flex-1"
                     onClick={() => handleReject(invite)}
                     disabled={isAccepting || isRejecting}
-                    className="flex-1 py-2.5 px-0 rounded-lg border-[1.5px] border-surface-container-border bg-white text-ink-strong text-[13px] font-semibold cursor-pointer"
                   >
                     Decline
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="flex-1"
                     onClick={() => handleAccept(invite)}
                     disabled={isAccepting || isRejecting}
-                    className="flex-1 py-2.5 px-0 rounded-lg border-none bg-brand text-white text-[13px] font-semibold cursor-pointer"
                   >
                     Accept
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}

@@ -144,13 +144,14 @@ export default function TransactionDetail() {
             <Row label="Transaction ID:" last={!tx.initiatedBy}>
               <span className="break-all">{tx.reference ?? tx.id}</span>{" "}
               <span className="inline-flex align-middle">
-                <button
+                <Button
+                  variant="tertiary"
+                  size="icon-sm"
                   onClick={copyReference}
-                  className="bg-transparent border-none cursor-pointer p-0.5 text-ink-faint flex"
                   aria-label="Copy transaction ID"
                 >
-                  {copied ? <CheckCheck size={13} color="#15803d" /> : <Copy size={13} />}
-                </button>
+                  {copied ? <CheckCheck size={13} className="text-success" /> : <Copy size={13} />}
+                </Button>
               </span>
             </Row>
             {tx.initiatedBy && (
@@ -162,13 +163,10 @@ export default function TransactionDetail() {
             )}
           </div>
 
-          <button
-            onClick={() => setShareOpen(true)}
-            className="flex items-center justify-center gap-2 w-full py-3.5 px-0 rounded-xl bg-white border-[1.5px] border-brand text-brand text-sm font-semibold cursor-pointer"
-          >
+          <Button variant="outline" onClick={() => setShareOpen(true)}>
             <Share2 size={15} />
             Share Receipt
-          </button>
+          </Button>
         </div>
       )}
 

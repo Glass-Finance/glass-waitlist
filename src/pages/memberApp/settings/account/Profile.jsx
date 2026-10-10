@@ -146,13 +146,15 @@ export default function Profile() {
             className="hidden"
             onChange={(e) => handlePhotoSelect(e.target.files[0])}
           />
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
+            fullWidth={false}
             onClick={() => photoInputRef.current?.click()}
             disabled={uploadFile.isPending}
-            className={`bg-transparent border-none cursor-pointer p-0 text-[13px] font-semibold text-brand ${uploadFile.isPending ? "opacity-60" : "opacity-100"}`}
           >
             {uploadFile.isPending ? "Uploading…" : "Change Photo"}
-          </button>
+          </Button>
           <p className="text-[13px] text-ink-ghost m-0">{isLoading ? "Loading…" : user?.email}</p>
         </div>
 

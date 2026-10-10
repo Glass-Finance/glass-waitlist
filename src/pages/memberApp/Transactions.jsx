@@ -42,13 +42,10 @@ function Dropdown({ value, options, onChange, optionLabel = (opt) => opt }) {
 
   return (
     <div className="relative inline-block">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="border border-surface-container-border flex items-center gap-1.5 bg-white rounded-lg py-[7px] px-3.5 text-sm font-medium text-ink cursor-pointer"
-      >
+      <Button variant="outline" size="sm" fullWidth={false} onClick={() => setOpen((o) => !o)}>
         {optionLabel(value)}
-        <ChevronDown size={14} color="var(--color-ink-muted)" />
-      </button>
+        <ChevronDown size={14} className="text-ink-muted" />
+      </Button>
 
       {open && (
         <>
@@ -186,18 +183,19 @@ export default function Transactions() {
         <h1 className="text-lg font-medium text-ink m-0 flex-1 text-center mr-9">
           Payment History
         </h1>
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-sm"
           onClick={exportCsv}
           disabled={isExporting}
           aria-label={isExporting ? "Preparing export" : "Export payment history as CSV"}
-          className="border border-surface-container-border w-9 h-9 rounded-full bg-white flex items-center justify-center cursor-pointer flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isExporting ? (
-            <Loader2 size={15} className="animate-spin" color="var(--color-ink-strong)" />
+            <Loader2 size={15} className="animate-spin text-ink-strong" />
           ) : (
-            <Download size={15} color="var(--color-ink-strong)" />
+            <Download size={15} className="text-ink-strong" />
           )}
-        </button>
+        </Button>
       </div>
 
       {/* ── Status + month filters ── */}

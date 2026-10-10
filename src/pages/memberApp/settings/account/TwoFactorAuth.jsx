@@ -140,12 +140,14 @@ function SetupFlow({ onSuccess, onCancel }) {
               <code className="flex-1 text-sm font-semibold tracking-[2px] text-ink break-all">
                 {setupData.secret}
               </code>
-              <button
+              <Button
+                variant="tertiary"
+                size="icon-sm"
                 onClick={copySecret}
-                className="bg-transparent border-none cursor-pointer text-brand flex-shrink-0 flex"
+                aria-label={copied ? "Copied" : "Copy setup key"}
               >
                 {copied ? <Check size={16} /> : <Copy size={16} />}
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -337,13 +339,9 @@ function RegenerateFlow({ onSuccess, onCancel }) {
       </p>
       <CodeInput value={code} onChange={setCode} disabled={loading} />
       {error && <p className="text-[13px] text-danger m-0">{error}</p>}
-      <button
-        onClick={handleRegenerate}
-        disabled={code.length !== 6 || loading}
-        className={`p-3.5 rounded-xl border-none text-white text-[15px] font-semibold ${code.length === 6 && !loading ? "cursor-pointer bg-brand" : "cursor-not-allowed bg-[#E0E0E0]"} ${loading ? "opacity-70" : "opacity-100"}`}
-      >
+      <Button onClick={handleRegenerate} disabled={code.length !== 6 || loading}>
         {loading ? "Generating…" : "Generate New Codes"}
-      </button>
+      </Button>
       <Button onClick={onCancel} disabled={loading} fullWidth={false} size="md">
         Cancel
       </Button>
@@ -426,12 +424,9 @@ export default function TwoFactorAuth() {
             {/* Action */}
             {mfaEnabled ? (
               <div className="flex flex-col gap-2.5">
-                <button
-                  onClick={() => setFlow("regenerate")}
-                  className="w-full p-3.5 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm font-semibold cursor-pointer"
-                >
+                <Button variant="outline" onClick={() => setFlow("regenerate")}>
                   Regenerate Recovery Codes
-                </button>
+                </Button>
                 <Button
                   variant="outline-caution"
                   onClick={() => setFlow("disable")}

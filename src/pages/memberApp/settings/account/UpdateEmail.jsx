@@ -187,12 +187,9 @@ export default function UpdateEmail() {
             <p className="text-lg font-bold text-ink mb-4">Enter the Code we Sent</p>
             <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code that was sent to</p>
             <p className="text-sm font-semibold text-gray-900 mb-3">{maskEmail(email)}</p>
-            <button
-              onClick={() => setStep("form")}
-              className="text-sm font-medium hover:underline text-brand bg-transparent border-none cursor-pointer p-0 mb-6"
-            >
+            <Button variant="tertiary" size="sm" fullWidth={false} onClick={() => setStep("form")}>
               Wrong Email?
-            </button>
+            </Button>
 
             <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6">
               <OtpBoxes
@@ -222,13 +219,15 @@ export default function UpdateEmail() {
             </p>
             <p className="text-center text-sm mt-5 text-gray-500">
               Didn't get OTP?{" "}
-              <button
+              <Button
+                variant="tertiary"
+                size="sm"
+                fullWidth={false}
                 onClick={handleResend}
                 disabled={resending}
-                className="font-semibold hover:underline disabled:opacity-60 text-brand bg-transparent border-none cursor-pointer p-0"
               >
                 {resending ? "Resending…" : "Resend"}
-              </button>
+              </Button>
             </p>
             {resendMessage && (
               <p className="text-center text-xs text-gray-400 mt-1">{resendMessage}</p>

@@ -173,13 +173,13 @@ export default function MyCommunities() {
       </div>
 
       <div className="pt-0 px-4 pb-4 flex items-center gap-2">
-        <button
+        <Button
           onClick={() => {
             kycGate.enforce(() => navigate("/onboarding/choose-path"));
           }}
           disabled={kycGate.isLoading}
           aria-busy={kycGate.isLoading}
-          className="flex items-center justify-center gap-2 flex-1 p-3 rounded-xl bg-brand-deep text-white text-sm font-semibold border-none cursor-pointer disabled:opacity-60 disabled:cursor-wait"
+          className="flex-1"
         >
           {kycGate.isLoading ? (
             <>
@@ -192,7 +192,7 @@ export default function MyCommunities() {
               Create a Community
             </>
           )}
-        </button>
+        </Button>
         {!kycDisabled() && kycGate.status && (
           <button
             onClick={() => setKycWizardOpen(true)}
