@@ -97,7 +97,7 @@ function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
           variant="tertiary"
           size="xs"
           onClick={onFooter}
-          className="w-full border-t border-gray-50"
+          className="w-full justify-start border-t border-gray-50"
         >
           {footerLabel} <ChevronRight size={12} />
         </Button>
