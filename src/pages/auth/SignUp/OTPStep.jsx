@@ -68,12 +68,9 @@ export default function OTPStep({ email, onVerified, onBack }) {
         <h1 className="text-headline text-gray-900 mb-3 font-sans">Verification Code Sent</h1>
         <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code that was sent to</p>
         <p className="text-sm font-semibold text-gray-900">{email}</p>
-        <button
-          onClick={onBack}
-          className="text-sm font-medium mt-1 hover:underline text-brand-link"
-        >
+        <Button variant="tertiary" size="sm" fullWidth={false} onClick={onBack} className="mt-1">
           Wrong email?
-        </button>
+        </Button>
         <p className={`text-xs mt-2 ${codeExpired ? "text-danger font-medium" : "text-ink-faint"}`}>
           {codeExpired
             ? "Your code has expired — request a new one below."
@@ -126,13 +123,15 @@ export default function OTPStep({ email, onVerified, onBack }) {
       <div>
         <p className="text-center text-sm text-gray-text">
           Didn't get OTP?{" "}
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
+            fullWidth={false}
             onClick={handleResend}
             disabled={resending}
-            className="font-semibold hover:underline disabled:opacity-60 text-brand-link"
           >
             {resending ? "Resending..." : "Resend"}
-          </button>
+          </Button>
         </p>
         {resendMessage && <p className="text-center text-xs text-gray-400 mt-1">{resendMessage}</p>}
       </div>

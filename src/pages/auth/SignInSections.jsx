@@ -1,4 +1,5 @@
 import { Loader2, ShieldCheck } from "lucide-react";
+import { Button } from "../../components/ui/Button";
 import AuthLayout from "../../layouts/AuthLayout";
 import { Label, TextInput, PrimaryButton, ErrorMessage } from "../../components/auth/FormFields";
 import OtpBoxes from "../../components/common/OtpBoxes";
@@ -102,23 +103,22 @@ export function MfaChallengeScreen({
         </PrimaryButton>
 
         {onSwitchMethod && (
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
+            fullWidth={false}
             onClick={() => onSwitchMethod(isRecovery ? "totp" : "recovery")}
             disabled={loading}
-            className="text-sm text-center text-brand hover:text-brand-deep bg-transparent border-none cursor-pointer disabled:opacity-50"
           >
             {isRecovery
               ? "Use my authenticator app instead"
               : "Lost access to your authenticator? Use a recovery code"}
-          </button>
+          </Button>
         )}
 
-        <button
-          onClick={onBack}
-          className="text-sm text-center text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer"
-        >
+        <Button variant="tertiary" size="sm" fullWidth={false} onClick={onBack}>
           ← Back to sign in
-        </button>
+        </Button>
       </div>
     </AuthLayout>
   );
@@ -146,12 +146,15 @@ export function OtpVerifyScreen({
           <h1 className="text-headline text-gray-900 mb-3 font-sans">Enter Your Code</h1>
           <p className="text-sm text-gray-500 mb-0.5">Enter the 6-digit code sent to</p>
           <p className="text-sm font-semibold text-gray-900">{otpIdentifier}</p>
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
+            fullWidth={false}
             onClick={onBackToIdentifier}
-            className="text-sm font-medium mt-1 hover:underline text-brand-link bg-transparent border-none cursor-pointer p-0"
+            className="mt-1"
           >
             Use a different email
-          </button>
+          </Button>
           <p
             className={`text-xs mt-2 ${otpCodeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
           >
@@ -206,17 +209,19 @@ export function OtpVerifyScreen({
 
         <p className="text-center text-sm text-gray-text">
           Didn't get a code?{" "}
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
+            fullWidth={false}
             onClick={onResend}
             disabled={otpSending || resendSecondsLeft > 0}
-            className="font-semibold hover:underline disabled:opacity-60 text-brand-link bg-transparent border-none cursor-pointer p-0"
           >
             {otpSending
               ? "Resending…"
               : resendSecondsLeft > 0
                 ? `Resend in ${formatCountdown(resendSecondsLeft)}`
                 : "Resend"}
-          </button>
+          </Button>
         </p>
       </div>
     </AuthLayout>

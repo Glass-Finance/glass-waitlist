@@ -31,13 +31,10 @@ export default function UploadMembersTab({
       <p className="text-sm font-semibold text-gray-900 mb-4">Upload a CSV</p>
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 mb-4">
         <p className="text-sm text-gray-500">Upload a CSV file with following sample information</p>
-        <button
-          onClick={downloadTemplate}
-          className="flex items-center gap-1.5 text-xs font-medium text-brand hover:opacity-80 bg-transparent border-none cursor-pointer"
-        >
+        <Button variant="tertiary" size="xs" fullWidth={false} onClick={downloadTemplate}>
           <Download size={12} />
           Download Template
-        </button>
+        </Button>
       </div>
 
       {/* Sample table — wider than any phone viewport, so it
@@ -113,13 +110,16 @@ export default function UploadMembersTab({
             className={inputCls}
             disabled={urlStage === "fetching"}
           />
-          <button
+          <Button
+            variant="outline"
+            size="sm"
+            fullWidth={false}
             onClick={handleUrlUpload}
             disabled={!fileUrl.trim() || urlStage === "fetching" || loading}
-            className="px-5 py-2 rounded-lg bg-brand/20 text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50"
+            className="flex-shrink-0"
           >
             Upload
-          </button>
+          </Button>
         </div>
 
         {urlStage === "fetching" && (

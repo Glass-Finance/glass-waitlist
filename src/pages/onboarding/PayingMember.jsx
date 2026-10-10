@@ -53,14 +53,17 @@ export default function PayingMember() {
       </div>
 
       <div className="w-full max-w-lg flex flex-col items-center">
-        <button
+        <Button
+          variant="tertiary"
+          size="sm"
+          fullWidth={false}
           type="button"
           onClick={handleBack}
-          className="self-start flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer mb-4 -ml-1 p-0"
+          className="self-start mb-4 -ml-1"
         >
           <ArrowLeft size={15} />
           {isAuthenticated ? "Back to dashboard" : "Back"}
-        </button>
+        </Button>
         <StepIndicator stepId="paying-member" />
         <div className="text-center mb-8">
           <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">
@@ -118,12 +121,9 @@ export default function PayingMember() {
         <Button onClick={() => go()} className="max-w-sm">
           Continue
         </Button>
-        <button
-          onClick={() => go(true)}
-          className="mt-4 text-sm font-medium hover:underline bg-transparent border-none cursor-pointer text-brand"
-        >
+        <Button variant="tertiary" size="sm" fullWidth={false} onClick={() => go(true)}>
           Skip
-        </button>
+        </Button>
         <div className="h-[env(safe-area-inset-bottom,0px)]" />
       </div>
     </div>

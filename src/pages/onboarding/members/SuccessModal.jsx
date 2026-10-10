@@ -17,12 +17,9 @@ export default function SuccessModal({ communityName, onDashboard, onCopy }) {
           Go To Dashboard
         </Button>
         <p className="text-xs text-gray-900 mb-1">Ready To Invite Members?</p>
-        <button
-          onClick={onCopy}
-          className="text-xs font-medium text-brand hover:underline bg-transparent border-none cursor-pointer"
-        >
+        <Button variant="tertiary" size="xs" fullWidth={false} onClick={onCopy}>
           Click here to copy your community link
-        </button>
+        </Button>
         <div className="h-[env(safe-area-inset-bottom,0px)] lg:hidden" />
       </div>
     </div>

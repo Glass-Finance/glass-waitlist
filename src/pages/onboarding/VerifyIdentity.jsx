@@ -49,13 +49,15 @@ export default function VerifyIdentity() {
 
       <header className="relative flex items-center px-6 lg:px-8 py-5 flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-md"
             onClick={() => navigate("/onboarding/choose-path", { state: { email } })}
             aria-label="Back to choose path"
-            className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
+            className="flex-shrink-0"
           >
-            <ArrowLeft size={17} strokeWidth={2} className="text-ink" />
-          </button>
+            <ArrowLeft size={17} strokeWidth={2} />
+          </Button>
           <div className="min-w-0">
             <h1 className="text-lg font-semibold text-gray-900 m-0">Identity Verification</h1>
             <p className="text-xs text-gray-400 mt-0.5 m-0">

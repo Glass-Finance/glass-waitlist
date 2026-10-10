@@ -323,14 +323,17 @@ export default function OrganizationProfile() {
         <main className="flex-1 lg:overflow-y-auto py-6 px-4 lg:py-10 lg:px-12 flex flex-col items-center">
           <form onSubmit={handleSubmit} className="w-full max-w-4xl">
             <div className="mb-8">
-              <button
+              <Button
+                variant="tertiary"
+                size="sm"
+                fullWidth={false}
                 type="button"
                 onClick={handleBack}
-                className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer mb-4 -ml-1 p-0"
+                className="mb-4 -ml-1"
               >
                 <ArrowLeft size={15} />
                 {isAuthenticated ? "Back to dashboard" : "Back"}
-              </button>
+              </Button>
               <h2 className="text-xl font-medium text-gray-900 mb-1">
                 Tell us about your community
               </h2>

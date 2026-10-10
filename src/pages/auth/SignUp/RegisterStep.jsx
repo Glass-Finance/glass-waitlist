@@ -6,7 +6,7 @@ import { notifyError } from "../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../utils/password";
 import PasswordChecklist from "../../../components/auth/PasswordChecklist";
 import { SignUpTextInput, SignUpFieldError } from "./SignUpTextInput";
-import { Button as PrimaryBtn } from "../../../components/ui/Button";
+import { Button, Button as PrimaryBtn } from "../../../components/ui/Button";
 
 // ── Step 2: Complete Profile (Name + Password) ────────────────────────────────
 // Fires the single register() call with email/phone carried over from
@@ -165,13 +165,16 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
               error={fieldErrors.password}
               className="pr-11"
             />
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
+            </Button>
           </div>
           <PasswordChecklist password={form.password} />
         </div>
@@ -190,13 +193,16 @@ export default function RegisterStep({ email, phone, phoneConfirmToken, onNext }
               error={fieldErrors.confirmPassword}
               className="pr-11"
             />
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+              aria-label={showConfirm ? "Hide password" : "Show password"}
             >
               {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
+            </Button>
           </div>
           <SignUpFieldError message={fieldErrors.confirmPassword} />
         </div>

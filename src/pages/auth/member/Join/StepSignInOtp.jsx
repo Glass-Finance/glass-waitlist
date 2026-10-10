@@ -3,7 +3,7 @@ import { requestLoginOtp, verifyLoginOtp } from "../../../../services/authServic
 import { notifyError } from "../../../../utils/errorHandler";
 import OtpBoxes from "../../../../components/common/OtpBoxes";
 import { useCountdown, formatCountdown } from "../../../../hooks/useCountdown";
-import { Button as PrimaryButton } from "../../../../components/ui/Button";
+import { Button, Button as PrimaryButton } from "../../../../components/ui/Button";
 import { ErrorMessage } from "./shared";
 import { renderDashedOtpBoxes } from "./otpBoxes";
 import { OTP_LENGTH } from "./constants";
@@ -126,9 +126,15 @@ export default function StepSignInOtp({ email, onVerified, onUseDifferentEmail }
           {sending ? "Sending a sign-in code to" : "Enter the 6-digit code sent to"}
         </p>
         <p className="font-semibold text-sm text-gray-900 mb-1">{email}</p>
-        <button onClick={onUseDifferentEmail} className="text-sm font-medium mt-1 text-brand-deep">
+        <Button
+          variant="tertiary"
+          size="sm"
+          fullWidth={false}
+          onClick={onUseDifferentEmail}
+          className="mt-1"
+        >
           Not you?
-        </button>
+        </Button>
         {resendCount > 0 && (
           <p
             className={`text-xs mt-2 ${codeExpired ? "text-danger font-medium" : "text-ink-faint"}`}
@@ -169,13 +175,15 @@ export default function StepSignInOtp({ email, onVerified, onUseDifferentEmail }
 
       <p className="text-sm text-center text-gray-500 pb-2">
         Didn't get a code?{" "}
-        <button
+        <Button
+          variant="tertiary"
+          size="sm"
+          fullWidth={false}
           onClick={handleResend}
           disabled={resendCooldown > 0 || sending}
-          className="font-semibold disabled:opacity-40 text-brand-deep"
         >
           {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend"}
-        </button>
+        </Button>
       </p>
     </div>
   );
