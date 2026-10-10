@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Bell, Check, ChevronDown, ChevronRight, Clock, Menu } from "lucide-react";
+import { Check, ChevronDown, ChevronRight, Clock } from "lucide-react";
 import noCommunityIcon from "../../assets/auth/no-community.webp";
 import paymentsDueIcon from "../../assets/memberApp/icon-payments-due.webp";
 import upcomingPaymentsIcon from "../../assets/memberApp/icon-upcoming-payments.webp";
 import paymentHistoryIcon from "../../assets/memberApp/icon-payment-history.webp";
 import { Button } from "../../components/ui/Button";
-import ProfileAvatar from "../../components/memberApp/ProfileAvatar";
 import PulseImg from "../../components/common/PulseImg";
 import {
   formatNaira,
@@ -370,71 +369,6 @@ export function PendingApprovalState({ navigate, community }) {
       >
         Browse Other Communities
       </Button>
-    </div>
-  );
-}
-
-export function MemberHomeHeader({
-  hasNoCommunity,
-  user,
-  unreadCount,
-  navigate,
-  onOpenMenu,
-  communityName,
-  communityInitial,
-  communityLogo,
-  activeCommunityIdentifier,
-  myCommunities,
-  handleSwitchCommunity,
-}) {
-  return (
-    <div className="flex items-center justify-between pt-[25px] px-5 pb-5">
-      <div className="flex items-center gap-[15px] min-w-0">
-        <Button
-          variant="tertiary"
-          size="icon-md"
-          onClick={onOpenMenu}
-          aria-label="Open menu"
-          className="flex-shrink-0"
-        >
-          <Menu size={28} strokeWidth={2} className="text-ink" />
-        </Button>
-
-        {!hasNoCommunity && (
-          <CommunitySwitcher
-            communities={myCommunities}
-            activeIdentifier={activeCommunityIdentifier}
-            communityName={communityName}
-            communityInitial={communityInitial}
-            communityLogo={communityLogo}
-            onSelect={handleSwitchCommunity}
-            navigate={navigate}
-          />
-        )}
-      </div>
-
-      <div className="flex items-center gap-2.5 flex-shrink-0">
-        <Button
-          variant="tertiary"
-          size="icon-md"
-          aria-label="Notifications"
-          onClick={() => navigate("/member/notifications")}
-          className="relative flex-shrink-0"
-        >
-          <Bell size={17} strokeWidth={1.8} />
-          {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 min-w-[15px] h-[15px] py-0 px-[3px] rounded-full bg-danger text-white text-[9px] font-bold flex items-center justify-center border-[1.5px] border-white">
-              {unreadCount > 9 ? "9+" : unreadCount}
-            </span>
-          )}
-        </Button>
-
-        <ProfileAvatar
-          user={user}
-          onClick={() => navigate("/member/profile")}
-          ariaLabel="Your profile"
-        />
-      </div>
     </div>
   );
 }
