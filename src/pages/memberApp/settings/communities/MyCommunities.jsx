@@ -2,7 +2,7 @@ import { useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { goBackInApp } from "../../../../utils/memberBack";
-import { AlertTriangle, ChevronLeft, ChevronRight, Loader2, LogOut, Plus, X } from "lucide-react";
+import { AlertTriangle, ChevronRight, Loader2, LogOut, Plus, X } from "lucide-react";
 import { useMyCommunities, useLeaveCommunity } from "../../../../hooks/useMyAccount";
 import { resolveIsPayingAdmin } from "../../../../utils/communityRole";
 import PageLoadingState from "../../../../components/common/PageLoadingState";
@@ -11,6 +11,7 @@ import KycStatusBadge from "../../../../components/memberApp/KycStatusBadge";
 import { Button } from "../../../../components/ui/Button";
 import { useKycGate } from "../../../../hooks/useKycGate";
 import { kycDisabled } from "../../../../lib/flags";
+import { MobileBackButton } from "../../../../components/ui/MobileBackButton";
 
 function getInitials(name = "") {
   return name
@@ -160,15 +161,10 @@ export default function MyCommunities() {
     <div className="relative overflow-hidden pb-10 min-h-screen">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
-        <Button
-          variant="tertiary"
-          size="icon-md"
+        <MobileBackButton
           aria-label="Back"
           onClick={() => goBackInApp(navigate, "/member/settings")}
-          className=""
-        >
-          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </Button>
+        />
         <h1 className="text-lg font-semibold text-ink m-0">My Communities</h1>
       </div>
 

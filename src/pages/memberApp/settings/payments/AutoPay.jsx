@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
-import { Button } from "../../../../components/ui/Button";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { goBackInApp } from "../../../../utils/memberBack";
-import { ChevronLeft } from "lucide-react";
+import {} from "lucide-react";
 import {
   usePayments,
   useManagePayments,
@@ -13,6 +12,7 @@ import PageLoadingState from "../../../../components/common/PageLoadingState";
 import Toggle from "../../../../components/common/Toggle";
 import ConfirmSheet from "../../../../components/memberApp/ConfirmSheet";
 import { formatNaira } from "../../../../utils/format";
+import { MobileBackButton } from "../../../../components/ui/MobileBackButton";
 
 export default function AutoPay() {
   const navigate = useNavigate();
@@ -103,15 +103,10 @@ export default function AutoPay() {
     <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
-        <Button
-          variant="tertiary"
-          size="icon-md"
+        <MobileBackButton
           aria-label="Back"
           onClick={() => goBackInApp(navigate, "/member/settings")}
-          className=""
-        >
-          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </Button>
+        />
         <h1 className="text-lg font-semibold text-ink m-0">Auto-Pay</h1>
       </div>
 

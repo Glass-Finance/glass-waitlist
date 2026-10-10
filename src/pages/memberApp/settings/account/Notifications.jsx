@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../../../components/ui/Button";
-import { ChevronLeft, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useNotificationPreferences } from "../../../../hooks/useNotifications";
 import Toggle from "../../../../components/common/Toggle";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
+import { MobileBackButton } from "../../../../components/ui/MobileBackButton";
 
 function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
   return (
@@ -61,15 +61,11 @@ export default function Notifications() {
       <GlassLogoGlow />
       {/* Header */}
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
-        <Button
-          variant="tertiary"
-          size="icon-md"
+        <MobileBackButton
           aria-label="Back"
           onClick={() => navigate(-1)}
           className="flex-shrink-0"
-        >
-          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </Button>
+        />
         <h1 className="text-lg font-semibold text-ink m-0">Notifications</h1>
       </div>
 

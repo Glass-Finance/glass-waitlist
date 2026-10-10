@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, ChevronLeft, Download, Loader2 } from "lucide-react";
+import { ChevronDown, Download, Loader2 } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import PageLoadingState from "../../components/common/PageLoadingState";
@@ -9,6 +9,7 @@ import { formatNaira, toTitleCase } from "../../utils/format";
 import { transactionStatusLabel, transactionStatusStyle } from "../../utils/transactionStatus";
 import { useExportJob } from "../../hooks/useExportJob";
 import { exportMyTransactions } from "../../api/exports";
+import { MobileBackButton } from "../../components/ui/MobileBackButton";
 
 const STATUS_OPTIONS = ["All Status", "Success", "Failed", "Pending"];
 
@@ -171,15 +172,11 @@ export default function Transactions() {
       <GlassLogoGlow />
       {/* ── Top bar ── */}
       <div className="pt-6 px-5 pb-4 flex items-center gap-3 sticky top-0 z-40">
-        <Button
-          variant="tertiary"
-          size="icon-md"
+        <MobileBackButton
           aria-label="Back"
           onClick={() => navigate(-1)}
           className="flex-shrink-0"
-        >
-          <ChevronLeft size={18} color="var(--color-ink-strong)" />
-        </Button>
+        />
         <h1 className="text-lg font-medium text-ink m-0 flex-1 text-center mr-9">
           Payment History
         </h1>
