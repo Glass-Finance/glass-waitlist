@@ -241,174 +241,121 @@ overlay on the fill**, not a scale transform.
 
 ## 3. Current compliance
 
-Measured 2026-10-07, re-measured after button sweep batch 1 (2026-10-08).
-Full evidence in `design-audit.md`.
+**Sweep complete (C1–C8, 2026-10-08 → 2026-10-10).** Re-measured 2026-10-10, both repos.
+Batch history: batch 1 shared components (ModalShell/ConfirmDialog/ConfirmSheet), then
+C2 toast/chips, C3 destructive, C4 icon-onlys, C5 memberApp, C6 dashboard, C7 auth +
+onboarding (app PRs #146–#151), C8 v1 leftovers (v1 PR #26). Evidence trail: `design-audit.md`.
 
-> **The button sweep is in progress, one batch per PR.** Batch 1 landed the
-> three highest-leverage shared components — `ModalShell` (17 importers),
-> `ConfirmDialog` (7), `ConfirmSheet` (3) — which corrects ~54 buttons for
-> three file edits. Icon-only buttons (hamburger, bell, close, chevron, trash)
-> were deliberately left as raw `<button>` and normalised in place, because Figma
-> defined no icon-button role and routing them through `ui/Button` would have meant inventing a
-> spec value. **That is no longer true:** §2.2a adds three icon-only sizes, so icon buttons can
-> now be migrated like anything else. They are a large share of what remains, so the raw-button
-> count will keep outrunning the fixed count for a while — expected, not a stall.
+Every role-mappable button is now on `ui/Button`. What remains as raw `<button>` is the
+**deliberate leave-list**: composite rows/list-items, dropdown-option menus, tab groups,
+segmented controls, radio cards, promo/empty-state cards, KycStatusBadge wrappers, the
+dark-navy Sidebar rail, numeric pagination, muted See-All links, destructive text links
+(no danger-tertiary role exists), decorative `dashboard-overlay/` mocks (`aria-hidden`,
+`tabIndex={-1}`), accordion triggers, and the component definitions themselves.
 
-### 3.1 App — `glass-waitlist`
+### 3.1 App — `glass-waitlist` (2026-10-10)
 
-| Metric                                                      | Value                                              |
-| ----------------------------------------------------------- | -------------------------------------------------- |
-| Raw `<button>` bypassing `ui/Button`                        | 457 (was 450; 141 files) — see note below          |
-| `<Button>` component call sites                             | 79 (was 76)                                        |
-| Raw buttons matching a Figma role exactly                   | **0**                                              |
-| Raw buttons with a `focus-visible` state                    | **6** (was 3) — `ui/Button` sites already pass     |
-| Raw buttons with a `:active` colour state                   | **1** shared class string (was 0)                  |
-| Raw buttons at the correct 4px resting radius               | **6** (was 2)                                      |
-| Buttons matching a Figma size exactly — _(10-07, stale)_    | **0 of 56** filled brand/danger buttons            |
-| Raw buttons with no hover despite a fill — _(10-07, stale)_ | 115                                                |
-| Raw buttons with no disabled treatment but a fill _(stale)_ | 303                                                |
-| Hex literals                                                | 484 occurrences / 229 distinct                     |
-| `#db0000` occurrences                                       | **0** — Figma's danger is a token (`bg-danger`)    |
-| `#0f53ff` occurrences                                       | **0** — used via `--color-focus` / `outline-focus` |
+| Metric                          | 10-07 baseline | 2026-10-10                           |
+| ------------------------------- | -------------- | ------------------------------------ |
+| Raw `<button>` (excl. tests)    | 450            | **122** (leave-list)                 |
+| `<Button>` call sites           | 76             | **406**                              |
+| `<LandingCta>` call sites       | —              | **8**                                |
+| `!important` escapes on buttons | 11             | **0**                                |
+| Hex literals                    | 484 / 229      | **415 / 219**                        |
+| `#db0000`                       | 0              | **0**                                |
+| `#0f53ff`                       | 0              | 1 (token definition, `index.css:45`) |
+| `bg-danger`/`text-danger` sites | —              | **101**                              |
 
-Rows marked _(stale)_ are carried over from the 10-07 baseline and were
-**not** re-measured — they need a per-element fill-and-size sweep rather than
-a class count. Every other row was measured after batch 1.
+Radius breakdown of the 122 remaining raw buttons (±4-line window):
+`rounded-full` 23 · `rounded-xl` 23 · `rounded-lg` 21 · `rounded-2xl` 12 ·
+`rounded-md` 8 · `rounded-[10px]` 7 · `rounded-sm` 2. These are the leave-list
+composites and mocks — not un-migrated CTAs. `focus-visible` present in 6
+windows; `active:` 0 (owed by raws that stay raw); `font-semibold` 49 /
+`font-bold` 9 / no-weight 30 across remaining raw windows.
 
-**Read the raw-tag count with care.** It barely moved because the four
-hand-rolled buttons `ConfirmDialog` and `ConfirmSheet` gave up became
-`ui/Button` call sites rather than disappearing, and one shared class string
-(`ModalShell`'s `CLOSE_BTN`) fixed two buttons at once. The honest measure of
-batch 1 is **~54 buttons brought into spec from three file edits** — a
-leverage ratio the tag count alone cannot show, which is why the radius and
-state-class rows below are the ones to watch as the sweep proceeds.
-
-Radius breakdown of raw buttons after batch 1: `rounded-full` 59 (was 61) ·
-`rounded-lg` 99 (was 107) · `rounded-xl` 34 (was 45) · `rounded-md` 10 ·
-arbitrary `rounded-[10px]` 8 · `rounded-2xl` 5 · `rounded-sm` 2 ·
-`rounded-g-1` 1.
-
-Only the first three classes moved in batch 1, and by exactly the six buttons
-those three components were rendering by hand.
+Fixed since baseline and no longer offenders: global focus ring is
+`--color-focus: #0f53ff` (token, not brand), `SideDrawer` red ring →
+`outline-focus`, all danger reds → `bg-danger`, `#2535c3` → comment-only
+(`SignUpTextInput.jsx:8`), `bg-red-600`/`bg-[#7f1d1d]` gone, JoinApprovedModal
+green → `success` extension role, `!important` count 11 → 0.
 
 Counting method: classes within a ±4-line window around each `<button` tag.
 JSX attributes are multi-line, so a per-line scan misses most of them — the
 same trap that produced the wrong numbers in the original audit.
 
-The single `rounded-g-1` hit is that one shared class string serving two
-buttons, and the `active:`/`focus-visible:` counts behave the same way. A
-shared constant corrects several buttons per edit — which is the whole reason
-batch 1 was sequenced this way, and why later batches will move these numbers
-more slowly per file touched than the tag count suggests.
+### 3.2 Marketing — `glass-waitlist-v1` (2026-10-10)
 
-Remaining batches, in order: destructive actions (~30 sites, the highest
-visual risk), then `pages/memberApp`, `pages/dashboard`,
-`components/dashboard`, `pages/auth` + `pages/onboarding`. Batch 2 is the one
-to watch for regressions — it spreads across ~20 files instead of 3, and 12
-of them have tests that may assert on the classes being changed.
+| Metric                       | 10-07 baseline | 2026-10-10                                                          |
+| ---------------------------- | -------------- | ------------------------------------------------------------------- |
+| Raw `<button>` (excl. tests) | 30             | **20** (leave-list)                                                 |
+| `<Button>` call sites        | 0              | **5**                                                               |
+| `<LandingCta>` call sites    | 0              | **8**                                                               |
+| `tailwing.config.js` (dead)  | present        | **deleted**                                                         |
+| Hex literals                 | 676 / 225      | **559 / 143**                                                       |
+| `#2547d0`                    | 19             | **0**                                                               |
+| `#db0000`                    | 0              | 9 (all in exempt `dashboard-overlay/` mocks + the Button spec test) |
 
-Each batch carries its own conformance tests, modelled on
-`src/__tests__/components/ui/Button.test.jsx`: assert the 4px radius, weight
-500 with no 600/700, the five states, and — for a confirm pair — that the
-cancel action is the transparent outline role rather than a filled pill.
-`ConfirmDialog`, `ConfirmSheet` and `ModalShell` had **no** test coverage
-before this sweep, which is how their off-spec buttons survived; those three
-now have it. One trap worth recording: `ui/Button` swaps its disabled styling
-in at render time instead of carrying a static `disabled:` class, so a
-migrated button's disabled state has to be asserted functionally
-(`.disabled === true`) rather than by looking for the class.
-
-### 3.2 Marketing — `glass-waitlist-v1`
-
-| Metric                                        | Value                                                     |
-| --------------------------------------------- | --------------------------------------------------------- |
-| Live `<button>`                               | 30 (no button component exists)                           |
-| `<a>`/`<Link>` styled as CTA                  | 4                                                         |
-| Buttons matching a Figma size exactly         | **0 of 30**                                               |
-| Buttons with `rounded-full`                   | 26 of 34 (76%)                                            |
-| Buttons with a focus-visible state            | 1 of 30                                                   |
-| Buttons with a `:active` state                | 0 of 30                                                   |
-| Buttons with a disabled state                 | 3 of 30                                                   |
-| Colour literals                               | 676 occurrences / 225 distinct; **375 (55%) off-palette** |
-| `#db0000` / `#0f53ff` / `#001f6e` / `#6b2fb5` | **0 occurrences each**                                    |
-
-Worst file: `organizations/ProblemSection.jsx` — 133 off-spec literals of 157.
+Remaining 20 raw buttons: Navbar nav links/hamburger (dark-navy context),
+mobile menu rows, mobile Sign In outline pill (per §6.11 ruling), Security /
+WhyGlass accordion triggers, UseCases card-teaser, dashboard-overlay
+decorative mocks, LandingCta/Button definitions. C8 (PR #26) converted the
+ErrorBoundary refresh pill and ProblemSection ↻ Replay; the UseCases white-fill
+outline and Security JS-invert outline from §4.3 were fixed in the landing
+batch (PR #25).
 
 ---
 
 ## 4. Offenders
 
-### 4.1 Critical — wrong colour
+Status 2026-10-10, after the C1–C8 sweep. Most of the original §4 inventory is
+**resolved**; the tables below keep the historical rows so the trail survives,
+struck through where fixed. What remains open is listed at the end.
 
-| Issue                                                           | Sites                                                                                                                                                                                                                                              |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Primary CTA inverted to `bg-white` + off-palette navy label     | v1: `Navbar.jsx` ×4, `organizations/Hero.jsx:122`, `members/MembersHero.jsx:154,228`, `common/CTASection.jsx:302,341`, `Footer.jsx:79` — **9 CTAs**                                                                                                |
-| Danger rendered with 5 different reds, none `#db0000`           | `bg-danger` `#dc2626` (15 sites), `bg-danger-bright` `#e11d48` (`UsersSection.jsx:58,147`), `bg-[#7f1d1d]` (`UsersSection.jsx:197,397`), `bg-red-600` (`PaystackAccount.jsx:131`), `text-red-500` (`HomeSections.jsx:163`, `Transactions.jsx:190`) |
-| `#2547d0` used as a brand blue                                  | v1 `PhoneHeroDemo.jsx` ×8, `MembersProblem.jsx:194` — **19 total both repos**                                                                                                                                                                      |
-| `#2535c3`                                                       | `auth/SignUp/EmailPhoneStep.jsx:93` — the exact hex `ui/Button.jsx:7` says it prevents                                                                                                                                                             |
-| Scroll-progress gradient spans two banned colours on every page | v1 `Navbar.jsx:101` — `#002FA7 → #4f46e5 → #7c3aed`                                                                                                                                                                                                |
-| Red focus ring                                                  | app `memberApp/SideDrawer.jsx:104` — `focus-visible:outline-[#D32F2F]`                                                                                                                                                                             |
-| Global focus ring is `#002fa7`, should be `#0f53ff`             | app `src/index.css:282`                                                                                                                                                                                                                            |
-| Green button role not in Figma at all                           | app `memberApp/JoinApprovedModal.jsx:17` — `bg-success-strong`                                                                                                                                                                                     |
+### 4.1 Critical — wrong colour — **RESOLVED**
 
-### 4.2 Critical — wrong radius
+- ~~Primary CTAs inverted to `bg-white` + off-palette navy label (9 v1 sites)~~ → `ui/LandingCta` (§2.2b, user decision 2026-10-10).
+- ~~Danger rendered with 5 different reds, none `#db0000`~~ → `bg-danger` token; 101 app sites; `#db0000` count 0 outside tests.
+- ~~`#2547d0` as brand blue (19 sites)~~ → 0 in both repos.
+- ~~`#2535c3` (`EmailPhoneStep`)~~ → removed; only a comment remains (`SignUpTextInput.jsx:8`).
+- ~~Scroll-progress gradient across banned colours (v1 `Navbar.jsx:101`)~~ → removed.
+- ~~Red focus ring (`SideDrawer`)~~ → `focus-visible:outline-focus`.
+- ~~Global focus ring `#002fa7`~~ → `--color-focus: #0f53ff` token.
+- ~~Off-palette green button (`JoinApprovedModal`)~~ → `success` extension role (§2.1).
 
-`rounded-full` (9999px) on **61 app + 26 marketing** buttons. Figma specifies a 4px rectangle.
-The 13 marketing hero/nav CTAs are the most visible: the site's primary action renders as a
-stadium. `rounded-xl` (12px, 3× spec) appears on 45 app buttons including every destructive
-action — `TwoFactorAuth.jsx:246`, `MyCommunities.jsx:67`, `UsersSection.jsx:58,147`.
+### 4.2 Critical — wrong radius — **mostly resolved**
 
-### 4.3 Critical — role collapse
+`rounded-full` on filled CTAs is down from 61 + 26 to **23 app + 9 v1**, and the
+remainder are leave-list items (badges, dark-nav pills, decorative mocks, the
+LandingCta shell which legitimately carries the Figma r=60 pill per §2.2b).
+`rounded-xl` destructives: all migrated (23 remaining `rounded-xl` windows are
+composite rows/cards, not buttons carrying the fill). Spec radius remains
+`rounded-g-1` everywhere else.
 
-**Secondary/outline is implemented as a filled grey pill.** 27 app sites, all of them the
-Cancel button next to a primary: `ConfirmDialog.jsx:35` · `AccountsSection.jsx:247` ·
-`CommunitiesSection.jsx:101,175,341` · `NotificationsSection.jsx:97,234` ·
-`UsersSection.jsx:51,85,140,190` · `SystemConfig.jsx:177` · plus `bg-stacked-container`
-copies in `ReconciliationSection.jsx:236`, `ProfileSections.jsx:58,94`,
-`CommunityProfile.jsx:328` and `ui/Button.jsx:42`. Spec: transparent + `#000000 @10%` 1px.
+### 4.3 Critical — role collapse — **RESOLVED**
 
-Also wrong:
+The grey-pill Cancel collapse (27 app sites, `ConfirmDialog` the canonical
+instance) is gone: every cancel/secondary action is `outline`/`outline-neutral`
+via `ui/Button`. Tertiary went from 0 uses to the default for text links across
+the sweep. v1's `UseCases` white-fill outline and `Security` JS-invert outline
+were fixed in the landing batch (PR #25). Remaining raws that still read as
+"role-ish" composites (option menus, tab groups, radio cards) are deliberate
+leaves — they are containers styled to look like buttons, not buttons.
 
-- `UseCases.jsx:405` (v1) — outline with a **white fill at rest** that fills solid blue on
-  hover. Backwards, and it inverts to a fill in a state the spec keeps transparent.
-- `Security.jsx:155` (v1) — outline that inverts to a solid fill via JS `onMouseEnter`,
-  which makes it **unreachable by keyboard** (no focus/pressed counterpart).
-- Tertiary role: **0 uses** in either repo.
-- Tonal role: **0 uses** in v1. App's `--color-surface-container` (`rgb(255 255 255 / 0.6)`)
-  is the only token that matches a Figma role.
+### 4.4 Critical — a11y — **open, exempt pending owner**
 
-**Resolved in sweep batch 1.** `ConfirmDialog`'s Cancel (7 importers) was the
-canonical instance of the grey-pill collapse: `rounded-xl` / `bg-gray-100` /
-`font-semibold`, sitting beside a confirm button that had already been moved
-to `ui/Button`. Both are on `ui/Button` now (`outline-neutral` / `critical`).
-`ConfirmSheet`'s pair had the same problem with no states at all. The remaining
-grey-pill and `bg-stacked-container` copies listed above are batch 2+ work —
-`ReconciliationSection`, `ProfileSections`, `CommunityProfile`, and the
-`UsersSection` rows are the biggest clusters left.
+| Issue                                                                               | Status                                                                                                      |
+| ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| 5 timeline steps clickable by mouse only — no `role`, no `tabIndex`, no `onKeyDown` | still open — v1 `organizations/ProblemSection.jsx` (`data-role` hooks; keyboard wiring is a feature change) |
+| 6 dead focusable buttons in a decorative product mock                               | still `aria-hidden`/`tabIndex={-1}` — v1 `dashboard-overlay/*`; exemption pending §6 owner confirm          |
+| 31 legal-prose links with no hover and no focus                                     | still open — v1 `src/index.css` `.legal-prose` (CSS-only fix, not part of the button sweep)                 |
 
-### 4.4 Critical — a11y
+### 4.5 Moderate — sizes and states — **mostly resolved**
 
-| Issue                                                                               | Site                                                                                           |
-| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| 5 timeline steps clickable by mouse only — no `role`, no `tabIndex`, no `onKeyDown` | v1 `organizations/ProblemSection.jsx:517-524`                                                  |
-| 6 dead focusable buttons in a decorative product mock, radius 7px                   | v1 `dashboard-overlay/{MembersScreen:151,175,244, DashboardScreen:88,101, PaymentsScreen:152}` |
-| 31 legal-prose links with no hover and no focus                                     | v1 `src/index.css:250-253`                                                                     |
-
-### 4.5 Moderate — sizes and states
-
-- **0 of 56** app filled buttons and **0 of 30** marketing buttons match a Figma size.
-  Figma heights are 32/40/48/56/64; the code clusters at 36, 44, 45, 56.
-- **Pressed state absent everywhere.** Figma defines it for all six roles.
-- Disabled done five inconsistent ways (`opacity-50/40/60/70/10`) plus three invented fills.
-- Label sizes outside the 12/14/16px set: `13.5px`, `15px`, `13px`, `10.5px`, `11px`,
-  `[clamp(12px,3.5vw,15px)]` — the clamp yields fractional sizes, which no Figma size permits.
-- Weight 600/700 on 161 app buttons (`font-semibold` 152, `font-bold` 10) and 9 marketing
-  buttons. Spec: **500**. 177 app buttons have no weight class at all.
-- `!important` escapes fighting the shared component, 11 occurrences — including a
-  **malformed** `!h-` (no value) at `CommunityProfile.jsx:240`, which silently emits nothing.
-- v1 `tailwing.config.js` — misspelled, unreferenced, dead, and holds a violet scale that
-  matches **0 of 12** Figma colours. `#7c3aed` reached production via copy-paste from it.
-  Delete it.
+- Figma sizes 32/40/48/56/64 now exist in code as `ui/Button` `xs/sm/md/lg/xl`; all 406 call sites carry them. The 10-07 "0 of 56 match" row is void.
+- Pressed/focus/disabled states: carried by `ui/Button` for every migrated button; raw leave-list buttons still owe their own (noted in §5).
+- Weight 600/700: `ui/Button` renders 500; remaining semibold/bold hits (49/9) are leave-list raws.
+- `!important` escapes: **0** (was 11).
+- v1 `tailwing.config.js`: **deleted**.
 
 ---
 
@@ -467,43 +414,58 @@ are given an `aria-label` so neither is an unnamed button.
 
 ## 6. Open questions for the design owner
 
+Refreshed 2026-10-10 after the button sweep. Struck-through items are resolved
+and need nothing from the owner; the shortlist at the bottom is what still does.
+
 1. ~~**Radius 4 vs 8.**~~ **Resolved:** take the smaller value → **4px everywhere**, no 8px
    hover radius. Recorded in §2.1.
-2. **`#0f53ff` at 6 uses.** Too low-frequency to treat as a confident token. Applied as the
-   global focus ring per §2.1, but confirm it's the intended focus colour and not a one-off.
+2. **`#0f53ff` focus colour.** Applied as the global focus ring per §2.1 (token
+   `--color-focus`). **Still needs confirmation** that it is the intended focus
+   colour, not a one-off.
 3. ~~**No success/warning role.**~~ **Resolved as an extension:** `success` and `warning` roles
    added in §2.1 using the file's own dominant green `#008000` and amber `#9a6500`, replacing
    the off-palette `#16a34a`/`#b45309`. Flagged as an extension, not spec.
 4. **Success/status palette.** Figma has `#008000`, `#1d6b40`, `#9a6500`, `#ffffdb` in use but
-   no coherent scale. Is there a status ramp somewhere else?
-5. ~~**Icons and other components.**~~ **Inventoried 2026-10-09:** typography in §7, icons in
-   §8, the full component sheet in §9. Still open: the decorative `dashboard-overlay/` mocks
-   (inline styles, radius 7) remain exempt — confirm they never need to conform.
+   no coherent scale. **Open:** is there a status ramp somewhere else?
+5. **Decorative `dashboard-overlay/` mocks** (inline styles, radius 7, `aria-hidden`).
+   **Open:** confirm they never need to conform. Until then they are exempt and
+   explain most remaining v1 hex literals.
 6. **Six near-identical navies.** `#0f1d6e`, `#1c2b8a`, `#0b0f2e`, `#0d1a6e`, `#0c1020`,
-   `#0d1022`, `#0f1640` all collapse to `#001f6e`. Confirm, since `--color-brand-deep` and
-   `--color-brand-night` currently carry extra meaning in dark sections.
+   `#0d1022`, `#0f1640` all collapse to `#001f6e`. **Open:** confirm, since
+   `--color-brand-deep` and `--color-brand-night` currently carry extra meaning in dark
+   sections.
 7. ~~**No icon-button role exists.**~~ **Resolved as an extension:** three icon-only sizes
-   (`icon-sm` 32, `icon-md` 40, `icon-lg` 48) added in §2.2a — square, no horizontal padding,
-   full state set, reusing the existing role fills. They are _sizes_ rather than a role, so
-   `ui/Button` keeps a single variant axis. The sweep can now migrate every remaining raw
-   `<button>`, icon ones included.
+   (`icon-sm` 32, `icon-md` 40, `icon-lg` 48) added in §2.2a and used across C4–C7.
 8. **Icon glyph scale is provisional (§8.4).** Figma's icon components don't serialize width/
    height via the REST API, so the 16/20/24/32/40 glyph scale is derived from the icon-button
-   boxes, not measured. Confirm — especially the normalisation of the app's `w-9` (36px, 60
-   sites) and `w-7` (28px, 35 sites).
+   boxes, not measured. **Open:** confirm — especially the normalisation of the app's `w-9`
+   (36px, 60 sites) and `w-7` (28px, 35 sites).
 9. **Dialog radius.** The Figma `Dialog` node carries r=24 — outside the 4/8/12/16 scale and on
-   a single node. Code uses 16 (`rounded-2xl`) + 20px sheets. Keeping the code values until
-   the owner rules; if 24 is real, §1.5 grows a fifth step.
+   a single node. Code uses 16 (`rounded-2xl`) + 20px sheets. **Open:** keeping the code
+   values until the owner rules; if 24 is real, §1.5 grows a fifth step.
 10. **Marketing display type has no spec.** The Figma file contains app screens only; its
     largest text is 24px. Marketing heroes run `clamp(26px…62px)` and `font-extrabold` (800,
-    which §7 bans as above the file's max weight of 700). Sizes stay unruled until the owner
-    exports marketing frames; weights should come down to ≤700 now.
+    which §7 bans as above the file's max weight of 700). **Open:** sizes stay unruled until
+    the owner exports marketing frames; weights should come down to ≤700 now.
 11. ~~**CTA on navy sections.**~~ **Re-resolved (user decision, 2026-10-10): white pill.**
-    An earlier ruling (2026-10-09) accepted the blue-on-navy `variant="primary"` CTAs as-is.
-    Re-checked against the Figma landing frames, the file draws every landing CTA as a
-    `#fafbfc` near-white pill (r=60, h=50) — see §2.2b. The shared `ui/LandingCta`
-    component now implements that at the nine marketing call sites; the blue-on-navy
-    shortcut is retired.
+    The Figma landing frames draw every landing CTA as a `#fafbfc` near-white pill
+    (r=60, h=50) — see §2.2b. `ui/LandingCta` implements that at the nine marketing
+    call sites; the blue-on-navy shortcut is retired.
+
+### Still needs owner sign-off (shortlist)
+
+1. **Focus colour `#0f53ff`** — confirm (item 2).
+2. **Six-navy collapse to `#001f6e`** — confirm, incl. what `brand-deep`/`brand-night`
+   should mean (item 6).
+3. **Dialog r=24 vs code's 16/20** — rule (item 9).
+4. **Marketing display sizes/weights** — export marketing frames or accept the
+   ≤700 interim (item 10).
+5. **Success/status ramp** — point at the real scale or adopt the extension (item 4).
+6. **dashboard-overlay mocks** — confirm permanent exemption (item 5).
+7. **Icon glyph scale** — confirm derived 16/20/24/32/40 (item 8).
+
+No further code work is planned on these until the owner rules; the page audit
+(every app page except the landing vs this spec) proceeds independently.
 
 ---
 
