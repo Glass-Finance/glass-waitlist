@@ -263,7 +263,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
             variant={chosen?.variant ?? "outline-neutral"}
             size="sm"
             disabled={!decision || submitting || isLoading || (commentRequired && !comment.trim())}
-            className="flex-1 flex items-center justify-center gap-1.5"
+            className="flex-1"
           >
             {submitting ? (
               <Loader2 size={12} className="animate-spin" />

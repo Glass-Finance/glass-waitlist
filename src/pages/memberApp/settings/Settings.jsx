@@ -160,7 +160,7 @@ export default function Settings() {
           variant="outline-neutral"
           onClick={handleLogout}
           fullWidth={false}
-          className="flex items-center gap-2.5 w-full"
+          className="w-full"
         >
           <LogOut size={16} className="text-brand" />
           <span className="text-sm font-medium text-brand">Log Out</span>

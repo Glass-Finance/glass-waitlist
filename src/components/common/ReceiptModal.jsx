@@ -390,7 +390,7 @@ function ReceiptCard({
             size="icon-sm"
             onClick={onCopyReference}
             aria-label="Copy transaction ID"
-            className="inline-flex align-middle"
+            className="align-middle"
           >
             {copied ? <CheckCheck size={16} /> : <Copy size={16} />}
           </Button>

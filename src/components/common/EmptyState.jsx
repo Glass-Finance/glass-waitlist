@@ -67,22 +67,12 @@ export default function EmptyState({
         </p>
       )}
       {action && isBig && (
-        <Button
-          onClick={action}
-          fullWidth={false}
-          size="md"
-          className="mt-6 px-5 inline-flex items-center gap-1.5"
-        >
+        <Button onClick={action} fullWidth={false} size="md" className="mt-6 px-5">
           {actionLabel}
         </Button>
       )}
       {action && !isBig && (
-        <Button
-          onClick={action}
-          size="xs"
-          fullWidth={false}
-          className="mt-4 inline-flex items-center gap-1.5"
-        >
+        <Button onClick={action} size="xs" fullWidth={false} className="mt-4">
           {actionLabel}
         </Button>
       )}

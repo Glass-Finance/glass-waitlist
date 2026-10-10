@@ -277,7 +277,7 @@ export default function PaymentProfile() {
                   size="sm"
                   fullWidth={false}
                   onClick={handleBack}
-                  className="flex items-center gap-1.5 mb-4 -ml-1"
+                  className="mb-4 -ml-1"
                 >
                   <ArrowLeft size={15} />
                   {isAuthenticated ? "Back to dashboard" : "Back"}

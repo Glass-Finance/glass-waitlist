@@ -89,17 +89,10 @@ function RequestCard({ r, onApprove, onReject, busy }) {
             disabled={busy}
             onClick={onReject}
             fullWidth={false}
-            className="flex items-center gap-1.5"
           >
             <X size={13} /> Reject
           </Button>
-          <Button
-            size="sm"
-            disabled={busy}
-            onClick={onApprove}
-            fullWidth={false}
-            className="flex items-center gap-1.5"
-          >
+          <Button size="sm" disabled={busy} onClick={onApprove} fullWidth={false}>
             <Check size={13} /> Approve
           </Button>
         </div>

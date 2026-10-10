@@ -5,7 +5,7 @@ import { forwardRef } from "react";
 // before changing anything here -- it records the exact padding, height,
 // label size, radius and state values, and which hex values are banned.
 //
-// 76 call sites use this component. Anything you add needs a reason that
+// 406 call sites use this component. Anything you add needs a reason that
 // isn't "the old one was easier".
 
 // Legacy aliases for the three roles this component shipped before
@@ -131,6 +131,13 @@ export const Button = forwardRef(function Button(
     // wins, so there is no state-dependent radius swap. rounded-g-1 is the
     // Figma-derived token, not Tailwind's rounded-lg (8px).
     "rounded-g-1",
+    // Figma draws every button as a horizontal auto-layout with 8px between
+    // the icon and the label, both axes centred (itemSpacing: 8,
+    // primaryAxis/counterAxisAlignItems: CENTER, content HUG). Without this
+    // the children stack as bare inline nodes and an icon+label pair sits
+    // baseline-aligned with a sub-4px gap. Call sites no longer need their
+    // own `flex items-center gap-*`; see DESIGN-SYSTEM.md §2.2.
+    "inline-flex items-center justify-center gap-2",
     sizeSpec.pad,
     sizeSpec.px,
     sizeSpec.h,

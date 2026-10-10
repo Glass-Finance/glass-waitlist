@@ -441,7 +441,7 @@ export default function PaymentSummary() {
           onClick={handlePay}
           disabled={!obligation || isLinkInactive || killSwitch}
           loading={initiatePayment.isPending || redirecting}
-          className="mt-1 flex items-center justify-center gap-2"
+          className="mt-1"
         >
           {initiatePayment.isPending || redirecting ? (
             <>
