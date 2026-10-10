@@ -77,7 +77,7 @@ export default function VerifyIdentityHistory() {
           onClick={() => goBackInApp(navigate, "/member/verify-identity")}
           className="absolute left-5"
         />
-        <h1 className="text-lg font-semibold text-ink m-0">Verification History</h1>
+        <h1 className="text-lg font-medium text-ink m-0">Verification History</h1>
       </div>
 
       <div className="px-4">

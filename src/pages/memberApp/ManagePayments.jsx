@@ -249,7 +249,7 @@ export default function ManagePayments() {
           onClick={() => navigate(-1)}
           className="absolute left-5"
         />
-        <h1 className="text-lg font-semibold text-ink m-0">Manage Payments</h1>
+        <h1 className="text-lg font-medium text-ink m-0">Manage Payments</h1>
       </div>
 
       <div className="px-4">

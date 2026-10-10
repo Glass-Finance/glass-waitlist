@@ -171,21 +171,20 @@ export default function Transactions() {
     <div className="relative overflow-hidden min-h-screen max-w-[430px] mx-auto pb-10">
       <GlassLogoGlow />
       {/* ── Top bar ── */}
-      <div className="pt-6 px-5 pb-4 flex items-center gap-3 sticky top-0 z-40">
+      <div className="relative pt-6 px-5 pb-4 flex items-center justify-center sticky top-0 z-40">
         <MobileBackButton
           aria-label="Back"
           onClick={() => navigate(-1)}
-          className="flex-shrink-0"
+          className="absolute left-5"
         />
-        <h1 className="text-lg font-medium text-ink m-0 flex-1 text-center mr-9">
-          Payment History
-        </h1>
+        <h1 className="text-lg font-medium text-ink m-0">Payment History</h1>
         <Button
           variant="tertiary"
           size="icon-sm"
           onClick={exportCsv}
           disabled={isExporting}
           aria-label={isExporting ? "Preparing export" : "Export payment history as CSV"}
+          className="absolute right-5"
         >
           {isExporting ? (
             <Loader2 size={15} className="animate-spin text-ink-strong" />
