@@ -26,12 +26,15 @@ function StepHeader({ title, onBack }) {
   return (
     <div className="flex items-center justify-center relative pt-6 px-5 pb-6">
       {onBack && (
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={onBack}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className="absolute left-5"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
       )}
       <h1 className="text-lg font-semibold text-ink m-0">{title}</h1>
     </div>

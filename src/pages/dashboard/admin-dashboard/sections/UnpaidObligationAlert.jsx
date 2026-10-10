@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { Button } from "../../../../components/ui/Button";
 import { toTitleCase, formatDate } from "../../../../utils/format";
 import WarnSignIcon from "../../../../assets/dashboard/warn-sign.webp";
 import { formatNaira } from "../helpers";
@@ -57,12 +58,15 @@ export default function UnpaidObligationAlert({
         >
           Pay Now
         </button>
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-sm"
+          aria-label="Close"
           onClick={onDismiss}
-          className="text-brand bg-transparent border-none cursor-pointer"
+          className=""
         >
           <X size={20} />
-        </button>
+        </Button>
       </div>
     </div>
   );

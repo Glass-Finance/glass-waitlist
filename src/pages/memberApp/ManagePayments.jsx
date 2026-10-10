@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Button } from "../../components/ui/Button";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronDown } from "lucide-react";
@@ -245,12 +246,15 @@ export default function ManagePayments() {
       <GlassLogoGlow />
       {/* Header */}
       <div className="relative flex items-center justify-center pt-[22px] px-5 pb-5">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={() => navigate(-1)}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className="absolute left-5"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
         <h1 className="text-lg font-semibold text-ink m-0">Manage Payments</h1>
       </div>
 

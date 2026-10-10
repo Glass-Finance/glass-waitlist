@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ChevronDown, Inbox } from "lucide-react";
 import LoadingState from "../../components/common/LoadingState";
@@ -69,13 +70,16 @@ export default function VerifyIdentityHistory() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-7 pt-7 pb-5">
         <div className="flex items-center gap-3 min-w-0">
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-md"
+            aria-label="Back to identity verification"
             onClick={() => navigate("/dashboard/verify-identity")}
             aria-label="Back to identity verification"
-            className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
+            className="flex-shrink-0"
           >
             <ArrowLeft size={17} strokeWidth={2} className="text-ink" />
-          </button>
+          </Button>
           <div className="min-w-0">
             <h1 className="text-lg font-semibold text-ink m-0">Verification History</h1>
             <p className="text-xs text-gray-400 mt-0.5 m-0">

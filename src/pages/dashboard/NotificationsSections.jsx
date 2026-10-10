@@ -98,12 +98,15 @@ export function DetailShell({ catLabel, onClose, maxWidthCls, children }) {
           <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">
             {catLabel}
           </span>
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-sm"
+            aria-label="Close"
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all flex-shrink-0"
+            className="flex-shrink-0"
           >
             <X size={15} />
-          </button>
+          </Button>
         </div>
         {children}
       </div>

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Button } from "../../components/ui/Button";
 import { ArrowLeft, History } from "lucide-react";
 import useKycFlow from "../../components/kyc/useKycFlow";
 
@@ -27,13 +28,16 @@ export default function VerifyIdentity() {
       {/* Header — dashboard page-header pattern (see CommunitiesHome) */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-7 pt-7 pb-5">
         <div className="flex items-center gap-3 min-w-0">
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-md"
+            aria-label="Back to communities"
             onClick={() => navigate("/dashboard/home")}
             aria-label="Back to communities"
-            className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center flex-shrink-0"
+            className="flex-shrink-0"
           >
             <ArrowLeft size={17} strokeWidth={2} className="text-ink" />
-          </button>
+          </Button>
           <div className="min-w-0">
             <h1 className="text-lg font-semibold text-ink m-0">Identity Verification</h1>
             <p className="text-xs text-gray-400 mt-0.5 m-0">
@@ -41,13 +45,16 @@ export default function VerifyIdentity() {
             </p>
           </div>
         </div>
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-sm"
+          aria-label="Attempt history"
           onClick={() => navigate("/dashboard/verify-identity/history")}
-          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className=""
           aria-label="Attempt history"
         >
           <History size={16} className="text-ink" />
-        </button>
+        </Button>
       </div>
 
       <div className="px-4 md:px-7 pb-10 flex flex-col gap-3 w-full max-w-[640px]">

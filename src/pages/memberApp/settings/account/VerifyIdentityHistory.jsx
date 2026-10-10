@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { goBackInApp } from "../../../../utils/memberBack";
 import { ChevronLeft, ChevronDown, Inbox } from "lucide-react";
@@ -70,12 +71,15 @@ export default function VerifyIdentityHistory() {
     <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center justify-center relative pt-6 px-5 pb-4">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={() => goBackInApp(navigate, "/member/verify-identity")}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className="absolute left-5"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
         <h1 className="text-lg font-semibold text-ink m-0">Verification History</h1>
       </div>
 

@@ -17,6 +17,7 @@
  */
 
 import { useEffect, useMemo, useState } from "react";
+import { Button } from "../ui/Button";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useInvites } from "../../hooks/useInvites";
 import { useRegisterShortcutGroup } from "../../hooks/useKeyboardShortcuts";
@@ -314,16 +315,19 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               }}
             />
 
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
+              aria-label="Platform Admin"
               onClick={() => {
                 navigate("/dashboard/admin-panel");
                 onCloseMobile?.();
               }}
               title="Platform Admin"
-              className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/20 text-white transition-all hover:bg-white/30"
+              className=""
             >
               <ShieldCheck size={15} />
-            </button>
+            </Button>
 
             <div className="flex-1" />
 
@@ -544,16 +548,19 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
           {/* Platform-admin shortcut */}
           {isPlatformAdmin && (
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
+              aria-label="Platform Admin"
               onClick={() => {
                 navigate("/dashboard/admin-panel");
                 onCloseMobile?.();
               }}
               title="Platform Admin"
-              className="mt-2 w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/50 hover:bg-white/20 hover:text-white transition-all"
+              className="mt-2"
             >
               <ShieldCheck size={14} />
-            </button>
+            </Button>
           )}
 
           {/* Logout button pinned to bottom of rail */}

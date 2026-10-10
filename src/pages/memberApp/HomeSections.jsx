@@ -386,13 +386,15 @@ export function MemberHomeHeader({
   return (
     <div className="flex items-center justify-between pt-[25px] px-5 pb-5">
       <div className="flex items-center gap-[15px] min-w-0">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
           onClick={onOpenMenu}
           aria-label="Open menu"
-          className="flex items-center justify-center border-none cursor-pointer bg-transparent p-0 flex-shrink-0"
+          className="flex-shrink-0"
         >
           <Menu size={28} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
 
         {!hasNoCommunity && (
           <CommunitySwitcher

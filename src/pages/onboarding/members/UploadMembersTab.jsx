@@ -1,4 +1,5 @@
 import { Download, FileSpreadsheet, Check, X } from "lucide-react";
+import { Button } from "../../../components/ui/Button";
 import uploadCloudIcon from "../../../assets/icons/upload-cloud.webp";
 import { HEADERS, SAMPLE_ROW, downloadTemplate } from "../addMembersUtils";
 
@@ -136,13 +137,15 @@ export default function UploadMembersTab({
               </div>
             </div>
             <span className="text-xs text-gray-500 flex-shrink-0">{Math.round(urlProgress)}%</span>
-            <button
-              onClick={clearUrlUpload}
+            <Button
+              variant="tertiary"
+              size="icon-sm"
               aria-label="Cancel upload"
-              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0"
+              onClick={clearUrlUpload}
+              className="flex-shrink-0"
             >
               <X size={16} />
-            </button>
+            </Button>
           </div>
         )}
 
@@ -156,13 +159,15 @@ export default function UploadMembersTab({
                 <span className="text-green-600 font-medium">Complete</span>
               </p>
             </div>
-            <button
-              onClick={clearUrlUpload}
+            <Button
+              variant="tertiary"
+              size="icon-sm"
               aria-label="Remove file"
-              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0"
+              onClick={clearUrlUpload}
+              className="flex-shrink-0"
             >
               <X size={16} />
-            </button>
+            </Button>
           </div>
         )}
       </div>

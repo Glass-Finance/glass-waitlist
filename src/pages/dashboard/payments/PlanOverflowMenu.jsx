@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../../components/ui/Button";
 import { MoreHorizontal, Pencil, Bell, Users, Pause, Play, Trash2 } from "lucide-react";
 import ConfirmDialog from "../../../components/dashboard/ConfirmDialog";
 
@@ -29,12 +30,15 @@ export default function PlanOverflowMenu({ plan, planPlans, onEdit, onViewMember
 
   return (
     <div className="relative">
-      <button
+      <Button
+        variant="tertiary"
+        size="icon-sm"
+        aria-label="More options"
         onClick={() => setOpen((o) => !o)}
-        className="w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer"
+        className=""
       >
         <MoreHorizontal size={14} />
-      </button>
+      </Button>
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={close} />

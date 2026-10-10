@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../ui/Button";
 import { Download } from "lucide-react";
 import ReceiptModal from "../common/ReceiptModal";
 
@@ -16,7 +17,10 @@ export default function ReceiptDownloadButton({
 
   return (
     <>
-      <button
+      <Button
+        variant="tertiary"
+        size="icon-sm"
+        aria-label={title}
         type="button"
         onClick={() => !disabled && setOpen(true)}
         disabled={disabled}
@@ -25,7 +29,7 @@ export default function ReceiptDownloadButton({
         style={buttonStyle}
       >
         <Download size={iconSize} />
-      </button>
+      </Button>
 
       {open && (
         <ReceiptModal

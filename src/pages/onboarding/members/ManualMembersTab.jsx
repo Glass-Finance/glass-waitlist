@@ -35,13 +35,14 @@ export default function ManualMembersTab({
               {em.charAt(0).toUpperCase()}
             </span>
             {em}
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
               onClick={() => removeEmailChip(i)}
               aria-label={`Remove ${em}`}
-              className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex items-center justify-center"
             >
               <X size={12} />
-            </button>
+            </Button>
           </span>
         ))}
         <input

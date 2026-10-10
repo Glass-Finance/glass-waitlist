@@ -174,12 +174,15 @@ export default function Transactions() {
       <GlassLogoGlow />
       {/* ── Top bar ── */}
       <div className="pt-6 px-5 pb-4 flex items-center gap-3 sticky top-0 z-40">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={() => navigate(-1)}
-          className="border border-surface-container-border w-9 h-9 rounded-full bg-white flex items-center justify-center cursor-pointer flex-shrink-0"
+          className="flex-shrink-0"
         >
           <ChevronLeft size={18} color="var(--color-ink-strong)" />
-        </button>
+        </Button>
         <h1 className="text-lg font-medium text-ink m-0 flex-1 text-center mr-9">
           Payment History
         </h1>

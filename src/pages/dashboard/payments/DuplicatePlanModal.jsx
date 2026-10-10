@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Button } from "../../../components/ui/Button";
 import { X, Check, Loader2 } from "lucide-react";
 import { useSlug } from "../../../hooks/useSlug";
 import { dateInputToIso } from "../../../utils/date";
@@ -66,12 +67,15 @@ export default function DuplicatePlanModal({ plan, onClose, onDuplicate, duplica
               account carry over automatically.
             </p>
           </div>
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-sm"
+            aria-label="Close"
             onClick={onClose}
-            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer bg-transparent"
+            className=""
           >
             <X size={14} />
-          </button>
+          </Button>
         </div>
 
         <div className="flex flex-col gap-4">

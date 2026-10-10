@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Button } from "../ui/Button";
 import { createPortal } from "react-dom";
 import { X, FileText, Image as ImageIcon, Share2, Check, Copy, CheckCheck } from "lucide-react";
 import html2canvas from "html2canvas";
@@ -641,12 +642,15 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
         {/* Title row */}
         <div className="flex items-center justify-between pt-2 px-5 pb-3 flex-shrink-0">
           <span className="text-[15px] font-bold text-[#0F172A]">Payment Receipt</span>
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-sm"
+            aria-label="Close"
             onClick={onClose}
-            className="bg-black/[0.06] border-none rounded-full w-8 h-8 flex items-center justify-center cursor-pointer text-[#475569] flex-shrink-0"
+            className="flex-shrink-0"
           >
             <X size={16} />
-          </button>
+          </Button>
         </div>
 
         {/* Scrollable receipt */}

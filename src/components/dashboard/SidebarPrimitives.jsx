@@ -1,4 +1,5 @@
 import { LogOut } from "lucide-react";
+import { Button } from "../ui/Button";
 import { safeImageUrl } from "../../utils/safeImageUrl";
 import PulseImg from "../common/PulseImg";
 
@@ -37,14 +38,17 @@ export function SidebarLogo({ onClick, title }) {
 
 export function LogoutButton({ onClick, loggingOut }) {
   return (
-    <button
+    <Button
+      variant="tertiary"
+      size="icon-sm"
+      aria-label="Log out"
       onClick={onClick}
       disabled={loggingOut}
       title="Log out"
-      className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/60 hover:bg-danger/20 hover:text-danger-wash transition-all disabled:opacity-50"
+      className=""
     >
       <LogOut size={14} />
-    </button>
+    </Button>
   );
 }
 

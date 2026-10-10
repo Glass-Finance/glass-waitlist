@@ -47,13 +47,15 @@ function LeaveConfirmModal({ community, onCancel, onConfirm, leaving }) {
         className="w-full max-w-[430px] bg-white rounded-t-[20px] pt-6 px-5 pb-7"
       >
         <div className="flex justify-end">
-          <button
-            onClick={onCancel}
-            className="bg-transparent border-none cursor-pointer p-1 text-ink-faint"
+          <Button
+            variant="tertiary"
+            size="icon-sm"
             aria-label="Cancel"
+            onClick={onCancel}
+            className=""
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
         <div className="flex flex-col items-center text-center gap-2.5">
           <div className="w-[52px] h-[52px] rounded-full bg-danger-wash flex items-center justify-center mb-1">
@@ -158,12 +160,15 @@ export default function MyCommunities() {
     <div className="relative overflow-hidden pb-10 min-h-screen">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={() => goBackInApp(navigate, "/member/settings")}
-          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className=""
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
         <h1 className="text-lg font-semibold text-ink m-0">My Communities</h1>
       </div>
 
@@ -246,14 +251,17 @@ export default function MyCommunities() {
                   </p>
                 </div>
                 {!c.owned ? (
-                  <button
+                  <Button
+                    variant="tertiary"
+                    size="icon-sm"
+                    aria-label="Leave community"
                     onClick={(e) => handleLeave(e, c)}
                     disabled={leaveCommunity.isPending}
                     title="Leave community"
-                    className="bg-transparent border-none cursor-pointer p-1.5 text-danger flex-shrink-0"
+                    className="flex-shrink-0"
                   >
                     <LogOut size={16} />
-                  </button>
+                  </Button>
                 ) : navigatingId === c.id ? (
                   <div className="w-4 h-4 rounded-full border-2 border-surface-container-border [border-top-color:var(--color-brand)] flex-shrink-0 animate-[spin_0.7s_linear_infinite]" />
                 ) : (

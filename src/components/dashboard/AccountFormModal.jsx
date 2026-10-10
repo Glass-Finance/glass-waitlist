@@ -125,12 +125,15 @@ export default function AccountFormModal({
           {/* Header */}
           <div className="flex items-start justify-between mb-1.5">
             <h2 className="text-[17px] font-bold text-gray-900">{title}</h2>
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
+              aria-label="Close"
               onClick={onClose}
-              className="w-7 h-7 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-200 transition-colors flex-shrink-0 ml-4 mt-0.5"
+              className="flex-shrink-0 ml-4 mt-0.5"
             >
               <X size={15} />
-            </button>
+            </Button>
           </div>
           <p className="text-sm text-gray-400 mb-6">{subtitle}</p>
 

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Button } from "../../../../components/ui/Button";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { ChevronLeft, ChevronRight, Lock, ShieldCheck } from "lucide-react";
 
@@ -24,12 +25,15 @@ export default function Security() {
     <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className=""
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
         <h1 className="text-lg font-semibold text-ink m-0">Security</h1>
       </div>
 

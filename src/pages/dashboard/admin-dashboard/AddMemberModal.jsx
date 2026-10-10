@@ -272,12 +272,15 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                 from your dashboard later.
               </p>
             </div>
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
+              aria-label="Close"
               onClick={onClose}
-              className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-100 bg-white cursor-pointer flex-shrink-0 ml-4"
+              className="flex-shrink-0 ml-4"
             >
               <X size={14} />
-            </button>
+            </Button>
           </div>
 
           <div className="px-3 pb-8 flex flex-col gap-2">
@@ -488,13 +491,15 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                             <span className="text-green-600 font-medium">Complete</span>
                           </p>
                         </div>
-                        <button
-                          onClick={clearUrlUpload}
+                        <Button
+                          variant="tertiary"
+                          size="icon-sm"
                           aria-label="Remove file"
-                          className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex-shrink-0"
+                          onClick={clearUrlUpload}
+                          className="flex-shrink-0"
                         >
                           <X size={16} />
-                        </button>
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -523,13 +528,14 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                           {em.charAt(0).toUpperCase()}
                         </span>
                         {em}
-                        <button
+                        <Button
+                          variant="tertiary"
+                          size="icon-sm"
                           onClick={() => setEmails((arr) => arr.filter((_, idx) => idx !== i))}
                           aria-label={`Remove ${em}`}
-                          className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer flex items-center justify-center"
                         >
                           <X size={12} />
-                        </button>
+                        </Button>
                       </span>
                     ))}
                     <input

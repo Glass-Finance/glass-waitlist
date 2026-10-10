@@ -207,13 +207,15 @@ function MfaModal({ mode, onClose, onSuccess }) {
               reasoning as the Cancel button below: once codes are on
               screen, "Done" is the only way out. */}
           {!showingRecoveryCodes && stage !== "success" && (
-            <button
-              onClick={requestDismiss}
+            <Button
+              variant="tertiary"
+              size="icon-sm"
               aria-label="Close"
-              className="p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+              onClick={requestDismiss}
+              className=""
             >
               <X size={15} />
-            </button>
+            </Button>
           )}
         </div>
 

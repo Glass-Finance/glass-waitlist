@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Button } from "../../components/ui/Button";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Bell, User } from "lucide-react";
@@ -310,12 +311,15 @@ export default function Notifications() {
       <GlassLogoGlow />
       {/* Header */}
       <div className="flex items-center justify-center relative pt-6 px-5 pb-5">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={() => navigate(-1)}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className="absolute left-5"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
         <h1 className="text-lg font-medium text-ink m-0">Notifications</h1>
       </div>
 

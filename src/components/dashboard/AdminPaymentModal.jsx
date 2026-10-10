@@ -202,12 +202,15 @@ export function AdminPaymentModal({ item, onClose }) {
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-6 py-4">
           <span className="text-lg font-medium text-gray-900">Transaction Details</span>
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-sm"
+            aria-label="Close"
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 cursor-pointer bg-transparent border-none transition-colors"
+            className=""
           >
             <X size={16} />
-          </button>
+          </Button>
         </div>
 
         {/* ── Community + payment method + Auto-Pay toggle ── */}
