@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import { useEffect } from "react";
 import { ScaledDashboard } from "./dashboard-overlay";
 import { cldUrl } from "../../lib/cloudinary";
-import { Button } from "../ui/Button";
+import { LandingCta } from "../ui/LandingCta";
 
 /* Hero waves — Cloudinary (public id glass/hero/hero, see docs/cloudinary.md) */
 const waveBg = cldUrl("glass/hero/hero", { width: 1920 });
@@ -107,15 +107,8 @@ export default function Hero() {
           <Reveal variant="up" delay={240}>
             <div className="flex items-center justify-center gap-3 flex-wrap">
               {/* ── FIXED: navigates to org onboarding entry point ── */}
-              <Button
+              <LandingCta
                 onClick={() => goToApp("/sign-up", navigate)}
-                fullWidth={false}
-                size="lg"
-                className="inline-flex items-center gap-2 shadow-lg shadow-black/30"
-                style={{
-                  fontWeight: 500,
-                  transition: "transform 0.18s cubic-bezier(0.22,1,0.36,1), box-shadow 0.18s ease",
-                }}
                 onMouseMove={(e) => {
                   const r = e.currentTarget.getBoundingClientRect();
                   const dx = ((e.clientX - (r.left + r.width / 2)) / (r.width / 2)) * 10;
@@ -141,7 +134,7 @@ export default function Hero() {
                 >
                   <ArrowRight className="w-4 h-4" />
                 </motion.span>
-              </Button>
+              </LandingCta>
             </div>
           </Reveal>
         </div>

@@ -4,6 +4,7 @@ import { useNavigate, useLocation, Link } from "react-router-dom";
 import { goToApp } from "../utils/deviceRedirect";
 import { motion, useScroll, useSpring } from "motion/react";
 import { Button } from "./ui/Button";
+import { LandingCta } from "./ui/LandingCta";
 
 const scrollTo = (id) =>
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -182,15 +183,13 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-3 shrink-0">
             {viewMode === "organizations" ? (
               <>
-                <Button
+                <LandingCta
                   onClick={() => goToApp("/sign-up", navigate)}
-                  fullWidth={false}
-                  size="sm"
                   className="shadow-lg shadow-black/20"
                 >
                   Get Started Free
                   <ChevronRight className="w-3.5 h-3.5" />
-                </Button>
+                </LandingCta>
                 <button
                   onClick={() => goToApp("/sign-in", navigate)}
                   className="text-[13.5px] text-white hover:text-white/70 transition-colors font-medium"
@@ -243,16 +242,14 @@ export default function Navbar() {
 
               {viewMode === "organizations" ? (
                 <div className="flex flex-col gap-3">
-                  <Button
+                  <LandingCta
                     onClick={() => {
                       goToApp("/sign-up", navigate);
                       setMenuOpen(false);
                     }}
-                    size="sm"
-                    className="shadow-lg shadow-black/20"
                   >
                     Get Started Free <ChevronRight className="w-4 h-4" />
-                  </Button>
+                  </LandingCta>
                   <button
                     onClick={() => {
                       goToApp("/sign-in", navigate);

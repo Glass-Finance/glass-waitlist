@@ -7,7 +7,7 @@ import { cldUrl } from "../../lib/cloudinary";
 import BlurText from "../ui/BlurText";
 import VariableProximity from "../ui/VariableProximity";
 import CloudAspectImage from "../common/CloudAspectImage";
-import { Button } from "../ui/Button";
+import { LandingCta } from "../ui/LandingCta";
 
 /* Wave background and phone mockup — Cloudinary (glass/hero/hero,
    glass/hero/iphone, see docs/cloudinary.md). The iphone is a natural-
@@ -162,12 +162,7 @@ export default function MembersHero() {
                 delay: 1.4,
               }}
             >
-              <Button
-                onClick={handleJoin}
-                fullWidth={false}
-                size="sm"
-                className="inline-flex items-center gap-2 hover:-translate-y-0.5 transition-transform hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30"
-              >
+              <LandingCta onClick={handleJoin} className="shadow-lg shadow-black/30">
                 Join A Community
                 <motion.span
                   animate={{ x: [0, 5, 0] }}
@@ -180,7 +175,7 @@ export default function MembersHero() {
                 >
                   <ArrowRight className="w-3.5 h-3.5" />
                 </motion.span>
-              </Button>
+              </LandingCta>
             </motion.div>
           </div>
 
@@ -255,12 +250,7 @@ export default function MembersHero() {
               Stop sending screenshots of receipts. Get instant proof of payment, track your
               history, and never miss a deadline again.
             </p>
-            <Button
-              onClick={handleJoin}
-              fullWidth={false}
-              size="sm"
-              className="inline-flex items-center gap-2 hover:-translate-y-0.5 transition-transform hover:shadow-2xl hover:shadow-white/20 shadow-lg shadow-black/30"
-            >
+            <LandingCta onClick={handleJoin} className="shadow-lg shadow-black/30">
               Join A Community
               <motion.span
                 animate={{ x: [0, 5, 0] }}
@@ -273,7 +263,7 @@ export default function MembersHero() {
               >
                 <ArrowRight className="w-3.5 h-3.5" />
               </motion.span>
-            </Button>
+            </LandingCta>
           </div>
 
           {/* Phone on mobile — pinned to the screen's bottom edge so it
