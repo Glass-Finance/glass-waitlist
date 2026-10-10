@@ -32,7 +32,7 @@ function StepHeader({ title, onBack }) {
       {onBack && (
         <MobileBackButton aria-label="Back" onClick={onBack} className="absolute left-5" />
       )}
-      <h1 className="text-lg font-semibold text-ink m-0">{title}</h1>
+      <h1 className="text-lg font-medium text-ink m-0">{title}</h1>
     </div>
   );
 }

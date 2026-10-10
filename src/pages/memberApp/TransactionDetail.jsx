@@ -62,15 +62,13 @@ export default function TransactionDetail() {
     <div className="relative overflow-hidden min-h-screen pb-10 max-w-[430px] mx-auto">
       <GlassLogoGlow />
       {/* Header */}
-      <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
+      <div className="relative flex items-center justify-center pt-5 px-4 pb-4">
         <MobileBackButton
           aria-label="Back"
           onClick={() => navigate(-1)}
-          className="flex-shrink-0"
+          className="absolute left-4"
         />
-        <h1 className="text-lg font-semibold text-ink m-0 flex-1 text-center mr-9">
-          Transaction Details
-        </h1>
+        <h1 className="text-lg font-medium text-ink m-0">Transaction Details</h1>
       </div>
 
       {isLoading ? (

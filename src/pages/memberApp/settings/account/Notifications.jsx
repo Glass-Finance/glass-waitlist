@@ -8,7 +8,7 @@ import { MobileBackButton } from "../../../../components/ui/MobileBackButton";
 function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
   return (
     <div
-      className={`flex items-center justify-between py-3.5 px-4 ${last ? "border-none" : "border-b border-hairline-soft"}`}
+      className={`flex items-center justify-between py-3.5 px-4 ${last ? "border-none" : "border-b border-black/10"}`}
     >
       <div className="min-w-0 pr-3">
         <p className="text-sm font-medium text-ink m-0">{label}</p>
@@ -22,10 +22,8 @@ function PrefRow({ label, desc, value, onChange, disabled, last = false }) {
 function Section({ title, children }) {
   return (
     <div className="mb-5">
-      <p className="text-[11px] font-bold text-ink-ghost mt-0 mx-1 mb-2 uppercase [letter-spacing:0.6px]">
-        {title}
-      </p>
-      <div className="border border-surface-container-border bg-white rounded-2xl overflow-hidden">
+      <p className="text-[14px] font-medium text-black/60 mt-0 mx-1 mb-2">{title}</p>
+      <div className="rounded-xl bg-surface-container border border-black/10 overflow-hidden">
         {children}
       </div>
     </div>
@@ -35,7 +33,7 @@ function Section({ title, children }) {
 function SkeletonRow({ last }) {
   return (
     <div
-      className={`flex items-center justify-between p-4 ${last ? "border-none" : "border-b border-hairline-soft"}`}
+      className={`flex items-center justify-between p-4 ${last ? "border-none" : "border-b border-black/10"}`}
     >
       <div>
         <div className="w-[140px] h-[13px] rounded-md bg-[#EBEBEB] mb-1.5" />
@@ -60,13 +58,13 @@ export default function Notifications() {
     <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       {/* Header */}
-      <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
+      <div className="relative flex items-center justify-center pt-5 px-4 pb-4">
         <MobileBackButton
           aria-label="Back"
           onClick={() => navigate(-1)}
-          className="flex-shrink-0"
+          className="absolute left-4"
         />
-        <h1 className="text-lg font-semibold text-ink m-0">Notifications</h1>
+        <h1 className="text-lg font-medium text-ink m-0">Notifications</h1>
       </div>
 
       <div className="px-4">

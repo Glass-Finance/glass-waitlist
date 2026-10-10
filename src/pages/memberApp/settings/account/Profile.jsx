@@ -118,9 +118,13 @@ export default function Profile() {
   return (
     <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
-      <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
-        <MobileBackButton aria-label="Back" onClick={() => navigate(-1)} />
-        <h1 className="text-lg font-semibold text-ink m-0">Profile</h1>
+      <div className="relative flex items-center justify-center pt-5 px-4 pb-4">
+        <MobileBackButton
+          aria-label="Back"
+          onClick={() => navigate(-1)}
+          className="absolute left-4"
+        />
+        <h1 className="text-lg font-medium text-ink m-0">Profile</h1>
       </div>
 
       <div className="px-4">
