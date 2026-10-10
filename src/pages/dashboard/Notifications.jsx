@@ -135,13 +135,16 @@ function AllCommunitiesNotifications() {
           {notifications.length > 0 && (
             <div className="flex items-center gap-2.5 flex-shrink-0">
               {unreadCount > 0 && (
-                <button
+                <Button
+                  variant="primary"
+                  size="xs"
+                  fullWidth={false}
                   onClick={() => markAllRead()}
                   disabled={isMarkingAllRead}
-                  className="self-start flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                  className="self-start flex-shrink-0"
                 >
                   Mark All As Read
-                </button>
+                </Button>
               )}
               <Button
                 variant="outline-caution"
@@ -237,13 +240,15 @@ function CommunityNotifications() {
               </p>
             </div>
             <div className="flex items-center gap-2.5 flex-shrink-0">
-              <button
+              <Button
+                variant="primary"
+                size="xs"
+                fullWidth={false}
                 onClick={() => markAllRead()}
                 disabled={isMarkingAllRead || unreadCount === 0}
-                className="px-4 py-2 rounded text-xs font-medium text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-40 disabled:cursor-default"
               >
                 Mark All As Read
-              </button>
+              </Button>
               <Button
                 variant="outline-caution"
                 size="xs"

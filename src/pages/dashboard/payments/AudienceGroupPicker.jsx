@@ -1,4 +1,5 @@
 import { useCommunityGroups, isArchivedGroup } from "../../../hooks/useGroups";
+import { Button } from "../../../components/ui/Button";
 
 // ── Audience group picker ─────────────────────────────────────────────────────
 // Shared by CreatePlanModal and EditPlanModal so the two paths can't drift on
@@ -79,21 +80,24 @@ export default function AudienceGroupPicker({ communityId, selected, onChange })
           {chosen.length} of {groups.length} selected
         </span>
         <div className="flex gap-2">
-          <button
-            type="button"
+          <Button
+            variant="tertiary"
+            size="sm"
+            fullWidth={false}
             onClick={() => onChange(groups.map((g) => g.id))}
-            className="text-[11px] text-brand hover:underline bg-transparent border-none cursor-pointer p-0"
           >
             Select all
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="tertiary"
+            size="xs"
+            fullWidth={false}
             onClick={() => onChange([])}
             disabled={chosen.length === 0}
-            className="text-[11px] text-gray-500 hover:underline bg-transparent border-none cursor-pointer p-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:no-underline"
+            type="button"
           >
             Clear
-          </button>
+          </Button>
         </div>
       </div>
       <div className="max-h-40 overflow-y-auto rounded-lg border border-gray-200 divide-y divide-gray-100">

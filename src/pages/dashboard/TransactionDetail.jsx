@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../components/ui/Button";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronLeft, Check, Copy, CheckCheck, Share2 } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
@@ -72,12 +73,9 @@ export default function TransactionDetail() {
     <div className="px-4 md:px-6 py-6 overflow-y-auto h-full">
       <div className="mb-5">
         <h1 className="text-lg font-bold text-black">
-          <button
-            onClick={() => navigate(-1)}
-            className="text-gray-400 font-medium bg-transparent border-none p-0 cursor-pointer hover:text-gray-600 hover:underline inline-flex items-center gap-1"
-          >
+          <Button variant="tertiary" size="sm" fullWidth={false} onClick={() => navigate(-1)}>
             <ChevronLeft size={15} /> Back
-          </button>
+          </Button>
           <span className="text-gray-300 mx-2">›</span> Transaction Details
         </h1>
         <p className="text-sm text-gray-400 mt-0.5">A full picture of this transaction.</p>
@@ -162,13 +160,15 @@ export default function TransactionDetail() {
             </Row>
             <Row label="Transaction ID" last={!tx.initiatedBy}>
               <span className="break-all">{tx.reference ?? tx.id}</span>{" "}
-              <button
+              <Button
+                variant="tertiary"
+                size="sm"
+                fullWidth={false}
                 onClick={copyReference}
-                className="bg-transparent border-none cursor-pointer p-0.5 text-gray-400 inline-flex align-middle"
                 aria-label="Copy transaction ID"
               >
                 {copied ? <CheckCheck size={13} color="#15803d" /> : <Copy size={13} />}
-              </button>
+              </Button>
             </Row>
             {tx.initiatedBy && (
               <Row label="Initiated by" last>
@@ -179,13 +179,10 @@ export default function TransactionDetail() {
             )}
           </div>
 
-          <button
-            onClick={() => setShareOpen(true)}
-            className="w-full flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold cursor-pointer bg-white border-[1.5px] border-brand text-brand"
-          >
+          <Button variant="outline" size="sm" onClick={() => setShareOpen(true)}>
             <Share2 size={15} />
             Share Receipt
-          </button>
+          </Button>
         </div>
       )}
 

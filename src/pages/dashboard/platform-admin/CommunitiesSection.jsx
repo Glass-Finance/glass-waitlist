@@ -344,18 +344,22 @@ export default function CommunitiesSection() {
                 </td>
                 <td className="px-4 py-3 text-right">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                    <button
+                    <Button
+                      variant="outline-neutral"
+                      size="xs"
+                      fullWidth={false}
                       onClick={() => setEditingSettings(c)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none"
                     >
                       <SlidersHorizontal size={11} /> Settings
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="xs"
+                      fullWidth={false}
                       onClick={() => setEditingCommission(c)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-brand bg-brand-tint hover:bg-[#d0dcff] transition-all cursor-pointer border-none"
                     >
                       <Edit2 size={11} /> Commission
-                    </button>
+                    </Button>
                   </div>
                 </td>
               </tr>

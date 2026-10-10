@@ -347,13 +347,15 @@ export default function Profile() {
                 className="hidden"
                 onChange={(e) => handlePhotoSelect(e.target.files[0])}
               />
-              <button
+              <Button
+                variant="outline"
+                size="xs"
+                fullWidth={false}
                 onClick={() => photoInputRef.current?.click()}
                 disabled={uploadFile.isPending}
-                className="h-12 px-2.5 rounded-[4px] text-xs text-brand bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-brand flex items-center justify-center"
               >
                 {uploadFile.isPending ? "Uploading…" : "Upload Photo"}
-              </button>
+              </Button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -474,12 +476,15 @@ export default function Profile() {
               out of this screen. Styled as the app's standard back-arrow link
               (matches PaymentProfile.jsx/PayingMember.jsx/CreatePlanModal.jsx)
               instead of a "Cancel" text button. */}
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
+            fullWidth={false}
             onClick={() => setView("profile")}
-            className="self-start flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer -ml-1 p-0"
+            className="self-start -ml-1"
           >
             <ArrowLeft size={15} /> Back
-          </button>
+          </Button>
 
           <div className="bg-surface-container rounded-xl border border-surface-container-border">
             <div className="px-6 py-4 border-b border-gray-100">
@@ -520,12 +525,15 @@ export default function Profile() {
       {view === "phone" && (
         <>
           {/* See the email view's identical comment above. */}
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
+            fullWidth={false}
             onClick={() => setView("profile")}
-            className="self-start flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer -ml-1 p-0"
+            className="self-start -ml-1"
           >
             <ArrowLeft size={15} /> Back
-          </button>
+          </Button>
 
           <div className="bg-surface-container rounded-xl border border-surface-container-border">
             <div className="px-6 py-4 border-b border-gray-100">

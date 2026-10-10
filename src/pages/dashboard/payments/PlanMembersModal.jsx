@@ -119,13 +119,15 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <button
+            <Button
+              variant="outline"
+              size="xs"
+              fullWidth={false}
               onClick={exportCsv}
               disabled={isExporting}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isExporting ? "Exporting…" : "Export CSV"}
-            </button>
+            </Button>
             <Button
               variant="tertiary"
               size="icon-sm"
@@ -150,15 +152,17 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
             />
           </div>
           <div className="relative">
-            <button
+            <Button
+              variant="outline-neutral"
+              size="sm"
+              fullWidth={false}
               onClick={() => setFilterOpen((o) => !o)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 bg-white cursor-pointer"
             >
               <Filter size={12} /> Filter
               {statusFilter && (
                 <span className="ml-1 w-1.5 h-1.5 rounded-full bg-brand flex-shrink-0" />
               )}
-            </button>
+            </Button>
             {filterOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setFilterOpen(false)} />
@@ -175,21 +179,19 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
                     <option>Overdue</option>
                   </select>
                   <div className="flex gap-2">
-                    <button
+                    <Button
+                      variant="outline-neutral"
+                      size="xs"
                       onClick={() => {
                         setStatusFilter("");
                         setFilterOpen(false);
                       }}
-                      className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-500 cursor-pointer bg-white"
                     >
                       Clear
-                    </button>
-                    <button
-                      onClick={() => setFilterOpen(false)}
-                      className="flex-1 px-3 py-2 rounded-lg bg-brand text-white text-xs font-semibold border-none cursor-pointer"
-                    >
+                    </Button>
+                    <Button variant="primary" size="xs" onClick={() => setFilterOpen(false)}>
                       Apply
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </>
@@ -297,12 +299,14 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
               Showing {filtered.length} of {planMembers.length} members
             </span>
             {statusFilter && (
-              <button
+              <Button
+                variant="tertiary"
+                size="xs"
+                fullWidth={false}
                 onClick={() => setStatusFilter("")}
-                className="text-xs font-semibold text-brand bg-transparent border-none cursor-pointer"
               >
                 Clear filter
-              </button>
+              </Button>
             )}
           </div>
         )}

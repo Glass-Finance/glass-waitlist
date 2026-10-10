@@ -181,13 +181,15 @@ export default function CommunityProfile() {
             className="hidden"
             onChange={(e) => handleLogoSelect(e.target.files[0])}
           />
-          <button
+          <Button
+            variant="outline"
+            size="xs"
+            fullWidth={false}
             onClick={() => logoInputRef.current?.click()}
             disabled={uploadFile.isPending}
-            className="h-12 px-2.5 rounded-[4px] text-xs text-brand bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-brand flex items-center justify-center"
           >
             {uploadFile.isPending ? "Uploading…" : "Change Logo"}
-          </button>
+          </Button>
         </div>
 
         <div className="flex flex-col gap-3">

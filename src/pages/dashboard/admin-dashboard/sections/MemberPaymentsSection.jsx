@@ -1,4 +1,5 @@
 import { Download, Search, ChevronDown, MoreHorizontal } from "lucide-react";
+import { Button } from "../../../../components/ui/Button";
 import ReceiptDownloadButton from "../../../../components/dashboard/ReceiptDownloadButton";
 import { toTitleCase, formatDate } from "../../../../utils/format";
 import TimerIcon from "../../../../assets/dashboard/timer.webp";
@@ -26,14 +27,16 @@ export default function MemberPaymentsSection({
     >
       <div className="flex items-center justify-between px-5 pt-4 pb-0">
         <span className="text-sm font-medium">Member Payments</span>
-        <button
+        <Button
+          variant="outline-neutral"
+          size="xs"
+          fullWidth={false}
           onClick={onExport}
           disabled={isExporting || !communityId}
           title="Export all transactions for this community as CSV"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-200 bg-white text-xs text-gray-600 hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Download size={12} /> {isExporting ? "Exporting…" : "Export CSV"}
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-5 py-3 gap-2">
@@ -48,13 +51,10 @@ export default function MemberPaymentsSection({
         </div>
         <div className="flex items-center gap-1.5 text-xs self-end sm:self-auto">
           Sort by:
-          <button
-            onClick={onToggleSort}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-500 bg-white font-medium text-gray-500 cursor-pointer hover:bg-gray-50"
-          >
+          <Button variant="outline-neutral" size="sm" fullWidth={false} onClick={onToggleSort}>
             {sortDir === "desc" ? "Recent" : "Oldest"}{" "}
             <ChevronDown size={11} className={sortDir === "asc" ? "rotate-180" : ""} />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -185,24 +185,26 @@ export default function MemberPaymentsSection({
                           }
                           buttonClassName={`w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center ${isPaid ? "text-gray-500 hover:bg-gray-50 cursor-pointer" : "text-gray-300 cursor-not-allowed opacity-40"}`}
                         />
-                        <button
+                        <Button
+                          variant="tertiary"
+                          size="icon-sm"
                           disabled
                           title="Send reminder — coming soon"
-                          className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center cursor-not-allowed opacity-40"
                         >
                           <img
                             src={TimerIcon}
                             className="w-2.5 h-2.5 object-contain"
                             alt="Send reminder"
                           />
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="tertiary"
+                          size="icon-sm"
                           disabled
                           title="More options — coming soon"
-                          className="w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center text-gray-400 cursor-not-allowed opacity-40"
                         >
                           <MoreHorizontal size={12} />
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>

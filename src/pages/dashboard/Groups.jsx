@@ -176,9 +176,9 @@ export default function Groups() {
       ) : isError ? (
         <p className="text-sm text-red-500 mb-4">
           {getErrorMessage(error, "Couldn't load groups.")}{" "}
-          <button onClick={() => refetch()} className="underline">
+          <Button variant="tertiary" size="xs" fullWidth={false} onClick={() => refetch()}>
             Retry
-          </button>
+          </Button>
         </p>
       ) : isLoading ? (
         <LoadingState />
@@ -218,13 +218,15 @@ export default function Groups() {
                 </div>
 
                 {!archived ? (
-                  <button
+                  <Button
+                    variant="tertiary"
+                    size="xs"
+                    fullWidth={false}
                     onClick={() => setManaging(group)}
                     title="Manage members"
-                    className="inline-flex items-center gap-1 text-xs font-bold text-brand bg-transparent border-none cursor-pointer hover:underline"
                   >
                     <UserPlus size={13} /> Members
-                  </button>
+                  </Button>
                 ) : null}
                 <Button
                   variant="tertiary"
@@ -235,25 +237,28 @@ export default function Groups() {
                 >
                   <Pencil size={14} />
                 </Button>
-                <button
+                <Button
+                  variant="tertiary"
+                  size="sm"
+                  fullWidth={false}
                   onClick={() => run(archived ? unarchive : archive, group)}
                   title={archived ? "Restore group" : "Archive group"}
                   aria-label={`${archived ? "Restore" : "Archive"} ${group.name}`}
-                  className="bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 p-1"
                 >
                   {archived ? <ArchiveRestore size={14} /> : <Archive size={14} />}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="tertiary"
+                  size="icon-sm"
                   onClick={() => {
                     setDeleteError("");
                     setConfirmDelete(group);
                   }}
                   title="Delete group"
                   aria-label={`Delete ${group.name}`}
-                  className="bg-transparent border-none cursor-pointer text-gray-400 hover:text-red-600 p-1"
                 >
                   <Trash2 size={14} />
-                </button>
+                </Button>
               </li>
             );
           })}
@@ -262,23 +267,27 @@ export default function Groups() {
 
       {totalPages > 1 ? (
         <div className="flex items-center justify-center gap-3 text-xs text-gray-500 mb-2">
-          <button
+          <Button
+            variant="tertiary"
+            size="xs"
+            fullWidth={false}
             onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
             disabled={pageNumber <= 1}
-            className="disabled:opacity-40"
           >
             Previous
-          </button>
+          </Button>
           <span>
             Page {pageNumber} of {totalPages} · {totalElements} total
           </span>
-          <button
+          <Button
+            variant="tertiary"
+            size="xs"
+            fullWidth={false}
             onClick={() => setPageNumber((p) => p + 1)}
             disabled={pageNumber >= totalPages}
-            className="disabled:opacity-40"
           >
             Next
-          </button>
+          </Button>
         </div>
       ) : null}
 

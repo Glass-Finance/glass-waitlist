@@ -442,15 +442,18 @@ export default function KycSection() {
                   <span className="text-[11px] text-gray-400">{fmtDateTime(a.createdAt)}</span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="xs"
+                    fullWidth={false}
                     onClick={(e) => {
                       e.stopPropagation();
                       setOpenId(a.id);
                     }}
-                    className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-auto px-3 py-1.5 rounded-lg text-[11px] font-semibold text-brand bg-blue-50 hover:bg-blue-100 transition-all cursor-pointer border-none"
+                    className="opacity-0 group-hover:opacity-100 ml-auto"
                   >
                     <ShieldCheck size={11} /> Review
-                  </button>
+                  </Button>
                 </td>
               </tr>
             ))}

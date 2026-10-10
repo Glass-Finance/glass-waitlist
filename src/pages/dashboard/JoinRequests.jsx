@@ -162,12 +162,9 @@ export default function JoinRequests() {
           {/* Own text-sm, not inherited text-xl -- the button had no size
               class of its own, so "Back" rendered at the same size as the
               title itself instead of reading as a smaller, secondary link. */}
-          <button
-            onClick={() => navigate(-1)}
-            className="text-sm text-gray-400 font-medium bg-transparent border-none p-0 cursor-pointer hover:text-gray-600 hover:underline inline-flex items-center gap-1 align-middle"
-          >
+          <Button variant="tertiary" size="sm" fullWidth={false} onClick={() => navigate(-1)}>
             <ChevronLeft size={13} /> Back
-          </button>
+          </Button>
           <span className="text-sm text-gray-300 mx-2 align-middle">›</span> Join Requests
         </h1>
         <p className="text-sm text-gray-400">

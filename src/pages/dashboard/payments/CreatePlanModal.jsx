@@ -237,12 +237,9 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
                 className="mb-6"
               />
 
-              <button
-                onClick={onClose}
-                className="px-6 py-2 rounded-lg bg-brand text-white font-medium text-xs cursor-pointer border-none"
-              >
+              <Button variant="primary" size="xs" fullWidth={false} onClick={onClose}>
                 Done
-              </button>
+              </Button>
             </div>
           ) : (
             <>
@@ -278,12 +275,14 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
         </div>
         {!success && (
           <div className="flex items-center justify-end gap-4 px-6 py-4 border-t border-gray-100">
-            <button
+            <Button
+              variant="tertiary"
+              size="xs"
+              fullWidth={false}
               onClick={() => (step > 1 ? setStep((s) => s - 1) : onClose())}
-              className="flex items-center gap-1.5 text-xs font-normal text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer"
             >
               <ArrowLeft size={15} /> {step > 1 ? "Back" : "Cancel"}
-            </button>
+            </Button>
             <Button
               onClick={() => {
                 if (step === 2) {

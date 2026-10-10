@@ -353,12 +353,15 @@ export default function AccountsSection() {
                 { value: "DISABLED", label: "Disabled" },
               ]}
             />
-            <button
+            <Button
+              variant="primary"
+              size="xs"
+              fullWidth={false}
               onClick={() => setCreatingAccount(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 transition-all cursor-pointer border-none flex-shrink-0"
+              className="flex-shrink-0"
             >
               <Wallet size={12} /> Create Account
-            </button>
+            </Button>
           </>
         }
       />
@@ -416,13 +419,16 @@ export default function AccountsSection() {
                       state (per backend, 2026-07-14): new account, not yet
                       approved by an admin or verified on Paystack. */}
                   {a.status === "UNVERIFIED" && (
-                    <button
+                    <Button
+                      variant="outline"
+                      size="xs"
+                      fullWidth={false}
                       onClick={() => setReviewingAccount(a)}
                       disabled={review.isPending}
-                      className="opacity-0 group-hover:opacity-100 flex items-center gap-1 ml-auto px-3 py-1.5 rounded-lg text-[11px] font-semibold text-brand bg-blue-50 hover:bg-blue-100 transition-all cursor-pointer border-none disabled:opacity-40"
+                      className="opacity-0 group-hover:opacity-100 ml-auto"
                     >
                       <ShieldCheck size={11} /> Review
-                    </button>
+                    </Button>
                   )}
                 </td>
               </tr>

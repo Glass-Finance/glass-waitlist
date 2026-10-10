@@ -396,13 +396,16 @@ export default function SystemConfig() {
 
                     {/* Edit */}
                     <td className="px-4 py-3 text-right">
-                      <button
+                      <Button
+                        variant="outline"
+                        size="xs"
+                        fullWidth={false}
                         onClick={() => setEditing(cfg)}
-                        className="opacity-0 group-hover:opacity-100 flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-brand bg-brand-tint hover:bg-[#d0dcff] transition-all cursor-pointer border-none"
+                        className="opacity-0 group-hover:opacity-100"
                       >
                         <Edit2 size={11} />
                         Edit
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))}

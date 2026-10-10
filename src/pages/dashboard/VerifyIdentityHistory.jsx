@@ -98,12 +98,9 @@ export default function VerifyIdentityHistory() {
             <p className="text-sm text-danger m-0 mb-3">
               {getErrorMessage(error, "Couldn't load history.")}
             </p>
-            <button
-              onClick={() => refetch()}
-              className="text-sm font-semibold text-brand bg-transparent border-none cursor-pointer p-0"
-            >
+            <Button variant="tertiary" size="sm" fullWidth={false} onClick={() => refetch()}>
               Try again
-            </button>
+            </Button>
           </div>
         )}
 

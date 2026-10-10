@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../../../components/ui/Button";
 import { Landmark, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
 import LoadingState from "../../../../components/common/LoadingState";
@@ -62,13 +63,14 @@ export default function PaymentMethod() {
                       </p>
                     </div>
                   </div>
-                  <button
+                  <Button
+                    variant="tertiary"
+                    size="icon-sm"
                     onClick={() => handleRemove(auth)}
                     disabled={isRemoving}
-                    className="text-danger/70 hover:text-danger transition-colors bg-transparent border-none cursor-pointer disabled:opacity-50"
                   >
                     <Trash2 size={15} />
-                  </button>
+                  </Button>
                 </div>
               ))
             )}

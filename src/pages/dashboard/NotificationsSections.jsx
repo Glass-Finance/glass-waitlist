@@ -200,12 +200,9 @@ export function NotificationDetailModal({
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
-          <button
-            onClick={onClose}
-            className="text-xs font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer py-1"
-          >
+          <Button variant="tertiary" size="xs" fullWidth={false} onClick={onClose}>
             Close
-          </button>
+          </Button>
         </div>
       </DetailShell>
     );
@@ -247,12 +244,9 @@ export function NotificationDetailModal({
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
-          <button
-            onClick={onClose}
-            className="text-xs font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer py-1"
-          >
+          <Button variant="tertiary" size="xs" fullWidth={false} onClick={onClose}>
             Not now
-          </button>
+          </Button>
         </div>
       </DetailShell>
     );
@@ -288,12 +282,9 @@ export function NotificationDetailModal({
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
-          <button
-            onClick={onClose}
-            className="text-xs font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer py-1"
-          >
+          <Button variant="tertiary" size="xs" fullWidth={false} onClick={onClose}>
             Close
-          </button>
+          </Button>
         </div>
       </DetailShell>
     );
@@ -328,12 +319,9 @@ export function NotificationDetailModal({
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
-          <button
-            onClick={onClose}
-            className="text-xs font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer py-1"
-          >
+          <Button variant="tertiary" size="xs" fullWidth={false} onClick={onClose}>
             Close
-          </button>
+          </Button>
         </div>
       </DetailShell>
     );

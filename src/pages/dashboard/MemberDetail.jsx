@@ -120,12 +120,14 @@ export default function MemberDetail() {
       <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
         <div>
           <h1 className="text-lg font-bold text-black">
-            <button
+            <Button
+              variant="tertiary"
+              size="sm"
+              fullWidth={false}
               onClick={() => navigate(`/dashboard/members?community=${communityId}`)}
-              className="text-gray-400 font-medium bg-transparent border-none p-0 cursor-pointer hover:text-gray-600 hover:underline"
             >
               Members
-            </button>
+            </Button>
             <span className="text-gray-300 mx-1">›</span> {memberName(member)}
           </h1>
           <p className="text-sm text-gray-400 mt-0.5">

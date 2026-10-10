@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { Button } from "../../../components/ui/Button";
 import { useNavigate, useLocation, Outlet, Navigate } from "react-router-dom";
 import { usePageTitle } from "../../../hooks/usePageTitle";
 import { Search, ChevronRight, Building2 } from "lucide-react";
@@ -147,12 +148,14 @@ function scopedPath(path, community) {
 function BreadcrumbParent({ parent, community }) {
   const navigate = useNavigate();
   return (
-    <button
+    <Button
+      variant="tertiary"
+      size="sm"
+      fullWidth={false}
       onClick={() => navigate(scopedPath(PARENT_PATH[parent], community))}
-      className="text-gray-600 hover:text-gray-900 hover:underline bg-transparent border-none p-0 cursor-pointer text-sm"
     >
       {parent}
-    </button>
+    </Button>
   );
 }
 

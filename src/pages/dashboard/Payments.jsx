@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Button } from "../../components/ui/Button";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { Plus, Wallet, ListChecks, Clock, XCircle, Landmark } from "lucide-react";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
@@ -110,12 +111,9 @@ export default function Payments() {
               A full picture of all payments created in your community.
             </p>
           </div>
-          <button
-            onClick={() => setCreateOpen(true)}
-            className="px-4 py-2 rounded text-xs font-medium text-white bg-brand flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
-          >
+          <Button variant="primary" size="xs" fullWidth={false} onClick={() => setCreateOpen(true)}>
             <Plus size={13} /> Create Payment Plan
-          </button>
+          </Button>
         </div>
       )}
 

@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { Button } from "../../../components/ui/Button";
 import { Landmark, ShieldCheck, ShieldAlert } from "lucide-react";
 import ModalShell from "../../../components/dashboard/ModalShell";
 import LoadingState from "../../../components/common/LoadingState";
@@ -329,25 +330,29 @@ export default function SettlementsList() {
           {data?.totalElements === 1 ? "" : "s"}
         </p>
         <div className="flex items-center gap-1">
-          <button
+          <Button
+            variant="outline-neutral"
+            size="xs"
+            fullWidth={false}
             onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
             disabled={pageNumber <= 1}
             aria-label="Previous page"
-            className="px-2.5 py-1 rounded-lg text-xs font-semibold text-gray-600 bg-white border border-surface-container-border disabled:opacity-40 cursor-pointer"
           >
             Prev
-          </button>
+          </Button>
           <span className="text-[11px] text-gray-500 px-1">
             Page {pageNumber} of {Math.max(1, data?.totalPages ?? 1)}
           </span>
-          <button
+          <Button
+            variant="outline-neutral"
+            size="xs"
+            fullWidth={false}
             onClick={() => setPageNumber((p) => p + 1)}
             disabled={pageNumber >= (data?.totalPages ?? 1)}
             aria-label="Next page"
-            className="px-2.5 py-1 rounded-lg text-xs font-semibold text-gray-600 bg-white border border-surface-container-border disabled:opacity-40 cursor-pointer"
           >
             Next
-          </button>
+          </Button>
         </div>
       </div>
 

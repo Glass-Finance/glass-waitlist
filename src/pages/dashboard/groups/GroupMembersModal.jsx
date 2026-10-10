@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Button } from "../../../components/ui/Button";
 import { Search, Plus, X } from "lucide-react";
 import ModalShell from "../../../components/dashboard/ModalShell";
 import LoadingState from "../../../components/common/LoadingState";
@@ -89,23 +90,27 @@ export default function GroupMembersModal({ communityId, group, onClose }) {
                     <p className="text-xs text-gray-400 truncate">{resolveEmail(member)}</p>
                   </div>
                   {added ? (
-                    <button
+                    <Button
+                      variant="tertiary"
+                      size="xs"
+                      fullWidth={false}
                       onClick={() => remove(id)}
                       disabled={isPending}
-                      aria-label={`Remove ${resolveDisplayName(member)} from ${group.name}`}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-danger bg-transparent border-none cursor-pointer hover:underline disabled:opacity-40"
+                      aria-label={`Remove ${resolveDisplayName(member)}`}
                     >
                       <X size={13} /> Remove
-                    </button>
+                    </Button>
                   ) : (
-                    <button
+                    <Button
+                      variant="tertiary"
+                      size="xs"
+                      fullWidth={false}
                       onClick={() => add(id)}
                       disabled={isPending}
-                      aria-label={`Add ${resolveDisplayName(member)} to ${group.name}`}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-brand bg-transparent border-none cursor-pointer hover:underline disabled:opacity-40"
+                      aria-label={`Add ${resolveDisplayName(member)}`}
                     >
                       <Plus size={13} /> Add
-                    </button>
+                    </Button>
                   )}
                 </li>
               );
@@ -114,12 +119,9 @@ export default function GroupMembersModal({ communityId, group, onClose }) {
         )}
 
         <div className="flex justify-end pt-1">
-          <button
-            onClick={onClose}
-            className="text-xs font-bold text-gray-500 bg-transparent border-none cursor-pointer px-3 py-2"
-          >
+          <Button variant="tertiary" size="xs" fullWidth={false} onClick={onClose}>
             Done
-          </button>
+          </Button>
         </div>
       </div>
     </ModalShell>
