@@ -1,13 +1,14 @@
 import { useState } from "react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useUpdatePassword } from "../../../../hooks/useMyAccount";
 import { getErrorMessage } from "../../../../utils/errorHandler";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
 import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
 import { Button } from "../../../../components/ui/Button";
 import { TextInput } from "../../../../components/ui/TextInput";
+import { MobileBackButton } from "../../../../components/ui/MobileBackButton";
 
 function PasswordField({ label, value, onChange, show, onToggleShow }) {
   return (
@@ -76,15 +77,7 @@ export default function Password() {
     <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
-        <Button
-          variant="tertiary"
-          size="icon-md"
-          aria-label="Back"
-          onClick={() => navigate(-1)}
-          className=""
-        >
-          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </Button>
+        <MobileBackButton aria-label="Back" onClick={() => navigate(-1)} />
         <h1 className="text-lg font-semibold text-ink m-0">Password</h1>
       </div>
 

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Button } from "../../../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { goBackInApp } from "../../../../utils/memberBack";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
-import { ChevronLeft, CreditCard, Trash2 } from "lucide-react";
+import { CreditCard, Trash2 } from "lucide-react";
 import { useManagePayments } from "../../../../hooks/usePayments";
 import PageLoadingState from "../../../../components/common/PageLoadingState";
 import ConfirmSheet from "../../../../components/memberApp/ConfirmSheet";
+import { MobileBackButton } from "../../../../components/ui/MobileBackButton";
 
 export default function SavedCards() {
   const navigate = useNavigate();
@@ -21,15 +21,10 @@ export default function SavedCards() {
     <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
-        <Button
-          variant="tertiary"
-          size="icon-md"
+        <MobileBackButton
           aria-label="Back"
           onClick={() => goBackInApp(navigate, "/member/settings")}
-          className=""
-        >
-          <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </Button>
+        />
         <h1 className="text-lg font-semibold text-ink m-0">Payment Methods</h1>
       </div>
 
