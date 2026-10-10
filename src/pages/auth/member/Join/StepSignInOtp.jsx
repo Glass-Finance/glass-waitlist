@@ -131,7 +131,7 @@ export default function StepSignInOtp({ email, onVerified, onUseDifferentEmail }
         </button>
         {resendCount > 0 && (
           <p
-            className={`text-xs mt-2 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
+            className={`text-xs mt-2 ${codeExpired ? "text-danger font-medium" : "text-ink-faint"}`}
           >
             {codeExpired
               ? "Your code has expired — request a new one below."

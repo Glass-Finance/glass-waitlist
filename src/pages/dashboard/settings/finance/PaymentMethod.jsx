@@ -65,7 +65,7 @@ export default function PaymentMethod() {
                   <button
                     onClick={() => handleRemove(auth)}
                     disabled={isRemoving}
-                    className="text-red-400 hover:text-red-600 transition-colors bg-transparent border-none cursor-pointer disabled:opacity-50"
+                    className="text-danger/70 hover:text-danger transition-colors bg-transparent border-none cursor-pointer disabled:opacity-50"
                   >
                     <Trash2 size={15} />
                   </button>

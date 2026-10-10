@@ -93,7 +93,7 @@ export default function GroupMembersModal({ communityId, group, onClose }) {
                       onClick={() => remove(id)}
                       disabled={isPending}
                       aria-label={`Remove ${resolveDisplayName(member)} from ${group.name}`}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-red-600 bg-transparent border-none cursor-pointer hover:underline disabled:opacity-40"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-danger bg-transparent border-none cursor-pointer hover:underline disabled:opacity-40"
                     >
                       <X size={13} /> Remove
                     </button>

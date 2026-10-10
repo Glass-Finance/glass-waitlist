@@ -279,7 +279,7 @@ export default function PaystackAccount() {
                   setShowRemoveModal(true);
                 }}
                 title="Remove payout account"
-                className="w-8 h-8 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer text-ink-faint hover:text-danger hover:bg-danger-wash transition-colors"
               >
                 <Trash2 size={15} />
               </button>

@@ -634,12 +634,15 @@ export default function Profile() {
             <p className="text-xs text-gray-700">
               Permanently remove your account and all associated data from Glass.
             </p>
-            <button
+            <Button
+              variant="outline-caution"
+              size="xs"
               onClick={() => setDeleteModal(true)}
-              className="self-start sm:self-auto flex-shrink-0 px-4 py-1.5 rounded-md text-xs font-medium text-red-500 hover:bg-red-50 transition-all cursor-pointer bg-transparent border border-[#FECACA]"
+              fullWidth={false}
+              className="self-start sm:self-auto flex-shrink-0"
             >
               Delete
-            </button>
+            </Button>
           </div>
         </div>
       )}

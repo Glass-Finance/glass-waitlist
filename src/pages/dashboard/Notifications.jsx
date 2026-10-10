@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { Bell } from "lucide-react";
+import { Button } from "../../components/ui/Button";
 import { useNotifications, useAllNotifications } from "../../hooks/useNotifications";
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { useAuth } from "../../store/AuthContext";
@@ -142,13 +143,16 @@ function AllCommunitiesNotifications() {
                   Mark All As Read
                 </button>
               )}
-              <button
+              <Button
+                variant="outline-caution"
+                size="xs"
                 onClick={() => clearAll()}
                 disabled={isClearingAll}
-                className="self-start flex-shrink-0 px-4 py-2 rounded text-xs font-medium text-red-500 bg-transparent border border-red-500 hover:opacity-80 border-solid cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                fullWidth={false}
+                className="self-start flex-shrink-0"
               >
                 Clear All
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -240,13 +244,15 @@ function CommunityNotifications() {
               >
                 Mark All As Read
               </button>
-              <button
+              <Button
+                variant="outline-caution"
+                size="xs"
                 onClick={() => clearAll()}
                 disabled={isClearingAll || notifications.length === 0}
-                className="px-4 py-2 rounded text-xs font-medium text-red-500 bg-transparent border border-red-500 hover:opacity-80 border-solid cursor-pointer disabled:opacity-40 disabled:cursor-default"
+                fullWidth={false}
               >
                 Clear All
-              </button>
+              </Button>
             </div>
           </div>
         </div>

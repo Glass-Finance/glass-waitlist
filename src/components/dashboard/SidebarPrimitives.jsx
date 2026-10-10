@@ -41,7 +41,7 @@ export function LogoutButton({ onClick, loggingOut }) {
       onClick={onClick}
       disabled={loggingOut}
       title="Log out"
-      className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/60 hover:bg-red-500/20 hover:text-red-300 transition-all disabled:opacity-50"
+      className="w-9 h-9 rounded-xl border-none cursor-pointer flex items-center justify-center bg-white/10 text-white/60 hover:bg-danger/20 hover:text-danger-wash transition-all disabled:opacity-50"
     >
       <LogOut size={14} />
     </button>
