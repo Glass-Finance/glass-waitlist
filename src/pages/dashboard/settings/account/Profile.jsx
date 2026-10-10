@@ -401,17 +401,20 @@ export default function Profile() {
                       />
                     )}
                   </div>
-                  <button
+                  <Button
+                    variant="tertiary"
+                    size="icon-sm"
+                    aria-label="Update email"
                     onClick={() => {
                       setEmailFieldError("");
                       setView("email");
                     }}
                     title="Update email"
                     aria-label="Update email"
-                    className="flex-shrink-0 w-12 h-12 rounded-lg border-[1.5px] border-gray-300 bg-white text-brand cursor-pointer flex items-center justify-center"
+                    className="flex-shrink-0"
                   >
                     <Pencil size={15} />
-                  </button>
+                  </Button>
                 </div>
               </div>
               <div className="flex flex-col gap-1.5">
@@ -429,17 +432,20 @@ export default function Profile() {
                       />
                     )}
                   </div>
-                  <button
+                  <Button
+                    variant="tertiary"
+                    size="icon-sm"
+                    aria-label={isPhoneUpdate ? "Update phone number" : "Add phone number"}
                     onClick={() => {
                       setPhoneFieldError("");
                       setView("phone");
                     }}
                     title={isPhoneUpdate ? "Update phone number" : "Add phone number"}
                     aria-label={isPhoneUpdate ? "Update phone number" : "Add phone number"}
-                    className="flex-shrink-0 w-12 h-12 rounded-lg border-[1.5px] border-gray-300 bg-white text-brand cursor-pointer flex items-center justify-center"
+                    className="flex-shrink-0"
                   >
                     <Pencil size={15} />
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>

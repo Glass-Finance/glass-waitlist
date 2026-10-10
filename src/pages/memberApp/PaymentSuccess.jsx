@@ -306,12 +306,15 @@ export default function PaymentSuccess() {
           drops the back/title bar the other states still use. */}
       {state !== "success" && (
         <div className="flex items-center px-4 pt-10 pb-4 relative">
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-md"
+            aria-label="Back"
             onClick={() => goTo(dest)}
-            className="w-9 h-9 rounded-full bg-[#D4D4D4] flex items-center justify-center cursor-pointer"
+            className=""
           >
             <ChevronLeft size={18} className="text-gray-700" />
-          </button>
+          </Button>
           <h1 className="absolute left-1/2 -translate-x-1/2 text-title-sm font-medium text-gray-800">
             Payment Summary
           </h1>

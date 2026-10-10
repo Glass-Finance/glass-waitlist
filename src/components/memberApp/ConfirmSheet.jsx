@@ -27,14 +27,15 @@ export default function ConfirmSheet({
         className="w-full max-w-[430px] bg-white rounded-t-[20px] pt-6 px-5 pb-7"
       >
         <div className="flex justify-end">
-          <button
-            onClick={onCancel}
-            disabled={confirming}
-            className="bg-transparent border-none cursor-pointer p-1 rounded-g-1 text-ink-faint hover:text-ink-muted hover:bg-black/5 active:bg-black/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:opacity-60 transition-colors"
+          <Button
+            variant="tertiary"
+            size="icon-sm"
             aria-label="Cancel"
+            onClick={onCancel}
+            className=""
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
         <div className="flex flex-col items-center text-center gap-2.5">
           <div

@@ -267,13 +267,15 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
           <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-brand-tint">
             <Icon size={20} className="text-brand" />
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 cursor-pointer bg-transparent border-none transition-colors"
+          <Button
+            variant="tertiary"
+            size="icon-sm"
             aria-label="Close tour"
+            onClick={onClose}
+            className=""
           >
             <X size={16} />
-          </button>
+          </Button>
         </div>
 
         <div className="px-6 pt-4 pb-2">

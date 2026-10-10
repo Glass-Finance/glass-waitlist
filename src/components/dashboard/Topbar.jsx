@@ -8,6 +8,7 @@
  *          User avatar → profile menu (Settings / Log out)
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "../ui/Button";
 import { useNavigate } from "react-router-dom";
 import {
   Search,
@@ -205,14 +206,16 @@ export default function Topbar({
   return (
     <header className="h-14 bg-surface-container border-b border-surface-container-border flex items-center gap-6 px-4 md:px-8 sticky top-0 z-50 flex-shrink-0">
       {/* Hamburger — mobile only */}
-      <button
+      <Button
+        variant="tertiary"
+        size="icon-md"
         data-tour="mobile-menu-button"
         onClick={onMenuClick}
-        className="md:hidden bg-transparent border-none cursor-pointer text-gray-600 hover:text-gray-900 transition-colors p-0 flex-shrink-0"
+        className="flex-shrink-0"
         aria-label="Open menu"
       >
         <Menu size={19} />
-      </button>
+      </Button>
 
       {/* Search */}
       <div
@@ -357,14 +360,16 @@ export default function Topbar({
       {/* Right */}
       <div className="relative ml-auto flex items-center gap-4" ref={panelRef}>
         {/* Help — replay the first-launch dashboard tour */}
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-sm"
           onClick={onOpenTour}
-          className="flex items-center justify-center bg-transparent border-none cursor-pointer text-gray-500 hover:text-gray-700 transition-colors p-0"
+          className=""
           aria-label="Take the dashboard tour"
           title="Take the dashboard tour"
         >
-          <HelpCircle size={17} />
-        </button>
+          <HelpCircle size={18} />
+        </Button>
 
         {/* Bell */}
         <div className="relative flex items-center">

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Button } from "../ui/Button";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
@@ -114,13 +115,15 @@ export default function GlassModal({
                 {subtitle && <p className="text-xs text-ink-muted mt-0.5 mb-0">{subtitle}</p>}
               </div>
               {showClose && !closeDisabled && (
-                <button
-                  onClick={() => onClose?.()}
+                <Button
+                  variant="tertiary"
+                  size="icon-sm"
                   aria-label="Close"
-                  className="bg-transparent border-none cursor-pointer p-1 -mr-1 text-ink-faint hover:text-ink-muted flex-shrink-0"
+                  onClick={() => onClose?.()}
+                  className="-mr-1 flex-shrink-0"
                 >
                   <X size={18} />
-                </button>
+                </Button>
               )}
             </div>
             {headerExtra}

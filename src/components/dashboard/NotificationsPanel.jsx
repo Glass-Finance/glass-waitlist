@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { Button } from "../ui/Button";
 import { useNavigate } from "react-router-dom";
 import { Bell, MoreVertical, User } from "lucide-react";
 import { useClickOutside } from "../../hooks/useClickOutside";
@@ -214,14 +215,17 @@ export default function NotificationsPanel({
 
           {/* Mobile: 3-dot overflow menu */}
           <div className="relative md:hidden" ref={actionsRef}>
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
+              aria-label="Notification actions"
               onClick={() => setActionsOpen((o) => !o)}
               aria-label="Notification actions"
               aria-expanded={actionsOpen}
-              className="flex items-center justify-center w-7 h-7 rounded-full text-ink-muted bg-transparent border-none cursor-pointer hover:bg-[#F0F0F0] transition-colors"
+              className=""
             >
               <MoreVertical size={16} />
-            </button>
+            </Button>
             {actionsOpen && (
               <div
                 className="absolute right-0 top-full mt-1 w-[172px] bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.14)] border border-[#EFEFEF] py-1 z-20"

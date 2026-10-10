@@ -370,12 +370,15 @@ export default function TwoFactorAuth() {
       <GlassLogoGlow />
       {/* Header */}
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={() => (flow ? setFlow(null) : goBackInApp(navigate, "/member/security"))}
-          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className=""
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
         <h1 className="text-lg font-semibold text-ink m-0">
           {flow === "setup"
             ? "Set Up MFA"

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Button } from "../../components/ui/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, History } from "lucide-react";
 import useKycFlow from "../../components/kyc/useKycFlow";
@@ -62,7 +63,10 @@ export default function VerifyIdentity() {
             </p>
           </div>
         </div>
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-sm"
+          aria-label="Attempt history"
           onClick={() =>
             navigate(
               isMobileDevice()
@@ -70,11 +74,11 @@ export default function VerifyIdentity() {
                 : "/dashboard/verify-identity/history",
             )
           }
-          className="ml-auto w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className="ml-auto"
           aria-label="Attempt history"
         >
           <History size={16} className="text-ink" />
-        </button>
+        </Button>
       </header>
 
       <main className="relative flex-1 px-6 lg:px-8 pb-10">

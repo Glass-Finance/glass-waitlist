@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../components/ui/Button";
 import { Check, Copy, X } from "lucide-react";
 import { useEscapeToClose } from "../../hooks/useKeyboardShortcuts";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
@@ -44,13 +45,15 @@ export function QuickAddMemberModal({
               An invite email will be sent to their address.
             </p>
           </div>
-          <button
-            type="button"
+          <Button
+            variant="tertiary"
+            size="icon-sm"
+            aria-label="Close"
             onClick={onClose}
-            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 bg-transparent cursor-pointer"
+            className=""
           >
             <X size={14} />
-          </button>
+          </Button>
         </div>
 
         <div className="flex flex-col gap-3.5">

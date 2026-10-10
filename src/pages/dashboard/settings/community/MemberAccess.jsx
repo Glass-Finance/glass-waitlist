@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../../../components/ui/Button";
 import { Copy, Check, MoreVertical } from "lucide-react";
 import { roleKeyword, isCommunityAdmin, findRoleId } from "../../../../utils/communityRole";
 import { useActiveCommunityId } from "../../../../hooks/useActiveCommunityId";
@@ -20,14 +21,16 @@ import { getErrorMessage } from "../../../../utils/errorHandler";
 function MemberActionsMenu({ open, onToggle, onClose, busy, actions }) {
   return (
     <div className="relative flex-shrink-0">
-      <button
+      <Button
+        variant="tertiary"
+        size="icon-sm"
         onClick={onToggle}
         disabled={busy}
         aria-label="Member actions"
-        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 bg-transparent border-none cursor-pointer transition-colors disabled:opacity-50"
+        className=""
       >
         <MoreVertical size={15} />
-      </button>
+      </Button>
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={onClose} />

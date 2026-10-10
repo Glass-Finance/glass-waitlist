@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Button } from "../../../../components/ui/Button";
 import { X, Check, AlertCircle, Clock } from "lucide-react";
 import { useKycSummary } from "../../../../hooks/useKyc";
 import { isKycApproved } from "../../../../utils/kycStatus";
@@ -40,13 +41,15 @@ export default function GettingStartedChecklist({
             Complete these steps to start collecting dues.
           </p>
         </div>
-        <button
-          onClick={onDismiss}
-          className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer p-0 flex-shrink-0 mt-0.5"
+        <Button
+          variant="tertiary"
+          size="icon-sm"
           aria-label="Dismiss"
+          onClick={onDismiss}
+          className="flex-shrink-0 mt-0.5"
         >
           <X size={15} />
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-col gap-2.5">

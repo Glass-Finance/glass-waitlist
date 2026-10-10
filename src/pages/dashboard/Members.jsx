@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Button } from "../../components/ui/Button";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
@@ -479,12 +480,14 @@ export default function Members() {
                   className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stacked-container text-xs text-ink-muted"
                 >
                   {chip.label}
-                  <button
+                  <Button
+                    variant="tertiary"
+                    size="icon-sm"
                     onClick={() => setFilters((f) => ({ ...f, [chip.key]: "" }))}
-                    className="bg-transparent border-none cursor-pointer p-0 flex items-center"
+                    aria-label="Remove filter"
                   >
-                    <X size={10} className="text-gray-400" />
-                  </button>
+                    <X size={10} />
+                  </Button>
                 </span>
               ))}
               <button
@@ -623,14 +626,17 @@ export default function Members() {
                             >
                               <RotateCcw size={11} />
                             </button>
-                            <button
+                            <Button
+                              variant="tertiary"
+                              size="icon-sm"
+                              aria-label="Remove member"
                               onClick={() => handleRemove(m)}
                               title="Remove member"
                               aria-label="Remove member"
-                              className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:bg-gray-50"
+                              className=""
                             >
                               <UserMinus size={11} />
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>

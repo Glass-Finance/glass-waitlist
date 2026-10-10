@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../../components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import { X, Search, Filter } from "lucide-react";
 import { getPaymentLinkMembers } from "../../../api/payments";
@@ -125,12 +126,15 @@ export default function PlanMembersModal({ plan, communityId, onClose }) {
             >
               {isExporting ? "Exporting…" : "Export CSV"}
             </button>
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
+              aria-label="Close"
               onClick={onClose}
-              className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 cursor-pointer bg-transparent"
+              className=""
             >
               <X size={14} />
-            </button>
+            </Button>
           </div>
         </div>
 

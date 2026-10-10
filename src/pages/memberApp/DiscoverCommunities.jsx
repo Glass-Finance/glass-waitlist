@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, Search, Users, Loader2, CheckCircle2, Clock } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -267,12 +268,15 @@ export default function DiscoverCommunities() {
       <GlassLogoGlow />
       {/* Header — before: padding: "52px 20px 16px" */}
       <div className="flex items-center justify-center relative pt-[35px] px-5 pb-4">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={() => navigate(-1)}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className="absolute left-5"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
         <h1 className="text-[18px] leading-6 font-medium text-ink m-0">Browse Communities</h1>
       </div>
 

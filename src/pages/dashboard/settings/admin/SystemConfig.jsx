@@ -100,12 +100,15 @@ function EditModal({ config, onClose, onSave, isSaving }) {
             <h2 className="text-sm font-bold text-gray-900">Edit Configuration</h2>
             <p className="text-[11px] text-gray-400 mt-0.5 font-mono">{config.key}</p>
           </div>
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-sm"
+            aria-label="Close"
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+            className=""
           >
             <X size={15} />
-          </button>
+          </Button>
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-5 flex flex-col gap-4">
@@ -416,13 +419,16 @@ export default function SystemConfig() {
             {totalElements} configuration{totalElements !== 1 ? "s" : ""}
           </p>
           <div className="flex items-center gap-1">
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-md"
+              aria-label="Back"
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
-              className="w-7 h-7 flex items-center justify-center rounded-lg cursor-pointer bg-white text-gray-500 hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-default border border-surface-container-border"
+              className=""
             >
               <ChevronLeft size={13} />
-            </button>
+            </Button>
 
             {Array.from({ length: totalPages }, (_, i) => i)
               .filter((i) => Math.abs(i - page) <= 2)
@@ -440,13 +446,16 @@ export default function SystemConfig() {
                 </button>
               ))}
 
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
+              aria-label="Next"
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page >= totalPages - 1}
-              className="w-7 h-7 flex items-center justify-center rounded-lg cursor-pointer bg-white text-gray-500 hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-default border border-surface-container-border"
+              className=""
             >
               <ChevronRight size={13} />
-            </button>
+            </Button>
           </div>
         </div>
       )}

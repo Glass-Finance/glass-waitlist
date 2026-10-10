@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Button } from "../../components/ui/Button";
 import { Bell, Menu } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../store/AuthContext";
@@ -182,13 +183,15 @@ export default function Home() {
         <div className="flex items-start justify-between pt-[25px] px-5 pb-5">
           <div className="flex flex-col gap-[7px] min-w-0">
             <div className="flex items-center gap-[15px] min-w-0">
-              <button
+              <Button
+                variant="tertiary"
+                size="icon-md"
                 onClick={() => setMenuOpen(true)}
                 aria-label="Open menu"
-                className="flex items-center justify-center border-none cursor-pointer bg-transparent p-0 flex-shrink-0"
+                className="flex-shrink-0"
               >
                 <Menu size={28} strokeWidth={2} className="text-ink" />
-              </button>
+              </Button>
 
               {!hasNoCommunity && (
                 <CommunitySwitcher

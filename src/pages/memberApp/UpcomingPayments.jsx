@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, ChevronLeft, Download, Loader2 } from "lucide-react";
 import { usePayments } from "../../hooks/usePayments";
@@ -115,12 +116,15 @@ export default function UpcomingPayments() {
       <GlassLogoGlow />
       {/* Header */}
       <div className="relative flex items-center justify-center pt-6 px-5 pb-5">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={() => navigate(-1)}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className="absolute left-5"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
         <h1 className="text-lg font-medium text-ink m-0">Upcoming Payments</h1>
         <button
           onClick={exportCsv}

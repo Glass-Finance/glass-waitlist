@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
+import { Button } from "../ui/Button";
 
 // Shared dashboard modal chrome — extracted out of PlatformAdmin.jsx so other
 // dashboard pages (Members, MemberDetail, MemberAccess, Payments, finance
@@ -22,16 +23,11 @@ import { X } from "lucide-react";
 // decision buttons/reason forms belong here, not at the end of a long
 // scrollable body.
 // Close-button styling, shared by both variants below so they can't drift.
-// Stays a raw <button> rather than going through ui/Button: Figma defines no
-// icon-button role, and forcing a square icon through the label-bearing
-// component would need an invented spec value. Radius, focus ring and
-// pressed state still have to match DESIGN-SYSTEM.md §2 like every other
-// control — the deviation is only "which component", not "which spec".
-const CLOSE_BTN =
-  "p-1.5 rounded-g-1 bg-transparent border-none cursor-pointer text-gray-400 " +
-  "hover:text-gray-700 hover:bg-gray-100 active:bg-gray-200 active:text-gray-800 " +
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
-  "transition-colors";
+// Icon-only close buttons now route through ui/Button's icon-sm size
+// (DESIGN-SYSTEM.md §2.2a adds the icon-only sizes; §6.7 resolved). The
+// tertiary role is the transparent, borderless treatment; aria-label is
+// mandatory because Button does not add one.
+const CLOSE_BTN = "flex-shrink-0";
 
 export default function ModalShell({ title, subtitle, onClose, children, footer }) {
   // Escape-to-close -- every dashboard modal built on this shell gets this
@@ -60,18 +56,26 @@ export default function ModalShell({ title, subtitle, onClose, children, footer 
               <h2 className="text-sm font-bold text-gray-900">{title}</h2>
               {subtitle && <p className="text-[11px] text-gray-400 mt-0.5">{subtitle}</p>}
             </div>
-            <button onClick={onClose} aria-label="Close" className={CLOSE_BTN}>
+            <Button
+              variant="tertiary"
+              size="icon-sm"
+              onClick={onClose}
+              aria-label="Close"
+              className={CLOSE_BTN}
+            >
               <X size={15} />
-            </button>
+            </Button>
           </div>
         ) : (
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-sm"
             onClick={onClose}
             aria-label="Close"
             className={`absolute top-4 right-4 ${CLOSE_BTN}`}
           >
             <X size={15} />
-          </button>
+          </Button>
         )}
         {children}
         {footer && <div className="border-t border-gray-100 px-6 pt-4 pb-5">{footer}</div>}

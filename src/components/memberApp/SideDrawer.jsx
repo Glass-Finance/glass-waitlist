@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/Button";
 import {
   Home as HomeIcon,
   CreditCard,
@@ -56,13 +57,15 @@ export default function SideDrawer({ open, onClose }) {
             <span className="text-lg font-medium text-ink">Glass</span>
           </div>
 
-          <button
-            onClick={onClose}
+          <Button
+            variant="tertiary"
+            size="icon-sm"
             aria-label="Close menu"
-            className="bg-transparent border-none cursor-pointer p-1 text-ink-strong"
+            onClick={onClose}
+            className=""
           >
             <X size={20} strokeWidth={2} />
-          </button>
+          </Button>
         </div>
 
         <div className="h-px bg-[#0000000D] mx-0 my-0" />

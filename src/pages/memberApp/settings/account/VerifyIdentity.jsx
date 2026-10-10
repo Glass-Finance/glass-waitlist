@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Button } from "../../../../components/ui/Button";
 import { goBackInApp } from "../../../../utils/memberBack";
 import { ChevronLeft, History } from "lucide-react";
 import GlassLogoGlow from "../../../../components/memberApp/GlassLogoGlow";
@@ -8,12 +9,15 @@ function StepHeader({ title, onBack, right }) {
   return (
     <div className="flex items-center justify-center relative pt-6 px-5 pb-6">
       {onBack && (
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={onBack}
-          className="absolute left-5 w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className="absolute left-5"
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
       )}
       <h1 className="text-lg font-semibold text-ink m-0">{title}</h1>
       {right && <div className="absolute right-5">{right}</div>}
@@ -40,13 +44,16 @@ export default function VerifyIdentity() {
         title="Identity Verification"
         onBack={() => goBackInApp(navigate, "/member/profile")}
         right={
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-sm"
+            aria-label="Attempt history"
             onClick={() => navigate("/member/verify-identity/history")}
-            className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+            className=""
             aria-label="Attempt history"
           >
             <History size={16} className="text-ink" />
-          </button>
+          </Button>
         }
       />
 

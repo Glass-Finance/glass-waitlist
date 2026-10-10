@@ -118,12 +118,15 @@ export default function Profile() {
     <div className="relative overflow-hidden min-h-screen pb-10">
       <GlassLogoGlow />
       <div className="flex items-center gap-2.5 pt-5 px-4 pb-4">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-white border border-surface-container-border cursor-pointer flex items-center justify-center"
+          className=""
         >
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
-        </button>
+        </Button>
         <h1 className="text-lg font-semibold text-ink m-0">Profile</h1>
       </div>
 
@@ -183,14 +186,17 @@ export default function Profile() {
                   />
                 )}
               </div>
-              <button
+              <Button
+                variant="tertiary"
+                size="icon-sm"
+                aria-label="Update email"
                 onClick={() => navigate("/member/update-email")}
                 title="Update email"
                 aria-label="Update email"
-                className="flex-shrink-0 w-10 h-10 rounded-[10px] border-[1.5px] border-[#E0E0E0] bg-white text-brand cursor-pointer flex items-center justify-center"
+                className="flex-shrink-0"
               >
                 <Pencil size={15} />
-              </button>
+              </Button>
             </div>
           </div>
           <div>
@@ -208,14 +214,17 @@ export default function Profile() {
                   />
                 )}
               </div>
-              <button
+              <Button
+                variant="tertiary"
+                size="icon-sm"
+                aria-label={user?.phoneVerified ? "Update phone number" : "Add phone number"}
                 onClick={() => navigate("/member/verify-phone")}
                 title={user?.phoneVerified ? "Update phone number" : "Add phone number"}
                 aria-label={user?.phoneVerified ? "Update phone number" : "Add phone number"}
-                className="flex-shrink-0 w-10 h-10 rounded-[10px] border-[1.5px] border-[#E0E0E0] bg-white text-brand cursor-pointer flex items-center justify-center"
+                className="flex-shrink-0"
               >
                 <Pencil size={15} />
-              </button>
+              </Button>
             </div>
           </div>
         </div>

@@ -244,12 +244,15 @@ export default function PaymentSummary() {
       <GlassLogoGlow />
       {/* ── Top bar ── */}
       <div className="flex items-center px-4 pt-5 pb-4 relative">
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-md"
+          aria-label="Back"
           onClick={() => navigate(-1)}
-          className="w-9 h-9 rounded-full bg-white border border-surface-container-border flex items-center justify-center cursor-pointer"
+          className=""
         >
           <ChevronLeft size={18} className="text-gray-700" />
-        </button>
+        </Button>
         <h1 className="absolute left-1/2 -translate-x-1/2 text-[16px] font-bold text-gray-900">
           Payment Summary
         </h1>

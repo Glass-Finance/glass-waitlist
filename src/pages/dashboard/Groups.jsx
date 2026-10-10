@@ -226,14 +226,15 @@ export default function Groups() {
                     <UserPlus size={13} /> Members
                   </button>
                 ) : null}
-                <button
+                <Button
+                  variant="tertiary"
+                  size="icon-sm"
                   onClick={() => setEditing({ group })}
-                  title="Edit group"
                   aria-label={`Edit ${group.name}`}
-                  className="bg-transparent border-none cursor-pointer text-gray-400 hover:text-gray-700 p-1"
+                  className=""
                 >
                   <Pencil size={14} />
-                </button>
+                </Button>
                 <button
                   onClick={() => run(archived ? unarchive : archive, group)}
                   title={archived ? "Restore group" : "Archive group"}
