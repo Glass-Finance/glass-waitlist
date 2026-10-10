@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "../../components/ui/Button";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Search, Users, Loader2, CheckCircle2, Clock } from "lucide-react";
+import { ChevronLeft, Search, Users, Loader2, CheckCircle2, Clock, X } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { searchPublicCommunities } from "../../api/communities";
 import { submitJoinRequest } from "../../api/invites";
@@ -134,16 +134,10 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
         )}
 
         {/* Action button */}
-        <button
+        <Button
           onClick={handleRequest}
           disabled={alreadyMember || alreadyPending || loading}
-          className={`w-full py-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 transition-opacity duration-150 ${loading ? "opacity-70" : "opacity-100"} ${alreadyPending || alreadyMember ? "border-[1.5px] border-[#E0E0E0] cursor-default" : "border-none cursor-pointer"} ${
-            alreadyMember
-              ? "bg-success-wash text-success-strong"
-              : alreadyPending
-                ? "bg-white text-ink-ghost"
-                : "bg-brand-deep text-white"
-          }`}
+          variant={alreadyMember ? "success" : alreadyPending ? "outline-neutral" : "primary"}
         >
           {loading && <Loader2 size={13} className="animate-spin" />}
           {alreadyMember && <CheckCircle2 size={13} />}
@@ -155,7 +149,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
               : community.requiresMemberApproval === false
                 ? "Join"
                 : "Request To Join"}
-        </button>
+        </Button>
         {errorMsg && <p className="text-[11.5px] text-danger m-0 text-center">{errorMsg}</p>}
       </div>
     </div>
@@ -297,12 +291,14 @@ export default function DiscoverCommunities() {
             className="flex-1 border-none outline-none bg-transparent text-sm text-ink"
           />
           {query && (
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
               onClick={() => setQuery("")}
-              className="bg-transparent border-none cursor-pointer text-ink-ghost text-lg leading-none p-0"
+              aria-label="Clear search"
             >
-              ×
-            </button>
+              <X size={16} />
+            </Button>
           )}
         </div>
       </div>

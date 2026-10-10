@@ -18,13 +18,15 @@ function PasswordField({ label, value, onChange, show, onToggleShow }) {
         value={value}
         onChange={onChange}
         rightElement={
-          <button
+          <Button
             type="button"
+            variant="tertiary"
+            size="icon-sm"
             onClick={onToggleShow}
-            className="bg-transparent border-none cursor-pointer text-ink-ghost p-1"
+            aria-label={show ? "Hide password" : "Show password"}
           >
             {show ? <EyeOff size={15} /> : <Eye size={15} />}
-          </button>
+          </Button>
         }
       />
     </div>

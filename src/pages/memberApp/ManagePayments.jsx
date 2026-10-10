@@ -53,12 +53,9 @@ function FilterDropdown({ value, onChange }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative inline-block">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 py-2 px-3.5 rounded-lg border border-surface-container-border bg-white text-ink text-sm font-medium cursor-pointer"
-      >
-        {value} <ChevronDown size={14} strokeWidth={2} />
-      </button>
+      <Button variant="outline" size="sm" fullWidth={false} onClick={() => setOpen((o) => !o)}>
+        {value} <ChevronDown size={14} strokeWidth={2} className="text-ink-muted" />
+      </Button>
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
@@ -150,9 +147,9 @@ function PlanCard({ plan, auth, onToggle }) {
                 {expiry ? ` | ${expiry}` : ""}
               </span>
             </div>
-            <button className="text-sm font-semibold text-brand bg-transparent border-none cursor-pointer">
+            <Button variant="tertiary" size="sm" fullWidth={false}>
               Change
-            </button>
+            </Button>
           </>
         ) : (
           <span className="text-[13px] text-ink-ghost">No saved card</span>

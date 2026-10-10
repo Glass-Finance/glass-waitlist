@@ -15,13 +15,10 @@ function FilterDropdown({ value, onChange }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 py-2 px-3.5 rounded-lg border-[1.5px] border-[#CCC] bg-white text-ink text-[13px] font-semibold cursor-pointer"
-      >
+      <Button variant="outline" size="sm" fullWidth={false} onClick={() => setOpen((o) => !o)}>
         {value}
-        <ChevronDown size={14} strokeWidth={2} />
-      </button>
+        <ChevronDown size={14} strokeWidth={2} className="text-ink-muted" />
+      </Button>
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
@@ -69,13 +66,16 @@ function PaymentRow({ item, onPay, paying }) {
         </p>
         <p className="text-[13px] text-ink-faint m-0">Due: {formatDate(item.dueDate)}</p>
       </div>
-      <button
+      <Button
+        variant="outline"
+        size="sm"
+        fullWidth={false}
+        className="flex-shrink-0"
         onClick={() => onPay(item)}
         disabled={paying}
-        className={`flex-shrink-0 py-[9px] px-[18px] rounded-lg border-[1.5px] border-brand bg-white text-brand text-[13px] font-semibold cursor-pointer ${paying ? "opacity-60" : "opacity-100"}`}
       >
         {paying ? "Starting…" : "Pay Now"}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -126,18 +126,20 @@ export default function UpcomingPayments() {
           <ChevronLeft size={18} strokeWidth={2} className="text-ink" />
         </Button>
         <h1 className="text-lg font-medium text-ink m-0">Upcoming Payments</h1>
-        <button
+        <Button
+          variant="tertiary"
+          size="icon-sm"
           onClick={exportCsv}
           disabled={isExporting}
           aria-label={isExporting ? "Preparing export" : "Export upcoming payments as CSV"}
-          className="absolute right-5 w-9 h-9 rounded-full bg-white border border-surface-container-border flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="absolute right-5"
         >
           {isExporting ? (
-            <Loader2 size={15} className="animate-spin" color="var(--color-ink-strong)" />
+            <Loader2 size={15} className="animate-spin text-ink-strong" />
           ) : (
-            <Download size={15} color="var(--color-ink-strong)" />
+            <Download size={15} className="text-ink-strong" />
           )}
-        </button>
+        </Button>
       </div>
 
       {/* Filter */}
@@ -154,12 +156,9 @@ export default function UpcomingPayments() {
         ) : loadError ? (
           <div className="border border-surface-container-border bg-white rounded-2xl text-center py-5">
             <p className="text-danger text-sm mt-0 mx-0 mb-2">Couldn't load upcoming payments.</p>
-            <button
-              onClick={refresh}
-              className="bg-transparent border-none text-brand text-[13px] font-semibold underline cursor-pointer p-0"
-            >
+            <Button variant="tertiary" size="sm" fullWidth={false} onClick={refresh}>
               Try again
-            </button>
+            </Button>
           </div>
         ) : filtered.length === 0 ? (
           <div className="border border-surface-container-border bg-white rounded-2xl py-12 px-6 text-center flex flex-col items-center gap-2">
@@ -179,12 +178,9 @@ export default function UpcomingPayments() {
             </div>
             <p className="text-sm font-semibold text-ink-strong m-0">Nothing due right now</p>
             <p className="text-[13px] text-ink-faint m-0">You're up to date on all payments.</p>
-            <button
-              onClick={refresh}
-              className="mt-1 bg-transparent border-none text-brand text-[13px] font-semibold cursor-pointer p-0"
-            >
+            <Button variant="tertiary" size="sm" fullWidth={false} onClick={refresh}>
               Check again
-            </button>
+            </Button>
           </div>
         ) : (
           filtered.map((item) => <PaymentRow key={item.id} item={item} onPay={handlePay} />)

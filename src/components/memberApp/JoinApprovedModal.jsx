@@ -19,12 +19,9 @@ export default function JoinApprovedModal({ entry, onOpen, onDismiss }) {
         <Button onClick={() => onOpen(entry)} variant="success" size="md" className="mb-2.5">
           Open Community
         </Button>
-        <button
-          onClick={() => onDismiss(entry)}
-          className="w-full py-2.5 rounded-[10px] border-none bg-transparent text-ink-muted text-[13px] font-medium cursor-pointer"
-        >
+        <Button variant="tertiary" size="sm" onClick={onDismiss}>
           Dismiss
-        </button>
+        </Button>
       </div>
     </div>
   );

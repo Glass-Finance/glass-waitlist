@@ -193,20 +193,24 @@ function InviteCard({ invite, onAccept, onReject, busy }) {
         </div>
       </div>
       <div className="flex gap-2.5">
-        <button
+        <Button
+          variant="primary"
+          size="md"
+          className="flex-1"
           onClick={() => onAccept(invite)}
           disabled={busy}
-          className="flex-1 py-3 rounded border-none bg-brand text-white text-sm font-semibold cursor-pointer"
         >
           Accept
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
+          size="md"
+          className="flex-1"
           onClick={() => onReject(invite)}
           disabled={busy}
-          className="flex-1 py-3 rounded border-[1.5px] border-brand bg-white text-brand text-sm font-semibold cursor-pointer"
         >
           Decline
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -234,12 +238,9 @@ function EmptyState({ icon: Icon, illustration, label, hint, onAction, actionLab
       <p className="text-sm font-semibold text-ink m-0">{label}</p>
       {hint && <p className="text-xs text-ink-ghost m-0 max-w-[240px] leading-relaxed">{hint}</p>}
       {onAction && (
-        <button
-          onClick={onAction}
-          className="mt-1 py-2 px-4 rounded-lg border-[1.5px] border-brand bg-white text-brand text-[13px] font-semibold cursor-pointer"
-        >
+        <Button variant="outline" size="sm" fullWidth={false} className="mt-1" onClick={onAction}>
           {actionLabel}
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -346,13 +347,15 @@ export default function Notifications() {
           notification); Mark All As Read only clears the unread state. */}
       {(activeTab === "Payments" || activeTab === "Community") && notifications.length > 0 && (
         <div className="flex items-center justify-end gap-4 px-5 pb-3">
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
+            fullWidth={false}
             onClick={() => markAllRead()}
             disabled={isMarkingAllRead}
-            className={`text-[12.5px] font-semibold text-brand bg-transparent border-none cursor-pointer p-0 ${isMarkingAllRead ? "opacity-50" : "opacity-100"}`}
           >
             Mark All As Read
-          </button>
+          </Button>
           <button
             onClick={() => clearAll()}
             disabled={isClearingAll}

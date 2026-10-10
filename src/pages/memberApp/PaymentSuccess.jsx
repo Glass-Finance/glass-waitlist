@@ -350,14 +350,10 @@ export default function PaymentSuccess() {
         {state === "success" ? (
           <div className="flex-1 w-full flex flex-col justify-end gap-3 pb-10 max-w-[340px]">
             <Button onClick={goHome}>Back to Home</Button>
-            <button
-              onClick={() => setShareOpen(true)}
-              disabled={!tx}
-              className="w-full px-8 py-3.5 rounded-full text-button font-semibold flex items-center justify-center gap-2 bg-white transition-opacity hover:opacity-90 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-brand border-[1.5px] border-brand"
-            >
+            <Button variant="outline" onClick={() => setShareOpen(true)} disabled={!tx}>
               {txLoading ? <Loader2 size={15} className="animate-spin" /> : <Share2 size={15} />}
               {txLoading ? "Preparing receipt…" : "Share Receipt"}
-            </button>
+            </Button>
           </div>
         ) : (
           content.action && (
