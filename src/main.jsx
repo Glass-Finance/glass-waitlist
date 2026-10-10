@@ -153,29 +153,36 @@ createRoot(document.getElementById("root")).render(
             position="bottom-right"
             closeButton
             icons={{
-              success: <CheckCircle2 size={18} className="text-emerald-500" />,
-              error: <XCircle size={18} className="text-red-500" />,
-              warning: <AlertTriangle size={18} className="text-amber-500" />,
+              // Status icon colours come from the DESIGN-SYSTEM.md status
+              // tokens (§1.6 bans the Tailwind emerald/red/amber these
+              // replaced: none of them appear in the Figma file).
+              success: <CheckCircle2 size={18} className="text-success" />,
+              error: <XCircle size={18} className="text-danger" />,
+              warning: <AlertTriangle size={18} className="text-warning" />,
               info: <Info size={18} className="text-brand" />,
-              loading: <Loader2 size={18} className="text-gray-400 animate-spin" />,
+              loading: <Loader2 size={18} className="text-ink-faint animate-spin" />,
             }}
             toastOptions={{
               style: {
                 fontSize: "13px",
               },
               classNames: {
-                toast: "rounded-2xl! border! border-gray-100! shadow-lg! bg-white! text-gray-900!",
-                title: "font-medium! text-gray-900!",
-                description: "text-xs! text-gray-500!",
+                toast: "rounded-2xl! border! border-hairline-soft! shadow-lg! bg-white! text-ink!",
+                title: "font-medium! text-ink!",
+                description: "text-xs! text-ink-muted!",
                 closeButton:
-                  "bg-white! border! border-gray-200! text-gray-400! hover:text-gray-600!",
-                actionButton: "bg-brand! text-white! rounded-full! text-xs! font-semibold!",
-                cancelButton: "bg-gray-100! text-gray-600! rounded-full! text-xs! font-semibold!",
-                error: "border-l-4! border-l-red-500!",
-                success: "border-l-4! border-l-emerald-500!",
-                warning: "border-l-4! border-l-amber-500!",
+                  "bg-white! border! border-hairline-neutral! text-ink-faint! hover:text-ink-muted!",
+                // Buttons are 4px radius at every state (§2.1) and label
+                // weight 500 (§7.1); the old rounded-full + semibold was
+                // off-system.
+                actionButton: "bg-brand! text-white! rounded-g-1! text-xs! font-medium!",
+                cancelButton:
+                  "bg-transparent! border! border-black/10! text-ink! rounded-g-1! text-xs! font-medium!",
+                error: "border-l-4! border-l-danger!",
+                success: "border-l-4! border-l-success!",
+                warning: "border-l-4! border-l-warning!",
                 info: "border-l-4! border-l-brand!",
-                loading: "border-l-4! border-l-gray-300!",
+                loading: "border-l-4! border-l-hairline-neutral!",
               },
             }}
           />

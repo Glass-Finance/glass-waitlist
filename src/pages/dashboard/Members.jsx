@@ -476,7 +476,7 @@ export default function Members() {
               {activeChips.map((chip) => (
                 <span
                   key={chip.key}
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100 text-xs text-gray-700"
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stacked-container text-xs text-ink-muted"
                 >
                   {chip.label}
                   <button

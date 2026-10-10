@@ -113,7 +113,7 @@ function EditModal({ config, onClose, onSave, isSaving }) {
           <div className="flex items-center gap-2 flex-wrap">
             <CategoryBadge category={config.category} />
             <EnvBadge environment={config.environment} />
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-stacked-container text-ink-muted">
               {config.valueType}
             </span>
           </div>
