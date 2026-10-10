@@ -253,7 +253,6 @@ export default function CommunityProfile() {
             disabled={updateCommunity.isPending}
             variant="outline"
             size="md"
-            className="text-xs"
           >
             {saved ? "Saved!" : updateCommunity.isPending ? "Saving…" : "Save Changes"}
           </Button>

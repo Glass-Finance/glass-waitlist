@@ -90,7 +90,7 @@ function CommunityCard({ community, derivedStatus, onRequest }) {
             left a browser broken-image glyph, because the letter was only
             rendered when there was no URL at all. A loaded image covers the
             background completely, so keeping it costs nothing. */}
-        <div className="w-11 h-11 rounded-[10px] flex-shrink-0 overflow-hidden flex items-center justify-center text-lg bg-[#F0F0F0] border border-[#E0E0E0]">
+        <div className="w-11 h-11 rounded-[10px] flex-shrink-0 overflow-hidden flex items-center justify-center text-lg bg-[#F0F0F0] border border-hairline-neutral">
           <PulseImg
             src={logoUrl}
             className="w-full h-full"
@@ -276,7 +276,7 @@ export default function DiscoverCommunities() {
 
       {/* Search input */}
       <div className="px-4 pb-4">
-        <div className="flex items-center gap-2.5 bg-white rounded-xl py-3 px-3.5 border-[1.5px] border-[#E0E0E0] focus-within:border-brand">
+        <div className="flex items-center gap-2.5 bg-white rounded-xl py-3 px-3.5 border-[1.5px] border-hairline-neutral focus-within:border-brand">
           {isFetching ? (
             <Loader2 size={15} className="animate-spin text-brand-deep flex-shrink-0" />
           ) : (

@@ -359,7 +359,7 @@ export default function Notifications() {
           <button
             onClick={() => clearAll()}
             disabled={isClearingAll}
-            className={`text-[12.5px] font-semibold text-danger bg-transparent border-none cursor-pointer p-0 ${isClearingAll ? "opacity-50" : "opacity-100"}`}
+            className={`text-xs font-medium text-danger bg-transparent border-none cursor-pointer p-0 ${isClearingAll ? "opacity-50" : "opacity-100"}`}
           >
             Clear All
           </button>
