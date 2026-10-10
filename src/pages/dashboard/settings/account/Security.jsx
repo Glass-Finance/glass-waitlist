@@ -716,7 +716,7 @@ export default function Security() {
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
             <span
-              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${mfaEnabled ? "bg-green-50 text-green-700" : "bg-gray-100 text-gray-400"}`}
+              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${mfaEnabled ? "bg-success-wash text-success-strong" : "bg-stacked-container text-ink-faint"}`}
             >
               {mfaEnabled ? "ON" : "OFF"}
             </span>
@@ -782,7 +782,7 @@ export default function Security() {
               <p className="text-xs text-gray-500">One-time code via SMS at login</p>
             </div>
           </div>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stacked-container text-ink-faint">
             Coming soon
           </span>
         </div>

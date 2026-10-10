@@ -372,7 +372,7 @@ export default function UsersSection() {
                       Platform Admin
                     </span>
                   ) : u.platformRole ? (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-stacked-container text-ink-muted">
                       {u.platformRole}
                     </span>
                   ) : (
