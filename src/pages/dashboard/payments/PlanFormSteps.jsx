@@ -190,15 +190,15 @@ export function Step2({
               <Loader2 size={14} className="animate-spin text-gray-400" />
             )}
             {!checking && !suggesting && available === true && (
-              <Check size={14} className="text-green-600" />
+              <Check size={14} className="text-success" />
             )}
             {!checking && !suggesting && available === false && (
-              <X size={14} className="text-red-500" />
+              <X size={14} className="text-danger" />
             )}
           </span>
         </div>
         {available === false && !checking && (
-          <p className="text-xs text-red-500 mt-1">That URL is taken — try another.</p>
+          <p className="text-xs text-danger mt-1">That URL is taken — try another.</p>
         )}
       </div>
       <div>
@@ -238,7 +238,7 @@ export function Step2({
           <label className="block text-xs font-medium text-gray-700 mb-1">
             Amount{" "}
             {amountRequired ? (
-              <span className="text-red-500">*</span>
+              <span className="text-danger">*</span>
             ) : (
               <span className="text-gray-400">(optional)</span>
             )}
@@ -309,7 +309,7 @@ export function Step2({
       {form.audience === "SELECTED_MEMBERS" && (
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">
-            Members <span className="text-red-500">*</span>
+            Members <span className="text-danger">*</span>
           </label>
           <AudienceMemberPicker
             communityId={communityId}
@@ -331,7 +331,7 @@ export function Step2({
       {form.audience === "GROUP" && (
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">
-            Groups <span className="text-red-500">*</span>
+            Groups <span className="text-danger">*</span>
           </label>
           {/* Mounted only for a GROUP audience, so an all-members or
               selected-members plan never fetches the group list. */}
@@ -402,7 +402,7 @@ export function Step2({
         ) : (
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
-              Due Date <span className="text-red-500">*</span>
+              Due Date <span className="text-danger">*</span>
             </label>
             <input
               type="date"
@@ -530,7 +530,7 @@ export function Step2({
                 })}
               </div>
               {(form.reminderChannels ?? []).length === 0 && (
-                <p className="text-[11px] text-red-500 mt-1">
+                <p className="text-[11px] text-danger mt-1">
                   Choose at least one channel, or reminders will be created disabled.
                 </p>
               )}

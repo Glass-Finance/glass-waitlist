@@ -173,7 +173,7 @@ export default function JoinRequests() {
       </div>
 
       {error && (
-        <p className="text-sm text-red-500 mb-4">Couldn't load join requests. Please refresh.</p>
+        <p className="text-sm text-danger mb-4">Couldn't load join requests. Please refresh.</p>
       )}
 
       {/* Pending -- plain label, no count badge, matching "Recently

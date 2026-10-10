@@ -183,7 +183,7 @@ export default function MemberPaymentsSection({
                               ? "Download receipt"
                               : "Receipts are only available for successful payments"
                           }
-                          buttonClassName={`w-7 h-7 rounded-full border border-[#e0e3f0] bg-white flex items-center justify-center ${isPaid ? "text-gray-500 hover:bg-gray-50 cursor-pointer" : "text-gray-300 cursor-not-allowed opacity-40"}`}
+                          buttonClassName="flex items-center justify-center"
                         />
                         <Button
                           variant="tertiary"

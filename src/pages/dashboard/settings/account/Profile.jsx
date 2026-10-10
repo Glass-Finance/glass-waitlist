@@ -412,7 +412,6 @@ export default function Profile() {
                       setView("email");
                     }}
                     title="Update email"
-                    aria-label="Update email"
                     className="flex-shrink-0"
                   >
                     <Pencil size={15} />
@@ -443,7 +442,6 @@ export default function Profile() {
                       setView("phone");
                     }}
                     title={isPhoneUpdate ? "Update phone number" : "Add phone number"}
-                    aria-label={isPhoneUpdate ? "Update phone number" : "Add phone number"}
                     className="flex-shrink-0"
                   >
                     <Pencil size={15} />
@@ -452,7 +450,7 @@ export default function Profile() {
               </div>
             </div>
 
-            {error && <p className="text-xs text-red-500 mb-3">{error}</p>}
+            {error && <p className="text-xs text-danger mb-3">{error}</p>}
 
             <div className="flex justify-end">
               <Button

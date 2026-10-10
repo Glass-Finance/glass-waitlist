@@ -124,9 +124,9 @@ export default function EmailPhoneStep({ initialEmail, onNext, onSwitch, onGoogl
           </span>
         </label>
 
-        {error && <p className="text-sm text-red-500 -mt-1">{error}</p>}
+        {error && <p className="text-sm text-danger -mt-1">{error}</p>}
 
-        <PrimaryBtn type="submit" className="mt-2 !py-3.5" disabled={!email.trim()} size="sm">
+        <PrimaryBtn type="submit" className="mt-2" disabled={!email.trim()} size="sm">
           Continue
         </PrimaryBtn>
       </form>

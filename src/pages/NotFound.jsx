@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import CloudImage from "../components/common/CloudImage";
+import { Button } from "../components/ui/Button";
 import { usePageTitle } from "../hooks/usePageTitle";
 
 export default function NotFound() {
@@ -30,18 +31,12 @@ export default function NotFound() {
         </p>
 
         <div className="flex gap-3 justify-center">
-          <button
-            onClick={() => navigate(-1)}
-            className="px-5 py-2.5 rounded-full text-[13px] font-medium text-gray-700 cursor-pointer transition-colors bg-surface-container border border-hairline-neutral backdrop-blur-xs"
-          >
+          <Button variant="outline-neutral" onClick={() => navigate(-1)} fullWidth={false}>
             Go back
-          </button>
-          <button
-            onClick={() => navigate("/")}
-            className="px-5 py-2.5 rounded-full text-[13px] font-semibold text-white cursor-pointer border-none transition-opacity hover:opacity-90 bg-brand"
-          >
+          </Button>
+          <Button onClick={() => navigate("/")} fullWidth={false}>
             Go home
-          </button>
+          </Button>
         </div>
       </div>
     </div>

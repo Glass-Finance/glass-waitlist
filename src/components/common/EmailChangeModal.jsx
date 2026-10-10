@@ -106,7 +106,7 @@ export default function EmailChangeModal({
         Wrong email?
       </button>
       <p
-        className={`text-xs mt-2 mb-6 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
+        className={`text-xs mt-2 mb-6 ${codeExpired ? "text-danger font-medium" : "text-gray-400"}`}
       >
         {codeExpired
           ? "Your code has expired — request a new one below."
@@ -146,7 +146,7 @@ export default function EmailChangeModal({
           )}
         />
 
-        {error && <p className="text-sm text-red-500 text-center -mt-2">{error}</p>}
+        {error && <p className="text-sm text-danger text-center -mt-2">{error}</p>}
 
         <Button type="submit" disabled={codeExpired || otp.some((d) => !d)} loading={loading}>
           {loading ? "Verifying..." : "Continue"}

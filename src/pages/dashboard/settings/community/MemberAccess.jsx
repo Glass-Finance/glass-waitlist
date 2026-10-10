@@ -44,7 +44,7 @@ function MemberActionsMenu({ open, onToggle, onClose, busy, actions }) {
                   a.onClick();
                 }}
                 className={`block w-full text-left px-4 py-2.5 text-xs font-medium bg-white hover:bg-gray-50 border-none cursor-pointer transition-colors disabled:opacity-50 ${
-                  a.danger ? "text-red-600" : "text-gray-700"
+                  a.danger ? "text-danger" : "text-gray-700"
                 }`}
               >
                 {a.label}
@@ -181,7 +181,7 @@ export default function MemberAccess() {
         </p>
         <div className="-mx-5 border-b border-gray-100 mb-4" />
         {!rolesLoading && !adminRoleId && (
-          <p className="text-xs text-red-500 mb-3">
+          <p className="text-xs text-danger mb-3">
             Couldn't find an Admin role on the server — Promote is disabled until this is resolved.
           </p>
         )}

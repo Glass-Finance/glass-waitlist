@@ -127,6 +127,7 @@ const REVIEW_DECISIONS = [
     value: "ACCEPT",
     label: "Accept",
     Icon: ShieldCheck,
+    variant: "success",
     activeCls: "bg-success-wash border-success-strong text-success-strong",
     solidCls: "bg-success-strong",
     focusCls: "focus:border-success-strong",
@@ -135,6 +136,7 @@ const REVIEW_DECISIONS = [
     value: "REQUEST_INFO",
     label: "Request Info",
     Icon: HelpCircle,
+    variant: "warning",
     activeCls: "bg-warning-wash border-warning text-warning",
     solidCls: "bg-warning",
     focusCls: "focus:border-warning",
@@ -143,6 +145,7 @@ const REVIEW_DECISIONS = [
     value: "REJECT",
     label: "Reject",
     Icon: ShieldAlert,
+    variant: "critical",
     activeCls: "bg-danger-wash border-danger-bright text-danger-bright",
     solidCls: "bg-danger-bright",
     focusCls: "focus:border-danger-bright",
@@ -183,7 +186,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
             <Loader2 size={14} className="animate-spin" /> Checking with Paystack…
           </div>
         ) : error ? (
-          <p className="text-xs text-red-500">
+          <p className="text-xs text-danger">
             Couldn't resolve this account with Paystack. Double-check the account number and bank
             code before deciding.
           </p>
@@ -198,7 +201,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
               {data?.accountName ?? "—"}
             </p>
             {!nameMatches && (
-              <p className="text-[11px] text-red-500 mt-2">
+              <p className="text-[11px] text-danger mt-2">
                 Names don't match — confirm this is really the same account before accepting.
               </p>
             )}
@@ -255,10 +258,12 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
           >
             Cancel
           </Button>
-          <button
+          <Button
             type="submit"
+            variant={chosen?.variant ?? "outline-neutral"}
+            size="sm"
             disabled={!decision || submitting || isLoading || (commentRequired && !comment.trim())}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-1.5 disabled:opacity-60 cursor-pointer border-none ${chosen?.solidCls ?? "bg-ink-faint"}`}
+            className="flex-1 flex items-center justify-center gap-1.5"
           >
             {submitting ? (
               <Loader2 size={12} className="animate-spin" />
@@ -266,7 +271,7 @@ function ReviewAccountModal({ account, onClose, onSubmit, submitting }) {
               <chosen.Icon size={12} />
             ) : null}
             {submitting ? "Submitting…" : chosen ? `Confirm ${chosen.label}` : "Choose a decision"}
-          </button>
+          </Button>
         </div>
       </form>
     </ModalShell>

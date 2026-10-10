@@ -140,7 +140,7 @@ export default function AutoPay() {
                       </p>
                     )}
                     {expired && (
-                      <p className="text-[11px] text-red-500 mt-1">
+                      <p className="text-[11px] text-danger mt-1">
                         Your saved card ({auth.bank ?? "Card"} ●●●● {auth.last4}) expired
                         {auth.expMonth && auth.expYear ? ` ${auth.expMonth}/${auth.expYear}` : ""}.
                         Auto-Pay charges will fail — pay once with a new card to update it.

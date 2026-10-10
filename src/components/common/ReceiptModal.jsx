@@ -385,21 +385,15 @@ function ReceiptCard({
 
         <DetailRow label="Transaction ID" last>
           <span style={{ wordBreak: "break-all" }}>{refValue}</span>{" "}
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-sm"
             onClick={onCopyReference}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: 2,
-              color: "#94A3B8",
-              display: "inline-flex",
-              verticalAlign: "middle",
-            }}
             aria-label="Copy transaction ID"
+            className="inline-flex align-middle"
           >
-            {copied ? <CheckCheck size={13} color="#15803d" /> : <Copy size={13} />}
-          </button>
+            {copied ? <CheckCheck size={16} /> : <Copy size={16} />}
+          </Button>
         </DetailRow>
       </div>
 
@@ -605,15 +599,16 @@ export default function ReceiptModal({ tx, payerName, payerEmail, onClose }) {
     typeof File !== "undefined";
 
   const actionBtn = (onClick, isActive, children, primary = false) => (
-    <button
+    <Button
       onClick={onClick}
       disabled={!!saving}
-      style={{ opacity: saving && !isActive ? 0.55 : 1 }}
-      // no border-radius — sharp buttons to match the receipt
-      className={`flex-1 flex items-center justify-center gap-1.5 py-[13px] px-2.5 border-none text-[13px] font-semibold transition-opacity duration-150 ${saving ? "cursor-not-allowed" : "cursor-pointer"} ${primary ? "bg-brand text-white" : "bg-brand-wash text-[#1E3A8A]"}`}
+      variant={primary ? "primary" : "tonal"}
+      size="sm"
+      fullWidth={false}
+      className="flex-1"
     >
       {children}
-    </button>
+    </Button>
   );
 
   return createPortal(

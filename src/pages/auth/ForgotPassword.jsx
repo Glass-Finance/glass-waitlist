@@ -147,7 +147,7 @@ export default function ForgotPassword() {
                 .
               </p>
               <p
-                className={`text-xs mt-1 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
+                className={`text-xs mt-1 ${codeExpired ? "text-danger font-medium" : "text-gray-400"}`}
               >
                 {codeExpired
                   ? "Your code has expired — request a new one below."

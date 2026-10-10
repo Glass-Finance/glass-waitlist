@@ -32,7 +32,7 @@ export default function BalancesSection() {
       {isLoading ? (
         <LoadingState className="py-20" />
       ) : error ? (
-        <p className="text-xs text-red-500 text-center py-10">{error.message}</p>
+        <p className="text-xs text-danger text-center py-10">{error.message}</p>
       ) : (
         <>
           {/* Residual / reconciliation — /admin/balances returns already

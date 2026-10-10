@@ -428,7 +428,7 @@ export default function PaymentSummary() {
           )}
         </div>
 
-        {error && <p className="text-sm text-red-500 px-1">{error}</p>}
+        {error && <p className="text-sm text-danger px-1">{error}</p>}
 
         {/* ── Make Payment button ──
             A "link is not accepting payments" rejection is a permanent

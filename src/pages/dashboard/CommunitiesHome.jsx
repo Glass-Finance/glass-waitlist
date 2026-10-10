@@ -97,7 +97,7 @@ function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
           variant="tertiary"
           size="xs"
           onClick={onFooter}
-          className="w-full border-t border-gray-50 rounded-none"
+          className="w-full border-t border-gray-50"
         >
           {footerLabel} <ChevronRight size={12} />
         </Button>
@@ -230,7 +230,7 @@ function GlobalOverview() {
                       t.status === "success"
                         ? "text-emerald-600"
                         : t.status === "failed"
-                          ? "text-red-500"
+                          ? "text-danger"
                           : "text-amber-600"
                     }`}
                   >
@@ -599,7 +599,7 @@ export default function CommunitiesHome() {
       {error && (
         <div className="mx-4 md:mx-7 mb-5 flex items-center gap-2 px-4 py-3 rounded-lg bg-red-50 border border-red-100">
           <AlertCircle size={16} className="text-red-400 flex-shrink-0" />
-          <p className="text-sm text-red-500">Couldn't load communities. Please refresh.</p>
+          <p className="text-sm text-danger">Couldn't load communities. Please refresh.</p>
         </div>
       )}
 

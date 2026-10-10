@@ -82,7 +82,7 @@ function ObligationDetailModal({ obligationId, onClose }) {
         {isLoading ? (
           <LoadingState className="py-10" />
         ) : error ? (
-          <p className="text-xs text-red-500">{getErrorMessage(error)}</p>
+          <p className="text-xs text-danger">{getErrorMessage(error)}</p>
         ) : (
           <>
             <div className="flex items-center justify-between mb-5">

@@ -189,7 +189,7 @@ export default function Role() {
       </div>
 
       {/* Save error */}
-      {saveError && <p className="text-xs text-red-500">{saveError}</p>}
+      {saveError && <p className="text-xs text-danger">{saveError}</p>}
 
       {/* Warning banner -- yellow, matching the Figma spec exactly (#FFFFE5). */}
       <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-[#FFFFE5]">

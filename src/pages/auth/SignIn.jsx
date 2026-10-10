@@ -429,7 +429,7 @@ export default function SignIn() {
             </p>
             <Link
               to="/member/join"
-              className="text-xs font-semibold mt-2 inline-block text-[#92400e]"
+              className="text-xs font-semibold mt-2 inline-block text-amber-800"
             >
               Back to registration →
             </Link>

@@ -215,7 +215,7 @@ export default function VerifyPhone() {
                 autoFocus
                 renderBoxes={renderDashedOtpBoxes}
               />
-              {otpError && <p className="text-sm text-red-500 text-center -mt-2">{otpError}</p>}
+              {otpError && <p className="text-sm text-danger text-center -mt-2">{otpError}</p>}
               <Button
                 type="submit"
                 disabled={codeExpired || otp.some((d) => !d)}
@@ -226,7 +226,7 @@ export default function VerifyPhone() {
             </form>
 
             <p
-              className={`text-xs mt-3 text-center ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
+              className={`text-xs mt-3 text-center ${codeExpired ? "text-danger font-medium" : "text-gray-400"}`}
             >
               {codeExpired
                 ? "Your code has expired — request a new one below."

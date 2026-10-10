@@ -104,22 +104,22 @@ export default function DuplicatePlanModal({ plan, onClose, onDuplicate, duplica
                   <Loader2 size={14} className="animate-spin text-gray-400" />
                 )}
                 {!checking && !suggesting && available === true && (
-                  <Check size={14} className="text-green-600" />
+                  <Check size={14} className="text-success" />
                 )}
                 {!checking && !suggesting && available === false && (
-                  <X size={14} className="text-red-500" />
+                  <X size={14} className="text-danger" />
                 )}
               </span>
             </div>
             {available === false && !checking && (
-              <p className="text-xs text-red-500 mt-1">That URL is taken — try another.</p>
+              <p className="text-xs text-danger mt-1">That URL is taken — try another.</p>
             )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Start Date <span className="text-red-500">*</span>
+                Start Date <span className="text-danger">*</span>
               </label>
               <input
                 type="date"
@@ -132,7 +132,7 @@ export default function DuplicatePlanModal({ plan, onClose, onDuplicate, duplica
             {!isRecurring && (
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Due Date <span className="text-red-500">*</span>
+                  Due Date <span className="text-danger">*</span>
                 </label>
                 <input
                   type="date"

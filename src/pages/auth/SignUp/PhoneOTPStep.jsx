@@ -121,7 +121,7 @@ export default function PhoneOTPStep({ phone, onVerified, onBack }) {
           )}
         />
 
-        {error && <p className="text-sm text-red-500 text-center -mt-2">{error}</p>}
+        {error && <p className="text-sm text-danger text-center -mt-2">{error}</p>}
 
         <Button type="submit" disabled={codeExpired || otp.some((d) => !d)} loading={loading}>
           {loading ? "Verifying..." : "Continue"}

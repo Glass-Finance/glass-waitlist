@@ -194,7 +194,7 @@ export default function AccountFormModal({
                 {accName && !resolving && !manualMode && (
                   <Check
                     size={14}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-success"
                   />
                 )}
               </div>

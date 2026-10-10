@@ -574,7 +574,7 @@ export default function Members() {
                   </tr>
                 ) : error ? (
                   <tr>
-                    <td colSpan={8} className="px-5 py-8 text-center text-xs text-red-500">
+                    <td colSpan={8} className="px-5 py-8 text-center text-xs text-danger">
                       Couldn't load members.
                     </td>
                   </tr>
@@ -649,7 +649,6 @@ export default function Members() {
                               aria-label="Remove member"
                               onClick={() => handleRemove(m)}
                               title="Remove member"
-                              aria-label="Remove member"
                               className=""
                             >
                               <UserMinus size={11} />

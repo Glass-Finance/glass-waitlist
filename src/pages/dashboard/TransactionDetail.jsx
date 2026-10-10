@@ -86,7 +86,7 @@ export default function TransactionDetail() {
           <LoadingState className="py-16" />
         </div>
       ) : error || !tx ? (
-        <p className="text-xs text-red-500">Couldn't load this transaction.</p>
+        <p className="text-xs text-danger">Couldn't load this transaction.</p>
       ) : (
         <div className="max-w-xl flex flex-col gap-4">
           {/* Amount card */}
@@ -167,7 +167,7 @@ export default function TransactionDetail() {
                 onClick={copyReference}
                 aria-label="Copy transaction ID"
               >
-                {copied ? <CheckCheck size={13} color="#15803d" /> : <Copy size={13} />}
+                {copied ? <CheckCheck size={13} className="text-success" /> : <Copy size={13} />}
               </Button>
             </Row>
             {tx.initiatedBy && (

@@ -88,7 +88,7 @@ export function CommunityCard({ community, onClick }) {
             </span>
             <span className="text-xs text-gray-500">
               Outstanding:{" "}
-              <strong className="text-red-500">
+              <strong className="text-danger">
                 {outstanding != null && outstanding > 0 ? formatNaira(outstanding) : "—"}
               </strong>
             </span>

@@ -66,27 +66,25 @@ export default function EmptyState({
           {subtitle}
         </p>
       )}
-      {/* Matches WelcomeEmptyState's "Create Your First Collection" button
-          exactly: 13px/font-normal text, rounded (4px, Figma's Radius
-          spec), py-4 (16px top/bottom, Figma's Padding spec) -- all
-          overriding Button's own defaults (rounded-lg/font-medium/py-4-but-
-          different-text-size), not just accepting them. */}
       {action && isBig && (
         <Button
           onClick={action}
           fullWidth={false}
-          className="mt-6 px-5 !rounded !py-4 !text-[13px] !font-normal inline-flex items-center gap-1.5"
+          size="md"
+          className="mt-6 px-5 inline-flex items-center gap-1.5"
         >
           {actionLabel}
         </Button>
       )}
       {action && !isBig && (
-        <button
+        <Button
           onClick={action}
-          className="mt-4 px-4 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 transition-all border-none cursor-pointer inline-flex items-center gap-1.5"
+          size="xs"
+          fullWidth={false}
+          className="mt-4 inline-flex items-center gap-1.5"
         >
           {actionLabel}
-        </button>
+        </Button>
       )}
     </div>
   );

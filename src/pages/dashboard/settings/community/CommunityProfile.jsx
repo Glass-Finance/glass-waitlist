@@ -245,7 +245,7 @@ export default function CommunityProfile() {
           </div>
         </div>
 
-        {error && <p className="text-xs text-red-500 mt-3">{error}</p>}
+        {error && <p className="text-xs text-danger mt-3">{error}</p>}
 
         <div className="flex justify-end mt-4">
           <Button
@@ -326,7 +326,7 @@ export default function CommunityProfile() {
               className="w-full h-12 min-h-8 border border-gray-300 px-4 py-1 rounded-lg text-placeholder outline-none focus:border-[#002FA7] mb-4 transition-all"
             />
 
-            {deleteError && <p className="text-xs text-red-500 mb-3">{deleteError}</p>}
+            {deleteError && <p className="text-xs text-danger mb-3">{deleteError}</p>}
 
             <div className="flex gap-2">
               <Button

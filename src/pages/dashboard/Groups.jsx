@@ -174,7 +174,7 @@ export default function Groups() {
           className="mb-4"
         />
       ) : isError ? (
-        <p className="text-sm text-red-500 mb-4">
+        <p className="text-sm text-danger mb-4">
           {getErrorMessage(error, "Couldn't load groups.")}{" "}
           <Button variant="tertiary" size="xs" fullWidth={false} onClick={() => refetch()}>
             Retry

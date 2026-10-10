@@ -85,7 +85,7 @@ export function QuickAddMemberModal({
               <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 border-l-4 border-r-4 border-t-[6px] border-l-transparent border-r-transparent border-t-black" />
             </div>
             {rolesUnavailable && (
-              <p className="text-xs text-red-500 mt-1.5">
+              <p className="text-xs text-danger mt-1.5">
                 Couldn't load roles from the server — try closing and reopening this dialog.
               </p>
             )}
@@ -102,7 +102,7 @@ export function QuickAddMemberModal({
 
         {error && (
           <div className="mt-3">
-            <p className="text-xs text-red-500">{error}</p>
+            <p className="text-xs text-danger">{error}</p>
             {isNotRegistered && inviteLink && (
               <div className="mt-2.5 rounded-lg p-3 bg-brand-wash border border-[#C7D2FE]">
                 <p className="text-xs text-gray-700 mb-2">

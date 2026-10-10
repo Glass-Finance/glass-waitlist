@@ -269,7 +269,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
                   />
                 )}
               </div>
-              {createError && <p className="text-xs text-red-500 mt-2">{createError}</p>}
+              {createError && <p className="text-xs text-danger mt-2">{createError}</p>}
             </>
           )}
         </div>
@@ -297,7 +297,7 @@ export default function CreatePlanModal({ communityId, onClose, onCreate, creati
               loading={creating}
               fullWidth={false}
               size="sm"
-              className="px-14 !text-xs !font-normal"
+              className="px-14"
             >
               {creating ? "Creating…" : step === 3 ? "Create Plan" : "Continue"}
             </Button>

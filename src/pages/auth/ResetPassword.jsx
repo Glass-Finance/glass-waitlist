@@ -143,7 +143,7 @@ export default function ResetPassword() {
         </div>
 
         {!credentials.email || !credentials.token ? (
-          <p className="text-sm text-[#E53E3E]">
+          <p className="text-sm text-danger">
             This reset link is invalid or has expired.{" "}
             <Link to="/forgot-password" className="font-semibold text-brand-navy">
               Request a new one

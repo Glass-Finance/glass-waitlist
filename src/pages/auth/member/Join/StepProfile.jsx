@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { isPasswordValid, PASSWORD_REQUIREMENTS_TEXT } from "../../../../utils/password";
 import PasswordChecklist from "../../../../components/auth/PasswordChecklist";
-import { Button as PrimaryButton } from "../../../../components/ui/Button";
+import { Button, Button as PrimaryButton } from "../../../../components/ui/Button";
 import { TextInput } from "../../../../components/ui/TextInput";
 import { Label, ErrorMessage } from "./shared";
 

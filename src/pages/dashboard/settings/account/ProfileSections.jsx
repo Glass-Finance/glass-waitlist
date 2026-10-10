@@ -54,7 +54,7 @@ export function DeleteAccountModal({
               placeholder="DELETE"
               className="w-full h-12 min-h-8 border-[1.5px] border-gray-300 px-4 py-1 rounded-lg text-placeholder outline-none focus:border-[#002FA7] mb-4 transition-all"
             />
-            {deleteError && <p className="text-xs text-red-500 mb-3">{deleteError}</p>}
+            {deleteError && <p className="text-xs text-danger mb-3">{deleteError}</p>}
             <div className="flex gap-2">
               <Button
                 onClick={onClose}
@@ -100,7 +100,7 @@ export function DeleteAccountModal({
                 {resendLoading ? "Resending…" : resendMessage || "Resend code"}
               </Button>
             </div>
-            {deleteError && <p className="text-xs text-red-500 mb-3 text-center">{deleteError}</p>}
+            {deleteError && <p className="text-xs text-danger mb-3 text-center">{deleteError}</p>}
             <div className="flex gap-2">
               <Button
                 onClick={onClose}

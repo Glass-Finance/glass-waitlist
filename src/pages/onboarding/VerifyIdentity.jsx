@@ -77,7 +77,6 @@ export default function VerifyIdentity() {
             )
           }
           className="ml-auto"
-          aria-label="Attempt history"
         >
           <History size={16} className="text-ink" />
         </Button>
