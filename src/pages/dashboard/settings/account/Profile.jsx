@@ -452,16 +452,15 @@ export default function Profile() {
 
             {error && <p className="text-xs text-danger mb-3">{error}</p>}
 
-            <div className="flex justify-end">
-              <Button
-                onClick={handleSave}
-                disabled={updateProfile.isPending || !isDirty}
-                variant="outline"
-                size="md"
-              >
-                {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
-              </Button>
-            </div>
+            <Button
+              onClick={handleSave}
+              disabled={updateProfile.isPending || !isDirty}
+              variant="primary"
+              size="md"
+              fullWidth={false}
+            >
+              {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
+            </Button>
           </div>
         </>
       )}
