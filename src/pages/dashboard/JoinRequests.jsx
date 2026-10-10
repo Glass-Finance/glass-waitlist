@@ -9,6 +9,7 @@ import {
 import { useActiveCommunityId } from "../../hooks/useActiveCommunityId";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import LoadingState from "../../components/common/LoadingState";
+import { Button } from "../../components/ui/Button";
 import { formatDate, formatDateShort } from "../../utils/format";
 
 function formatRequestedAt(r) {
@@ -82,20 +83,25 @@ function RequestCard({ r, onApprove, onReject, busy }) {
 
       {isPending ? (
         <div className="flex items-center gap-2 flex-shrink-0">
-          <button
+          <Button
+            variant="outline-caution"
+            size="sm"
             disabled={busy}
             onClick={onReject}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-white border border-red-200 text-red-600 hover:bg-red-50 cursor-pointer transition-colors disabled:opacity-50"
+            fullWidth={false}
+            className="flex items-center gap-1.5"
           >
             <X size={13} /> Reject
-          </button>
-          <button
+          </Button>
+          <Button
+            size="sm"
             disabled={busy}
             onClick={onApprove}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-brand hover:opacity-90 border-none cursor-pointer transition-opacity disabled:opacity-50"
+            fullWidth={false}
+            className="flex items-center gap-1.5"
           >
             <Check size={13} /> Approve
-          </button>
+          </Button>
         </div>
       ) : (
         chip && (

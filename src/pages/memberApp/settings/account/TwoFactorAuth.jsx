@@ -429,12 +429,13 @@ export default function TwoFactorAuth() {
                 >
                   Regenerate Recovery Codes
                 </button>
-                <button
+                <Button
+                  variant="outline-caution"
                   onClick={() => setFlow("disable")}
-                  className="w-full p-3.5 rounded-xl border-[1.5px] border-danger bg-white text-danger text-sm font-semibold cursor-pointer"
+                  className="w-full"
                 >
                   Disable MFA
-                </button>
+                </Button>
               </div>
             ) : (
               <Button onClick={() => setFlow("setup")}>Set Up MFA</Button>

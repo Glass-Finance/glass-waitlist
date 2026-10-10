@@ -9,7 +9,7 @@ function MenuItem({ icon, label, onClick, disabled, danger, title }) {
       disabled={disabled}
       title={title}
       className={`w-full flex items-center gap-3 px-4 py-2.5 text-xs font-medium bg-transparent border-none cursor-pointer transition-colors text-left
-        ${disabled ? "text-gray-300 cursor-not-allowed" : danger ? "text-red-500 hover:bg-red-50" : "text-gray-700 hover:bg-gray-50"}`}
+        ${disabled ? "text-gray-300 cursor-not-allowed" : danger ? "text-danger hover:bg-danger-wash" : "text-gray-700 hover:bg-gray-50"}`}
     >
       {icon && <span className="flex-shrink-0">{icon}</span>}
       {label}

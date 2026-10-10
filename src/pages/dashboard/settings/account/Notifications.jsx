@@ -59,7 +59,7 @@ export default function Notifications() {
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="text-xs font-semibold text-red-600 bg-transparent border-none cursor-pointer ml-3"
+            className="text-xs font-semibold text-danger bg-transparent border-none cursor-pointer ml-3"
           >
             Retry
           </button>

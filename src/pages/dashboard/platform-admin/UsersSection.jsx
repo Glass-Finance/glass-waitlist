@@ -404,28 +404,37 @@ export default function UsersSection() {
                 <td className="px-4 py-3 text-right">
                   <div className="opacity-0 group-hover:opacity-100 flex items-center justify-end gap-1.5 transition-opacity">
                     {u.enabled ? (
-                      <button
+                      <Button
+                        variant="outline-caution"
+                        size="xs"
                         onClick={() => setSuspending(u)}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-red-600 bg-red-50 hover:bg-red-100 transition-all cursor-pointer border-none"
+                        fullWidth={false}
+                        className="flex items-center gap-1"
                       >
                         <ShieldAlert size={11} /> Suspend
-                      </button>
+                      </Button>
                     ) : (
-                      <button
+                      <Button
+                        variant="success"
+                        size="xs"
                         onClick={() => setUnsuspending(u)}
                         disabled={unsuspend.isPending}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-green-700 bg-green-50 hover:bg-green-100 transition-all cursor-pointer border-none disabled:opacity-40"
+                        fullWidth={false}
+                        className="flex items-center gap-1"
                       >
                         <ShieldCheck size={11} /> Unsuspend
-                      </button>
+                      </Button>
                     )}
-                    <button
+                    <Button
+                      variant="outline-caution"
+                      size="xs"
                       onClick={() => setMarkingDeletion(u)}
                       title="Mark for deletion"
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-red-600 bg-red-50 hover:bg-red-100 transition-all cursor-pointer border-none"
+                      fullWidth={false}
+                      className="flex items-center gap-1"
                     >
                       <Trash2 size={11} /> Delete
-                    </button>
+                    </Button>
                     <Button
                       onClick={() => setAnonymizing(u)}
                       title="Anonymize now (requires the account already be marked for deletion)"

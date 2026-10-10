@@ -446,7 +446,7 @@ export default function Topbar({
                 role="menuitem"
                 onClick={handleLogout}
                 disabled={loggingOut}
-                className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-red-600 bg-transparent border-none cursor-pointer hover:bg-red-50 text-left disabled:opacity-50"
+                className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-danger bg-transparent border-none cursor-pointer hover:bg-danger-wash text-left disabled:opacity-50"
               >
                 <LogOut size={14} />
                 {loggingOut ? "Signing out…" : "Log out"}

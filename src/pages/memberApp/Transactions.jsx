@@ -4,6 +4,7 @@ import { ChevronDown, ChevronLeft, Download, Loader2 } from "lucide-react";
 import { useTransactions } from "../../hooks/useTransactions";
 import GlassLogoGlow from "../../components/memberApp/GlassLogoGlow";
 import PageLoadingState from "../../components/common/PageLoadingState";
+import { Button } from "../../components/ui/Button";
 import { formatNaira, toTitleCase } from "../../utils/format";
 import { transactionStatusLabel, transactionStatusStyle } from "../../utils/transactionStatus";
 import { useExportJob } from "../../hooks/useExportJob";
@@ -214,12 +215,9 @@ export default function Transactions() {
       ) : error ? (
         <div className="text-center py-8">
           <p className="text-danger text-sm mb-3">Couldn't load transactions.</p>
-          <button
-            onClick={() => refetch()}
-            className="bg-transparent border border-[#FCA5A5] rounded-full text-danger-bright-2 text-xs font-semibold cursor-pointer py-1.5 px-4.5"
-          >
+          <Button variant="outline-caution" size="xs" onClick={() => refetch()} fullWidth={false}>
             Try again
-          </button>
+          </Button>
         </div>
       ) : groups.length === 0 ? (
         <div className="mx-3 py-12 px-6 text-center flex flex-col items-center gap-2">

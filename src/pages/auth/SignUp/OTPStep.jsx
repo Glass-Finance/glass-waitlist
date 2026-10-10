@@ -74,7 +74,7 @@ export default function OTPStep({ email, onVerified, onBack }) {
         >
           Wrong email?
         </button>
-        <p className={`text-xs mt-2 ${codeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}>
+        <p className={`text-xs mt-2 ${codeExpired ? "text-danger font-medium" : "text-ink-faint"}`}>
           {codeExpired
             ? "Your code has expired — request a new one below."
             : `Code expires in ${formatCountdown(secondsLeft)}`}

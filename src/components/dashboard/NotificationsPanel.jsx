@@ -206,7 +206,7 @@ export default function NotificationsPanel({
             <button
               onClick={onClearAll}
               disabled={notifications.length === 0 || isClearingAll}
-              className="text-[11px] font-normal text-red-500 bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
+              className="text-[11px] font-normal text-danger bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
             >
               Clear All
             </button>
@@ -245,7 +245,7 @@ export default function NotificationsPanel({
                   }}
                   disabled={notifications.length === 0 || isClearingAll}
                   role="menuitem"
-                  className="w-full text-left px-3.5 py-2.5 text-[11.5px] font-medium text-red-500 bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7] disabled:opacity-40 disabled:cursor-default"
+                  className="w-full text-left px-3.5 py-2.5 text-[11.5px] font-medium text-danger bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7] disabled:opacity-40 disabled:cursor-default"
                 >
                   Clear All
                 </button>

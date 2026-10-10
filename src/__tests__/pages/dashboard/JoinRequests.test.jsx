@@ -148,3 +148,33 @@ describe("JoinRequests approve/reject flow", () => {
     expect(screen.queryByText("Approve")).toBeNull();
   });
 });
+
+// DESIGN-SYSTEM.md §2.1 confirm-pair conformance (sweep batch C3): the
+// cancel/reject action is the transparent outline role, never a filled
+// pill; the confirm action is primary. Classes are asserted literally --
+// if the spec changes, the spec file changes first.
+describe("JoinRequests — design system conformance", () => {
+  it("Reject is outline-caution: transparent, danger label, black/10 border, 4px radius", async () => {
+    mockRequests([pendingRequest()]);
+    renderPage();
+
+    const reject = (await screen.findByText("Reject")).closest("button");
+    const cls = reject.className;
+    expect(cls).toContain("bg-transparent");
+    expect(cls).toContain("text-danger");
+    expect(cls).toContain("border-black/10");
+    expect(cls).toContain("rounded-g-1");
+    expect(cls).not.toContain("bg-danger");
+  });
+
+  it("Approve is primary: brand fill, white label, 4px radius", async () => {
+    mockRequests([pendingRequest()]);
+    renderPage();
+
+    const approve = (await screen.findByText("Approve")).closest("button");
+    const cls = approve.className;
+    expect(cls).toContain("bg-brand");
+    expect(cls).toContain("text-white");
+    expect(cls).toContain("rounded-g-1");
+  });
+});

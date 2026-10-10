@@ -155,12 +155,15 @@ export function HeroCard({ nextDue, onPay, error, onRefresh }) {
               <p className="text-[13px] text-ink-faint m-0 leading-normal">
                 Check your connection and try again.
               </p>
-              <button
+              <Button
+                variant="outline-caution"
+                size="xs"
                 onClick={onRefresh}
-                className="mt-4 bg-transparent border border-[#FCA5A5] rounded-[20px] text-danger-bright-2 text-xs font-semibold cursor-pointer py-1.5 px-[18px]"
+                fullWidth={false}
+                className="mt-4"
               >
                 Try again
-              </button>
+              </Button>
             </>
           ) : (
             <>
