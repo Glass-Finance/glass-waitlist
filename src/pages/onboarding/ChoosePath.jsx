@@ -173,12 +173,14 @@ export default function ChoosePath() {
           <Button onClick={handleContinue} loading={selected === "create" && kycGate.isLoading}>
             Continue
           </Button>
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
+            fullWidth={false}
             onClick={() => navigate("/dashboard/home")}
-            className="text-sm font-medium hover:underline bg-transparent border-none cursor-pointer text-brand"
           >
             Skip
-          </button>
+          </Button>
         </div>
         <div className="h-[env(safe-area-inset-bottom,0px)]" />
       </main>

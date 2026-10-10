@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Button } from "../../components/ui/Button";
 import { useAuth } from "../../store/AuthContext";
 import { getAccessToken } from "../../store/sessionStorage";
 import { useMfaChallenge } from "../../hooks/useMfaChallenge";
@@ -478,15 +479,17 @@ export default function SignIn() {
                 disabled={loading}
                 error={activeField === "password" ? fieldErrors.password : ""}
                 rightElement={
-                  <button
+                  <Button
+                    variant="tertiary"
+                    size="icon-sm"
                     type="button"
                     onClick={() => setShowPw((v) => !v)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className=""
                     tabIndex={-1}
                     aria-label={showPw ? "Hide password" : "Show password"}
                   >
                     {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
+                  </Button>
                 }
               />
               <ErrorMessage message={fieldErrors.password || error} />

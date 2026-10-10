@@ -368,14 +368,17 @@ export default function AddMembers() {
         <main className="flex-1 lg:overflow-y-auto py-6 px-4 lg:py-10 lg:px-12">
           <div className="w-full max-w-4xl">
             <div className="mb-6">
-              <button
+              <Button
+                variant="tertiary"
+                size="sm"
+                fullWidth={false}
                 type="button"
                 onClick={handleBack}
-                className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer mb-4 -ml-1 p-0"
+                className="mb-4 -ml-1"
               >
                 <ArrowLeft size={15} />
                 {isAuthenticated ? "Back to dashboard" : "Back"}
-              </button>
+              </Button>
               <h2 className="text-base font-medium text-gray-900 mb-1">Add your members</h2>
               <p className="text-sm text-gray-500">
                 Add members now or invite them to join. You can always add more from your dashboard
@@ -391,13 +394,16 @@ export default function AddMembers() {
                   Copy this link and share it with your members to get them on Glass.
                 </p>
               </div>
-              <button
+              <Button
+                variant="outline"
+                size="xs"
+                fullWidth={false}
                 onClick={copyLink}
-                className="flex items-center justify-center gap-2 w-full lg:w-auto px-4 py-2 rounded-full border border-brand text-xs font-semibold text-brand hover:bg-gray-50 transition-all flex-shrink-0 lg:ml-6 cursor-pointer bg-transparent"
+                className="flex-shrink-0 lg:ml-6"
               >
                 <Copy size={12} />
                 {copied ? "Copied!" : "Copy Link"}
-              </button>
+              </Button>
             </div>
 
             {/* Direct add card */}

@@ -369,13 +369,16 @@ export default function PaymentProfile() {
             >
               {saving ? "Setting up…" : "Set-Up Account"}
             </Button>
-            <button
+            <Button
+              variant="tertiary"
+              size="sm"
+              fullWidth={false}
               onClick={handleSkip}
               disabled={saving}
-              className="w-full mt-3 text-sm font-medium text-gray-500 hover:text-gray-700 bg-transparent border-none cursor-pointer disabled:opacity-50"
+              className="mt-3"
             >
               Skip for now — set this up later
-            </button>
+            </Button>
             <div className="h-[env(safe-area-inset-bottom,20px)] lg:hidden" />
           </div>
         </main>

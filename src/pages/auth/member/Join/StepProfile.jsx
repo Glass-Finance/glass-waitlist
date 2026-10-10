@@ -98,15 +98,17 @@ export default function StepProfile({ onSubmit }) {
           autoComplete="new-password"
           disabled={loading}
           rightElement={
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
               type="button"
               onClick={() => setShowPw((v) => !v)}
-              className="text-gray-400 hover:text-gray-600"
+              className=""
               tabIndex={-1}
               aria-label={showPw ? "Hide password" : "Show password"}
             >
               {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
+            </Button>
           }
         />
         <PasswordChecklist password={form.password} />
@@ -123,15 +125,17 @@ export default function StepProfile({ onSubmit }) {
           autoComplete="new-password"
           disabled={loading}
           rightElement={
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
               type="button"
               onClick={() => setShowCpw((v) => !v)}
-              className="text-gray-400 hover:text-gray-600"
+              className=""
               tabIndex={-1}
               aria-label={showCpw ? "Hide password" : "Show password"}
             >
               {showCpw ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
+            </Button>
           }
         />
       </div>

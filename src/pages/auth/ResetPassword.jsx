@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { Button } from "../../components/ui/Button";
 import { resetPassword } from "../../services/authService";
 import { notifyError } from "../../utils/errorHandler";
 import { toastSuccess } from "../../utils/toast";
@@ -163,15 +164,16 @@ export default function ResetPassword() {
                 disabled={loading}
                 error={fieldErrors.newPassword}
                 rightElement={
-                  <button
+                  <Button
+                    variant="tertiary"
+                    size="icon-sm"
                     type="button"
                     onClick={() => setShowPw((v) => !v)}
-                    className="text-gray-400 hover:text-gray-600"
                     tabIndex={-1}
                     aria-label={showPw ? "Hide password" : "Show password"}
                   >
                     {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
+                  </Button>
                 }
               />
               <PasswordChecklist password={form.newPassword} />
@@ -190,15 +192,17 @@ export default function ResetPassword() {
                 disabled={loading}
                 error={fieldErrors.confirmPassword}
                 rightElement={
-                  <button
+                  <Button
+                    variant="tertiary"
+                    size="icon-sm"
                     type="button"
                     onClick={() => setShowConfirm((v) => !v)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className=""
                     tabIndex={-1}
                     aria-label={showConfirm ? "Hide password" : "Show password"}
                   >
                     {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
+                  </Button>
                 }
               />
               <ErrorMessage message={fieldErrors.confirmPassword || error} />

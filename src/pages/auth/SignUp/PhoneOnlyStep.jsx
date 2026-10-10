@@ -3,7 +3,7 @@ import { isPhoneValid, PHONE_FORMAT_HINT } from "../../../utils/phone";
 import { requestPhoneOtp } from "../../../services/authService";
 import { getErrorMessage } from "../../../utils/errorHandler";
 import { SignUpTextInput, SignUpFieldError } from "./SignUpTextInput";
-import { Button as PrimaryBtn } from "../../../components/ui/Button";
+import { Button, Button as PrimaryBtn } from "../../../components/ui/Button";
 
 function validatePhone(value) {
   if (!value.trim()) return "Phone number is required.";
@@ -80,13 +80,9 @@ export default function PhoneOnlyStep({ initialPhone, onNext, onCancel }) {
           {submitting ? "Sending Code..." : "Send New Code"}
         </PrimaryBtn>
 
-        <button
-          type="button"
-          onClick={onCancel}
-          className="text-sm font-medium text-center hover:underline text-brand-link bg-transparent border-none cursor-pointer"
-        >
+        <Button variant="tertiary" size="sm" fullWidth={false} onClick={onCancel} type="button">
           Back to verification
-        </button>
+        </Button>
       </form>
     </div>
   );

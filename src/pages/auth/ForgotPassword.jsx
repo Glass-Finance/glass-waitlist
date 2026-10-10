@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../components/ui/Button";
 import { usePageTitle } from "../../hooks/usePageTitle";
 import { Link, useNavigate } from "react-router-dom";
 import { forgotPassword } from "../../services/authService";
@@ -194,24 +195,30 @@ export default function ForgotPassword() {
             <div className="flex flex-col items-center gap-1 text-sm text-gray-500 pb-2">
               <p>
                 Didn't receive it?{" "}
-                <button
+                <Button
+                  variant="tertiary"
+                  size="xs"
+                  fullWidth={false}
+                  type="button"
                   onClick={handleResend}
                   disabled={loading}
-                  className="font-semibold bg-transparent border-none cursor-pointer disabled:opacity-50 text-brand-navy"
                 >
                   {loading ? "Sending…" : "Resend code"}
-                </button>
+                </Button>
               </p>
-              <button
+              <Button
+                variant="tertiary"
+                size="xs"
+                fullWidth={false}
                 onClick={() => {
                   setStep("email");
                   setError("");
                   setOtp(["", "", "", "", "", ""]);
                 }}
-                className="text-xs bg-transparent border-none cursor-pointer mt-1 text-[#6b7280]"
+                className="mt-1"
               >
                 ← Change email address
-              </button>
+              </Button>
             </div>
           </>
         )}

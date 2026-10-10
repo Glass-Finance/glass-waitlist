@@ -4,7 +4,7 @@ import { Check } from "lucide-react";
 import { getEmailError } from "../../../utils/validators";
 import GoogleAuthButton from "../../../components/auth/GoogleAuthButton";
 import { SignUpTextInput, SignUpFieldError } from "./SignUpTextInput";
-import { Button as PrimaryBtn } from "../../../components/ui/Button";
+import { Button, Button as PrimaryBtn } from "../../../components/ui/Button";
 
 const Divider = () => (
   <div className="flex items-center gap-3 my-5">
@@ -136,12 +136,9 @@ export default function EmailPhoneStep({ initialEmail, onNext, onSwitch, onGoogl
 
       <p className="text-center text-sm mt-5 text-gray-500">
         Already Have An Account?{" "}
-        <button
-          onClick={onSwitch}
-          className="font-semibold hover:underline bg-transparent border-none cursor-pointer text-brand"
-        >
+        <Button variant="tertiary" size="sm" fullWidth={false} onClick={onSwitch}>
           Sign In
-        </button>
+        </Button>
       </p>
     </div>
   );
