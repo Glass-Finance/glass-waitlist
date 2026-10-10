@@ -190,6 +190,7 @@ export default function MemberPaymentsSection({
                           size="icon-sm"
                           disabled
                           title="Send reminder — coming soon"
+                          aria-label="Send reminder — coming soon"
                         >
                           <img
                             src={TimerIcon}
@@ -202,6 +203,7 @@ export default function MemberPaymentsSection({
                           size="icon-sm"
                           disabled
                           title="More options — coming soon"
+                          aria-label="More options — coming soon"
                         >
                           <MoreHorizontal size={12} />
                         </Button>

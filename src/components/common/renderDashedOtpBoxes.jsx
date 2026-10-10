@@ -21,7 +21,7 @@ export function renderDashedOtpBoxes(boxDigits, activeIndex) {
           <div
             key={i}
             aria-label={`Digit ${i + 1} of ${OTP_LENGTH}`}
-            className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 transition-all duration-150 min-w-0 max-w-16 text-[22px] border-[1.5px] ${d || i === activeIndex ? "border-brand-deep" : "border-[#D0D5E8]"}`}
+            className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 transition-all duration-150 min-w-0 max-w-16 text-[22px] border-[1.5px] ${d || i === activeIndex ? "border-brand-deep" : "border-hairline-neutral"}`}
           >
             {d}
           </div>
@@ -35,7 +35,7 @@ export function renderDashedOtpBoxes(boxDigits, activeIndex) {
             <div
               key={idx}
               aria-label={`Digit ${idx + 1} of ${OTP_LENGTH}`}
-              className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 transition-all duration-150 min-w-0 max-w-16 text-[22px] border-[1.5px] ${d || idx === activeIndex ? "border-brand-deep" : "border-[#D0D5E8]"}`}
+              className={`flex-1 h-16 rounded-lg flex items-center justify-center text-xl font-bold text-gray-900 transition-all duration-150 min-w-0 max-w-16 text-[22px] border-[1.5px] ${d || idx === activeIndex ? "border-brand-deep" : "border-hairline-neutral"}`}
             >
               {d}
             </div>

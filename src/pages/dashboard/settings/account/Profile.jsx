@@ -458,7 +458,6 @@ export default function Profile() {
                 disabled={updateProfile.isPending || !isDirty}
                 variant="outline"
                 size="md"
-                className="text-xs"
               >
                 {saved ? "Saved!" : updateProfile.isPending ? "Saving…" : "Save Changes"}
               </Button>

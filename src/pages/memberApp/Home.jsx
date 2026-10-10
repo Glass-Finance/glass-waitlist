@@ -297,7 +297,7 @@ export default function Home() {
                 {totalUpcomingCount > 0 && (
                   <button
                     onClick={() => navigate("/member/upcoming")}
-                    className="bg-transparent border-none cursor-pointer text-[13px] font-semibold text-ink-faint p-0"
+                    className="bg-transparent border-none cursor-pointer text-xs font-medium text-ink-faint p-0"
                   >
                     See All
                   </button>
@@ -317,7 +317,7 @@ export default function Home() {
                 {history.length > 0 && (
                   <button
                     onClick={() => navigate("/member/transactions")}
-                    className="bg-transparent border-none cursor-pointer text-[13px] font-semibold text-ink-faint p-0"
+                    className="bg-transparent border-none cursor-pointer text-xs font-medium text-ink-faint p-0"
                   >
                     See All
                   </button>

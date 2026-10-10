@@ -176,7 +176,7 @@ export default function Role() {
                     <circle cx="12" cy="12" r="8" fill="var(--color-brand)" />
                   </svg>
                 ) : (
-                  <div className="w-5 h-5 rounded-full flex-shrink-0 mt-0.5 bg-white border border-[#D1D5DB]" />
+                  <div className="w-5 h-5 rounded-full flex-shrink-0 mt-0.5 bg-white border border-gray-300" />
                 )}
                 <div>
                   <p className="text-sm text-gray-900 mb-0.5">{opt.title}</p>

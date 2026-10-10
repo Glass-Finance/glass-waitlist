@@ -162,7 +162,7 @@ export default function PhoneChangeModal({
         <button
           onClick={handleResend}
           disabled={resending}
-          className="font-semibold hover:underline disabled:opacity-60 text-brand-link"
+          className="font-medium hover:underline disabled:opacity-60 text-brand-link"
         >
           {resending ? "Resending..." : "Resend"}
         </button>

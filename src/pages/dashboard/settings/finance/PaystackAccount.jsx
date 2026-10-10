@@ -283,12 +283,13 @@ export default function PaystackAccount() {
                   setShowRemoveModal(true);
                 }}
                 title="Remove payout account"
+                aria-label="Remove payout account"
               >
                 <Trash2 size={15} />
               </Button>
             </div>
           </div>
-          {removeError && <p className="text-xs text-red-600 mb-4 -mt-2">{removeError}</p>}
+          {removeError && <p className="text-xs text-danger mb-4 -mt-2">{removeError}</p>}
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4">
             <div>
