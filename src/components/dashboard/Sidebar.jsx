@@ -647,7 +647,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                         isDisabled
                           ? "bg-transparent text-ink-faint"
                           : isActive
-                            ? "bg-brand-mist text-brand"
+                            ? "bg-brand-100 text-brand"
                             : "bg-transparent text-ink-muted hover:bg-surface-sunken"
                       }`}
                     >

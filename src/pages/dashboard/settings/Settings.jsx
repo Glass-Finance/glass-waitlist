@@ -371,11 +371,12 @@ export default function Settings() {
               <button
                 key={tab.label}
                 onClick={() => navigate(scopedPath(tab.defaultPath, scopedCommunity))}
-                className={`px-6 py-2 text-[13px] rounded transition-all cursor-pointer border-none font-medium
+                aria-current={isActive ? "page" : undefined}
+                className={`px-6 py-2 text-base font-medium rounded transition-colors cursor-pointer border-none focus-visible:outline-none
                   ${
                     isActive
-                      ? "bg-surface-container text-gray-900 shadow-sm"
-                      : "bg-transparent text-gray-500 hover:text-gray-800"
+                      ? "bg-surface-container text-black"
+                      : "bg-transparent text-black/60 hover:text-black"
                   }`}
               >
                 {tab.label}
