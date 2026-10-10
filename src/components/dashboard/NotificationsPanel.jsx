@@ -197,13 +197,15 @@ export default function NotificationsPanel({
         <div className="flex items-center gap-3">
           {/* Desktop: inline actions */}
           <div className="hidden md:flex items-center gap-3">
-            <button
+            <Button
+              variant="tertiary"
+              size="sm"
+              fullWidth={false}
               onClick={onMarkAllRead}
               disabled={count === 0}
-              className="text-[11px] font-normal text-brand bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
             >
               Mark All As Read
-            </button>
+            </Button>
             <button
               onClick={onClearAll}
               disabled={notifications.length === 0 || isClearingAll}
@@ -231,17 +233,17 @@ export default function NotificationsPanel({
                 className="absolute right-0 top-full mt-1 w-[172px] bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.14)] border border-[#EFEFEF] py-1 z-20"
                 role="menu"
               >
-                <button
+                <Button
+                  variant="tertiary"
+                  size="sm"
                   onClick={() => {
                     onMarkAllRead();
                     setActionsOpen(false);
                   }}
                   disabled={count === 0}
-                  role="menuitem"
-                  className="w-full text-left px-3.5 py-2.5 text-[11.5px] font-medium text-brand bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7] disabled:opacity-40 disabled:cursor-default"
                 >
                   Mark All As Read
-                </button>
+                </Button>
                 <button
                   onClick={() => {
                     onClearAll();

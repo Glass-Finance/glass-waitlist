@@ -295,12 +295,14 @@ export default function DashboardTour({ onClose, onNeedMobileNav, steps = STEPS 
 
           <div className="flex items-center gap-2">
             {prevStep !== null && (
-              <button
+              <Button
+                variant="outline-neutral"
+                size="xs"
+                fullWidth={false}
                 onClick={() => setStep(prevStep)}
-                className="px-4 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors"
               >
                 Back
-              </button>
+              </Button>
             )}
             <Button
               onClick={() => (isLast ? onClose() : setStep(nextStep))}

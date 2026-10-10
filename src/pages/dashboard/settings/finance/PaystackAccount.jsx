@@ -267,22 +267,25 @@ export default function PaystackAccount() {
               </div>
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
-              <button
+              <Button
+                variant="tertiary"
+                size="xs"
+                fullWidth={false}
                 onClick={() => setShowModal(true)}
-                className="text-xs font-medium text-brand bg-transparent border-none cursor-pointer hover:underline"
               >
                 Change Account
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="tertiary"
+                size="icon-sm"
                 onClick={() => {
                   setRemoveError("");
                   setShowRemoveModal(true);
                 }}
                 title="Remove payout account"
-                className="w-8 h-8 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer text-ink-faint hover:text-danger hover:bg-danger-wash transition-colors"
               >
                 <Trash2 size={15} />
-              </button>
+              </Button>
             </div>
           </div>
           {removeError && <p className="text-xs text-red-600 mb-4 -mt-2">{removeError}</p>}

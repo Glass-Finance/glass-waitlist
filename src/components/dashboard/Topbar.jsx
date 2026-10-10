@@ -373,18 +373,20 @@ export default function Topbar({
 
         {/* Bell */}
         <div className="relative flex items-center">
-          <button
+          <Button
+            variant="tertiary"
+            size="icon-md"
             onClick={() => setPanelOpen((o) => !o)}
-            className="relative bg-transparent border-none cursor-pointer text-gray-500 hover:text-gray-700 transition-colors p-0"
+            className="relative"
             aria-label={`Notifications${unreadCount ? ` (${unreadCount} unread)` : ""}`}
           >
             <Bell size={17} />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-[9px] font-bold px-0.5">
+              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 rounded-full bg-danger border-2 border-white flex items-center justify-center text-white text-[9px] font-bold px-0.5">
                 {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
-          </button>
+          </Button>
         </div>
 
         {panelOpen && (

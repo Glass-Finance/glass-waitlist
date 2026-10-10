@@ -66,13 +66,9 @@ export default function GroupFormModal({ group, onClose, onSave, saving }) {
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-xs font-bold text-gray-500 bg-transparent border-none cursor-pointer px-3 py-2"
-          >
+          <Button variant="tertiary" size="xs" fullWidth={false} onClick={onClose} type="button">
             Cancel
-          </button>
+          </Button>
           <Button type="submit" loading={saving} fullWidth={false} size="sm" className="px-4">
             {saving ? "Saving…" : isEdit ? "Save changes" : "Create group"}
           </Button>

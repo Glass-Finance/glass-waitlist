@@ -158,14 +158,17 @@ export default function MemberAccess() {
             <span className="text-sm text-gray-700 font-medium truncate">
               {inviteLink ?? "Select a community to generate an invite link"}
             </span>
-            <button
+            <Button
+              variant="tertiary"
+              size="xs"
+              fullWidth={false}
               onClick={handleCopy}
               disabled={!inviteLink}
-              className="flex items-center gap-1 text-xs font-medium text-brand bg-transparent hover:opacity-70 transition-all border-none cursor-pointer flex-shrink-0 disabled:opacity-50"
+              className="flex-shrink-0"
             >
               {copied ? <Check size={12} /> : <Copy size={12} />}
               {copied ? "Copied!" : "Copy Link"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { Button } from "../../components/ui/Button";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Plus, AlertCircle, ChevronRight } from "lucide-react";
 import { usePageTitle } from "../../hooks/usePageTitle";
@@ -319,18 +320,22 @@ function DashboardContent({ isPaying, communityId }) {
             </p>
           </div>
           <div data-tour="dashboard-header-actions" className="flex gap-2.5">
-            <button
+            <Button
+              variant="outline-neutral"
+              size="xs"
+              fullWidth={false}
               onClick={() => navigate(`/dashboard/payments?community=${communityId ?? ""}`)}
-              className="px-4 py-2 rounded text-xs font-medium text-black bg-white border border-[#efeff1] hover:bg-gray-50 transition-all cursor-pointer"
             >
               Create Payment Plan
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
+              size="xs"
+              fullWidth={false}
               onClick={() => setAddMemberOpen(true)}
-              className="px-4 py-2 rounded text-xs font-medium text-white bg-brand flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
             >
               <Plus size={14} /> Add Member
-            </button>
+            </Button>
           </div>
         </div>
 

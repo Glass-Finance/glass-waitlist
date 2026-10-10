@@ -292,13 +292,16 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                   Copy this link and share it with your members to get them on Glass.
                 </p>
               </div>
-              <button
+              <Button
+                variant="outline"
+                size="xs"
+                fullWidth={false}
                 onClick={copyLink}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-brand/10 transition-all flex-shrink-0 ml-6 cursor-pointer bg-transparent"
+                className="flex-shrink-0 ml-6"
               >
                 <Copy size={12} />
                 {linkCopied ? "Copied!" : "Copy Link"}
-              </button>
+              </Button>
             </div>
 
             {/* Direct add card -- Glass/SurfaceContainerHigh (#F3F4F6) per
@@ -331,13 +334,15 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                     <p className="text-sm text-gray-500">
                       Upload a CSV file with following sample information
                     </p>
-                    <button
+                    <Button
+                      variant="tertiary"
+                      size="xs"
+                      fullWidth={false}
                       onClick={downloadTemplate}
-                      className="flex items-center gap-1.5 text-xs font-medium text-brand hover:opacity-80 bg-transparent border-none cursor-pointer"
                     >
                       <Download size={12} />
                       Download Template
-                    </button>
+                    </Button>
                   </div>
 
                   <div className="rounded-md overflow-x-auto mb-4 border border-surface-container-border">
@@ -433,13 +438,16 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                         className={inputCls}
                         disabled={urlStage === "fetching"}
                       />
-                      <button
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        fullWidth={false}
                         onClick={handleUrlUpload}
                         disabled={!fileUrl.trim() || urlStage === "fetching" || uploading}
-                        className="px-5 py-2 rounded-lg bg-brand/20 text-xs text-brand hover:bg-brand/10 transition-all flex-shrink-0 border-none cursor-pointer disabled:opacity-50"
+                        className="flex-shrink-0"
                       >
                         Upload
-                      </button>
+                      </Button>
                     </div>
 
                     {urlStage === "fetching" && (
@@ -472,12 +480,14 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                           </span>
                         </div>
                         <p className="text-sm text-gray-700 mb-3">Uploading File...</p>
-                        <button
+                        <Button
+                          variant="outline-neutral"
+                          size="xs"
+                          fullWidth={false}
                           onClick={clearUrlUpload}
-                          className="px-4 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-all bg-white border border-gray-300 cursor-pointer"
                         >
                           Cancel
-                        </button>
+                        </Button>
                       </div>
                     )}
 

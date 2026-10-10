@@ -1,4 +1,5 @@
 import { toTitleCase } from "../../../../utils/format";
+import { Button } from "../../../../components/ui/Button";
 import { Skeleton } from "../SkeletonUI";
 import { formatNaira } from "../helpers";
 
@@ -16,12 +17,9 @@ export default function PaymentPlansCard({ plans, plansLoading, onManageAll }) {
     <div className="rounded-xl border border-surface-container-border p-4 bg-brand-mist">
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-black">Payment Plans</span>
-        <button
-          onClick={onManageAll}
-          className="text-xs font-medium text-brand bg-transparent border-none cursor-pointer hover:underline"
-        >
+        <Button variant="tertiary" size="xs" fullWidth={false} onClick={onManageAll}>
           Manage All
-        </button>
+        </Button>
       </div>
 
       {plansLoading ? (

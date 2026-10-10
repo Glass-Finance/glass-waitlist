@@ -1,4 +1,5 @@
 import { useCommunityMembers } from "../../../hooks/useCommunityMembers";
+import { Button } from "../../../components/ui/Button";
 import { resolveDisplayName } from "../../../utils/memberName";
 
 // ── Audience member picker ──────────────────────────────────────────────────
@@ -45,21 +46,24 @@ export default function AudienceMemberPicker({ communityId, selected, onChange }
           {chosen.length} of {members.length} selected
         </span>
         <div className="flex gap-2">
-          <button
-            type="button"
+          <Button
+            variant="tertiary"
+            size="sm"
+            fullWidth={false}
             onClick={() => onChange(members.map((m) => m.id))}
-            className="text-[11px] text-brand hover:underline bg-transparent border-none cursor-pointer p-0"
           >
             Select all
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="tertiary"
+            size="xs"
+            fullWidth={false}
             onClick={() => onChange([])}
             disabled={chosen.length === 0}
-            className="text-[11px] text-gray-500 hover:underline bg-transparent border-none cursor-pointer p-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:no-underline"
+            type="button"
           >
             Clear
-          </button>
+          </Button>
         </div>
       </div>
       <div className="max-h-40 overflow-y-auto rounded-lg border border-gray-200 divide-y divide-gray-100">

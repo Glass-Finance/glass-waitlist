@@ -112,27 +112,26 @@ export function QuickAddMemberModal({
                   <span className="flex-1 text-xs text-brand truncate font-medium">
                     {inviteLink}
                   </span>
-                  <button
-                    type="button"
+                  <Button
+                    variant="primary"
+                    size="xs"
+                    fullWidth={false}
                     onClick={() => copyInviteLinkText(inviteLink)}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-brand border-none cursor-pointer flex-shrink-0 hover:opacity-90"
+                    type="button"
+                    className="flex-shrink-0"
                   >
                     {linkCopied ? <Check size={11} /> : <Copy size={11} />}
                     {linkCopied ? "Copied!" : "Copy"}
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={adding || !isReady}
-          className="w-full mt-4 px-4 py-2 rounded bg-brand text-white text-xs font-medium hover:opacity-90 transition-all border-none cursor-pointer disabled:opacity-50"
-        >
+        <Button type="submit" disabled={adding || !isReady} className="mt-4">
           {adding ? "Sending…" : "Send Invite"}
-        </button>
+        </Button>
       </form>
     </div>
   );

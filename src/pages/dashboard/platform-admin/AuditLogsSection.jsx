@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../../components/ui/Button";
 import { useQuery } from "@tanstack/react-query";
 import { Download, ScrollText, RefreshCw, CheckCircle2, XCircle } from "lucide-react";
 import ModalShell from "../../../components/dashboard/ModalShell";
@@ -179,19 +180,18 @@ export default function AuditLogsSection() {
               }}
               options={RESULT_OPTIONS}
             />
-            <button
+            <Button
+              variant="outline-neutral"
+              size="xs"
+              fullWidth={false}
               onClick={() => csvExport.run(() => exportAdminAuditLogs(params))}
               disabled={csvExport.isExporting}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-surface-container-border"
             >
               <Download size={12} /> {csvExport.isExporting ? "Exporting…" : "Export"}
-            </button>
-            <button
-              onClick={() => refetch()}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer border border-surface-container-border"
-            >
+            </Button>
+            <Button variant="outline-neutral" size="xs" fullWidth={false} onClick={() => refetch()}>
               <RefreshCw size={12} /> Refresh
-            </button>
+            </Button>
           </>
         }
       />

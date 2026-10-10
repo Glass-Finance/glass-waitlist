@@ -286,12 +286,9 @@ export default function NotificationsSection() {
         count={data?.totalElements ?? 0}
         isFetching={isFetching && !isLoading}
         right={
-          <button
-            onClick={() => setShowCreate(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-white cursor-pointer border-none bg-brand"
-          >
+          <Button variant="primary" size="xs" fullWidth={false} onClick={() => setShowCreate(true)}>
             <Bell size={12} /> Send Notification
-          </button>
+          </Button>
         }
       />
 

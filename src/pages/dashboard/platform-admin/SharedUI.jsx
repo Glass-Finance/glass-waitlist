@@ -1,4 +1,5 @@
 import { Search, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { Button } from "../../../components/ui/Button";
 import { getErrorMessage } from "../../../utils/errorHandler";
 import EmptyState from "../../../components/common/EmptyState";
 import LoadingState from "../../../components/common/LoadingState";
@@ -20,13 +21,15 @@ export function StatusBadge({ status }) {
 
 export function PagerBtn({ children, onClick, disabled }) {
   return (
-    <button
+    <Button
+      variant="outline-neutral"
+      size="sm"
+      fullWidth={false}
       onClick={onClick}
       disabled={disabled}
-      className="w-7 h-7 flex items-center justify-center rounded-lg cursor-pointer bg-white text-gray-500 hover:bg-gray-100 transition-all disabled:opacity-40 disabled:cursor-default border border-surface-container-border"
     >
       {children}
-    </button>
+    </Button>
   );
 }
 

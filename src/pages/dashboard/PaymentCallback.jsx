@@ -282,7 +282,10 @@ function AdminPaymentCallback() {
     <div className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat bg-admin-default">
       {/* Top bar */}
       <div className="flex items-center px-4 md:px-8 pt-6 md:pt-8 pb-4">
-        <button
+        <Button
+          variant="tertiary"
+          size="sm"
+          fullWidth={false}
           onClick={() => {
             // Leaving voluntarily — the return target is used up, but the
             // pending reference stays so the destination page can still
@@ -291,11 +294,10 @@ function AdminPaymentCallback() {
             beginAuthGrace();
             navigate(effectiveReturnTo, { replace: true });
           }}
-          className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
         >
           <ArrowLeft size={16} />
           {backLabel}
-        </button>
+        </Button>
       </div>
 
       {/* Centered card */}

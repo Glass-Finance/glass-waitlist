@@ -598,13 +598,15 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
         </div>
 
         <div className="flex justify-end mt-6">
-          <button
+          <Button
+            variant="primary"
+            size="xs"
+            fullWidth={false}
             onClick={handleSave}
             disabled={!isReady || saving}
-            className="px-6 py-2 rounded-lg text-xs font-normal text-white bg-brand hover:opacity-90 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saving ? "Saving…" : "Save Changes"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -268,12 +268,15 @@ function MfaModal({ mode, onClose, onSuccess }) {
                     <code className="flex-1 text-xs font-bold tracking-widest text-gray-800 break-all">
                       {secret}
                     </code>
-                    <button
+                    <Button
+                      variant="tertiary"
+                      size="sm"
+                      fullWidth={false}
                       onClick={copySecret}
-                      className="border-none bg-transparent cursor-pointer text-brand flex-shrink-0"
+                      className="flex-shrink-0"
                     >
                       {copied ? <Check size={14} /> : <Copy size={14} />}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
@@ -410,13 +413,15 @@ function MfaModal({ mode, onClose, onSuccess }) {
                       </code>
                     ))}
                   </div>
-                  <button
+                  <Button
+                    variant="tertiary"
+                    size="xs"
+                    fullWidth={false}
                     onClick={() => copyAll(recoveryCodes.join("\n"))}
-                    className="flex items-center justify-center gap-1.5 text-xs font-semibold text-brand bg-transparent border-none cursor-pointer py-1"
                   >
                     {copiedAll ? <Check size={13} /> : <Copy size={13} />}
                     {copiedAll ? "Copied" : "Copy all codes"}
-                  </button>
+                  </Button>
                 </>
               )}
               <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
@@ -470,13 +475,15 @@ function MfaModal({ mode, onClose, onSuccess }) {
                       </code>
                     ))}
                   </div>
-                  <button
+                  <Button
+                    variant="tertiary"
+                    size="xs"
+                    fullWidth={false}
                     onClick={() => copyAll(recoveryCodes.join("\n"))}
-                    className="flex items-center justify-center gap-1.5 text-xs font-semibold text-brand bg-transparent border-none cursor-pointer py-1"
                   >
                     {copiedAll ? <Check size={13} /> : <Copy size={13} />}
                     {copiedAll ? "Copied" : "Copy all codes"}
-                  </button>
+                  </Button>
                 </>
               )}
               <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
@@ -619,13 +626,16 @@ export default function Security() {
                 className={inputCls}
                 style={fieldErrors.current ? { borderColor: "var(--color-danger)" } : undefined}
               />
-              <button
+              <Button
                 type="button"
+                variant="tertiary"
+                size="icon-sm"
                 onClick={() => setShow({ ...show, current: !show.current })}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                aria-label={show.current ? "Hide current password" : "Show current password"}
+                className="absolute right-3 top-1/2 -translate-y-1/2"
               >
                 {show.current ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
+              </Button>
             </div>
             {fieldErrors.current && <p className="text-xs text-danger">{fieldErrors.current}</p>}
           </div>
@@ -643,13 +653,16 @@ export default function Security() {
                   className={inputCls}
                   style={fieldErrors.new ? { borderColor: "var(--color-danger)" } : undefined}
                 />
-                <button
+                <Button
                   type="button"
+                  variant="tertiary"
+                  size="icon-sm"
                   onClick={() => setShow({ ...show, new: !show.new })}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label={show.new ? "Hide new password" : "Show new password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
                   {show.new ? <EyeOff size={15} /> : <Eye size={15} />}
-                </button>
+                </Button>
               </div>
               <PasswordChecklist password={passwords.new} />
             </div>
@@ -665,13 +678,16 @@ export default function Security() {
                   className={inputCls}
                   style={fieldErrors.confirm ? { borderColor: "var(--color-danger)" } : undefined}
                 />
-                <button
+                <Button
                   type="button"
+                  variant="tertiary"
+                  size="icon-sm"
                   onClick={() => setShow({ ...show, confirm: !show.confirm })}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label={show.confirm ? "Hide confirm password" : "Show confirm password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
                 >
                   {show.confirm ? <EyeOff size={15} /> : <Eye size={15} />}
-                </button>
+                </Button>
               </div>
               {fieldErrors.confirm && <p className="text-xs text-danger">{fieldErrors.confirm}</p>}
             </div>
@@ -681,13 +697,15 @@ export default function Security() {
           {success && <p className="text-xs text-emerald-600">Password updated.</p>}
 
           <div className="flex justify-end">
-            <button
+            <Button
+              variant="outline"
+              size="xs"
+              fullWidth={false}
               onClick={handleUpdatePassword}
               disabled={updatePassword.isPending}
-              className="px-4 py-2 rounded-md font-small text-xs text-brand border border-brand hover:opacity-90 transition-all disabled:opacity-50"
             >
               {updatePassword.isPending ? "Updating…" : "Update Password"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -722,25 +740,14 @@ export default function Security() {
             >
               {mfaEnabled ? "ON" : "OFF"}
             </span>
-            <button
+            <Button
+              variant={mfaEnabled ? "outline-caution" : "outline"}
+              size="xs"
+              fullWidth={false}
               onClick={() => setMfaModal(mfaEnabled ? "disable" : "setup")}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold border cursor-pointer transition-all"
-              style={
-                mfaEnabled
-                  ? {
-                      border: "1px solid var(--color-danger-wash)",
-                      color: "var(--color-danger)",
-                      background: "var(--color-danger-wash-2)",
-                    }
-                  : {
-                      border: "1px solid var(--color-brand)",
-                      color: "var(--color-brand)",
-                      background: "var(--color-white)",
-                    }
-              }
             >
               {mfaEnabled ? "Disable" : "Enable"}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -760,17 +767,14 @@ export default function Security() {
                 </p>
               </div>
             </div>
-            <button
+            <Button
+              variant="outline"
+              size="xs"
+              fullWidth={false}
               onClick={() => setMfaModal("regenerate")}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold border cursor-pointer transition-all"
-              style={{
-                border: "1px solid var(--color-brand)",
-                color: "var(--color-brand)",
-                background: "var(--color-white)",
-              }}
             >
               Regenerate
-            </button>
+            </Button>
           </div>
         )}
 

@@ -70,12 +70,15 @@ export default function GettingStartedChecklist({
               </span>
             </div>
             {!kycApproved && (
-              <button
+              <Button
+                variant="outline"
+                size="xs"
+                fullWidth={false}
                 onClick={() => navigate("/dashboard/verify-identity")}
-                className="text-xs font-semibold text-brand bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
+                className="flex-shrink-0"
               >
                 Verify
-              </button>
+              </Button>
             )}
           </div>
         )}
@@ -103,12 +106,15 @@ export default function GettingStartedChecklist({
             </span>
           </div>
           {!hasPlans && (
-            <button
+            <Button
+              variant="outline"
+              size="xs"
+              fullWidth={false}
               onClick={() => navigate(`/dashboard/payments?community=${communityId ?? ""}`)}
-              className="text-xs font-semibold text-brand bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
+              className="flex-shrink-0"
             >
               Create plan
-            </button>
+            </Button>
           )}
         </div>
 
@@ -127,12 +133,15 @@ export default function GettingStartedChecklist({
             </span>
           </div>
           {!hasMembers && (
-            <button
+            <Button
+              variant="outline"
+              size="xs"
+              fullWidth={false}
               onClick={onAddMember}
-              className="text-xs font-semibold text-brand bg-white border border-blue-100 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer flex-shrink-0"
+              className="flex-shrink-0"
             >
               Add member
-            </button>
+            </Button>
           )}
         </div>
 
@@ -174,16 +183,15 @@ export default function GettingStartedChecklist({
             </span>
           </div>
           {!hasPayoutAccount && (
-            <button
+            <Button
+              variant={payoutAccountRejected ? "outline-caution" : "outline"}
+              size="xs"
+              fullWidth={false}
               onClick={() => navigate("/dashboard/settings/finance/paystack")}
-              className={`text-xs font-semibold bg-white px-3 py-1.5 rounded-lg transition-colors cursor-pointer flex-shrink-0 border ${
-                payoutAccountRejected
-                  ? "text-red-700 border-red-100 hover:bg-red-50"
-                  : "text-brand border-blue-100 hover:bg-blue-50"
-              }`}
+              className="flex-shrink-0"
             >
               {payoutAccountRejected ? "Review" : payoutAccountPending ? "View status" : "Set up"}
-            </button>
+            </Button>
           )}
         </div>
       </div>

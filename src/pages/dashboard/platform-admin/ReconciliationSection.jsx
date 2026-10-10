@@ -49,21 +49,25 @@ function ReconciliationRunsTable() {
         isFetching={isFetching && !isLoading}
         right={
           <>
-            <button
+            <Button
+              variant="outline-neutral"
+              size="xs"
+              fullWidth={false}
               onClick={() => runPassOne.mutate()}
               disabled={busy}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-surface-container-border"
             >
               <RefreshCw size={12} className={runPassOne.isPending ? "animate-spin" : ""} /> Run
               Pass 1
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
+              size="xs"
+              fullWidth={false}
               onClick={() => runFull.mutate()}
               disabled={busy}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 transition-all cursor-pointer disabled:opacity-50"
             >
               <RefreshCw size={12} className={runFull.isPending ? "animate-spin" : ""} /> Run Full
-            </button>
+            </Button>
           </>
         }
       />
@@ -354,18 +358,22 @@ function ReconciliationFindingsTable() {
                 <td className="px-4 py-3 text-right whitespace-nowrap">
                   {f.status !== "RESOLVED" && (
                     <div className="opacity-0 group-hover:opacity-100 flex items-center gap-2 justify-end transition-opacity">
-                      <button
+                      <Button
+                        variant="outline-neutral"
+                        size="xs"
+                        fullWidth={false}
                         onClick={() => setModal({ finding: f, mode: "review" })}
-                        className="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-gray-600 bg-white hover:bg-gray-50 cursor-pointer border border-surface-container-border"
                       >
                         Review
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="success"
+                        size="xs"
+                        fullWidth={false}
                         onClick={() => setModal({ finding: f, mode: "resolve" })}
-                        className="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-green-700 bg-green-50 hover:bg-green-100 cursor-pointer border-none"
                       >
                         Resolve
-                      </button>
+                      </Button>
                     </div>
                   )}
                 </td>

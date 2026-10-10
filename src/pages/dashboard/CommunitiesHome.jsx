@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../components/ui/Button";
 import { useNavigate, Navigate } from "react-router-dom";
 import {
   ChevronDown,
@@ -92,12 +93,14 @@ function OverviewCard({ icon, title, badge, children, footerLabel, onFooter }) {
       </div>
       <div className="flex-1 divide-y divide-gray-50">{children}</div>
       {footerLabel && (
-        <button
+        <Button
+          variant="tertiary"
+          size="xs"
           onClick={onFooter}
-          className="flex items-center justify-center gap-1 w-full py-2.5 text-[11px] font-semibold text-brand bg-transparent border-t border-gray-50 cursor-pointer hover:bg-blue-50 transition-colors"
+          className="w-full border-t border-gray-50 rounded-none"
         >
           {footerLabel} <ChevronRight size={12} />
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -431,13 +434,15 @@ export default function CommunitiesHome() {
           </div>
 
           {!kycDisabled() && kycGate.status && (
-            <button
+            <Button
+              variant="tertiary"
+              size="icon-sm"
               onClick={() => setKycWizardOpen(true)}
-              className="bg-transparent border-none cursor-pointer p-0 flex-shrink-0 mt-1 md:self-center md:mt-0"
               aria-label="Identity verification status"
+              className="flex-shrink-0 mt-1"
             >
               <KycStatusBadge status={kycGate.status} />
-            </button>
+            </Button>
           )}
         </div>
 
@@ -445,19 +450,22 @@ export default function CommunitiesHome() {
           data-tour="communities-home-actions"
           className="flex w-full gap-2.5 md:w-auto md:items-center"
         >
-          <button
+          <Button
+            variant="outline"
+            size="xs"
+            className="flex-1 md:flex-none whitespace-nowrap"
             onClick={() => navigate("/onboarding/choose-path", { state: { intent: "join" } })}
-            className="h-10 flex-1 px-3.5 rounded-lg border border-hairline text-brand bg-white text-xs font-medium hover:bg-gray-50 transition-all flex items-center justify-center whitespace-nowrap md:flex-none"
           >
             Join Community
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="primary"
+            size="xs"
             onClick={() => {
               kycGate.enforce(() => navigate("/onboarding/choose-path"));
             }}
             disabled={kycGate.isLoading}
             aria-busy={kycGate.isLoading}
-            className="h-10 flex-1 px-3.5 rounded-lg bg-brand text-white text-xs font-medium hover:opacity-90 transition-all flex items-center justify-center whitespace-nowrap disabled:opacity-60 disabled:cursor-wait md:flex-none"
           >
             {kycGate.isLoading ? (
               <>
@@ -467,7 +475,7 @@ export default function CommunitiesHome() {
             ) : (
               "Create Community"
             )}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -505,20 +513,24 @@ export default function CommunitiesHome() {
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <button
+                      <Button
+                        variant="primary"
+                        size="xs"
+                        fullWidth={false}
                         onClick={() => handleAcceptInvite(invite.id)}
                         disabled={isResponding}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-brand text-white text-xs font-medium hover:opacity-90 transition-all disabled:opacity-50"
                       >
                         <Check size={12} /> Accept
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="outline-neutral"
+                        size="xs"
+                        fullWidth={false}
                         onClick={() => handleRejectInvite(invite.id)}
                         disabled={isResponding}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-md border border-gray-200 bg-white text-gray-600 text-xs font-medium hover:bg-gray-50 transition-all disabled:opacity-50"
                       >
                         <XIcon size={12} /> Decline
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 );
@@ -537,12 +549,14 @@ export default function CommunitiesHome() {
         className="flex items-center gap-5 px-4 md:px-7 pb-5 w-fit"
       >
         <div className="relative">
-          <button
+          <Button
+            variant="outline-neutral"
+            size="xs"
+            fullWidth={false}
             onClick={() => setSortOpen((o) => !o)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-sm border border-gray-200 bg-white text-xs font-medium text-gray-600 hover:bg-gray-50 transition-all"
           >
             {sort} <ChevronDown size={13} />
-          </button>
+          </Button>
           {sortOpen && (
             <div className="absolute top-full mt-1 left-0 bg-white rounded-xl border border-surface-container-border shadow-lg z-50 min-w-40 overflow-hidden">
               {SORT_OPTIONS.map((opt) => (

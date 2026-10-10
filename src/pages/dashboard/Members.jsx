@@ -104,15 +104,17 @@ function FilterPanel({ planOptions, filters, onApply, onClose }) {
               <option value="Unpaid">Unpaid</option>
             </select>
           </div>
-          <button
+          <Button
+            variant="primary"
+            size="xs"
+            fullWidth={false}
             onClick={() => {
               onApply({ plan, status });
               onClose();
             }}
-            className="px-3 py-2 rounded-lg bg-brand text-white text-xs font-semibold border-none cursor-pointer"
           >
             Apply
-          </button>
+          </Button>
         </div>
       </div>
     </>
@@ -300,21 +302,25 @@ export default function Members() {
           </div>
           <div className="flex items-center gap-2">
             {inviteLink && (
-              <button
+              <Button
+                variant="outline-neutral"
+                size="xs"
+                fullWidth={false}
                 onClick={() => copyInviteLinkText(inviteLink)}
                 title={inviteLink}
-                className="px-4 py-2 rounded text-xs font-medium text-black bg-white border border-[#efeff1] flex items-center gap-1.5 hover:bg-gray-50 transition-all cursor-pointer"
               >
                 {linkCopied ? <Check size={13} /> : <Copy size={13} />}
                 {linkCopied ? "Copied!" : "Copy Invite Link"}
-              </button>
+              </Button>
             )}
-            <button
+            <Button
+              variant="primary"
+              size="xs"
+              fullWidth={false}
               onClick={() => setModalOpen(true)}
-              className="px-4 py-2 rounded text-xs font-medium text-white bg-brand flex items-center gap-1.5 hover:opacity-90 transition-all border-none cursor-pointer"
             >
               <Plus size={13} /> Add Member
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -406,13 +412,15 @@ export default function Members() {
         <div className="bg-surface-container rounded-xl border border-surface-container-border">
           <div className="flex items-center justify-between px-5 py-4">
             <span className="text-sm font-medium text-black">Member Payments</span>
-            <button
+            <Button
+              variant="outline"
+              size="xs"
+              fullWidth={false}
               onClick={exportCsv}
               disabled={isExporting}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand text-xs font-semibold text-brand hover:bg-blue-50 transition-all bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download size={13} /> {isExporting ? "Exporting…" : "Export Csv"}
-            </button>
+            </Button>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-5 pb-3 gap-2">
@@ -427,12 +435,14 @@ export default function Members() {
             </div>
             <div className="flex items-center gap-2 self-end sm:self-auto">
               <div className="relative">
-                <button
+                <Button
+                  variant="outline-neutral"
+                  size="xs"
+                  fullWidth={false}
                   onClick={() => setFilterOpen((o) => !o)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 bg-white cursor-pointer"
                 >
                   <Filter size={12} /> Filter
-                </button>
+                </Button>
                 {filterOpen && (
                   <FilterPanel
                     planOptions={planOptions}
@@ -443,12 +453,14 @@ export default function Members() {
                 )}
               </div>
               <div className="relative">
-                <button
+                <Button
+                  variant="outline-neutral"
+                  size="xs"
+                  fullWidth={false}
                   onClick={() => setSortOpen((o) => !o)}
-                  className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-gray-600 cursor-pointer"
                 >
                   Sort by: {sort} <ChevronDown size={11} />
-                </button>
+                </Button>
                 {sortOpen && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setSortOpen(false)} />
@@ -490,12 +502,14 @@ export default function Members() {
                   </Button>
                 </span>
               ))}
-              <button
+              <Button
+                variant="tertiary"
+                size="xs"
+                fullWidth={false}
                 onClick={() => setFilters({ plan: "", status: "" })}
-                className="text-xs font-semibold text-brand bg-transparent border-none cursor-pointer"
               >
                 Clear All
-              </button>
+              </Button>
             </div>
           )}
 
@@ -587,14 +601,16 @@ export default function Members() {
                         </td>
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <button
+                            <Button
+                              variant="tertiary"
+                              size="xs"
+                              fullWidth={false}
                               onClick={() =>
                                 navigate(`/dashboard/members/${m.id}?community=${communityId}`)
                               }
-                              className="text-xs font-semibold text-brand hover:underline bg-transparent border-none cursor-pointer p-0"
                             >
                               {memberName(m)}
-                            </button>
+                            </Button>
                             {/* Verification completion — admin-facing only;
                                 renders nothing until the member DTO carries
                                 kycStatus (docs/kyc.md). */}
@@ -618,14 +634,15 @@ export default function Members() {
                         </td>
                         <td className="hidden sm:table-cell px-5 py-3">
                           <div className="flex gap-1.5">
-                            <button
+                            <Button
+                              variant="tertiary"
+                              size="icon-sm"
                               disabled
                               title="Resend reminder — coming soon"
                               aria-label="Resend reminder — coming soon"
-                              className="w-7 h-7 rounded-lg border border-gray-200 bg-white flex items-center justify-center text-gray-300 cursor-not-allowed"
                             >
                               <RotateCcw size={11} />
-                            </button>
+                            </Button>
                             <Button
                               variant="tertiary"
                               size="icon-sm"

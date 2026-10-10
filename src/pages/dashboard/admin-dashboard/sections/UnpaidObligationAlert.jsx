@@ -52,12 +52,9 @@ export default function UnpaidObligationAlert({
         </div>
       </div>
       <div className="flex items-center gap-2 ml-4 flex-shrink-0">
-        <button
-          onClick={() => onPayNow(due)}
-          className="px-4 py-2 rounded-sm text-xs font-semibold text-brand border cursor-pointer"
-        >
+        <Button variant="outline" size="xs" fullWidth={false} onClick={() => onPayNow(due)}>
           Pay Now
-        </button>
+        </Button>
         <Button
           variant="tertiary"
           size="icon-sm"

@@ -1,4 +1,5 @@
 import { ShieldAlert, ArrowRight } from "lucide-react";
+import { Button } from "../ui/Button";
 import { isKycApproved, isKycInFlight, kycStatusLabel } from "../../utils/kycStatus";
 
 // ── Community-staff KYC notice ───────────────────────────────────────────────
@@ -57,15 +58,17 @@ export default function CommunityStaffKycNotice({
         )}
       </div>
       {onVerify && (
-        <button
-          type="button"
+        <Button
+          variant="primary"
+          size="xs"
+          fullWidth={false}
           onClick={onVerify}
+          type="button"
           data-testid="community-staff-kyc-verify"
-          className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-xs font-semibold text-white transition-opacity hover:opacity-90"
         >
           {action}
           <ArrowRight size={13} />
-        </button>
+        </Button>
       )}
     </div>
   );

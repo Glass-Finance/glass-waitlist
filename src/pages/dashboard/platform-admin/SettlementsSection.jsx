@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "../../../components/ui/Button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ShieldCheck, ShieldAlert, Download, RefreshCw, Landmark } from "lucide-react";
 import ModalShell from "../../../components/dashboard/ModalShell";
@@ -179,20 +180,24 @@ export default function SettlementsSection() {
                 { value: "MISMATCHED", label: "Mismatched" },
               ]}
             />
-            <button
+            <Button
+              variant="outline-neutral"
+              size="xs"
+              fullWidth={false}
               onClick={() => csvExport.run(() => exportAdminSettlements(params))}
               disabled={csvExport.isExporting}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 bg-white hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50 border border-surface-container-border"
             >
               <Download size={12} /> {csvExport.isExporting ? "Exporting…" : "Export"}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
+              size="xs"
+              fullWidth={false}
               onClick={() => sync.mutate()}
               disabled={sync.isPending}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-white bg-brand hover:opacity-90 transition-all cursor-pointer border-none disabled:opacity-50"
             >
               <RefreshCw size={12} className={sync.isPending ? "animate-spin" : ""} /> Sync Now
-            </button>
+            </Button>
           </>
         }
       />

@@ -90,13 +90,15 @@ export function DeleteAccountModal({
               <OtpBoxes value={deletionCode} onChange={setDeletionCode} disabled={deleteLoading} />
             </div>
             <div className="flex items-center justify-center mb-4">
-              <button
+              <Button
+                variant="tertiary"
+                size="xs"
+                fullWidth={false}
                 onClick={onResendCode}
                 disabled={resendLoading || deleteLoading}
-                className="text-xs font-medium cursor-pointer bg-transparent border-none transition-all disabled:opacity-50 text-brand"
               >
                 {resendLoading ? "Resending…" : resendMessage || "Resend code"}
-              </button>
+              </Button>
             </div>
             {deleteError && <p className="text-xs text-red-500 mb-3 text-center">{deleteError}</p>}
             <div className="flex gap-2">

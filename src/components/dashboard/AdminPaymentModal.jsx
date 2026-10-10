@@ -240,12 +240,14 @@ export function AdminPaymentModal({ item, onClose }) {
                     : ""}
                 </span>
               </div>
-              <button
+              <Button
+                variant="tertiary"
+                size="sm"
+                fullWidth={false}
                 onClick={() => navigate("/dashboard/settings/finance/payment-methods")}
-                className="text-[13px] font-semibold bg-transparent border-none cursor-pointer text-brand"
               >
                 Change
-              </button>
+              </Button>
             </div>
           ) : (
             <p className="text-sm text-gray-500 py-2.5 border-b border-gray-200">

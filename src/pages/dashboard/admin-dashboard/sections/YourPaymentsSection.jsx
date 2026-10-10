@@ -1,4 +1,5 @@
 import { ChevronDown } from "lucide-react";
+import { Button } from "../../../../components/ui/Button";
 import { toTitleCase, formatDate } from "../../../../utils/format";
 import { formatNaira, statusStyle, freqStyle } from "../helpers";
 import { isPaidObligationStatus } from "../../../../utils/paymentStatus";
@@ -18,20 +19,19 @@ export default function YourPaymentsSection({
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-medium text-black">Your Payments</span>
         <div className="flex items-center gap-2">
-          <button
-            onClick={onToggleSort}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-200 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
-          >
+          <Button variant="outline-neutral" size="xs" fullWidth={false} onClick={onToggleSort}>
             Sort
             <ChevronDown size={11} className={sortDir === "asc" ? "rotate-180" : ""} />
-          </button>
+          </Button>
           <div className="relative">
-            <button
+            <Button
+              variant="outline-neutral"
+              size="xs"
+              fullWidth={false}
               onClick={onToggleFilterOpen}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-gray-200 bg-white text-xs font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
             >
               Filter <ChevronDown size={11} />
-            </button>
+            </Button>
             {filterOpen && (
               <div className="absolute right-0 top-full mt-1 bg-white rounded-lg border border-surface-container-border shadow-lg z-20 min-w-[110px] overflow-hidden">
                 {[
@@ -106,19 +106,18 @@ export default function YourPaymentsSection({
                     </td>
                     <td className="py-3 px-2">
                       {isPaid ? (
-                        <button
-                          disabled
-                          className="px-4 py-1.5 rounded text-xs font-semibold text-gray-300 border border-gray-200 bg-white cursor-not-allowed"
-                        >
+                        <Button variant="outline" size="xs" fullWidth={false} disabled>
                           Pay Now
-                        </button>
+                        </Button>
                       ) : (
-                        <button
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          fullWidth={false}
                           onClick={() => onPayNow(row)}
-                          className="px-4 py-1.5 rounded text-xs font-semibold text-brand border border-brand bg-white hover:bg-blue-50 cursor-pointer transition-all"
                         >
                           Pay Now
-                        </button>
+                        </Button>
                       )}
                     </td>
                   </tr>
