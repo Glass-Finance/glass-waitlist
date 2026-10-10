@@ -98,7 +98,14 @@ function CommissionModal({ community, onClose }) {
         )}
 
         <div className="flex gap-3 pt-1">
-          <Button type="button" onClick={onClose} fullWidth={false} size="sm" className="flex-1">
+          <Button
+            type="button"
+            variant="outline-neutral"
+            onClick={onClose}
+            fullWidth={false}
+            size="sm"
+            className="flex-1"
+          >
             Cancel
           </Button>
           <Button
@@ -168,7 +175,14 @@ function CommunitySettingsModal({ community, onClose }) {
         </div>
 
         <div className="flex gap-3 pt-4">
-          <Button type="button" onClick={onClose} fullWidth={false} size="sm" className="flex-1">
+          <Button
+            type="button"
+            variant="outline-neutral"
+            onClick={onClose}
+            fullWidth={false}
+            size="sm"
+            className="flex-1"
+          >
             Cancel
           </Button>
           <Button

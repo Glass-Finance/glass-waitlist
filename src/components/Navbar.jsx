@@ -248,7 +248,6 @@ export default function Navbar() {
                       goToApp("/sign-up", navigate);
                       setMenuOpen(false);
                     }}
-                    fullWidth={false}
                     size="sm"
                     className="shadow-lg shadow-black/20"
                   >
@@ -270,7 +269,6 @@ export default function Navbar() {
                     goToApp("/sign-in", navigate);
                     setMenuOpen(false);
                   }}
-                  fullWidth={false}
                   size="sm"
                   className="shadow-lg shadow-black/20"
                 >

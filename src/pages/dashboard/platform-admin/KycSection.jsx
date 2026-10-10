@@ -170,7 +170,7 @@ function KycDetailModal({ attemptId, onClose }) {
               </Button>
               <Button
                 size="sm"
-                variant="secondary"
+                variant="outline-neutral"
                 onClick={() => {
                   setMode(null);
                   setReason("");
