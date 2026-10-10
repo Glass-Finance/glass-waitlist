@@ -310,7 +310,7 @@ export function AdminPaymentModal({ item, onClose }) {
             disabled={isLinkInactive || killSwitch}
             loading={initiatePayment.isPending || redirecting}
             fullWidth={false}
-            className="w-[262px] flex items-center justify-center gap-2"
+            className="w-[262px]"
           >
             {initiatePayment.isPending || redirecting ? (
               <>

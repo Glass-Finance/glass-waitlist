@@ -192,11 +192,7 @@ export function NotificationDetailModal({
         </div>
         <div className="flex flex-col gap-2 px-6 py-4 border-t border-gray-100">
           {action && (
-            <Button
-              onClick={goToAction}
-              size="sm"
-              className="flex items-center justify-center gap-1"
-            >
+            <Button onClick={goToAction} size="sm">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -236,11 +232,7 @@ export function NotificationDetailModal({
         <FactRows rows={factRows} />
         <div className="flex flex-col gap-2 px-6 py-4 border-t border-gray-100">
           {action && (
-            <Button
-              onClick={goToAction}
-              variant="danger"
-              className="flex items-center justify-center gap-1"
-            >
+            <Button onClick={goToAction} variant="danger">
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -278,7 +270,7 @@ export function NotificationDetailModal({
         <FactRows rows={factRows} />
         <div className="flex flex-col gap-2 px-6 py-4 border-t border-gray-100">
           {action && (
-            <Button onClick={goToAction} className="flex items-center justify-center gap-1">
+            <Button onClick={goToAction}>
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -315,7 +307,7 @@ export function NotificationDetailModal({
         <FactRows rows={factRows} />
         <div className="flex flex-col gap-2 px-6 py-4 border-t border-gray-100">
           {action && (
-            <Button onClick={goToAction} className="flex items-center justify-center gap-1">
+            <Button onClick={goToAction}>
               {action.label} <ChevronRight size={13} />
             </Button>
           )}
@@ -354,12 +346,7 @@ export function NotificationDetailModal({
           Close
         </Button>
         {action && (
-          <Button
-            onClick={goToAction}
-            fullWidth={false}
-            size="sm"
-            className="px-4 flex items-center gap-1"
-          >
+          <Button onClick={goToAction} fullWidth={false} size="sm" className="px-4">
             {action.label} <ChevronRight size={13} />
           </Button>
         )}

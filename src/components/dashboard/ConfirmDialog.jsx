@@ -55,7 +55,7 @@ export default function ConfirmDialog({
             fullWidth={false}
             variant={danger ? "critical" : "primary"}
             size="sm"
-            className="flex-1 flex items-center justify-center gap-1.5"
+            className="flex-1"
           >
             {confirming && <Loader2 size={12} className="animate-spin" />}
             {confirming ? (confirmingLabel ?? "Please wait…") : confirmLabel}

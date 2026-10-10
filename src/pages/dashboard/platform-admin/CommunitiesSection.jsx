@@ -108,12 +108,7 @@ function CommissionModal({ community, onClose }) {
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            loading={mutation.isPending}
-            fullWidth={false}
-            className="flex-1 flex items-center justify-center gap-1.5"
-          >
+          <Button type="submit" loading={mutation.isPending} fullWidth={false} className="flex-1">
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
             ) : (
@@ -185,12 +180,7 @@ function CommunitySettingsModal({ community, onClose }) {
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            loading={mutation.isPending}
-            fullWidth={false}
-            className="flex-1 flex items-center justify-center gap-1.5"
-          >
+          <Button type="submit" loading={mutation.isPending} fullWidth={false} className="flex-1">
             {mutation.isPending ? (
               <Loader2 size={12} className="animate-spin" />
             ) : (

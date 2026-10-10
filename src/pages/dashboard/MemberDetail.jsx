@@ -140,7 +140,6 @@ export default function MemberDetail() {
           fullWidth={false}
           variant="critical"
           size="sm"
-          className="flex items-center gap-1.5"
         >
           <UserMinus size={14} /> Remove Member
         </Button>
