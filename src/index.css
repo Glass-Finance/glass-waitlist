@@ -768,6 +768,10 @@ section {
   text-decoration: underline;
 }
 
+.legal-prose a:hover {
+  text-decoration-thickness: 2px;
+}
+
 /* Scoped one-notch downscale for the admin dashboard (Sidebar/Topbar/every
    dashboard page) -- DashboardLayout toggles this class on <html> only
    while it's mounted. Every Tailwind text-* and rem-based spacing/sizing
