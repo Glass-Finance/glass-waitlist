@@ -100,7 +100,7 @@ function SetupFlow({ onSuccess, onCancel }) {
         </div>
 
         <Button onClick={startSetup}>Set Up MFA</Button>
-        <Button onClick={onCancel} fullWidth={false} size="md">
+        <Button variant="outline-neutral" onClick={onCancel} fullWidth={false} size="md">
           Cancel
         </Button>
       </div>
@@ -161,7 +161,7 @@ function SetupFlow({ onSuccess, onCancel }) {
         <Button onClick={verifySetup} disabled={code.length !== 6} loading={stage === "verifying"}>
           {stage === "verifying" ? "Activating…" : "Activate MFA"}
         </Button>
-        <Button onClick={onCancel} fullWidth={false} size="md">
+        <Button variant="outline-neutral" onClick={onCancel} fullWidth={false} size="md">
           Cancel
         </Button>
       </div>
@@ -314,8 +314,11 @@ function RegenerateFlow({ onSuccess, onCancel }) {
           ))}
         </div>
         <Button
+          variant="outline"
+          size="sm"
+          fullWidth={false}
           onClick={() => copy(recoveryCodes.join("\n"))}
-          className="flex items-center justify-center gap-2 p-3 rounded-xl border-[1.5px] border-hairline-strong bg-white text-ink-strong text-sm cursor-pointer"
+          className="flex items-center justify-center gap-2"
         >
           {copied ? <Check size={16} /> : <Copy size={16} />}
           {copied ? "Copied" : "Copy all codes"}
@@ -342,7 +345,13 @@ function RegenerateFlow({ onSuccess, onCancel }) {
       <Button onClick={handleRegenerate} disabled={code.length !== 6 || loading}>
         {loading ? "Generating…" : "Generate New Codes"}
       </Button>
-      <Button onClick={onCancel} disabled={loading} fullWidth={false} size="md">
+      <Button
+        variant="outline-neutral"
+        onClick={onCancel}
+        disabled={loading}
+        fullWidth={false}
+        size="md"
+      >
         Cancel
       </Button>
     </div>

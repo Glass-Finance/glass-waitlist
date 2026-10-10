@@ -76,7 +76,7 @@ export default function BankSelect({
         // itself changing colour, no ring. Both call sites already pass an
         // inputCls with focus:border, so this is belt-and-braces for a trigger
         // that gets mounted without one.
-        className={`w-full flex items-center justify-between gap-2 text-left cursor-pointer focus:border-[#002FA7] ${triggerClassName}`}
+        className={`w-full flex items-center justify-between gap-2 text-left cursor-pointer focus:border-brand ${triggerClassName}`}
       >
         <span className="flex items-center gap-2 min-w-0">
           {selected && <BankLogo bank={selected} size={18} />}

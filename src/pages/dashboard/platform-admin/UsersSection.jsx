@@ -388,7 +388,7 @@ export default function UsersSection() {
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <span
-                    className={`text-[11px] font-medium ${u.emailVerified ? "text-green-600" : "text-gray-400"}`}
+                    className={`text-[11px] font-medium ${u.emailVerified ? "text-success" : "text-gray-400"}`}
                   >
                     {u.emailVerified ? "Yes" : "No"}
                   </span>

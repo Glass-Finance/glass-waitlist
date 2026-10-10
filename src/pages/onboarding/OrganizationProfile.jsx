@@ -56,7 +56,7 @@ const CATEGORIES = [
 const COMPLETED_STEP_IDS = ["choose-path", "paying-member"];
 
 const inputCls =
-  "w-full h-12 min-h-8 border bg-stacked-container px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-[#002FA7] transition-all";
+  "w-full h-12 min-h-8 border bg-stacked-container px-4 py-1 rounded-lg text-placeholder text-gray-800 placeholder-gray-400 outline-none focus:border-brand transition-all";
 
 export default function OrganizationProfile() {
   const navigate = useNavigate();
@@ -431,10 +431,10 @@ export default function OrganizationProfile() {
                       <Loader2 size={14} className="animate-spin text-gray-400" />
                     )}
                     {!checking && !suggesting && available === true && (
-                      <Check size={14} className="text-green-600" />
+                      <Check size={14} className="text-success" />
                     )}
                     {!checking && !suggesting && available === false && (
-                      <XIcon size={14} className="text-red-500" />
+                      <XIcon size={14} className="text-danger" />
                     )}
                   </span>
                 </div>
@@ -442,10 +442,10 @@ export default function OrganizationProfile() {
                   <span className="text-xs text-danger">{fieldErrors.slug}</span>
                 )}
                 {!fieldErrors.slug && available === false && !checking && (
-                  <span className="text-xs text-red-500">That URL is taken — try another.</span>
+                  <span className="text-xs text-danger">That URL is taken — try another.</span>
                 )}
                 {!fieldErrors.slug && available === true && !checking && (
-                  <span className="text-xs text-green-600">
+                  <span className="text-xs text-success">
                     {INVITE_HOST}/member/join?community={slug}
                   </span>
                 )}
@@ -507,7 +507,7 @@ export default function OrganizationProfile() {
               </div>
             </div>
 
-            {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
+            {error && <p className="text-sm text-danger mb-4">{error}</p>}
 
             <Button
               type="submit"

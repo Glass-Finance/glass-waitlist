@@ -421,7 +421,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                         <span className="text-brand font-medium underline">Browse</span>
                       </p>
                     )}
-                    {csvError && <p className="text-xs text-red-500 mt-2">{csvError}</p>}
+                    {csvError && <p className="text-xs text-danger mt-2">{csvError}</p>}
                   </div>
 
                   <div>
@@ -493,12 +493,12 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
 
                     {urlStage === "complete" && urlFileInfo && (
                       <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-surface-container-border">
-                        <FileSpreadsheet size={20} className="text-green-600 flex-shrink-0" />
+                        <FileSpreadsheet size={20} className="text-success flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs text-gray-900 truncate">{urlFileInfo.name}</p>
                           <p className="text-xs text-gray-500 flex items-center gap-1">
-                            {urlFileInfo.sizeLabel} • <Check size={11} className="text-green-600" />{" "}
-                            <span className="text-green-600 font-medium">Complete</span>
+                            {urlFileInfo.sizeLabel} • <Check size={11} className="text-success" />{" "}
+                            <span className="text-success font-medium">Complete</span>
                           </p>
                         </div>
                         <Button
@@ -604,7 +604,7 @@ export default function AddMemberModal({ onClose, communityId, communitySlug }) 
                     Exempt from billing
                   </label>
 
-                  {manualError && <p className="text-xs text-red-500 mb-3">{manualError}</p>}
+                  {manualError && <p className="text-xs text-danger mb-3">{manualError}</p>}
 
                   <div className="flex justify-end">
                     <Button

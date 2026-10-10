@@ -151,12 +151,12 @@ export default function UploadMembersTab({
 
         {urlStage === "complete" && urlFileInfo && (
           <div className="mt-3 flex items-center justify-between gap-3 rounded-lg px-4 py-3 border border-hairline-neutral">
-            <FileSpreadsheet size={20} className="text-green-600 flex-shrink-0" />
+            <FileSpreadsheet size={20} className="text-success flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs text-gray-900 truncate">{urlFileInfo.name}</p>
               <p className="text-xs text-gray-500 flex items-center gap-1">
-                {urlFileInfo.sizeLabel} • <Check size={11} className="text-green-600" />{" "}
-                <span className="text-green-600 font-medium">Complete</span>
+                {urlFileInfo.sizeLabel} • <Check size={11} className="text-success" />{" "}
+                <span className="text-success font-medium">Complete</span>
               </p>
             </div>
             <Button
@@ -172,7 +172,7 @@ export default function UploadMembersTab({
         )}
       </div>
 
-      {error && <p className="text-sm text-red-500 mt-3">{error}</p>}
+      {error && <p className="text-sm text-danger mt-3">{error}</p>}
     </>
   );
 }

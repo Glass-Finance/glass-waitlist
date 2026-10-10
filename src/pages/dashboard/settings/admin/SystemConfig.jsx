@@ -177,7 +177,14 @@ function EditModal({ config, onClose, onSave, isSaving }) {
 
           {/* Actions */}
           <div className="flex gap-3 pt-1">
-            <Button type="button" onClick={onClose} fullWidth={false} size="sm" className="flex-1">
+            <Button
+              type="button"
+              variant="outline-neutral"
+              onClick={onClose}
+              fullWidth={false}
+              size="sm"
+              className="flex-1"
+            >
               Cancel
             </Button>
             <Button
@@ -251,7 +258,7 @@ export default function SystemConfig() {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-3">
         <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
-          <X size={18} className="text-red-500" />
+          <X size={18} className="text-danger" />
         </div>
         <p className="text-sm font-semibold text-gray-800">Access Denied</p>
         <p className="text-xs text-gray-400">
@@ -315,7 +322,7 @@ export default function SystemConfig() {
           <LoadingState className="py-20" />
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-20 gap-2">
-            <p className="text-xs text-red-500 font-medium">Failed to load configurations</p>
+            <p className="text-xs text-danger font-medium">Failed to load configurations</p>
             <p className="text-xs text-gray-400">{error?.message ?? "Unknown error"}</p>
           </div>
         ) : configs.length === 0 ? (

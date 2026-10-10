@@ -96,9 +96,11 @@ function SendNotificationModal({ onClose }) {
           <div className="flex gap-3 pt-1">
             <Button
               type="button"
+              variant="outline-neutral"
               onClick={() => setConfirming(false)}
               disabled={mutation.isPending}
-              className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all cursor-pointer border-none disabled:opacity-60"
+              size="sm"
+              className="flex-1"
             >
               Back
             </Button>
@@ -339,13 +341,13 @@ export default function NotificationsSection() {
                     <span className="text-[12px] text-gray-700">{j.recipientCount ?? "—"}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-[12px] font-medium text-green-600">
+                    <span className="text-[12px] font-medium text-success">
                       {j.deliveredCount ?? "—"}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`text-[12px] font-medium ${(j.failedCount ?? 0) > 0 ? "text-red-500" : "text-gray-400"}`}
+                      className={`text-[12px] font-medium ${(j.failedCount ?? 0) > 0 ? "text-danger" : "text-gray-400"}`}
                     >
                       {j.failedCount ?? "—"}
                     </span>

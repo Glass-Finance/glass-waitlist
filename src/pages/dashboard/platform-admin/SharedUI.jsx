@@ -78,7 +78,7 @@ export function TableShell({
         <LoadingState className="py-16" />
       ) : error ? (
         <div className="flex flex-col items-center justify-center py-16 gap-2">
-          <p className="text-xs font-semibold text-red-500">
+          <p className="text-xs font-semibold text-danger">
             {is403 ? "Access denied" : "Failed to load"}
           </p>
           <p className="text-xs text-gray-400">

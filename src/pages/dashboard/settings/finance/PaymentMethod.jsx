@@ -30,7 +30,7 @@ export default function PaymentMethod() {
             {isLoading ? (
               <LoadingState />
             ) : error ? (
-              <p className="text-xs text-red-500">Couldn't load payment methods.</p>
+              <p className="text-xs text-danger">Couldn't load payment methods.</p>
             ) : authorisations.length === 0 ? (
               // Shaped like a real method row below (same w-9 h-9 rounded-lg
               // icon tile, same flex layout) but dashed and empty, instead
@@ -67,6 +67,7 @@ export default function PaymentMethod() {
                     variant="tertiary"
                     size="icon-sm"
                     onClick={() => handleRemove(auth)}
+                    aria-label="Remove payment method"
                     disabled={isRemoving}
                   >
                     <Trash2 size={15} />

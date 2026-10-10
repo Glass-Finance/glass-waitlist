@@ -37,7 +37,7 @@ function SettlementDetailModal({ settlementId, onClose }) {
         {isLoading ? (
           <LoadingState className="py-10" />
         ) : error ? (
-          <p className="text-xs text-red-500">{getErrorMessage(error)}</p>
+          <p className="text-xs text-danger">{getErrorMessage(error)}</p>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-3 mb-5">
@@ -72,9 +72,7 @@ function SettlementDetailModal({ settlementId, onClose }) {
               <StatusBadge status={data.status} />
             </div>
 
-            {data.failureReason && (
-              <p className="text-xs text-red-500 mb-3">{data.failureReason}</p>
-            )}
+            {data.failureReason && <p className="text-xs text-danger mb-3">{data.failureReason}</p>}
 
             {transactions.length === 0 ? (
               <p className="text-xs text-gray-400 py-4 text-center">
@@ -93,9 +91,9 @@ function SettlementDetailModal({ settlementId, onClose }) {
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {t.matched ? (
-                        <ShieldCheck size={13} className="text-green-600" />
+                        <ShieldCheck size={13} className="text-success" />
                       ) : (
-                        <ShieldAlert size={13} className="text-red-500" />
+                        <ShieldAlert size={13} className="text-danger" />
                       )}
                       <span className="text-xs font-semibold text-gray-900">
                         {fmt(t.net, t.currency)}

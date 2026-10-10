@@ -300,7 +300,7 @@ export function AdminPaymentModal({ item, onClose }) {
           </div>
         </div>
 
-        {error && <p className="text-xs text-red-500 px-7 pb-4">{error}</p>}
+        {error && <p className="text-xs text-danger px-7 pb-4">{error}</p>}
 
         {/* ── Footer -- single action, matching the X close button for
             "never mind" instead of a redundant second Cancel button. ── */}

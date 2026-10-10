@@ -268,7 +268,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
               <label className="block text-xs font-medium text-gray-700 mb-1.5">
                 Amount Per Member{" "}
                 {amountRequired ? (
-                  <span className="text-red-500">*</span>
+                  <span className="text-danger">*</span>
                 ) : (
                   <span className="text-gray-400">(optional)</span>
                 )}
@@ -349,7 +349,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
           {form.audience === "SELECTED_MEMBERS" && (
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Members <span className="text-red-500">*</span>
+                Members <span className="text-danger">*</span>
               </label>
               <AudienceMemberPicker
                 communityId={communityId}
@@ -374,7 +374,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
           {form.audience === "GROUP" && (
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Groups <span className="text-red-500">*</span>
+                Groups <span className="text-danger">*</span>
               </label>
               {/* Mounted only for a GROUP audience, so an all-members or
                   selected-members plan never fetches the group list. */}
@@ -587,7 +587,7 @@ export default function EditPlanModal({ plan, communityId, onClose, onSave, savi
                     })}
                   </div>
                   {form.reminderChannels.length === 0 && (
-                    <p className="text-[11px] text-red-500 mt-1">
+                    <p className="text-[11px] text-danger mt-1">
                       Choose at least one channel, or reminders will be saved disabled.
                     </p>
                   )}

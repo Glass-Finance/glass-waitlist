@@ -107,7 +107,7 @@ function NotifCard({ n, communityMap, onMarkRead, onNavigate }) {
         if (!isRead) onMarkRead?.(n.id);
         onNavigate?.(notificationsListDestination(n, community));
       }}
-      className={`flex items-start gap-2.5 w-full py-3 px-3.5 border-none cursor-pointer text-left transition-[background] duration-150 outline-none focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-brand ${isRead ? "bg-transparent rounded-none border-b border-[#EFEFEF]" : "bg-[#F5F5F7] rounded-xl"}`}
+      className={`flex items-start gap-2.5 w-full py-3 px-3.5 border-none cursor-pointer text-left transition-[background] duration-150 outline-none focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-focus ${isRead ? "bg-transparent rounded-none border-b border-hairline" : "bg-surface-container rounded-xl"}`}
     >
       <NotifAvatar n={n} />
 
@@ -209,7 +209,7 @@ export default function NotificationsPanel({
             <button
               onClick={onClearAll}
               disabled={notifications.length === 0 || isClearingAll}
-              className="text-[11px] font-normal text-danger bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
+              className="text-xs font-medium text-danger bg-transparent border-none cursor-pointer hover:opacity-70 disabled:opacity-40 disabled:cursor-default"
             >
               Clear All
             </button>
@@ -222,7 +222,6 @@ export default function NotificationsPanel({
               size="icon-sm"
               aria-label="Notification actions"
               onClick={() => setActionsOpen((o) => !o)}
-              aria-label="Notification actions"
               aria-expanded={actionsOpen}
               className=""
             >
@@ -251,7 +250,7 @@ export default function NotificationsPanel({
                   }}
                   disabled={notifications.length === 0 || isClearingAll}
                   role="menuitem"
-                  className="w-full text-left px-3.5 py-2.5 text-[11.5px] font-medium text-danger bg-transparent border-none cursor-pointer hover:bg-[#F5F5F7] disabled:opacity-40 disabled:cursor-default"
+                  className="w-full text-left px-3.5 py-2.5 text-xs font-medium text-danger bg-transparent border-none cursor-pointer hover:bg-surface-container disabled:opacity-40 disabled:cursor-default"
                 >
                   Clear All
                 </button>

@@ -45,7 +45,7 @@ export default function GroupFormModal({ group, onClose, onSave, saving }) {
             autoFocus
             className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2"
           />
-          {nameError ? <p className="text-xs text-red-500 mt-1">{nameError}</p> : null}
+          {nameError ? <p className="text-xs text-danger mt-1">{nameError}</p> : null}
         </div>
 
         <div>

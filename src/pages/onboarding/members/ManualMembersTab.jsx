@@ -111,7 +111,7 @@ export default function ManualMembersTab({
         </span>
       </label>
 
-      {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
+      {error && <p className="text-sm text-danger mb-3">{error}</p>}
 
       <div className="flex lg:justify-end">
         <Button

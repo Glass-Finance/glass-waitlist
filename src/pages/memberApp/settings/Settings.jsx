@@ -156,13 +156,15 @@ export default function Settings() {
           </div>
         ))}
 
-        <button
+        <Button
+          variant="outline-neutral"
           onClick={handleLogout}
-          className="border border-surface-container-border flex items-center gap-2.5 w-full text-left py-3.5 px-4 bg-white rounded-2xl cursor-pointer"
+          fullWidth={false}
+          className="flex items-center gap-2.5 w-full"
         >
           <LogOut size={16} className="text-brand" />
           <span className="text-sm font-medium text-brand">Log Out</span>
-        </button>
+        </Button>
       </div>
 
       <KycWizardModal

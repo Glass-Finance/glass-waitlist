@@ -195,7 +195,7 @@ export function NotificationDetailModal({
             <Button
               onClick={goToAction}
               size="sm"
-              className="flex items-center justify-center gap-1 !h-9 !py-0 !text-[13px] !font-normal"
+              className="flex items-center justify-center gap-1"
             >
               {action.label} <ChevronRight size={13} />
             </Button>
@@ -350,13 +350,7 @@ export function NotificationDetailModal({
       </div>
       <FactRows rows={factRows} />
       <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
-        <Button
-          onClick={onClose}
-          variant="secondary"
-          fullWidth={false}
-          size="sm"
-          className="!h-9 !py-0 !text-xs !font-normal"
-        >
+        <Button onClick={onClose} variant="outline-neutral" fullWidth={false} size="sm">
           Close
         </Button>
         {action && (
@@ -364,7 +358,7 @@ export function NotificationDetailModal({
             onClick={goToAction}
             fullWidth={false}
             size="sm"
-            className="px-4 flex items-center gap-1 !h-9 !py-0 !text-[13px] !font-normal"
+            className="px-4 flex items-center gap-1"
           >
             {action.label} <ChevronRight size={13} />
           </Button>

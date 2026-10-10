@@ -156,7 +156,7 @@ export function OtpVerifyScreen({
             Use a different email
           </Button>
           <p
-            className={`text-xs mt-2 ${otpCodeExpired ? "text-red-500 font-medium" : "text-gray-400"}`}
+            className={`text-xs mt-2 ${otpCodeExpired ? "text-danger font-medium" : "text-gray-400"}`}
           >
             {otpCodeExpired
               ? "Your code has expired — request a new one below."
@@ -197,7 +197,7 @@ export function OtpVerifyScreen({
             )}
           />
 
-          {otpError && <p className="text-sm text-red-500 text-center -mt-2">{otpError}</p>}
+          {otpError && <p className="text-sm text-danger text-center -mt-2">{otpError}</p>}
           <PrimaryButton
             onClick={onVerify}
             loading={otpVerifying}

@@ -158,7 +158,7 @@ function KycDetailModal({ attemptId, onClose }) {
               onChange={(e) => setReason(e.target.value)}
               placeholder="User-visible reason…"
             />
-            {formError && <p className="text-[11px] text-red-500 mt-2 mb-0">{formError}</p>}
+            {formError && <p className="text-[11px] text-danger mt-2 mb-0">{formError}</p>}
             <div className="flex gap-2 mt-3">
               <Button
                 size="sm"
@@ -211,7 +211,7 @@ function KycDetailModal({ attemptId, onClose }) {
       <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">
         {detail.isLoading && <p className="text-xs text-gray-400">Loading detail…</p>}
         {detail.isError && (
-          <p className="text-xs text-red-500">
+          <p className="text-xs text-danger">
             {getErrorMessage(detail.error, "Failed to load attempt detail.")}
           </p>
         )}
@@ -300,7 +300,7 @@ function KycDetailModal({ attemptId, onClose }) {
             {d.canApprove === false &&
               Array.isArray(d.approvalBlockingReasons) &&
               d.approvalBlockingReasons.length > 0 && (
-                <p className="text-[11px] text-red-500 mb-2">
+                <p className="text-[11px] text-danger mb-2">
                   Approval blocked: {d.approvalBlockingReasons.join(", ")}
                 </p>
               )}

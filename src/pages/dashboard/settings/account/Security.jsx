@@ -231,7 +231,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 </p>
               </div>
               {error && (
-                <p role="alert" className="text-xs text-red-500">
+                <p role="alert" className="text-xs text-danger">
                   {error}
                 </p>
               )}
@@ -273,6 +273,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
                       size="sm"
                       fullWidth={false}
                       onClick={copySecret}
+                      aria-label="Copy secret key"
                       className="flex-shrink-0"
                     >
                       {copied ? <Check size={14} /> : <Copy size={14} />}
@@ -296,7 +297,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 className={inputCls}
               />
               {error && (
-                <p role="alert" className="text-xs text-red-500">
+                <p role="alert" className="text-xs text-danger">
                   {error}
                 </p>
               )}
@@ -332,7 +333,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 className={inputCls}
               />
               {error && (
-                <p role="alert" className="text-xs text-red-500">
+                <p role="alert" className="text-xs text-danger">
                   {error}
                 </p>
               )}
@@ -377,7 +378,7 @@ function MfaModal({ mode, onClose, onSuccess }) {
                 className={inputCls}
               />
               {error && (
-                <p role="alert" className="text-xs text-red-500">
+                <p role="alert" className="text-xs text-danger">
                   {error}
                 </p>
               )}
@@ -693,7 +694,7 @@ export default function Security() {
             </div>
           </div>
 
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          {error && <p className="text-xs text-danger">{error}</p>}
           {success && <p className="text-xs text-emerald-600">Password updated.</p>}
 
           <div className="flex justify-end">
@@ -725,7 +726,7 @@ export default function Security() {
             <div
               className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${mfaEnabled ? "bg-green-50" : "bg-gray-100"}`}
             >
-              <ShieldCheck size={16} className={mfaEnabled ? "text-green-600" : "text-gray-400"} />
+              <ShieldCheck size={16} className={mfaEnabled ? "text-success" : "text-gray-400"} />
             </div>
             <div>
               <p className="text-sm text-gray-900">Authenticator App (TOTP)</p>

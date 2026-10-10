@@ -76,7 +76,7 @@ export default function PhoneOnlyStep({ initialPhone, onNext, onCancel }) {
           <SignUpFieldError message={phoneError} />
         </div>
 
-        <PrimaryBtn type="submit" className="mt-2 !py-3.5" loading={submitting} size="sm">
+        <PrimaryBtn type="submit" className="mt-2" loading={submitting} size="sm">
           {submitting ? "Sending Code..." : "Send New Code"}
         </PrimaryBtn>
 

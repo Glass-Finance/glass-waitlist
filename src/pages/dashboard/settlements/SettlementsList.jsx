@@ -81,7 +81,7 @@ function SettlementDetail({ communityId, settlementId, onClose }) {
             subtitle="Settlements awaiting review are not shown to community admins."
           />
         ) : error ? (
-          <p className="text-xs text-red-500">{getErrorMessage(error)}</p>
+          <p className="text-xs text-danger">{getErrorMessage(error)}</p>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-3 mb-5">
@@ -130,9 +130,9 @@ function SettlementDetail({ communityId, settlementId, onClose }) {
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {t.matched ? (
-                        <ShieldCheck size={13} className="text-green-600" />
+                        <ShieldCheck size={13} className="text-success" />
                       ) : (
-                        <ShieldAlert size={13} className="text-red-500" />
+                        <ShieldAlert size={13} className="text-danger" />
                       )}
                       <span className="text-xs font-semibold text-gray-900">
                         {fmt(t.amount, t.currency)}
@@ -259,7 +259,7 @@ export default function SettlementsList() {
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <p className="text-xs font-semibold text-red-500">Failed to load</p>
+            <p className="text-xs font-semibold text-danger">Failed to load</p>
             <p className="text-xs text-gray-400">{getErrorMessage(error)}</p>
           </div>
         ) : items.length === 0 ? (

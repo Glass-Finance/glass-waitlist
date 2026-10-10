@@ -25,12 +25,9 @@ export default function AutoPayPrompt({ prompt, onDismiss, onEnable }) {
           {frequencyAdverb(prompt.frequency)}?
         </p>
         <div className="flex gap-2.5 justify-end">
-          <button
-            onClick={onDismiss}
-            className="py-[11px] px-[22px] rounded-lg border-[1.5px] border-hairline-neutral bg-white text-ink-strong text-sm font-semibold cursor-pointer"
-          >
+          <Button variant="outline-neutral" onClick={onDismiss} fullWidth={false}>
             No
-          </button>
+          </Button>
           <Button onClick={onEnable} fullWidth={false} className="px-[26px]">
             Yes
           </Button>
