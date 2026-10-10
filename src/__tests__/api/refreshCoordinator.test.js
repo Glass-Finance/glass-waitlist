@@ -94,6 +94,45 @@ describe("waitForRefreshResult", () => {
     await expect(waiting).rejects.toMatchObject({ code: "REFRESH_FAILED" });
   });
 
+  // The `stale` flag separates "the owner gave up because the session
+  // generation moved under it" from "the owner tried and the backend said no".
+  // The two must raise different error classes, because client.js treats a
+  // generation change as "abandon quietly" and a genuine failure as "this
+  // session is dead, clear it". Collapsing them is what let a logout/re-login
+  // race wipe a perfectly valid new session.
+  it("rejects with SESSION_CHANGED (not REFRESH_FAILED) when the owner's failure was stale", async () => {
+    // Epoch is deliberately left untouched, so the ONLY route to SESSION_CHANGED
+    // here is the stale flag — isolating this from the separate
+    // generation-moved-mid-wait path further down.
+    const epoch = getSessionEpoch();
+    writeForeignLease(10_000);
+    const waiting = waitForRefreshResult({ epoch, pollMs: 5 });
+    publishRefreshResult({ ok: false, stale: true });
+    storageEvent(REFRESH_RESULT_KEY);
+
+    const err = await waiting.catch((e) => e);
+    expect(err).toBeInstanceOf(RefreshEpochChangedError);
+    expect(err.code).toBe("SESSION_CHANGED");
+    // Explicitly NOT the genuine-failure class.
+    expect(err).not.toBeInstanceOf(RefreshFailedError);
+    expect(getSessionEpoch()).toBe(epoch);
+  });
+
+  it("keeps raising REFRESH_FAILED when the stale flag is absent or false", async () => {
+    // The genuine-failure path must be untouched by the stale branch: a real
+    // backend rejection still propagates as REFRESH_FAILED so client.js can
+    // clear the dead session.
+    for (const published of [{ ok: false }, { ok: false, stale: false }]) {
+      writeForeignLease(10_000);
+      const waiting = waitForRefreshResult({ epoch: getSessionEpoch(), pollMs: 5 });
+      publishRefreshResult(published);
+      storageEvent(REFRESH_RESULT_KEY);
+      const err = await waiting.catch((e) => e);
+      expect(err).toBeInstanceOf(RefreshFailedError);
+      expect(err.code).toBe("REFRESH_FAILED");
+    }
+  });
+
   it("rejects with SESSION_CHANGED when the generation moves mid-wait (logout)", async () => {
     const epoch = getSessionEpoch();
     writeForeignLease(10_000);

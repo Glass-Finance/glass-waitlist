@@ -40,6 +40,12 @@ client.interceptors.request.use((config) => {
 // POST /api/v1/auth/token/refresh — body: { refreshToken, deviceInfo }.
 /** @type {Promise<string> | null} */
 let refreshPromise = null;
+/**
+ * The session generation `refreshPromise` was created for. A memoised cycle
+ * belongs to the generation that started it and must never be handed to a
+ * different one — see getRefreshPromise below.
+ */
+let refreshPromiseEpoch = null;
 
 function doRefresh(refreshToken, epoch) {
   // Raw axios (not `client`) so the refresh call itself never re-enters
@@ -65,14 +71,34 @@ function doRefresh(refreshToken, epoch) {
 }
 
 function getRefreshPromise(refreshToken, epoch) {
+  // A memoised cycle belongs to the session generation that started it. A
+  // request arriving in a NEWER generation (the user logged out and back in
+  // while a refresh was still running) must never adopt it: that cycle's
+  // execute() is bound to the old epoch, so it can only reject with
+  // RefreshEpochChangedError — and the adopting caller's catch block compares
+  // the CURRENT epoch against its OWN epoch. Those match, so the failure gets
+  // misread as "my session is dead" and clearSessionAndRedirect() destroys a
+  // perfectly valid new session. Drop the foreign memo and start this
+  // generation's own cycle instead.
+  if (refreshPromise && refreshPromiseEpoch !== epoch) refreshPromise = null;
   if (!refreshPromise) {
-    refreshPromise = coordinateRefresh({
+    refreshPromiseEpoch = epoch;
+    const cycle = coordinateRefresh({
       epoch,
       refreshToken,
       execute: () => doRefresh(refreshToken, epoch),
-    }).finally(() => {
-      refreshPromise = null;
     });
+    let tracked;
+    tracked = cycle.finally(() => {
+      // Identity-guarded: a cycle that a newer generation already replaced
+      // must not null out the newer memo on its way out.
+      if (refreshPromise === tracked) {
+        refreshPromise = null;
+        refreshPromiseEpoch = null;
+      }
+    });
+    refreshPromise = tracked;
+    return tracked;
   }
   return refreshPromise;
 }
@@ -230,6 +256,15 @@ client.interceptors.response.use(
         return client(originalRequest);
       } catch (refreshError) {
         if (getSessionEpoch() !== epoch) return Promise.reject(error);
+        // The session generation moved underneath the refresh, yet it is still
+        // ours now (the compare above passed). This failure therefore describes
+        // a generation that no longer exists — refreshCoordinator publishes
+        // those as `stale`, and a waiter re-raises them as
+        // RefreshEpochChangedError. It is not evidence that THIS session is
+        // dead, so reject the caller's request with its original error and
+        // leave the live session untouched; the lease unwinds and the next
+        // attempt refreshes normally.
+        if (refreshError instanceof RefreshEpochChangedError) return Promise.reject(error);
         if (!originalRequest._skipAuthRedirect) clearSessionAndRedirect();
         return Promise.reject(refreshError);
       }

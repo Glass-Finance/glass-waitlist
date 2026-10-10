@@ -164,6 +164,16 @@ export function publishRefreshResult(result) {
  * Throws RefreshFailedError if the owner attempted and failed — the caller
  * must propagate, never retry (retrying a rejected token risks backend
  * reuse detection).
+ *
+ * A published failure also carries a `stale` flag: true when the owner
+ * aborted because ITS generation moved, false when it genuinely attempted and
+ * failed. The two deliberately raise DIFFERENT error classes, because the
+ * caller's obligation differs:
+ *   - stale: true  → RefreshEpochChangedError. The failure describes a
+ *     session that no longer exists. A waiter still in a LIVE generation must
+ *     abandon the attempt without concluding that its own session has died.
+ *   - stale: false → RefreshFailedError. A real attempt failed; propagate it.
+ * Collapsing the two would let a logout/re-login race clear a valid session.
  * @param {{ epoch?: number, since?: number, knownLease?: object|null, pollMs?: number, maxWaitMs?: number }} [opts]
  */
 export function waitForRefreshResult({
@@ -203,6 +213,15 @@ export function waitForRefreshResult({
       if (result && result.at >= since) {
         if (result.ok) {
           settle(() => resolve({ outcome: "refreshed", accessToken: getAccessToken() }));
+        } else if (result.stale) {
+          // The owner published this while running under a DIFFERENT session
+          // generation (logout / re-login mid-flight), so its failure describes
+          // a session that no longer exists. Re-raise it as a generation change
+          // rather than RefreshFailedError: a waiter sitting in a live
+          // generation must abandon the attempt WITHOUT treating it as its own
+          // session dying. `stale` was already on the wire (published by
+          // coordinateRefresh below) — it was simply never read here.
+          settle(() => reject(new RefreshEpochChangedError()));
         } else {
           settle(() => reject(new RefreshFailedError()));
         }
